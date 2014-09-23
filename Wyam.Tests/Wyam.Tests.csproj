@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EngineFixture.cs" />
+    <Compile Include="PathExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MetadataStackFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

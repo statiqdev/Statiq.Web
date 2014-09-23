@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,16 +11,23 @@ namespace Wyam.Core
 {
     public class Engine
     {
-        private readonly VariableStack _vars;
+        private readonly MetadataStack _meta;
 
-        public dynamic Vars
+        public dynamic Meta
         {
-            get { return _vars; }
+            get { return _meta; }
+        }
+
+        private readonly PipelineCollection _pipelines = new PipelineCollection();
+
+        public PipelineCollection Pipelines
+        {
+            get { return _pipelines; }
         }
 
         public Engine()
         {
-            _vars = new VariableStack(this);
+            _meta = new MetadataStack(this);
         }
 
         // Configure the engine using a config script or with defaults if null
@@ -32,17 +40,23 @@ namespace Wyam.Core
                 return;
             }
 
+            // Add assemblies
+            CSScript.Evaluator.Run(string.Format("using System.IO;"));
+            CSScript.Evaluator.Run(string.Format("using Wyam.Core;"));
+            CSScript.Evaluator.Run(string.Format("using Wyam.Core.Modules;"));
+            // TODO: Locate modules and add assemblies and using statements for all located modules
+
             // Evaluate the config script
             var configure = CSScript.Evaluator.CreateDelegate(
-                string.Format("void Configure(dynamic vars) {{ {0} }}", configScript));
-            configure(Vars);
+                string.Format("void Configure(dynamic Meta, PipelineCollection Pipelines) {{ {0} }}", configScript));
+            configure(Meta);
         }
 
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Vars.InputFolder = @".\input";
-            Vars.OutputFolder = @".\output";
+            Meta.InputFolder = @".\input";
+            Meta.OutputFolder = @".\output";
             
         }
 
@@ -51,12 +65,6 @@ namespace Wyam.Core
         public Trace Trace
         {
             get { return _trace; }
-        }
-
-        // This adds a top-level variable
-        public void AddVariable(string key, object value)
-        {
-            _vars.AddTopLevel(key, value);
         }
 
         public void Build(IBuildFilter buildFilter = null)

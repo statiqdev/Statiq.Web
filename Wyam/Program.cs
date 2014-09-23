@@ -130,21 +130,28 @@ namespace Wyam
 
         private bool Configure()
         {
-            _engine.Trace.Verbose("Parsing configuration file...");
+            _engine.Trace.Verbose("Configuring...");
 
             // If we have a configuration file use it, otherwise configure with defaults  
             string configFile = Path.Combine(_rootFolder, "config.wyam");
             if (File.Exists(configFile))
             {
                 _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                _engine.Configure(File.ReadAllText(configFile));
+                try
+                {
+                    _engine.Configure(File.ReadAllText(configFile));
+                }
+                catch(Exception ex)
+                {
+                    _engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);                    
+                }
             }
             else
             {
                 _engine.Configure();
             }
 
-            _engine.Trace.Verbose("Parsed configuration file.");
+            _engine.Trace.Verbose("Configured.");
             return true;
         }
     }
