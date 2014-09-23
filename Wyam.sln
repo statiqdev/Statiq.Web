@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Core", "Wyam.Core\Wyam.Core.csproj", "{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tests", "Wyam.Tests\Wyam.Tests.csproj", "{E62E44ED-15F5-4DCA-A3FB-3E7732685DFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CADDE07-290F-4958-B0D4-2E613B8F127F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CADDE07-290F-4958-B0D4-2E613B8F127F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CADDE07-290F-4958-B0D4-2E613B8F127F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CADDE07-290F-4958-B0D4-2E613B8F127F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E62E44ED-15F5-4DCA-A3FB-3E7732685DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62E44ED-15F5-4DCA-A3FB-3E7732685DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62E44ED-15F5-4DCA-A3FB-3E7732685DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62E44ED-15F5-4DCA-A3FB-3E7732685DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
