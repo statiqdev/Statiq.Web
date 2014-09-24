@@ -23,9 +23,38 @@ namespace Wyam.Core
             _modules.Add(module);
         }
 
-        internal void Execute(MetadataStack meta)
+        internal PrepareTree Prepare(MetadataStack metadata)
         {
-            // TODO
+            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(metadata));
+            List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
+            { 
+                new PrepareBranch(null) 
+                { 
+                    Outputs = new List<PrepareBranch>() { rootBranch } 
+                }
+            };
+
+            foreach(IModule module in _modules)
+            {
+                List<PrepareBranch> currentBranches = new List<PrepareBranch>();
+                foreach (PrepareBranch lastBranch in lastBranches)
+                {
+                    foreach (PrepareBranch tree in lastBranch.Outputs)
+                    {
+                        tree.Module = module;
+                        tree.Outputs = module.Prepare(tree.Input).Select(x => new PrepareBranch(x)).ToList();
+                        currentBranches.AddRange(tree.Outputs);
+                    }
+                }
+                lastBranches = currentBranches;
+            }
+
+            return new PrepareTree(rootBranch, lastBranches);
+        }
+
+        internal void Execute(PrepareBranch rootBranch)
+        {
+            
         }
     }
 }

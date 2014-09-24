@@ -18,20 +18,20 @@ namespace Wyam.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Meta.TestString = ""teststring"";
-                Meta.TestInt = 1234;
-                Meta.TestFloat = 1234.567;
-                Meta.TestBool = true;
+                Metadata.TestString = ""teststring"";
+                Metadata.TestInt = 1234;
+                Metadata.TestFloat = 1234.567;
+                Metadata.TestBool = true;
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual("teststring", engine.Meta.TestString);
-            Assert.AreEqual(1234, engine.Meta.TestInt);
-            Assert.AreEqual(1234.567, engine.Meta.TestFloat);
-            Assert.AreEqual(true, engine.Meta.TestBool);
+            Assert.AreEqual("teststring", engine.Metadata.TestString);
+            Assert.AreEqual(1234, engine.Metadata.TestInt);
+            Assert.AreEqual(1234.567, engine.Metadata.TestFloat);
+            Assert.AreEqual(true, engine.Metadata.TestBool);
         }
 
         [Test]
@@ -40,15 +40,15 @@ namespace Wyam.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Meta.TestAnonymous = new { A = 1, B = ""b"" };
+                Metadata.TestAnonymous = new { A = 1, B = ""b"" };
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Meta.TestAnonymous.A);
-            Assert.AreEqual("b", engine.Meta.TestAnonymous.B);
+            Assert.AreEqual(1, engine.Metadata.TestAnonymous.A);
+            Assert.AreEqual("b", engine.Metadata.TestAnonymous.B);
         }
 
         // TODO: Replace with more specific tests

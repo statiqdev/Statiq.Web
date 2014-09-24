@@ -12,21 +12,25 @@ namespace Wyam.Core
     internal class MetadataStack : DynamicObject
     {
         private readonly Engine _engine;
-        private readonly Stack<IDictionary<string, object>> _meta;
+        private readonly Stack<IDictionary<string, object>> _metadata;
         private bool _locked = false;
 
         public MetadataStack(Engine engine)
         {
             _engine = engine;
-             _meta = new Stack<IDictionary<string, object>>();
-             _meta.Push(new Dictionary<string, object>());
+             _metadata = new Stack<IDictionary<string, object>>();
+             _metadata.Push(new Dictionary<string, object>());
         }
 
         private MetadataStack(MetadataStack variableStack)
         {
             _engine = variableStack._engine;
-            _meta = new Stack<IDictionary<string, object>>(variableStack._meta.Reverse());
-            _meta.Push(new Dictionary<string, object>());
+            _metadata = new Stack<IDictionary<string, object>>(variableStack._metadata.Reverse());
+            if (_metadata.Peek().Count != 0)
+            {
+                // Only need to push a new one if there's actually something on the top
+                _metadata.Push(new Dictionary<string, object>());
+            }
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
@@ -38,7 +42,7 @@ namespace Wyam.Core
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             result = null;
-            IDictionary<string, object> meta = _meta.FirstOrDefault(x => x.ContainsKey(binder.Name));
+            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(binder.Name));
             if (meta != null)
             {
                 result = meta[binder.Name];
@@ -54,11 +58,11 @@ namespace Wyam.Core
                 return false;
             }
 
-            if (_meta.Any(x => x.ContainsKey(binder.Name)))
+            if (_metadata.Any(x => x.ContainsKey(binder.Name)))
             {
                 _engine.Trace.Warning("Duplicate value for metadata: {0}.", binder.Name);
             }
-            _meta.Peek()[binder.Name] = value;
+            _metadata.Peek()[binder.Name] = value;
 
             return true;
         }

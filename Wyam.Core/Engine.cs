@@ -11,11 +11,11 @@ namespace Wyam.Core
 {
     public class Engine
     {
-        private readonly MetadataStack _meta;
+        private readonly MetadataStack _metadata;
 
-        public dynamic Meta
+        public dynamic Metadata
         {
-            get { return _meta; }
+            get { return _metadata; }
         }
 
         private readonly PipelineCollection _pipelines = new PipelineCollection();
@@ -27,7 +27,7 @@ namespace Wyam.Core
 
         public Engine()
         {
-            _meta = new MetadataStack(this);
+            _metadata = new MetadataStack(this);
         }
 
         // Configure the engine using a config script or with defaults if null
@@ -48,15 +48,15 @@ namespace Wyam.Core
 
             // Evaluate the config script
             var configure = CSScript.Evaluator.CreateDelegate(
-                string.Format("void Configure(dynamic Meta, PipelineCollection Pipelines) {{ {0} }}", configScript));
-            configure(Meta);
+                string.Format("void Configure(dynamic Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
+            configure(Metadata, Pipelines);
         }
 
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Meta.InputFolder = @".\input";
-            Meta.OutputFolder = @".\output";
+            Metadata.InputFolder = @".\input";
+            Metadata.OutputFolder = @".\output";
             
         }
 
@@ -67,8 +67,15 @@ namespace Wyam.Core
             get { return _trace; }
         }
 
-        public void Build(IBuildFilter buildFilter = null)
+        public void Execute(IExecuteFilter executeFilter = null)
         {
+            // TODO: Use the filter
+            
+            // Prepare all of the pipelines
+            foreach(Pipeline pipeline in Pipelines)
+            {
+
+            }
         }
     }
 }
