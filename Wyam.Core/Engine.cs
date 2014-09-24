@@ -18,7 +18,7 @@ namespace Wyam.Core
             get { return _metadata; }
         }
 
-        private readonly PipelineCollection _pipelines = new PipelineCollection();
+        private readonly PipelineCollection _pipelines;
 
         public PipelineCollection Pipelines
         {
@@ -28,6 +28,7 @@ namespace Wyam.Core
         public Engine()
         {
             _metadata = new MetadataStack(this);
+            _pipelines = new PipelineCollection(this);
         }
 
         // Configure the engine using a config script or with defaults if null
@@ -112,17 +113,24 @@ namespace Wyam.Core
 
             // First pass: prepare each pipelines
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
+            int c = 1;
             foreach(Pipeline pipeline in Pipelines)
             {
+                Trace.Verbose("Preparing pipeline {0}...", c);
                 PrepareTree prepareTree = pipeline.Prepare(_metadata, documents);
                 prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
-                documents.AddRange(prepareTree.Leaves.Select(x => x.Input.Metadata));
+                IEnumerable<dynamic> pipelineDocuments = prepareTree.Leaves.Select(x => x.Input.Metadata);
+                documents.AddRange(pipelineDocuments);
+                Trace.Verbose("Prepared pipeline {0} resulting in {1} documents.", c++, pipelineDocuments.Count());
             }
 
             // Second pass: execute each pipeline
+            c = 1;
             foreach(PipelinePrepareResult prepareResult in prepareResults)
             {
+                Trace.Verbose("Executing pipeline {0}...", c);
                 prepareResult.Pipeline.Execute(prepareResult.PrepareTree.RootBranch);
+                Trace.Verbose("Executed pipeline {0}.", c++);
             }
         }
 

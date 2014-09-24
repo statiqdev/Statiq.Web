@@ -11,9 +11,9 @@ namespace Wyam.Core
     {
         private readonly TraceSource _traceSource = new TraceSource("Wyam", SourceLevels.Information);
 
-        public void SetVerbose(bool verbose)
+        public void SetLevel(SourceLevels level)
         {
-            _traceSource.Switch.Level = verbose ? SourceLevels.Verbose : SourceLevels.Information;
+            _traceSource.Switch.Level = level;
         }
 
         public void AddListener(TraceListener listener)

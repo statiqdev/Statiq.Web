@@ -9,7 +9,13 @@ namespace Wyam.Core
 {
     public class PipelineCollection : IEnumerable<Pipeline>
     {
+        private readonly Engine _engine;
         private readonly List<Pipeline> _pipelines = new List<Pipeline>();
+
+        public PipelineCollection(Engine engine)
+        {
+            _engine = engine;
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -28,7 +34,7 @@ namespace Wyam.Core
 
         public void Add(params IModule[] modules)
         {
-            _pipelines.Add(new Pipeline(modules));
+            _pipelines.Add(new Pipeline(_engine, modules));
         }
     }
 }

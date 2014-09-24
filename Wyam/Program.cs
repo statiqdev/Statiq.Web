@@ -41,7 +41,7 @@ namespace Wyam
             // Set verbose tracing
             if (_verbose)
             {
-                _engine.Trace.SetVerbose(true);
+                _engine.Trace.SetLevel(SourceLevels.Verbose);
             }
 
             // Make sure the root folder actually exists
