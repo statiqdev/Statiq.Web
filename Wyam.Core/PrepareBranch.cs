@@ -12,7 +12,10 @@ namespace Wyam.Core
 
         public PrepareBranch(PipelineContext input)
         {
-            input.Lock();   // Lock the context once it's added to the tree
+            if (input != null)
+            {
+                input.IsReadOnly = true;   // Lock the context once it's added to the tree
+            }
             Input = input;
             Outputs = new List<PrepareBranch>();
         }

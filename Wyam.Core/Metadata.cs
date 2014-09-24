@@ -9,19 +9,19 @@ namespace Wyam.Core
 {
     // This was helpful: http://weblog.west-wind.com/posts/2012/Feb/01/Dynamic-Types-and-DynamicObject-References-in-C
     // Starts with one top-level variable dictionary
-    internal class MetadataStack : DynamicObject
+    public class Metadata : DynamicObject
     {
         private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadata;
         
-        public MetadataStack(Engine engine)
+        internal Metadata(Engine engine)
         {
             _engine = engine;
              _metadata = new Stack<IDictionary<string, object>>();
              _metadata.Push(new Dictionary<string, object>());
         }
 
-        private MetadataStack(MetadataStack variableStack)
+        private Metadata(Metadata variableStack)
         {
             _engine = variableStack._engine;
             _metadata = new Stack<IDictionary<string, object>>(variableStack._metadata.Reverse());
@@ -33,40 +33,55 @@ namespace Wyam.Core
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal MetadataStack Clone()
+        internal Metadata Clone()
         {
-            return new MetadataStack(this);
+            return new Metadata(this);
         }
 
         // This locks the stack so no more values can be added
-        internal bool Locked { get; set; }
+        internal bool IsReadOnly { get; set; }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = null;
-            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(binder.Name));
-            if (meta != null)
-            {
-                result = meta[binder.Name];
-                return true;
-            }
-            return false;
+            result = Get(binder.Name);
+            return true;
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            if(Locked)
-            {
-                return false;
-            }
-
-            if (_metadata.Any(x => x.ContainsKey(binder.Name)))
-            {
-                _engine.Trace.Warning("Duplicate value for metadata: {0}.", binder.Name);
-            }
-            _metadata.Peek()[binder.Name] = value;
-
+            Set(binder.Name, value);
             return true;
+        }
+
+        public object Get(string key)
+        {
+            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(key));
+            if (meta == null)
+            {
+                throw new KeyNotFoundException(string.Format("The key {0} was not found in the metadata.", key));
+            }
+            return meta[key];
+        }
+
+        public void Set(string key, object value)
+        {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(string.Format("The metadata is read-only and the key {0} can not be set.", key));
+            }
+
+            if (_metadata.Any(x => x.ContainsKey(key)))
+            {
+                _engine.Trace.Warning("Existing value found while setting metadata key {0}.", value);
+            }
+
+            _metadata.Peek()[key] = value;
+        }
+
+        // A little syntactic sugar for the dynamic cast
+        public dynamic Dynamic
+        {
+            get { return this; }
         }
     }
 }

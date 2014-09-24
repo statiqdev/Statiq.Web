@@ -25,7 +25,12 @@ namespace Wyam.Core
             _modules.Add(module);
         }
 
-        internal PrepareTree Prepare(MetadataStack metadata, IEnumerable<dynamic> documents)
+        internal int Count
+        {
+            get { return _modules.Count; }
+        }
+
+        internal PrepareTree Prepare(Metadata metadata, IEnumerable<dynamic> documents)
         {
             PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(_engine, metadata, documents));
             List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
@@ -43,25 +48,31 @@ namespace Wyam.Core
                 int i = 0;
                 foreach (PrepareBranch lastBranch in lastBranches)
                 {
-                    foreach (PrepareBranch tree in lastBranch.Outputs)
+                    foreach (PrepareBranch currentBranch in lastBranch.Outputs)
                     {
                         i++;
-                        tree.Module = module;
-                        tree.Outputs = module.Prepare(tree.Input).Select(x => new PrepareBranch(x)).ToList();
-                        currentBranches.AddRange(tree.Outputs);
+                        currentBranch.Module = module;
+                        currentBranch.Outputs = module.Prepare(currentBranch.Input).Select(x => new PrepareBranch(x)).ToList();
+                        currentBranches.Add(currentBranch);
                     }
                 }
                 lastBranches = currentBranches;
-                _engine.Trace.Verbose("Prepared module {0} with {1} input(s) and {2} output(s).", module.GetType().Name, i, currentBranches.Count);
+                _engine.Trace.Verbose("Prepared module {0} with {1} input(s) and resulting in {2} output(s).", module.GetType().Name, i, currentBranches.Sum(x => x.Outputs.Count));
             }
 
-            return new PrepareTree(rootBranch, lastBranches);
+            return new PrepareTree(rootBranch, lastBranches.SelectMany(x => x.Outputs));
         }
 
         internal void Execute(PrepareBranch branch, string content = null)
         {
+            if(branch.Module == null)
+            {
+                // This is a leaf
+                return;
+            }
+
             _engine.Trace.Verbose("Executing module {0}...", branch.Module.GetType().Name);
-            branch.Input.Unlock();  // Unlock the context before execution so that the module can add metadata during execution (I.e., excerpts, final content, etc.)
+            branch.Input.IsReadOnly = false;  // Unlock the context before execution so that the module can add metadata during execution (I.e., excerpts, final content, etc.)
             content = branch.Module.Execute(branch.Input, content);
             foreach(PrepareBranch child in branch.Outputs)
             {

@@ -9,19 +9,19 @@ namespace Wyam.Core
     public class PipelineContext
     {
         private readonly Engine _engine;
-        private readonly MetadataStack _metadata;
+        private readonly Metadata _metadata;
         private readonly IEnumerable<dynamic> _documents;
         private readonly object _persistedObject;
 
-        internal PipelineContext(Engine engine, MetadataStack metadata, IEnumerable<dynamic> documents)
+        internal PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents)
         {
             _engine = engine;
             _metadata = metadata.Clone();
             _documents = documents;
-            Lock();  // Lock the metadata for a new uncloned context - I.e. at the start of the pipeline
+            IsReadOnly = true;  // Lock the metadata for a new uncloned context - I.e. at the start of the pipeline
         }
 
-        private PipelineContext(Engine engine, MetadataStack metadata, IEnumerable<dynamic> documents, object persistedObject)
+        private PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents, object persistedObject)
         {
             _engine = engine;
             _metadata = metadata.Clone();
@@ -29,7 +29,7 @@ namespace Wyam.Core
             _persistedObject = persistedObject;
         }
 
-        public dynamic Metadata
+        public Metadata Metadata
         {
             get { return _metadata; }
         }
@@ -55,14 +55,9 @@ namespace Wyam.Core
             return new PipelineContext(_engine, _metadata, _documents, persistedObject);
         }
 
-        internal void Lock()
+        internal bool IsReadOnly
         {
-            _metadata.Locked = true;
-        }
-
-        internal void Unlock()
-        {
-            _metadata.Locked = false;
+            set { _metadata.IsReadOnly = value; }
         }
     }
 }

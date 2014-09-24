@@ -18,20 +18,20 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.TestString = ""teststring"";
-                Metadata.TestInt = 1234;
-                Metadata.TestFloat = 1234.567;
-                Metadata.TestBool = true;
+                Metadata.Dynamic.TestString = ""teststring"";
+                Metadata.Dynamic.TestInt = 1234;
+                Metadata.Set(""TestFloat"", 1234.567);
+                Metadata.Set(""TestBool"", true);
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual("teststring", engine.Metadata.TestString);
-            Assert.AreEqual(1234, engine.Metadata.TestInt);
-            Assert.AreEqual(1234.567, engine.Metadata.TestFloat);
-            Assert.AreEqual(true, engine.Metadata.TestBool);
+            Assert.AreEqual("teststring", engine.Metadata.Get("TestString"));
+            Assert.AreEqual(1234, engine.Metadata.Get("TestInt"));
+            Assert.AreEqual(1234.567, engine.Metadata.Dynamic.TestFloat);
+            Assert.AreEqual(true, engine.Metadata.Dynamic.TestBool);
         }
 
         [Test]
@@ -40,20 +40,19 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.TestAnonymous = new { A = 1, B = ""b"" };
+                Metadata.Dynamic.TestAnonymous = new { A = 1, B = ""b"" };
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Metadata.TestAnonymous.A);
-            Assert.AreEqual("b", engine.Metadata.TestAnonymous.B);
+            Assert.AreEqual(1, engine.Metadata.Dynamic.TestAnonymous.A);
+            Assert.AreEqual("b", ((dynamic)engine.Metadata.Get("TestAnonymous")).B);
         }
 
-        // TODO: Replace with more specific tests
         [Test]
-        public void ConfigurePipeline()
+        public void ConfigureAddsPipelineAndModules()
         {
             // Given
             Engine engine = new Engine();
@@ -67,6 +66,42 @@ namespace Wyam.Core.Tests
             engine.Configure(configScript);
 
             // Then
+            Assert.AreEqual(1, engine.Pipelines.AllPipelines.Count());
+            Assert.AreEqual(2, engine.Pipelines.AllPipelines.First().Count);
+        }
+
+        [Test]
+        public void ExecuteResultsInCorrectCounts()
+        {
+            // Given
+            Engine engine = new Engine();
+            CountModule a = new CountModule("A")
+            {
+                AdditionalOutputs = 1
+            };
+            CountModule b = new CountModule("B")
+            {
+                AdditionalOutputs = 2
+            };
+            CountModule c = new CountModule("C")
+            {
+                AdditionalOutputs = 3
+            };
+            engine.Pipelines.Add(a, b, c);
+
+            // When
+            engine.Execute();
+
+            // Then
+            Assert.AreEqual(1, a.PrepareCount);
+            Assert.AreEqual(2, b.PrepareCount);
+            Assert.AreEqual(6, c.PrepareCount);
+            Assert.AreEqual(2, a.OutputCount);
+            Assert.AreEqual(6, b.OutputCount);
+            Assert.AreEqual(24, c.OutputCount);
+            Assert.AreEqual(1, a.ExecuteCount);
+            Assert.AreEqual(2, b.ExecuteCount);
+            Assert.AreEqual(6, c.ExecuteCount);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace Wyam.Core
 {
     public class Engine
     {
-        private readonly MetadataStack _metadata;
+        private readonly Metadata _metadata;
 
-        public dynamic Metadata
+        public Metadata Metadata
         {
             get { return _metadata; }
         }
@@ -27,7 +27,7 @@ namespace Wyam.Core
 
         public Engine()
         {
-            _metadata = new MetadataStack(this);
+            _metadata = new Metadata(this);
             _pipelines = new PipelineCollection(this);
         }
 
@@ -51,7 +51,7 @@ namespace Wyam.Core
             ConfigureModuleAssemblies(scriptBuilder);
 
             // Evaluate the config script
-            scriptBuilder.AppendLine(string.Format("void Configure(dynamic Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
+            scriptBuilder.AppendLine(string.Format("void Configure(Metadata Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
             var configure = CSScript.Evaluator.CreateDelegate(scriptBuilder.ToString());
             configure(Metadata, Pipelines);
         }
@@ -59,8 +59,8 @@ namespace Wyam.Core
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Metadata.InputFolder = @".\input";
-            Metadata.OutputFolder = @".\output";
+            Metadata.Dynamic.InputFolder = @".\input";
+            Metadata.Dynamic.OutputFolder = @".\output";
             
             // TODO: Configure default pipelines
         }
@@ -114,9 +114,9 @@ namespace Wyam.Core
             // First pass: prepare each pipelines
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
             int c = 1;
-            foreach(Pipeline pipeline in Pipelines)
+            foreach(Pipeline pipeline in Pipelines.AllPipelines)
             {
-                Trace.Verbose("Preparing pipeline {0}...", c);
+                Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
                 PrepareTree prepareTree = pipeline.Prepare(_metadata, documents);
                 prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
                 IEnumerable<dynamic> pipelineDocuments = prepareTree.Leaves.Select(x => x.Input.Metadata);

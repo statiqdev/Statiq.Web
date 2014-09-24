@@ -42,10 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DelegateModule.cs" />
     <Compile Include="EngineFixture.cs" />
-    <Compile Include="MetadataStackFixture.cs" />
+    <Compile Include="MetadataFixture.cs" />
     <Compile Include="PathExtensionsFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CountModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
