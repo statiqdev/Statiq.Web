@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Tests
+namespace Wyam.Core.Tests
 {
     [TestFixture]
     public class PathExtensionsFixture

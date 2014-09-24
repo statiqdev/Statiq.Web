@@ -13,8 +13,7 @@ namespace Wyam.Core
     {
         private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadata;
-        private bool _locked = false;
-
+        
         public MetadataStack(Engine engine)
         {
             _engine = engine;
@@ -39,6 +38,9 @@ namespace Wyam.Core
             return new MetadataStack(this);
         }
 
+        // This locks the stack so no more values can be added
+        internal bool Locked { get; set; }
+
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             result = null;
@@ -53,7 +55,7 @@ namespace Wyam.Core
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            if(_locked)
+            if(Locked)
             {
                 return false;
             }
@@ -65,12 +67,6 @@ namespace Wyam.Core
             _metadata.Peek()[binder.Name] = value;
 
             return true;
-        }
-
-        // This locks the stack so no more values can be added
-        public void Lock()
-        {
-            _locked = true;
         }
     }
 }

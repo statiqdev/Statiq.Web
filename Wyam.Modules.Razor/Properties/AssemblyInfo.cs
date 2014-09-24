@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wyam.Core")]
+[assembly: AssemblyTitle("Wyam.Modules.Razor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("Wyam.Core")]
+[assembly: AssemblyProduct("Wyam.Modules.Razor")]
 [assembly: AssemblyCopyright("Copyright © Hewlett-Packard Company 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,10 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ae85f027-c319-4e8f-9373-5521afc7d8d8")]
-
-// Allow unit testing internal classes
-[assembly: InternalsVisibleTo("Wyam.Core.Tests")]
+[assembly: Guid("0b603e5c-1116-4d53-a175-5e92b129c109")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core
+namespace Wyam.Core.Helpers
 {
-    public static class PathExtensions
+    // This contains some additional helpers for the file system
+    // Have to do it this way sine scripts can't use extension methods (otherwise these would just be extensions of Path)
+    public class PathHelper
     {
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
         public static String GetRelativePath(String fromPath, String toPath)
@@ -25,10 +26,11 @@ namespace Wyam.Core
 
             if (toUri.Scheme.ToUpperInvariant() == "FILE")
             {
-                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                relativePath = relativePath.Replace(System.IO.Path.AltDirectorySeparatorChar, System.IO.Path.DirectorySeparatorChar);
             }
 
             return relativePath;
         }
+
     }
 }

@@ -45,12 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IExecuteFilter.cs" />
     <Compile Include="IModule.cs" />
-    <Compile Include="Modules\Razor.cs" />
-    <Compile Include="Modules\ReadFile.cs" />
-    <Compile Include="Modules\WriteFile.cs" />
-    <Compile Include="PathExtensions.cs" />
+    <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Pipeline.cs" />
     <Compile Include="PipelineCollection.cs" />
     <Compile Include="PipelineContext.cs" />

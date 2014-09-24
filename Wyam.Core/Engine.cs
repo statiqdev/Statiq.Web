@@ -40,15 +40,18 @@ namespace Wyam.Core
                 return;
             }
 
-            // Add assemblies
-            CSScript.Evaluator.Run(string.Format("using System.IO;"));
-            CSScript.Evaluator.Run(string.Format("using Wyam.Core;"));
-            CSScript.Evaluator.Run(string.Format("using Wyam.Core.Modules;"));
-            // TODO: Locate modules and add assemblies and using statements for all located modules
+            // Add default namespaces
+            StringBuilder scriptBuilder = new StringBuilder();
+            scriptBuilder.AppendLine("using System.IO;");
+            scriptBuilder.AppendLine("using Wyam.Core;");
+            scriptBuilder.AppendLine("using Wyam.Core.Helpers;");
+
+            // Add namespaces and load assemblies for all found modules
+            ConfigureModuleAssemblies(scriptBuilder);
 
             // Evaluate the config script
-            var configure = CSScript.Evaluator.CreateDelegate(
-                string.Format("void Configure(dynamic Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
+            scriptBuilder.AppendLine(string.Format("void Configure(dynamic Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
+            var configure = CSScript.Evaluator.CreateDelegate(scriptBuilder.ToString());
             configure(Metadata, Pipelines);
         }
 
@@ -58,6 +61,41 @@ namespace Wyam.Core
             Metadata.InputFolder = @".\input";
             Metadata.OutputFolder = @".\output";
             
+            // TODO: Configure default pipelines
+        }
+
+        // TODO: Is there a better way to do this?
+        private void ConfigureModuleAssemblies(StringBuilder scriptBuilder)
+        {
+            HashSet<string> namespaces = new HashSet<string>();
+            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            foreach (string assemblyPath in Directory.GetFiles(currentPath, "*.dll", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                    foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
+                    {
+                        if (namespaces.Add(moduleType.Namespace))
+                        {
+                            scriptBuilder.AppendLine(string.Format("using {0};", moduleType.Namespace));
+                        }
+                    }
+                }
+                catch (FileLoadException)
+                {
+                    // The Assembly has already been loaded
+                }
+                catch (BadImageFormatException)
+                {
+                    // If a BadImageFormatException exception is thrown, the file is not an assembly
+                }
+                catch (Exception ex)
+                {
+                    // Some other reason the assembly couldn't be loaded or we couldn't reflect
+                    Trace.Verbose("Unexpected exception while loading assemblies: {0}.", ex.Message);
+                }
+            }
         }
 
         private readonly Trace _trace = new Trace();
@@ -67,14 +105,36 @@ namespace Wyam.Core
             get { return _trace; }
         }
 
-        public void Execute(IExecuteFilter executeFilter = null)
-        {
-            // TODO: Use the filter
-            
-            // Prepare all of the pipelines
+        public void Execute()
+        {            
+            // Store the final metadata for each pipeline so it can be used from subsiquent pipelines
+            List<dynamic> documents = new List<dynamic>();
+
+            // First pass: prepare each pipelines
+            List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
             foreach(Pipeline pipeline in Pipelines)
             {
+                PrepareTree prepareTree = pipeline.Prepare(_metadata, documents);
+                prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
+                documents.AddRange(prepareTree.Leaves.Select(x => x.Input.Metadata));
+            }
 
+            // Second pass: execute each pipeline
+            foreach(PipelinePrepareResult prepareResult in prepareResults)
+            {
+                prepareResult.Pipeline.Execute(prepareResult.PrepareTree.RootBranch);
+            }
+        }
+
+        private class PipelinePrepareResult
+        {
+            public Pipeline Pipeline { get; private set; }
+            public PrepareTree PrepareTree { get; private set; }
+
+            public PipelinePrepareResult(Pipeline pipeline, PrepareTree prepareTree)
+            {
+                Pipeline = pipeline;
+                PrepareTree = prepareTree;
             }
         }
     }

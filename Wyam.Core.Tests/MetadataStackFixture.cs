@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 
-namespace Wyam.Tests
+namespace Wyam.Core.Tests
 {
     [TestFixture]
     public class MetadataStackFixture
@@ -23,7 +23,7 @@ namespace Wyam.Tests
             meta.B = "b";
 
             // When
-            metadataStack.Lock();
+            metadataStack.Locked = true;
 
             // Then
             Assert.Throws<RuntimeBinderException>(() => meta.C = "c");  // Set

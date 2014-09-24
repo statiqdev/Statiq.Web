@@ -23,9 +23,9 @@ namespace Wyam.Core
             _modules.Add(module);
         }
 
-        internal PrepareTree Prepare(MetadataStack metadata)
+        internal PrepareTree Prepare(MetadataStack metadata, IEnumerable<dynamic> documents)
         {
-            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(metadata));
+            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(metadata, documents));
             List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
             { 
                 new PrepareBranch(null) 
@@ -52,9 +52,14 @@ namespace Wyam.Core
             return new PrepareTree(rootBranch, lastBranches);
         }
 
-        internal void Execute(PrepareBranch rootBranch)
+        internal void Execute(PrepareBranch branch, string content = null)
         {
-            
+            branch.Input.Unlock();  // Unlock the context before execution so that the module can add metadata during execution (I.e., excerpts, final content, etc.)
+            content = branch.Module.Execute(branch.Input, content);
+            foreach(PrepareBranch child in branch.Outputs)
+            {
+                Execute(child, content);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Core;
 
 
-namespace Wyam.Tests
+namespace Wyam.Core.Tests
 {
     [TestFixture]
     public class EngineFixture
@@ -60,8 +60,7 @@ namespace Wyam.Tests
             string configScript = @"
                 Pipelines.Add(
 	                new ReadFile(m => m.InputPath + @""\*.cshtml""),
-	                new Razor(),
-	                new WriteFile(m => string.Format(@""{0}\{1}.html"", Path.GetRelativePath(m.InputPath, m.FilePath), m.FileBase)));
+	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.InputPath, m.FilePath), m.FileBase)));
             ";
 
             // When

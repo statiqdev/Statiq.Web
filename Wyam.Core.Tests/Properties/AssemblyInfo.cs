@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wyam.Tests")]
+[assembly: AssemblyTitle("Wyam.Core.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("Wyam.Tests")]
+[assembly: AssemblyProduct("Wyam.Core.Tests")]
 [assembly: AssemblyCopyright("Copyright © Hewlett-Packard Company 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4ddd1971-3a8c-47a8-aa66-29ac26d44c0f")]
+[assembly: Guid("f5c54acf-77ac-49bc-909f-66a702b063f4")]
 
 // Version information for an assembly consists of the following four values:
 //
