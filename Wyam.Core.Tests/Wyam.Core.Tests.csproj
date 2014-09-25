@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateModule.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="MetadataFixture.cs" />
     <Compile Include="PathExtensionsFixture.cs" />

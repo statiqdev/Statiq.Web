@@ -50,10 +50,18 @@ namespace Wyam.Core
                 {
                     foreach (PrepareBranch currentBranch in lastBranch.Outputs)
                     {
-                        i++;
-                        currentBranch.Module = module;
-                        currentBranch.Outputs = module.Prepare(currentBranch.Input).Select(x => new PrepareBranch(x)).ToList();
-                        currentBranches.Add(currentBranch);
+                        try
+                        {
+                            currentBranch.Module = module;
+                            currentBranch.Outputs = module.Prepare(currentBranch.Input).Select(x => new PrepareBranch(x)).ToList();
+                            currentBranches.Add(currentBranch);
+                            i++;
+                        }
+                        catch (Exception ex)
+                        {
+                            _engine.Trace.Error("Error while preparing module {0}: {1}", module.GetType().Name, ex.Message);
+                            _engine.Trace.Verbose(ex.ToString());
+                        }
                     }
                 }
                 lastBranches = currentBranches;
@@ -67,13 +75,22 @@ namespace Wyam.Core
         {
             if(branch.Module == null)
             {
-                // This is a leaf
+                // This is a leaf, so no further recursion required
                 return;
             }
 
             _engine.Trace.Verbose("Executing module {0}...", branch.Module.GetType().Name);
             branch.Input.IsReadOnly = false;  // Unlock the context before execution so that the module can add metadata during execution (I.e., excerpts, final content, etc.)
-            content = branch.Module.Execute(branch.Input, content);
+            try
+            {
+                content = branch.Module.Execute(branch.Input, content);
+            }
+            catch (Exception ex)
+            {
+                _engine.Trace.Error("Error while executing module {0}: {1}", branch.Module.GetType().Name, ex.Message);
+                _engine.Trace.Verbose(ex.ToString());
+                return;
+            }
             foreach(PrepareBranch child in branch.Outputs)
             {
                 Execute(child, content);

@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 namespace Wyam.Core
 {
     // This was helpful: http://weblog.west-wind.com/posts/2012/Feb/01/Dynamic-Types-and-DynamicObject-References-in-C
-    // Starts with one top-level variable dictionary
-    public class Metadata : DynamicObject
+    public class Metadata
     {
         private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadata;
@@ -41,26 +40,31 @@ namespace Wyam.Core
         // This locks the stack so no more values can be added
         internal bool IsReadOnly { get; set; }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public bool Contains(string key)
         {
-            result = Get(binder.Name);
-            return true;
-        }
-
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            Set(binder.Name, value);
-            return true;
+            return _metadata.FirstOrDefault(x => x.ContainsKey(key)) != null;
         }
 
         public object Get(string key)
         {
-            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(key));
-            if (meta == null)
+            object value;
+            if (!TryGet(key, out value))
             {
                 throw new KeyNotFoundException(string.Format("The key {0} was not found in the metadata.", key));
             }
-            return meta[key];
+            return value;
+        }
+
+        public bool TryGet(string key, out object value)
+        {
+            value = null;
+            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(key));
+            if (meta == null)
+            {
+                return false;
+            }
+            value = meta[key];
+            return true;
         }
 
         public void Set(string key, object value)
@@ -81,7 +85,29 @@ namespace Wyam.Core
         // A little syntactic sugar for the dynamic cast
         public dynamic Dynamic
         {
-            get { return this; }
+            get { return new DynamicMetadata(this); }
+        }
+
+        private class DynamicMetadata : DynamicObject
+        {
+            private readonly Metadata _metadata;
+
+            public DynamicMetadata(Metadata metadata)
+            {
+                _metadata = metadata;
+            }
+
+            public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                result = _metadata.Get(binder.Name);
+                return true;
+            }
+
+            public override bool TrySetMember(SetMemberBinder binder, object value)
+            {
+                _metadata.Set(binder.Name, value);
+                return true;
+            }
         }
     }
 }
