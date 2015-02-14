@@ -53,5 +53,10 @@ namespace Wyam.Core
         {
             _traceSource.TraceEvent(TraceEventType.Verbose, 0, format, args);
         }
+
+        public void TraceEvent(TraceEventType eventType, string format, params object[] args)
+        {
+            _traceSource.TraceEvent(eventType, 0, format, args);
+        }
     }
 }

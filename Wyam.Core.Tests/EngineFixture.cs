@@ -18,8 +18,8 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.Dynamic.TestString = ""teststring"";
-                Metadata.Dynamic.TestInt = 1234;
+                Metadata.AsDynamic.TestString = ""teststring"";
+                Metadata.AsDynamic.TestInt = 1234;
                 Metadata.Set(""TestFloat"", 1234.567);
                 Metadata.Set(""TestBool"", true);
             ";
@@ -30,8 +30,8 @@ namespace Wyam.Core.Tests
             // Then
             Assert.AreEqual("teststring", engine.Metadata.Get("TestString"));
             Assert.AreEqual(1234, engine.Metadata.Get("TestInt"));
-            Assert.AreEqual(1234.567, engine.Metadata.Dynamic.TestFloat);
-            Assert.AreEqual(true, engine.Metadata.Dynamic.TestBool);
+            Assert.AreEqual(1234.567, engine.Metadata.AsDynamic.TestFloat);
+            Assert.AreEqual(true, engine.Metadata.AsDynamic.TestBool);
         }
 
         [Test]
@@ -40,14 +40,14 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.Dynamic.TestAnonymous = new { A = 1, B = ""b"" };
+                Metadata.AsDynamic.TestAnonymous = new { A = 1, B = ""b"" };
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Metadata.Dynamic.TestAnonymous.A);
+            Assert.AreEqual(1, engine.Metadata.AsDynamic.TestAnonymous.A);
             Assert.AreEqual("b", ((dynamic)engine.Metadata.Get("TestAnonymous")).B);
         }
 
@@ -58,8 +58,8 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             string configScript = @"
                 Pipelines.Add(
-	                new ReadFile(m => m.InputPath + @""\*.cshtml""),
-	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.InputPath, m.FilePath), m.FileBase)));
+	                new ReadFile(m => m.AsDynamic.InputPath + @""\*.cshtml""),
+	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.AsDynamic.InputPath, m.AsDynamic.FilePath), m.AsDynamic.FileBase)));
             ";
 
             // When

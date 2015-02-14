@@ -19,7 +19,7 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
             metadata.Set("A", "a");
-            dynamic meta = metadata;
+            dynamic meta = metadata.AsDynamic;
             meta.B = "b";
 
             // When

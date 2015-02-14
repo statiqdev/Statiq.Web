@@ -83,7 +83,7 @@ namespace Wyam.Core
         }
 
         // A little syntactic sugar for the dynamic cast
-        public dynamic Dynamic
+        public dynamic AsDynamic
         {
             get { return new DynamicMetadata(this); }
         }

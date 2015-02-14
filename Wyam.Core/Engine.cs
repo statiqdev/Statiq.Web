@@ -1,4 +1,4 @@
-﻿using CSScriptLibrary;
+﻿using System.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,11 +6,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Scripting.CSharp;
 
 namespace Wyam.Core
 {
     public class Engine
     {
+        private bool _configured = false;
+
         private readonly Metadata _metadata;
 
         public Metadata Metadata
@@ -25,49 +31,105 @@ namespace Wyam.Core
             get { return _pipelines; }
         }
 
+        private readonly Trace _trace = new Trace();
+
+        public Trace Trace
+        {
+            get { return _trace; }
+        }
+
         public Engine()
         {
             _metadata = new Metadata(this);
             _pipelines = new PipelineCollection(this);
         }
 
+        // This gets passed to the scripting engine as a global object and all members can be accessed globaly from the script
+        public class ConfigurationGlobals
+        {
+            private readonly Engine _engine;
+
+            public ConfigurationGlobals(Engine engine)
+            {
+                _engine = engine;
+            }
+
+            public Metadata Metadata
+            {
+                get { return _engine.Metadata; }
+            }
+
+            public PipelineCollection Pipelines
+            {
+                get { return _engine.Pipelines; }
+            }
+        }
+
+        private static readonly Dictionary<DiagnosticSeverity, TraceEventType> DiagnosticMapping 
+            = new Dictionary<DiagnosticSeverity, TraceEventType>()
+            {
+                { DiagnosticSeverity.Error, TraceEventType.Error },
+                { DiagnosticSeverity.Warning, TraceEventType.Warning },
+                { DiagnosticSeverity.Info, TraceEventType.Information }
+            };
+
         // Configure the engine using a config script or with defaults if null
         public void Configure(string configScript = null)
         {
-            // Configure with defaults if no script
-            if (string.IsNullOrWhiteSpace(configScript))
+            if(_configured)
             {
-                ConfigureDefault();
-                return;
+                throw new InvalidOperationException("This engine has already been configured.");
             }
+            _configured = true;
 
-            // Add default namespaces
-            StringBuilder scriptBuilder = new StringBuilder();
-            scriptBuilder.AppendLine("using System.IO;");
-            scriptBuilder.AppendLine("using Wyam.Core;");
-            scriptBuilder.AppendLine("using Wyam.Core.Helpers;");
+            try
+            {
+                // Configure with defaults if no script
+                if (string.IsNullOrWhiteSpace(configScript))
+                {
+                    ConfigureDefault();
+                    return;
+                }
 
-            // Add namespaces and load assemblies for all found modules
-            ConfigureModuleAssemblies(scriptBuilder);
+                // Create the script options
+                // TODO: Add a way to specify additional namespaces and/or assemblies (probably as arguments, exposed as switches in the console version)
+                ScriptOptions scriptOptions = new ScriptOptions()
+                    .AddNamespaces(
+                        "System",
+                        "System.Collections.Generic",
+                        "System.Linq",
+                        "System.IO", 
+                        "Wyam.Core", 
+                        "Wyam.Core.Helpers")
+                    .AddReferences(
+                        Assembly.GetAssembly(typeof(object)),  // System
+                        Assembly.GetAssembly(typeof(List<>)),  // System.Collections.Generic 
+                        Assembly.GetAssembly(typeof(ImmutableArrayExtensions)),  // System.Linq
+                        Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),  // System.Core (needed for dynamic)
+                        Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
+                        Assembly.GetAssembly(typeof(Path)), // System.IO
+                        Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
+                scriptOptions = AddModulesToScriptOptions(scriptOptions);
 
-            // Evaluate the config script
-            scriptBuilder.AppendLine(string.Format("void Configure(Metadata Metadata, PipelineCollection Pipelines) {{ {0} }}", configScript));
-            var configure = CSScript.Evaluator.CreateDelegate(scriptBuilder.ToString());
-            configure(Metadata, Pipelines);
+                // Evaluate the script
+                CSharpScript.Eval(configScript, scriptOptions, new ConfigurationGlobals(this));
+            }
+            catch(CompilationErrorException compilationError)
+            {
+                Trace.Error("Error compiling configuration: {0}", compilationError.ToString());
+                throw;
+            }
+            catch(Exception ex)
+            {
+                Trace.Error("Unexpected error during configuration: {0}", ex.ToString());
+                throw;
+            }
         }
 
-        // Configure the engine with default values
-        private void ConfigureDefault()
+        // Gets all modules in the current path and adds their namespaces and references to the options
+        private ScriptOptions AddModulesToScriptOptions(ScriptOptions scriptOptions)
         {
-            Metadata.Dynamic.InputFolder = @".\input";
-            Metadata.Dynamic.OutputFolder = @".\output";
-            
-            // TODO: Configure default pipelines
-        }
-
-        // TODO: Is there a better way to do this?
-        private void ConfigureModuleAssemblies(StringBuilder scriptBuilder)
-        {
+            List<Assembly> assemblies = new List<Assembly>();
             HashSet<string> namespaces = new HashSet<string>();
             string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             foreach (string assemblyPath in Directory.GetFiles(currentPath, "*.dll", SearchOption.AllDirectories))
@@ -77,11 +139,9 @@ namespace Wyam.Core
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
                     foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
                     {
-                        if (namespaces.Add(moduleType.Namespace))
-                        {
-                            scriptBuilder.AppendLine(string.Format("using {0};", moduleType.Namespace));
-                        }
+                        namespaces.Add(moduleType.Namespace);
                     }
+                    assemblies.Add(assembly);
                 }
                 catch (FileLoadException)
                 {
@@ -94,20 +154,31 @@ namespace Wyam.Core
                 catch (Exception ex)
                 {
                     // Some other reason the assembly couldn't be loaded or we couldn't reflect
-                    Trace.Verbose("Unexpected exception while loading assemblies: {0}.", ex.Message);
+                    Trace.Verbose("Unexpected exception while loading assembly at {0}: {1}.", assemblyPath, ex.Message);
                 }
             }
+            return scriptOptions
+                .AddNamespaces(namespaces)
+                .AddReferences(assemblies);
         }
 
-        private readonly Trace _trace = new Trace();
-
-        public Trace Trace
+        // Configure the engine with default values
+        private void ConfigureDefault()
         {
-            get { return _trace; }
+            Metadata.AsDynamic.InputFolder = @".\input";
+            Metadata.AsDynamic.OutputFolder = @".\output";
+            
+            // TODO: Configure default pipelines
         }
 
         public void Execute()
-        {            
+        {         
+            // Configure with defaults if not already configured
+            if(!_configured)
+            {
+                Configure();
+            }
+
             // Store the final metadata for each pipeline so it can be used from subsiquent pipelines
             List<dynamic> documents = new List<dynamic>();
 
