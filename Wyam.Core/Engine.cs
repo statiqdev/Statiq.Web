@@ -146,8 +146,8 @@ namespace Wyam.Core
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Metadata.InputFolder = @".\input";
-            Metadata.OutputFolder = @".\output";
+            Metadata.InputPath = @".\input";
+            Metadata.OutputPath = @".\output";
             
             // TODO: Configure default pipelines
         }

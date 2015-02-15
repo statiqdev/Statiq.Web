@@ -10,17 +10,17 @@ namespace Wyam.Modules.Razor
 {
     public class Razor : IModule
     {
-        private readonly ReadFile _readFile;
+        private readonly ReadFiles _readFile;
 
         public Razor()
         {
         }
 
         // Use this constructor to read file(s) for input
-        // It has the effect of inserting a ReadFile module into the pipeline just before this module
-        public Razor(Func<dynamic, string> fileFunc)
+        // It has the effect of inserting a ReadFiles module into the pipeline just before this module
+        public Razor(Func<dynamic, string> files)
         {
-            _readFile = new ReadFile(fileFunc);
+            _readFile = new ReadFiles(files);
         }
 
         public IEnumerable<PipelineContext> Prepare(PipelineContext context)

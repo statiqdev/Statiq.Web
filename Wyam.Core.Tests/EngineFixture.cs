@@ -58,8 +58,9 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             string configScript = @"
                 Pipelines.Add(
-	                new ReadFile(m => m.InputPath + @""\*.cshtml""),
-	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.InputPath, m.FilePath), m.FileBase)));
+	                new ReadFiles(""*.cshtml""),
+	                new WriteFiles("".html"")
+                );
             ";
 
             // When
