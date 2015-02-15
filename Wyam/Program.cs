@@ -67,6 +67,7 @@ namespace Wyam
         }
 
         // Very simple command line parsing
+        // TODO: Specify additional metadata (such as input paths) on the command line
         private bool ParseArgs(string[] args)
         {
             for (int c = 0; c < args.Length; c++)

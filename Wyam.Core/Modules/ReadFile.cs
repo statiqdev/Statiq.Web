@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 
-namespace Wyam.Modules.Basic
+namespace Wyam.Core.Modules
 {
     public class ReadFile : IModule
     {
-        private readonly Func<Metadata, string> _path;
+        private readonly Func<dynamic, string> _path;
         private readonly SearchOption _searchOption;
 
-        public ReadFile(Func<Metadata, string> path, SearchOption searchOption = SearchOption.AllDirectories)
+        public ReadFile(Func<dynamic, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
             _path = path;
             _searchOption = searchOption;
@@ -25,11 +25,11 @@ namespace Wyam.Modules.Basic
             foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
             {
                 PipelineContext fileContext = context.Clone(file);
-                fileContext.Metadata.Set("FileBase", Path.GetFileNameWithoutExtension(file));
-                fileContext.Metadata.Set("FileExt", Path.GetExtension(file));
-                fileContext.Metadata.Set("FileName", Path.GetFileName(file));
-                fileContext.Metadata.Set("FileDir", Path.GetDirectoryName(file));
-                fileContext.Metadata.Set("FilePath", file);
+                fileContext.Metadata.FileBase = Path.GetFileNameWithoutExtension(file);
+                fileContext.Metadata.FileExt = Path.GetExtension(file);
+                fileContext.Metadata.FileName = Path.GetFileName(file);
+                fileContext.Metadata.FileDir = Path.GetDirectoryName(file);
+                fileContext.Metadata.FilePath = file;
                 yield return fileContext;
             }
         }

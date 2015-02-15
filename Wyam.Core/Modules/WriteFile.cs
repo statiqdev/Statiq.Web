@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 
-namespace Wyam.Modules.Basic
+namespace Wyam.Core.Modules
 {
     public class WriteFile : IModule
     {
-        private readonly Func<dynamic, string> _fileFunc;
+        private readonly Func<dynamic, string> _path;
 
-        public WriteFile(Func<dynamic, string> fileFunc)
+        public WriteFile(Func<dynamic, string> path)
         {
-            _fileFunc = fileFunc;
+            _path = path;
         }
 
         public IEnumerable<PipelineContext> Prepare(PipelineContext context)

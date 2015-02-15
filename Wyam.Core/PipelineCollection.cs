@@ -22,7 +22,7 @@ namespace Wyam.Core
             _pipelines.Add(new Pipeline(_engine, modules));
         }
 
-        internal IEnumerable<Pipeline> AllPipelines
+        internal IEnumerable<Pipeline> All
         {
             get { return _pipelines; }
         }

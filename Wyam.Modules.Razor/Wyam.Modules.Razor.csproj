@@ -48,10 +48,6 @@
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Basic\Wyam.Modules.Basic.csproj">
-      <Project>{0cf2096c-8a8f-4ea8-a929-1b8876ec4f31}</Project>
-      <Name>Wyam.Modules.Basic</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

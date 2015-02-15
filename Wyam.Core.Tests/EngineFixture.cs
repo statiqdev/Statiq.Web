@@ -18,20 +18,20 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.AsDynamic.TestString = ""teststring"";
-                Metadata.AsDynamic.TestInt = 1234;
-                Metadata.Set(""TestFloat"", 1234.567);
-                Metadata.Set(""TestBool"", true);
+                Metadata.TestString = ""teststring"";
+                Metadata.TestInt = 1234;
+                ((Metadata)Metadata).Set(""TestFloat"", 1234.567);
+                ((Metadata)Metadata).Set(""TestBool"", true);
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual("teststring", engine.Metadata.Get("TestString"));
-            Assert.AreEqual(1234, engine.Metadata.Get("TestInt"));
-            Assert.AreEqual(1234.567, engine.Metadata.AsDynamic.TestFloat);
-            Assert.AreEqual(true, engine.Metadata.AsDynamic.TestBool);
+            Assert.AreEqual("teststring", ((Metadata)engine.Metadata).Get("TestString"));
+            Assert.AreEqual(1234, ((Metadata)engine.Metadata).Get("TestInt"));
+            Assert.AreEqual(1234.567, engine.Metadata.TestFloat);
+            Assert.AreEqual(true, engine.Metadata.TestBool);
         }
 
         [Test]
@@ -40,15 +40,15 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.AsDynamic.TestAnonymous = new { A = 1, B = ""b"" };
+                Metadata.TestAnonymous = new { A = 1, B = ""b"" };
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Metadata.AsDynamic.TestAnonymous.A);
-            Assert.AreEqual("b", ((dynamic)engine.Metadata.Get("TestAnonymous")).B);
+            Assert.AreEqual(1, engine.Metadata.TestAnonymous.A);
+            Assert.AreEqual("b", ((dynamic)((Metadata)engine.Metadata).Get("TestAnonymous")).B);
         }
 
         [Test]
@@ -58,16 +58,16 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             string configScript = @"
                 Pipelines.Add(
-	                new ReadFile(m => m.AsDynamic.InputPath + @""\*.cshtml""),
-	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.AsDynamic.InputPath, m.AsDynamic.FilePath), m.AsDynamic.FileBase)));
+	                new ReadFile(m => m.InputPath + @""\*.cshtml""),
+	                new WriteFile(m => string.Format(@""{0}\{1}.html"", PathHelper.GetRelativePath(m.InputPath, m.FilePath), m.FileBase)));
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Pipelines.AllPipelines.Count());
-            Assert.AreEqual(2, engine.Pipelines.AllPipelines.First().Count);
+            Assert.AreEqual(1, engine.Pipelines.All.Count());
+            Assert.AreEqual(2, engine.Pipelines.All.First().Count);
         }
 
         [Test]

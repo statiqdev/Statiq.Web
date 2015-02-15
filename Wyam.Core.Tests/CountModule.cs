@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests
             {
                 Value++;
                 PipelineContext outputContext = context.Clone(Value);
-                outputContext.Metadata.Set(ValueKey, Value);
+                ((Metadata)outputContext.Metadata).Set(ValueKey, Value);
                 OutputCount++;
                 yield return outputContext;
             }

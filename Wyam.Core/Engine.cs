@@ -19,7 +19,8 @@ namespace Wyam.Core
 
         private readonly Metadata _metadata;
 
-        public Metadata Metadata
+        // Cast this to Metadata for more direct control - I.e., for .Get() and .Set()
+        public dynamic Metadata
         {
             get { return _metadata; }
         }
@@ -42,27 +43,6 @@ namespace Wyam.Core
         {
             _metadata = new Metadata(this);
             _pipelines = new PipelineCollection(this);
-        }
-
-        // This gets passed to the scripting engine as a global object and all members can be accessed globaly from the script
-        public class ConfigurationGlobals
-        {
-            private readonly Engine _engine;
-
-            public ConfigurationGlobals(Engine engine)
-            {
-                _engine = engine;
-            }
-
-            public Metadata Metadata
-            {
-                get { return _engine.Metadata; }
-            }
-
-            public PipelineCollection Pipelines
-            {
-                get { return _engine.Pipelines; }
-            }
         }
 
         private static readonly Dictionary<DiagnosticSeverity, TraceEventType> DiagnosticMapping 
@@ -100,6 +80,7 @@ namespace Wyam.Core
                         "System.Linq",
                         "System.IO", 
                         "Wyam.Core", 
+                        "Wyam.Core.Modules", 
                         "Wyam.Core.Helpers")
                     .AddReferences(
                         Assembly.GetAssembly(typeof(object)),  // System
@@ -165,8 +146,8 @@ namespace Wyam.Core
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Metadata.AsDynamic.InputFolder = @".\input";
-            Metadata.AsDynamic.OutputFolder = @".\output";
+            Metadata.InputFolder = @".\input";
+            Metadata.OutputFolder = @".\output";
             
             // TODO: Configure default pipelines
         }
@@ -179,13 +160,13 @@ namespace Wyam.Core
                 Configure();
             }
 
-            // Store the final metadata for each pipeline so it can be used from subsiquent pipelines
+            // Store the final metadata for each pipeline so it can be used from subsequent pipelines
             List<dynamic> documents = new List<dynamic>();
 
             // First pass: prepare each pipelines
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
             int c = 1;
-            foreach(Pipeline pipeline in Pipelines.AllPipelines)
+            foreach(Pipeline pipeline in Pipelines.All)
             {
                 Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
                 PrepareTree prepareTree = pipeline.Prepare(_metadata, documents);

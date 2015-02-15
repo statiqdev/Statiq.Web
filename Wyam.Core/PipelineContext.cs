@@ -29,7 +29,7 @@ namespace Wyam.Core
             _persistedObject = persistedObject;
         }
 
-        public Metadata Metadata
+        public dynamic Metadata
         {
             get { return _metadata; }
         }
@@ -50,6 +50,7 @@ namespace Wyam.Core
         }
 
         // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
+        // The persisted object will be available from the context of the same module during execution
         public PipelineContext Clone(object persistedObject)
         {
             return new PipelineContext(_engine, _metadata, _documents, persistedObject);

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    public class Pipeline
+    internal class Pipeline
     {
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
 
-        internal Pipeline(Engine engine, params IModule[] modules)
+        public Pipeline(Engine engine, params IModule[] modules)
         {
             _engine = engine;
             foreach(IModule module in modules)
@@ -25,12 +25,12 @@ namespace Wyam.Core
             _modules.Add(module);
         }
 
-        internal int Count
+        public int Count
         {
             get { return _modules.Count; }
         }
 
-        internal PrepareTree Prepare(Metadata metadata, IEnumerable<dynamic> documents)
+        public PrepareTree Prepare(Metadata metadata, IEnumerable<dynamic> documents)
         {
             PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(_engine, metadata, documents));
             List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
@@ -71,7 +71,7 @@ namespace Wyam.Core
             return new PrepareTree(rootBranch, lastBranches.SelectMany(x => x.Outputs));
         }
 
-        internal void Execute(PrepareBranch branch, string content = null)
+        public void Execute(PrepareBranch branch, string content = null)
         {
             if(branch.Module == null)
             {

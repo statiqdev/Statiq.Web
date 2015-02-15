@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 namespace Wyam.Core
 {
     // This was helpful: http://weblog.west-wind.com/posts/2012/Feb/01/Dynamic-Types-and-DynamicObject-References-in-C
-    public class Metadata
+    // Also this: http://weblog.west-wind.com/posts/2012/Feb/08/Creating-a-dynamic-extensible-C-Expando-Object
+    // This class contains a stack of all the metadata generated at a particular pipeline stage
+    // Getting a value checks each of the stacks and returns the first hit
+    public class Metadata : DynamicObject, IDynamicMetaObjectProvider
     {
         private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadata;
@@ -82,32 +85,23 @@ namespace Wyam.Core
             _metadata.Peek()[key] = value;
         }
 
-        // A little syntactic sugar for the dynamic cast
-        public dynamic AsDynamic
+        public object this[string key]
         {
-            get { return new DynamicMetadata(this); }
+            get { return Get(key); }
+            set { Set(key, value); }
         }
 
-        private class DynamicMetadata : DynamicObject
+        // Dynamic support
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            private readonly Metadata _metadata;
+            return TryGet(binder.Name, out result);
+        }
 
-            public DynamicMetadata(Metadata metadata)
-            {
-                _metadata = metadata;
-            }
-
-            public override bool TryGetMember(GetMemberBinder binder, out object result)
-            {
-                result = _metadata.Get(binder.Name);
-                return true;
-            }
-
-            public override bool TrySetMember(SetMemberBinder binder, object value)
-            {
-                _metadata.Set(binder.Name, value);
-                return true;
-            }
+        public override bool TrySetMember(SetMemberBinder binder, object value)
+        {
+            Set(binder.Name, value);
+            return true;
         }
     }
 }

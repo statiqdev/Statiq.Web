@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace Wyam.Core.Helpers
 {
     // This contains some additional helpers for the file system
-    // Have to do it this way sine scripts can't use extension methods (otherwise these would just be extensions of Path)
     public class PathHelper
     {
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path

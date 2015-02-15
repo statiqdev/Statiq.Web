@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
-using Wyam.Modules.Basic;
+using Wyam.Core.Modules;
 
 namespace Wyam.Modules.Razor
 {

@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Core", "Wyam.Core\Wyam.Core.csproj", "{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Basic", "Wyam.Modules.Basic\Wyam.Modules.Basic.csproj", "{0CF2096C-8A8F-4EA8-A929-1B8876EC4F31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Razor", "Wyam.Modules.Razor\Wyam.Modules.Razor.csproj", "{AF55128A-4DC6-4AB0-8C2C-E88781B4361A}"
 EndProject
@@ -27,10 +25,6 @@ Global
 		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CF2096C-8A8F-4EA8-A929-1B8876EC4F31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CF2096C-8A8F-4EA8-A929-1B8876EC4F31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CF2096C-8A8F-4EA8-A929-1B8876EC4F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CF2096C-8A8F-4EA8-A929-1B8876EC4F31}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF55128A-4DC6-4AB0-8C2C-E88781B4361A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF55128A-4DC6-4AB0-8C2C-E88781B4361A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF55128A-4DC6-4AB0-8C2C-E88781B4361A}.Release|Any CPU.ActiveCfg = Release|Any CPU
