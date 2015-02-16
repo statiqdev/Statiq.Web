@@ -11,13 +11,9 @@ namespace Wyam.Core
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
 
-        public Pipeline(Engine engine, params IModule[] modules)
+        public Pipeline(Engine engine)
         {
             _engine = engine;
-            foreach(IModule module in modules)
-            {
-                Add(module);
-            }
         }
 
         public void Add(IModule module)

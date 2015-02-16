@@ -11,6 +11,8 @@ namespace Wyam.Core
     // Also this: http://weblog.west-wind.com/posts/2012/Feb/08/Creating-a-dynamic-extensible-C-Expando-Object
     // This class contains a stack of all the metadata generated at a particular pipeline stage
     // Getting a value checks each of the stacks and returns the first hit
+    // If a key can't be found null is always returned (it won't throw KeyNotFoundException or RuntimeBinderException)
+    // You have to cast to Metadata and call .Contains() or .TryGet() to see if the key really exists
     public class Metadata : DynamicObject, IDynamicMetaObjectProvider
     {
         private readonly Engine _engine;
@@ -19,8 +21,8 @@ namespace Wyam.Core
         internal Metadata(Engine engine)
         {
             _engine = engine;
-             _metadata = new Stack<IDictionary<string, object>>();
-             _metadata.Push(new Dictionary<string, object>());
+            _metadata = new Stack<IDictionary<string, object>>();
+            _metadata.Push(new Dictionary<string, object>());
         }
 
         private Metadata(Metadata variableStack)
@@ -51,10 +53,7 @@ namespace Wyam.Core
         public object Get(string key)
         {
             object value;
-            if (!TryGet(key, out value))
-            {
-                throw new KeyNotFoundException(string.Format("The key {0} was not found in the metadata.", key));
-            }
+            TryGet(key, out value);
             return value;
         }
 
@@ -95,7 +94,8 @@ namespace Wyam.Core
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            return TryGet(binder.Name, out result);
+            TryGet(binder.Name, out result);
+            return true;
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)

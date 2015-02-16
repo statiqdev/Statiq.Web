@@ -23,13 +23,13 @@ namespace Wyam.Modules.Razor
             _readFile = new ReadFiles(files);
         }
 
-        public IEnumerable<PipelineContext> Prepare(PipelineContext context)
+        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             // TODO: Implement this method
             throw new NotImplementedException();
         }
 
-        public string Execute(PipelineContext context, string content)
+        public string Execute(IPipelineContext context, string content)
         {
             // TODO: Implement this method
             throw new NotImplementedException();

@@ -57,10 +57,9 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Pipelines.Add(
-	                new ReadFiles(""*.cshtml""),
-	                new WriteFiles("".html"")
-                );
+                Pipelines.Create()
+	                .ReadFiles(""*.cshtml"")
+	                .WriteFiles("".html"");
             ";
 
             // When
@@ -88,7 +87,10 @@ namespace Wyam.Core.Tests
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Add(a, b, c);
+            engine.Pipelines.Create()
+                .AddModule(a)
+                .AddModule(b)
+                .AddModule(c);
 
             // When
             engine.Execute();

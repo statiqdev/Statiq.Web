@@ -15,22 +15,18 @@ namespace Wyam.Core.Modules
 
         public WriteFiles(Func<dynamic, string> path)
         {
+            if (path == null) throw new ArgumentNullException("path");
+
             _path = path;
         }
 
-        // This writes a file per content to the path specified in Metadata.OutputPath with the same relative path as the input file and with the specified extension
-        public WriteFiles(string extension)
-            : this(m => Path.Combine(m.OutputPath, PathHelper.GetRelativePath(m.FileRoot, m.FilePath)) + m.FileBase + (extension.StartsWith(".") ? extension : ("." + extension)))
-        {
-        }
-
-        public IEnumerable<PipelineContext> Prepare(PipelineContext context)
+        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             // TODO: Implement this method
             throw new NotImplementedException();
         }
 
-        public string Execute(PipelineContext context, string content)
+        public string Execute(IPipelineContext context, string content)
         {
             // TODO: Implement this method
             throw new NotImplementedException();

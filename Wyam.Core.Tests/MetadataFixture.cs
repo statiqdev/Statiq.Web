@@ -12,28 +12,84 @@ namespace Wyam.Core.Tests
     [TestFixture]
     public class MetadataFixture
     {
+        // TODO: Test for setting value for static metadata
+        // TODO: Test for setting value for dynamic metadata
+        // TODO: Test for reading value for static metadata
+        // TODO: Test for reading value for dynamic metadata
+        // TODO: Tests for various static metadata methods (Get(), TryGet(), etc.)
+
         [Test]
-        public void IsReadOnlyDoesNotAllowEdits()
+        public void IsReadOnlyDoesNotAllowEditsForStaticMetadata()
         {
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            metadata.Set("A", "a");
-            dynamic dyn = metadata;
-            dyn.B = "b";
 
             // When
             metadata.IsReadOnly = true;
 
             // Then
-            Assert.Throws<InvalidOperationException>(() => dyn.C = "c");  // dynamic set
-            Assert.Throws<InvalidOperationException>(() => metadata.Set("D", "d"));  // set
-            Assert.AreEqual("a", dyn.A);  // pre-lock dynamic get
-            Assert.AreEqual("b", metadata.Get("B"));  // pre-lock get
-            object c;
-            Assert.Throws<RuntimeBinderException>(() => c = dyn.C);  // dynamic get
-            object d;
-            Assert.Throws<KeyNotFoundException>(() => d = metadata.Get("D"));  // get
+            Assert.Throws<InvalidOperationException>(() => metadata["A"] = "a");
+        }
+        
+        [Test]
+        public void IsReadOnlyDoesNotAllowEditsForDynamicMetadata()
+        {
+            // Given
+            Engine engine = new Engine();
+            Metadata metadata = new Metadata(engine);
+            dynamic dyn = metadata;
+
+            // When
+            metadata.IsReadOnly = true;
+
+            // Then
+            Assert.Throws<InvalidOperationException>(() => dyn.A = "a");
+        }
+
+        [Test]
+        public void GetMissingKeyReturnsNullForStaticMetadata()
+        {
+            // Given
+            Engine engine = new Engine();
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            object value = metadata.Get("A");
+
+            // Then
+            Assert.IsNull(value);
+        }
+
+        [Test]
+        public void TryGetMissingKeyReturnsNullForStaticMetadata()
+        {
+            // Given
+            Engine engine = new Engine();
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            object value;
+            bool found = metadata.TryGet("A", out value);
+
+            // Then
+            Assert.IsFalse(found);
+            Assert.IsNull(value);
+        }
+
+        [Test]
+        public void MissingKeyReturnsNullForDynamicMetadata()
+        {
+            // Given
+            Engine engine = new Engine();
+            Metadata metadata = new Metadata(engine);
+            dynamic dyn = metadata;
+
+            // When
+            object value = dyn.A;
+
+            // Then
+            Assert.IsNull(value);
         }
     }
 }

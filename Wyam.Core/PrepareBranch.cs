@@ -6,11 +6,11 @@ namespace Wyam.Core
     {
         public IModule Module { get; set; }
 
-        public PipelineContext Input { get; set; }
+        public IPipelineContext Input { get; set; }
 
         public IList<PrepareBranch> Outputs { get; set; }
 
-        public PrepareBranch(PipelineContext input)
+        public PrepareBranch(IPipelineContext input)
         {
             if (input != null)
             {

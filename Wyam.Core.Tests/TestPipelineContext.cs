@@ -4,24 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core
+namespace Wyam.Core.Tests
 {
-    internal class PipelineContext : IPipelineContext
+    public class TestPipelineContext : IPipelineContext
     {
         private readonly Engine _engine;
         private readonly Metadata _metadata;
         private readonly IEnumerable<dynamic> _documents;
         private readonly object _persistedObject;
 
-        internal PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents)
-        {
-            _engine = engine;
-            _metadata = metadata.Clone();
-            _documents = documents;
-            IsReadOnly = true;  // Lock the metadata for a new uncloned context - I.e. at the start of the pipeline
-        }
-
-        private PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents, object persistedObject)
+        public TestPipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents, object persistedObject)
         {
             _engine = engine;
             _metadata = metadata.Clone();
@@ -54,11 +46,9 @@ namespace Wyam.Core
             get { return _engine.Trace; }
         }
 
-        // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
-        // The persisted object will be available from the context of the same module during execution
         public IPipelineContext Clone(object persistedObject)
         {
-            return new PipelineContext(_engine, _metadata, _documents, persistedObject);
+            return new TestPipelineContext(_engine, _metadata, _documents, persistedObject);
         }
     }
 }

@@ -7,16 +7,16 @@ namespace Wyam.Core.Modules
     // This module is helpful when one-off behavior is needed without writing a whole extension module
     internal class Execute : IModule
     {
-        private readonly Func<PipelineContext, IEnumerable<PipelineContext>> _prepare;
-        private readonly Func<PipelineContext, string, string> _execute;
+        private readonly Func<IPipelineContext, IEnumerable<IPipelineContext>> _prepare;
+        private readonly Func<IPipelineContext, string, string> _execute;
 
-        public Execute(Func<PipelineContext, IEnumerable<PipelineContext>> prepare, Func<PipelineContext, string, string> execute)
+        public Execute(Func<IPipelineContext, IEnumerable<IPipelineContext>> prepare, Func<IPipelineContext, string, string> execute)
         {
             _prepare = prepare;
             _execute = execute;
         }
 
-        public IEnumerable<PipelineContext> Prepare(PipelineContext context)
+        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             if (_prepare != null)
             {
@@ -25,7 +25,7 @@ namespace Wyam.Core.Modules
             return null;
         }
 
-        string IModule.Execute(PipelineContext context, string content)
+        string IModule.Execute(IPipelineContext context, string content)
         {
             if (_execute != null)
             {

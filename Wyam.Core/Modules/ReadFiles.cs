@@ -15,22 +15,23 @@ namespace Wyam.Core.Modules
 
         public ReadFiles(Func<dynamic, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
+            if (path == null) throw new ArgumentNullException("path");
+
             _path = path;
             _searchOption = searchOption;
         }
 
-        // This reads all files in the path specified in Metadata.InputPath that match the specified search pattern
-        public ReadFiles(string searchPattern, SearchOption searchOption = SearchOption.AllDirectories)
-            : this(m => m.InputPath + searchPattern, searchOption)
+        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
-        }
-
-        public IEnumerable<PipelineContext> Prepare(PipelineContext context)
-        {
-            string path = Path.Combine(Environment.CurrentDirectory, _path(context.Metadata));
+            string path = _path(context.Metadata);
+            if(path == null)
+            {
+                yield break;
+            }
+            path = Path.Combine(Environment.CurrentDirectory, path);
             foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
             {
-                PipelineContext fileContext = context.Clone(file);
+                IPipelineContext fileContext = context.Clone(file);
                 fileContext.Metadata.FileRoot = path;
                 fileContext.Metadata.FileBase = Path.GetFileNameWithoutExtension(file);
                 fileContext.Metadata.FileExt = Path.GetExtension(file);
@@ -41,9 +42,13 @@ namespace Wyam.Core.Modules
             }
         }
 
-        public string Execute(PipelineContext context, string content)
+        public string Execute(IPipelineContext context, string content)
         {
-            return File.ReadAllText((string)context.PersistedObject);
+            if(context.ExecutionObject == null)
+            {
+                return content;
+            }
+            return File.ReadAllText((string)context.ExecutionObject);
         }
     }
 }

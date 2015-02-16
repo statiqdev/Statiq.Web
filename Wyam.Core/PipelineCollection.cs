@@ -17,9 +17,11 @@ namespace Wyam.Core
             _engine = engine;
         }
 
-        public void Add(params IModule[] modules)
+        public IPipelineBuilder Create()
         {
-            _pipelines.Add(new Pipeline(_engine, modules));
+            Pipeline pipeline = new Pipeline(_engine);
+            _pipelines.Add(pipeline);
+            return new PipelineBuilder(pipeline);
         }
 
         internal IEnumerable<Pipeline> All

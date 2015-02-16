@@ -20,20 +20,20 @@ namespace Wyam.Core.Tests
             ValueKey = valueKey;
         }
 
-        public IEnumerable<PipelineContext> Prepare(PipelineContext context)
+        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             PrepareCount++;
             for(int c = 0 ; c < AdditionalOutputs + 1 ; c++)
             {
                 Value++;
-                PipelineContext outputContext = context.Clone(Value);
+                IPipelineContext outputContext = context.Clone(Value);
                 ((Metadata)outputContext.Metadata).Set(ValueKey, Value);
                 OutputCount++;
                 yield return outputContext;
             }
         }
 
-        public string Execute(PipelineContext context, string content)
+        public string Execute(IPipelineContext context, string content)
         {
             ExecuteCount++;
             Value++;
