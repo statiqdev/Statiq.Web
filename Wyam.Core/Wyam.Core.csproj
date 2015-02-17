@@ -76,7 +76,9 @@
     <Compile Include="IPipelineBuilder.cs" />
     <Compile Include="IPipelineContext.cs" />
     <Compile Include="Modules\Execute.cs" />
-    <Compile Include="PipelineBuilderExtensions.cs" />
+    <Compile Include="Modules\ExecuteExtensions.cs" />
+    <Compile Include="Modules\ReadFilesExtensions.cs" />
+    <Compile Include="Modules\WriteFilesExtensions.cs" />
     <Compile Include="Modules\ReadFiles.cs" />
     <Compile Include="Modules\WriteFiles.cs" />
     <Compile Include="Pipeline.cs" />

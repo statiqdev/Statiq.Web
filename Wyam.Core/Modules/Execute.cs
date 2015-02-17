@@ -5,7 +5,7 @@ using Wyam.Core;
 namespace Wyam.Core.Modules
 {
     // This module is helpful when one-off behavior is needed without writing a whole extension module
-    internal class Execute : IModule
+    public class Execute : IModule
     {
         private readonly Func<IPipelineContext, IEnumerable<IPipelineContext>> _prepare;
         private readonly Func<IPipelineContext, string, string> _execute;

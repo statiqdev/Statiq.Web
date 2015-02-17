@@ -152,7 +152,7 @@ namespace Wyam.Core
             // TODO: Configure default pipelines
         }
 
-        public void Execute()
+        public void Run()
         {         
             // Configure with defaults if not already configured
             if(!_configured)

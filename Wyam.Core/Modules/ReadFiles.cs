@@ -32,7 +32,7 @@ namespace Wyam.Core.Modules
             foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
             {
                 IPipelineContext fileContext = context.Clone(file);
-                fileContext.Metadata.FileRoot = path;
+                fileContext.Metadata.FileRoot = Path.GetDirectoryName(path);
                 fileContext.Metadata.FileBase = Path.GetFileNameWithoutExtension(file);
                 fileContext.Metadata.FileExt = Path.GetExtension(file);
                 fileContext.Metadata.FileName = Path.GetFileName(file);

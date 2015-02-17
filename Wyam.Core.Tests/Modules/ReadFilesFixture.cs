@@ -13,7 +13,7 @@ namespace Wyam.Core.Tests.Modules
     public class ReadFilesFixture
     {        
         [Test]
-        public void ReadFilesWithNoInputPathFindsNoFiles()
+        public void NoInputPathFindsNoFiles()
         {
             // Given
             TestPipelineBuilder builder = new TestPipelineBuilder();
@@ -23,13 +23,14 @@ namespace Wyam.Core.Tests.Modules
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
 
             // Then
-            Assert.AreEqual(0, contexts.Count());
+            Assert.AreEqual(0, count);
         }
 
         [Test]
-        public void ReadFilesThrowsOnNullPathFunction()
+        public void ThrowsOnNullPathFunction()
         {
             // Given
             TestPipelineBuilder builder = new TestPipelineBuilder();
@@ -41,7 +42,7 @@ namespace Wyam.Core.Tests.Modules
         }
 
         [Test]
-        public void ReadFilesThrowsOnNullExtension()
+        public void ThrowsOnNullExtension()
         {
             // Given
             TestPipelineBuilder builder = new TestPipelineBuilder();
@@ -60,7 +61,7 @@ namespace Wyam.Core.Tests.Modules
         [TestCase("*.md", SearchOption.AllDirectories, 2)]
         [TestCase("*.*", SearchOption.TopDirectoryOnly, 3)]
         [TestCase("*.*", SearchOption.AllDirectories, 5)]
-        public void ReadFilesWithSearchPatternFindsCorrectFiles(string searchPattern, SearchOption searchOption, int expectedCount)
+        public void SearchPatternFindsCorrectFiles(string searchPattern, SearchOption searchOption, int expectedCount)
         {
             // Given
             TestPipelineBuilder builder = new TestPipelineBuilder();
@@ -71,11 +72,122 @@ namespace Wyam.Core.Tests.Modules
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
             
             // Then
-            Assert.AreEqual(expectedCount, contexts.Count());
+            Assert.AreEqual(expectedCount, count);
         }
 
-        // TODO: Add test for InputPath without trailing slash
+        [Test]
+        public void SearchPatternWorksWithoutInputPathTrailingSlash()
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles("*.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
+            
+            // Then
+            Assert.AreEqual(3, count);
+        }
+
+        [Test]
+        public void SearchPatternWorksWithInputPathTrailingSlash()
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles("*.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input\";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
+            
+            // Then
+            Assert.AreEqual(3, count);
+        }
+
+        [Test]
+        public void SearchPatternWorksWithSubpath()
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles(@"Subfolder\*.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
+            
+            // Then
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void SearchPatternWorksWithSingleFile()
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles(@"test-a.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input\";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            int count = contexts.Count();
+            
+            // Then
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public void ExecuteGetsCorrectContent()
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles(@"test-a.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            context = builder.Module.Prepare(context).First();
+            string content = builder.Module.Execute(context, null);
+            
+            // Then
+            Assert.AreEqual("aaa", content);
+        }
+
+        [TestCase("FileRoot", @"TestFiles\Input")]
+        [TestCase("FileBase", @"test-c")]
+        [TestCase("FileExt", @".txt")]
+        [TestCase("FileName", @"test-c.txt")]
+        [TestCase("FileDir", @"TestFiles\Input\Subfolder")]
+        [TestCase("FilePath", @"TestFiles\Input\Subfolder\test-c.txt")]
+        public void PrepareSetsMetadata(string key, string expectedEnding)
+        {
+            // Given
+            TestPipelineBuilder builder = new TestPipelineBuilder();
+            builder.ReadFiles(@"test-c.txt");
+            Engine engine = new Engine();
+            engine.Metadata.InputPath = @"TestFiles\Input";
+            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+
+            // When
+            context = builder.Module.Prepare(context).First();
+            
+            // Then
+            Assert.That(((Metadata)context.Metadata).Get(key), Is.StringEnding(expectedEnding));
+        }
     }
 }

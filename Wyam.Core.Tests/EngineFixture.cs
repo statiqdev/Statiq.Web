@@ -93,7 +93,7 @@ namespace Wyam.Core.Tests
                 .AddModule(c);
 
             // When
-            engine.Execute();
+            engine.Run();
 
             // Then
             Assert.AreEqual(1, a.PrepareCount);
