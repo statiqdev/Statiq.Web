@@ -10,10 +10,10 @@ namespace Wyam.Core.Modules
 {
     public class ReadFiles : IModule
     {
-        private readonly Func<dynamic, string> _path;
+        private readonly Func<IMetadata, string> _path;
         private readonly SearchOption _searchOption;
 
-        public ReadFiles(Func<dynamic, string> path, SearchOption searchOption = SearchOption.AllDirectories)
+        public ReadFiles(Func<IMetadata, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
             if (path == null) throw new ArgumentNullException("path");
 
@@ -31,24 +31,26 @@ namespace Wyam.Core.Modules
             path = Path.Combine(Environment.CurrentDirectory, path);
             foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
             {
-                IPipelineContext fileContext = context.Clone(file);
-                fileContext.Metadata.FileRoot = Path.GetDirectoryName(path);
-                fileContext.Metadata.FileBase = Path.GetFileNameWithoutExtension(file);
-                fileContext.Metadata.FileExt = Path.GetExtension(file);
-                fileContext.Metadata.FileName = Path.GetFileName(file);
-                fileContext.Metadata.FileDir = Path.GetDirectoryName(file);
-                fileContext.Metadata.FilePath = file;
-                yield return fileContext;
+
+                yield return context.Clone(file, new Dictionary<string, object>
+                {
+                    {"FileRoot", Path.GetDirectoryName(path)},
+                    {"FileBase", Path.GetFileNameWithoutExtension(file)},
+                    {"FileExt", Path.GetExtension(file)},
+                    {"FileName", Path.GetFileName(file)},
+                    {"FileDir", Path.GetDirectoryName(file)},
+                    {"FilePath", file}
+                });
             }
         }
 
         public string Execute(IPipelineContext context, string content)
         {
-            if(context.ExecutionObject == null)
+            if(context.PersistedObject == null)
             {
                 return content;
             }
-            return File.ReadAllText((string)context.ExecutionObject);
+            return File.ReadAllText((string)context.PersistedObject);
         }
     }
 }

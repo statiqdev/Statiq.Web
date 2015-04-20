@@ -11,9 +11,9 @@ namespace Wyam.Core.Modules
 {
     public class WriteFiles : IModule
     {
-        private readonly Func<dynamic, string> _path;
+        private readonly Func<IMetadata, string> _path;
 
-        public WriteFiles(Func<dynamic, string> path)
+        public WriteFiles(Func<IMetadata, string> path)
         {
             if (path == null) throw new ArgumentNullException("path");
 
@@ -22,13 +22,18 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
-            // TODO: Implement this method
-            throw new NotImplementedException();
+            string path = _path(context.Metadata);
+            if (path == null)
+            {
+                yield break;
+            }
+            path = Path.Combine(Environment.CurrentDirectory, path);
+            yield return context.Clone(path);
         }
 
         public string Execute(IPipelineContext context, string content)
         {
-            // TODO: Implement this method
+            // TODO
             throw new NotImplementedException();
         }
     }

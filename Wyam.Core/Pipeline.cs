@@ -26,9 +26,9 @@ namespace Wyam.Core
             get { return _modules.Count; }
         }
 
-        public PrepareTree Prepare(Metadata metadata, IEnumerable<dynamic> documents)
+        public PrepareTree Prepare(Metadata metadata, IEnumerable<IMetadata> allMetadata)
         {
-            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(_engine, metadata, documents));
+            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(_engine, metadata, allMetadata));
             List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
             { 
                 new PrepareBranch(null) 
@@ -76,7 +76,6 @@ namespace Wyam.Core
             }
 
             _engine.Trace.Verbose("Executing module {0}...", branch.Module.GetType().Name);
-            branch.Input.IsReadOnly = false;  // Unlock the context before execution so that the module can add metadata during execution (I.e., excerpts, final content, etc.)
             try
             {
                 content = branch.Module.Execute(branch.Input, content);

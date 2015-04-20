@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    // This gets passed to the scripting engine as a global object and all members can be accessed globaly from the script
+    // This gets passed to the scripting engine as a global object and all members can be accessed globally from the script
     public class ConfigurationGlobals
     {
         private readonly Engine _engine;
@@ -16,7 +16,7 @@ namespace Wyam.Core
             _engine = engine;
         }
 
-        public dynamic Metadata
+        public IDictionary<string, object> Metadata
         {
             get { return _engine.Metadata; }
         }

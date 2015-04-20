@@ -2,19 +2,20 @@ using System.Collections.Generic;
 
 namespace Wyam.Core
 {
+    // A pipeline context is immutable, call .Clone() to get a new context with persisted object and/or new metadata items
     public interface IPipelineContext
     {
-        dynamic Metadata { get; }
+        IMetadata Metadata { get; }
 
-        IEnumerable<dynamic> Documents { get; }
+        // This contains the metadata for all previous stages of the pipeline
+        IEnumerable<IMetadata> AllMetadata { get; }
 
         // This gets passed from the preparation stage of a module to the execution stage of that same module
-        object ExecutionObject { get; }
+        object PersistedObject { get; }
 
         Trace Trace { get; }
 
-        IPipelineContext Clone(object persistedObject);
-
-        bool IsReadOnly { set; }
+        IPipelineContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null);
+        IPipelineContext Clone(IEnumerable<KeyValuePair<string, object>> items = null);
     }
 }

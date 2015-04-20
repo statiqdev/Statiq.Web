@@ -18,7 +18,7 @@ namespace Wyam.Modules.Razor
 
         // Use this constructor to read file(s) for input
         // It has the effect of inserting a ReadFiles module into the pipeline just before this module
-        public Razor(Func<dynamic, string> files)
+        public Razor(Func<IMetadata, string> files)
         {
             _readFile = new ReadFiles(files);
         }

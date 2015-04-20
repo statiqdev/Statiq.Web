@@ -12,7 +12,7 @@ namespace Wyam.Core
     public static class WriteFilesExtensions
     {
         public static IPipelineBuilder WriteFiles(this IPipelineBuilder builder,
-            Func<dynamic, string> path)
+            Func<IMetadata, string> path)
         {
             return builder.AddModule(new WriteFiles(path));
         }
@@ -24,8 +24,8 @@ namespace Wyam.Core
             if (extension == null) throw new ArgumentNullException("extension");
 
             return builder.AddModule(new WriteFiles(m => 
-                (m.OutputPath == null || m.FileRoot == null || m.FilePath == null || m.FileBase == null) ? null :
-                Path.Combine(m.OutputPath, PathHelper.GetRelativePath(m.FileRoot, m.FilePath), m.FileBase, 
+                (!m.ContainsKey("OutputPath") || !m.ContainsKey("FileRoot") || !m.ContainsKey("FilePath") || !m.ContainsKey("FileBase")) ? null :
+                Path.Combine((string)m["OutputPath"], PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FilePath"]), (string)m["FileBase"], 
                     (extension.StartsWith(".") ? extension : ("." + extension)))));
         }
     }

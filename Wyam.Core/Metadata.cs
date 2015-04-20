@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -7,60 +8,74 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    // This was helpful: http://weblog.west-wind.com/posts/2012/Feb/01/Dynamic-Types-and-DynamicObject-References-in-C
-    // Also this: http://weblog.west-wind.com/posts/2012/Feb/08/Creating-a-dynamic-extensible-C-Expando-Object
     // This class contains a stack of all the metadata generated at a particular pipeline stage
     // Getting a value checks each of the stacks and returns the first hit
-    // If a key can't be found null is always returned (it won't throw KeyNotFoundException or RuntimeBinderException)
-    // You have to cast to Metadata and call .Contains() or .TryGet() to see if the key really exists
-    public class Metadata : DynamicObject, IDynamicMetaObjectProvider
+    // This class is immutable, use IPipelineContext.Clone() to get a new one with additional values
+    internal class Metadata : IMetadata
     {
         private readonly Engine _engine;
-        private readonly Stack<IDictionary<string, object>> _metadata;
+        private readonly Stack<IDictionary<string, object>> _metadataStack;
         
         internal Metadata(Engine engine)
         {
             _engine = engine;
-            _metadata = new Stack<IDictionary<string, object>>();
-            _metadata.Push(new Dictionary<string, object>());
+            _metadataStack = new Stack<IDictionary<string, object>>();
+            Dictionary<string, object> dictionary = new Dictionary<string, object>();
+            foreach (KeyValuePair<string, object> item in engine.Metadata)
+            {
+                dictionary[item.Key] = item.Value;
+            }
+            _metadataStack.Push(dictionary);
         }
 
-        private Metadata(Metadata variableStack)
+        private Metadata(Metadata variableStack, IEnumerable<KeyValuePair<string, object>> items)
         {
             _engine = variableStack._engine;
-            _metadata = new Stack<IDictionary<string, object>>(variableStack._metadata.Reverse());
-            if (_metadata.Peek().Count != 0)
+            _metadataStack = new Stack<IDictionary<string, object>>(variableStack._metadataStack.Reverse());
+            if (_metadataStack.Peek().Count != 0)
             {
-                // Only need to push a new one if there's actually something on the top
-                _metadata.Push(new Dictionary<string, object>());
+                // Only need to push a new one if there's actually some items on the top
+                _metadataStack.Push(new Dictionary<string, object>());
+            }
+
+            // Set new items
+            if (items != null)
+            {
+                foreach (KeyValuePair<string, object> item in items)
+                {
+                    if (_metadataStack.Any(x => x.ContainsKey(item.Key)))
+                    {
+                        _engine.Trace.Warning("Existing value found while setting metadata key {0}.", item.Key);
+                    }
+
+                    _metadataStack.Peek()[item.Key] = item.Value;
+                }
             }
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal Metadata Clone()
+        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
-            return new Metadata(this);
+            return new Metadata(this, items);
         }
 
-        // This locks the stack so no more values can be added
-        internal bool IsReadOnly { get; set; }
-
-        public bool Contains(string key)
+        public bool ContainsKey(string key)
         {
-            return _metadata.FirstOrDefault(x => x.ContainsKey(key)) != null;
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+            return _metadataStack.FirstOrDefault(x => x.ContainsKey(key)) != null;
         }
 
-        public object Get(string key)
+        public bool TryGetValue(string key, out object value)
         {
-            object value;
-            TryGet(key, out value);
-            return value;
-        }
-
-        public bool TryGet(string key, out object value)
-        {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
             value = null;
-            IDictionary<string, object> meta = _metadata.FirstOrDefault(x => x.ContainsKey(key));
+            IDictionary<string, object> meta = _metadataStack.FirstOrDefault(x => x.ContainsKey(key));
             if (meta == null)
             {
                 return false;
@@ -69,39 +84,46 @@ namespace Wyam.Core
             return true;
         }
 
-        public void Set(string key, object value)
-        {
-            if (IsReadOnly)
-            {
-                throw new InvalidOperationException(string.Format("The metadata is read-only and the key {0} can not be set.", key));
-            }
-
-            if (_metadata.Any(x => x.ContainsKey(key)))
-            {
-                _engine.Trace.Warning("Existing value found while setting metadata key {0}.", value);
-            }
-
-            _metadata.Peek()[key] = value;
-        }
-
         public object this[string key]
         {
-            get { return Get(key); }
-            set { Set(key, value); }
+            get
+            {
+                if (key == null)
+                {
+                    throw new ArgumentNullException("key");
+                }
+                object value;
+                if (!TryGetValue(key, out value))
+                {
+                    throw new KeyNotFoundException();
+                }
+                return value;
+            }
         }
 
-        // Dynamic support
-
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public IEnumerable<string> Keys
         {
-            TryGet(binder.Name, out result);
-            return true;
+            get { return _metadataStack.SelectMany(x => x.Keys); }
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        public IEnumerable<object> Values
         {
-            Set(binder.Name, value);
-            return true;
+            get { return _metadataStack.SelectMany(x => x.Values); }
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _metadataStack.SelectMany(x => x).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public int Count
+        {
+            get { return _metadataStack.Sum(x => x.Count); }
         }
     }
 }

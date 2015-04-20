@@ -10,8 +10,8 @@ namespace Wyam.Core
 {
     public static class ReadFilesExtensions
     {
-        public static IPipelineBuilder ReadFiles(this IPipelineBuilder builder, 
-            Func<dynamic, string> path, SearchOption searchOption = SearchOption.AllDirectories)
+        public static IPipelineBuilder ReadFiles(this IPipelineBuilder builder,
+            Func<IMetadata, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
             return builder.AddModule(new ReadFiles(path, searchOption));
         }
@@ -22,7 +22,7 @@ namespace Wyam.Core
         {
             if (searchPattern == null) throw new ArgumentNullException("searchPattern");
 
-            return builder.AddModule(new ReadFiles(m => m.InputPath == null ? null : Path.Combine(m.InputPath, searchPattern), searchOption));
+            return builder.AddModule(new ReadFiles(m => !m.ContainsKey("InputPath") ? null : Path.Combine((string)m["InputPath"], searchPattern), searchOption));
         }
     }
 }

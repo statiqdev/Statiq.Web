@@ -18,20 +18,20 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.TestString = ""teststring"";
-                Metadata.TestInt = 1234;
-                ((Metadata)Metadata).Set(""TestFloat"", 1234.567);
-                ((Metadata)Metadata).Set(""TestBool"", true);
+                Metadata[""TestString""] = ""teststring"";
+                Metadata[""TestInt""] = 1234;
+                Metadata[""TestFloat""] = 1234.567;
+                Metadata[""TestBool""] = true;
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual("teststring", ((Metadata)engine.Metadata).Get("TestString"));
-            Assert.AreEqual(1234, ((Metadata)engine.Metadata).Get("TestInt"));
-            Assert.AreEqual(1234.567, engine.Metadata.TestFloat);
-            Assert.AreEqual(true, engine.Metadata.TestBool);
+            Assert.AreEqual("teststring", engine.Metadata["TestString"]);
+            Assert.AreEqual(1234, engine.Metadata["TestInt"]);
+            Assert.AreEqual(1234.567, engine.Metadata["TestFloat"]);
+            Assert.AreEqual(true, engine.Metadata["TestBool"]);
         }
 
         [Test]
@@ -40,15 +40,15 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata.TestAnonymous = new { A = 1, B = ""b"" };
+                Metadata[""TestAnonymous""] = new { A = 1, B = ""b"" };
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual(1, engine.Metadata.TestAnonymous.A);
-            Assert.AreEqual("b", ((dynamic)((Metadata)engine.Metadata).Get("TestAnonymous")).B);
+            Assert.AreEqual(1, ((dynamic)engine.Metadata["TestAnonymous"]).A);
+            Assert.AreEqual("b", ((dynamic)engine.Metadata["TestAnonymous"]).B);
         }
 
         [Test]

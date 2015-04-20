@@ -10,41 +10,35 @@ namespace Wyam.Core
     {
         private readonly Engine _engine;
         private readonly Metadata _metadata;
-        private readonly IEnumerable<dynamic> _documents;
+        private readonly IEnumerable<IMetadata> _allMetadata;
         private readonly object _persistedObject;
 
-        internal PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents)
+        internal PipelineContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata)
         {
             _engine = engine;
-            _metadata = metadata.Clone();
-            _documents = documents;
-            IsReadOnly = true;  // Lock the metadata for a new uncloned context - I.e. at the start of the pipeline
+            _metadata = metadata;
+            _allMetadata = allMetadata;
         }
 
-        private PipelineContext(Engine engine, Metadata metadata, IEnumerable<dynamic> documents, object persistedObject)
+        private PipelineContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata, object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             _engine = engine;
-            _metadata = metadata.Clone();
-            _documents = documents;
+            _metadata = metadata.Clone(items);
+            _allMetadata = allMetadata;
             _persistedObject = persistedObject;
         }
 
-        public dynamic Metadata
+        public IMetadata Metadata
         {
             get { return _metadata; }
         }
 
-        public bool IsReadOnly
+        public IEnumerable<IMetadata> AllMetadata
         {
-            set { _metadata.IsReadOnly = value; }
+            get { return _allMetadata; }
         }
 
-        public IEnumerable<dynamic> Documents
-        {
-            get { return _documents; }
-        }
-
-        public object ExecutionObject
+        public object PersistedObject
         {
             get { return _persistedObject; }
         }
@@ -56,9 +50,14 @@ namespace Wyam.Core
 
         // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
         // The persisted object will be available from the context of the same module during execution
-        public IPipelineContext Clone(object persistedObject)
+        public IPipelineContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new PipelineContext(_engine, _metadata, _documents, persistedObject);
+            return new PipelineContext(_engine, _metadata, _allMetadata, persistedObject, items);
+        }
+
+        public IPipelineContext Clone(IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return Clone(null, items);
         }
     }
 }

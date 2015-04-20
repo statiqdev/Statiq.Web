@@ -19,7 +19,8 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles("*.txt");
             Engine engine = new Engine();
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -67,8 +68,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles(searchPattern, searchOption);
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input\";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input\";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -85,8 +87,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles("*.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -103,8 +106,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles("*.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input\";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -121,8 +125,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles(@"Subfolder\*.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -139,8 +144,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles(@"test-a.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input\";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
@@ -157,8 +163,9 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles(@"test-a.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             context = builder.Module.Prepare(context).First();
@@ -180,14 +187,15 @@ namespace Wyam.Core.Tests.Modules
             TestPipelineBuilder builder = new TestPipelineBuilder();
             builder.ReadFiles(@"test-c.txt");
             Engine engine = new Engine();
-            engine.Metadata.InputPath = @"TestFiles\Input";
-            IPipelineContext context = new TestPipelineContext(engine, engine.Metadata, null, null);
+            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            IPipelineContext context = new PipelineContext(engine, metadata, null);
 
             // When
             context = builder.Module.Prepare(context).First();
             
             // Then
-            Assert.That(((Metadata)context.Metadata).Get(key), Is.StringEnding(expectedEnding));
+            Assert.That(context.Metadata[key], Is.StringEnding(expectedEnding));
         }
     }
 }

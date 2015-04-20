@@ -26,10 +26,9 @@ namespace Wyam.Core.Tests
             for(int c = 0 ; c < AdditionalOutputs + 1 ; c++)
             {
                 Value++;
-                IPipelineContext outputContext = context.Clone(Value);
-                ((Metadata)outputContext.Metadata).Set(ValueKey, Value);
                 OutputCount++;
-                yield return outputContext;
+                yield return context.Clone(Value,
+                    new Dictionary<string, object> {{ValueKey, Value}});
             }
         }
 

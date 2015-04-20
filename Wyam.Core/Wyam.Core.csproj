@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationGlobals.cs" />
+    <Compile Include="IMetadata.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="IPipelineBuilder.cs" />

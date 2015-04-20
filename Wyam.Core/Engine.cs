@@ -17,10 +17,9 @@ namespace Wyam.Core
     {
         private bool _configured = false;
 
-        private readonly Metadata _metadata;
+        private readonly Dictionary<string, object> _metadata;
 
-        // Cast this to Metadata for more direct control - I.e., for .Get() and .Set()
-        public dynamic Metadata
+        public IDictionary<string, object> Metadata
         {
             get { return _metadata; }
         }
@@ -41,10 +40,11 @@ namespace Wyam.Core
 
         public Engine()
         {
-            _metadata = new Metadata(this);
+            _metadata = new Dictionary<string, object>();
             _pipelines = new PipelineCollection(this);
         }
 
+        // This maps Roslyn diagnostic levels to tracing levels
         private static readonly Dictionary<DiagnosticSeverity, TraceEventType> DiagnosticMapping 
             = new Dictionary<DiagnosticSeverity, TraceEventType>()
             {
@@ -108,6 +108,7 @@ namespace Wyam.Core
         }
 
         // Gets all modules in the current path and adds their namespaces and references to the options
+        // TODO: Consider changing to MEF for this?
         private ScriptOptions AddModulesToScriptOptions(ScriptOptions scriptOptions)
         {
             List<Assembly> assemblies = new List<Assembly>();
@@ -146,8 +147,8 @@ namespace Wyam.Core
         // Configure the engine with default values
         private void ConfigureDefault()
         {
-            Metadata.InputPath = @".\input";
-            Metadata.OutputPath = @".\output";
+            Metadata["InputPath"] = @".\input";
+            Metadata["OutputPath"] = @".\output";
             
             // TODO: Configure default pipelines
         }
@@ -161,7 +162,7 @@ namespace Wyam.Core
             }
 
             // Store the final metadata for each pipeline so it can be used from subsequent pipelines
-            List<dynamic> documents = new List<dynamic>();
+            List<IMetadata> allMetadata = new List<IMetadata>();
 
             // First pass: prepare each pipelines
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
@@ -169,11 +170,12 @@ namespace Wyam.Core
             foreach(Pipeline pipeline in Pipelines.All)
             {
                 Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
-                PrepareTree prepareTree = pipeline.Prepare(_metadata, documents);
+                Metadata metadata = new Metadata(this);
+                PrepareTree prepareTree = pipeline.Prepare(metadata, allMetadata);
                 prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
-                IEnumerable<dynamic> pipelineDocuments = prepareTree.Leaves.Select(x => x.Input.Metadata);
-                documents.AddRange(pipelineDocuments);
-                Trace.Verbose("Prepared pipeline {0} resulting in {1} documents.", c++, pipelineDocuments.Count());
+                IEnumerable<IMetadata> pipelineMetadata = prepareTree.Leaves.Select(x => x.Input.Metadata).ToList();
+                allMetadata.AddRange(pipelineMetadata);
+                Trace.Verbose("Prepared pipeline {0} resulting in {1} documents.", c++, pipelineMetadata.Count());
             }
 
             // Second pass: execute each pipeline
