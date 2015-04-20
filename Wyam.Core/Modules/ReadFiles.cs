@@ -46,11 +46,7 @@ namespace Wyam.Core.Modules
 
         public string Execute(IPipelineContext context, string content)
         {
-            if(context.PersistedObject == null)
-            {
-                return content;
-            }
-            return File.ReadAllText((string)context.PersistedObject);
+            return context.PersistedObject == null ? content : File.ReadAllText((string)context.PersistedObject);
         }
     }
 }

@@ -12,7 +12,9 @@ namespace Wyam.Core.Tests.Helpers
     public class PathHelperFixture
     {
         [TestCase(@"C:\A\B\", @"C:\A\B\", @"")]
-        [TestCase(@"C:\A\B\", @"C:\A\B\C", @"C\")]
+        [TestCase(@"C:\A\B\", @"C:\A\B\C", @"C")]
+        [TestCase(@"\A\B\", @"\A\B\C", @"C")]
+        [TestCase(@"A\B\", @"A\B\C", @"C")]
         public void GetRelativePathReturnsCorrectPath(string fromPath, string toPath, string expectedPath)
         {
             // Given

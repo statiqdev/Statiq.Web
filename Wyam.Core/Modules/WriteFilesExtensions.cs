@@ -24,9 +24,9 @@ namespace Wyam.Core
             if (extension == null) throw new ArgumentNullException("extension");
 
             return builder.AddModule(new WriteFiles(m => 
-                (!m.ContainsKey("OutputPath") || !m.ContainsKey("FileRoot") || !m.ContainsKey("FilePath") || !m.ContainsKey("FileBase")) ? null :
-                Path.Combine((string)m["OutputPath"], PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FilePath"]), (string)m["FileBase"], 
-                    (extension.StartsWith(".") ? extension : ("." + extension)))));
+                (!m.ContainsKey("OutputPath") || !m.ContainsKey("FileRoot") || !m.ContainsKey("FileDir") || !m.ContainsKey("FileBase")) ? null :
+                Path.Combine((string)m["OutputPath"], PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
+                    (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)))));
         }
     }
 }

@@ -33,8 +33,16 @@ namespace Wyam.Core.Modules
 
         public string Execute(IPipelineContext context, string content)
         {
-            // TODO
-            throw new NotImplementedException();
+            if (context.PersistedObject != null)
+            {
+                string path = (string) context.PersistedObject;
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    File.WriteAllText(path, content);
+                }
+            }
+            return content;
         }
     }
 }
