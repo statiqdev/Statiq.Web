@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core.Tests
 {
-    public class CountModule : IModule
+    public class CountModule : Module
     {
         public int AdditionalOutputs { get; set; }  // Controls how many additional outputs are spawned
         public int PrepareCount { get; set; }
@@ -19,20 +19,19 @@ namespace Wyam.Core.Tests
         {
             ValueKey = valueKey;
         }
-
-        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        
+        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             PrepareCount++;
             for(int c = 0 ; c < AdditionalOutputs + 1 ; c++)
             {
                 Value++;
                 OutputCount++;
-                yield return context.Clone(Value,
-                    new Dictionary<string, object> {{ValueKey, Value}});
+                yield return context.Clone(Value, new Dictionary<string, object> {{ValueKey, Value}});
             }
         }
 
-        public string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IPipelineContext context, string content)
         {
             ExecuteCount++;
             Value++;

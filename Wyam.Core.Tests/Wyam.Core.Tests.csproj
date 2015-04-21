@@ -48,9 +48,9 @@
     <Compile Include="MetadataFixture.cs" />
     <Compile Include="Modules\ReadFilesFixture.cs" />
     <Compile Include="Modules\WriteFilesFixture.cs" />
+    <Compile Include="PipelineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CountModule.cs" />
-    <Compile Include="TestPipelineBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,20 +8,34 @@ using Wyam.Core;
 
 namespace Wyam.Core.Modules
 {
-    public class ReadFiles : IModule
+    public class ReadFiles : Module
     {
         private readonly Func<IMetadata, string> _path;
         private readonly SearchOption _searchOption;
 
         public ReadFiles(Func<IMetadata, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null)
+            {
+                throw new ArgumentNullException("path");
+            }
 
             _path = path;
             _searchOption = searchOption;
         }
 
-        public IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        public ReadFiles(string searchPattern, SearchOption searchOption = SearchOption.AllDirectories)
+        {
+            if (searchPattern == null)
+            {
+                throw new ArgumentNullException("searchPattern");
+            }
+
+            _path = m => !m.ContainsKey("InputPath") ? null : Path.Combine((string)m["InputPath"], searchPattern);
+            _searchOption = searchOption;
+        }
+
+        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
         {
             string path = _path(context.Metadata);
             if(path == null)
@@ -44,7 +58,7 @@ namespace Wyam.Core.Modules
             }
         }
 
-        public string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IPipelineContext context, string content)
         {
             return context.PersistedObject == null ? content : File.ReadAllText((string)context.PersistedObject);
         }

@@ -7,7 +7,8 @@ namespace Wyam.Core
     {
         IMetadata Metadata { get; }
 
-        // This contains the metadata for all previous stages of the pipeline
+        // This contains the metadata for all previous pipelines
+        // It is populated at the conclusion of each pipeline prepare in sequence
         IEnumerable<IMetadata> AllMetadata { get; }
 
         // This gets passed from the preparation stage of a module to the execution stage of that same module

@@ -15,9 +15,9 @@ namespace Wyam.Core
             _pipeline = pipeline;
         }
 
-        public IPipelineBuilder AddModule(IModule module)
+        public IPipelineBuilder AddModule(Module module)
         {
-            _pipeline.Add(module);
+            _pipeline.AddModule(module);
             return this;
         }
     }

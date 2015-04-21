@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Core.Modules;
 
 namespace Wyam.Core.Tests.Modules
 {
@@ -45,11 +46,10 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
             IPipelineContext context = new PipelineContext(engine, metadata, null);
-            TestPipelineBuilder builder = new TestPipelineBuilder();
-            builder.WriteFiles(".txt");
+            WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            IEnumerable<IPipelineContext> contexts = builder.Module.Prepare(context);
+            IEnumerable<IPipelineContext> contexts = writeFiles.Prepare(context);
             int count = contexts.Count();
 
             // Then
@@ -67,12 +67,11 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IPipelineContext context = new PipelineContext(engine, metadata, null);
-            TestPipelineBuilder builder = new TestPipelineBuilder();
-            builder.WriteFiles(".txt");
+            WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            context = builder.Module.Prepare(context).First();
-            string content = builder.Module.Execute(context, "Test");
+            context = writeFiles.Prepare(context).First();
+            string content = writeFiles.Execute(context, "Test");
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -90,12 +89,11 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IPipelineContext context = new PipelineContext(engine, metadata, null);
-            TestPipelineBuilder builder = new TestPipelineBuilder();
-            builder.WriteFiles("txt");
+            WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
-            context = builder.Module.Prepare(context).First();
-            string content = builder.Module.Execute(context, "Test");
+            context = writeFiles.Prepare(context).First();
+            string content = writeFiles.Execute(context, "Test");
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -109,11 +107,10 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
             IPipelineContext context = new PipelineContext(engine, metadata, null);
-            TestPipelineBuilder builder = new TestPipelineBuilder();
-            builder.WriteFiles(x => string.Empty);
+            WriteFiles writeFiles = new WriteFiles(x => string.Empty);
 
             // When
-            string content = builder.Module.Execute(context, "Test");
+            string content = writeFiles.Execute(context, "Test");
 
             // Then
             Assert.AreEqual("Test", content);

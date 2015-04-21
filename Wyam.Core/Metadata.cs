@@ -32,11 +32,7 @@ namespace Wyam.Core
         {
             _engine = variableStack._engine;
             _metadataStack = new Stack<IDictionary<string, object>>(variableStack._metadataStack.Reverse());
-            if (_metadataStack.Peek().Count != 0)
-            {
-                // Only need to push a new one if there's actually some items on the top
-                _metadataStack.Push(new Dictionary<string, object>());
-            }
+            _metadataStack.Push(new Dictionary<string, object>());
 
             // Set new items
             if (items != null)

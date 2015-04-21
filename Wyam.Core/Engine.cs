@@ -19,6 +19,7 @@ namespace Wyam.Core
 
         private readonly Dictionary<string, object> _metadata;
 
+        // This is used as the initial set of metadata for each run
         public IDictionary<string, object> Metadata
         {
             get { return _metadata; }
@@ -36,6 +37,15 @@ namespace Wyam.Core
         public Trace Trace
         {
             get { return _trace; }
+        }
+
+        // Store the final metadata for each pipeline so it can be used from subsequent pipelines
+        private readonly List<IMetadata> _allMetadata = new List<IMetadata>();
+
+        // This is only populated after running the engine
+        public IReadOnlyList<IMetadata> AllMetadata
+        {
+            get { return _allMetadata; }
         }
 
         public Engine()
@@ -109,6 +119,7 @@ namespace Wyam.Core
 
         // Gets all modules in the current path and adds their namespaces and references to the options
         // TODO: Consider changing to MEF for this?
+        // TODO: Even better, consider basing extension mechanism totally on NuGet
         private ScriptOptions AddModulesToScriptOptions(ScriptOptions scriptOptions)
         {
             List<Assembly> assemblies = new List<Assembly>();
@@ -119,7 +130,7 @@ namespace Wyam.Core
                 try
                 {
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                    foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
+                    foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(Module).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
                     {
                         namespaces.Add(moduleType.Namespace);
                     }
@@ -144,7 +155,7 @@ namespace Wyam.Core
                 .AddReferences(assemblies);
         }
 
-        // Configure the engine with default values
+        // Configure the engine with default values and a default pipeline
         private void ConfigureDefault()
         {
             Metadata["InputPath"] = @".\input";
@@ -161,20 +172,18 @@ namespace Wyam.Core
                 Configure();
             }
 
-            // Store the final metadata for each pipeline so it can be used from subsequent pipelines
-            List<IMetadata> allMetadata = new List<IMetadata>();
-
             // First pass: prepare each pipelines
+            _allMetadata.Clear();
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
             int c = 1;
             foreach(Pipeline pipeline in Pipelines.All)
             {
                 Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
                 Metadata metadata = new Metadata(this);
-                PrepareTree prepareTree = pipeline.Prepare(metadata, allMetadata);
+                PrepareTree prepareTree = pipeline.Prepare(metadata, _allMetadata);
                 prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
-                IEnumerable<IMetadata> pipelineMetadata = prepareTree.Leaves.Select(x => x.Input.Metadata).ToList();
-                allMetadata.AddRange(pipelineMetadata);
+                IEnumerable<IMetadata> pipelineMetadata = prepareTree.Leaves.Select(x => x.Context.Metadata).ToList();
+                _allMetadata.AddRange(pipelineMetadata);
                 Trace.Verbose("Prepared pipeline {0} resulting in {1} documents.", c++, pipelineMetadata.Count());
             }
 

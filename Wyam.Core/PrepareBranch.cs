@@ -4,15 +4,17 @@ namespace Wyam.Core
 {
     internal class PrepareBranch
     {
-        public IModule Module { get; set; }
+        public Module Module { get; set; }
 
-        public IPipelineContext Input { get; set; }
+        public IPipelineContext Context { get; set; }
 
         public IList<PrepareBranch> Outputs { get; set; }
 
-        public PrepareBranch(IPipelineContext input)
+        public string Content { get; set; }
+
+        public PrepareBranch(IPipelineContext context)
         {
-            Input = input;
+            Context = context;
             Outputs = new List<PrepareBranch>();
         }
     }

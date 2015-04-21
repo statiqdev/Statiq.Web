@@ -2,6 +2,6 @@ namespace Wyam.Core
 {
     public interface IPipelineBuilder
     {
-        IPipelineBuilder AddModule(IModule module);
+        IPipelineBuilder AddModule(Module module);
     }
 }

@@ -9,14 +9,14 @@ namespace Wyam.Core
     internal class Pipeline
     {
         private readonly Engine _engine;
-        private readonly List<IModule> _modules = new List<IModule>();
+        private readonly List<Module> _modules = new List<Module>();
 
         public Pipeline(Engine engine)
         {
             _engine = engine;
         }
 
-        public void Add(IModule module)
+        public void AddModule(Module module)
         {
             _modules.Add(module);
         }
@@ -37,7 +37,7 @@ namespace Wyam.Core
                 }
             };
 
-            foreach(IModule module in _modules)
+            foreach(Module module in _modules)
             {
                 _engine.Trace.Verbose("Preparing module {0}...", module.GetType().Name);
                 List<PrepareBranch> currentBranches = new List<PrepareBranch>();
@@ -49,7 +49,9 @@ namespace Wyam.Core
                         try
                         {
                             currentBranch.Module = module;
-                            currentBranch.Outputs = module.Prepare(currentBranch.Input).Select(x => new PrepareBranch(x)).ToList();
+                            currentBranch.Outputs = module.Prepare(currentBranch.Context)
+                                .Select(x => new PrepareBranch(x == currentBranch.Context ? x.Clone() : x))  // Make sure we clone the context if it's the same as the input
+                                .ToList();
                             currentBranches.Add(currentBranch);
                             i++;
                         }
@@ -67,7 +69,7 @@ namespace Wyam.Core
             return new PrepareTree(rootBranch, lastBranches.SelectMany(x => x.Outputs));
         }
 
-        public void Execute(PrepareBranch branch, string content = null)
+        public void Execute(PrepareBranch branch)
         {
             if(branch.Module == null)
             {
@@ -75,21 +77,29 @@ namespace Wyam.Core
                 return;
             }
 
-            _engine.Trace.Verbose("Executing module {0}...", branch.Module.GetType().Name);
-            try
+            // We need to execute the module for each output that was returned during prepare
+            foreach (PrepareBranch output in branch.Outputs)
             {
-                content = branch.Module.Execute(branch.Input, content);
+                _engine.Trace.Verbose("Executing module {0}...", branch.Module.GetType().Name);
+                try
+                {
+                    output.Content = branch.Module.Execute(output.Context, branch.Content);
+                }
+                catch (Exception ex)
+                {
+                    _engine.Trace.Error("Error while executing module {0}: {1}", branch.Module.GetType().Name,
+                        ex.Message);
+                    _engine.Trace.Verbose(ex.ToString());
+                    return;
+                }
             }
-            catch (Exception ex)
+
+            // Only once all outputs for the current module have been run should we descend to the next module
+            foreach(PrepareBranch output in branch.Outputs)
             {
-                _engine.Trace.Error("Error while executing module {0}: {1}", branch.Module.GetType().Name, ex.Message);
-                _engine.Trace.Verbose(ex.ToString());
-                return;
+                Execute(output);
             }
-            foreach(PrepareBranch child in branch.Outputs)
-            {
-                Execute(child, content);
-            }
+
             _engine.Trace.Verbose("Executed module {0} with {1} input(s).", branch.Module.GetType().Name, branch.Outputs.Count);
         }
     }

@@ -6,7 +6,8 @@ namespace Wyam.Core
     {
         public PrepareBranch RootBranch { get; private set; }
 
-        public IEnumerable<PrepareBranch> Leaves { get; private set; }// The final leaves are used for populating the aggregate document list
+        // The final leaves are used for populating the aggregate document list
+        public IEnumerable<PrepareBranch> Leaves { get; private set; }
 
         public PrepareTree(PrepareBranch rootBranch, IEnumerable<PrepareBranch> leaves)
         {
