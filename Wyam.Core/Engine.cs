@@ -10,6 +10,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
+using NuGet;
+using Wyam.Core.Configuration;
+using Wyam.Core.Extensibility;
 
 namespace Wyam.Core
 {
@@ -27,7 +30,7 @@ namespace Wyam.Core
 
         private readonly PipelineCollection _pipelines;
 
-        public PipelineCollection Pipelines
+        public IPipelineCollection Pipelines
         {
             get { return _pipelines; }
         }
@@ -63,7 +66,6 @@ namespace Wyam.Core
                 { DiagnosticSeverity.Info, TraceEventType.Information }
             };
 
-        // Configure the engine using a config script or with defaults if null
         public void Configure(string configScript = null)
         {
             if(_configured)
@@ -71,97 +73,20 @@ namespace Wyam.Core
                 throw new InvalidOperationException("This engine has already been configured.");
             }
             _configured = true;
-
-            try
-            {
-                // Configure with defaults if no script
-                if (string.IsNullOrWhiteSpace(configScript))
-                {
-                    ConfigureDefault();
-                    return;
-                }
-
-                // Create the script options
-                // TODO: Add a way to specify additional namespaces and/or assemblies (probably as arguments, exposed as switches in the console version)
-                ScriptOptions scriptOptions = new ScriptOptions()
-                    .AddNamespaces(
-                        "System",
-                        "System.Collections.Generic",
-                        "System.Linq",
-                        "System.IO", 
-                        "Wyam.Core", 
-                        "Wyam.Core.Modules", 
-                        "Wyam.Core.Helpers")
-                    .AddReferences(
-                        Assembly.GetAssembly(typeof(object)),  // System
-                        Assembly.GetAssembly(typeof(List<>)),  // System.Collections.Generic 
-                        Assembly.GetAssembly(typeof(ImmutableArrayExtensions)),  // System.Linq
-                        Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),  // System.Core (needed for dynamic)
-                        Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
-                        Assembly.GetAssembly(typeof(Path)), // System.IO
-                        Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
-                scriptOptions = AddModulesToScriptOptions(scriptOptions);
-
-                // Evaluate the script
-                CSharpScript.Eval(configScript, scriptOptions, new ConfigurationGlobals(this));
-            }
-            catch(CompilationErrorException compilationError)
-            {
-                Trace.Error("Error compiling configuration: {0}", compilationError.ToString());
-                throw;
-            }
-            catch(Exception ex)
-            {
-                Trace.Error("Unexpected error during configuration: {0}", ex.ToString());
-                throw;
-            }
+            Configurator configurator = new Configurator(this);
+            configurator.Configure(configScript);
         }
 
-        // Gets all modules in the current path and adds their namespaces and references to the options
-        // TODO: Consider changing to MEF for this?
-        // TODO: Even better, consider basing extension mechanism totally on NuGet
-        private ScriptOptions AddModulesToScriptOptions(ScriptOptions scriptOptions)
+        public void ConfigureDefaultPipelines()
         {
-            List<Assembly> assemblies = new List<Assembly>();
-            HashSet<string> namespaces = new HashSet<string>();
-            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (string assemblyPath in Directory.GetFiles(currentPath, "*.dll", SearchOption.AllDirectories))
+            // Configure with defaults if not already configured
+            if (!_configured)
             {
-                try
-                {
-                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                    foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(Module).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
-                    {
-                        namespaces.Add(moduleType.Namespace);
-                    }
-                    assemblies.Add(assembly);
-                }
-                catch (FileLoadException)
-                {
-                    // The Assembly has already been loaded
-                }
-                catch (BadImageFormatException)
-                {
-                    // If a BadImageFormatException exception is thrown, the file is not an assembly
-                }
-                catch (Exception ex)
-                {
-                    // Some other reason the assembly couldn't be loaded or we couldn't reflect
-                    Trace.Verbose("Unexpected exception while loading assembly at {0}: {1}.", assemblyPath, ex.Message);
-                }
+                Configure();
             }
-            return scriptOptions
-                .AddNamespaces(namespaces)
-                .AddReferences(assemblies);
-        }
 
-        // Configure the engine with default values and a default pipeline
-        private void ConfigureDefault()
-        {
-            Metadata["InputPath"] = @".\input";
-            Metadata["OutputPath"] = @".\output";
-            
-            // TODO: Configure default pipelines
+            Configurator configurator = new Configurator(this);
+            configurator.ConfigureDefaultPipelines();
         }
 
         public void Run()
@@ -176,7 +101,7 @@ namespace Wyam.Core
             _allMetadata.Clear();
             List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
             int c = 1;
-            foreach(Pipeline pipeline in Pipelines.All)
+            foreach(Pipeline pipeline in _pipelines.Pipelines)
             {
                 Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
                 Metadata metadata = new Metadata(this);

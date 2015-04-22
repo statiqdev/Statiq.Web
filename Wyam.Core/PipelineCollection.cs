@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    public class PipelineCollection
+    internal class PipelineCollection : IPipelineCollection
     {
         private readonly Engine _engine;
         private readonly List<Pipeline> _pipelines = new List<Pipeline>();
 
-        internal PipelineCollection(Engine engine)
+        public PipelineCollection(Engine engine)
         {
             _engine = engine;
         }
 
-        public IPipelineBuilder Create()
+        public IPipeline AddPipeline()
         {
             Pipeline pipeline = new Pipeline(_engine);
             _pipelines.Add(pipeline);
-            return new PipelineBuilder(pipeline);
+            return pipeline;
         }
 
-        internal IEnumerable<Pipeline> All
+        public IEnumerable<Pipeline> Pipelines
         {
             get { return _pipelines; }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    internal class Pipeline
+    internal class Pipeline : IPipeline
     {
         private readonly Engine _engine;
         private readonly List<Module> _modules = new List<Module>();
@@ -16,9 +16,10 @@ namespace Wyam.Core
             _engine = engine;
         }
 
-        public void AddModule(Module module)
+        public IPipeline AddModule(Module module)
         {
             _modules.Add(module);
+            return this;
         }
 
         public int Count
