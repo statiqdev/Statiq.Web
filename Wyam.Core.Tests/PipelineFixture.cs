@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Core.Modules;
+using Delegate = Wyam.Core.Modules.Delegate;
 
 namespace Wyam.Core.Tests
 {
@@ -19,8 +20,8 @@ namespace Wyam.Core.Tests
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline(engine);
             int c = 0;
-            pipeline.AddModule(new Delegates(x => new[] { x.Clone(c++), x.Clone(c++) }, null));
-            pipeline.AddModule(new Delegates(x => new[] { x.Clone(c++) }, null));
+            pipeline.AddModule(new Delegate(x => new[] { x.Clone(c++), x.Clone(c++) }, null));
+            pipeline.AddModule(new Delegate(x => new[] { x.Clone(c++) }, null));
 
             // When
             PrepareTree prepareTree = pipeline.Prepare(metadata, new List<Metadata>());
@@ -43,12 +44,12 @@ namespace Wyam.Core.Tests
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline(engine);
             int c = 0;
-            pipeline.AddModule(new Delegates(x => new[]
+            pipeline.AddModule(new Delegate(x => new[]
             {
                 x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
                 x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
             }, null));
-            pipeline.AddModule(new Delegates(x => new[]
+            pipeline.AddModule(new Delegate(x => new[]
             {
                 x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
             }, null));

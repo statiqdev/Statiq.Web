@@ -20,7 +20,7 @@ namespace Wyam.Core.Tests
             ValueKey = valueKey;
         }
         
-        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
         {
             PrepareCount++;
             for(int c = 0 ; c < AdditionalOutputs + 1 ; c++)
@@ -31,7 +31,7 @@ namespace Wyam.Core.Tests
             }
         }
 
-        protected internal override string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IModuleContext context, string content)
         {
             ExecuteCount++;
             Value++;

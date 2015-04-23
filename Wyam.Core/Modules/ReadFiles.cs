@@ -35,7 +35,7 @@ namespace Wyam.Core.Modules
             _searchOption = searchOption;
         }
 
-        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
         {
             string path = _path(context.Metadata);
             if(path == null)
@@ -58,7 +58,7 @@ namespace Wyam.Core.Modules
             }
         }
 
-        protected internal override string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IModuleContext context, string content)
         {
             return context.PersistedObject == null ? content : File.ReadAllText((string)context.PersistedObject);
         }

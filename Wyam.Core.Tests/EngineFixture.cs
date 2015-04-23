@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Modules;
+using Delegate = Wyam.Core.Modules.Delegate;
 
 
 namespace Wyam.Core.Tests
@@ -115,12 +116,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Create()
-                .AddModule(new Delegates(x => new[]
+                .AddModule(new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }, null))
-                .AddModule(new Delegates(x => new[]
+                .AddModule(new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }, null));
@@ -154,12 +155,12 @@ namespace Wyam.Core.Tests
             List<object> persistedObjects = new List<object>();
             int c = 0;
             engine.Pipelines.Create()
-                .AddModule(new Delegates(x => new[] { x.Clone(c++), x.Clone(c++) }, (x, y) =>
+                .AddModule(new Delegate(x => new[] { x.Clone(c++), x.Clone(c++) }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
                     return y;
                 }))
-                .AddModule(new Delegates(x => new[] { x.Clone(c++) }, (x, y) =>
+                .AddModule(new Delegate(x => new[] { x.Clone(c++) }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
                     return y;
@@ -184,7 +185,7 @@ namespace Wyam.Core.Tests
             int c = 0;
             List<IEnumerable<string>> metadata = new List<IEnumerable<string>>();
             engine.Pipelines.Create()
-                .AddModule(new Delegates(x => new[]
+                .AddModule(new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } }), 
                     x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } })
@@ -193,7 +194,7 @@ namespace Wyam.Core.Tests
                     metadata.Add(x.Metadata.Where(z => z.Key.StartsWith("!")).Select(z => z.Key).ToList());
                     return y;
                 }))
-                .AddModule(new Delegates(x => new[]
+                .AddModule(new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } })
                 }, (x, y) =>
@@ -220,12 +221,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             List<object> persistedObjects = new List<object>();
             engine.Pipelines.Create()
-                .AddModule(new Delegates(x => new[] { x.Clone("A") }, (x, y) =>
+                .AddModule(new Delegate(x => new[] { x.Clone("A") }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
                     return y;
                 }))
-                .AddModule(new Delegates(x => new[] { x }, (x, y) =>
+                .AddModule(new Delegate(x => new[] { x }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
                     return y;

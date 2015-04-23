@@ -24,11 +24,11 @@ namespace Wyam.Core.Modules
 }
 namespace Wyam.Core.Modules
 {
-    public static class DelegatesPipelineExtensions
+    public static class DelegatePipelineExtensions
     {
-        public static IPipeline Delegates(this IPipeline pipeline, Func<IPipelineContext, IEnumerable<IPipelineContext>> prepare, Func<IPipelineContext, string, string> execute)
+        public static IPipeline Delegate(this IPipeline pipeline, Func<IModuleContext, IEnumerable<IModuleContext>> prepare, Func<IModuleContext, string, string> execute)
         {
-            return pipeline.AddModule(new Delegates(prepare, execute));
+            return pipeline.AddModule(new Delegate(prepare, execute));
         }
     }
 }

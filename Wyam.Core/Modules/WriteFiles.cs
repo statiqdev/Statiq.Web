@@ -32,7 +32,7 @@ namespace Wyam.Core.Modules
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
         }
 
-        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
         {
             string path = _path(context.Metadata);
             if (path == null)
@@ -43,7 +43,7 @@ namespace Wyam.Core.Modules
             yield return context.Clone(path);
         }
 
-        protected internal override string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IModuleContext context, string content)
         {
             if (context.PersistedObject != null)
             {

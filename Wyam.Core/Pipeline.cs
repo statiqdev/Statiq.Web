@@ -29,7 +29,7 @@ namespace Wyam.Core
 
         public PrepareTree Prepare(Metadata metadata, IEnumerable<IMetadata> allMetadata)
         {
-            PrepareBranch rootBranch = new PrepareBranch(new PipelineContext(_engine, metadata, allMetadata));
+            PrepareBranch rootBranch = new PrepareBranch(new ModuleContext(_engine, metadata, allMetadata));
             List<PrepareBranch> lastBranches = new List<PrepareBranch>() 
             { 
                 new PrepareBranch(null) 
@@ -50,9 +50,12 @@ namespace Wyam.Core
                         try
                         {
                             currentBranch.Module = module;
+
+                            // Make sure we clone the output context if it's the same as the input
                             currentBranch.Outputs = module.Prepare(currentBranch.Context)
-                                .Select(x => new PrepareBranch(x == currentBranch.Context ? x.Clone() : x))  // Make sure we clone the context if it's the same as the input
+                                .Select(x => new PrepareBranch(x == currentBranch.Context ? x.Clone() : x))
                                 .ToList();
+
                             currentBranches.Add(currentBranch);
                             i++;
                         }

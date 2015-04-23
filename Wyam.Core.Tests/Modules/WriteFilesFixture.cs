@@ -45,11 +45,11 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext context = new PipelineContext(engine, metadata, null);
+            IModuleContext context = new ModuleContext(engine, metadata, null);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            IEnumerable<IPipelineContext> contexts = writeFiles.Prepare(context);
+            IEnumerable<IModuleContext> contexts = writeFiles.Prepare(context);
             int count = contexts.Count();
 
             // Then
@@ -66,7 +66,7 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IPipelineContext context = new PipelineContext(engine, metadata, null);
+            IModuleContext context = new ModuleContext(engine, metadata, null);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
@@ -88,7 +88,7 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IPipelineContext context = new PipelineContext(engine, metadata, null);
+            IModuleContext context = new ModuleContext(engine, metadata, null);
             WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
@@ -106,7 +106,7 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext context = new PipelineContext(engine, metadata, null);
+            IModuleContext context = new ModuleContext(engine, metadata, null);
             WriteFiles writeFiles = new WriteFiles(x => string.Empty);
 
             // When

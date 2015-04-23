@@ -20,12 +20,12 @@ namespace Wyam.Core.Modules
             _content = content;
         }
 
-        protected internal override IEnumerable<IPipelineContext> Prepare(IPipelineContext context)
+        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
         {
             return new[] { context };
         }
 
-        protected internal override string Execute(IPipelineContext context, string content)
+        protected internal override string Execute(IModuleContext context, string content)
         {
             return _content + content;
         }

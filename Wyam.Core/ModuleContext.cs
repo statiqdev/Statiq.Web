@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    internal class PipelineContext : IPipelineContext
+    internal class ModuleContext : IModuleContext
     {
         private readonly Engine _engine;
         private readonly Metadata _metadata;
         private readonly IEnumerable<IMetadata> _allMetadata;
         private readonly object _persistedObject;
 
-        internal PipelineContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata)
+        internal ModuleContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata)
         {
             _engine = engine;
             _metadata = metadata;
             _allMetadata = allMetadata;
         }
 
-        private PipelineContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata, object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
+        private ModuleContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata, object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             _engine = engine;
             _metadata = metadata.Clone(items);
@@ -50,12 +50,12 @@ namespace Wyam.Core
 
         // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
         // The persisted object will be available from the context of the same module during execution
-        public IPipelineContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IModuleContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new PipelineContext(_engine, _metadata, _allMetadata, persistedObject, items);
+            return new ModuleContext(_engine, _metadata, _allMetadata, persistedObject, items);
         }
 
-        public IPipelineContext Clone(IEnumerable<KeyValuePair<string, object>> items = null)
+        public IModuleContext Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return Clone(null, items);
         }

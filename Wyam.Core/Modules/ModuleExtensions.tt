@@ -51,7 +51,7 @@ using System.IO;
 				// Output the extensions class
 				WriteLine("    public static class " + classDeclaration.Identifier.Text + "PipelineExtensions" + Environment.NewLine + "    {");
 			
-				// Get all public constructors
+				// Get all non-static public constructors
 				foreach(ConstructorDeclarationSyntax constructor in classDeclaration.Members
 					.OfType<ConstructorDeclarationSyntax>()
 					.Where(x => x.Modifiers.Count == 1 && x.Modifiers[0].Text == "public"))

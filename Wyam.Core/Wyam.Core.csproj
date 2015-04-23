@@ -81,10 +81,10 @@
     <Compile Include="IPipelineCollection.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
-    <Compile Include="IPipelineContext.cs" />
+    <Compile Include="IModuleContext.cs" />
     <Compile Include="Modules\Append.cs" />
     <Compile Include="Modules\Content.cs" />
-    <Compile Include="Modules\Delegates.cs" />
+    <Compile Include="Modules\Delegate.cs" />
     <Compile Include="Modules\ModuleExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -96,7 +96,7 @@
     <Compile Include="Extensibility\Package.cs" />
     <Compile Include="Pipeline.cs" />
     <Compile Include="PipelineCollection.cs" />
-    <Compile Include="PipelineContext.cs" />
+    <Compile Include="ModuleContext.cs" />
     <Compile Include="PrepareBranch.cs" />
     <Compile Include="PrepareTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Wyam.Core
 {
     // A pipeline context is immutable, call .Clone() to get a new context with persisted object and/or new metadata items
-    public interface IPipelineContext
+    public interface IModuleContext
     {
         IMetadata Metadata { get; }
 
@@ -16,7 +16,7 @@ namespace Wyam.Core
 
         Trace Trace { get; }
 
-        IPipelineContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null);
-        IPipelineContext Clone(IEnumerable<KeyValuePair<string, object>> items = null);
+        IModuleContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null);
+        IModuleContext Clone(IEnumerable<KeyValuePair<string, object>> items = null);
     }
 }
