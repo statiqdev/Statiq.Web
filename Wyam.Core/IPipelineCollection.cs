@@ -8,6 +8,6 @@ namespace Wyam.Core
 {
     public interface IPipelineCollection
     {
-        IPipeline AddPipeline();
+        IPipeline Create();
     }
 }

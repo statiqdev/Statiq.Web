@@ -148,7 +148,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        // Gets all modules in the current path and adds their namespaces and references to the options
+        // Gets all modules in the packages path and adds their namespaces and references to the options
         // TODO: Consider changing to MEF for this?
         private ScriptOptions AddModulesToScript(ScriptOptions scriptOptions)
         {

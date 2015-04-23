@@ -58,9 +58,9 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Pipelines.AddPipeline()
+                Pipelines.Create()
 	                .AddModule(new ReadFiles(""*.cshtml""))
-	                .AddModule(new WriteFiles("".html""));
+	                .WriteFiles("".html"");
             ";
 
             // When
@@ -88,7 +88,7 @@ namespace Wyam.Core.Tests
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.AddPipeline()
+            engine.Pipelines.Create()
                 .AddModule(a)
                 .AddModule(b)
                 .AddModule(c);
@@ -114,7 +114,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.AddPipeline()
+            engine.Pipelines.Create()
                 .AddModule(new Delegates(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
@@ -153,7 +153,7 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             List<object> persistedObjects = new List<object>();
             int c = 0;
-            engine.Pipelines.AddPipeline()
+            engine.Pipelines.Create()
                 .AddModule(new Delegates(x => new[] { x.Clone(c++), x.Clone(c++) }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
@@ -183,7 +183,7 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             List<IEnumerable<string>> metadata = new List<IEnumerable<string>>();
-            engine.Pipelines.AddPipeline()
+            engine.Pipelines.Create()
                 .AddModule(new Delegates(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } }), 
@@ -219,7 +219,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             List<object> persistedObjects = new List<object>();
-            engine.Pipelines.AddPipeline()
+            engine.Pipelines.Create()
                 .AddModule(new Delegates(x => new[] { x.Clone("A") }, (x, y) =>
                 {
                     persistedObjects.Add(x.PersistedObject);
