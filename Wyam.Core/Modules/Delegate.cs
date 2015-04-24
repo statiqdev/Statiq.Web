@@ -15,7 +15,7 @@ namespace Wyam.Core.Modules
             _execute = execute;
         }
 
-        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
         {
             return inputs.SelectMany(x => _execute(x));
         }

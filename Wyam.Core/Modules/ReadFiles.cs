@@ -35,7 +35,7 @@ namespace Wyam.Core.Modules
             _searchOption = searchOption;
         }
 
-        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
         {
             foreach (IModuleContext input in inputs)
             {

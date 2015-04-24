@@ -8,6 +8,7 @@ namespace Wyam.Core
 {
     public interface IModule
     {
-        IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline);
+        // This should not be called directly, instead call IPipelineContext.Execute() if you need to execute a module from within another module
+        IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline);
     }
 }

@@ -84,6 +84,7 @@
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="IModuleContext.cs" />
     <Compile Include="Modules\Append.cs" />
+    <Compile Include="Modules\Branch.cs" />
     <Compile Include="Modules\Content.cs" />
     <Compile Include="Modules\Delegate.cs" />
     <Compile Include="Modules\Prepend.cs" />

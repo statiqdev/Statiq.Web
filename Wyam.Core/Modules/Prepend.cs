@@ -21,7 +21,7 @@ namespace Wyam.Core.Modules
             _content = content;
         }
 
-        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
         {
             return inputs.Select(x => x.Clone(_content + x.Content));
         }

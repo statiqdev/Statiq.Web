@@ -32,7 +32,7 @@ namespace Wyam.Core.Modules
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
         }
 
-        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
         {
             foreach (IModuleContext input in inputs)
             {
