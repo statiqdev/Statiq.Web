@@ -59,9 +59,9 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Pipelines.Create()
-	                .AddModule(new ReadFiles(""*.cshtml""))
-	                .WriteFiles("".html"");
+                Pipelines.Create(
+                    new ReadFiles(""*.cshtml""),
+	                new WriteFiles("".html""));
             ";
 
             // When
@@ -89,155 +89,85 @@ namespace Wyam.Core.Tests
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Create()
-                .AddModule(a)
-                .AddModule(b)
-                .AddModule(c);
+            engine.Pipelines.Create(a, b, c);
 
             // When
-            engine.Run();
+            engine.Execute();
 
             // Then
-            Assert.AreEqual(1, a.PrepareCount);
-            Assert.AreEqual(2, b.PrepareCount);
-            Assert.AreEqual(6, c.PrepareCount);
+            Assert.AreEqual(1, a.ExecuteCount);
+            Assert.AreEqual(1, b.ExecuteCount);
+            Assert.AreEqual(1, c.ExecuteCount);
+            Assert.AreEqual(1, a.InputCount);
+            Assert.AreEqual(2, b.InputCount);
+            Assert.AreEqual(6, c.InputCount);
             Assert.AreEqual(2, a.OutputCount);
             Assert.AreEqual(6, b.OutputCount);
             Assert.AreEqual(24, c.OutputCount);
-            Assert.AreEqual(2, a.ExecuteCount);
-            Assert.AreEqual(6, b.ExecuteCount);
-            Assert.AreEqual(24, c.ExecuteCount);
         }
 
         [Test]
-        public void AllMetadataIsPopulatedAfterRun()
+        public void CompletedMetadataIsPopulatedAfterRun()
         {
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.Create()
-                .AddModule(new Delegate(x => new[]
+            engine.Pipelines.Create(
+                new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
-                }, null))
-                .AddModule(new Delegate(x => new[]
+                }),
+                new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
-                }, null));
-
-            // When
-            engine.Run();
-
-            // Then
-            Assert.AreEqual(2, engine.AllMetadata.Count);
-            
-            Assert.IsTrue(engine.AllMetadata[0].ContainsKey("0"));
-            Assert.AreEqual(0, engine.AllMetadata[0]["0"]);
-            Assert.IsTrue(engine.AllMetadata[0].ContainsKey("2"));
-            Assert.AreEqual(2, engine.AllMetadata[0]["2"]);
-            Assert.IsFalse(engine.AllMetadata[0].ContainsKey("1"));
-            Assert.IsFalse(engine.AllMetadata[0].ContainsKey("3"));
-
-            Assert.IsTrue(engine.AllMetadata[1].ContainsKey("1"));
-            Assert.AreEqual(1, engine.AllMetadata[1]["1"]);
-            Assert.IsTrue(engine.AllMetadata[1].ContainsKey("3"));
-            Assert.AreEqual(3, engine.AllMetadata[1]["3"]);
-            Assert.IsFalse(engine.AllMetadata[1].ContainsKey("0"));
-            Assert.IsFalse(engine.AllMetadata[1].ContainsKey("2"));
-        }
-
-        [Test]
-        public void PersistedObjectIsPassedToExecute()
-        {
-            // Given
-            Engine engine = new Engine();
-            List<object> persistedObjects = new List<object>();
-            int c = 0;
-            engine.Pipelines.Create()
-                .AddModule(new Delegate(x => new[] { x.Clone(c++), x.Clone(c++) }, (x, y) =>
-                {
-                    persistedObjects.Add(x.PersistedObject);
-                    return y;
-                }))
-                .AddModule(new Delegate(x => new[] { x.Clone(c++) }, (x, y) =>
-                {
-                    persistedObjects.Add(x.PersistedObject);
-                    return y;
                 }));
 
             // When
-            engine.Run();
+            engine.Execute();
 
             // Then
-            Assert.AreEqual(4, persistedObjects.Count);
-            Assert.AreEqual(0, persistedObjects[0]);
-            Assert.AreEqual(1, persistedObjects[1]);
-            Assert.AreEqual(2, persistedObjects[2]);
-            Assert.AreEqual(3, persistedObjects[3]);
+            Assert.AreEqual(2, engine.CompletedContexts.Count);
+
+            Assert.IsTrue(engine.CompletedContexts[0].Metadata.ContainsKey("0"));
+            Assert.AreEqual(0, engine.CompletedContexts[0].Metadata["0"]);
+            Assert.IsTrue(engine.CompletedContexts[0].Metadata.ContainsKey("2"));
+            Assert.AreEqual(2, engine.CompletedContexts[0].Metadata["2"]);
+            Assert.IsFalse(engine.CompletedContexts[0].Metadata.ContainsKey("1"));
+            Assert.IsFalse(engine.CompletedContexts[0].Metadata.ContainsKey("3"));
+
+            Assert.IsTrue(engine.CompletedContexts[1].Metadata.ContainsKey("1"));
+            Assert.AreEqual(1, engine.CompletedContexts[1].Metadata["1"]);
+            Assert.IsTrue(engine.CompletedContexts[1].Metadata.ContainsKey("3"));
+            Assert.AreEqual(3, engine.CompletedContexts[1].Metadata["3"]);
+            Assert.IsFalse(engine.CompletedContexts[1].Metadata.ContainsKey("0"));
+            Assert.IsFalse(engine.CompletedContexts[1].Metadata.ContainsKey("2"));
         }
 
         [Test]
-        public void MetadataIsPassedToExecute()
+        public void CompletedContentIsPopulatedAfterRun()
         {
             // Given
             Engine engine = new Engine();
             int c = 0;
-            List<IEnumerable<string>> metadata = new List<IEnumerable<string>>();
-            engine.Pipelines.Create()
-                .AddModule(new Delegate(x => new[]
+            engine.Pipelines.Create(
+                new Delegate(x => new[]
                 {
-                    x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } }), 
-                    x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } })
-                }, (x, y) =>
+                    x.Clone((c++).ToString()), 
+                    x.Clone((c++).ToString())
+                }),
+                new Delegate(x => new[]
                 {
-                    metadata.Add(x.Metadata.Where(z => z.Key.StartsWith("!")).Select(z => z.Key).ToList());
-                    return y;
-                }))
-                .AddModule(new Delegate(x => new[]
-                {
-                    x.Clone(null, new Dictionary<string, object> { { "!" + c.ToString(), c++ } })
-                }, (x, y) =>
-                {
-                    metadata.Add(x.Metadata.Where(z => z.Key.StartsWith("!")).Select(z => z.Key).ToList());
-                    return y;
+                    x.Clone((c++).ToString())
                 }));
 
             // When
-            engine.Run();
+            engine.Execute();
 
             // Then
-            Assert.AreEqual(4, metadata.Count);
-            CollectionAssert.AreEquivalent(new[] { "!0" }, metadata[0]);
-            CollectionAssert.AreEquivalent(new[] { "!1" }, metadata[1]);
-            CollectionAssert.AreEquivalent(new[] { "!0", "!2" }, metadata[2]);
-            CollectionAssert.AreEquivalent(new[] { "!1", "!3" }, metadata[3]);
-        }
-
-        [Test]
-        public void RecycledPersistedObjectIsNotPassedToExecute()
-        {
-            // Given
-            Engine engine = new Engine();
-            List<object> persistedObjects = new List<object>();
-            engine.Pipelines.Create()
-                .AddModule(new Delegate(x => new[] { x.Clone("A") }, (x, y) =>
-                {
-                    persistedObjects.Add(x.PersistedObject);
-                    return y;
-                }))
-                .AddModule(new Delegate(x => new[] { x }, (x, y) =>
-                {
-                    persistedObjects.Add(x.PersistedObject);
-                    return y;
-                }));
-
-            // When
-            engine.Run();
-
-            // Then
-            Assert.AreEqual("A", persistedObjects[0]);
-            Assert.AreEqual(null, persistedObjects[1]);
+            Assert.AreEqual(2, engine.CompletedContexts.Count);
+            Assert.AreEqual("2", engine.CompletedContexts[0].Content);
+            Assert.AreEqual("3", engine.CompletedContexts[1].Content);
         }
     }
 }

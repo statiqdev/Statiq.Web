@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -28,6 +29,13 @@ namespace Wyam.Core
             get { return _metadata; }
         }
 
+        private readonly List<IModuleContext> _completedContexts = new List<IModuleContext>();
+
+        public IReadOnlyList<IModuleContext> CompletedContexts
+        {
+            get { return _completedContexts.AsReadOnly(); }
+        }
+
         private readonly PipelineCollection _pipelines;
 
         public IPipelineCollection Pipelines
@@ -40,15 +48,6 @@ namespace Wyam.Core
         public Trace Trace
         {
             get { return _trace; }
-        }
-
-        // Store the final metadata for each pipeline so it can be used from subsequent pipelines
-        private readonly List<IMetadata> _allMetadata = new List<IMetadata>();
-
-        // This is only populated after running the engine
-        public IReadOnlyList<IMetadata> AllMetadata
-        {
-            get { return _allMetadata; }
         }
 
         public Engine()
@@ -89,7 +88,7 @@ namespace Wyam.Core
             configurator.ConfigureDefaultPipelines();
         }
 
-        public void Run()
+        public void Execute()
         {         
             // Configure with defaults if not already configured
             if(!_configured)
@@ -97,41 +96,18 @@ namespace Wyam.Core
                 Configure();
             }
 
-            // First pass: prepare each pipelines
-            _allMetadata.Clear();
-            List<PipelinePrepareResult> prepareResults = new List<PipelinePrepareResult>();
+            Trace.Verbose("Executing {0} pipelines...", _pipelines.Count);
+            _completedContexts.Clear();
             int c = 1;
             foreach(Pipeline pipeline in _pipelines.Pipelines)
             {
-                Trace.Verbose("Preparing pipeline {0} with {1} modules...", c, pipeline.Count);
+                Trace.Verbose("Executing pipeline {0} with {1} child module(s)...", c, pipeline.Count);
                 Metadata metadata = new Metadata(this);
-                PrepareTree prepareTree = pipeline.Prepare(metadata, _allMetadata);
-                prepareResults.Add(new PipelinePrepareResult(pipeline, prepareTree));
-                IEnumerable<IMetadata> pipelineMetadata = prepareTree.Leaves.Select(x => x.Context.Metadata).ToList();
-                _allMetadata.AddRange(pipelineMetadata);
-                Trace.Verbose("Prepared pipeline {0} resulting in {1} documents.", c++, pipelineMetadata.Count());
+                IReadOnlyList<IModuleContext> results = pipeline.Execute(metadata);
+                _completedContexts.AddRange(results);
+                Trace.Verbose("Executed pipeline {0} resulting in {1} output(s).", c++, results.Count);
             }
-
-            // Second pass: execute each pipeline
-            c = 1;
-            foreach(PipelinePrepareResult prepareResult in prepareResults)
-            {
-                Trace.Verbose("Executing pipeline {0}...", c);
-                prepareResult.Pipeline.Execute(prepareResult.PrepareTree.RootBranch);
-                Trace.Verbose("Executed pipeline {0}.", c++);
-            }
-        }
-
-        private class PipelinePrepareResult
-        {
-            public Pipeline Pipeline { get; private set; }
-            public PrepareTree PrepareTree { get; private set; }
-
-            public PipelinePrepareResult(Pipeline pipeline, PrepareTree prepareTree)
-            {
-                Pipeline = pipeline;
-                PrepareTree = prepareTree;
-            }
+            Trace.Verbose("Executed {0} pipelines.", _pipelines.Count);
         }
     }
 }

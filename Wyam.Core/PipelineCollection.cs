@@ -17,9 +17,9 @@ namespace Wyam.Core
             _engine = engine;
         }
 
-        public IPipeline Create()
+        public IPipeline Create(params IModule[] modules)
         {
-            Pipeline pipeline = new Pipeline(_engine);
+            Pipeline pipeline = new Pipeline(_engine, modules, _engine.CompletedContexts);
             _pipelines.Add(pipeline);
             return pipeline;
         }
@@ -27,6 +27,11 @@ namespace Wyam.Core
         public IEnumerable<Pipeline> Pipelines
         {
             get { return _pipelines; }
+        }
+
+        public int Count
+        {
+            get { return _pipelines.Count; }
         }
     }
 }

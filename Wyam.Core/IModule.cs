@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core
 {
-    public interface IPipeline
+    public interface IModule
     {
+        IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline);
     }
 }

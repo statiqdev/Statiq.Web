@@ -8,24 +8,18 @@ namespace Wyam.Core
 {
     internal class ModuleContext : IModuleContext
     {
-        private readonly Engine _engine;
         private readonly Metadata _metadata;
-        private readonly IEnumerable<IMetadata> _allMetadata;
-        private readonly object _persistedObject;
+        private readonly string _content;
 
-        internal ModuleContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata)
+        internal ModuleContext(Metadata metadata)
         {
-            _engine = engine;
             _metadata = metadata;
-            _allMetadata = allMetadata;
         }
 
-        private ModuleContext(Engine engine, Metadata metadata, IEnumerable<IMetadata> allMetadata, object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
+        private ModuleContext(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            _engine = engine;
             _metadata = metadata.Clone(items);
-            _allMetadata = allMetadata;
-            _persistedObject = persistedObject;
+            _content = content;
         }
 
         public IMetadata Metadata
@@ -33,31 +27,21 @@ namespace Wyam.Core
             get { return _metadata; }
         }
 
-        public IEnumerable<IMetadata> AllMetadata
+        public string Content
         {
-            get { return _allMetadata; }
-        }
-
-        public object PersistedObject
-        {
-            get { return _persistedObject; }
-        }
-
-        public Trace Trace
-        {
-            get { return _engine.Trace; }
+            get { return _content; }
         }
 
         // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
         // The persisted object will be available from the context of the same module during execution
-        public IModuleContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IModuleContext Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new ModuleContext(_engine, _metadata, _allMetadata, persistedObject, items);
+            return new ModuleContext(_metadata, content, items);
         }
 
         public IModuleContext Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return Clone(null, items);
+            return Clone(_content, items);
         }
     }
 }

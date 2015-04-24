@@ -9,7 +9,7 @@ using Wyam.Core.Helpers;
 
 namespace Wyam.Core.Modules
 {
-    public class WriteFiles : Module
+    public class WriteFiles : IModule
     {
         private readonly Func<IMetadata, string> _path;
 
@@ -32,29 +32,22 @@ namespace Wyam.Core.Modules
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
         }
 
-        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
+        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
         {
-            string path = _path(context.Metadata);
-            if (path == null)
+            foreach (IModuleContext input in inputs)
             {
-                yield break;
-            }
-            path = Path.Combine(Environment.CurrentDirectory, path);
-            yield return context.Clone(path);
-        }
-
-        protected internal override string Execute(IModuleContext context, string content)
-        {
-            if (context.PersistedObject != null)
-            {
-                string path = (string) context.PersistedObject;
-                if (!string.IsNullOrWhiteSpace(path))
+                string path = _path(input.Metadata);
+                if (path != null)
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(path));
-                    File.WriteAllText(path, content);
+                    path = Path.Combine(Environment.CurrentDirectory, path);
+                    if (!string.IsNullOrWhiteSpace(path))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(path));
+                        File.WriteAllText(path, input.Content);
+                    }
                 }
+                yield return input;
             }
-            return content;
         }
     }
 }

@@ -8,7 +8,7 @@ using Wyam.Core;
 
 namespace Wyam.Core.Modules
 {
-    public class ReadFiles : Module
+    public class ReadFiles : IModule
     {
         private readonly Func<IMetadata, string> _path;
         private readonly SearchOption _searchOption;
@@ -35,32 +35,29 @@ namespace Wyam.Core.Modules
             _searchOption = searchOption;
         }
 
-        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
+        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
         {
-            string path = _path(context.Metadata);
-            if(path == null)
+            foreach (IModuleContext input in inputs)
             {
-                yield break;
-            }
-            path = Path.Combine(Environment.CurrentDirectory, path);
-            foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
-            {
-
-                yield return context.Clone(file, new Dictionary<string, object>
+                string path = _path(input.Metadata);
+                if (path != null)
                 {
-                    {"FileRoot", Path.GetDirectoryName(path)},
-                    {"FileBase", Path.GetFileNameWithoutExtension(file)},
-                    {"FileExt", Path.GetExtension(file)},
-                    {"FileName", Path.GetFileName(file)},
-                    {"FileDir", Path.GetDirectoryName(file)},
-                    {"FilePath", file}
-                });
+                    path = Path.Combine(Environment.CurrentDirectory, path);
+                    foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
+                    {
+                        string content = File.ReadAllText(file);
+                        yield return input.Clone(content, new Dictionary<string, object>
+                        {
+                            {"FileRoot", Path.GetDirectoryName(path)},
+                            {"FileBase", Path.GetFileNameWithoutExtension(file)},
+                            {"FileExt", Path.GetExtension(file)},
+                            {"FileName", Path.GetFileName(file)},
+                            {"FileDir", Path.GetDirectoryName(file)},
+                            {"FilePath", file}
+                        });
+                    }
+                }
             }
-        }
-
-        protected internal override string Execute(IModuleContext context, string content)
-        {
-            return context.PersistedObject == null ? content : File.ReadAllText((string)context.PersistedObject);
         }
     }
 }

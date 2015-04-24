@@ -6,17 +6,8 @@ namespace Wyam.Core
     public interface IModuleContext
     {
         IMetadata Metadata { get; }
-
-        // This contains the metadata for all previous pipelines
-        // It is populated at the conclusion of each pipeline prepare in sequence
-        IEnumerable<IMetadata> AllMetadata { get; }
-
-        // This gets passed from the preparation stage of a module to the execution stage of that same module
-        object PersistedObject { get; }
-
-        Trace Trace { get; }
-
-        IModuleContext Clone(object persistedObject, IEnumerable<KeyValuePair<string, object>> items = null);
+        string Content { get; }
+        IModuleContext Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null);
         IModuleContext Clone(IEnumerable<KeyValuePair<string, object>> items = null);
     }
 }

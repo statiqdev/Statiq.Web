@@ -40,23 +40,6 @@ namespace Wyam.Core.Tests.Modules
         }
 
         [Test]
-        public void NoOutputPathWritesNoFiles()
-        {
-            // Given
-            Engine engine = new Engine();
-            Metadata metadata = new Metadata(engine);
-            IModuleContext context = new ModuleContext(engine, metadata, null);
-            WriteFiles writeFiles = new WriteFiles(".txt");
-
-            // When
-            IEnumerable<IModuleContext> contexts = writeFiles.Prepare(context);
-            int count = contexts.Count();
-
-            // Then
-            Assert.AreEqual(0, count);
-        }
-
-        [Test]
         public void ExtensionWithDotWritesFile()
         {
             // Given
@@ -66,12 +49,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext context = new ModuleContext(engine, metadata, null);
+            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IPipelineContext pipeline = new Pipeline(engine, null, null);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            context = writeFiles.Prepare(context).First();
-            string content = writeFiles.Execute(context, "Test");
+            IEnumerable<IModuleContext> outputs = writeFiles.Execute(inputs, pipeline).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -88,12 +71,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext context = new ModuleContext(engine, metadata, null);
+            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IPipelineContext pipeline = new Pipeline(engine, null, null);
             WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
-            context = writeFiles.Prepare(context).First();
-            string content = writeFiles.Execute(context, "Test");
+            IEnumerable<IModuleContext> outputs = writeFiles.Execute(inputs, pipeline).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -105,15 +88,20 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Metadata["OutputPath"] = @"TestFiles\Output\";
+            engine.Metadata["FileRoot"] = @"TestFiles\Input";
+            engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
+            engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext context = new ModuleContext(engine, metadata, null);
-            WriteFiles writeFiles = new WriteFiles(x => string.Empty);
+            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            WriteFiles writeFiles = new WriteFiles(x => null);
 
             // When
-            string content = writeFiles.Execute(context, "Test");
+            IModuleContext context = writeFiles.Execute(inputs, pipeline).First();
 
             // Then
-            Assert.AreEqual("Test", content);
+            Assert.AreEqual("Test", context.Content);
         }
     }
 }

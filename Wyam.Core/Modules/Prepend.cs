@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core.Modules
 {
-    public class Prepend : Module
+    // Prepends the specified content to the existing content
+    public class Prepend : IModule
     {
         private readonly string _content;
 
@@ -20,14 +21,9 @@ namespace Wyam.Core.Modules
             _content = content;
         }
 
-        protected internal override IEnumerable<IModuleContext> Prepare(IModuleContext context)
+        public IEnumerable<IModuleContext> Execute(IEnumerable<IModuleContext> inputs, IPipelineContext pipeline)
         {
-            return new[] { context };
-        }
-
-        protected internal override string Execute(IModuleContext context, string content)
-        {
-            return _content + content;
+            return inputs.Select(x => x.Clone(_content + x.Content));
         }
     }
 }
