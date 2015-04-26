@@ -73,6 +73,25 @@ namespace Wyam.Core.Tests
         }
 
         [Test]
+        public void ConfigureSupportsGlobalConstructorMethods()
+        {
+            // Given
+            Engine engine = new Engine();
+            string configScript = @"
+                Pipelines.Create(
+                    ReadFiles(""*.cshtml""),
+	                WriteFiles("".html""));
+            ";
+
+            // When
+            engine.Configure(configScript);
+
+            // Then
+            Assert.AreEqual(1, ((PipelineCollection)engine.Pipelines).Pipelines.Count());
+            Assert.AreEqual(2, ((PipelineCollection)engine.Pipelines).Pipelines.First().Count);
+        }
+
+        [Test]
         public void ExecuteResultsInCorrectCounts()
         {
             // Given

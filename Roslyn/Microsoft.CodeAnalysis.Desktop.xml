@@ -33,99 +33,16 @@
             <remarks>
             Analyzer are read from the file, owned by the reference, and doesn't change 
             since the reference is accessed until the reference object is garbage collected.
-            During this time the file is open and its content is read-only.
             
             If you need to manage the lifetime of the anayzer reference (and the file stream) explicitly use <see cref="T:Microsoft.CodeAnalysis.Diagnostics.AnalyzerImageReference"/>.
             </remarks>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader">
-            <summary>
-            Handles loading assemblies without locking the corresponding DLL on disk.
-            
-            This is achieved by copying the DLL into a byte array, and then calling
-            <see cref="M:System.Reflection.Assembly.Load(System.Byte[])"/> to load the assembly from the byte array.
-            
-            Does not handle multi-module assemblies.
-            </summary>
-            
-            <remarks>
-            The interesting bit is that <see cref="T:System.Reflection.Assembly"/> objects loaded in this way
-            are not placed in the Load or Load-From binding contexts. If one of these
-            needs a dependency to be resolved and it isn't already loaded or available in
-            the GAC, the runtime will not do any probing to find it. Since it doesn't know
-            where the assembly came from, it doesn't assume it knows how to resolve its
-            dependencies.
-            
-            This means we also need to hook the <see cref="E:System.AppDomain.AssemblyResolve"/>
-            event and handle finding and loading dependencies ourselves. We also need to
-            handle loading the dependencies' dependencies, and so on.
-            </remarks>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.s_assembliesFromFiles">
-            <summary>
-            Maps from a full path to a file to a corresponding <see cref="T:System.Reflection.Assembly"/>
-            that we've already loaded.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.s_filesFromAssemblyNames">
-            <summary>
-            Maps from an assembly full name to the directory where we found the
-            corresponding file.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.s_assembliesFromNames">
-            <summary>
-            Maps from an assembly full name to the corresponding <see cref="T:System.Reflection.Assembly"/>.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.s_requestingFilesFromFiles">
-            <summary>
-            Maps from the full path to an assembly to the full path of the assembly
-            that requested it.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.s_guard">
-            <summary>
-            Controls access to the loader's data structures.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.Load(System.String)">
-            <summary>
-            Loads the <see cref="T:System.Reflection.Assembly"/> at the given path without locking the file.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.LoadCore(System.String)">
-            <summary>
-            Performs the actual loading of the assembly, updates data structures, and
-            fires the <see cref="E:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.AssemblyLoad"/> event.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.InMemoryAssemblyLoader.CurrentDomain_AssemblyResolve(System.Object,System.ResolveEventArgs)">
-            <summary>
-            Handles the <see cref="E:System.AppDomain.AssemblyResolve"/> event when the requesting
-            assembly is one that we've loaded.
-            
-            We assume that an assembly's dependencies can be found next to it in the file
-            system.
-            </summary>
-        </member>
-        <member name="E:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.AssemblyLoad">
-            <summary>
-            Fired when an <see cref="T:System.Reflection.Assembly"/> referred to by an <see cref="T:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference"/>
-            (or a dependent <see cref="T:System.Reflection.Assembly"/>) is loaded.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.TryGetRequestingAssemblyPath(System.String)">
-            <summary>
-            Maps from one assembly back to the assembly that requested it, if known.
-            </summary>
         </member>
         <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.#ctor(System.String,System.Func{System.String,System.Reflection.Assembly})">
             <summary>
             Creates an AnalyzerFileReference with the given <paramref name="fullPath"/>.
             </summary>
             <param name="fullPath">Full path of the analyzer assembly.</param>
-            <param name="getAssembly">An optional assembly loader to override the default assembly load mechanism.</param>
+            <param name="getAssembly">Function for loading the analyzer assembly</param>
         </member>
         <member name="M:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference.AddAnalyzers(System.Collections.Immutable.ImmutableDictionary{System.String,System.Collections.Immutable.ImmutableArray{Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzer}}.Builder)">
             <summary>
@@ -161,23 +78,40 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.AssemblyIdentityExtensions.ToAssemblyName(Microsoft.CodeAnalysis.AssemblyIdentity)">
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.KeepAliveIsNotAnInteger">
             <summary>
-            Converts this identity to <see cref="T:System.Reflection.AssemblyName"/>.
-            </summary>
-            <returns>A new instance of <see cref="T:System.Reflection.AssemblyName"/>.</returns>
-            <exception cref="T:System.Globalization.CultureNotFoundException">The culture specified in <see cref="P:Microsoft.CodeAnalysis.AssemblyIdentity.CultureName"/> is not available on the current platform.</exception>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.AssemblyPortabilityPolicy">
-            <summary>
-            Policy to be used when matching assembly reference to an assembly definition accross platforms.
+              Looks up a localized string similar to Argument to &apos;/keepalive&apos; option is not a 32-bit integer..
             </summary>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.AssemblyVersion.op_Explicit(System.Version)~Microsoft.CodeAnalysis.AssemblyVersion">
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.KeepAliveIsTooSmall">
             <summary>
-            Converts <see cref="T:System.Version"/> to <see cref="T:Microsoft.CodeAnalysis.AssemblyVersion"/>.
+              Looks up a localized string similar to Arguments to &apos;/keepalive&apos; option below -1 are invalid..
             </summary>
-            <exception cref="T:System.InvalidCastException">Major, minor, build or revision number are less than 0 or greater than 0xFFFF.</exception>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.KeepAliveWithoutShared">
+            <summary>
+              Looks up a localized string similar to &apos;/keepalive&apos; option is only valid with &apos;/shared&apos; option..
+            </summary>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.MismatchedVersion">
+            <summary>
+              Looks up a localized string similar to Roslyn compiler server reports different protocol version than build task..
+            </summary>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.MissingKeepAlive">
+            <summary>
+              Looks up a localized string similar to Missing argument for &apos;/keepalive&apos; option..
+            </summary>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.RuleSetBadAttributeValue">
+            <summary>
+              Looks up a localized string similar to The attribute {0} has an invalid value of {1}..
+            </summary>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CodeAnalysisDesktopResources.RuleSetMissingAttribute">
+            <summary>
+              Looks up a localized string similar to The element {0} is missing an attribute named {1}..
+            </summary>
         </member>
         <member name="T:Microsoft.CodeAnalysis.CommandLineReference">
             <summary>
@@ -277,6 +211,11 @@
         <member name="P:Microsoft.CodeAnalysis.CommandLineArguments.DocumentationPath">
             <summary>
             Absolute path of the documentation comment XML file or null if not specified.
+            </summary>
+        </member>
+        <member name="P:Microsoft.CodeAnalysis.CommandLineArguments.ErrorLogPath">
+            <summary>
+            Absolute path of the error log file or null if not specified.
             </summary>
         </member>
         <member name="P:Microsoft.CodeAnalysis.CommandLineArguments.AppConfigPath">
@@ -420,10 +359,11 @@
             called by CommonCompiler with diagnostics and message provider
             </remarks>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.CommandLineArguments.ResolveAnalyzerReferences">
+        <member name="M:Microsoft.CodeAnalysis.CommandLineArguments.ResolveAnalyzerReferences(System.Func{System.String,System.Reflection.Assembly})">
             <summary>
             Resolves analyzer references stored in <see cref="P:Microsoft.CodeAnalysis.CommandLineArguments.AnalyzerReferences"/> using given file resolver.
             </summary>
+            <param name="getAssembly">Load an assembly from a file path</param>
             <returns>Yields resolved <see cref="T:Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference"/> or <see cref="T:Microsoft.CodeAnalysis.Diagnostics.UnresolvedAnalyzerReference"/>.</returns>
         </member>
         <member name="M:Microsoft.CodeAnalysis.CommandLineParser.EnumerateFiles(System.String,System.String,System.IO.SearchOption)">
@@ -435,10 +375,43 @@
             <param name="searchOption">Specifies whether to search the specified <paramref name="directory"/> only, or all its subdirectories as well.</param>
             <returns>Sequence of file paths.</returns>
         </member>
+        <member name="M:Microsoft.CodeAnalysis.CommandLineParser.Parse(System.Collections.Generic.IEnumerable{System.String},System.String,System.String,System.String)">
+            <summary>
+            Parses a command line.
+            </summary>
+            <param name="args">A collection of strings representing the command line arguments.</param>
+            <param name="baseDirectory">The base directory used for qualifying file locations.</param>
+            <param name="sdkDirectory">The directory to search for mscorlib.</param>
+            <param name="additionalReferenceDirectories">A string representing additional reference paths.</param>
+            <returns>a commandlinearguments object representing the parsed command line.</returns>
+        </member>
         <member name="M:Microsoft.CodeAnalysis.CommandLineParser.RemoveTrailingSpacesAndDots(System.String)">
             <summary>
             Trims all '.' and whitespaces from the end of the path
             </summary>
+        </member>
+        <member name="M:Microsoft.CodeAnalysis.CommandLineParser.TryParseClientArgs(System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.List{System.String}@,System.Boolean@,System.String@,System.String@)">
+            <summary>
+            Returns false if any of the client arguments are invalid and true otherwise.
+            </summary>
+            <param name="args">
+            The original args to the client.
+            </param>
+            <param name="parsedArgs">
+            The original args minus the client args, if no errors were encountered.
+            </param>
+            <param name="containsShared">
+            Only defined if no errors were encountered.
+            True if '/shared' was an argument, false otherwise.
+            </param>
+            <param name="keepAliveValue">
+            Only defined if no errors were encountered.
+            The value to the '/keepalive' argument if one was specified, null otherwise.
+            </param>
+            <param name="errorMessage">
+            Only defined if errors were encountered.
+            The error message for the encountered error.
+            </param>
         </member>
         <member name="M:Microsoft.CodeAnalysis.CommandLineParser.ParseResponseFile(System.String,System.Collections.Generic.IList{Microsoft.CodeAnalysis.Diagnostic})">
             <summary>
@@ -490,11 +463,6 @@
             Split a string, based on whether "splitHere" returned true on each character.
             </summary>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.CommandLineParser.CondenseDoubledBackslashes(System.String)">
-            <summary>
-            Condense double backslashes that precede a quotation mark to single backslashes.
-            </summary>
-        </member>
         <member name="M:Microsoft.CodeAnalysis.CommandLineParser.AddBackslashes(System.Text.StringBuilder,System.Int32)">
             <summary>
             Add "count" backslashes to a StringBuilder. 
@@ -524,19 +492,6 @@
         <member name="T:Microsoft.CodeAnalysis.CommonCompiler">
             <summary>
             Base class for csc.exe, csi.exe, vbc.exe and vbi.exe implementations.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.CommonCompiler.GetResponseFileDirectory">
-            <summary>
-            Return the path in which to look for response files.  This should only be called 
-            on EXE entry points as the implementation relies on managed entry points.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.CommonCompiler.GetResponseFileFullPath(System.String)">
-            <summary>
-            Called from a compiler exe entry point to get the full path to the response file for
-            the given name.  Will return a fully qualified path.
             </summary>
         </member>
         <member name="M:Microsoft.CodeAnalysis.CommonCompiler.ResolveMetadataReferences(Microsoft.CodeAnalysis.MetadataFileReferenceResolver,Microsoft.CodeAnalysis.MetadataFileReferenceProvider,System.Collections.Generic.List{Microsoft.CodeAnalysis.DiagnosticInfo},Microsoft.CodeAnalysis.AssemblyIdentityComparer,Microsoft.CodeAnalysis.TouchedFileLogger,Microsoft.CodeAnalysis.MetadataFileReferenceResolver@)">
@@ -586,26 +541,6 @@
             Test hook for intercepting File.Open.
             </summary>
         </member>
-        <member name="P:Microsoft.CodeAnalysis.CommonCompiler.FileDelete">
-            <summary>
-            Test hook for intercepting File.Delete.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.CommonCompiler.FileMove">
-            <summary>
-            Test hook for intercepting File.Move.
-            </summary>
-        </member>
-        <member name="E:Microsoft.CodeAnalysis.CommonCompiler.OnCreateTempFile">
-            <summary>
-            Test hook for intercepting creation of temporary files.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.CommonCompiler.RunInteractive(System.IO.TextWriter)">
-            <summary>
-            csi.exe and vbi.exe entry point.
-            </summary>
-        </member>
         <member name="P:Microsoft.CodeAnalysis.CommonCompiler.Culture">
             <summary>
               When overriden by a derived class, this property can override the current thread's
@@ -627,6 +562,37 @@
         <member name="M:Microsoft.CodeAnalysis.CommonCompiler.ExistingReferencesResolver.ResolveMetadataFile(System.String,System.String)">
             <summary>
             When compiling to a file all relative paths have to match one of the file references specified on command line.
+            </summary>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.CommonCompiler.CompilerEmitStreamProvider">
+            <summary>
+            This implementation of <see cref="T:Microsoft.CodeAnalysis.Compilation.EmitStreamProvider"/> will delay the creation
+            of the PE / PDB file until the compiler determines the compilation has succeeded.  This prevents
+            the compiler from deleting output from the previous compilation when a new compilation 
+            fails.
+            </summary>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.ErrorLogger">
+            <summary>
+            Used for logging all compiler diagnostics into a given <see cref="T:System.IO.Stream"/>.
+            This logger is responsible for closing the given stream on <see cref="M:Microsoft.CodeAnalysis.ErrorLogger.Dispose"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.ErrorLogger.Issue">
+            <summary>
+            Represents an issue to be logged into the error log.
+            This could be corresponding to a <see cref="T:Microsoft.CodeAnalysis.Diagnostic"/> or a <see cref="T:Microsoft.CodeAnalysis.DiagnosticInfo"/> reported by the <see cref="T:Microsoft.CodeAnalysis.CommonCompiler"/>.
+            </summary>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.ErrorLogger.Value">
+            <summary>
+            Represents a value for a key-value pair to be emitted into the error log file.
+            This could be a simple string or an integer OR could be a list of identical values OR a group of heterogenous key-value pairs.
+            </summary>
+        </member>
+        <member name="T:Microsoft.CodeAnalysis.ErrorLogger.WellKnownStrings">
+            <summary>
+            Contains well known property strings for error log file.
             </summary>
         </member>
         <member name="T:Microsoft.CodeAnalysis.InvalidRuleSetException">
@@ -747,11 +713,6 @@
             This type is responsible for parsing a ruleset xml file and producing a <see cref="T:Microsoft.CodeAnalysis.RuleSet"/> object.
             </summary>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.RuleSetProcessor.CreateRuleSetSchema">
-            <summary>
-            Static constructor for initializing the schema object to be used for schema validation
-            </summary>
-        </member>
         <member name="M:Microsoft.CodeAnalysis.RuleSetProcessor.LoadFromFile(System.String)">
             <summary>
             Creates and loads the rule set from a file
@@ -789,11 +750,12 @@
             <param name="includeNode">The include node from which to create a RuleSetInclude object</param>
             <returns>A RuleSetInclude object with data from the given XML node</returns>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.RuleSetProcessor.ReadAction(System.Xml.XmlNode)">
+        <member name="M:Microsoft.CodeAnalysis.RuleSetProcessor.ReadAction(System.Xml.XmlNode,System.Boolean)">
             <summary>
             Reads the action from the given node
             </summary>
-            <param name="node">The node to read the action, it can be a rule node or an include node</param>
+            <param name="node">The node to read the action, it can be a rule node or an include node.</param>
+            <param name="allowDefault">Whether or not the default value is allowed.</param>
             <returns>The rule action</returns>
         </member>
         <member name="M:Microsoft.CodeAnalysis.RuleSetProcessor.ReadIncludeAll(System.Xml.XmlNode)">
@@ -873,36 +835,6 @@
             <exception cref="T:System.ArgumentException">Path is empty or invalid.</exception>
             <exception cref="T:System.IO.IOException">An error occurred while reading or writing a file.</exception>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.DesktopAssemblyIdentityComparer.#ctor(Microsoft.CodeAnalysis.AssemblyPortabilityPolicy)">
-            <param name="policy">Assembly portability policy, usually provided through an app.config file.</param>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.DesktopAssemblyIdentityComparer.LoadFromXml(System.IO.Stream)">
-            <summary>
-            Loads <see cref="T:Microsoft.CodeAnalysis.AssemblyPortabilityPolicy"/> information from XML with App.config schema.
-            </summary>
-            <exception cref="T:System.Xml.XmlException">The stream doesn't contain a well formed XML.</exception>
-            <exception cref="T:System.ArgumentNullException"><paramref name="input"/> is null.</exception>
-            <remarks>
-            Tries to find supportPortability elements in the given XML:
-            <![CDATA[
-            <configuration>
-               <runtime>
-                  <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
-                     <supportPortability PKT="7cec85d7bea7798e" enable="false"/>
-                     <supportPortability PKT="31bf3856ad364e35" enable="false"/>
-                  </assemblyBinding>
-               </runtime>
-            </configuration>
-            ]]>
-            
-            Keeps the stream open.
-            </remarks>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.DesktopAssemblyIdentityComparer.IsFrameworkAssembly(Microsoft.CodeAnalysis.AssemblyIdentity)">
-            <summary>
-            Returns true if the identity is a Framework 4.5 or lower assembly.
-            </summary>
-        </member>
         <member name="T:Microsoft.CodeAnalysis.DesktopStrongNameProvider">
             <summary>
             Provides strong name and signs source assemblies.
@@ -945,22 +877,26 @@
             Assembly file path.
             </summary>
         </member>
-        <member name="F:Microsoft.CodeAnalysis.Text.EncodedStringText._source">
-            <summary>
-            Underlying string on which this SourceText instance is based
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Text.EncodedStringText.FallbackEncoding">
+        <member name="F:Microsoft.CodeAnalysis.Text.EncodedStringText.s_fallbackEncoding">
             <summary>
             Encoding to use when there is no byte order mark (BOM) on the stream. This encoder may throw a <see cref="T:System.Text.DecoderFallbackException"/>
             if the stream contains invalid UTF-8 bytes.
             </summary>
         </member>
+        <member name="F:Microsoft.CodeAnalysis.Text.EncodedStringText.s_defaultEncoding">
+            <summary>
+            Encoding to use when UTF-8 fails. If available, we use CodePage 1252. If not, we use Latin1.
+            </summary>
+        </member>
         <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.Create(System.IO.Stream,System.Text.Encoding,Microsoft.CodeAnalysis.Text.SourceHashAlgorithm)">
             <summary>
-            Initializes an instance of <see cref="T:Microsoft.CodeAnalysis.Text.EncodedStringText"/> with provided bytes.
+            Initializes an instance of <see cref="T:Microsoft.CodeAnalysis.Text.SourceText"/> from the provided stream. This version differs
+            from <see cref="M:Microsoft.CodeAnalysis.Text.SourceText.From(System.IO.Stream,System.Text.Encoding,Microsoft.CodeAnalysis.Text.SourceHashAlgorithm,System.Boolean)"/> in two ways:
+            1. It attempts to minimize allocations by trying to read the stream into a byte array.
+            2. If <paramref name="defaultEncoding"/> is null, it will first try UTF8 and, if that fails, it will
+               try CodePage 1252. If CodePage 1252 is not available on the system, then it will try Latin1.
             </summary>
-            <param name="stream"></param>
+            <param name="stream">The stream containing encoded text.</param>
             <param name="defaultEncoding">
             Specifies an encoding to be used if the actual encoding can't be determined from the stream content (the stream doesn't start with Byte Order Mark).
             If not specified auto-detect heuristics are used to determine the encoding. If these heuristics fail the decoding is assumed to be <see cref="P:System.Text.Encoding.Default"/>.
@@ -973,50 +909,15 @@
             </exception>
             <exception cref="T:System.IO.IOException">An IO error occurred while reading from the stream.</exception>
         </member>
-        <member name="P:Microsoft.CodeAnalysis.Text.EncodedStringText.Source">
-            <summary>
-            Underlying string which is the source of this SourceText instance
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.Text.EncodedStringText.Length">
-            <summary>
-            The length of the text represented by <see cref="T:Microsoft.CodeAnalysis.Text.EncodedStringText"/>.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.Text.EncodedStringText.Item(System.Int32)">
-            <summary>
-            Returns a character at given position.
-            </summary>
-            <param name="position">The position to get the character from.</param>
-            <returns>The character.</returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">When position is negative or 
-            greater than <see cref="P:Microsoft.CodeAnalysis.Text.EncodedStringText.Length"/>.</exception>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.ToString(Microsoft.CodeAnalysis.Text.TextSpan)">
-            <summary>
-            Provides a string representation of the StringText located within given span.
-            </summary>
-            <exception cref="T:System.ArgumentOutOfRangeException">When given span is outside of the text range.</exception>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.IsBinary(System.String)">
-            <summary>
-            Check for occurrence of two consecutive NUL (U+0000) characters.
-            This is unlikely to appear in genuine text, so it's a good heuristic
-            to detect binary files.
-            </summary>
-            <remarks>
-            internal for unit testing
-            </remarks>
-        </member>
         <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.Decode(System.IO.Stream,System.Text.Encoding,Microsoft.CodeAnalysis.Text.SourceHashAlgorithm,System.Boolean)">
             <summary>
-            Try to create a <see cref="T:Microsoft.CodeAnalysis.Text.EncodedStringText"/> from the given stream using the given encoding.
+            Try to create a <see cref="T:Microsoft.CodeAnalysis.Text.SourceText"/> from the given stream using the given encoding.
             </summary>
             <param name="data">The input stream containing the encoded text. The stream will not be closed.</param>
             <param name="encoding">The expected encoding of the stream. The actual encoding used may be different if byte order marks are detected.</param>
             <param name="checksumAlgorithm">The checksum algorithm to use.</param>
             <param name="throwIfBinaryDetected">Throw <see cref="T:System.IO.InvalidDataException"/> if binary (non-text) data is detected.</param>
-            <returns>The <see cref="T:Microsoft.CodeAnalysis.Text.EncodedStringText"/> decoded from the stream.</returns>
+            <returns>The <see cref="T:Microsoft.CodeAnalysis.Text.SourceText"/> decoded from the stream.</returns>
             <exception cref="T:System.Text.DecoderFallbackException">The decoder was unable to decode the stream with the given encoding.</exception>
             <remarks>
             internal for unit testing
@@ -1032,17 +933,6 @@
             be read into a byte array.
             </returns>
         </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.Decode(System.IO.Stream,System.Text.Encoding,System.Text.Encoding@)">
-            <summary>
-            Decode the given stream using the given encoding. Does not
-            close the stream afterwards.
-            </summary>
-            <param name="data">Data stream</param>
-            <param name="encoding">Default encoding to use for decoding.</param>
-            <param name="actualEncoding">Actual encoding used to read the text.</param>
-            <exception cref="T:System.Text.DecoderFallbackException">If the given encoding is set to use <see cref="T:System.Text.DecoderExceptionFallback"/> as its fallback decoder.</exception>
-            <returns>Decoded stream as a text string</returns>
-        </member>
         <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.TryGetByteArrayFromMemoryStream(System.IO.MemoryStream,System.Byte[]@)">
             <summary>
             If the MemoryStream was created with publiclyVisible=true, then we can access its buffer
@@ -1057,236 +947,6 @@
             <param name="stream">The FileStream with encoded text.</param>
             <param name="buffer">A byte array filled with the contents of the file.</param>
             <returns>True if a byte array could be created.</returns>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.Decode(System.Byte[],System.Int32,System.Text.Encoding,System.Text.Encoding@)">
-            <summary>
-            Decode text from a byte array.
-            </summary>
-            <param name="buffer">The byte array containing encoded text.</param>
-            <param name="length">The count of valid bytes in <paramref name="buffer"/>.</param>
-            <param name="encoding">The encoding to use if an encoding cannot be determined from the byte order mark.</param>
-            <param name="actualEncoding">The actual encoding used.</param>
-            <returns>The decoded text.</returns>
-            <exception cref="T:System.Text.DecoderFallbackException">If the given encoding is set to use <see cref="T:System.Text.DecoderExceptionFallback"/> 
-            as its fallback decoder.</exception>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.TryReadByteOrderMark(System.Byte[],System.Int32,System.Int32@)">
-            <summary>
-            Detect an encoding by looking for byte order marks.
-            </summary>
-            <param name="source">A buffer containing the encoded text.</param>
-            <param name="length">The length of valid data in the buffer.</param>
-            <param name="preambleLength">The length of any detected byte order marks.</param>
-            <returns>The detected encoding or null if no recognized byte order mark was present.</returns>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.EncodedStringText.TryReadByteOrderMark(System.IO.Stream)">
-            <summary>
-            Detect an encoding by looking for byte order marks at the beginning of the stream.
-            </summary>
-            <param name="data">The stream containing encoded text.</param>
-            <returns>The detected encoding or null if no recognized byte order mark was present.</returns>
-            <remarks>
-            On exit, the stream's position is set to the first position after any decoded byte order
-            mark or rewound to the start if no byte order mark was detected.
-            </remarks>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.Text.LargeEncodedText">
-            <summary>
-            A <see cref="T:Microsoft.CodeAnalysis.Text.SourceText"/> optimized for very large sources. The text is stored as
-            a list of chunks (char arrays).
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.Text.LargeEncodedText.ChunkSize">
-            <remarks>
-            internal for unit testing
-            </remarks>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.Text.LargeEncodedText.IsBinary(System.Char[])">
-            <summary>
-            Check for occurrence of two consecutive NUL (U+0000) characters.
-            This is unlikely to appear in genuine text, so it's a good heuristic
-            to detect binary files.
-            </summary>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.MetadataCache">
-             <summary>
-             Manages cache of the following information for Portable Executables loaded from files.
-            
-             For assemblies - a map from file name and timestamp to: 
-                 1) A weak reference to the corresponding PEAssembly object;
-                 2) A list of weak references to instances of VB/CS AssemblySymbols based on the PEAssembly object.
-            
-             For modules - a map from file name and timestamp to a weak reference to the corresponding PEModule object
-             
-             For analyzer assemblies - a map from file name and timestamp to a weak reference to the diagnostic analyzers defined in the assembly.
-             </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_assembliesFromFiles">
-            <summary>
-            Global cache for assemblies imported from files.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_modulesFromFiles">
-            <summary>
-            Global cache for net-modules imported from files.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_analyzersFromFiles">
-            <summary>
-            Global cache for diagnostic analyzers imported from analyzer assembly files.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_compactTimer">
-            <summary>
-            Timer triggering compact operation for metadata cache.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.compactTimerPeriod">
-            <summary>
-            Period at which the timer is firing (30 seconds).
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_compactInProgress">
-            <summary>
-            compactTimer's procedure is in progress.
-            Used to prevent multiple instances running in parallel.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_compactTimerIsOn">
-            <summary>
-            compactTimer is on, i.e. will fire.
-            
-            This field is changed to 'yes' only by EnableCompactTimer(),
-            and is changed to 'no' only by CompactCache().
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.s_compactCollectionCount">
-            <summary>
-            Collection count last time the cache was compacted.
-            </summary>
-        </member>
-        <member name="F:Microsoft.CodeAnalysis.MetadataCache.Guard">
-            <summary>
-            Lock that must be acquired for the duration of read/write operations on MetadataCache.
-            
-            Internal for testing.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.GetCollectionCount">
-            <summary>
-            Return amount of GC collections occurred so far.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.CompactCache(System.Object)">
-            <summary>
-            Called by compactTimer to compact the cache.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.EnableCompactTimer">
-            <summary>
-            Trigger timer every 30 seconds.
-            Cache must be locked before calling this method.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.CompactTimerIsOn">
-            <summary>
-            For test purposes only.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.TriggerCacheCompact">
-            <summary>
-            Trigger compact operation for the cache, meant to be used for test purpose only.
-            Locking the cache prior to calling this method is a good way to get into a deadlock.
-            
-            For test purposes only!!!
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.CompactCacheOfAssemblies">
-            <summary>
-            Called by compactTimer.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.CompactCacheOfModules">
-            <summary>
-            Called by compactTimer.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.CompactCacheOfAnalyzers">
-            <summary>
-            Called by compactTimer.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.AssembliesFromFiles">
-            <summary>
-            Global cache for assemblies imported from files.
-            Internal accessibility is for test purpose only.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.AssemblyKeys">
-            <summary>
-            For test purposes only.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.ModulesFromFiles">
-            <summary>
-            Global cache for net-modules imported from files.
-            Internal accessibility is for test purpose only.
-            </summary>
-            <remarks></remarks>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.ModuleKeys">
-            <summary>
-            For test purposes only.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.AnalyzersFromFiles">
-            <summary>
-            Global cache for analyzers imported from files.
-            Internal accessibility is for test purpose only.
-            </summary>
-        </member>
-        <member name="P:Microsoft.CodeAnalysis.MetadataCache.AnalyzerAssemblyKeys">
-            <summary>
-            For test purposes only.
-            </summary>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.MetadataCache.CleaningCacheLock">
-            <summary>
-            This class is meant to be used for test purpose only.
-            It locks MetadataCache until the instance is disposed.
-            Upon locking, the cache is swapped with an empty cache,
-            original cache is restored before the cache is unlocked.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.CleaningCacheLock.CleanCaches">
-            <summary>
-            Clean global metadata caches, meant to be used for test purpose only.
-            </summary>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.GetOrCreateFromFile(System.String,Microsoft.CodeAnalysis.MetadataImageKind)">
-            <exception cref="T:System.IO.IOException"/>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.GetOrCreateAssemblyFromFile(System.String)">
-            <exception cref="T:System.IO.IOException"/>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataCache.GetOrCreateModuleFromFile(System.String)">
-            <exception cref="T:System.IO.IOException"/>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.MetadataFileReference">
-            <summary>
-            Represents metadata stored in a file.
-            </summary>
-            <remarks>
-            Metadata image is read from the file, owned by the reference, and doesn't change 
-            since the reference is accessed by the compiler until the reference object is garbage collected.
-            During this time the file is open and its content is read-only.
-            
-            If you need to manage the lifetime of the metadata (and the file stream) explicitly use <see cref="T:Microsoft.CodeAnalysis.MetadataImageReference"/> or 
-            implement a custom subclass of <see cref="T:Microsoft.CodeAnalysis.PortableExecutableReference"/>.
-            </remarks>
-        </member>
-        <member name="M:Microsoft.CodeAnalysis.MetadataFileReference.GetMetadataImpl">
-            <exception cref="T:System.IO.IOException"/>
         </member>
         <member name="T:Microsoft.CodeAnalysis.MetadataFileReferenceResolver">
             <summary>
@@ -1343,16 +1003,6 @@
             <returns>
             Normalized absolute path to the referenced file or null if it can't be resolved.
             </returns>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.SerializableCompilationOptions">
-            <summary>
-            Represents compilation options common to C# and VB.
-            </summary>
-        </member>
-        <member name="T:Microsoft.CodeAnalysis.SerializableParseOptions">
-            <summary>
-            Represents parse options common to C# and VB.
-            </summary>
         </member>
         <member name="T:Microsoft.CodeAnalysis.SourceFileResolver">
             <summary>

@@ -412,7 +412,7 @@
                    method. 
             
                    This is a new API that will provide API convergence across all platforms for 
-                   this scenario. It is already on .NET 4.5.3+ and ASP.NET vNext, but not yet available 
+                   this scenario. It is already on .NET 4.6+ and ASP.NET vNext, but not yet available 
                    on every platform we support. See below for how we fall back.
             
                (2) Deal with WinRT prefixes. 
@@ -425,9 +425,9 @@
             
                (3) Deal with platforms that don't yet have Encoding.GetString(byte*, int). 
                
-                  If we're running on a full framework earlier than 4.5.3, we will bind to the internal 
+                  If we're running on a full framework earlier than 4.6, we will bind to the internal
                   String.CreateStringFromEncoding which is equivalent and Encoding.GetString is just a trivial 
-                  wrapper around it in .NET 4.5.3. This means that we always have the fast path on every
+                  wrapper around it in .NET 4.6. This means that we always have the fast path on every
                   full framework version we support.
             
                   If we can't bind to it via reflection, then we emulate it using what is effectively (2) and 
@@ -1467,10 +1467,14 @@
         </member>
         <member name="T:System.Reflection.Metadata.MetadataStringComparer">
              <summary>
-             Provides zero-allocation string comparison helpers to query strings in metadata.
+             Provides string comparison helpers to query strings in metadata while
+             avoiding allocation where possible.
              </summary>
             
              <remarks>
+             No allocation is performed unless both the handle argument and the
+             value argument contain non-ascii text.
+            
              Obtain instances using <see cref="P:System.Reflection.Metadata.MetadataReader.StringComparer"/>.
             
              A default-initialized instance is useless and behaves as a null reference.

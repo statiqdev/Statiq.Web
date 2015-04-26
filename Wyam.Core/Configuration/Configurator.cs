@@ -1,8 +1,13 @@
 ﻿using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using NuGet;
@@ -75,7 +80,6 @@ namespace Wyam.Core.Configuration
                     .AddReferences(
                         Assembly.GetAssembly(typeof(object)),  // System
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
-                scriptOptions = AddModulesToScript(scriptOptions);
 
                 // Evaluate the script
                 CSharpScript.Eval(script, scriptOptions, new PreConfigGlobals(this, _packages));
@@ -131,7 +135,12 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
                         Assembly.GetAssembly(typeof(Path)), // System.IO
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
-                scriptOptions = AddModulesToScript(scriptOptions);
+                List<Type> moduleTypes;
+                scriptOptions = AddModulesToScript(scriptOptions, out moduleTypes);
+
+                // Generate the script
+                moduleTypes.AddRange(GetModuleTypes(typeof(Engine).Assembly));  // Add our own modules to the list of module types
+                script = GenerateScript(script, moduleTypes);
 
                 // Evaluate the script
                 CSharpScript.Eval(script, scriptOptions, new ConfigGlobals(_engine.Metadata, _engine.Pipelines));
@@ -148,10 +157,79 @@ namespace Wyam.Core.Configuration
             }
         }
 
+        // This creates a wrapper class for the config script that contains static methods for constructing modules
+        private string GenerateScript(string script, List<Type> moduleTypes)
+        {
+            StringBuilder scriptBuilder = new StringBuilder();
+            scriptBuilder.Append(@"
+                public static class ConfigScript
+                {
+                    public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines)
+                    {
+                        " + script + @"
+                    }");
+
+            // Add static methods to construct each module
+            // Use Roslyn to get a display string for each constructor
+            foreach (Type moduleType in moduleTypes)
+            {
+                CSharpCompilation compilation = CSharpCompilation
+                    .Create("ScriptCtorMethodGen")
+                    .AddReferences(MetadataReference.CreateFromAssembly(moduleType.Assembly));
+                foreach (AssemblyName referencedAssembly in moduleType.Assembly.GetReferencedAssemblies())
+                {
+                    try
+                    {
+                        compilation = compilation.AddReferences(
+                            MetadataReference.CreateFromAssembly(Assembly.Load(referencedAssembly)));
+                    }
+                    catch (Exception)
+                    {
+                        // We don't care about problems loading referenced assemblies, just ignore them
+                    }
+                }
+                INamedTypeSymbol moduleSymbol = compilation.GetTypeByMetadataName(moduleType.FullName);
+                foreach (IMethodSymbol ctorSymbol in moduleSymbol.InstanceConstructors
+                    .Where(x => x.DeclaredAccessibility == Accessibility.Public))
+                {
+                    string ctorDisplayString = ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
+                        typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                        genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                        parameterOptions: SymbolDisplayParameterOptions.IncludeName
+                            | SymbolDisplayParameterOptions.IncludeDefaultValue
+                            | SymbolDisplayParameterOptions.IncludeParamsRefOut
+                            | SymbolDisplayParameterOptions.IncludeType,
+                        memberOptions: SymbolDisplayMemberOptions.IncludeParameters
+                            | SymbolDisplayMemberOptions.IncludeContainingType,
+                        miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+                    string ctorCallDisplayString = 	ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
+                        parameterOptions: SymbolDisplayParameterOptions.IncludeName 
+		                    | SymbolDisplayParameterOptions.IncludeParamsRefOut,
+		                memberOptions: SymbolDisplayMemberOptions.IncludeParameters));
+                    scriptBuilder.AppendFormat(@"
+                        public static {0} {1}{2}
+                        {{
+                            return new {0}{3};  
+                        }}",
+                        moduleType.FullName,
+                        moduleType.Name,
+                        ctorDisplayString.Substring(ctorDisplayString.IndexOf("(", StringComparison.Ordinal)),
+                        ctorCallDisplayString.Substring(ctorCallDisplayString.IndexOf("(", StringComparison.Ordinal)));
+                }
+            }
+
+            scriptBuilder.Append(@"
+                }
+
+                ConfigScript.Run(Metadata, Pipelines);");
+            return scriptBuilder.ToString();
+        }
+
         // Gets all modules in the packages path and adds their namespaces and references to the options
         // TODO: Consider changing to MEF for this?
-        private ScriptOptions AddModulesToScript(ScriptOptions scriptOptions)
+        private ScriptOptions AddModulesToScript(ScriptOptions scriptOptions, out List<Type> moduleTypes)
         {
+            moduleTypes = new List<Type>();
             List<Assembly> assemblies = new List<Assembly>();
             HashSet<string> namespaces = new HashSet<string>();
             if (Directory.Exists(PackagePath))
@@ -161,8 +239,9 @@ namespace Wyam.Core.Configuration
                     try
                     {
                         Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                        foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(Module).IsAssignableFrom(x) && !x.IsAbstract && !x.ContainsGenericParameters))
+                        foreach (Type moduleType in GetModuleTypes(assembly))
                         {
+                            moduleTypes.Add(moduleType);
                             namespaces.Add(moduleType.Namespace);
                         }
                         assemblies.Add(assembly);
@@ -185,6 +264,12 @@ namespace Wyam.Core.Configuration
             return scriptOptions
                 .AddNamespaces(namespaces)
                 .AddReferences(assemblies);
+        }
+
+        private IEnumerable<Type> GetModuleTypes(Assembly assembly)
+        {
+            return assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x)
+                && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters);
         }
 
         private void ConfigureDefaultMetadata()
