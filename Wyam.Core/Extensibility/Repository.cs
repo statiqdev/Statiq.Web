@@ -14,7 +14,7 @@ namespace Wyam.Core.Extensibility
             _packageSource = string.IsNullOrWhiteSpace(packageSource) ? "https://packages.nuget.org/api/v2" : packageSource;
         }
 
-        public IRepository AddPackage(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public IRepository Add(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
             Package package = new Package(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
             _packages.Add(package);

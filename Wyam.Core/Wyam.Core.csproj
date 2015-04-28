@@ -71,8 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\ConfigGlobals.cs" />
     <Compile Include="Configuration\Configurator.cs" />
+    <Compile Include="Configuration\IAssemblyCollection.cs" />
+    <Compile Include="Configuration\INamespacesCollection.cs" />
+    <Compile Include="Configuration\NamespacesCollection.cs" />
     <Compile Include="Configuration\PreConfigGlobals.cs" />
     <Compile Include="Extensibility\IPackagesCollection.cs" />
     <Compile Include="Extensibility\IRepository.cs" />

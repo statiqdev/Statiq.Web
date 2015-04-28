@@ -8,7 +8,10 @@ namespace Wyam.Core.Extensibility
 {
     public interface IPackagesCollection
     {
+        // Sets the path where NuGet packages will be downloaded and cached
+        string Path { get; set; }
+
         IRepository AddRepository(string packageSource);
-        IPackagesCollection AddPackage(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
+        IPackagesCollection Add(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
     }
 }

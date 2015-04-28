@@ -9,24 +9,30 @@ namespace Wyam.Core.Configuration
 {
     public class PreConfigGlobals
     {
-        private readonly Configurator _config;
         private readonly IPackagesCollection _packages;
+        private readonly IAssemblyCollection _assemblies;
+        private readonly INamespacesCollection _namespaces;
 
-        internal PreConfigGlobals(Configurator config, IPackagesCollection packages)
+        internal PreConfigGlobals(IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
         {
-            _config = config;
             _packages = packages;
-        }
-
-        public string PackagePath
-        {
-            get { return _config.PackagePath; }
-            set { _config.PackagePath = value; }
+            _assemblies = assemblies;
+            _namespaces = namespaces;
         }
 
         public IPackagesCollection Packages
         {
             get { return _packages; }
+        }
+
+        public IAssemblyCollection Assemblies
+        {
+            get { return _assemblies; }
+        }
+
+        public INamespacesCollection Namespaces
+        {
+            get { return _namespaces; }
         }
     }
 }

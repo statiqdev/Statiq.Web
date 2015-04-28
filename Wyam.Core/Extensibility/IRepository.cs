@@ -8,6 +8,6 @@ namespace Wyam.Core.Extensibility
 {
     public interface IRepository
     {
-        IRepository AddPackage(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
+        IRepository Add(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
     }
 }

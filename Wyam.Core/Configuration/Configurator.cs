@@ -20,9 +20,8 @@ namespace Wyam.Core.Configuration
     {
         private readonly Engine _engine;
         private readonly PackagesCollection _packages = new PackagesCollection();
-
-        // Sets the path where NuGet packages will be downloaded
-        public string PackagePath { get; set; }
+        private readonly AssemblyCollection _assemblies = new AssemblyCollection();
+        private readonly NamespacesCollection _namespaces = new NamespacesCollection();
 
         public Configurator(Engine engine)
         {
@@ -48,7 +47,7 @@ namespace Wyam.Core.Configuration
             {
                 // Preconfigure (install packages, specify additional assemblies and namespaces, etc.)
                 Preconfig(configParts.Item1);
-                InstallPackages();
+                _packages.InstallPackages();
             }
             Config(configParts.Item2);
         }
@@ -82,7 +81,7 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new PreConfigGlobals(this, _packages));
+                CSharpScript.Eval(script, scriptOptions, new PreConfigGlobals(_packages, _assemblies, _namespaces));
             }
             catch (CompilationErrorException compilationError)
             {
@@ -96,27 +95,11 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private void InstallPackages()
-        {
-            // Default package path
-            if (string.IsNullOrWhiteSpace(PackagePath))
-            {
-                PackagePath = Path.Combine(Path.GetDirectoryName(typeof (Engine).Assembly.Location), "packages");
-            }
-
-            // Iterate repositories
-            foreach (Repository repository in _packages.Repositories)
-            {
-                repository.InstallPackages(PackagePath);
-            }
-        }
-
         private void Config(string script)
         {
             try
             {
                 // Create the script options
-                // TODO: Add a way to specify additional namespaces and/or assemblies (particularly BCL assemblies since extensions will come from NuGet)
                 ScriptOptions scriptOptions = new ScriptOptions()
                     .AddNamespaces(
                         "System",
@@ -135,11 +118,18 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
                         Assembly.GetAssembly(typeof(Path)), // System.IO
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
-                List<Type> moduleTypes;
-                scriptOptions = AddModulesToScript(scriptOptions, out moduleTypes);
+
+                // Add specified assemblies and find modules from packages, etc.
+                HashSet<Type> moduleTypes;
+                scriptOptions = AddAssembliesAndFindModules(scriptOptions, out moduleTypes);
+
+                // Add our own modules to the list of module types
+                moduleTypes.AddRange(GetModuleTypes(typeof(Engine).Assembly));
+
+                // Add any additional namespaces
+                scriptOptions = scriptOptions.AddNamespaces(_namespaces.Ns);
 
                 // Generate the script
-                moduleTypes.AddRange(GetModuleTypes(typeof(Engine).Assembly));  // Add our own modules to the list of module types
                 script = GenerateScript(script, moduleTypes);
 
                 // Evaluate the script
@@ -158,7 +148,7 @@ namespace Wyam.Core.Configuration
         }
 
         // This creates a wrapper class for the config script that contains static methods for constructing modules
-        private string GenerateScript(string script, List<Type> moduleTypes)
+        private string GenerateScript(string script, HashSet<Type> moduleTypes)
         {
             StringBuilder scriptBuilder = new StringBuilder();
             scriptBuilder.Append(@"
@@ -225,42 +215,80 @@ namespace Wyam.Core.Configuration
             return scriptBuilder.ToString();
         }
 
-        // Gets all modules in the packages path and adds their namespaces and references to the options
-        // TODO: Consider changing to MEF for this?
-        private ScriptOptions AddModulesToScript(ScriptOptions scriptOptions, out List<Type> moduleTypes)
+        // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
+        private ScriptOptions AddAssembliesAndFindModules(ScriptOptions scriptOptions, out HashSet<Type> moduleTypes)
         {
-            moduleTypes = new List<Type>();
+            moduleTypes = new HashSet<Type>();
+
+            // Get path to all assemblies (except those specified by name)
+            List<string> assemblyPaths = new List<string>();
+            if (Directory.Exists(_packages.Path))
+            {
+                assemblyPaths.AddRange(Directory.GetFiles(_packages.Path, "*.dll", SearchOption.AllDirectories));
+            }
+            assemblyPaths.AddRange(_assemblies.Directories
+                .Where(x => Directory.Exists(x.Item1))
+                .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
+            assemblyPaths.AddRange(_assemblies.ByPath.Where(File.Exists));
+
+            // Iterate assemblies by path, add them to the script, and check for modules
             List<Assembly> assemblies = new List<Assembly>();
             HashSet<string> namespaces = new HashSet<string>();
-            if (Directory.Exists(PackagePath))
+            foreach (string assemblyPath in assemblyPaths.Distinct())
             {
-                foreach (string assemblyPath in Directory.GetFiles(PackagePath, "*.dll", SearchOption.AllDirectories))
+                try
                 {
-                    try
+                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                    assemblies.Add(assembly);
+                    foreach (Type moduleType in GetModuleTypes(assembly))
                     {
-                        Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                        foreach (Type moduleType in GetModuleTypes(assembly))
-                        {
-                            moduleTypes.Add(moduleType);
-                            namespaces.Add(moduleType.Namespace);
-                        }
-                        assemblies.Add(assembly);
-                    }
-                    catch (FileLoadException)
-                    {
-                        // The Assembly has already been loaded
-                    }
-                    catch (BadImageFormatException)
-                    {
-                        // If a BadImageFormatException exception is thrown, the file is not an assembly
-                    }
-                    catch (Exception ex)
-                    {
-                        // Some other reason the assembly couldn't be loaded or we couldn't reflect
-                        _engine.Trace.Verbose("Unexpected exception while loading assembly at {0}: {1}.", assemblyPath, ex.Message);
+                        moduleTypes.Add(moduleType);
+                        namespaces.Add(moduleType.Namespace);
                     }
                 }
+                catch (FileLoadException)
+                {
+                    // The Assembly has already been loaded
+                }
+                catch (BadImageFormatException)
+                {
+                    // If a BadImageFormatException exception is thrown, the file is not an assembly
+                }
+                catch (Exception ex)
+                {
+                    // Some other reason the assembly couldn't be loaded or we couldn't reflect
+                    _engine.Trace.Verbose("Unexpected exception while loading assembly at {0}: {1}.", assemblyPath, ex.Message);
+                }
             }
+
+            // Also iterate assemblies specified by name
+            foreach (string assemblyName in _assemblies.ByName)
+            {
+                try
+                {
+                    Assembly assembly = Assembly.Load(assemblyName);
+                    assemblies.Add(assembly);
+                    foreach (Type moduleType in GetModuleTypes(assembly))
+                    {
+                        moduleTypes.Add(moduleType);
+                        namespaces.Add(moduleType.Namespace);
+                    }
+                }
+                catch (FileLoadException)
+                {
+                    // The Assembly has already been loaded
+                }
+                catch (BadImageFormatException)
+                {
+                    // If a BadImageFormatException exception is thrown, the file is not an assembly
+                }
+                catch (Exception ex)
+                {
+                    // Some other reason the assembly couldn't be loaded or we couldn't reflect
+                    _engine.Trace.Verbose("Unexpected exception while loading assembly {0}: {1}.", assemblyName, ex.Message);
+                }
+            }
+
             return scriptOptions
                 .AddNamespaces(namespaces)
                 .AddReferences(assemblies);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Wyam.Core.Extensibility
 {
@@ -10,6 +11,8 @@ namespace Wyam.Core.Extensibility
             new Repository(null)
         };
 
+        public string Path { get; set; }
+
         public IRepository AddRepository(string packageSource)
         {
             Repository repository = new Repository(packageSource);
@@ -17,16 +20,26 @@ namespace Wyam.Core.Extensibility
             return repository;
         }
 
-        public IPackagesCollection AddPackage(string packageId, string versionSpec = null, 
+        public IPackagesCollection Add(string packageId, string versionSpec = null, 
             bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
-            _repositories[0].AddPackage(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
+            _repositories[0].Add(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
             return this;
         }
 
-        public IEnumerable<Repository> Repositories
+        public void InstallPackages()
         {
-            get { return _repositories; }
+            // Default package path
+            if (string.IsNullOrWhiteSpace(Path))
+            {
+                Path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Engine).Assembly.Location), "packages");
+            }
+
+            // Iterate repositories
+            foreach (Repository repository in _repositories)
+            {
+                repository.InstallPackages(Path);
+            }
         }
     }
 }
