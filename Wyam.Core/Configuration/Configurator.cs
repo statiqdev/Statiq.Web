@@ -58,7 +58,7 @@ namespace Wyam.Core.Configuration
         {
             string preconfig = null;
             List<string> configLines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            int preconfigLine = configLines.FindIndex(x => x.All(y => y == '-'));
+            int preconfigLine = configLines.FindIndex(x => x.Trim().All(y => y == '-'));
             if (preconfigLine != -1)
             {
                 preconfig = string.Join(Environment.NewLine, configLines.Take(preconfigLine));

@@ -53,6 +53,7 @@ namespace Wyam.Core
                     Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
                     Trace.Verbose(ex.ToString());
                     contexts = new List<IModuleContext>();
+                    break;
                 }
             }
             return contexts.AsReadOnly();
