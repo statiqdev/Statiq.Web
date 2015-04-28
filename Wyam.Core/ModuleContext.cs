@@ -9,7 +9,7 @@ namespace Wyam.Core
     internal class ModuleContext : IModuleContext
     {
         private readonly Metadata _metadata;
-        private readonly string _content;
+        private readonly string _content = string.Empty;
 
         internal ModuleContext(Metadata metadata)
         {
@@ -19,7 +19,7 @@ namespace Wyam.Core
         private ModuleContext(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             _metadata = metadata.Clone(items);
-            _content = content;
+            _content = content ?? string.Empty;
         }
 
         public IMetadata Metadata
