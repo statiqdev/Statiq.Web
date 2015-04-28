@@ -55,6 +55,7 @@
     <Compile Include="Helpers\PathHelperFixture.cs" />
     <Compile Include="MetadataFixture.cs" />
     <Compile Include="Modules\BranchFixture.cs" />
+    <Compile Include="Modules\IfFixture.cs" />
     <Compile Include="Modules\ReadFilesFixture.cs" />
     <Compile Include="Modules\WriteFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
