@@ -13,7 +13,8 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using NuGet;
 using Wyam.Core.Configuration;
-using Wyam.Core.Extensibility;
+using Wyam.Core.NuGet;
+using Wyam.Extensibility;
 
 namespace Wyam.Core
 {
@@ -45,7 +46,7 @@ namespace Wyam.Core
 
         private readonly Trace _trace = new Trace();
 
-        public Trace Trace
+        public ITrace Trace
         {
             get { return _trace; }
         }

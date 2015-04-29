@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Wyam.Core.Extensibility
+namespace Wyam.Core.NuGet
 {
     internal class PackagesCollection : IPackagesCollection
     {

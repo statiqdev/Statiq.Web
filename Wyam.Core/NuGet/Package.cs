@@ -1,7 +1,7 @@
 ﻿using System;
 using NuGet;
 
-namespace Wyam.Core.Extensibility
+namespace Wyam.Core.NuGet
 {
     internal class Package
     {

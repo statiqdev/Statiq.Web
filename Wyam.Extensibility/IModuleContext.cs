@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Wyam.Core
+namespace Wyam.Extensibility
 {
     // A pipeline context is immutable, call .Clone() to get a new context with persisted object and/or new metadata items
     public interface IModuleContext

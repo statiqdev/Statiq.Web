@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Core.Modules;
+using Wyam.Extensibility;
 
 namespace Wyam.Core.Tests.Modules
 {

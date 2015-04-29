@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core
+namespace Wyam.Extensibility
 {
     public interface IPipelineContext
     {
-        Trace Trace { get; }
+        ITrace Trace { get; }
         IReadOnlyList<IModuleContext> CompletedContexts { get; }
 
         // This executes the specified modules on the specified input contexts and returns the final result contexts

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Core.Extensibility;
+using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration
 {

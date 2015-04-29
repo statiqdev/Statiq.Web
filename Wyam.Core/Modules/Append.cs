@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Wyam.Extensibility;
 
 namespace Wyam.Core.Modules
 {

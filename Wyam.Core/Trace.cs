@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Extensibility;
 
 namespace Wyam.Core
 {
-    public class Trace
+    public class Trace : ITrace
     {
         private readonly TraceSource _traceSource = new TraceSource("Wyam", SourceLevels.Information);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
+using Wyam.Extensibility;
 
 namespace Wyam.Core.Modules
 {

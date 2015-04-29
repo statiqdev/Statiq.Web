@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core.Modules;
+using Wyam.Extensibility;
 
 namespace Wyam.Core.Tests.Modules
 {

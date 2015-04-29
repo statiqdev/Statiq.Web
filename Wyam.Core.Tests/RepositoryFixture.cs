@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NuGet;
 using NUnit.Framework;
-using Wyam.Core.Extensibility;
+using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Tests
 {

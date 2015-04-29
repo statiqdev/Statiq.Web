@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Extensibility;
 
 namespace Wyam.Core
 {
@@ -24,7 +25,7 @@ namespace Wyam.Core
             get { return _modules.Length; }
         }
 
-        public Trace Trace
+        public ITrace Trace
         {
             get { return _engine.Trace; }
         }

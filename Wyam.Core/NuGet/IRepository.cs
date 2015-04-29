@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core.Extensibility
+namespace Wyam.Core.NuGet
 {
     public interface IRepository
     {

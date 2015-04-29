@@ -12,7 +12,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using NuGet;
-using Wyam.Core.Extensibility;
+using Wyam.Core.NuGet;
+using Wyam.Extensibility;
 
 namespace Wyam.Core.Configuration
 {
@@ -80,7 +81,8 @@ namespace Wyam.Core.Configuration
                     .AddNamespaces(
                         "System",
                         "Wyam.Core",
-                        "Wyam.Core.Extensibility")
+                        "Wyam.Core.Configuration",
+                        "Wyam.Core.NuGet")
                     .AddReferences(
                         Assembly.GetAssembly(typeof(object)),  // System
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
@@ -116,7 +118,7 @@ namespace Wyam.Core.Configuration
         private void Config(string script)
         {
             try
-            {
+            { 
                 HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
                 {
                     Assembly.GetAssembly(typeof(object)),  // System
@@ -125,7 +127,8 @@ namespace Wyam.Core.Configuration
                     Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),  // System.Core (needed for dynamic)
                     Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
                     Assembly.GetAssembly(typeof(Path)), // System.IO
-                    Assembly.GetAssembly(typeof(Engine)) // Wyam.Core
+                    Assembly.GetAssembly(typeof(Engine)), // Wyam.Core
+                    Assembly.GetAssembly(typeof(IModule)) // Wyam.Extensibility
                 };
 
                 HashSet<string> namespaces = new HashSet<string>()
@@ -135,9 +138,10 @@ namespace Wyam.Core.Configuration
                     "System.Linq",
                     "System.IO",
                     "Wyam.Core",
-                    "Wyam.Core.Extensibility",
+                    "Wyam.Core.Configuration",
                     "Wyam.Core.Modules",
-                    "Wyam.Core.Helpers"
+                    "Wyam.Core.Helpers",
+                    "Wyam.Extensibility"
                 };
                 namespaces.AddRange(_namespaces.Ns);
 

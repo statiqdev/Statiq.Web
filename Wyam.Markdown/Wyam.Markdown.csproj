@@ -46,9 +46,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
-      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
-      <Name>Wyam.Core</Name>
+    <ProjectReference Include="..\Wyam.Extensibility\Wyam.Extensibility.csproj">
+      <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
+      <Name>Wyam.Extensibility</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

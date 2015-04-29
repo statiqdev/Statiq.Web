@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Wyam.Core.Extensibility;
+using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration
 {
