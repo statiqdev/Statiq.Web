@@ -201,7 +201,7 @@ namespace Wyam.Core.Configuration
                 try
                 {
                     _engine.Trace.Verbose("Loading assembly from {0}.", assemblyPath);
-                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                    Assembly assembly = Assembly.LoadFile(assemblyPath);
                     if (!assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly from {0} because it was already added.", assemblyPath);

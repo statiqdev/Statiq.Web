@@ -25,6 +25,7 @@ namespace Wyam
         private string _logFile = null;
         private bool _verbose = false;
         private string _rootFolder = null;
+        private string _configFile = null;
         private readonly Dictionary<string, object> _globalVariables = new Dictionary<string,object>();
 
         private void Run(string[] args)
@@ -59,9 +60,25 @@ namespace Wyam
                 _engine.Trace.AddListener(new SimpleFileTraceListener(_logFile));
             }
 
-            // Parse the configuration file
-            if (!Configure())
+            // Configure
+            try
             {
+                Configure();
+            }
+            catch (Exception ex)
+            {
+                _engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);
+                return;
+            }
+
+            // Execute
+            try
+            {
+                _engine.Execute();
+            }
+            catch (Exception ex)
+            {
+                _engine.Trace.Critical("Error while executing: {0}.", ex.Message);
                 return;
             }
         }
@@ -97,7 +114,14 @@ namespace Wyam
                         _logFile = args[c++];
                     }
                 }
-                if (args[c] == "--verbose")
+                else if (args[c] == "--config")
+                {
+                    if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
+                    {
+                        _configFile = args[c++];
+                    }
+                }
+                else if (args[c] == "--verbose")
                 {
                     _verbose = true;
                 }
@@ -129,31 +153,23 @@ namespace Wyam
             Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [port]] [--log [log file]] [--verbose] [--help]");
         }
 
-        private bool Configure()
+        private void Configure()
         {
             _engine.Trace.Verbose("Configuring...");
 
             // If we have a configuration file use it, otherwise configure with defaults  
-            string configFile = Path.Combine(_rootFolder, "config.wyam");
+            string configFile = string.IsNullOrWhiteSpace(_configFile)
+                ? Path.Combine(_rootFolder, "config.wyam") : Path.Combine(_rootFolder, _configFile);
             if (File.Exists(configFile))
             {
                 _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                try
-                {
-                    _engine.Configure(File.ReadAllText(configFile));
-                }
-                catch(Exception ex)
-                {
-                    _engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);                    
-                }
+                _engine.Configure(File.ReadAllText(configFile));
             }
             else
             {
                 _engine.Configure();
             }
-
             _engine.Trace.Verbose("Configured.");
-            return true;
         }
     }
 }
