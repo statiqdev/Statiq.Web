@@ -8,6 +8,6 @@ namespace Wyam.Core
 {
     public interface IPipelineCollection
     {
-        IPipeline Create(params IModule[] modules);
+        IPipeline Add(params IModule[] modules);
     }
 }

@@ -27,6 +27,11 @@ namespace Wyam.Core
             get { return _metadata; }
         }
 
+        public object this[string key]
+        {
+            get { return _metadata[key]; }
+        }
+
         public string Content
         {
             get { return _content; }

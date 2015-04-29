@@ -1,0 +1,11 @@
+Assemblies.AddDirectory(@"..\..\Wyam.Markdown\bin\Debug");
+---
+Pipelines.Add(
+	ReadFiles("*.md"),
+	Markdown(),
+	Metadata("Header", File.ReadAllText(@"input\header.html")),
+	Prepend(x => x["Header"]),
+	Metadata("Footer", File.ReadAllText(@"input\footer.html")),
+	Append(x => x["Footer"]),
+	WriteFiles(".html")
+);

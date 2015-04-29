@@ -60,7 +60,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Pipelines.Create(
+                Pipelines.Add(
                     new ReadFiles(""*.cshtml""),
 	                new WriteFiles("".html""));
             ";
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Pipelines.Create(
+                Pipelines.Add(
                     ReadFiles(""*.cshtml""),
 	                WriteFiles("".html""));
             ";
@@ -109,7 +109,7 @@ namespace Wyam.Core.Tests
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Create(a, b, c);
+            engine.Pipelines.Add(a, b, c);
 
             // When
             engine.Execute();
@@ -132,7 +132,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.Create(
+            engine.Pipelines.Add(
                 new Delegate(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
@@ -170,7 +170,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.Create(
+            engine.Pipelines.Add(
                 new Delegate(x => new[]
                 {
                     x.Clone((c++).ToString()), 

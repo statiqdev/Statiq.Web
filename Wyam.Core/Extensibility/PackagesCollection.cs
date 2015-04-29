@@ -1,17 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Wyam.Core.Extensibility
 {
     internal class PackagesCollection : IPackagesCollection
     {
+        private string _path;
+
         // The first repository is the default NuGet feed
         private readonly List<Repository> _repositories = new List<Repository>()
         {
             new Repository(null)
         };
-
-        public string Path { get; set; }
+        
+        public string Path
+        {
+            get { return _path; }
+            set { _path = System.IO.Path.Combine(Environment.CurrentDirectory, value); }
+        }
 
         public IRepository AddRepository(string packageSource)
         {
@@ -32,7 +39,7 @@ namespace Wyam.Core.Extensibility
             // Default package path
             if (string.IsNullOrWhiteSpace(Path))
             {
-                Path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Engine).Assembly.Location), "packages");
+                Path = System.IO.Path.Combine(Environment.CurrentDirectory, "packages");
             }
 
             // Iterate repositories

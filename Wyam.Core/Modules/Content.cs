@@ -9,21 +9,21 @@ namespace Wyam.Core.Modules
     // Overwrites the existing content with the specified content
     public class Content : IModule
     {
-        private readonly Func<IModuleContext, string> _content;
+        private readonly Func<IModuleContext, object> _content;
 
-        public Content(string content)
+        public Content(object content)
         {
             _content = x => content;
         }
 
-        public Content(Func<IModuleContext, string> content)
+        public Content(Func<IModuleContext, object> content)
         {
             _content = content ?? (x => null);
         }
 
         public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
         {
-            return inputs.Select(x => x.Clone(_content(x)));
+            return inputs.Select(x => x.Clone(_content(x).ToString()));
         }
     }
 }

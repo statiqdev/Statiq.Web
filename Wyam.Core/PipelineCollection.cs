@@ -17,7 +17,7 @@ namespace Wyam.Core
             _engine = engine;
         }
 
-        public IPipeline Create(params IModule[] modules)
+        public IPipeline Add(params IModule[] modules)
         {
             Pipeline pipeline = new Pipeline(_engine, modules, _engine.CompletedContexts);
             _pipelines.Add(pipeline);

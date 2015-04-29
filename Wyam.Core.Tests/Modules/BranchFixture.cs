@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Create(a, new Branch(b), c);
+            engine.Pipelines.Add(a, new Branch(b), c);
 
             // When
             engine.Execute();
@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Create(a, new Branch(x => x.Content == "1", b), c);
+            engine.Pipelines.Add(a, new Branch(x => x.Content == "1", b), c);
 
             // When
             engine.Execute();
