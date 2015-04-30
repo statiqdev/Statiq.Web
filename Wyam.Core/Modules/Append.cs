@@ -1,28 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Wyam.Extensibility;
 
 namespace Wyam.Core.Modules
 {
     // Appends the specified content to the existing content
-    public class Append : IModule
+    public class Append : ContentModule
     {
-        private readonly Func<IModuleContext, object> _content;
-
-        public Append(object content)
+        public Append(object content) 
+            : base(content)
         {
-            _content = x => content;
         }
 
-        public Append(Func<IModuleContext, object> content)
+        public Append(Func<IModuleContext, object> content) 
+            : base(content)
         {
-            _content = content ?? (x => null);
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public Append(params IModule[] modules)
+            : base(modules)
         {
-            return inputs.Select(x => x.Clone(x.Content + _content(x).ToString()));
+        }
+
+        protected override IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline)
+        {
+            return new [] { content == null ? input : input.Clone(input.Content + content) };
         }
     }
 }

@@ -8,23 +8,26 @@ using Wyam.Extensibility;
 namespace Wyam.Core.Modules
 {
     // Prepends the specified content to the existing content
-    public class Prepend : IModule
+    public class Prepend : ContentModule
     {
-        private readonly Func<IModuleContext, object> _content;
-
         public Prepend(object content)
+            : base(content)
         {
-            _content = x => content;
         }
 
         public Prepend(Func<IModuleContext, object> content)
+            : base(content)
         {
-            _content = content ?? (x => null);
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public Prepend(params IModule[] modules)
+            : base(modules)
         {
-            return inputs.Select(x => x.Clone(_content(x).ToString() + x.Content));
+        }
+
+        protected override IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline)
+        {
+            return new[] { content == null ? input : input.Clone(content + input.Content) };
         }
     }
 }

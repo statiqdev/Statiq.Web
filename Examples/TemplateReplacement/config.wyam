@@ -1,0 +1,8 @@
+Assemblies.AddDirectory(@"..\..\Wyam.Markdown\bin\Debug");
+---
+Pipelines.Add(
+	ReadFiles("*.md"),
+	Markdown(),
+	ReplaceIn("{{REPLACE}}", ReadFiles("template.html")),
+	WriteFiles(".html")
+);

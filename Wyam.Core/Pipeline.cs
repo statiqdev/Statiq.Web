@@ -37,36 +37,36 @@ namespace Wyam.Core
 
         public IReadOnlyList<IModuleContext> Execute(IEnumerable<IModule> modules, IEnumerable<IModuleContext> inputContexts)
         {
-            List<IModuleContext> contexts = inputContexts == null ? new List<IModuleContext>() : inputContexts.ToList();
-            foreach (IModule module in modules.Where(x => x != null))
+            List<IModuleContext> contexts = inputContexts == null 
+                ? new List<IModuleContext> { new ModuleContext(new Metadata(_engine)) } : inputContexts.ToList();
+            if (modules != null)
             {
-                string moduleName = module.GetType().Name;
-                Trace.Verbose("Executing module {0} with {1} input(s)...", moduleName, contexts.Count);
-                try
+                foreach (IModule module in modules.Where(x => x != null))
                 {
-                    // Make sure we clone the output context if it's the same as the input
-                    IEnumerable<IModuleContext> outputs = module.Execute(contexts, this);
-                    contexts = outputs == null ? new List<IModuleContext>() : outputs.Where(x => x != null).ToList();
-                    Trace.Verbose("Executed module {0} resulting in {1} output(s).", moduleName, contexts.Count);
-                }
-                catch (Exception ex)
-                {
-                    Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
-                    Trace.Verbose(ex.ToString());
-                    contexts = new List<IModuleContext>();
-                    break;
+                    string moduleName = module.GetType().Name;
+                    Trace.Verbose("Executing module {0} with {1} input(s)...", moduleName, contexts.Count);
+                    try
+                    {
+                        // Make sure we clone the output context if it's the same as the input
+                        IEnumerable<IModuleContext> outputs = module.Execute(contexts, this);
+                        contexts = outputs == null ? new List<IModuleContext>() : outputs.Where(x => x != null).ToList();
+                        Trace.Verbose("Executed module {0} resulting in {1} output(s).", moduleName, contexts.Count);
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
+                        Trace.Verbose(ex.ToString());
+                        contexts = new List<IModuleContext>();
+                        break;
+                    }
                 }
             }
             return contexts.AsReadOnly();
         }
 
-        public IReadOnlyList<IModuleContext> Execute(Metadata initialMetadata)
+        public IReadOnlyList<IModuleContext> Execute()
         {
-            IReadOnlyList<IModuleContext> contexts = new List<IModuleContext>
-            {
-                new ModuleContext(initialMetadata)
-            };
-            return Execute(_modules, contexts);
+            return Execute(_modules, null);
         }
     }
 }

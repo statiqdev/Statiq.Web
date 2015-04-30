@@ -103,8 +103,7 @@ namespace Wyam.Core
             foreach(Pipeline pipeline in _pipelines.Pipelines)
             {
                 Trace.Verbose("Executing pipeline {0} with {1} child module(s)...", c, pipeline.Count);
-                Metadata metadata = new Metadata(this);
-                IReadOnlyList<IModuleContext> results = pipeline.Execute(metadata);
+                IReadOnlyList<IModuleContext> results = pipeline.Execute();
                 _completedContexts.AddRange(results);
                 Trace.Verbose("Executed pipeline {0} resulting in {1} output(s).", c++, results.Count);
             }

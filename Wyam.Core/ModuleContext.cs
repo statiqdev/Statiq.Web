@@ -38,6 +38,11 @@ namespace Wyam.Core
             get { return _content; }
         }
 
+        public override string ToString()
+        {
+            return Content;
+        }
+
         // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
         // The persisted object will be available from the context of the same module during execution
         public IModuleContext Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)

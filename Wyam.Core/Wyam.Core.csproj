@@ -78,6 +78,9 @@
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\NamespacesCollection.cs" />
     <Compile Include="Configuration\PreConfigGlobals.cs" />
+    <Compile Include="Modules\ContentModule.cs" />
+    <Compile Include="Modules\Replace.cs" />
+    <Compile Include="Modules\ReplaceIn.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
     <Compile Include="IPipeline.cs" />
