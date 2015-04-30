@@ -7,7 +7,7 @@ namespace Wyam.Core.Modules
 {
     public abstract class ContentModule : IModule
     {
-        private readonly Func<IModuleContext, object> _content;
+        private readonly Func<IDocument, object> _content;
         private readonly IModule[] _modules;
         
         protected ContentModule(object content)
@@ -15,20 +15,20 @@ namespace Wyam.Core.Modules
             _content = x => content;
         }
 
-        protected ContentModule(Func<IModuleContext, object> content)
+        protected ContentModule(Func<IDocument, object> content)
         {
             _content = content ?? (x => null);
         }
 
-        // For performance reasons, the specified modules will only be run once with a newly initialized, isolated context
-        // Otherwise, we'd need to run the whole set for each input context (I.e., multiple duplicate file reads, transformations, etc. for each input)
+        // For performance reasons, the specified modules will only be run once with a newly initialized, isolated document
+        // Otherwise, we'd need to run the whole set for each input document (I.e., multiple duplicate file reads, transformations, etc. for each input)
         // Each input will be applied against each result from the specified modules (I.e., if 2 inputs and the module chain results in 2 outputs, there will be 4 total outputs)
         protected ContentModule(params IModule[] modules)
         {
             _modules = modules;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             if (_modules != null)
             {
@@ -38,6 +38,6 @@ namespace Wyam.Core.Modules
         }
 
         // Note that content can be passed in as null, implementors should guard against that
-        protected abstract IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline);
+        protected abstract IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline);
     }
 }

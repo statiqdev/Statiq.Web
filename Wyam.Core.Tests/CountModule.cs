@@ -21,10 +21,10 @@ namespace Wyam.Core.Tests
             ValueKey = valueKey;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             ExecuteCount++;
-            foreach (IModuleContext input in inputs)
+            foreach (IDocument input in inputs)
             {
                 InputCount++;
                 for (int c = 0; c < AdditionalOutputs + 1; c++)

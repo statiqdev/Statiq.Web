@@ -9,60 +9,60 @@ namespace Wyam.Core.Modules
 {
     // This executes the specified modules if the specified predicate is true
     // Any results from the specified modules (if run) will be returned as the result of the If module
-    // Like a Branch module, but results replace context at the end (instead of being dropped)
+    // Like a Branch module, but results replace the input documents at the end (instead of being dropped)
     public class If : IModule
     {
-        private readonly List<Tuple<Func<IModuleContext, bool>, IModule[]>> _conditions 
-            = new List<Tuple<Func<IModuleContext, bool>, IModule[]>>();
+        private readonly List<Tuple<Func<IDocument, bool>, IModule[]>> _conditions 
+            = new List<Tuple<Func<IDocument, bool>, IModule[]>>();
 
-        public If(Func<IModuleContext, bool> predicate, params IModule[] modules)
+        public If(Func<IDocument, bool> predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IModuleContext, bool>, IModule[]>(predicate, modules));
+            _conditions.Add(new Tuple<Func<IDocument, bool>, IModule[]>(predicate, modules));
         }
 
-        public If ElseIf(Func<IModuleContext, bool> predicate, params IModule[] modules)
+        public If ElseIf(Func<IDocument, bool> predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IModuleContext, bool>, IModule[]>(predicate, modules));
+            _conditions.Add(new Tuple<Func<IDocument, bool>, IModule[]>(predicate, modules));
             return this;
         }
 
         // Returns IModule instead of If to discourage further conditions
         public IModule Else(params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IModuleContext, bool>, IModule[]>(x => true, modules));
+            _conditions.Add(new Tuple<Func<IDocument, bool>, IModule[]>(x => true, modules));
             return this;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
-            List<IModuleContext> results = new List<IModuleContext>();
-            IEnumerable<IModuleContext> contexts = inputs;
-            foreach (Tuple<Func<IModuleContext, bool>, IModule[]> condition in _conditions)
+            List<IDocument> results = new List<IDocument>();
+            IEnumerable<IDocument> documents = inputs;
+            foreach (Tuple<Func<IDocument, bool>, IModule[]> condition in _conditions)
             {
-                // Split the contexts into ones that satisfy the predicate and ones that don't
-                List<IModuleContext> handled = new List<IModuleContext>();
-                List<IModuleContext> unhandled = new List<IModuleContext>();
-                foreach (IModuleContext context in contexts)
+                // Split the documents into ones that satisfy the predicate and ones that don't
+                List<IDocument> handled = new List<IDocument>();
+                List<IDocument> unhandled = new List<IDocument>();
+                foreach (IDocument document in documents)
                 {
-                    if (condition.Item1 == null || condition.Item1(context))
+                    if (condition.Item1 == null || condition.Item1(document))
                     {
-                        handled.Add(context);
+                        handled.Add(document);
                     }
                     else
                     {
-                        unhandled.Add(context);
+                        unhandled.Add(document);
                     }
                 }
 
-                // Run the modules on the ones that satisfy the predicate
+                // Run the modules on the documents that satisfy the predicate
                 results.AddRange(pipeline.Execute(condition.Item2, handled));
 
-                // Continue with the ones that don't satisfy the predicate
-                contexts = unhandled;
+                // Continue with the documents that don't satisfy the predicate
+                documents = unhandled;
             }
 
-            // Add back any that never matched a predicate
-            results.AddRange(contexts);
+            // Add back any documents that never matched a predicate
+            results.AddRange(documents);
 
             return results;
         }

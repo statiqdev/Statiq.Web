@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="IMetadata.cs" />
     <Compile Include="IModule.cs" />
-    <Compile Include="IModuleContext.cs" />
+    <Compile Include="IDocument.cs" />
     <Compile Include="IPipelineContext.cs" />
     <Compile Include="ITrace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

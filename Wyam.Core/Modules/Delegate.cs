@@ -9,14 +9,14 @@ namespace Wyam.Core.Modules
     // Executes the specified delegate for each input
     public class Delegate : IModule
     {
-        private readonly Func<IModuleContext, IEnumerable<IModuleContext>> _execute;
+        private readonly Func<IDocument, IEnumerable<IDocument>> _execute;
 
-        public Delegate(Func<IModuleContext, IEnumerable<IModuleContext>> execute)
+        public Delegate(Func<IDocument, IEnumerable<IDocument>> execute)
         {
             _execute = execute;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             return inputs.SelectMany(x => _execute(x));
         }

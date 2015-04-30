@@ -50,12 +50,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            IEnumerable<IModuleContext> outputs = writeFiles.Execute(inputs, pipeline).ToList();
+            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, pipeline).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -72,12 +72,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
-            IEnumerable<IModuleContext> outputs = writeFiles.Execute(inputs, pipeline).ToList();
+            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, pipeline).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -94,12 +94,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata).Clone("Test") };
+            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             WriteFiles writeFiles = new WriteFiles(x => null);
 
             // When
-            IModuleContext context = writeFiles.Execute(inputs, pipeline).First();
+            IDocument context = writeFiles.Execute(inputs, pipeline).First();
 
             // Then
             Assert.AreEqual("Test", context.Content);

@@ -20,7 +20,7 @@ namespace Wyam.Core
 
         public IPipeline Add(params IModule[] modules)
         {
-            Pipeline pipeline = new Pipeline(_engine, modules, _engine.CompletedContexts);
+            Pipeline pipeline = new Pipeline(_engine, modules, _engine.CompletedDocuments);
             _pipelines.Add(pipeline);
             return pipeline;
         }

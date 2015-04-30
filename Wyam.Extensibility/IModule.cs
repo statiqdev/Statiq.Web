@@ -9,6 +9,6 @@ namespace Wyam.Extensibility
     public interface IModule
     {
         // This should not be called directly, instead call IPipelineContext.Execute() if you need to execute a module from within another module
-        IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline);
+        IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline);
     }
 }

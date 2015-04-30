@@ -147,21 +147,21 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.CompletedContexts.Count);
+            Assert.AreEqual(2, engine.CompletedDocuments.Count);
 
-            Assert.IsTrue(engine.CompletedContexts[0].Metadata.ContainsKey("0"));
-            Assert.AreEqual(0, engine.CompletedContexts[0].Metadata["0"]);
-            Assert.IsTrue(engine.CompletedContexts[0].Metadata.ContainsKey("2"));
-            Assert.AreEqual(2, engine.CompletedContexts[0].Metadata["2"]);
-            Assert.IsFalse(engine.CompletedContexts[0].Metadata.ContainsKey("1"));
-            Assert.IsFalse(engine.CompletedContexts[0].Metadata.ContainsKey("3"));
+            Assert.IsTrue(engine.CompletedDocuments[0].Metadata.ContainsKey("0"));
+            Assert.AreEqual(0, engine.CompletedDocuments[0].Metadata["0"]);
+            Assert.IsTrue(engine.CompletedDocuments[0].Metadata.ContainsKey("2"));
+            Assert.AreEqual(2, engine.CompletedDocuments[0].Metadata["2"]);
+            Assert.IsFalse(engine.CompletedDocuments[0].Metadata.ContainsKey("1"));
+            Assert.IsFalse(engine.CompletedDocuments[0].Metadata.ContainsKey("3"));
 
-            Assert.IsTrue(engine.CompletedContexts[1].Metadata.ContainsKey("1"));
-            Assert.AreEqual(1, engine.CompletedContexts[1].Metadata["1"]);
-            Assert.IsTrue(engine.CompletedContexts[1].Metadata.ContainsKey("3"));
-            Assert.AreEqual(3, engine.CompletedContexts[1].Metadata["3"]);
-            Assert.IsFalse(engine.CompletedContexts[1].Metadata.ContainsKey("0"));
-            Assert.IsFalse(engine.CompletedContexts[1].Metadata.ContainsKey("2"));
+            Assert.IsTrue(engine.CompletedDocuments[1].Metadata.ContainsKey("1"));
+            Assert.AreEqual(1, engine.CompletedDocuments[1].Metadata["1"]);
+            Assert.IsTrue(engine.CompletedDocuments[1].Metadata.ContainsKey("3"));
+            Assert.AreEqual(3, engine.CompletedDocuments[1].Metadata["3"]);
+            Assert.IsFalse(engine.CompletedDocuments[1].Metadata.ContainsKey("0"));
+            Assert.IsFalse(engine.CompletedDocuments[1].Metadata.ContainsKey("2"));
         }
 
         [Test]
@@ -185,9 +185,9 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.CompletedContexts.Count);
-            Assert.AreEqual("2", engine.CompletedContexts[0].Content);
-            Assert.AreEqual("3", engine.CompletedContexts[1].Content);
+            Assert.AreEqual(2, engine.CompletedDocuments.Count);
+            Assert.AreEqual("2", engine.CompletedDocuments[0].Content);
+            Assert.AreEqual("3", engine.CompletedDocuments[1].Content);
         }
     }
 }

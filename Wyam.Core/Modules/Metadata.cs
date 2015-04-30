@@ -10,14 +10,14 @@ namespace Wyam.Core.Modules
     public class Metadata : IModule
     {
         private readonly string _key;
-        private readonly Func<IModuleContext, object> _metadata;
+        private readonly Func<IDocument, object> _metadata;
 
         public Metadata(string key, object metadata)
             : this(key, x => metadata)
         {
         }
 
-        public Metadata(string key, Func<IModuleContext, object> metadata)
+        public Metadata(string key, Func<IDocument, object> metadata)
         {
             if (key == null)
             {
@@ -27,7 +27,7 @@ namespace Wyam.Core.Modules
             _metadata = metadata;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             return inputs.Select(x => _metadata == null ? x : x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata(x)) }));
         }

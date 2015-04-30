@@ -7,7 +7,7 @@ using Wyam.Extensibility;
 
 namespace Wyam.Core.Modules
 {
-    // Replaces a search string in the specified content with the contents of the input context
+    // Replaces a search string in the specified content with the content of the input document
     public class ReplaceIn : ContentModule
     {
         private readonly string _search;
@@ -18,7 +18,7 @@ namespace Wyam.Core.Modules
             _search = search;
         }
 
-        public ReplaceIn(string search, Func<IModuleContext, object> content)
+        public ReplaceIn(string search, Func<IDocument, object> content)
             : base(content)
         {
             _search = search;
@@ -30,7 +30,7 @@ namespace Wyam.Core.Modules
             _search = search;
         }
 
-        protected override IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {
             if (content == null)
             {

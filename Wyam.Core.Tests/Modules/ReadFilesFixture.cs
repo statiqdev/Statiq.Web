@@ -19,12 +19,12 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
 
             // Then
@@ -67,12 +67,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input\";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles(searchPattern, searchOption);
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
             
             // Then
@@ -86,12 +86,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
             
             // Then
@@ -105,12 +105,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
             
             // Then
@@ -124,12 +124,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles(@"Subfolder\*.txt");
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
             
             // Then
@@ -143,12 +143,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
             // When
-            IEnumerable<IModuleContext> contexts = readFiles.Execute(inputs, pipeline);
+            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
             int count = contexts.Count();
             
             // Then
@@ -162,12 +162,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
             // When
-            IModuleContext context = readFiles.Execute(inputs, pipeline).First();
+            IDocument context = readFiles.Execute(inputs, pipeline).First();
             
             // Then
             Assert.AreEqual("aaa", context.Content);
@@ -185,12 +185,12 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.Metadata["InputPath"] = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IModuleContext[] inputs = { new ModuleContext(metadata) };
+            IDocument[] inputs = { new Document(metadata) };
             IPipelineContext pipeline = new Pipeline(engine, null, null);
             ReadFiles readFiles = new ReadFiles(@"test-c.txt");
 
             // When
-            IModuleContext context = readFiles.Execute(inputs, pipeline).First();
+            IDocument context = readFiles.Execute(inputs, pipeline).First();
             
             // Then
             Assert.That(context.Metadata[key], Is.StringEnding(expectedEnding));

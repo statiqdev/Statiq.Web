@@ -15,7 +15,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Content(Func<IModuleContext, object> content)
+        public Content(Func<IDocument, object> content)
             : base(content)
         {
         }
@@ -25,7 +25,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        protected override IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {
             return new [] { content == null ? input : input.Clone(content.ToString()) };
         }

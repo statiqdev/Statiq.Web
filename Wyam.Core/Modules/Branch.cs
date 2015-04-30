@@ -8,11 +8,11 @@ using Wyam.Extensibility;
 
 namespace Wyam.Core.Modules
 {
-    // This executes the specified modules and then outputs the input contexts without modification
-    // In other words, the branch does not come back and affect the main module flow
+    // This executes the specified modules and then outputs the input documents without modification
+    // In other words, the branch does affect the primary pipeline module flow
     public class Branch : IModule
     {
-        private readonly Func<IModuleContext, bool> _predicate;
+        private readonly Func<IDocument, bool> _predicate;
         private readonly IModule[] _modules;
 
         public Branch(params IModule[] modules)
@@ -20,16 +20,16 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
-        public Branch(Func<IModuleContext, bool> predicate, params IModule[] modules)
+        public Branch(Func<IDocument, bool> predicate, params IModule[] modules)
         {
             _predicate = predicate;
             _modules = modules;
         }
 
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
-            IEnumerable<IModuleContext> contexts = _predicate == null ? inputs : inputs.Where(_predicate);
-            pipeline.Execute(_modules, contexts);
+            IEnumerable<IDocument> documents = _predicate == null ? inputs : inputs.Where(_predicate);
+            pipeline.Execute(_modules, documents);
             return inputs;
         }
     }

@@ -9,7 +9,7 @@ namespace Wyam.Markdown
 {
     public class Markdown : IModule
     {
-        public IEnumerable<IModuleContext> Execute(IReadOnlyList<IModuleContext> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             return inputs.Select(x => x.Clone(CommonMark.CommonMarkConverter.Convert(x.Content)));
         }

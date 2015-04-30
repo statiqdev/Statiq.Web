@@ -7,17 +7,17 @@ using Wyam.Extensibility;
 
 namespace Wyam.Core
 {
-    internal class ModuleContext : IModuleContext
+    internal class Document : IDocument
     {
         private readonly Metadata _metadata;
         private readonly string _content = string.Empty;
 
-        internal ModuleContext(Metadata metadata)
+        internal Document(Metadata metadata)
         {
             _metadata = metadata;
         }
 
-        private ModuleContext(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        private Document(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             _metadata = metadata.Clone(items);
             _content = content ?? string.Empty;
@@ -43,14 +43,12 @@ namespace Wyam.Core
             return Content;
         }
 
-        // Use the during module prepare to get a fresh context with metadata that can be changed and/or a persisted object
-        // The persisted object will be available from the context of the same module during execution
-        public IModuleContext Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new ModuleContext(_metadata, content, items);
+            return new Document(_metadata, content, items);
         }
 
-        public IModuleContext Clone(IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return Clone(_content, items);
         }

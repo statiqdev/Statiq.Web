@@ -11,13 +11,13 @@ namespace Wyam.Core
     {
         private readonly Engine _engine;
         private readonly IModule[] _modules;
-        private readonly IReadOnlyList<IModuleContext> _completedContexts;
+        private readonly IReadOnlyList<IDocument> _completedDocuments;
 
-        public Pipeline(Engine engine, IModule[] modules, IReadOnlyList<IModuleContext> completedContexts)
+        public Pipeline(Engine engine, IModule[] modules, IReadOnlyList<IDocument> completedDocuments)
         {
             _engine = engine;
             _modules = modules;
-            _completedContexts = completedContexts;
+            _completedDocuments = completedDocuments;
         }
 
         public int Count
@@ -30,41 +30,41 @@ namespace Wyam.Core
             get { return _engine.Trace; }
         }
 
-        public IReadOnlyList<IModuleContext> CompletedContexts
+        public IReadOnlyList<IDocument> CompletedDocuments
         {
-            get { return _completedContexts; }
+            get { return _completedDocuments; }
         }
 
-        public IReadOnlyList<IModuleContext> Execute(IEnumerable<IModule> modules, IEnumerable<IModuleContext> inputContexts)
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
-            List<IModuleContext> contexts = inputContexts == null 
-                ? new List<IModuleContext> { new ModuleContext(new Metadata(_engine)) } : inputContexts.ToList();
+            List<IDocument> documents = inputDocuments == null 
+                ? new List<IDocument> { new Document(new Metadata(_engine)) } : inputDocuments.ToList();
             if (modules != null)
             {
                 foreach (IModule module in modules.Where(x => x != null))
                 {
                     string moduleName = module.GetType().Name;
-                    Trace.Verbose("Executing module {0} with {1} input(s)...", moduleName, contexts.Count);
+                    Trace.Verbose("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
                     try
                     {
                         // Make sure we clone the output context if it's the same as the input
-                        IEnumerable<IModuleContext> outputs = module.Execute(contexts, this);
-                        contexts = outputs == null ? new List<IModuleContext>() : outputs.Where(x => x != null).ToList();
-                        Trace.Verbose("Executed module {0} resulting in {1} output(s).", moduleName, contexts.Count);
+                        IEnumerable<IDocument> outputs = module.Execute(documents, this);
+                        documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
+                        Trace.Verbose("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
                     }
                     catch (Exception ex)
                     {
                         Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
                         Trace.Verbose(ex.ToString());
-                        contexts = new List<IModuleContext>();
+                        documents = new List<IDocument>();
                         break;
                     }
                 }
             }
-            return contexts.AsReadOnly();
+            return documents.AsReadOnly();
         }
 
-        public IReadOnlyList<IModuleContext> Execute()
+        public IReadOnlyList<IDocument> Execute()
         {
             return Execute(_modules, null);
         }

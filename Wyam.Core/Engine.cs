@@ -30,11 +30,11 @@ namespace Wyam.Core
             get { return _metadata; }
         }
 
-        private readonly List<IModuleContext> _completedContexts = new List<IModuleContext>();
+        private readonly List<IDocument> _completedDocuments = new List<IDocument>();
 
-        public IReadOnlyList<IModuleContext> CompletedContexts
+        public IReadOnlyList<IDocument> CompletedDocuments
         {
-            get { return _completedContexts.AsReadOnly(); }
+            get { return _completedDocuments.AsReadOnly(); }
         }
 
         private readonly PipelineCollection _pipelines;
@@ -98,14 +98,14 @@ namespace Wyam.Core
             }
 
             Trace.Verbose("Executing {0} pipelines...", _pipelines.Count);
-            _completedContexts.Clear();
+            _completedDocuments.Clear();
             int c = 1;
             foreach(Pipeline pipeline in _pipelines.Pipelines)
             {
                 Trace.Verbose("Executing pipeline {0} with {1} child module(s)...", c, pipeline.Count);
-                IReadOnlyList<IModuleContext> results = pipeline.Execute();
-                _completedContexts.AddRange(results);
-                Trace.Verbose("Executed pipeline {0} resulting in {1} output(s).", c++, results.Count);
+                IReadOnlyList<IDocument> results = pipeline.Execute();
+                _completedDocuments.AddRange(results);
+                Trace.Verbose("Executed pipeline {0} resulting in {1} output document(s).", c++, results.Count);
             }
             Trace.Verbose("Executed {0} pipelines.", _pipelines.Count);
         }

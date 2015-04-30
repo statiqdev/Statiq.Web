@@ -12,7 +12,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Append(Func<IModuleContext, object> content) 
+        public Append(Func<IDocument, object> content) 
             : base(content)
         {
         }
@@ -22,7 +22,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        protected override IEnumerable<IModuleContext> Execute(object content, IModuleContext input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {
             return new [] { content == null ? input : input.Clone(input.Content + content) };
         }
