@@ -30,7 +30,7 @@ namespace Wyam.Core.Configuration
             _engine = engine;
         }
 
-        // Preconfig is separated from config by a line with only '-' characters
+        // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
         public void Configure(string script = null)
         {
@@ -47,32 +47,32 @@ namespace Wyam.Core.Configuration
             Tuple<string, string> configParts = GetConfigParts(script);
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
-                // Preconfigure (install packages, specify additional assemblies and namespaces, etc.)
-                Preconfig(configParts.Item1);
+                // Setup (install packages, specify additional assemblies and namespaces, etc.)
+                Setup(configParts.Item1);
                 _packages.InstallPackages();
             }
             Config(configParts.Item2);
         }
 
-        // Item1 = preconfig (possibly null), Item2 = config
+        // Item1 = setup (possibly null), Item2 = config
         public Tuple<string, string> GetConfigParts(string script)
         {
-            string preconfig = null;
+            string setup = null;
             List<string> configLines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            int preconfigLine = configLines.FindIndex(x =>
+            int setupLine = configLines.FindIndex(x =>
             {
                 string trimmed = x.Trim();
                 return trimmed.Length > 0 && x.Trim().All(y => y == '-');
             });
-            if (preconfigLine != -1)
+            if (setupLine != -1)
             {
-                preconfig = string.Join(Environment.NewLine, configLines.Take(preconfigLine));
-                configLines.RemoveRange(0, preconfigLine + 1);
+                setup = string.Join(Environment.NewLine, configLines.Take(setupLine));
+                configLines.RemoveRange(0, setupLine + 1);
             }
-            return new Tuple<string, string>(preconfig, string.Join(Environment.NewLine, configLines));
+            return new Tuple<string, string>(setup, string.Join(Environment.NewLine, configLines));
         }
 
-        private void Preconfig(string script)
+        private void Setup(string script)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new PreConfigGlobals(_packages, _assemblies, _namespaces));
+                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_packages, _assemblies, _namespaces));
             }
             catch (CompilationErrorException compilationError)
             {

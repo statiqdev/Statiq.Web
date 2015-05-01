@@ -7,13 +7,13 @@ using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration
 {
-    public class PreConfigGlobals
+    public class SetupGlobals
     {
         private readonly IPackagesCollection _packages;
         private readonly IAssemblyCollection _assemblies;
         private readonly INamespacesCollection _namespaces;
 
-        internal PreConfigGlobals(IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        internal SetupGlobals(IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
         {
             _packages = packages;
             _assemblies = assemblies;

@@ -77,7 +77,7 @@
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\NamespacesCollection.cs" />
-    <Compile Include="Configuration\PreConfigGlobals.cs" />
+    <Compile Include="Configuration\SetupGlobals.cs" />
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Modules\Replace.cs" />
     <Compile Include="Modules\ReplaceIn.cs" />
