@@ -46,6 +46,12 @@ Pipelines.Add(
 
 However, don't let the simplicity fool you. Wyam configuration files are C# scripts and as such can make use of the full C# language and the entire .NET ecosystem (including built-in support for NuGet). For example, one of the built-in modules lets you write a delegate to transform the input documents for extreme flexibility.
 
+## Examples
+
+There isn't a lot of documentation yet because the project is in such an early stage. The best place to start is the Examples folder in the source repository. It has some very simple examples of using Wyam from the console with configuration files. You'll just need to build the console application, navigate to the appropriate example folder, and run `Wyam.exe` from there. It'll pick up the `config.wyam` file and go from there.
+
+You can also browse the unit tests to get an idea of how to integrate Wyam into your own application using the core library or how to write your own modules.
+
 ## Modules
 
 More information about the available modules will be added soon, including those that are still planned as development is still in the early stages. As a general rule, only modules that don't have any extra dependencies are defined in the core library. Any modules that do require support libraries (such as Markdown support) are typically defined in optional libraries and available on NuGet. These can be easily specified in your configuration file and Wyam will automatically pull them down when running.
@@ -53,23 +59,20 @@ More information about the available modules will be added soon, including those
 ### Input/Output
 These modules manipulate input documents and return output documents.
 
-#### Content
-**Library:** Wyam.Core
-**Signature:** `Content(string)`
-**Input Content:** Any
-**Output Content:** Same as input
-**Required Metadata:** None
-**Output Metadata:** None
-**Description:** Replaces the content of each input document with the specified content.
+> |*Content*|
+> |:-|:-
+> |**Library**|Wyam.Core
+> |**Signature**|`Content(string)`
+> ||`Content(Func<IDocument, object>)`
+> ||`Content(params IModule[] modules)`
+> |**Input Content**|Any
+> |**Output Content**|Same as input
+> |**Required Metadata**|None
+> |**Output Metadata**|None
+> |**Description**|Replaces the content of each input document with the specified content. In the case where modules are provided, they are executed against an empty initial document and the results are applied to each input document.
 
 ### Control Flow
 These modules alter the flow of the pipeline and can be used to enable more sophisticated scenarios.
 
 ### Analysis
 These modules are used for validation and reporting and typically output the same documents that were input.
-
-## Examples
-
-There isn't a lot of documentation yet because the project is in such an early stage. The best place to start is the Examples folder in the source repository. It has some very simple examples of using Wyam from the console with configuration files. You'll just need to build the console application, navigate to the appropriate example folder, and run `Wyam.exe` from there. It'll pick up the `config.wyam` file and go from there.
-
-You can also browse the unit tests to get an idea of how to integrate Wyam into your own application using the core library or how to write your own modules.
