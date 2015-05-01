@@ -12,9 +12,9 @@ namespace Wyam.Core.Modules
 {
     public class WriteFiles : IModule
     {
-        private readonly Func<IMetadata, string> _path;
+        private readonly Func<IDocument, string> _path;
 
-        public WriteFiles(Func<IMetadata, string> path)
+        public WriteFiles(Func<IDocument, string> path)
         {
             if (path == null)
             {
@@ -28,7 +28,7 @@ namespace Wyam.Core.Modules
         {
             if (extension == null) throw new ArgumentNullException("extension");
 
-            _path = m => (!m.ContainsKey("OutputPath") || !m.ContainsKey("FileRoot") || !m.ContainsKey("FileDir") || !m.ContainsKey("FileBase")) ? null :
+            _path = m => (!m.Metadata.ContainsKey("OutputPath") || !m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileBase")) ? null :
                 Path.Combine((string)m["OutputPath"], PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
         }
@@ -37,7 +37,7 @@ namespace Wyam.Core.Modules
         {
             foreach (IDocument input in inputs)
             {
-                string path = _path(input.Metadata);
+                string path = _path(input);
                 if (path != null)
                 {
                     path = Path.Combine(Environment.CurrentDirectory, path);

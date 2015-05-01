@@ -59,17 +59,36 @@ More information about the available modules will be added soon, including those
 ### Input/Output
 These modules manipulate input documents and return output documents.
 
-> |*Content*|
-> |:-|:-
-> |**Library**|Wyam.Core
-> |**Signature**|`Content(string)`
-> ||`Content(Func<IDocument, object>)`
-> ||`Content(params IModule[] modules)`
-> |**Input Content**|Any
-> |**Output Content**|Same as input
-> |**Required Metadata**|None
-> |**Output Metadata**|None
-> |**Description**|Replaces the content of each input document with the specified content. In the case where modules are provided, they are executed against an empty initial document and the results are applied to each input document.
+- #### Content (*Wyam.Core*)
+  - Replaces the content of each input document with the string value of the specified content object. In the case where modules are provided, they are executed against an empty initial document and the results are applied to each input document.
+  - Usage:
+    - `Content(object content)`: Uses the string value of the specified object as the new content for every input document.
+    - `Content(Func<IDocument, object> content)`: Uses the string value of the returned object as the new content for each document. This allows you to specify different content for each document depending on the input.
+    - `Content(params IModule[] modules)`: The specified modules are executed against an empty initial document and the results are applied to every input document (possibly creating more than one output document for each input document).
+    
+- #### Metadata (*Wyam.Core*)
+  - Adds additional metadata to each input document.
+  - Usage:
+    - `Metadata(string key, object metadata)`: The specified object is added as metadata for the specified key for every input document.
+    - `Metadata(string key, Func<IDocument, object> metadata)`: The specified object is added as metadata for each document. This allows you to specify different metadata for each document depending on the input.
+    
+- #### ReadFiles (*Wyam.Core*)
+  - Reads the content of files from the file system into the content of new documents. The following metadata is added to each new document:
+    - `FileRoot`: The root search path without any nested directories (useful for outputting documents at the same location relative to the root path).
+    - `FilePath`: The full path to the file.
+    - `FileBase`: Equivalent to `Path.GetFileNameWithoutExtension(FilePath)`.
+    - `FileExt`: Equivalent to `Path.GetExtension(FilePath)`.
+    - `FileName: Equivalent to `Path.GetFileName(FilePath)`.
+    - `FileDir`: Equivalent to `Path.GetDirectoryName(FilePath)`.
+  - Usage:
+    - `ReadFiles(string searchPattern, SearchOption searchOption = SearchOption.AllDirectories)`: Reads all files that match the specified search pattern with the specified `SearchOption`. If the input metadata contains the key `InputPath` (which is usually set by default), it is used as the root path of the search.
+    - `ReadFiles(Func<IDocument, string> path, SearchOption searchOption = SearchOption.AllDirectories)`: Reads all files that match the specified search pattern with the specified `SearchOption`. This allows you to specify different search paths depending on the input.
+
+- #### WriteFiles (*Wyam.Core*)
+  - Writes the content of each input document to the file system.
+  - Usage:
+    - `WriteFiles(string extension)`: Writes the document content to disk with the specified extension with the same base filename and relative path as the input file. This requires metadata values for `OutputPath` (which is usually set by default), `FileRoot`, `FileDir`, and `FileBase` (which are all automatically set by the ReadFiles module).
+    - `WriteFiles(Func<IMetadata, string> path)`: Writes the document content to disk at the specified path.
 
 ### Control Flow
 These modules alter the flow of the pipeline and can be used to enable more sophisticated scenarios.

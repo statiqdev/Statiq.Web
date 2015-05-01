@@ -11,10 +11,10 @@ namespace Wyam.Core.Modules
 {
     public class ReadFiles : IModule
     {
-        private readonly Func<IMetadata, string> _path;
+        private readonly Func<IDocument, string> _path;
         private readonly SearchOption _searchOption;
 
-        public ReadFiles(Func<IMetadata, string> path, SearchOption searchOption = SearchOption.AllDirectories)
+        public ReadFiles(Func<IDocument, string> path, SearchOption searchOption = SearchOption.AllDirectories)
         {
             if (path == null)
             {
@@ -32,7 +32,7 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException("searchPattern");
             }
 
-            _path = m => !m.ContainsKey("InputPath") ? null : Path.Combine((string)m["InputPath"], searchPattern);
+            _path = m => !m.Metadata.ContainsKey("InputPath") ? null : Path.Combine((string)m["InputPath"], searchPattern);
             _searchOption = searchOption;
         }
 
@@ -40,7 +40,7 @@ namespace Wyam.Core.Modules
         {
             foreach (IDocument input in inputs)
             {
-                string path = _path(input.Metadata);
+                string path = _path(input);
                 if (path != null)
                 {
                     path = Path.Combine(Environment.CurrentDirectory, path);
