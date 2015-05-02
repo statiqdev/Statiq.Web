@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Markdown", "Wyam.Markd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Extensibility", "Wyam.Extensibility\Wyam.Extensibility.csproj", "{F40B73E9-C0CC-465C-925E-B51E686C1D5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Yaml", "Wyam.Yaml\Wyam.Yaml.csproj", "{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F40B73E9-C0CC-465C-925E-B51E686C1D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F40B73E9-C0CC-465C-925E-B51E686C1D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F40B73E9-C0CC-465C-925E-B51E686C1D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

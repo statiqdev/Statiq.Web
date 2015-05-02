@@ -9,6 +9,7 @@ namespace Wyam.Core.Modules
     {
         private readonly Func<IDocument, object> _content;
         private readonly IModule[] _modules;
+        private readonly bool _forEachDocument;
         
         protected ContentModule(object content)
         {
@@ -28,11 +29,23 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
+        // Setting true for forEachDocument results in the whole sequence of modules being executed for every input document
+        // (as opposed to only being executed once with an empty initial document)
+        protected ContentModule(bool forEachDocument, params IModule[] modules)
+        {
+            _forEachDocument = forEachDocument;
+            _modules = modules;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
         {
             if (_modules != null)
             {
-                return pipeline.Execute(_modules, null).SelectMany(x => inputs.SelectMany(y => Execute(x.Content, y, pipeline)));
+                if (_forEachDocument)
+                {
+                    return inputs.SelectMany(input => pipeline.Execute(_modules, new[] { input }).SelectMany(result => Execute(result.Content, input, pipeline)));
+                }
+                return pipeline.Execute(_modules, null).SelectMany(result => inputs.SelectMany(input => Execute(result.Content, input, pipeline)));
             }
             return inputs.SelectMany(x => Execute(_content(x), x, pipeline));
         }

@@ -24,6 +24,11 @@ namespace Wyam.Core.Modules
             : base(modules)
         {
         }
+        
+        public Prepend(bool forEachDocument, params IModule[] modules)
+            : base(forEachDocument, modules)
+        {
+        }
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {
