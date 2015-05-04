@@ -62,7 +62,7 @@ namespace Wyam.Core.Configuration
             int setupLine = configLines.FindIndex(x =>
             {
                 string trimmed = x.Trim();
-                return trimmed.Length > 0 && x.Trim().All(y => y == '-');
+                return trimmed.Length > 0 && x.All(y => y == '-');
             });
             if (setupLine != -1)
             {
