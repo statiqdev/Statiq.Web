@@ -45,6 +45,7 @@ namespace Wyam.Core.Modules
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(path));
                         File.WriteAllText(path, input.Content);
+                        pipeline.Trace.Verbose("Wrote file {0}", path);
                     }
                 }
                 yield return input;

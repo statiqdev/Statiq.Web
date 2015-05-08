@@ -82,6 +82,7 @@
     <Compile Include="Modules\FrontMatter.cs" />
     <Compile Include="Modules\Replace.cs" />
     <Compile Include="Modules\ReplaceIn.cs" />
+    <Compile Include="Modules\Trace.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
     <Compile Include="IPipeline.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="Modules\Append.cs" />
     <Compile Include="Modules\Branch.cs" />
     <Compile Include="Modules\Content.cs" />
-    <Compile Include="Modules\Delegate.cs" />
+    <Compile Include="Modules\Execute.cs" />
     <Compile Include="Modules\If.cs" />
     <Compile Include="Modules\Metadata.cs" />
     <Compile Include="Modules\Prepend.cs" />

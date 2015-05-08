@@ -11,6 +11,7 @@ namespace Wyam.Core
     public class Trace : ITrace
     {
         private readonly TraceSource _traceSource = new TraceSource("Wyam", SourceLevels.Information);
+        private int _indent = 0;
 
         public void SetLevel(SourceLevels level)
         {
@@ -20,44 +21,74 @@ namespace Wyam.Core
         public void AddListener(TraceListener listener)
         {
             _traceSource.Listeners.Add(listener);
+            listener.IndentLevel = _indent;
         }
 
         public void RemoveListener(TraceListener listener)
         {
+            listener.IndentLevel = 0;
             _traceSource.Listeners.Remove(listener);
         }
 
         // Stops the application
-        public void Critical(string format, params object[] args)
+        public void Critical(string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Critical, 0, format, args);
+            TraceEvent(TraceEventType.Critical, messageOrFormat, args);
         }
 
         // Prevents expected behavior
-        public void Error(string format, params object[] args)
+        public void Error(string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Error, 0, format, args);
+            TraceEvent(TraceEventType.Error, messageOrFormat, args);
         }
 
         // Unexpected behavior that does not prevent expected behavior
-        public void Warning(string format, params object[] args)
+        public void Warning(string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Warning, 0, format, args);
+            TraceEvent(TraceEventType.Warning, messageOrFormat, args);
         }
 
-        public void Information(string format, params object[] args)
+        public void Information(string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Information, 0, format, args);
+            TraceEvent(TraceEventType.Information, messageOrFormat, args);
         }
 
-        public void Verbose(string format, params object[] args)
+        public void Verbose(string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Verbose, 0, format, args);
+            TraceEvent(TraceEventType.Verbose, messageOrFormat, args);
         }
 
-        public void TraceEvent(TraceEventType eventType, string format, params object[] args)
+        public void TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
         {
-            _traceSource.TraceEvent(eventType, 0, format, args);
+            if (args == null || args.Length == 0)
+            {
+                _traceSource.TraceEvent(eventType, 0, messageOrFormat);
+            }
+            else
+            {
+                _traceSource.TraceEvent(eventType, 0, messageOrFormat, args);
+            }
+        }
+
+        public int Indent()
+        {
+            return IndentLevel++;
+        }
+
+        public int IndentLevel
+        {
+            get { return _indent; }
+            set
+            {
+                if (value >= 0)
+                {
+                    _indent = value;
+                    foreach (TraceListener listener in _traceSource.Listeners)
+                    {
+                        listener.IndentLevel = _indent;
+                    }
+                }
+            }
         }
     }
 }

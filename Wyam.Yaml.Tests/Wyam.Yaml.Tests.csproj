@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{862B500E-D6C3-4026-868C-4097C3AD1D5C}</ProjectGuid>
+    <ProjectGuid>{E5F18C7B-08A6-4F2C-9999-34F54BA2212A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wyam.Core.Tests</RootNamespace>
-    <AssemblyName>Wyam.Core.Tests</AssemblyName>
+    <RootNamespace>Wyam.Yaml.Tests</RootNamespace>
+    <AssemblyName>Wyam.Yaml.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,15 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.8.1.0\lib\net45\NSubstitute.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.Core, Version=2.8.60318.667, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NuGet.Core.2.8.5\lib\net40-Client\NuGet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -49,30 +43,19 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="YamlDotNet">
+      <HintPath>..\packages\YamlDotNet.3.5.1\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="YamlDotNet.Dynamic">
+      <HintPath>..\packages\YamlDotNet.Dynamic.3.2.3\lib\net40\YamlDotNet.Dynamic.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfiguratorFixture.cs" />
-    <Compile Include="EngineFixture.cs" />
-    <Compile Include="Helpers\PathHelperFixture.cs" />
-    <Compile Include="MetadataFixture.cs" />
-    <Compile Include="Modules\BranchFixture.cs" />
-    <Compile Include="Modules\FrontMatterFixture.cs" />
-    <Compile Include="Modules\IfFixture.cs" />
-    <Compile Include="Modules\ReadFilesFixture.cs" />
-    <Compile Include="Modules\WriteFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CountModule.cs" />
-    <Compile Include="RepositoryFixture.cs" />
+    <Compile Include="YamlFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="TestFiles\Input\markdown-x.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Input\Subfolder\markdown-y.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
@@ -83,20 +66,10 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Extensibility</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestFiles\Output\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestFiles\Input\Subfolder\test-c.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Input\test-a.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Input\test-b.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\Wyam.Yaml\Wyam.Yaml.csproj">
+      <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
+      <Name>Wyam.Yaml</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

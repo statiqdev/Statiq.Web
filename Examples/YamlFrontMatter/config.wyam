@@ -1,0 +1,18 @@
+Assemblies.AddDirectory(@"..\..\Wyam.Markdown\bin\Debug");
+Assemblies.AddDirectory(@"..\..\Wyam.Yaml\bin\Debug");
+---
+Pipelines.Add(
+	ReadFiles("*.md"),
+	FrontMatter(Yaml("FrontMatter")),
+	Trace(doc => doc.Metadata.ContainsKey("FrontMatter")),
+	Markdown(),
+	ReplaceIn("{{CONTENT}}", ReadFiles("template.html")),
+	If(x => x.Metadata.ContainsKey("FrontMatter"),
+		Replace("{{TITLE}}", doc => (string)((dynamic)doc["FrontMatter"]).Title),
+		Replace("{{DESC}}", doc => (string)((dynamic)doc["FrontMatter"]).Description)
+	).Else(
+		Replace("{{TITLE}}", "Default Title"),
+		Replace("{{DESC}}", "Default Description")
+	),
+	WriteFiles(".html")
+);

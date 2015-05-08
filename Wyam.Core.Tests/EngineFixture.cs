@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Modules;
-using Delegate = Wyam.Core.Modules.Delegate;
 
 
 namespace Wyam.Core.Tests
@@ -133,12 +132,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Add(
-                new Delegate(x => new[]
+                new Execute(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }),
-                new Delegate(x => new[]
+                new Execute(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }));
@@ -171,12 +170,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Add(
-                new Delegate(x => new[]
+                new Execute(x => new[]
                 {
                     x.Clone((c++).ToString()), 
                     x.Clone((c++).ToString())
                 }),
-                new Delegate(x => new[]
+                new Execute(x => new[]
                 {
                     x.Clone((c++).ToString())
                 }));

@@ -24,8 +24,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
 
             // Then
             Assert.AreEqual(0, count);
@@ -72,8 +72,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles(searchPattern, searchOption);
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
             
             // Then
             Assert.AreEqual(expectedCount, count);
@@ -91,8 +91,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
             
             // Then
             Assert.AreEqual(3, count);
@@ -110,8 +110,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles("*.txt");
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
             
             // Then
             Assert.AreEqual(3, count);
@@ -129,8 +129,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles(@"Subfolder\*.txt");
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
             
             // Then
             Assert.AreEqual(1, count);
@@ -148,8 +148,8 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
             // When
-            IEnumerable<IDocument> contexts = readFiles.Execute(inputs, pipeline);
-            int count = contexts.Count();
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, pipeline);
+            int count = documents.Count();
             
             // Then
             Assert.AreEqual(1, count);

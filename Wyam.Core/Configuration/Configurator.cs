@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -61,8 +62,8 @@ namespace Wyam.Core.Configuration
             List<string> configLines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             int setupLine = configLines.FindIndex(x =>
             {
-                string trimmed = x.Trim();
-                return trimmed.Length > 0 && x.All(y => y == '-');
+                string trimmed = x.TrimEnd();
+                return trimmed.Length > 0 && trimmed.All(y => y == '-');
             });
             if (setupLine != -1)
             {
@@ -122,13 +123,14 @@ namespace Wyam.Core.Configuration
                 HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
                 {
                     Assembly.GetAssembly(typeof(object)),  // System
-                    Assembly.GetAssembly(typeof(List<>)),  // System.Collections.Generic 
-                    Assembly.GetAssembly(typeof(ImmutableArrayExtensions)),  // System.Linq
+                    Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)),  // System.Collections.Generic 
+                    Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions)),  // System.Linq
                     Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),  // System.Core (needed for dynamic)
                     Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
-                    Assembly.GetAssembly(typeof(Path)), // System.IO
-                    Assembly.GetAssembly(typeof(Engine)), // Wyam.Core
-                    Assembly.GetAssembly(typeof(IModule)) // Wyam.Extensibility
+                    Assembly.GetAssembly(typeof(System.IO.Path)), // System.IO
+                    Assembly.GetAssembly(typeof(System.Diagnostics.TraceSource)), // System.Diagnostics
+                    Assembly.GetAssembly(typeof(Wyam.Core.Engine)), // Wyam.Core
+                    Assembly.GetAssembly(typeof(Wyam.Extensibility.IModule)) // Wyam.Extensibility
                 };
 
                 HashSet<string> namespaces = new HashSet<string>()
@@ -137,6 +139,7 @@ namespace Wyam.Core.Configuration
                     "System.Collections.Generic",
                     "System.Linq",
                     "System.IO",
+                    "System.Diagnostics",
                     "Wyam.Core",
                     "Wyam.Core.Configuration",
                     "Wyam.Core.Modules",
@@ -357,9 +360,6 @@ namespace Wyam.Core.Configuration
                 }
 
                 ConfigScript.Run(Metadata, Pipelines);");
-
-            // TODO: Debug the tracing logic - it fails with this kind of string (maybe because of the {?)
-            //_engine.Trace.Verbose(scriptBuilder.ToString().Replace("{", "*"));
 
             return scriptBuilder.ToString();
         }

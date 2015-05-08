@@ -97,17 +97,19 @@ namespace Wyam.Core
                 Configure();
             }
 
-            Trace.Verbose("Executing {0} pipelines...", _pipelines.Count);
+            Trace.Information("Executing {0} pipelines...", _pipelines.Count);
             _completedDocuments.Clear();
             int c = 1;
             foreach(Pipeline pipeline in _pipelines.Pipelines)
             {
-                Trace.Verbose("Executing pipeline {0} with {1} child module(s)...", c, pipeline.Count);
+                Trace.Information("Executing pipeline {0} with {1} child module(s)...", c, pipeline.Count);
+                int indent = Trace.Indent();
                 IReadOnlyList<IDocument> results = pipeline.Execute();
                 _completedDocuments.AddRange(results);
-                Trace.Verbose("Executed pipeline {0} resulting in {1} output document(s).", c++, results.Count);
+                Trace.IndentLevel = indent;
+                Trace.Information("Executed pipeline {0} resulting in {1} output document(s).", c++, results.Count);
             }
-            Trace.Verbose("Executed {0} pipelines.", _pipelines.Count);
+            Trace.Information("Executed {0} pipelines.", _pipelines.Count);
         }
     }
 }

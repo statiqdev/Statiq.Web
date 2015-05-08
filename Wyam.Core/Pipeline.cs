@@ -44,18 +44,21 @@ namespace Wyam.Core
                 foreach (IModule module in modules.Where(x => x != null))
                 {
                     string moduleName = module.GetType().Name;
-                    Trace.Verbose("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
+                    Trace.Information("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
+                    int indent = Trace.Indent();
                     try
                     {
                         // Make sure we clone the output context if it's the same as the input
                         IEnumerable<IDocument> outputs = module.Execute(documents, this);
                         documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
-                        Trace.Verbose("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
+                        Trace.IndentLevel = indent;
+                        Trace.Information("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
                     }
                     catch (Exception ex)
                     {
                         Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
                         Trace.Verbose(ex.ToString());
+                        Trace.IndentLevel = indent;
                         documents = new List<IDocument>();
                         break;
                     }

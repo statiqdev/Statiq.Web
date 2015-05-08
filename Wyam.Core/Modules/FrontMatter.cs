@@ -46,11 +46,11 @@ namespace Wyam.Core.Modules
                 int delimiterLine = inputLines.FindIndex(x =>
                 {
                     string trimmed = x.TrimEnd();
-                    return trimmed.Length > 0 && (_repeated ? x.All(y => y == _delimiter[0]) : x == _delimiter);
+                    return trimmed.Length > 0 && (_repeated ? trimmed.All(y => y == _delimiter[0]) : trimmed == _delimiter);
                 });
                 if (delimiterLine != -1)
                 {
-                    string frontMatter = string.Join("\n", inputLines.Take(delimiterLine));
+                    string frontMatter = string.Join("\n", inputLines.Take(delimiterLine)) + "\n";
                     inputLines.RemoveRange(0, delimiterLine + 1);
                     string content = string.Join("\n", inputLines);
                     foreach (IDocument result in pipeline.Execute(_modules, new[] { input.Clone(frontMatter) }))
@@ -58,7 +58,10 @@ namespace Wyam.Core.Modules
                         yield return result.Clone(content);
                     }
                 }
-                yield return input;
+                else
+                {
+                    yield return input;
+                }
             }
         }
     }
