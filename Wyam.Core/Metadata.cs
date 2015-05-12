@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
@@ -79,6 +80,12 @@ namespace Wyam.Core
             }
             value = meta[key];
             return true;
+        }
+
+        public object Get(string key, object defaultValue = null)
+        {
+            object value;
+            return TryGetValue(key, out value) ? value : defaultValue;
         }
 
         public object this[string key]

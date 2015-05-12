@@ -3,16 +3,10 @@ Assemblies.AddDirectory(@"..\..\Wyam.Yaml\bin\Debug");
 ---
 Pipelines.Add(
 	ReadFiles("*.md"),
-	FrontMatter(Yaml("FrontMatter")),
-	Trace(doc => doc.Metadata.ContainsKey("FrontMatter")),
+	FrontMatter(Yaml()),
 	Markdown(),
 	ReplaceIn("{{CONTENT}}", ReadFiles("template.html")),
-	If(x => x.Metadata.ContainsKey("FrontMatter"),
-		Replace("{{TITLE}}", doc => (string)((dynamic)doc["FrontMatter"]).Title),
-		Replace("{{DESC}}", doc => (string)((dynamic)doc["FrontMatter"]).Description)
-	).Else(
-		Replace("{{TITLE}}", "Default Title"),
-		Replace("{{DESC}}", "Default Description")
-	),
+	Replace("{{TITLE}}", doc => doc.Get("Title", "Default Title")),
+	Replace("{{DESC}}", doc => doc.Get("Description", "Default Description")),
 	WriteFiles(".html")
 );

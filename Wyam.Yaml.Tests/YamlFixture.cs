@@ -64,5 +64,32 @@ C: Yes
             Assert.AreEqual(true, (bool)((dynamic)items.First().Value).B);
             Assert.AreEqual("Yes", (string)((dynamic)items.First().Value).C);
         }
+
+        [Test]
+        public void FlattensTopLevelScalarNodes()
+        {
+            // Given
+            IDocument document = Substitute.For<IDocument>();
+            IEnumerable<KeyValuePair<string, object>> items = null;
+            document
+                .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
+            document.Content.Returns(@"
+A: 1
+B: true
+C: Yes
+");
+            Yaml yaml = new Yaml();
+
+            // When
+            yaml.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+
+            // Then
+            document.Received().Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+            Assert.AreEqual(3, items.Count());
+            Assert.AreEqual("1", items.First(x => x.Key == "A").Value);
+            Assert.AreEqual("true", items.First(x => x.Key == "B").Value);
+            Assert.AreEqual("Yes", items.First(x => x.Key == "C").Value);
+        }
     }
 }

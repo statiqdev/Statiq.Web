@@ -9,7 +9,7 @@ namespace Wyam.Core.Modules
     {
         private readonly Func<IDocument, object> _content;
         private readonly IModule[] _modules;
-        private readonly bool _forEachDocument;
+        private bool _forEachDocument;
         
         protected ContentModule(object content)
         {
@@ -31,10 +31,11 @@ namespace Wyam.Core.Modules
 
         // Setting true for forEachDocument results in the whole sequence of modules being executed for every input document
         // (as opposed to only being executed once with an empty initial document)
-        protected ContentModule(bool forEachDocument, params IModule[] modules)
+        // You use this when the content modules rely on the input document - I.e., to read specific files based on metadata such as original file name in each input document
+        public IModule ForEachDocument()
         {
-            _forEachDocument = forEachDocument;
-            _modules = modules;
+            _forEachDocument = true;
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)

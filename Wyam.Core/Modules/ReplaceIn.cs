@@ -29,11 +29,6 @@ namespace Wyam.Core.Modules
         {
             _search = search;
         }
-        
-        public ReplaceIn(bool forEachDocument, params IModule[] modules)
-            : base(forEachDocument, modules)
-        {
-        }
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {

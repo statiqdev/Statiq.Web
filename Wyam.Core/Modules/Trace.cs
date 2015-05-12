@@ -37,17 +37,6 @@ namespace Wyam.Core.Modules
             _traceEventType = traceEventType;
         }
 
-        public Trace(bool forEachDocument, params IModule[] modules)
-            : this(TraceEventType.Information, forEachDocument, modules)
-        {
-        }
-
-        public Trace(TraceEventType traceEventType, bool forEachDocument, params IModule[] modules)
-            : base(forEachDocument, modules)
-        {
-            _traceEventType = traceEventType;
-        }
-
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
         {
             pipeline.Trace.TraceEvent(_traceEventType, content.ToString());

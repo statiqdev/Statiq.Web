@@ -33,6 +33,11 @@ namespace Wyam.Core
             get { return _metadata[key]; }
         }
 
+        public object Get(string key, object defaultValue)
+        {
+            return _metadata.Get(key, defaultValue);
+        }
+
         public string Content
         {
             get { return _content; }

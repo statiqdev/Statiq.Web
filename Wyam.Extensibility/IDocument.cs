@@ -7,8 +7,9 @@ namespace Wyam.Extensibility
     {
         IMetadata Metadata { get; }
 
-        // This is a shortcut for getting a metadata value
+        // Shortcuts for getting metadata values
         object this[string key] { get; }
+        object Get(string key, object defaultValue = null);
         
         // Content will never be null (if null is passed in, it'll be converted to string.Empty)
         string Content { get; }
