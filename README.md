@@ -119,7 +119,7 @@ These modules manipulate input documents (by changing content, adding metadata, 
 - #### ReplaceIn (*Wyam.Core*)
   - Replaces a search string in the specified content with the content of an input document. This module is very useful for simple template substitution.
 
-- #### Markdown (*Wyam.Markdown*)
+- #### Markdown (*Wyam.Modules.Markdown*)
   - Replaces markdown content with rendered HTML content.
 
 - #### Liquid (*Planned*)

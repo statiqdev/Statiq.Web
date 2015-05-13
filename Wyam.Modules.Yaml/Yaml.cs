@@ -8,7 +8,7 @@ using Wyam.Extensibility;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;
 
-namespace Wyam.Yaml
+namespace Wyam.Modules.Yaml
 {
     // Parses the content for each input document and then stores a dynamic object representing the first YAML document in metadata with the specified key
     // If no key is specified, then the dynamic object is not added

@@ -11,7 +11,7 @@ using Wyam.Core.Modules;
 using Wyam.Extensibility;
 using YamlDotNet.Dynamic;
 
-namespace Wyam.Yaml.Tests
+namespace Wyam.Modules.Yaml.Tests
 {
     [TestFixture]
     public class YamlFixture

@@ -1,4 +1,4 @@
-Assemblies.AddDirectory(@"..\..\Wyam.Markdown\bin\Debug");
+Assemblies.AddDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
 ---
 Pipelines.Add(
 	ReadFiles("*.md"),

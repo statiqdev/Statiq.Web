@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Extensibility;
 
-namespace Wyam.Markdown
+namespace Wyam.Modules.Markdown
 {
     public class Markdown : IModule
     {
