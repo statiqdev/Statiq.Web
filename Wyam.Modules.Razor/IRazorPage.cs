@@ -23,5 +23,15 @@ namespace Wyam.Modules.Razor
         void EndContext();
         void DefineSection(string name, RenderAsyncDelegate section);
         string Href(string contentPath);
+
+        // Other members not required by the Razor code generator
+        ViewContext ViewContext { get; set; }
+        Action<TextWriter> RenderBodyDelegate { get; set; }
+        bool IsLayoutBeingRendered { get; set; }
+        string Path { get; set; }
+        bool IsPartial { get; set; }
+        IDictionary<string, RenderAsyncDelegate> PreviousSectionWriters { get; set; }
+        IDictionary<string, RenderAsyncDelegate> SectionWriters { get; }
+        void EnsureRenderedBodyOrSections();
     }
 }

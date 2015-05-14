@@ -9,29 +9,37 @@ using System.Threading.Tasks;
 
 namespace Wyam.Modules.Razor
 {
-    // Mostly from https://github.com/aspnet/Mvc/blob/dev/src/Microsoft.AspNet.Mvc.Razor/RazorPage.cs
-    // Also https://github.com/aspnet/Diagnostics/blob/dev/src/Microsoft.AspNet.Diagnostics/Views/BaseView.cs
+    // From https://github.com/aspnet/Mvc/blob/dev/src/Microsoft.AspNet.Mvc.Razor/RazorPage.cs
     public abstract class RazorPage : IRazorPage
     {
         private readonly HashSet<string> _renderedSections = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        private readonly Stack<TextWriter> _writerScopes;
-        private TextWriter _originalWriter;
         private bool _renderedBody;
 
         protected RazorPage()
         {
             SectionWriters = new Dictionary<string, RenderAsyncDelegate>(StringComparer.OrdinalIgnoreCase);
-
-            _writerScopes = new Stack<TextWriter>();
         }
 
         public string Path { get; set; }
+
+        public ViewContext ViewContext { get; set; }
         
         public string Layout { get; set; }
 
         public bool IsPartial { get; set; }
 
-        public virtual TextWriter Output { get; private set; }
+        public virtual TextWriter Output
+        {
+            get
+            {
+                if (ViewContext == null)
+                {
+                    throw new InvalidOperationException("ViewContext must be set.");
+                }
+
+                return ViewContext.Writer;
+            }
+        }
         
         public Action<TextWriter> RenderBodyDelegate { get; set; }
 

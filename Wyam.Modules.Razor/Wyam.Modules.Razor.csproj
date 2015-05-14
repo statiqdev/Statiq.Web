@@ -71,13 +71,24 @@
     <Compile Include="HelperResult.cs" />
     <Compile Include="HtmlString.cs" />
     <Compile Include="IRazorPage.cs" />
+    <Compile Include="IRazorPageFactory.cs" />
+    <Compile Include="IRazorViewEngine.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="IViewStartProvider.cs" />
     <Compile Include="PositionTagged.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Razor.cs" />
     <Compile Include="RazorPage.cs" />
+    <Compile Include="RazorPageFactory.cs" />
+    <Compile Include="RazorPageResult.cs" />
+    <Compile Include="RazorView.cs" />
+    <Compile Include="RazorViewEngine.cs" />
     <Compile Include="RenderAsyncDelegate.cs" />
     <Compile Include="StringCollectionTextWriter.cs" />
     <Compile Include="TaskHelper.cs" />
+    <Compile Include="ViewContext.cs" />
+    <Compile Include="ViewHierarchyUtility.cs" />
+    <Compile Include="ViewStartProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">

@@ -11,6 +11,7 @@ using Wyam.Extensibility;
 
 namespace Wyam.Modules.Razor
 {
+    // TODO: Add support for common HtmlHelpers, especially partial views
     public class Razor : IModule
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
