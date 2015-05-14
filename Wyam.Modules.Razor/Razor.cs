@@ -50,8 +50,9 @@ namespace Wyam.Modules.Razor
                     return x.Clone(string.Empty);
                 }
 
-                // Run the code through the Roslyn scripting engine to get a delegate
+                // TODO: Run the code through the Roslyn scripting engine to get a delegate
 
+                // TODO: Set RazorPage.Path
 
                 // TODO: Cache the generated code for the next time through - what to base it on; a hash of the content?
 

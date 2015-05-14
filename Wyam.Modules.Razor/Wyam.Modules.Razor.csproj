@@ -67,13 +67,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeValue.cs" />
+    <Compile Include="BufferEntryCollection.cs" />
     <Compile Include="HelperResult.cs" />
+    <Compile Include="HtmlString.cs" />
     <Compile Include="IRazorPage.cs" />
     <Compile Include="PositionTagged.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Razor.cs" />
     <Compile Include="RazorPage.cs" />
     <Compile Include="RenderAsyncDelegate.cs" />
+    <Compile Include="StringCollectionTextWriter.cs" />
+    <Compile Include="TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
