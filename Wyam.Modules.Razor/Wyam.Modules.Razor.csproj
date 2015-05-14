@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.4.0.0-beta4\lib\net45\Microsoft.AspNet.Razor.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\Roslyn\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -66,18 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeValue.cs" />
-    <Compile Include="BufferEntryCollection.cs" />
-    <Compile Include="HelperResult.cs" />
-    <Compile Include="HtmlString.cs" />
-    <Compile Include="IRazorPage.cs" />
-    <Compile Include="PositionTagged.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Razor.cs" />
-    <Compile Include="RazorPage.cs" />
-    <Compile Include="RenderAsyncDelegate.cs" />
-    <Compile Include="StringCollectionTextWriter.cs" />
-    <Compile Include="TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
@@ -88,9 +75,6 @@
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
       <Name>Wyam.Extensibility</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

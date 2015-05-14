@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.Razor">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.4.0.0-beta4\lib\net45\Microsoft.AspNet.Razor.dll</HintPath>
-    </Reference>
     <Reference Include="NSubstitute">
       <HintPath>..\packages\NSubstitute.1.8.1.0\lib\net45\NSubstitute.dll</HintPath>
     </Reference>
