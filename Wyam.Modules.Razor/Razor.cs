@@ -18,7 +18,11 @@ namespace Wyam.Modules.Razor
         {
             return inputs.Select(x =>
             {
-                
+                // Create ViewContext
+                // Create ViewEngine
+                // ViewEngine.FindView.EnsureSuccessful()
+                // Get RazorView (result.View)
+                // RazorView.RenderAsync
 
                 return x.Clone(string.Empty);
             });

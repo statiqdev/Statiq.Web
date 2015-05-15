@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-// This is just included in RazorWire to support the uses throughout the MVC code and make differencing easier
+// This is just included in Wyam.Modules.Razor to support the uses throughout the MVC code and make differencing easier
 
 using System;
 

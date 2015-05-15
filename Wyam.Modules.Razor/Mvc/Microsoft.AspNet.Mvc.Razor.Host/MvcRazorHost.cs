@@ -14,15 +14,15 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 {
     public class MvcRazorHost : RazorEngineHost, IMvcRazorHost
     {
-        private const string BaseType = "RazorWire.Microsoft.AspNet.Mvc.Razor.RazorPage";
+        private const string BaseType = "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.RazorPage";
 
         private static readonly string[] _defaultNamespaces = new[]
         {
             "System",
             "System.Linq",
             "System.Collections.Generic",
-            "RazorWire.Microsoft.AspNet.Mvc",
-            "RazorWire.Microsoft.AspNet.Mvc.Rendering",
+            "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
+            "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
         };
 
         // CodeGenerationContext.DefaultBaseClass is set to MyBaseType<dynamic>.
@@ -35,14 +35,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             _baseType = BaseType;
 
             DefaultBaseClass = BaseType + "<" + DefaultModel + ">";
-            DefaultNamespace = "RazorWire";
+            DefaultNamespace = "Wyam.Modules.Razor";
             GeneratedClassContext = new GeneratedClassContext(
                 executeMethodName: "ExecuteAsync",
                 writeMethodName: "Write",
                 writeLiteralMethodName: "WriteLiteral",
                 writeToMethodName: "WriteTo",
                 writeLiteralToMethodName: "WriteLiteralTo",
-                templateTypeName: "RazorWire.Microsoft.AspNet.Mvc.Razor.HelperResult",
+                templateTypeName: "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.HelperResult",
                 defineSectionMethodName: "DefineSection",
                 generatedTagHelperContext: null)
             {
@@ -69,7 +69,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <inheritdoc />
         public string MainClassNamePrefix
         {
-            get { return "RazorWire_"; }
+            get { return "Wyam_"; }
         }
 
         /// <inheritdoc />
