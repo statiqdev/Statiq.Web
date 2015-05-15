@@ -14,25 +14,24 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
     /// </summary>
     public class VirtualPathRazorPageFactory : IRazorPageFactory
     {
+        private readonly string _rootDirectory;
         private readonly IFileProvider _fileProvider;
         private readonly IRazorCompilationService _razorcompilationService;
 
         public VirtualPathRazorPageFactory(string rootDirectory)
         {
+            _rootDirectory = rootDirectory;
             _fileProvider = new PhysicalFileProvider(rootDirectory);
-            _razorcompilationService = new RazorCompilationService(rootDirectory);
-        }
-
-        private IRazorCompilationService RazorCompilationService
-        {
-            get
-            {
-                return _razorcompilationService;
-            }
+            _razorcompilationService = new RazorCompilationService();
         }
 
         /// <inheritdoc />
         public IRazorPage CreateInstance([NotNull] string relativePath)
+        {
+            return CreateInstance(relativePath, null);
+        }
+
+        public IRazorPage CreateInstance([NotNull] string relativePath, string content)
         {
             if (relativePath.StartsWith("~/", StringComparison.Ordinal))
             {
@@ -41,10 +40,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             }
 
             // Some of this code is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
-            var fileInfo = _fileProvider.GetFileInfo(relativePath);
+            var fileProvider = content == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, content);
+            var fileInfo = fileProvider.GetFileInfo(relativePath);
             var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
             Type result = _razorcompilationService.Compile(relativeFileInfo);
-            
+
             var page = (IRazorPage)Activator.CreateInstance(result);
             page.Path = relativePath;
 

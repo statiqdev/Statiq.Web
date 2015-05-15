@@ -14,5 +14,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <param name="relativePath">The path to locate the page.</param>
         /// <returns>The IRazorPage instance if it exists, null otherwise.</returns>
         IRazorPage CreateInstance(string relativePath);
+
+        // Creates a IRazorPage for the specified path that uses the specified content
+        IRazorPage CreateInstance(string relativePath, string content);
     }
 }

@@ -60,6 +60,20 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return _viewLocationFormats; }
         }
 
+        // Gets a view that acts like a normal file-based view, but uses the provided content
+        public ViewEngineResult GetView([NotNull] ViewContext context,
+                                         string viewName,
+                                         string content)
+        {
+            if (string.IsNullOrEmpty(viewName))
+            {
+                throw new ArgumentException("viewName");
+            }
+
+            var pageResult = GetRazorPageResult(context, viewName, isPartial: false, content: content);
+            return CreateViewEngineResult(pageResult, _viewFactory, isPartial: false);
+        }
+
         /// <inheritdoc />
         public ViewEngineResult FindView([NotNull] ViewContext context,
                                          string viewName)
@@ -100,7 +114,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
         private RazorPageResult GetRazorPageResult(ViewContext context,
                                                    string pageName,
-                                                   bool isPartial)
+                                                   bool isPartial,
+                                                   string content = null)
         {
             if (IsApplicationRelativePath(pageName))
             {
@@ -110,7 +125,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                     applicationRelativePath += ViewExtension;
                 }
 
-                var page = _pageFactory.CreateInstance(applicationRelativePath);
+                var page = _pageFactory.CreateInstance(applicationRelativePath, content);
                 if (page != null)
                 {
                     return new RazorPageResult(pageName, page);

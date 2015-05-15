@@ -26,12 +26,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
     public class RazorCompilationService : IRazorCompilationService
     {
         private readonly IMvcRazorHost _razorHost;
-        private readonly IFileProvider _fileProvider;
 
-        public RazorCompilationService(string rootDirectory)
+        public RazorCompilationService()
         {
             _razorHost = new MvcRazorHost();
-            _fileProvider = new PhysicalFileProvider(rootDirectory);
         }
 
         /// <inheritdoc />
@@ -48,12 +46,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                 throw new AggregateException(results.ParserErrors.Select(x => new Exception(x.Message)));
             }
 
-            return Compile(file, results.GeneratedCode);
+            return Compile(results.GeneratedCode);
         }
 
         // Use the Roslyn scripting engine for compilation - in MVC, this part is done in RoslynCompilationService
-        private Type Compile([NotNull] RelativeFileInfo fileInfo, [NotNull] string compilationContent)
+        private Type Compile([NotNull] string compilationContent)
         {
+            // TODO: Get assemblies from Wyam engine
             HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
             {
                 Assembly.GetAssembly(typeof(object)),  // System
@@ -61,16 +60,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                 Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions)),  // System.Linq
                 Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject))
             };
-
-            HashSet<string> namespaces = new HashSet<string>(_razorHost.NamespaceImports);
             
-            // Evaluate the script
-            ScriptOptions options = new ScriptOptions()
-                .WithReferences(assemblies)
-                .WithNamespaces(namespaces);
-            var script = CSharpScript.Create(compilationContent, options);
-
-
             var assemblyName = Path.GetRandomFileName();
             var parseOptions = new CSharpParseOptions();
             var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(compilationContent, Encoding.UTF8), parseOptions, assemblyName);

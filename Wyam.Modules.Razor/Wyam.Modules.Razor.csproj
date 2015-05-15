@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Common\Microsoft.Framework.BufferEntryCollection.Sources\BufferEntryCollection.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
+    <Compile Include="DocumentFileProvider.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Common\TaskHelper.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\HtmlString.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\StringCollectionTextWriter.cs" />
