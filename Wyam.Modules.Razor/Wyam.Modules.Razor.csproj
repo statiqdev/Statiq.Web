@@ -30,6 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNet.FileProviders, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.FileProviders.1.0.0-beta4\lib\net45\Microsoft.AspNet.FileProviders.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.FileProviders.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.FileProviders.Interfaces.1.0.0-beta4\lib\net45\Microsoft.AspNet.FileProviders.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Razor">
       <HintPath>..\packages\Microsoft.AspNet.Razor.4.0.0-beta4\lib\net45\Microsoft.AspNet.Razor.dll</HintPath>
     </Reference>
@@ -51,6 +59,10 @@
     <Reference Include="Microsoft.CodeAnalysis.Scripting.CSharp">
       <HintPath>..\Roslyn\Microsoft.CodeAnalysis.Scripting.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Framework.Caching.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Framework.Caching.Interfaces.1.0.0-beta4\lib\net45\Microsoft.Framework.Caching.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\Roslyn\System.Collections.Immutable.dll</HintPath>
@@ -66,6 +78,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Microsoft.Framework.BufferEntryCollection.Sources\BufferEntryCollection.cs" />
+    <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Common\TaskHelper.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\HtmlString.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\StringCollectionTextWriter.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\IView.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\IViewEngine.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\ViewEngineResult.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\ViewContext.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\IMvcRazorHost.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\MvcRazorHost.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\ViewHierarchyUtility.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\AttributeValue.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\IRazorCompilationService.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RazorCompilationService.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RelativeFileInfo.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\HelperResult.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPage.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPageFactory.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorViewEngine.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorViewFactory.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IViewStartProvider.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\PositionTagged.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorPage.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorPageResult.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorView.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorViewEngine.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorViewFactory.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RenderAsyncDelegate.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\ViewStartProvider.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\VirtualPathRazorPageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Razor.cs" />
   </ItemGroup>
