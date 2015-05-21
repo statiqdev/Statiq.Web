@@ -17,6 +17,8 @@ namespace Wyam.Modules.Razor.Tests
         public void RazorTest()
         {
             // Given
+            IPipelineContext context = Substitute.For<IPipelineContext>();
+            context.RootFolder.Returns(Environment.CurrentDirectory);
             IDocument document = Substitute.For<IDocument>();
             IEnumerable<KeyValuePair<string, object>> items = null;
             document
@@ -26,7 +28,7 @@ namespace Wyam.Modules.Razor.Tests
             Razor razor = new Razor();
 
             // When
-            razor.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
         }

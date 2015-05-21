@@ -46,10 +46,10 @@ namespace Wyam
             }
 
             // Make sure the root folder actually exists
-            _rootFolder = _rootFolder == null ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _rootFolder);
-            if (!Directory.Exists(_rootFolder))
+            _engine.RootFolder = _rootFolder == null ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _rootFolder);
+            if (!Directory.Exists(_engine.RootFolder))
             {
-                _engine.Trace.Critical("Specified folder {0} does not exist.", _rootFolder);
+                _engine.Trace.Critical("Specified folder {0} does not exist.", _engine.RootFolder);
                 return;
             }
 
@@ -84,7 +84,6 @@ namespace Wyam
         }
 
         // Very simple command line parsing
-        // TODO: Specify additional metadata (such as input paths) on the command line
         private bool ParseArgs(string[] args)
         {
             for (int c = 0; c < args.Length; c++)

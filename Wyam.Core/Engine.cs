@@ -51,6 +51,21 @@ namespace Wyam.Core
             get { return _trace; }
         }
 
+        private string _rootFolder = Environment.CurrentDirectory;
+
+        public string RootFolder
+        {
+            get { return _rootFolder; }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("RootFolder");
+                }
+                _rootFolder = value;
+            }
+        }
+
         public Engine()
         {
             _metadata = new Dictionary<string, object>();

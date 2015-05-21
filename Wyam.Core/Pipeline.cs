@@ -30,6 +30,11 @@ namespace Wyam.Core
             get { return _engine.Trace; }
         }
 
+        public string RootFolder
+        {
+            get { return _engine.RootFolder; }
+        }
+
         public IReadOnlyList<IDocument> CompletedDocuments
         {
             get { return _completedDocuments; }

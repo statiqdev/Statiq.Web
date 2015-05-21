@@ -18,5 +18,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <param name="viewName">The name or full path to the view.</param>
         /// <returns>A result representing the result of locating the <see cref="IRazorPage"/>.</returns>
         RazorPageResult FindPage(ViewContext context, string page);
+
+        ViewEngineResult GetView(ViewContext context, string viewName, string content);
     }
 }

@@ -8,6 +8,7 @@ namespace Wyam.Extensibility
 {
     public interface IPipelineContext
     {
+        string RootFolder { get; }
         ITrace Trace { get; }
         IReadOnlyList<IDocument> CompletedDocuments { get; }
 
