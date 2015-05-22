@@ -27,7 +27,10 @@ namespace Wyam.Modules.Razor
 
             return inputs.Select(x =>
             {
-                ViewContext viewContext = new ViewContext(null, null);
+                ViewContext viewContext = new ViewContext(null, null)
+                {
+                    Metadata = x.Metadata
+                };
                 ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext,
                     (string) x.Metadata.Get("FileBase", "/"), x.Content).EnsureSuccessful();
                 using (StringWriter writer = new StringWriter())

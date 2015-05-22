@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
+using Wyam.Extensibility;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
@@ -40,5 +41,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// This property contains the path of the file currently being rendered.
         /// </remarks>
         public string ExecutingFilePath { get; set; }
+
+        public IMetadata Metadata { get; set; }
     }
 }

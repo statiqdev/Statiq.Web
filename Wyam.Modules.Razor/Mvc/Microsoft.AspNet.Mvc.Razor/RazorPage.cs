@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Wyam.Extensibility;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
@@ -35,6 +37,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
         /// <inheritdoc />
         public bool IsPartial { get; set; }
+
+        public IMetadata Metadata
+        {
+            get { return ViewContext.Metadata; }
+        }
 
         /// <summary>
         /// Gets the TextWriter that the page is writing output to.

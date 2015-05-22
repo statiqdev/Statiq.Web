@@ -36,5 +36,30 @@ namespace Wyam.Modules.Razor.Tests
             Assert.AreEqual(1, items.Count());
             Assert.AreEqual(" <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ", items.First());
         }
+
+        [Test]
+        public void ExistingMetadataIsRendered()
+        {
+            // Given
+            IPipelineContext context = Substitute.For<IPipelineContext>();
+            context.RootFolder.Returns(Environment.CurrentDirectory);
+            IDocument document = Substitute.For<IDocument>();
+            document.Metadata.Get("FileBase", "/").Returns("/");
+            document.Metadata["MyKey"].Returns("MyValue");
+            List<string> items = new List<string>();
+            document
+                .When(x => x.Clone(Arg.Any<string>()))
+                .Do(x => items.Add(x.Arg<string>()));
+            document.Content.Returns(@"<p>@Metadata[""MyKey""]</p>");
+            Razor razor = new Razor();
+
+            // When
+            razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            document.Received().Clone(Arg.Any<string>());
+            Assert.AreEqual(1, items.Count());
+            Assert.AreEqual("<p>MyValue</p>", items.First());
+        }
     }
 }

@@ -59,7 +59,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                 Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)),  // System.Collections.Generic 
                 Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions)),  // System.Linq
                 Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),
-                Assembly.GetAssembly(typeof(Wyam.Modules.Razor.Razor))  // Wyam.Modules.Razor
+                Assembly.GetAssembly(typeof(Extensibility.IMetadata)),  // Wyam.Extensibility
+                Assembly.GetAssembly(typeof(Modules.Razor.Razor))  // Wyam.Modules.Razor
             };
             
             var assemblyName = Path.GetRandomFileName();
