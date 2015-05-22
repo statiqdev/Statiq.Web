@@ -30,7 +30,7 @@ namespace Wyam.Core.Modules
             _search = search;
         }
 
-        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
             if (content == null)
             {

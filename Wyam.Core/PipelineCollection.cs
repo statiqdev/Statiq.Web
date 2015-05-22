@@ -11,7 +11,7 @@ namespace Wyam.Core
     internal class PipelineCollection : IPipelineCollection
     {
         private readonly Engine _engine;
-        private readonly List<Pipeline> _pipelines = new List<Pipeline>();
+        private readonly Dictionary<string, Pipeline> _pipelines = new Dictionary<string, Pipeline>();
 
         public PipelineCollection(Engine engine)
         {
@@ -20,14 +20,27 @@ namespace Wyam.Core
 
         public IPipeline Add(params IModule[] modules)
         {
-            Pipeline pipeline = new Pipeline(_engine, modules, _engine.CompletedDocuments);
-            _pipelines.Add(pipeline);
+            return Add(null, modules);
+        }
+
+        public IPipeline Add(string name, params IModule[] modules)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "Pipeline " + (_pipelines.Count + 1);
+            }
+            if (_pipelines.ContainsKey(name))
+            {
+                throw new ArgumentException("Pipelines must have a unique name.");
+            }
+            Pipeline pipeline = new Pipeline(name, _engine, modules);
+            _pipelines.Add(name, pipeline);
             return pipeline;
         }
 
         public IEnumerable<Pipeline> Pipelines
         {
-            get { return _pipelines; }
+            get { return _pipelines.Values; }
         }
 
         public int Count

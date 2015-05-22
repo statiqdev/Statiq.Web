@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Abstractions
 {
-    public interface IPipelineCollection
+    public interface IEngine
     {
-        IPipeline Add(params IModule[] modules);
+        // TODO: Add accessors for assemblies and namespaces
     }
 }

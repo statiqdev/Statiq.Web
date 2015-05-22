@@ -26,10 +26,10 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IEnumerable<IDocument> documents = _predicate == null ? inputs : inputs.Where(_predicate);
-            pipeline.Execute(_modules, documents);
+            context.Execute(_modules, documents);
             return inputs;
         }
     }

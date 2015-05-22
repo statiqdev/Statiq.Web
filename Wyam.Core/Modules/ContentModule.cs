@@ -38,20 +38,20 @@ namespace Wyam.Core.Modules
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (_modules != null)
             {
                 if (_forEachDocument)
                 {
-                    return inputs.SelectMany(input => pipeline.Execute(_modules, new[] { input }).SelectMany(result => Execute(result.Content, input, pipeline)));
+                    return inputs.SelectMany(input => context.Execute(_modules, new[] { input }).SelectMany(result => Execute(result.Content, input, context)));
                 }
-                return pipeline.Execute(_modules, null).SelectMany(result => inputs.SelectMany(input => Execute(result.Content, input, pipeline)));
+                return context.Execute(_modules, null).SelectMany(result => inputs.SelectMany(input => Execute(result.Content, input, context)));
             }
-            return inputs.SelectMany(x => Execute(_content(x), x, pipeline));
+            return inputs.SelectMany(x => Execute(_content(x), x, context));
         }
 
         // Note that content can be passed in as null, implementors should guard against that
-        protected abstract IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline);
+        protected abstract IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context);
     }
 }

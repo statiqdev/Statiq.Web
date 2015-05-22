@@ -33,7 +33,7 @@ namespace Wyam.Core.Modules
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             foreach (IDocument input in inputs)
             {
@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(path));
                         File.WriteAllText(path, input.Content);
-                        pipeline.Trace.Verbose("Wrote file {0}", path);
+                        context.Trace.Verbose("Wrote file {0}", path);
                     }
                 }
                 yield return input;

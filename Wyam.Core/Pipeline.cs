@@ -7,17 +7,30 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    internal class Pipeline : IPipeline, IPipelineContext
+    internal class Pipeline : IPipeline
     {
+        private readonly string _name;
         private readonly Engine _engine;
         private readonly IModule[] _modules;
-        private readonly IReadOnlyList<IDocument> _completedDocuments;
 
-        public Pipeline(Engine engine, IModule[] modules, IReadOnlyList<IDocument> completedDocuments)
+        public Pipeline(string name, Engine engine, IModule[] modules)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("name");
+            }
+            if (engine == null)
+            {
+                throw new ArgumentNullException("engine");
+            }
+            _name = name;
             _engine = engine;
             _modules = modules;
-            _completedDocuments = completedDocuments;
+        }
+
+        public string Name
+        {
+            get { return _name; }
         }
 
         public int Count
@@ -25,45 +38,31 @@ namespace Wyam.Core
             get { return _modules.Length; }
         }
 
-        public ITrace Trace
-        {
-            get { return _engine.Trace; }
-        }
-
-        public string RootFolder
-        {
-            get { return _engine.RootFolder; }
-        }
-
-        public IReadOnlyList<IDocument> CompletedDocuments
-        {
-            get { return _completedDocuments; }
-        }
-
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
             List<IDocument> documents = inputDocuments == null 
                 ? new List<IDocument> { new Document(new Metadata(_engine)) } : inputDocuments.ToList();
+            ExecutionContext context = new ExecutionContext(_engine, this);
             if (modules != null)
             {
                 foreach (IModule module in modules.Where(x => x != null))
                 {
                     string moduleName = module.GetType().Name;
-                    Trace.Information("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
-                    int indent = Trace.Indent();
+                    _engine.Trace.Information("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
+                    int indent = _engine.Trace.Indent();
                     try
                     {
                         // Make sure we clone the output context if it's the same as the input
-                        IEnumerable<IDocument> outputs = module.Execute(documents, this);
+                        IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
-                        Trace.IndentLevel = indent;
-                        Trace.Information("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
+                        _engine.Trace.IndentLevel = indent;
+                        _engine.Trace.Information("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
                     }
                     catch (Exception ex)
                     {
-                        Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
-                        Trace.Verbose(ex.ToString());
-                        Trace.IndentLevel = indent;
+                        _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
+                        _engine.Trace.Verbose(ex.ToString());
+                        _engine.Trace.IndentLevel = indent;
                         documents = new List<IDocument>();
                         break;
                     }

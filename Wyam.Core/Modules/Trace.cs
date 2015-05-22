@@ -37,9 +37,9 @@ namespace Wyam.Core.Modules
             _traceEventType = traceEventType;
         }
 
-        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            pipeline.Trace.TraceEvent(_traceEventType, content.ToString());
+            context.Trace.TraceEvent(_traceEventType, content.ToString());
             return new [] { input };
         }
     }

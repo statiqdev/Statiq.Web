@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests
             ValueKey = valueKey;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ExecuteCount++;
             foreach (IDocument input in inputs)

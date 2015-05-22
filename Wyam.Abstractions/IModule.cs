@@ -8,7 +8,7 @@ namespace Wyam.Abstractions
 {
     public interface IModule
     {
-        // This should not be called directly, instead call IPipelineContext.Execute() if you need to execute a module from within another module
-        IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline);
+        // This should not be called directly, instead call IExecutionContext.Execute() if you need to execute a module from within another module
+        IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context);
     }
 }

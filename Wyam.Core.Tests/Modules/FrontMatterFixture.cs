@@ -18,7 +18,8 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 ---
@@ -32,7 +33,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -49,7 +50,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 ---
@@ -63,7 +65,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -81,7 +83,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 ABC
@@ -95,7 +98,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -112,7 +115,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 !!!!
@@ -126,7 +130,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -143,7 +147,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 !!!!  
@@ -157,7 +162,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -174,7 +179,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
   !!!!
@@ -188,7 +194,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -206,7 +212,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 
@@ -222,7 +229,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -241,7 +248,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"FM1
 FM2
 !
@@ -255,7 +263,7 @@ Content2") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(1, documents.Count());
@@ -272,7 +280,8 @@ Content2", documents.First().Content);
             // Given
             Engine engine = new Engine();
             Metadata metadata = new Metadata(engine);
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(metadata).Clone(@"AA
 -
 XX"), new Document(metadata).Clone(@"BB
@@ -286,7 +295,7 @@ YY") };
             }));
 
             // When
-            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, pipeline);
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
 
             // Then
             Assert.AreEqual(2, documents.Count());

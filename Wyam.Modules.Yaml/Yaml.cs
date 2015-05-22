@@ -29,7 +29,7 @@ namespace Wyam.Modules.Yaml
             _flatten = flatten;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Select(x =>
             {

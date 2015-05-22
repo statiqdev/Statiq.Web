@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Wyam.Abstractions;
 using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration

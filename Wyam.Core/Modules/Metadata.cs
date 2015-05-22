@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (_modules != null)
             {
@@ -56,7 +56,7 @@ namespace Wyam.Core.Modules
                 {
                     return inputs.Select(input =>
                     {
-                        foreach (IDocument result in pipeline.Execute(_modules, new[] { input }))
+                        foreach (IDocument result in context.Execute(_modules, new[] { input }))
                         {
                             foreach (KeyValuePair<string, object> kvp in result.Metadata)
                             {
@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules
                 }
 
                 // Execute the modules once and apply to each input document
-                foreach (IDocument result in pipeline.Execute(_modules, null))
+                foreach (IDocument result in context.Execute(_modules, null))
                 {
                     foreach (KeyValuePair<string, object> kvp in result.Metadata)
                     {

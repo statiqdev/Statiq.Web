@@ -25,7 +25,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IPipelineContext pipeline)
+        protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
             return new [] { content == null ? input : input.Clone(content.ToString()) };
         }

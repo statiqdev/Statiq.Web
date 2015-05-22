@@ -51,11 +51,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
             // When
-            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, pipeline).ToList();
+            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -73,11 +74,12 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
-            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, pipeline).ToList();
+            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -95,14 +97,15 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["FileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
-            IPipelineContext pipeline = new Pipeline(engine, null, null);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles(x => null);
 
             // When
-            IDocument context = writeFiles.Execute(inputs, pipeline).First();
+            IDocument document = writeFiles.Execute(inputs, context).First();
 
             // Then
-            Assert.AreEqual("Test", context.Content);
+            Assert.AreEqual("Test", document.Content);
         }
     }
 }

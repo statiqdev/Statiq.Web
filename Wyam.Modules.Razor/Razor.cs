@@ -18,9 +18,9 @@ namespace Wyam.Modules.Razor
     // TODO: Add support for common HtmlHelpers, especially partial views
     public class Razor : IModule
     {
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(pipeline.RootFolder);
+            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.RootFolder);
             IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory);
             IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
             IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);

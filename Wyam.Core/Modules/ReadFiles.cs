@@ -36,7 +36,7 @@ namespace Wyam.Core.Modules
             _searchOption = searchOption;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             foreach (IDocument input in inputs)
             {
@@ -47,7 +47,7 @@ namespace Wyam.Core.Modules
                     foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
                     {
                         string content = File.ReadAllText(file);
-                        pipeline.Trace.Verbose("Read file {0}", file);
+                        context.Trace.Verbose("Read file {0}", file);
                         yield return input.Clone(content, new Dictionary<string, object>
                         {
                             {"FileRoot", Path.GetDirectoryName(path)},

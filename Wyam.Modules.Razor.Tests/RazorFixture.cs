@@ -17,7 +17,7 @@ namespace Wyam.Modules.Razor.Tests
         public void SimpleTemplateIsRendered()
         {
             // Given
-            IPipelineContext context = Substitute.For<IPipelineContext>();
+            IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
@@ -41,7 +41,7 @@ namespace Wyam.Modules.Razor.Tests
         public void ExistingMetadataIsRendered()
         {
             // Given
-            IPipelineContext context = Substitute.For<IPipelineContext>();
+            IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");

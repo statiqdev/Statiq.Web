@@ -75,10 +75,9 @@
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\ConfigGlobals.cs" />
     <Compile Include="Configuration\Configurator.cs" />
-    <Compile Include="Configuration\IAssemblyCollection.cs" />
-    <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\NamespacesCollection.cs" />
     <Compile Include="Configuration\SetupGlobals.cs" />
+    <Compile Include="ExecutionContext.cs" />
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Modules\FrontMatter.cs" />
     <Compile Include="Modules\Replace.cs" />
@@ -86,8 +85,6 @@
     <Compile Include="Modules\Trace.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
-    <Compile Include="IPipeline.cs" />
-    <Compile Include="IPipelineCollection.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Modules\Append.cs" />
     <Compile Include="Modules\Branch.cs" />

@@ -131,7 +131,7 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.Add(
+            engine.Pipelines.Add("Pipeline",
                 new Execute(x => new[]
                 {
                     x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
@@ -146,21 +146,21 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.CompletedDocuments.Count);
+            Assert.AreEqual(2, engine.CompletedDocuments["Pipeline"].Count);
 
-            Assert.IsTrue(engine.CompletedDocuments[0].Metadata.ContainsKey("0"));
-            Assert.AreEqual(0, engine.CompletedDocuments[0].Metadata["0"]);
-            Assert.IsTrue(engine.CompletedDocuments[0].Metadata.ContainsKey("2"));
-            Assert.AreEqual(2, engine.CompletedDocuments[0].Metadata["2"]);
-            Assert.IsFalse(engine.CompletedDocuments[0].Metadata.ContainsKey("1"));
-            Assert.IsFalse(engine.CompletedDocuments[0].Metadata.ContainsKey("3"));
+            Assert.IsTrue(engine.CompletedDocuments["Pipeline"][0].Metadata.ContainsKey("0"));
+            Assert.AreEqual(0, engine.CompletedDocuments["Pipeline"][0].Metadata["0"]);
+            Assert.IsTrue(engine.CompletedDocuments["Pipeline"][0].Metadata.ContainsKey("2"));
+            Assert.AreEqual(2, engine.CompletedDocuments["Pipeline"][0].Metadata["2"]);
+            Assert.IsFalse(engine.CompletedDocuments["Pipeline"][0].Metadata.ContainsKey("1"));
+            Assert.IsFalse(engine.CompletedDocuments["Pipeline"][0].Metadata.ContainsKey("3"));
 
-            Assert.IsTrue(engine.CompletedDocuments[1].Metadata.ContainsKey("1"));
-            Assert.AreEqual(1, engine.CompletedDocuments[1].Metadata["1"]);
-            Assert.IsTrue(engine.CompletedDocuments[1].Metadata.ContainsKey("3"));
-            Assert.AreEqual(3, engine.CompletedDocuments[1].Metadata["3"]);
-            Assert.IsFalse(engine.CompletedDocuments[1].Metadata.ContainsKey("0"));
-            Assert.IsFalse(engine.CompletedDocuments[1].Metadata.ContainsKey("2"));
+            Assert.IsTrue(engine.CompletedDocuments["Pipeline"][1].Metadata.ContainsKey("1"));
+            Assert.AreEqual(1, engine.CompletedDocuments["Pipeline"][1].Metadata["1"]);
+            Assert.IsTrue(engine.CompletedDocuments["Pipeline"][1].Metadata.ContainsKey("3"));
+            Assert.AreEqual(3, engine.CompletedDocuments["Pipeline"][1].Metadata["3"]);
+            Assert.IsFalse(engine.CompletedDocuments["Pipeline"][1].Metadata.ContainsKey("0"));
+            Assert.IsFalse(engine.CompletedDocuments["Pipeline"][1].Metadata.ContainsKey("2"));
         }
 
         [Test]
@@ -184,9 +184,9 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.CompletedDocuments.Count);
-            Assert.AreEqual("2", engine.CompletedDocuments[0].Content);
-            Assert.AreEqual("3", engine.CompletedDocuments[1].Content);
+            Assert.AreEqual(2, engine.CompletedDocuments["Pipeline 1"].Count);
+            Assert.AreEqual("2", engine.CompletedDocuments["Pipeline 1"][0].Content);
+            Assert.AreEqual("3", engine.CompletedDocuments["Pipeline 1"][1].Content);
         }
     }
 }

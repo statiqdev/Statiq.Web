@@ -33,7 +33,7 @@ namespace Wyam.Core.Modules
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<IDocument> results = new List<IDocument>();
             IEnumerable<IDocument> documents = inputs;
@@ -55,7 +55,7 @@ namespace Wyam.Core.Modules
                 }
 
                 // Run the modules on the documents that satisfy the predicate
-                results.AddRange(pipeline.Execute(condition.Item2, handled));
+                results.AddRange(context.Execute(condition.Item2, handled));
 
                 // Continue with the documents that don't satisfy the predicate
                 documents = unhandled;

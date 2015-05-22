@@ -38,7 +38,7 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IPipelineContext pipeline)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             foreach (IDocument input in inputs)
             {
@@ -53,7 +53,7 @@ namespace Wyam.Core.Modules
                     string frontMatter = string.Join("\n", inputLines.Take(delimiterLine)) + "\n";
                     inputLines.RemoveRange(0, delimiterLine + 1);
                     string content = string.Join("\n", inputLines);
-                    foreach (IDocument result in pipeline.Execute(_modules, new[] { input.Clone(frontMatter) }))
+                    foreach (IDocument result in context.Execute(_modules, new[] { input.Clone(frontMatter) }))
                     {
                         yield return result.Clone(content);
                     }
