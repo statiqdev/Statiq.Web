@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wyam.Extensibility")]
+[assembly: AssemblyTitle("Wyam.Abstractions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dave Glick")]
-[assembly: AssemblyProduct("Wyam.Extensibility")]
+[assembly: AssemblyProduct("Wyam.Abstractions")]
 [assembly: AssemblyCopyright("Copyright © Dave Glick")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

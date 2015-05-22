@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;
 

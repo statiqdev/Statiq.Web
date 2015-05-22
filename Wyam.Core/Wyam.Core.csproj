@@ -117,9 +117,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Extensibility\Wyam.Extensibility.csproj">
+    <ProjectReference Include="..\Wyam.Abstractions\Wyam.Abstractions.csproj">
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
-      <Name>Wyam.Extensibility</Name>
+      <Name>Wyam.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

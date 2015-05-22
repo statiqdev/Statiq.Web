@@ -8,7 +8,7 @@ using Microsoft.AspNet.Razor;
 using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Parser.SyntaxTree;
 using Wyam.Core;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;

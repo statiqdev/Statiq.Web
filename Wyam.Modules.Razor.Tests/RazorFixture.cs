@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Modules.Razor.Tests
 {

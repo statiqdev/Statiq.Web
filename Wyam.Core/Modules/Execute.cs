@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Core;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core.Modules
 {

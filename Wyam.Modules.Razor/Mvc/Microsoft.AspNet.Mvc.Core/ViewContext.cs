@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Core.Modules;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core.Tests.Modules
 {

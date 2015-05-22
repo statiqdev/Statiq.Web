@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core
 {

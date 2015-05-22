@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Extensibility
+namespace Wyam.Abstractions
 {
     public interface ITrace
     {

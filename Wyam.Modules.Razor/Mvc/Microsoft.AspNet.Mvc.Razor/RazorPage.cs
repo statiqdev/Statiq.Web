@@ -10,7 +10,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

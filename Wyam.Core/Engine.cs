@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Scripting.CSharp;
 using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core
 {

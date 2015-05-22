@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using NuGet;
 using Wyam.Core.NuGet;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core.Configuration
 {
@@ -130,7 +130,7 @@ namespace Wyam.Core.Configuration
                     Assembly.GetAssembly(typeof(System.IO.Path)), // System.IO
                     Assembly.GetAssembly(typeof(System.Diagnostics.TraceSource)), // System.Diagnostics
                     Assembly.GetAssembly(typeof(Wyam.Core.Engine)), // Wyam.Core
-                    Assembly.GetAssembly(typeof(Wyam.Extensibility.IModule)) // Wyam.Extensibility
+                    Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule)) // Wyam.Abstractions
                 };
 
                 HashSet<string> namespaces = new HashSet<string>()
@@ -144,7 +144,7 @@ namespace Wyam.Core.Configuration
                     "Wyam.Core.Configuration",
                     "Wyam.Core.Modules",
                     "Wyam.Core.Helpers",
-                    "Wyam.Extensibility"
+                    "Wyam.Abstractions"
                 };
                 namespaces.AddRange(_namespaces.Ns);
 

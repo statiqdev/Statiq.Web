@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Wyam.Extensibility;
+using Wyam.Abstractions;
 
 namespace Wyam.Core.Modules
 {
