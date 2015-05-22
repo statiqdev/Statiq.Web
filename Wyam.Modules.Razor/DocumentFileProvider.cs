@@ -49,12 +49,12 @@ namespace Wyam.Modules.Razor
 
             public bool Exists
             {
-                get { return _info.Exists; }
+                get { return true; }
             }
 
             public long Length
             {
-                get { return _info.Length; }
+                get { return _content.Length; }
             }
 
             public string PhysicalPath
@@ -69,12 +69,12 @@ namespace Wyam.Modules.Razor
 
             public DateTimeOffset LastModified
             {
-                get { return _info.LastModified; }
+                get { return DateTimeOffset.Now; }
             }
 
             public bool IsDirectory
             {
-                get { return _info.IsDirectory; }
+                get { return false; }
             }
 
             public Stream CreateReadStream()

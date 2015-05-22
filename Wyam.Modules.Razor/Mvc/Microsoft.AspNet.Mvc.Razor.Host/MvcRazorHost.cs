@@ -34,7 +34,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         {
             _baseType = BaseType;
 
-            DefaultBaseClass = BaseType + "<" + DefaultModel + ">";
+            DefaultBaseClass = BaseType;
             DefaultNamespace = "Wyam.Modules.Razor";
             GeneratedClassContext = new GeneratedClassContext(
                 executeMethodName: "ExecuteAsync",

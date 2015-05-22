@@ -42,6 +42,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             // Some of this code is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
             var fileProvider = content == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, content);
             var fileInfo = fileProvider.GetFileInfo(relativePath);
+            if (!fileInfo.Exists)
+            {
+                return null;
+            }
             var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
             Type result = _razorcompilationService.Compile(relativeFileInfo);
 
