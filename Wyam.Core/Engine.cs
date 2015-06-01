@@ -84,13 +84,21 @@ namespace Wyam.Core
 
         public void Configure(string configScript = null)
         {
-            if(_configured)
+            try
             {
-                throw new InvalidOperationException("This engine has already been configured.");
+                if(_configured)
+                {
+                    throw new InvalidOperationException("This engine has already been configured.");
+                }
+                _configured = true;
+                Configurator configurator = new Configurator(this);
+                configurator.Configure(configScript);
             }
-            _configured = true;
-            Configurator configurator = new Configurator(this);
-            configurator.Configure(configScript);
+            catch (Exception ex)
+            {
+                Trace.Verbose("Exception: {0}", ex);
+                throw;
+            }
         }
 
         public void ConfigureDefaultPipelines()
@@ -101,8 +109,16 @@ namespace Wyam.Core
                 Configure();
             }
 
-            Configurator configurator = new Configurator(this);
-            configurator.ConfigureDefaultPipelines();
+            try
+            {
+                Configurator configurator = new Configurator(this);
+                configurator.ConfigureDefaultPipelines();
+            }
+            catch (Exception ex)
+            {
+                Trace.Verbose("Exception: {0}", ex);
+                throw;
+            }
         }
 
         public void Execute()
@@ -113,19 +129,27 @@ namespace Wyam.Core
                 Configure();
             }
 
-            Trace.Information("Executing {0} pipelines...", _pipelines.Count);
-            _completedDocuments.Clear();
-            int c = 1;
-            foreach(Pipeline pipeline in _pipelines.Pipelines)
+            try
             {
-                Trace.Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)...", pipeline.Name, c, _pipelines.Count, pipeline.Count);
-                int indent = Trace.Indent();
-                IReadOnlyList<IDocument> results = pipeline.Execute();
-                _completedDocuments.Add(pipeline.Name, results);
-                Trace.IndentLevel = indent;
-                Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", pipeline.Name, c++, _pipelines.Count, results.Count);
+                Trace.Information("Executing {0} pipelines...", _pipelines.Count);
+                _completedDocuments.Clear();
+                int c = 1;
+                foreach(Pipeline pipeline in _pipelines.Pipelines)
+                {
+                    Trace.Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)...", pipeline.Name, c, _pipelines.Count, pipeline.Count);
+                    int indent = Trace.Indent();
+                    IReadOnlyList<IDocument> results = pipeline.Execute();
+                    _completedDocuments.Add(pipeline.Name, results);
+                    Trace.IndentLevel = indent;
+                    Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", pipeline.Name, c++, _pipelines.Count, results.Count);
+                }
+                Trace.Information("Executed {0} pipelines.", _pipelines.Count);
             }
-            Trace.Information("Executed {0} pipelines.", _pipelines.Count);
+            catch (Exception ex)
+            {
+                Trace.Verbose("Exception: {0}", ex);
+                throw;
+            }
         }
     }
 }

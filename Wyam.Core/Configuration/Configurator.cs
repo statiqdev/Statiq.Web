@@ -83,22 +83,24 @@ namespace Wyam.Core.Configuration
                         "System",
                         "Wyam.Core",
                         "Wyam.Core.Configuration",
-                        "Wyam.Core.NuGet")
+                        "Wyam.Core.NuGet",
+                        "Wyam.Abstractions")
                     .AddReferences(
                         Assembly.GetAssembly(typeof(object)),  // System
-                        Assembly.GetAssembly(typeof(Engine)));  // Wyam.Core
+                        Assembly.GetAssembly(typeof(Engine)),  //Wyam.Core
+                        Assembly.GetAssembly(typeof(IAssemblyCollection)));  // Wyam.Abstractions
 
                 // Evaluate the script
                 CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_packages, _assemblies, _namespaces));
             }
             catch (CompilationErrorException compilationError)
             {
-                _engine.Trace.Error("Error compiling pre-configuration: {0}", compilationError.ToString());
+                _engine.Trace.Error("Error compiling setup: {0}", compilationError.ToString());
                 throw;
             }
             catch (Exception ex)
             {
-                _engine.Trace.Error("Unexpected error during pre-configuration: {0}", ex.ToString());
+                _engine.Trace.Error("Unexpected error during setup: {0}", ex.Message);
                 throw;
             }
         }
@@ -119,18 +121,19 @@ namespace Wyam.Core.Configuration
         private void Config(string script)
         {
             try
-            { 
+            {
                 HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
                 {
-                    Assembly.GetAssembly(typeof(object)),  // System
-                    Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)),  // System.Collections.Generic 
-                    Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions)),  // System.Linq
-                    Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),  // System.Core (needed for dynamic)
-                    Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),  // Microsoft.CSharp (needed for dynamic)
-                    Assembly.GetAssembly(typeof(System.IO.Path)), // System.IO
-                    Assembly.GetAssembly(typeof(System.Diagnostics.TraceSource)), // System.Diagnostics
-                    Assembly.GetAssembly(typeof(Wyam.Core.Engine)), // Wyam.Core
-                    Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule)) // Wyam.Abstractions
+                    Assembly.GetAssembly(typeof (object)), // System
+                    Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
+                    Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
+                    Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
+                    Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),
+                    // Microsoft.CSharp (needed for dynamic)
+                    Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
+                    Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
+                    Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
+                    Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
                 };
 
                 HashSet<string> namespaces = new HashSet<string>()
@@ -168,9 +171,17 @@ namespace Wyam.Core.Configuration
                 _engine.Trace.Error("Error compiling configuration: {0}", compilationError.ToString());
                 throw;
             }
+            catch (ReflectionTypeLoadException reflectionException)
+            {
+                for (int c = 0; c < reflectionException.LoaderExceptions.Length; c++)
+                {
+                    _engine.Trace.Verbose("Loader Exception {0}: {1}", c + 1, reflectionException.LoaderExceptions[c]);
+                }
+                throw;
+            }
             catch (Exception ex)
             {
-                _engine.Trace.Error("Unexpected error during configuration: {0}", ex.ToString());
+                _engine.Trace.Error("Unexpected error during configuration: {0}", ex.Message);
                 throw;
             }
         }
@@ -240,6 +251,7 @@ namespace Wyam.Core.Configuration
             HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in assemblies)
             {
+                _engine.Trace.Verbose("Loading modules from assembly {0}...", assembly.FullName);
                 foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x)
                     && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
                 {
@@ -247,6 +259,7 @@ namespace Wyam.Core.Configuration
                     moduleTypes.Add(moduleType);
                     namespaces.Add(moduleType.Namespace);
                 }
+                _engine.Trace.Verbose("Loaded modules from assembly {0}.", assembly.FullName);
             }
             return moduleTypes;
         }

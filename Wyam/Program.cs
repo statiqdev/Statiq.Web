@@ -56,7 +56,7 @@ namespace Wyam
             // Set up the log file         
             if (_logFile != null)
             {
-                _logFile = Path.Combine(_rootFolder, _logFile);
+                _logFile = Path.Combine(_engine.RootFolder, _logFile);
                 _engine.Trace.AddListener(new SimpleFileTraceListener(_logFile));
             }
 
@@ -158,7 +158,7 @@ namespace Wyam
 
             // If we have a configuration file use it, otherwise configure with defaults  
             string configFile = string.IsNullOrWhiteSpace(_configFile)
-                ? Path.Combine(_rootFolder, "config.wyam") : Path.Combine(_rootFolder, _configFile);
+                ? Path.Combine(_engine.RootFolder, "config.wyam") : Path.Combine(_engine.RootFolder, _configFile);
             if (File.Exists(configFile))
             {
                 _engine.Trace.Information("Loading configuration from {0}.", configFile);
