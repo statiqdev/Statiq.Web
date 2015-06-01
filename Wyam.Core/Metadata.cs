@@ -41,11 +41,6 @@ namespace Wyam.Core
             {
                 foreach (KeyValuePair<string, object> item in items)
                 {
-                    if (_metadataStack.Any(x => x.ContainsKey(item.Key)))
-                    {
-                        _engine.Trace.Warning("Existing value found while setting metadata key {0}.", item.Key);
-                    }
-
                     _metadataStack.Peek()[item.Key] = item.Value;
                 }
             }

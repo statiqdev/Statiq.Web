@@ -9,6 +9,7 @@ using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Parser.SyntaxTree;
 using Wyam.Core;
 using Wyam.Abstractions;
+using Wyam.Core.Helpers;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -31,8 +32,12 @@ namespace Wyam.Modules.Razor
                 {
                     Metadata = x.Metadata
                 };
-                ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext,
-                    (string) x.Metadata.Get("FileBase", "/"), x.Content).EnsureSuccessful();
+                string relativePath = "/";
+                if (x.Metadata.ContainsKey("FilePath"))
+                {
+                    relativePath += PathHelper.GetRelativePath(context.RootFolder, (string) x["FilePath"]);
+                }
+                ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
                 using (StringWriter writer = new StringWriter())
                 {
                     viewContext.View = viewEngineResult.View;

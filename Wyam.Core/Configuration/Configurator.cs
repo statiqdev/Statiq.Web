@@ -22,13 +22,14 @@ namespace Wyam.Core.Configuration
     internal class Configurator
     {
         private readonly Engine _engine;
-        private readonly PackagesCollection _packages = new PackagesCollection();
+        private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblies = new AssemblyCollection();
         private readonly NamespacesCollection _namespaces = new NamespacesCollection();
 
         public Configurator(Engine engine)
         {
             _engine = engine;
+            _packages = new PackagesCollection(engine);
         }
 
         // Setup is separated from config by a line with only '-' characters
@@ -168,15 +169,7 @@ namespace Wyam.Core.Configuration
             }
             catch (CompilationErrorException compilationError)
             {
-                _engine.Trace.Error("Error compiling configuration: {0}", compilationError.ToString());
-                throw;
-            }
-            catch (ReflectionTypeLoadException reflectionException)
-            {
-                for (int c = 0; c < reflectionException.LoaderExceptions.Length; c++)
-                {
-                    _engine.Trace.Verbose("Loader Exception {0}: {1}", c + 1, reflectionException.LoaderExceptions[c]);
-                }
+                _engine.Trace.Error("Error compiling configuration: {0}", compilationError.Message);
                 throw;
             }
             catch (Exception ex)
@@ -197,7 +190,7 @@ namespace Wyam.Core.Configuration
                 assemblyPaths.AddRange(Directory.GetFiles(_packages.Path, "*.dll", SearchOption.AllDirectories));
             }
             assemblyPaths.AddRange(_assemblies.Directories
-                .Select(x => new Tuple<string, SearchOption>(Path.Combine(Environment.CurrentDirectory, x.Item1), x.Item2))
+                .Select(x => new Tuple<string, SearchOption>(Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))
                 .Select(x =>
                 {
@@ -206,7 +199,7 @@ namespace Wyam.Core.Configuration
                 })
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
             assemblyPaths.AddRange(_assemblies.ByPath
-                .Select(x => Path.Combine(Environment.CurrentDirectory, x))
+                .Select(x => Path.Combine(_engine.RootFolder, x))
                 .Where(File.Exists));
 
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
@@ -252,16 +245,32 @@ namespace Wyam.Core.Configuration
             foreach (Assembly assembly in assemblies)
             {
                 _engine.Trace.Verbose("Loading modules from assembly {0}...", assembly.FullName);
-                foreach (Type moduleType in assembly.GetTypes().Where(x => typeof(IModule).IsAssignableFrom(x)
+                foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
                     && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
                 {
-                    _engine.Trace.Verbose("Found module {0} in assembly {1}.", moduleType.Name, assembly.FullName);
+                    _engine.Trace.Verbose("* Found module {0} in assembly {1}.", moduleType.Name, assembly.FullName);
                     moduleTypes.Add(moduleType);
                     namespaces.Add(moduleType.Namespace);
                 }
                 _engine.Trace.Verbose("Loaded modules from assembly {0}.", assembly.FullName);
             }
             return moduleTypes;
+        }
+
+        public IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                foreach (Exception loaderException in ex.LoaderExceptions)
+                {
+                    _engine.Trace.Verbose("Loader Exception: {0}", loaderException.Message);
+                }
+                return ex.Types.Where(t => t != null);
+            }
         }
 
         private class ModuleMethodQualifier : CSharpSyntaxRewriter
@@ -379,8 +388,14 @@ namespace Wyam.Core.Configuration
 
         private void ConfigureDefaultMetadata()
         {
-            _engine.Metadata["InputPath"] = @".\input";
-            _engine.Metadata["OutputPath"] = @".\output";
+            if (!_engine.Metadata.ContainsKey("InputPath"))
+            {
+                _engine.Metadata["InputPath"] = @".\input";
+            }
+            if (!_engine.Metadata.ContainsKey("OutputPath"))
+            {
+                _engine.Metadata["OutputPath"] = @".\output";
+            }
         }
 
         public void ConfigureDefaultPipelines()

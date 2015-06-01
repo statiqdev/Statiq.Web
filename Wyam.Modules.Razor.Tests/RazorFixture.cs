@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Abstractions;
+using Wyam.Core;
+using Wyam.Core.Modules;
 
 namespace Wyam.Modules.Razor.Tests
 {
@@ -14,7 +16,7 @@ namespace Wyam.Modules.Razor.Tests
     public class RazorFixture
     {
         [Test]
-        public void SimpleTemplateIsRendered()
+        public void SimpleTemplate()
         {
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -38,7 +40,7 @@ namespace Wyam.Modules.Razor.Tests
         }
 
         [Test]
-        public void ExistingMetadataIsRendered()
+        public void Metadata()
         {
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -54,12 +56,30 @@ namespace Wyam.Modules.Razor.Tests
             Razor razor = new Razor();
 
             // When
-            razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+            razor.Execute(new[] { document }, context).ToList();
 
             // Then
             document.Received().Clone(Arg.Any<string>());
             Assert.AreEqual(1, items.Count());
             Assert.AreEqual("<p>MyValue</p>", items.First());
+        }
+
+        [Test]
+        public void LoadSimpleTemplateFile()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Metadata["InputPath"] = @"TestFiles\Input\";
+            ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
+            Razor razor = new Razor();
+            engine.Pipelines.Add("Pipeline", readFiles, razor);
+
+            // When
+            engine.Execute();
+
+            // Then
+            Assert.AreEqual(1, engine.CompletedDocuments["Pipeline"].Count);
+            Assert.AreEqual(@"<p>This is a test</p>", engine.CompletedDocuments["Pipeline"].First().Content);
         }
     }
 }

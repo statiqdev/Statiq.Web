@@ -1,0 +1,13 @@
+Assemblies.AddDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
+Assemblies.AddDirectory(@"..\..\Wyam.Modules.Yaml\bin\Debug");
+Assemblies.AddDirectory(@"..\..\Wyam.Modules.Razor\bin\Debug");
+---
+Pipelines.Add("Posts",
+	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
+	Markdown(),  // Render the markdown content
+	Metadata("Post", x => x.Content),  // Move the markdown content to metadata
+	ReadFiles(@"posts\post.cshtml"),  // Load the Razor post page template
+	Razor(),  // Compile and render the page template
+	WriteFiles(x => string.Format(@"{0}\posts\{1}.html", x["OutputPath"], ((string)x["Title"]).ToLower().Replace(' ', '-')))  // Use the post title as the filename for output 
+);

@@ -43,7 +43,7 @@ namespace Wyam.Core.Modules
                 string path = _path(input);
                 if (path != null)
                 {
-                    path = Path.Combine(Environment.CurrentDirectory, path);
+                    path = Path.Combine(context.RootFolder, path);
                     foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
                     {
                         string content = File.ReadAllText(file);

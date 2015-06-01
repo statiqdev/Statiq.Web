@@ -40,7 +40,7 @@ namespace Wyam.Core.Modules
                 string path = _path(input);
                 if (path != null)
                 {
-                    path = Path.Combine(Environment.CurrentDirectory, path);
+                    path = Path.Combine(context.RootFolder, path);
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(path));

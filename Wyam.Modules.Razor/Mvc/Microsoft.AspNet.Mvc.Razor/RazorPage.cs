@@ -491,5 +491,17 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                 throw new InvalidOperationException("Method " + methodName + " cannot be called.");
             }
         }
+
+        // These are implementations of common HTML helpers
+
+        public HtmlString Raw(string value)
+        {
+            return new HtmlString(value);
+        }
+
+        public HtmlString Raw(object value)
+        {
+            return new HtmlString(value == null ? (string)null : value.ToString());
+        }
     }
 }
