@@ -43,6 +43,16 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return ViewContext.Metadata; }
         }
 
+        public IExecutionContext ExecutionContext
+        {
+            get { return ViewContext.ExecutionContext; }
+        }
+
+        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> CompletedDocuments
+        {
+            get { return ExecutionContext.CompletedDocuments; }
+        }
+
         /// <summary>
         /// Gets the TextWriter that the page is writing output to.
         /// </summary>

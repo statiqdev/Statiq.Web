@@ -43,5 +43,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         public string ExecutingFilePath { get; set; }
 
         public IMetadata Metadata { get; set; }
+
+        public IExecutionContext ExecutionContext { get; set; }
     }
 }

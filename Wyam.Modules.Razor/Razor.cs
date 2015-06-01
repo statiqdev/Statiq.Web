@@ -30,7 +30,8 @@ namespace Wyam.Modules.Razor
             {
                 ViewContext viewContext = new ViewContext(null, null)
                 {
-                    Metadata = x.Metadata
+                    Metadata = x.Metadata,
+                    ExecutionContext = context
                 };
                 string relativePath = "/";
                 if (x.Metadata.ContainsKey("FilePath"))
