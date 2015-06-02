@@ -43,6 +43,19 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return ViewContext.Metadata; }
         }
 
+        // Expose a Model property to better match existing conventions
+        public IMetadata Model
+        {
+            get { return Metadata; }
+        }
+
+        // In ASP.NET MVC these kinds of properties are injected with InjectChunk in MvcRazorHost, but this is easier
+        private readonly HtmlHelper _html = new HtmlHelper();
+        public HtmlHelper Html
+        {
+            get { return _html; }
+        }
+
         public IExecutionContext ExecutionContext
         {
             get { return ViewContext.ExecutionContext; }
@@ -500,18 +513,6 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             {
                 throw new InvalidOperationException("Method " + methodName + " cannot be called.");
             }
-        }
-
-        // These are implementations of common HTML helpers
-
-        public HtmlString Raw(string value)
-        {
-            return new HtmlString(value);
-        }
-
-        public HtmlString Raw(object value)
-        {
-            return new HtmlString(value == null ? (string)null : value.ToString());
         }
     }
 }
