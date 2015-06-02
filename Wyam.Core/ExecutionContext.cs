@@ -33,9 +33,9 @@ namespace Wyam.Core
             get { return _engine.Trace; }
         }
 
-        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> CompletedDocuments
+        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> Documents
         {
-            get { return _engine.CompletedDocuments; }
+            get { return _engine.Documents; }
         }
 
         public string RootFolder

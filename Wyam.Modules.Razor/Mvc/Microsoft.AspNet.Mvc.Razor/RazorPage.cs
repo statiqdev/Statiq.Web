@@ -61,9 +61,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return ViewContext.ExecutionContext; }
         }
 
-        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> CompletedDocuments
+        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> Documents
         {
-            get { return ExecutionContext.CompletedDocuments; }
+            get { return ExecutionContext.Documents; }
         }
 
         /// <summary>

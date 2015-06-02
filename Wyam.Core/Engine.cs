@@ -30,12 +30,12 @@ namespace Wyam.Core
             get { return _metadata; }
         }
         
-        private readonly Dictionary<string, IReadOnlyList<IDocument>> _completedDocuments 
+        private readonly Dictionary<string, IReadOnlyList<IDocument>> _documents 
             = new Dictionary<string, IReadOnlyList<IDocument>>();
 
-        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> CompletedDocuments
+        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> Documents
         {
-            get { return _completedDocuments; }
+            get { return _documents; }
         }
 
         private readonly PipelineCollection _pipelines;
@@ -140,14 +140,14 @@ namespace Wyam.Core
             try
             {
                 Trace.Information("Executing {0} pipelines...", _pipelines.Count);
-                _completedDocuments.Clear();
+                _documents.Clear();
                 int c = 1;
                 foreach(Pipeline pipeline in _pipelines.Pipelines)
                 {
                     Trace.Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)...", pipeline.Name, c, _pipelines.Count, pipeline.Count);
                     int indent = Trace.Indent();
                     IReadOnlyList<IDocument> results = pipeline.Execute();
-                    _completedDocuments.Add(pipeline.Name, results);
+                    _documents.Add(pipeline.Name, results);
                     Trace.IndentLevel = indent;
                     Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", pipeline.Name, c++, _pipelines.Count, results.Count);
                 }

@@ -2,9 +2,9 @@
 <hr/>
 <p>Hi, this paragraph has a little bit about me.</p>
 <h2>Posts</h2>
-@foreach(var postDoc in CompletedDocuments["Posts"])
+@foreach(var doc in Documents["Posts"])
 {
 	<ul>
-		<li><a href="@postDoc["PostFile"]">@postDoc["Title"]</a> - @postDoc["Published"]</li>
+		<li><a href="@doc["PostFile"]">@doc["Title"]</a> - @doc["Published"]</li>
 	</ul>
 }
