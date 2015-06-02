@@ -21,7 +21,7 @@ namespace Wyam.Modules.Razor
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.RootFolder);
+            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder);
             IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory);
             IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
             IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
@@ -36,7 +36,7 @@ namespace Wyam.Modules.Razor
                 string relativePath = "/";
                 if (x.Metadata.ContainsKey("FilePath"))
                 {
-                    relativePath += PathHelper.GetRelativePath(context.RootFolder, (string) x["FilePath"]);
+                    relativePath += PathHelper.GetRelativePath(context.InputFolder, (string) x["FilePath"]);
                 }
                 ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
                 using (StringWriter writer = new StringWriter())

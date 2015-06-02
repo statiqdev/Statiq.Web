@@ -14,25 +14,6 @@ namespace Wyam.Core.Tests.Modules
     public class ReadFilesFixture
     {        
         [Test]
-        public void NoInputPathReadsNoFiles()
-        {
-            // Given
-            Engine engine = new Engine();
-            Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IExecutionContext context = new ExecutionContext(engine, pipeline);
-            ReadFiles readFiles = new ReadFiles("*.txt");
-
-            // When
-            IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-            int count = documents.Count();
-
-            // Then
-            Assert.AreEqual(0, count);
-        }
-
-        [Test]
         public void ThrowsOnNullPathFunction()
         {
             // Given
@@ -66,12 +47,12 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input\";
+            engine.InputFolder = @"TestFiles\Input\";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
-            ReadFiles readFiles = new ReadFiles(searchPattern, searchOption);
+            ReadFiles readFiles = new ReadFiles(searchPattern).SearchOption(searchOption);
 
             // When
             IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
@@ -86,7 +67,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -106,7 +87,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -126,7 +107,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -146,7 +127,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -166,7 +147,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -190,7 +171,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input";
+            engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);

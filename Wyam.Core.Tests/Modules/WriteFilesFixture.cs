@@ -45,7 +45,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["OutputPath"] = @"TestFiles\Output\";
+            engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["FileRoot"] = @"TestFiles\Input";
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
@@ -68,7 +68,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["OutputPath"] = @"TestFiles\Output\";
+            engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["FileRoot"] = @"TestFiles\Input";
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";
@@ -91,7 +91,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["OutputPath"] = @"TestFiles\Output\";
+            engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["FileRoot"] = @"TestFiles\Input";
             engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
             engine.Metadata["FileBase"] = @"write-test";

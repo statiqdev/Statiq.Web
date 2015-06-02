@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -21,6 +22,7 @@ namespace Wyam.Modules.Razor.Tests
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(Path.Combine(Environment.CurrentDirectory, @".\Input"));
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             List<string> items = new List<string>();
@@ -45,6 +47,7 @@ namespace Wyam.Modules.Razor.Tests
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(Path.Combine(Environment.CurrentDirectory, @".\Input"));
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             document.Metadata["MyKey"].Returns("MyValue");
@@ -69,7 +72,7 @@ namespace Wyam.Modules.Razor.Tests
         {
             // Given
             Engine engine = new Engine();
-            engine.Metadata["InputPath"] = @"TestFiles\Input\";
+            engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
             Razor razor = new Razor();
             engine.Pipelines.Add("Pipeline", readFiles, razor);
@@ -80,6 +83,42 @@ namespace Wyam.Modules.Razor.Tests
             // Then
             Assert.AreEqual(1, engine.CompletedDocuments["Pipeline"].Count);
             Assert.AreEqual(@"<p>This is a test</p>", engine.CompletedDocuments["Pipeline"].First().Content);
+        }
+
+        [Test]
+        public void LoadLayoutFile()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.InputFolder = @"TestFiles\Input\";
+            ReadFiles readFiles = new ReadFiles(@"Layout\Test.cshtml");
+            Razor razor = new Razor();
+            engine.Pipelines.Add("Pipeline", readFiles, razor);
+
+            // When
+            engine.Execute();
+
+            // Then
+            Assert.AreEqual(1, engine.CompletedDocuments["Pipeline"].Count);
+            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.CompletedDocuments["Pipeline"].First().Content);
+        }
+
+        [Test]
+        public void LoadViewStartAndLayoutFile()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.InputFolder = @"TestFiles\Input\";
+            ReadFiles readFiles = new ReadFiles(@"ViewStartAndLayout\Test.cshtml");
+            Razor razor = new Razor();
+            engine.Pipelines.Add("Pipeline", readFiles, razor);
+
+            // When
+            engine.Execute();
+
+            // Then
+            Assert.AreEqual(1, engine.CompletedDocuments["Pipeline"].Count);
+            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.CompletedDocuments["Pipeline"].First().Content);
         }
     }
 }

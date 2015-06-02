@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
@@ -24,8 +25,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
         private static readonly IEnumerable<string> _viewLocationFormats = new[]
         {
-            "/Views/{0}" + ViewExtension,
-            "/Views/Shared/{0}" + ViewExtension,
+            "/{0}",
+            "/Shared/{0}",
+            "/Views/{0}",
+            "/Views/Shared/{0}"
         };
 
         private readonly IRazorPageFactory _pageFactory;
@@ -117,14 +120,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                                                    bool isPartial,
                                                    string content = null)
         {
+            if (!pageName.EndsWith(ViewExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                pageName += ViewExtension;
+            }
             if (IsApplicationRelativePath(pageName))
             {
                 var applicationRelativePath = pageName;
-                if (!pageName.EndsWith(ViewExtension, StringComparison.OrdinalIgnoreCase))
-                {
-                    applicationRelativePath += ViewExtension;
-                }
-
                 var page = _pageFactory.CreateInstance(applicationRelativePath, content);
                 if (page != null)
                 {
@@ -143,8 +145,16 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                                                             string pageName,
                                                             bool isPartial)
         {
-            // Only use the area view location formats if we have an area token.
-            var viewLocations = ViewLocationFormats;
+            // First search paths relative to the current view
+            List<string> viewLocations = new List<string>();
+            if (context.View != null && !string.IsNullOrWhiteSpace(context.View.Path))
+            {
+                viewLocations.AddRange(ViewLocationFormats.Select(
+                    x => Path.GetDirectoryName(context.View.Path).Replace('\\', '/') + x));
+            }
+
+            // Now add the non-relative paths
+            viewLocations.AddRange(ViewLocationFormats);
 
             // 3. Use the expanded locations to look up a page.
             var searchedLocations = new List<string>();

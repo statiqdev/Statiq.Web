@@ -43,6 +43,16 @@ namespace Wyam.Core
             get { return _engine.RootFolder; }
         }
 
+        public string InputFolder
+        {
+            get { return _engine.InputFolder; }
+        }
+
+        public string OutputFolder
+        {
+            get { return _engine.OutputFolder; }
+        }
+
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
             return _pipeline.Execute(modules, inputDocuments);

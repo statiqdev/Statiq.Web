@@ -29,7 +29,7 @@ namespace Wyam.Core
         {
             get { return _metadata; }
         }
-
+        
         private readonly Dictionary<string, IReadOnlyList<IDocument>> _completedDocuments 
             = new Dictionary<string, IReadOnlyList<IDocument>>();
 
@@ -53,6 +53,8 @@ namespace Wyam.Core
         }
 
         private string _rootFolder = Environment.CurrentDirectory;
+        private string _inputFolder = @".\Input";
+        private string _outputFolder = @".\Output";
 
         public string RootFolder
         {
@@ -64,6 +66,32 @@ namespace Wyam.Core
                     throw new ArgumentException("RootFolder");
                 }
                 _rootFolder = value;
+            }
+        }
+
+        public string InputFolder
+        {
+            get { return Path.Combine(RootFolder, _inputFolder); }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("InputFolder");
+                }
+                _inputFolder = value;
+            }
+        }
+
+        public string OutputFolder
+        {
+            get { return Path.Combine(RootFolder, _outputFolder); }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("OutputFolder");
+                }
+                _outputFolder = value;
             }
         }
 
@@ -93,26 +121,6 @@ namespace Wyam.Core
                 _configured = true;
                 Configurator configurator = new Configurator(this);
                 configurator.Configure(configScript);
-            }
-            catch (Exception ex)
-            {
-                Trace.Verbose("Exception: {0}", ex);
-                throw;
-            }
-        }
-
-        public void ConfigureDefaultPipelines()
-        {
-            // Configure with defaults if not already configured
-            if (!_configured)
-            {
-                Configure();
-            }
-
-            try
-            {
-                Configurator configurator = new Configurator(this);
-                configurator.ConfigureDefaultPipelines();
             }
             catch (Exception ex)
             {

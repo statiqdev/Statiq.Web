@@ -36,10 +36,6 @@ namespace Wyam.Core.Configuration
         // If no such line exists, then the entire script is treated as config
         public void Configure(string script = null)
         {
-            // Default metadata is configured regardless of if a config script has been provided
-            // The script can overwrite or clear the default metadata if needed
-            ConfigureDefaultMetadata();
-
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
@@ -384,23 +380,6 @@ namespace Wyam.Core.Configuration
                 ConfigScript.Run(Metadata, Pipelines);");
 
             return scriptBuilder.ToString();
-        }
-
-        private void ConfigureDefaultMetadata()
-        {
-            if (!_engine.Metadata.ContainsKey("InputPath"))
-            {
-                _engine.Metadata["InputPath"] = @".\input";
-            }
-            if (!_engine.Metadata.ContainsKey("OutputPath"))
-            {
-                _engine.Metadata["OutputPath"] = @".\output";
-            }
-        }
-
-        public void ConfigureDefaultPipelines()
-        {
-            // TODO: Call this from the console project if no script is specified - if using the engine directly, default pipelines must be explicitly configured
         }
     }
 }

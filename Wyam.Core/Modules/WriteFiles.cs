@@ -13,6 +13,7 @@ namespace Wyam.Core.Modules
     public class WriteFiles : IModule
     {
         private readonly Func<IDocument, string> _path;
+        private Func<IDocument, bool> _where = null; 
 
         public WriteFiles(Func<IDocument, string> path)
         {
@@ -28,19 +29,25 @@ namespace Wyam.Core.Modules
         {
             if (extension == null) throw new ArgumentNullException("extension");
 
-            _path = m => (!m.Metadata.ContainsKey("OutputPath") || !m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileBase")) ? null :
-                Path.Combine((string)m["OutputPath"], PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
+            _path = m => (!m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileBase")) ? null :
+                Path.Combine(PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
+        }
+
+        public WriteFiles Where(Func<IDocument, bool> predicate)
+        {
+            _where = predicate;
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            foreach (IDocument input in inputs.Where(x => _where == null || _where(x)))
             {
                 string path = _path(input);
                 if (path != null)
                 {
-                    path = Path.Combine(context.RootFolder, path);
+                    path = Path.Combine(context.OutputFolder, path);
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(path));

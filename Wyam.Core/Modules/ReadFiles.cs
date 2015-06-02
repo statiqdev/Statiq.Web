@@ -12,9 +12,10 @@ namespace Wyam.Core.Modules
     public class ReadFiles : IModule
     {
         private readonly Func<IDocument, string> _path;
-        private readonly SearchOption _searchOption;
+        private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
+        private Func<string, bool> _where = null; 
 
-        public ReadFiles(Func<IDocument, string> path, SearchOption searchOption = SearchOption.AllDirectories)
+        public ReadFiles(Func<IDocument, string> path)
         {
             if (path == null)
             {
@@ -22,18 +23,40 @@ namespace Wyam.Core.Modules
             }
 
             _path = path;
-            _searchOption = searchOption;
         }
 
-        public ReadFiles(string searchPattern, SearchOption searchOption = SearchOption.AllDirectories)
+        public ReadFiles(string searchPattern)
         {
             if (searchPattern == null)
             {
                 throw new ArgumentNullException("searchPattern");
             }
 
-            _path = m => !m.Metadata.ContainsKey("InputPath") ? null : Path.Combine((string)m["InputPath"], searchPattern);
+            _path = m => searchPattern;
+        }
+
+        public ReadFiles SearchOption(SearchOption searchOption)
+        {
             _searchOption = searchOption;
+            return this;
+        }
+
+        public ReadFiles AllDirectories()
+        {
+            _searchOption = System.IO.SearchOption.AllDirectories;
+            return this;
+        }
+
+        public ReadFiles TopDirectoryOnly()
+        {
+            _searchOption = System.IO.SearchOption.TopDirectoryOnly;
+            return this;
+        }
+
+        public ReadFiles Where(Func<string, bool> predicate)
+        {
+            _where = predicate;
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -43,8 +66,8 @@ namespace Wyam.Core.Modules
                 string path = _path(input);
                 if (path != null)
                 {
-                    path = Path.Combine(context.RootFolder, path);
-                    foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption))
+                    path = Path.Combine(context.InputFolder, path);
+                    foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
                     {
                         string content = File.ReadAllText(file);
                         context.Trace.Verbose("Read file {0}", file);

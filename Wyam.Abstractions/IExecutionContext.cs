@@ -11,6 +11,8 @@ namespace Wyam.Abstractions
         IEngine Engine { get; }
         IPipeline Pipeline { get; }
         string RootFolder { get; }
+        string InputFolder { get; }
+        string OutputFolder { get; }
         ITrace Trace { get; }
         IReadOnlyDictionary<string, IReadOnlyList<IDocument>> CompletedDocuments { get; }
 
