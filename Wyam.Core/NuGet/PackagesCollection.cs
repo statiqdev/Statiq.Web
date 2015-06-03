@@ -7,7 +7,7 @@ namespace Wyam.Core.NuGet
     internal class PackagesCollection : IPackagesCollection
     {
         private readonly Engine _engine;
-        private string _path;
+        private string _path = "packages";
 
         public PackagesCollection(Engine engine)
         {
@@ -22,8 +22,15 @@ namespace Wyam.Core.NuGet
         
         public string Path
         {
-            get { return _path; }
-            set { _path = System.IO.Path.Combine(_engine.RootFolder, value); }
+            get { return System.IO.Path.Combine(_engine.RootFolder, _path); }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Path");
+                }
+                _path = value;
+            }
         }
 
         public IRepository AddRepository(string packageSource)
@@ -42,16 +49,10 @@ namespace Wyam.Core.NuGet
 
         public void InstallPackages()
         {
-            // Default package path
-            if (string.IsNullOrWhiteSpace(Path))
-            {
-                Path = System.IO.Path.Combine(_engine.RootFolder, "packages");
-            }
-
             // Iterate repositories
             foreach (Repository repository in _repositories)
             {
-                repository.InstallPackages(Path);
+                repository.InstallPackages(Path, _engine);
             }
         }
     }

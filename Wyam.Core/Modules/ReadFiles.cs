@@ -67,19 +67,23 @@ namespace Wyam.Core.Modules
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, path);
-                    foreach (string file in Directory.EnumerateFiles(Path.GetDirectoryName(path), Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
+                    string directory = Path.GetDirectoryName(path);
+                    if(directory != null && Directory.Exists(directory))
                     {
-                        string content = File.ReadAllText(file);
-                        context.Trace.Verbose("Read file {0}", file);
-                        yield return input.Clone(content, new Dictionary<string, object>
+                        foreach (string file in Directory.EnumerateFiles(directory, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
                         {
-                            {"FileRoot", Path.GetDirectoryName(path)},
-                            {"FileBase", Path.GetFileNameWithoutExtension(file)},
-                            {"FileExt", Path.GetExtension(file)},
-                            {"FileName", Path.GetFileName(file)},
-                            {"FileDir", Path.GetDirectoryName(file)},
-                            {"FilePath", file}
-                        });
+                            string content = File.ReadAllText(file);
+                            context.Trace.Verbose("Read file {0}", file);
+                            yield return input.Clone(content, new Dictionary<string, object>
+                            {
+                                {"FileRoot", Path.GetDirectoryName(path)},
+                                {"FileBase", Path.GetFileNameWithoutExtension(file)},
+                                {"FileExt", Path.GetExtension(file)},
+                                {"FileName", Path.GetFileName(file)},
+                                {"FileDir", Path.GetDirectoryName(file)},
+                                {"FilePath", file}
+                            });
+                        }
                     }
                 }
             }

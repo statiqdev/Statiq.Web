@@ -30,14 +30,18 @@ namespace Wyam.Core.NuGet
             return _packageRepository;
         }
 
-        public void InstallPackages(string path)
+        public void InstallPackages(string path, Engine engine)
         {
+            engine.Trace.Verbose("Installing {0} package(s) from {1}...", _packages.Count, _packageSource);
+            int indent = engine.Trace.Indent();
             IPackageRepository repository = GetRepository();
             PackageManager packageManager = new PackageManager(repository, path);
             foreach (Package package in _packages)
             {
-                package.InstallPackage(packageManager);
+                package.InstallPackage(packageManager, engine);
             }
+            engine.Trace.IndentLevel = indent;
+            engine.Trace.Verbose("Installed {0} package(s) from {1}.", _packages.Count, _packageSource);
         }
     }
 }

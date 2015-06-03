@@ -154,25 +154,18 @@ namespace Wyam
 
         private void Configure()
         {
-            _engine.Trace.Verbose("Configuring...");
-
             // If we have a configuration file use it, otherwise configure with defaults  
             string configFile = string.IsNullOrWhiteSpace(_configFile)
                 ? Path.Combine(_engine.RootFolder, "config.wyam") : Path.Combine(_engine.RootFolder, _configFile);
             if (File.Exists(configFile))
             {
                 _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                int indent = _engine.Trace.Indent();
                 _engine.Configure(File.ReadAllText(configFile));
-                _engine.Trace.IndentLevel = indent;
             }
             else
             {
-                int indent = _engine.Trace.Indent();
                 _engine.Configure();
-                _engine.Trace.IndentLevel = indent;
             }
-            _engine.Trace.Verbose("Configured.");
         }
     }
 }

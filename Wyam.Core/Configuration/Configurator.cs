@@ -46,10 +46,20 @@ namespace Wyam.Core.Configuration
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
                 // Setup (install packages, specify additional assemblies and namespaces, etc.)
+
+                _engine.Trace.Verbose("Performing setup...");
+                int indent = _engine.Trace.Indent();
                 Setup(configParts.Item1);
                 _packages.InstallPackages();
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Setup complete.");
             }
+
+            _engine.Trace.Verbose("Performing configuration...");
+            int indent2 = _engine.Trace.Indent();
             Config(configParts.Item2);
+            _engine.Trace.IndentLevel = indent2;
+            _engine.Trace.Verbose("Configuration complete.");
         }
 
         // Item1 = setup (possibly null), Item2 = config
@@ -88,7 +98,7 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(IAssemblyCollection)));  // Wyam.Abstractions
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_packages, _assemblies, _namespaces));
+                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies, _namespaces));
             }
             catch (CompilationErrorException compilationError)
             {
@@ -125,8 +135,7 @@ namespace Wyam.Core.Configuration
                     Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
                     Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
                     Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
-                    Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)),
-                    // Microsoft.CSharp (needed for dynamic)
+                    Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
                     Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
                     Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
                     Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core

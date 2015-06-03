@@ -10,15 +10,32 @@ namespace Wyam.Core.Configuration
 {
     public class SetupGlobals
     {
+        private readonly Engine _engine;
         private readonly IPackagesCollection _packages;
         private readonly IAssemblyCollection _assemblies;
         private readonly INamespacesCollection _namespaces;
 
-        internal SetupGlobals(IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        internal SetupGlobals(Engine engine, IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
         {
+            _engine = engine;
             _packages = packages;
             _assemblies = assemblies;
             _namespaces = namespaces;
+        }
+
+        public string RootFolder
+        {
+            set { _engine.RootFolder = value; }
+        }
+
+        public string InputFolder
+        {
+            set { _engine.InputFolder = value; }
+        }
+
+        public string OutputFolder
+        {
+            set { _engine.OutputFolder = value; }
         }
 
         public IPackagesCollection Packages
