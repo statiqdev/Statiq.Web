@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using NuGet;
 using NuGet.Frameworks;
 
@@ -25,6 +26,31 @@ namespace Wyam.Core.NuGet
         public void InstallPackages(string path, Engine engine)
         {
             PackageManager packageManager = new PackageManager(_packageRepository, path);
+            packageManager.PackageInstalled += (sender, args) =>
+            {
+                // Copy all content files on install
+                foreach (IPackageFile packageFile in args.Package.GetContentFiles())
+                {
+                    string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    using (var fileStream = File.Create(filePath))
+                    {
+                        packageFile.GetStream().CopyTo(fileStream);
+                    }
+                }
+            };
+            packageManager.PackageUninstalling += (sender, args) =>
+            {
+                // Remove all content files on uninstall
+                foreach (IPackageFile packageFile in args.Package.GetContentFiles())
+                {
+                    string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+                }
+            };
             foreach (Package package in _packages)
             {
                 package.InstallPackage(packageManager, engine);

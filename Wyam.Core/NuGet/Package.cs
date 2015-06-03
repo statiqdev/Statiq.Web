@@ -69,14 +69,6 @@ namespace Wyam.Core.NuGet
             {
                 int indent = engine.Trace.Indent();
                 engine.Trace.Verbose("Uninstalling package {0} {1}.", localPackage.Id, localPackage.Version);
-                foreach (IPackageFile packageFile in localPackage.GetContentFiles())
-                {
-                    string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                    }
-                }
                 packageManager.UninstallPackage(localPackage);
                 engine.Trace.IndentLevel = indent;
             }
@@ -84,17 +76,6 @@ namespace Wyam.Core.NuGet
             // Install it
             packageManager.InstallPackage(sourcePackage, false, _allowPrereleaseVersions);
             
-            // Copy content files
-            foreach (IPackageFile packageFile in sourcePackage.GetContentFiles())
-            {
-                string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                using (var fileStream = File.Create(filePath))
-                {
-                    packageFile.GetStream().CopyTo(fileStream);
-                }
-            }
-
             engine.Trace.Verbose("Installed package {0} {1}.", sourcePackage.Id, sourcePackage.Version);
         }
     }
