@@ -42,24 +42,15 @@ namespace Wyam.Core.Configuration
                 return;
             }
 
+            // Setup (install packages, specify additional assemblies and namespaces, etc.)
             Tuple<string, string> configParts = GetConfigParts(script);
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
-                // Setup (install packages, specify additional assemblies and namespaces, etc.)
-
-                _engine.Trace.Verbose("Performing setup...");
-                int indent = _engine.Trace.Indent();
                 Setup(configParts.Item1);
-                _packages.InstallPackages();
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Setup complete.");
             }
 
-            _engine.Trace.Verbose("Performing configuration...");
-            int indent2 = _engine.Trace.Indent();
+            // Configuration
             Config(configParts.Item2);
-            _engine.Trace.IndentLevel = indent2;
-            _engine.Trace.Verbose("Configuration complete.");
         }
 
         // Item1 = setup (possibly null), Item2 = config
@@ -82,6 +73,8 @@ namespace Wyam.Core.Configuration
 
         private void Setup(string script)
         {
+            _engine.Trace.Verbose("Evaluating setup script...");
+            int indent = _engine.Trace.Indent();
             try
             {
                 // Create the script options
@@ -99,14 +92,27 @@ namespace Wyam.Core.Configuration
 
                 // Evaluate the script
                 CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies, _namespaces));
+
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Evaluated setup script.");
+                _engine.Trace.Verbose("Installing packages...");
+                indent = _engine.Trace.Indent();
+
+                // Install packages
+                _packages.InstallPackages();
+
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Packages installed.");
             }
             catch (CompilationErrorException compilationError)
             {
+                _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Error compiling setup: {0}", compilationError.ToString());
                 throw;
             }
             catch (Exception ex)
             {
+                _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Unexpected error during setup: {0}", ex.Message);
                 throw;
             }
@@ -127,8 +133,11 @@ namespace Wyam.Core.Configuration
 
         private void Config(string script)
         {
+            _engine.Trace.Verbose("Initializing scripting environment...");
+            int indent = _engine.Trace.Indent();
             try
             {
+
                 HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
                 {
                     Assembly.GetAssembly(typeof (object)), // System
@@ -163,6 +172,11 @@ namespace Wyam.Core.Configuration
                 // Get modules
                 HashSet<Type> moduleTypes = GetModules(assemblies, namespaces);
 
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Initialized scripting environment.");
+                _engine.Trace.Verbose("Evaluating configuration script...");
+                indent = _engine.Trace.Indent();
+
                 // Generate the script
                 script = GenerateScript(script, moduleTypes, namespaces);
 
@@ -171,15 +185,20 @@ namespace Wyam.Core.Configuration
                     .WithReferences(assemblies)
                     .WithNamespaces(namespaces);
                 CSharpScript.Eval(script, options, new ConfigGlobals(_engine.Metadata, _engine.Pipelines));
+
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Evaluated configuration script.");
             }
             catch (CompilationErrorException compilationError)
             {
+                _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Error compiling configuration: {0}", compilationError.Message);
                 throw;
             }
             catch (Exception ex)
             {
-                _engine.Trace.Error("Unexpected error during configuration: {0}", ex.Message);
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Error("Unexpected error during configuration evaluation: {0}", ex.Message);
                 throw;
             }
         }
@@ -189,11 +208,8 @@ namespace Wyam.Core.Configuration
         {
             // Get path to all assemblies (except those specified by name)
             List<string> assemblyPaths = new List<string>();
-            if (Directory.Exists(_packages.Path))
-            {
-                _engine.Trace.Verbose("Scanning for assemblies and modules in path {0}.", _packages.Path);
-                assemblyPaths.AddRange(Directory.GetFiles(_packages.Path, "*.dll", SearchOption.AllDirectories));
-            }
+            _engine.Trace.Verbose("Scanning for assemblies and modules in NuGet packages.");
+            assemblyPaths.AddRange(_packages.GetCompatibleAssemblyPaths());
             assemblyPaths.AddRange(_assemblies.Directories
                 .Select(x => new Tuple<string, SearchOption>(Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))

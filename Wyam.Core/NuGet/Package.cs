@@ -40,8 +40,8 @@ namespace Wyam.Core.NuGet
 
         public void InstallPackage(PackageManager packageManager, Engine engine)
         {
-            engine.Trace.Verbose("Installing package {0}{1}...", 
-                _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec);
+            engine.Trace.Verbose("Installing package {0}{1} from {2}...", 
+                _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
 
             // Find the local package
             IPackage localPackage = packageManager.LocalRepository.FindPackage(_packageId);
@@ -51,8 +51,8 @@ namespace Wyam.Core.NuGet
                 .FindPackage(_packageId, _versionSpec, _allowPrereleaseVersions, _allowUnlisted);
             if (sourcePackage == null)
             {
-                engine.Trace.Warning("Package {0} {1} could not be found.", 
-                    _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec);
+                engine.Trace.Warning("Package {0} {1} could not be found at {2}.",
+                    _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace Wyam.Core.NuGet
             
             // Install it
             packageManager.InstallPackage(sourcePackage, false, _allowPrereleaseVersions);
-
+            
             // Copy content files
             foreach (IPackageFile packageFile in sourcePackage.GetContentFiles())
             {

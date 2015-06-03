@@ -24,6 +24,7 @@ namespace Wyam
         private int _previewPort = 5080;
         private string _logFile = null;
         private bool _verbose = false;
+        private bool _pause = false;
         private string _rootFolder = null;
         private string _configFile = null;
         private readonly Dictionary<string, object> _globalVariables = new Dictionary<string,object>();
@@ -58,6 +59,13 @@ namespace Wyam
             {
                 _logFile = Path.Combine(_engine.RootFolder, _logFile);
                 _engine.Trace.AddListener(new SimpleFileTraceListener(_logFile));
+            }
+
+            // Pause if requested
+            if (_pause)
+            {
+                _engine.Trace.Information("Pause requested, hit any key to continue.");
+                Console.ReadKey();
             }
 
             // Configure
@@ -124,6 +132,10 @@ namespace Wyam
                 {
                     _verbose = true;
                 }
+                else if (args[c] == "--pause")
+                {
+                    _pause = true;
+                }
                 else if (args[c] == "--help")
                 {
                     Help(false);
@@ -149,7 +161,7 @@ namespace Wyam
             {
                 Console.WriteLine("Invalid arguments.");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [port]] [--log [log file]] [--verbose] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private void Configure()
