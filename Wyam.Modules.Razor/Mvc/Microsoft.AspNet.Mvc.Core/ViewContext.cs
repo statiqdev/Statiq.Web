@@ -1,6 +1,7 @@
 ﻿﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.IO;
 using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -10,6 +11,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
 {
     public class ViewContext
     {
+        private DynamicViewData _viewBag;
+
         /// <summary>
         /// Initializes a new instance of <see cref="ViewContext"/>.
         /// </summary>
@@ -17,16 +20,40 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// <param name="writer">The <see cref="TextWriter"/> to render output to.</param>
         public ViewContext(
             [NotNull] IView view,
+            [NotNull] IDictionary<string, object> viewData,
             [NotNull] TextWriter writer)
         {
             View = view;
+            ViewData = viewData;
             Writer = writer;
+        }
+
+        /// <summary>
+        /// Gets the dynamic view bag.
+        /// </summary>
+        public dynamic ViewBag
+        {
+            get
+            {
+                if (_viewBag == null)
+                {
+                    _viewBag = new DynamicViewData(() => ViewData);
+                }
+
+                return _viewBag;
+            }
         }
 
         /// <summary>
         /// Gets or sets the <see cref="IView"/> currently being rendered, if any.
         /// </summary>
         public IView View { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="T:Microsoft.AspNet.Mvc.ViewDataDictionary"/>.
+        /// 
+        /// </summary>
+        public IDictionary<string, object> ViewData { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="TextWriter"/> used to write the output.

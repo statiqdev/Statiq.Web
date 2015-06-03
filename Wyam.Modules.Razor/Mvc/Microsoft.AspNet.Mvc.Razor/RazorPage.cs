@@ -82,6 +82,19 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             }
         }
 
+        public IDictionary<string, object> ViewData
+        {
+            get { return ViewContext == null ? null : ViewContext.ViewData; }
+        }
+        
+        public dynamic ViewBag
+        {
+            get
+            {
+                return ViewContext == null ? null : ViewContext.ViewBag;
+            }
+        }
+
         /// <inheritdoc />
         public Action<TextWriter> RenderBodyDelegate { get; set; }
 

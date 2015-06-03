@@ -83,6 +83,7 @@
     <Compile Include="DocumentFileProvider.cs" />
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Common\TaskHelper.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\DynamicViewData.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\HtmlString.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\StringCollectionTextWriter.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\IView.cs" />

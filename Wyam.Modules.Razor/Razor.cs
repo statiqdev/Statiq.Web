@@ -28,7 +28,7 @@ namespace Wyam.Modules.Razor
 
             return inputs.Select(x =>
             {
-                ViewContext viewContext = new ViewContext(null, null)
+                ViewContext viewContext = new ViewContext(null, new Dictionary<string, object>(), null)
                 {
                     Metadata = x.Metadata,
                     ExecutionContext = context
