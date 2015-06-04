@@ -71,8 +71,17 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             var parseOptions = new CSharpParseOptions();
             var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(compilationContent, Encoding.UTF8), parseOptions, assemblyName);
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(assemblyName, new[] {syntaxTree},
-                assemblies.Select(MetadataReference.CreateFromAssembly), compilationOptions);
+                assemblies.Select(MetadataReference.CreateFromAssembly), compilationOptions)
+                .AddReferences(
+                    // For some reason, Roslyn really wants these added by filename
+                    // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
+                );
 
             using (var ms = new MemoryStream())
             {

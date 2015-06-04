@@ -23,6 +23,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "System.Collections.Generic",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
+            "Wyam.Abstractions"
         };
 
         // CodeGenerationContext.DefaultBaseClass is set to MyBaseType<dynamic>.
@@ -63,7 +64,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <remarks>This value is used as the generic type argument for the base type </remarks>
         public virtual string DefaultModel
         {
-            get { return "dynamic"; }
+            get { return "IMetadata"; }
         }
 
         /// <inheritdoc />

@@ -151,16 +151,18 @@ namespace Wyam
                     }
 
                     // Execute if files have changed
-                    int changedCount = 0;
+                    HashSet<string> changedFiles = new HashSet<string>();
                     string changedFile;
                     while (_changedFiles.TryDequeue(out changedFile))
                     {
-                        _engine.Trace.Verbose("{0} has changed.", changedFile);
-                        changedCount++;
+                        if (changedFiles.Add(changedFile))
+                        {
+                            _engine.Trace.Verbose("{0} has changed.", changedFile);
+                        }
                     }
-                    if (changedCount > 0)
+                    if (changedFiles.Count > 0)
                     {
-                        _engine.Trace.Information("{0} files have changed, re-executing...", changedCount);
+                        _engine.Trace.Information("{0} files have changed, re-executing...", changedFiles.Count);
                         Execute();
                     }
 
@@ -169,6 +171,7 @@ namespace Wyam
                     {
                         break;
                     }
+                    _engine.Trace.Information("Hit any key to exit...");
                     _messageEvent.Reset();
                 }
 
@@ -324,6 +327,13 @@ namespace Wyam
             string url = "http://localhost:" + _previewPort;
             return WebApp.Start(url, app =>
             {
+                app.Use((c, t) =>
+                {
+                    c.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                    c.Response.Headers.Append("Pragma", "no-cache");
+                    c.Response.Headers.Append("Expires", "0");
+                    return t();
+                });
                 IFileSystem outputFolder = new PhysicalFileSystem(_engine.OutputFolder);
                 app.UseDefaultFiles(new DefaultFilesOptions
                 {

@@ -38,7 +38,7 @@ namespace Wyam.Core
             get { return _modules.Length; }
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments, Action<IReadOnlyList<IDocument>> setDocuments)
         {
             List<IDocument> documents = inputDocuments == null 
                 ? new List<IDocument> { new Document(new Metadata(_engine)) } : inputDocuments.ToList();
@@ -48,15 +48,19 @@ namespace Wyam.Core
                 foreach (IModule module in modules.Where(x => x != null))
                 {
                     string moduleName = module.GetType().Name;
-                    _engine.Trace.Information("Executing module {0} with {1} input document(s)...", moduleName, documents.Count);
+                    _engine.Trace.Verbose("Executing module {0} with {1} input document(s)...", moduleName, documents.Count);
                     int indent = _engine.Trace.Indent();
                     try
                     {
                         // Make sure we clone the output context if it's the same as the input
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
+                        if (setDocuments != null)
+                        {
+                            setDocuments(documents.AsReadOnly());
+                        }
                         _engine.Trace.IndentLevel = indent;
-                        _engine.Trace.Information("Executed module {0} resulting in {1} output document(s).", moduleName, documents.Count);
+                        _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s).", moduleName, documents.Count);
                     }
                     catch (Exception ex)
                     {
@@ -64,6 +68,10 @@ namespace Wyam.Core
                         _engine.Trace.Verbose(ex.ToString());
                         _engine.Trace.IndentLevel = indent;
                         documents = new List<IDocument>();
+                        if (setDocuments != null)
+                        {
+                            setDocuments(documents.AsReadOnly());
+                        }
                         break;
                     }
                 }
@@ -71,9 +79,9 @@ namespace Wyam.Core
             return documents.AsReadOnly();
         }
 
-        public IReadOnlyList<IDocument> Execute()
+        public void Execute(Action<IReadOnlyList<IDocument>> setDocuments)
         {
-            return Execute(_modules, null);
+            Execute(_modules, null, setDocuments);
         }
     }
 }

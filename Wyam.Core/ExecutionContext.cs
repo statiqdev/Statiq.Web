@@ -55,7 +55,7 @@ namespace Wyam.Core
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
-            return _pipeline.Execute(modules, inputDocuments);
+            return _pipeline.Execute(modules, inputDocuments, null);
         }
     }
 }

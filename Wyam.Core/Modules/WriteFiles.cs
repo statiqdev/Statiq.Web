@@ -32,15 +32,20 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException("extension");
             }
 
-            _path = m => (!m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileBase")) ? null :
-                Path.Combine(PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
-                    (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
+            _path = x =>
+            {
+                string fileRelative = x.Metadata.Get("FileRelative") as string;
+                if (!string.IsNullOrWhiteSpace(fileRelative))
+                {
+                    return Path.ChangeExtension(fileRelative, extension);
+                }
+                return null;
+            };
         }
 
         public WriteFiles()
         {
-            _path = m => (!m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileName")) ? null :
-                Path.Combine(PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]), (string)m["FileName"]);
+            _path = m => (string)m.Metadata.Get("FileRelative");
         }
 
         public WriteFiles Where(Func<IDocument, bool> predicate)

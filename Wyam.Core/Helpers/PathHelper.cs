@@ -81,6 +81,5 @@ namespace Wyam.Core.Helpers
 
             return newPath;
         }
-
     }
 }

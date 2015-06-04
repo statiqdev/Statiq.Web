@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Abstractions;
+using Wyam.Core.Helpers;
 
 namespace Wyam.Core.Modules
 {
@@ -74,14 +75,17 @@ namespace Wyam.Core.Modules
                         {
                             string content = File.ReadAllText(file);
                             context.Trace.Verbose("Read file {0}", file);
+                            string fileRoot = Path.GetDirectoryName(path);
+                            string fileDir = Path.GetDirectoryName(file);
                             yield return input.Clone(content, new Dictionary<string, object>
                             {
-                                {"FileRoot", Path.GetDirectoryName(path)},
+                                {"FileRoot", fileRoot},
                                 {"FileBase", Path.GetFileNameWithoutExtension(file)},
                                 {"FileExt", Path.GetExtension(file)},
                                 {"FileName", Path.GetFileName(file)},
-                                {"FileDir", Path.GetDirectoryName(file)},
-                                {"FilePath", file}
+                                {"FileDir", fileDir},
+                                {"FilePath", file},
+                                {"FileRelative", Path.Combine(PathHelper.GetRelativePath(context.InputFolder, file))}
                             });
                         }
                     }

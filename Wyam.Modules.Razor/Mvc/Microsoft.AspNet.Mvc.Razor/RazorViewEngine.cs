@@ -145,12 +145,16 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                                                             string pageName,
                                                             bool isPartial)
         {
-            // First search paths relative to the current view
+            // First search paths relative to the current view (and up the hierarchy)
             List<string> viewLocations = new List<string>();
             if (context.View != null && !string.IsNullOrWhiteSpace(context.View.Path))
             {
-                viewLocations.AddRange(ViewLocationFormats.Select(
-                    x => Path.GetDirectoryName(context.View.Path).Replace('\\', '/') + x));
+                string parentPath = Path.GetDirectoryName(context.View.Path).Replace('\\', '/');
+                while (!string.IsNullOrWhiteSpace(parentPath) && parentPath != "/")
+                {
+                    viewLocations.AddRange(ViewLocationFormats.Select(x => parentPath + x));
+                    parentPath = Path.GetDirectoryName(parentPath).Replace('\\', '/');
+                }
             }
 
             // Now add the non-relative paths

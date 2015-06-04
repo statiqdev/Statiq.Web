@@ -137,24 +137,33 @@ namespace Wyam.Core
                 Configure();
             }
 
+            int outerIndent = Trace.IndentLevel;
             try
             {
                 Trace.Information("Executing {0} pipelines...", _pipelines.Count);
+                outerIndent = Trace.Indent();
                 _documents.Clear();
                 int c = 1;
                 foreach(Pipeline pipeline in _pipelines.Pipelines)
                 {
                     Trace.Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)...", pipeline.Name, c, _pipelines.Count, pipeline.Count);
                     int indent = Trace.Indent();
-                    IReadOnlyList<IDocument> results = pipeline.Execute();
-                    _documents.Add(pipeline.Name, results);
+                    string pipelineName = pipeline.Name;
+                    int documentCount = 0;
+                    pipeline.Execute(x =>
+                    {
+                        _documents[pipelineName] = x;
+                        documentCount = x.Count;
+                    });
                     Trace.IndentLevel = indent;
-                    Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", pipeline.Name, c++, _pipelines.Count, results.Count);
+                    Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", pipeline.Name, c++, _pipelines.Count, documentCount);
                 }
+                Trace.IndentLevel = outerIndent;
                 Trace.Information("Executed {0} pipelines.", _pipelines.Count);
             }
             catch (Exception ex)
             {
+                Trace.IndentLevel = outerIndent;
                 Trace.Verbose("Exception: {0}", ex);
                 throw;
             }
