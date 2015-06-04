@@ -90,6 +90,7 @@ namespace Wyam.Core.Modules
                             string destination = _destinationPath == null
                                 ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(Path.GetDirectoryName(path), Path.GetDirectoryName(file)), Path.GetFileName(file)) 
                                 : _destinationPath(file);
+                            Directory.CreateDirectory(Path.GetDirectoryName(destination));
                             File.Copy(file, destination, true);
                             context.Trace.Verbose("Copied file {0} to {1}", file, destination);
                             yield return input.Clone(new Dictionary<string, object>

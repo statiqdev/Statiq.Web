@@ -66,6 +66,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionFileSystemWatcher.cs" />
+    <Compile Include="InterlockedBool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />

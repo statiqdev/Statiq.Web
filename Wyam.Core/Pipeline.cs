@@ -48,7 +48,7 @@ namespace Wyam.Core
                 foreach (IModule module in modules.Where(x => x != null))
                 {
                     string moduleName = module.GetType().Name;
-                    _engine.Trace.Information("Executing module {0} with {1} input(s)...", moduleName, documents.Count);
+                    _engine.Trace.Information("Executing module {0} with {1} input document(s)...", moduleName, documents.Count);
                     int indent = _engine.Trace.Indent();
                     try
                     {
@@ -56,7 +56,7 @@ namespace Wyam.Core
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
                         _engine.Trace.IndentLevel = indent;
-                        _engine.Trace.Information("Executed module {0} resulting in {1} output(s).", moduleName, documents.Count);
+                        _engine.Trace.Information("Executed module {0} resulting in {1} output document(s).", moduleName, documents.Count);
                     }
                     catch (Exception ex)
                     {

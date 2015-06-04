@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
@@ -28,6 +30,7 @@ namespace Wyam
 
         private readonly Engine _engine = new Engine();
         private bool _watch = false;
+        private bool _clean = false;
         private bool _preview = false;
         private int _previewPort = 5080;
         private string _logFile = null;
@@ -36,6 +39,9 @@ namespace Wyam
         private string _rootFolder = null;
         private string _configFile = null;
         private readonly Dictionary<string, object> _globalVariables = new Dictionary<string,object>();
+        private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
+        private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
+        private readonly InterlockedBool _exit = new InterlockedBool(false);
 
         private void Run(string[] args)
         {
@@ -69,7 +75,7 @@ namespace Wyam
                 _engine.Trace.AddListener(new SimpleFileTraceListener(_logFile));
             }
 
-            // Pause if requested
+            // Pause
             if (_pause)
             {
                 _engine.Trace.Information("Pause requested, hit any key to continue.");
@@ -77,38 +83,28 @@ namespace Wyam
             }
 
             // Configure
-            try
+            if (!Configure())
             {
-                Configure();
-            }
-            catch (Exception ex)
-            {
-                _engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);
                 return;
             }
 
             // Execute
-            try
+            if (!Execute())
             {
-                _engine.Execute();
-            }
-            catch (Exception ex)
-            {
-                _engine.Trace.Critical("Error while executing: {0}.", ex.Message);
                 return;
             }
 
-            bool pauseBeforeExit = false;
+            bool messagePump = false;
 
             // Start the preview server
             IDisposable previewServer = null;
             if (_preview)
             {
-                pauseBeforeExit = true;
+                messagePump = true;
                 try
                 {
-                    previewServer = Preview();
                     _engine.Trace.Information("Preview server running on port {0}...", _previewPort);
+                    previewServer = Preview();
                 }
                 catch (Exception ex)
                 {
@@ -116,11 +112,72 @@ namespace Wyam
                 }
             }
 
-            // Pause if an async process is running
-            if (pauseBeforeExit)
+            // Start the watcher
+            IDisposable watcher = null;
+            if (_watch)
             {
-                _engine.Trace.Information("Hit any key to exit.");
-                Console.ReadKey();
+                messagePump = true;
+                _engine.Trace.Information("Watching folder {0}...", _engine.InputFolder);
+                watcher = new ActionFileSystemWatcher(_engine.InputFolder, path =>
+                {
+                    _changedFiles.Enqueue(path);
+                    _messageEvent.Set();
+                });
+            }
+
+            // Start the message pump if an async process is running
+            if (messagePump)
+            {
+                // Start the key listening thread
+                _engine.Trace.Information("Hit any key to exit...");
+                var thread = new Thread(() =>
+                {
+                    Console.ReadKey();
+                    _exit.Set();
+                    _messageEvent.Set();
+                })
+                {
+                    IsBackground = true
+                };
+                thread.Start();
+
+                // Wait for activity
+                while (true)
+                {
+                    _messageEvent.WaitOne();
+                    if (_exit)
+                    {
+                        break;
+                    }
+
+                    // Execute if files have changed
+                    int changedCount = 0;
+                    string changedFile;
+                    while (_changedFiles.TryDequeue(out changedFile))
+                    {
+                        _engine.Trace.Verbose("{0} has changed.", changedFile);
+                        changedCount++;
+                    }
+                    if (changedCount > 0)
+                    {
+                        _engine.Trace.Information("{0} files have changed, re-executing...", changedCount);
+                        Execute();
+                    }
+
+                    // Check one more time for exit
+                    if (_exit)
+                    {
+                        break;
+                    }
+                    _messageEvent.Reset();
+                }
+
+                // Shutdown
+                _engine.Trace.Information("Shutting down...");
+                if (watcher != null)
+                {
+                    watcher.Dispose();
+                }
                 if (previewServer != null)
                 {
                     previewServer.Dispose();
@@ -136,6 +193,10 @@ namespace Wyam
                 if (args[c] == "--watch")
                 {
                     _watch = true;
+                }
+                else if (args[c] == "--clean")
+                {
+                    _clean = true;
                 }
                 else if (args[c] == "--preview")
                 {
@@ -201,20 +262,61 @@ namespace Wyam
             Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
-        private void Configure()
+        private bool Configure()
         {
-            // If we have a configuration file use it, otherwise configure with defaults  
-            string configFile = string.IsNullOrWhiteSpace(_configFile)
-                ? Path.Combine(_engine.RootFolder, "config.wyam") : Path.Combine(_engine.RootFolder, _configFile);
-            if (File.Exists(configFile))
+            try
             {
-                _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                _engine.Configure(File.ReadAllText(configFile));
+                // If we have a configuration file use it, otherwise configure with defaults  
+                string configFile = string.IsNullOrWhiteSpace(_configFile)
+                    ? Path.Combine(_engine.RootFolder, "config.wyam") : Path.Combine(_engine.RootFolder, _configFile);
+                if (File.Exists(configFile))
+                {
+                    _engine.Trace.Information("Loading configuration from {0}.", configFile);
+                    _engine.Configure(File.ReadAllText(configFile));
+                }
+                else
+                {
+                    _engine.Trace.Information("Could not find configuration file {0}, using default configuration.", configFile);
+                    _engine.Configure();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _engine.Configure();
+                _engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);
+                return false;
             }
+
+            return true;
+        }
+
+        private bool Execute()
+        {
+            if (_clean)
+            {
+                try
+                {
+                    _engine.Trace.Information("Cleaning output directory {0}...", _engine.OutputFolder);
+                    Directory.Delete(_engine.OutputFolder, true);
+                    _engine.Trace.Information("Cleaned output directory.");
+                }
+                catch (Exception ex)
+                {
+                    _engine.Trace.Critical("Error while cleaning output directory: {0}.", ex.Message);
+                    return false;
+                }
+            }
+
+            try
+            {
+                _engine.Execute();
+            }
+            catch (Exception ex)
+            {
+                _engine.Trace.Critical("Error while executing: {0}.", ex.Message);
+                return false;
+            }
+
+            return true;
         }
 
         private IDisposable Preview()
@@ -223,7 +325,7 @@ namespace Wyam
             return WebApp.Start(url, app =>
             {
                 IFileSystem outputFolder = new PhysicalFileSystem(_engine.OutputFolder);
-                app.UseDefaultFiles(new DefaultFilesOptions()
+                app.UseDefaultFiles(new DefaultFilesOptions
                 {
                     RequestPath = PathString.Empty,
                     FileSystem = outputFolder,
