@@ -27,11 +27,20 @@ namespace Wyam.Core.Modules
 
         public WriteFiles(string extension)
         {
-            if (extension == null) throw new ArgumentNullException("extension");
+            if (extension == null)
+            {
+                throw new ArgumentNullException("extension");
+            }
 
             _path = m => (!m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileBase")) ? null :
                 Path.Combine(PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]),
                     (string)m["FileBase"] + (extension.StartsWith(".") ? extension : ("." + extension)));
+        }
+
+        public WriteFiles()
+        {
+            _path = m => (!m.Metadata.ContainsKey("FileRoot") || !m.Metadata.ContainsKey("FileDir") || !m.Metadata.ContainsKey("FileName")) ? null :
+                Path.Combine(PathHelper.GetRelativePath((string)m["FileRoot"], (string)m["FileDir"]), (string)m["FileName"]);
         }
 
         public WriteFiles Where(Func<IDocument, bool> predicate)

@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
 {
@@ -55,12 +56,15 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             // TODO: Get assemblies from Wyam engine
             HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
             {
-                Assembly.GetAssembly(typeof(object)),  // System
-                Assembly.GetAssembly(typeof(System.Collections.Generic.List<>)),  // System.Collections.Generic 
-                Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions)),  // System.Linq
-                Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject)),
-                Assembly.GetAssembly(typeof(Abstractions.IMetadata)),  // Wyam.Abstractions
-                Assembly.GetAssembly(typeof(Modules.Razor.Razor))  // Wyam.Modules.Razor
+                Assembly.GetAssembly(typeof (object)),  // System
+                Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)),  // System.Collections.Generic 
+                Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)),  // System.Linq
+                Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
+                Assembly.GetAssembly(typeof (Binder)), // Microsoft.CSharp (needed for dynamic)
+                Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
+                Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
+                Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)), // Wyam.Abstractions
+                Assembly.GetAssembly(typeof (Modules.Razor.Razor))  // Wyam.Modules.Razor
             };
             
             var assemblyName = Path.GetRandomFileName();

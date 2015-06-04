@@ -10,9 +10,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering
 {
     public class DynamicViewData : DynamicObject
     {
-        private readonly Func<IDictionary<string, object>> _viewDataFunc;
+        private readonly Func<ViewDataDictionary> _viewDataFunc;
 
-        public DynamicViewData([NotNull] Func<IDictionary<string, object>> viewDataFunc)
+        public DynamicViewData([NotNull] Func<ViewDataDictionary> viewDataFunc)
         {
             _viewDataFunc = viewDataFunc;
         }

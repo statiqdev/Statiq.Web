@@ -69,7 +69,7 @@ namespace Wyam.Core.NuGet
             {
                 int indent = engine.Trace.Indent();
                 engine.Trace.Verbose("Uninstalling package {0} {1}.", localPackage.Id, localPackage.Version);
-                packageManager.UninstallPackage(localPackage);
+                packageManager.UninstallPackage(localPackage, true);
                 engine.Trace.IndentLevel = indent;
             }
             

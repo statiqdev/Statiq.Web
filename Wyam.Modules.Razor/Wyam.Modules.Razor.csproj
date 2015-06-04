@@ -90,6 +90,7 @@
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\IViewEngine.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\Rendering\ViewEngine\ViewEngineResult.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\ViewContext.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Core\ViewDataDictionary.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\IMvcRazorHost.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\MvcRazorHost.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\ViewHierarchyUtility.cs" />

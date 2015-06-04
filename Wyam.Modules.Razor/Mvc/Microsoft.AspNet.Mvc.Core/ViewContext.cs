@@ -20,7 +20,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// <param name="writer">The <see cref="TextWriter"/> to render output to.</param>
         public ViewContext(
             [NotNull] IView view,
-            [NotNull] IDictionary<string, object> viewData,
+            [NotNull] ViewDataDictionary viewData,
             [NotNull] TextWriter writer)
         {
             View = view;
@@ -53,7 +53,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// Gets or sets the <see cref="T:Microsoft.AspNet.Mvc.ViewDataDictionary"/>.
         /// 
         /// </summary>
-        public IDictionary<string, object> ViewData { get; set; }
+        public ViewDataDictionary ViewData { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="TextWriter"/> used to write the output.

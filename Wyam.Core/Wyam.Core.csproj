@@ -99,6 +99,7 @@
     <Compile Include="Configuration\SetupGlobals.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Modules\ContentModule.cs" />
+    <Compile Include="Modules\CopyFiles.cs" />
     <Compile Include="Modules\FrontMatter.cs" />
     <Compile Include="Modules\Replace.cs" />
     <Compile Include="Modules\ReplaceIn.cs" />

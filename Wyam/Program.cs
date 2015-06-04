@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.Hosting;
+using Microsoft.Owin.StaticFiles;
+using Owin;
 using Wyam.Core;
 
 namespace Wyam
@@ -88,6 +96,35 @@ namespace Wyam
             {
                 _engine.Trace.Critical("Error while executing: {0}.", ex.Message);
                 return;
+            }
+
+            bool pauseBeforeExit = false;
+
+            // Start the preview server
+            IDisposable previewServer = null;
+            if (_preview)
+            {
+                pauseBeforeExit = true;
+                try
+                {
+                    previewServer = Preview();
+                    _engine.Trace.Information("Preview server running on port {0}...", _previewPort);
+                }
+                catch (Exception ex)
+                {
+                    _engine.Trace.Critical("Error while running preview server: {0}.", ex.Message);
+                }
+            }
+
+            // Pause if an async process is running
+            if (pauseBeforeExit)
+            {
+                _engine.Trace.Information("Hit any key to exit.");
+                Console.ReadKey();
+                if (previewServer != null)
+                {
+                    previewServer.Dispose();
+                }
             }
         }
 
@@ -178,6 +215,26 @@ namespace Wyam
             {
                 _engine.Configure();
             }
+        }
+
+        private IDisposable Preview()
+        {
+            string url = "http://localhost:" + _previewPort;
+            return WebApp.Start(url, app =>
+            {
+                IFileSystem outputFolder = new PhysicalFileSystem(_engine.OutputFolder);
+                app.UseDefaultFiles(new DefaultFilesOptions()
+                {
+                    RequestPath = PathString.Empty,
+                    FileSystem = outputFolder,
+                    DefaultFileNames = new List<string> {"Index.html", "Index.htm", "Home.html", "Home.htm"}
+                });
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    RequestPath = PathString.Empty,
+                    FileSystem = outputFolder
+                });
+            });
         }
     }
 }
