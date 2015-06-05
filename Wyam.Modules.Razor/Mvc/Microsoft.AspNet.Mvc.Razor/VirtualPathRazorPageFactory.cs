@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.AspNet.FileProviders;
+using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
@@ -18,11 +19,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         private readonly IFileProvider _fileProvider;
         private readonly IRazorCompilationService _razorcompilationService;
 
-        public VirtualPathRazorPageFactory(string rootDirectory)
+        public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext)
         {
             _rootDirectory = rootDirectory;
             _fileProvider = new PhysicalFileProvider(rootDirectory);
-            _razorcompilationService = new RazorCompilationService();
+            _razorcompilationService = new RazorCompilationService(executionContext);
         }
 
         /// <inheritdoc />

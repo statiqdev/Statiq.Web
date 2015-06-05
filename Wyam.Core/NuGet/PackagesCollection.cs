@@ -37,17 +37,17 @@ namespace Wyam.Core.NuGet
             }
         }
 
-        public IRepository AddRepository(string packageSource)
+        public IRepository Repository(string packageSource)
         {
             Repository repository = new Repository(packageSource);
             _repositories.Add(repository);
             return repository;
         }
 
-        public IPackagesCollection Add(string packageId, string versionSpec = null, 
+        public IRepository Install(string packageId, string versionSpec = null, 
             bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
-            _repositories[0].Add(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
+            _repositories[0].Install(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
             return this;
         }
 

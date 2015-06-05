@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
@@ -27,9 +28,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
     public class RazorCompilationService : IRazorCompilationService
     {
         private readonly IMvcRazorHost _razorHost;
+        private readonly IExecutionContext _executionContext;
 
-        public RazorCompilationService()
+        public RazorCompilationService(IExecutionContext executionContext)
         {
+            _executionContext = executionContext;
             _razorHost = new MvcRazorHost();
         }
 
@@ -44,14 +47,15 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
 
             if (!results.Success)
             {
+                _executionContext.Trace.Error("{0} errors parsing {1}:{2}{3}", results.ParserErrors.Count(), file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, results.ParserErrors));
                 throw new AggregateException(results.ParserErrors.Select(x => new Exception(x.Message)));
             }
 
-            return Compile(results.GeneratedCode);
+            return Compile(results.GeneratedCode, file);
         }
 
         // Use the Roslyn scripting engine for compilation - in MVC, this part is done in RoslynCompilationService
-        private Type Compile([NotNull] string compilationContent)
+        private Type Compile([NotNull] string compilationContent, [NotNull] RelativeFileInfo file)
         {
             // TODO: Get assemblies from Wyam engine
             HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
@@ -89,6 +93,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
 
                 if (!result.Success)
                 {
+                    _executionContext.Trace.Error("{0} errors compiling {1}:{2}{3}", result.Diagnostics.Length, file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
                     throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
                 }
 

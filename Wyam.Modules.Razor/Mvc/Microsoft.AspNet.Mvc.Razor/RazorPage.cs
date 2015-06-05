@@ -66,6 +66,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return ExecutionContext.Documents; }
         }
 
+        public IEnumerable<IDocument> AllDocuments
+        {
+            get { return ExecutionContext.Documents.SelectMany(x => x.Value); }
+        }
+
         /// <summary>
         /// Gets the TextWriter that the page is writing output to.
         /// </summary>

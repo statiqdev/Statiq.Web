@@ -11,22 +11,22 @@ namespace Wyam.Core.Configuration
     internal class AssemblyCollection : IAssemblyCollection
     {
         private readonly List<Tuple<string, SearchOption>> _directories = new List<Tuple<string, SearchOption>>(); 
-        private readonly List<string> _byPath = new List<string>();
+        private readonly List<string> _byFile = new List<string>();
         private readonly List<string> _byName = new List<string>();
 
-        public IAssemblyCollection AddDirectory(string path, SearchOption searchOption = SearchOption.AllDirectories)
+        public IAssemblyCollection LoadDirectory(string path, SearchOption searchOption = SearchOption.AllDirectories)
         {
             _directories.Add(new Tuple<string, SearchOption>(path, searchOption));
             return this;
         }
 
-        public IAssemblyCollection AddFrom(string path)
+        public IAssemblyCollection LoadFile(string path)
         {
-            _byPath.Add(path);
+            _byFile.Add(path);
             return this;
         }
 
-        public IAssemblyCollection Add(string name)
+        public IAssemblyCollection Load(string name)
         {
             _byName.Add(name);
             return this;
@@ -37,9 +37,9 @@ namespace Wyam.Core.Configuration
             get { return _directories; }
         }
 
-        public List<string> ByPath
+        public List<string> ByFile
         {
-            get { return _byPath; }
+            get { return _byFile; }
         }
 
         public List<string> ByName

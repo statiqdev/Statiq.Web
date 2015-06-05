@@ -1,6 +1,6 @@
-Assemblies.AddDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
-Assemblies.AddDirectory(@"..\..\Wyam.Modules.Yaml\bin\Debug");
-Assemblies.AddDirectory(@"..\..\Wyam.Modules.Razor\bin\Debug");
+Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
+Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Yaml\bin\Debug");
+Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Razor\bin\Debug");
 ---
 
 Pipelines.Add("Posts",

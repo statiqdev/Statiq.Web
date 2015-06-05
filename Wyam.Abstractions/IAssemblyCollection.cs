@@ -4,8 +4,8 @@ namespace Wyam.Abstractions
 {
     public interface IAssemblyCollection
     {
-        IAssemblyCollection AddDirectory(string path, SearchOption searchOption = SearchOption.AllDirectories);
-        IAssemblyCollection AddFrom(string path);
-        IAssemblyCollection Add(string name);
+        IAssemblyCollection LoadDirectory(string path, SearchOption searchOption = SearchOption.AllDirectories);
+        IAssemblyCollection LoadFile(string path);
+        IAssemblyCollection Load(string name);
     }
 }

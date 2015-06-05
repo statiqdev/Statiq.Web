@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Wyam.Core.NuGet
 {
-    public interface IPackagesCollection
+    public interface IPackagesCollection : IRepository
     {
         // Sets the path where NuGet packages will be downloaded and cached
         string Path { get; set; }
 
-        IRepository AddRepository(string packageSource);
-        IPackagesCollection Add(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
+        IRepository Repository(string packageSource);
     }
 }

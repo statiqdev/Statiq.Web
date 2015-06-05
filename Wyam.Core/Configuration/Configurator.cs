@@ -220,7 +220,7 @@ namespace Wyam.Core.Configuration
                     return x;
                 })
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
-            assemblyPaths.AddRange(_assemblies.ByPath
+            assemblyPaths.AddRange(_assemblies.ByFile
                 .Select(x => Path.Combine(_engine.RootFolder, x))
                 .Where(File.Exists));
 

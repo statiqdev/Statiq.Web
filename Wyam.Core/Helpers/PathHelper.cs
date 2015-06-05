@@ -11,7 +11,7 @@ namespace Wyam.Core.Helpers
     public class PathHelper
     {
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
-        public static String GetRelativePath(String fromPath, String toPath)
+        public static string GetRelativePath(string fromPath, string toPath)
         {
             if (fromPath == null)
             {
@@ -80,6 +80,12 @@ namespace Wyam.Core.Helpers
             string newPath = string.Join(Path.DirectorySeparatorChar.ToString(), relativeParts);
 
             return newPath;
+        }
+
+        public static string RemoveExtension(string path)
+        {
+            string extension = Path.GetExtension(path);
+            return string.IsNullOrWhiteSpace(extension) ? path : path.Substring(0, path.Length - extension.Length);
         }
     }
 }

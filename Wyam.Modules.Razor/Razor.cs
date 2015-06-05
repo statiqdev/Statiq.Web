@@ -21,7 +21,7 @@ namespace Wyam.Modules.Razor
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder);
+            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context);
             IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory);
             IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
             IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
