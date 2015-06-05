@@ -67,7 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionFileSystemWatcher.cs" />
+    <Compile Include="Owin\ExtensionlessUrlsExtensions.cs" />
+    <Compile Include="Owin\ExtensionlessUrlsMiddleware.cs" />
     <Compile Include="InterlockedBool.cs" />
+    <Compile Include="Owin\ExtensionlessUrlsOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />

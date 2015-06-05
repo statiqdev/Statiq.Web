@@ -17,6 +17,7 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Core;
+using Wyam.Owin;
 
 namespace Wyam
 {
@@ -33,9 +34,11 @@ namespace Wyam
         private bool _clean = false;
         private bool _preview = false;
         private int _previewPort = 5080;
+        private bool _previewForceExtension = false;
         private string _logFile = null;
         private bool _verbose = false;
         private bool _pause = false;
+        private bool _skipPackages = false;
         private string _rootFolder = null;
         private string _configFile = null;
         private readonly Dictionary<string, object> _globalVariables = new Dictionary<string,object>();
@@ -204,9 +207,14 @@ namespace Wyam
                 else if (args[c] == "--preview")
                 {
                     _preview = true;
-                    if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
+                    while (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
                     {
-                        if (!int.TryParse(args[c++], out _previewPort))
+                        if (args[c] == "force-ext")
+                        {
+                            _previewForceExtension = true;
+                            c++;
+                        }
+                        else if (!int.TryParse(args[c++], out _previewPort))
                         {
                             // Invalid port number
                             Help(true);
@@ -228,6 +236,10 @@ namespace Wyam
                     {
                         _configFile = args[c++];
                     }
+                }
+                else if (args[c] == "--skip-packages")
+                {
+                    _skipPackages = true;
                 }
                 else if (args[c] == "--verbose")
                 {
@@ -262,7 +274,7 @@ namespace Wyam
             {
                 Console.WriteLine("Invalid arguments.");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private bool Configure()
@@ -275,12 +287,12 @@ namespace Wyam
                 if (File.Exists(configFile))
                 {
                     _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                    _engine.Configure(File.ReadAllText(configFile));
+                    _engine.Configure(File.ReadAllText(configFile), !_skipPackages);
                 }
                 else
                 {
                     _engine.Trace.Information("Could not find configuration file {0}, using default configuration.", configFile);
-                    _engine.Configure();
+                    _engine.Configure(null, !_skipPackages);
                 }
             }
             catch (Exception ex)
@@ -327,6 +339,9 @@ namespace Wyam
             string url = "http://localhost:" + _previewPort;
             return WebApp.Start(url, app =>
             {
+                IFileSystem outputFolder = new PhysicalFileSystem(_engine.OutputFolder);
+
+                // Disable caching
                 app.Use((c, t) =>
                 {
                     c.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -334,17 +349,27 @@ namespace Wyam
                     c.Response.Headers.Append("Expires", "0");
                     return t();
                 });
-                IFileSystem outputFolder = new PhysicalFileSystem(_engine.OutputFolder);
+
+                // Support for extensionless URLs
+                if (!_previewForceExtension)
+                {
+                    app.UseExtensionlessUrls(new ExtensionlessUrlsOptions
+                    {
+                        FileSystem = outputFolder
+                    });
+                }
+
+                // Serve up all static files
                 app.UseDefaultFiles(new DefaultFilesOptions
                 {
                     RequestPath = PathString.Empty,
                     FileSystem = outputFolder,
-                    DefaultFileNames = new List<string> {"Index.html", "Index.htm", "Home.html", "Home.htm"}
+                    DefaultFileNames = new List<string> {"index.html", "index.htm", "home.html", "home.htm", "default.html", "default.html"}
                 });
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     RequestPath = PathString.Empty,
-                    FileSystem = outputFolder
+                    FileSystem = outputFolder, 
                 });
             });
         }

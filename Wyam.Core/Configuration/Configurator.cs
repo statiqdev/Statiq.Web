@@ -34,7 +34,7 @@ namespace Wyam.Core.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script = null)
+        public void Configure(string script, bool installPackages)
         {
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
@@ -46,7 +46,7 @@ namespace Wyam.Core.Configuration
             Tuple<string, string> configParts = GetConfigParts(script);
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
-                Setup(configParts.Item1);
+                Setup(configParts.Item1, installPackages);
             }
 
             // Configuration
@@ -71,7 +71,7 @@ namespace Wyam.Core.Configuration
             return new Tuple<string, string>(setup, string.Join(Environment.NewLine, configLines));
         }
 
-        private void Setup(string script)
+        private void Setup(string script, bool installPackages)
         {
             _engine.Trace.Verbose("Evaluating setup script...");
             int indent = _engine.Trace.Indent();
@@ -92,17 +92,18 @@ namespace Wyam.Core.Configuration
 
                 // Evaluate the script
                 CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies, _namespaces));
-
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated setup script.");
-                _engine.Trace.Verbose("Installing packages...");
-                indent = _engine.Trace.Indent();
 
                 // Install packages
-                _packages.InstallPackages();
-
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Packages installed.");
+                if (installPackages)
+                {
+                    _engine.Trace.Verbose("Installing packages...");
+                    indent = _engine.Trace.Indent();
+                    _packages.InstallPackages();
+                    _engine.Trace.IndentLevel = indent;
+                    _engine.Trace.Verbose("Packages installed.");
+                }
             }
             catch (CompilationErrorException compilationError)
             {
