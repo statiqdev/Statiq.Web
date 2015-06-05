@@ -31,7 +31,7 @@ namespace Wyam
 
         private readonly Engine _engine = new Engine();
         private bool _watch = false;
-        private bool _clean = false;
+        private bool _noClean = false;
         private bool _preview = false;
         private int _previewPort = 5080;
         private bool _previewForceExtension = false;
@@ -106,7 +106,7 @@ namespace Wyam
                 messagePump = true;
                 try
                 {
-                    _engine.Trace.Information("Preview server running on port {0}...", _previewPort);
+                    _engine.Trace.Information("Preview server listening on port {0}...", _previewPort);
                     previewServer = Preview();
                 }
                 catch (Exception ex)
@@ -200,9 +200,9 @@ namespace Wyam
                 {
                     _watch = true;
                 }
-                else if (args[c] == "--clean")
+                else if (args[c] == "--no-clean")
                 {
-                    _clean = true;
+                    _noClean = true;
                 }
                 else if (args[c] == "--preview")
                 {
@@ -232,10 +232,12 @@ namespace Wyam
                 }
                 else if (args[c] == "--config")
                 {
-                    if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
+                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
                     {
-                        _configFile = args[c++];
+                        Help(true);
+                        return false;
                     }
+                    _configFile = args[c++];
                 }
                 else if (args[c] == "--skip-packages")
                 {
@@ -254,7 +256,7 @@ namespace Wyam
                     Help(false);
                     return false;
                 }
-                else if (c == 0)
+                else if (c == 0 && !args[c].StartsWith("--"))
                 {
                     _rootFolder = args[c];
                 }
@@ -274,7 +276,7 @@ namespace Wyam
             {
                 Console.WriteLine("Invalid arguments.");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--clean] [--skip-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--config file] [--no-clean] [--skip-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private bool Configure()
@@ -306,7 +308,7 @@ namespace Wyam
 
         private bool Execute()
         {
-            if (_clean)
+            if (!_noClean)
             {
                 try
                 {

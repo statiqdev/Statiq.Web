@@ -9,17 +9,17 @@ namespace Wyam.Core.Configuration
 {
     internal class NamespacesCollection : INamespacesCollection
     {
-        private readonly List<string> _ns = new List<string>();
+        private readonly List<string> _namespaces = new List<string>();
 
-        public INamespacesCollection Add(string ns)
+        public INamespacesCollection Using(string ns)
         {
-            _ns.Add(ns);
+            _namespaces.Add(ns);
             return this;
         }
 
-        public List<string> Ns
+        public List<string> Namespaces
         {
-            get { return _ns; }
+            get { return _namespaces; }
         }
     }
 }

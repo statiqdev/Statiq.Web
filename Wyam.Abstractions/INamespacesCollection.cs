@@ -2,6 +2,6 @@ namespace Wyam.Abstractions
 {
     public interface INamespacesCollection
     {
-        INamespacesCollection Add(string ns);
+        INamespacesCollection Using(string @namespace);
     }
 }

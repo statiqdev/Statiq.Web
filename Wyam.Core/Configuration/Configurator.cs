@@ -165,7 +165,7 @@ namespace Wyam.Core.Configuration
                     "Wyam.Core.Helpers",
                     "Wyam.Abstractions"
                 };
-                namespaces.AddRange(_namespaces.Ns);
+                namespaces.AddRange(_namespaces.Namespaces);
 
                 // Add specified assemblies from packages, etc.
                 GetAssemblies(assemblies);
