@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Security.Policy;
 using Microsoft.AspNet.FileProviders;
 using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation;
@@ -18,6 +20,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         private readonly string _rootDirectory;
         private readonly IFileProvider _fileProvider;
         private readonly IRazorCompilationService _razorcompilationService;
+        private readonly Dictionary<string, CacheEntry> _pageCache = new Dictionary<string, CacheEntry>(); 
 
         public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext)
         {
@@ -40,21 +43,51 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                 relativePath = relativePath.Substring(1);
             }
 
-            // Some of this code is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
-            // TODO: Add better caching similar to the caching ASP.NET MVC does
+            // Code below is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
+
+            // Check the file
             var fileProvider = content == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, content);
             var fileInfo = fileProvider.GetFileInfo(relativePath);
             if (!fileInfo.Exists)
             {
                 return null;
             }
+
+            // Check the cache
+            CacheEntry cacheEntry;
+            string hash = RazorFileHash.GetHash(fileInfo);
+            if (_pageCache.TryGetValue(relativePath, out cacheEntry))
+            {
+                // It was found in the cache, see if it still matches
+                if (cacheEntry.Length == fileInfo.Length
+                    && cacheEntry.LastModified == fileInfo.LastModified
+                    && cacheEntry.Hash == hash)
+                {
+                    return cacheEntry.Page;
+                }
+            }
+
+            // Compile and store in cache
             var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
             Type result = _razorcompilationService.Compile(relativeFileInfo);
-
-            var page = (IRazorPage)Activator.CreateInstance(result);
+            IRazorPage page = (IRazorPage)Activator.CreateInstance(result);
             page.Path = relativePath;
-
+            _pageCache[relativePath] = new CacheEntry
+            {
+                Page = page,
+                Length = fileInfo.Length,
+                LastModified = fileInfo.LastModified,
+                Hash = hash
+            };
             return page;
+        }
+
+        private class CacheEntry
+        {
+            public IRazorPage Page { get; set; }
+            public long Length { get; set; }
+            public DateTimeOffset LastModified { get; set; }
+            public string Hash { get; set; }
         }
     }
 }
