@@ -50,10 +50,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         }
 
         // In ASP.NET MVC these kinds of properties are injected with InjectChunk in MvcRazorHost, but this is easier
-        private readonly HtmlHelper _html = new HtmlHelper();
         public HtmlHelper Html
         {
-            get { return _html; }
+            get { return new HtmlHelper(ViewContext); }
         }
 
         public IExecutionContext ExecutionContext

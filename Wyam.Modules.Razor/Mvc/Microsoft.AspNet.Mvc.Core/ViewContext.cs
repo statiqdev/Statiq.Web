@@ -21,11 +21,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         public ViewContext(
             [NotNull] IView view,
             [NotNull] ViewDataDictionary viewData,
-            [NotNull] TextWriter writer)
+            [NotNull] TextWriter writer,
+            IViewEngine viewEngine)
         {
             View = view;
             ViewData = viewData;
             Writer = writer;
+            ViewEngine = viewEngine;
         }
 
         /// <summary>
@@ -68,6 +70,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// This property contains the path of the file currently being rendered.
         /// </remarks>
         public string ExecutingFilePath { get; set; }
+
+        internal IViewEngine ViewEngine { get; set; }
 
         public IMetadata Metadata { get; set; }
 
