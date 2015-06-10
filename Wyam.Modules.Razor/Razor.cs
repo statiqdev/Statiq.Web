@@ -28,11 +28,7 @@ namespace Wyam.Modules.Razor
 
             return inputs.Select(x =>
             {
-                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, viewEngine)
-                {
-                    Metadata = x.Metadata,
-                    ExecutionContext = context
-                };
+                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
                 string relativePath = "/";
                 if (x.Metadata.ContainsKey("FilePath"))
                 {

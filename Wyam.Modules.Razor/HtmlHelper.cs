@@ -65,8 +65,7 @@ namespace Wyam.Modules.Razor
             var view = viewEngineResult.View;
             using (view as IDisposable)
             {
-                //var viewContext = new ViewContext(ViewContext, view, newViewData, writer);
-                var viewContext = new ViewContext(view, _viewContext.ViewData, textWriter, _viewContext.ViewEngine);
+                var viewContext = new ViewContext(_viewContext, view, _viewContext.ViewData, textWriter);
                 AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
             }
         }

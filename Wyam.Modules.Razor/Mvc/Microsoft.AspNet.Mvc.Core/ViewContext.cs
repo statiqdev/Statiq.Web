@@ -22,12 +22,38 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
             [NotNull] IView view,
             [NotNull] ViewDataDictionary viewData,
             [NotNull] TextWriter writer,
+            IMetadata metadata,
+            IExecutionContext executionContext,
             IViewEngine viewEngine)
         {
             View = view;
             ViewData = viewData;
             Writer = writer;
+            Metadata = metadata;
+            ExecutionContext = executionContext;
             ViewEngine = viewEngine;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ViewContext"/>.
+        /// </summary>
+        /// <param name="viewContext">The <see cref="ViewContext"/> to copy values from.</param>
+        /// <param name="view">The <see cref="IView"/> being rendered.</param>
+        /// <param name="viewData">The <see cref="ViewDataDictionary"/>.</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to render output to.</param>
+        public ViewContext(
+            [NotNull] ViewContext viewContext,
+            [NotNull] IView view,
+            [NotNull] ViewDataDictionary viewData,
+            [NotNull] TextWriter writer)
+        {
+
+            Metadata = viewContext.Metadata;
+            ExecutionContext = viewContext.ExecutionContext;
+            ViewEngine = viewContext.ViewEngine;
+            View = view;
+            ViewData = viewData;
+            Writer = writer;
         }
 
         /// <summary>
