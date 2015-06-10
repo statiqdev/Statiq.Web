@@ -46,6 +46,11 @@ namespace Wyam.Core
             }
         }
 
+        public IMetadata<T> Of<T>()
+        {
+            return new MetadataOf<T>(this);
+        }
+
         // This clones the stack and pushes a new dictionary on to the cloned stack
         internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
@@ -81,6 +86,16 @@ namespace Wyam.Core
         {
             object value;
             return TryGetValue(key, out value) ? value : defaultValue;
+        }
+
+        public T Get<T>(string key)
+        {
+            return Of<T>().Get(key);
+        }
+
+        public T Get<T>(string key, T defaultValue)
+        {
+            return Of<T>().Get(key, defaultValue);
         }
 
         public object this[string key]

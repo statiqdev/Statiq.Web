@@ -10,6 +10,8 @@ namespace Wyam.Abstractions
         // Shortcuts for getting metadata values
         object this[string key] { get; }
         object Get(string key, object defaultValue = null);
+        T Get<T>(string key);
+        T Get<T>(string key, T defaultValue);
         
         // Content will never be null (if null is passed in, it'll be converted to string.Empty)
         string Content { get; }

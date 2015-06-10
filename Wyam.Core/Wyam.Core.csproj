@@ -89,6 +89,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UniversalTypeConverter, Version=1.0.2.1, Culture=neutral, PublicKeyToken=2f110abc75e7903d, processorArchitecture=MSIL">
+      <HintPath>..\packages\UniversalTypeConverter.1.0.2\lib\net40\UniversalTypeConverter.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncHelper.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="Trace.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="Engine.cs" />
+    <Compile Include="MetadataOf.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -38,6 +38,16 @@ namespace Wyam.Core
             return _metadata.Get(key, defaultValue);
         }
 
+        public T Get<T>(string key)
+        {
+            return _metadata.Get<T>(key);
+        }
+
+        public T Get<T>(string key, T defaultValue)
+        {
+            return _metadata.Get<T>(key, defaultValue);
+        }
+
         public string Content
         {
             get { return _content; }
