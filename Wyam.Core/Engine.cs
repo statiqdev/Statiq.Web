@@ -137,6 +137,16 @@ namespace Wyam.Core
                 Configure();
             }
 
+            // Create the input and output folders if they don't already exist
+            if (!Directory.Exists(InputFolder))
+            {
+                Directory.CreateDirectory(InputFolder);
+            }
+            if (!Directory.Exists(OutputFolder))
+            {
+                Directory.CreateDirectory(OutputFolder);
+            }
+
             int outerIndent = Trace.IndentLevel;
             try
             {

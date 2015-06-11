@@ -20,9 +20,14 @@ namespace Wyam.Modules.Razor.Tests
         public void SimpleTemplate()
         {
             // Given
+            string inputFolder = Path.Combine(Environment.CurrentDirectory, @".\Input");
+            if (!Directory.Exists(inputFolder))
+            {
+                Directory.CreateDirectory(inputFolder);
+            }
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
-            context.InputFolder.Returns(Path.Combine(Environment.CurrentDirectory, @".\Input"));
+            context.InputFolder.Returns(inputFolder);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             List<string> items = new List<string>();
@@ -45,9 +50,14 @@ namespace Wyam.Modules.Razor.Tests
         public void Metadata()
         {
             // Given
+            string inputFolder = Path.Combine(Environment.CurrentDirectory, @".\Input");
+            if (!Directory.Exists(inputFolder))
+            {
+                Directory.CreateDirectory(inputFolder);
+            }
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
-            context.InputFolder.Returns(Path.Combine(Environment.CurrentDirectory, @".\Input"));
+            context.InputFolder.Returns(inputFolder);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             document.Metadata["MyKey"].Returns("MyValue");
