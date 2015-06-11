@@ -23,7 +23,7 @@ namespace Wyam.Core.NuGet
             return this;
         }
 
-        public void InstallPackages(string path, Engine engine)
+        public void InstallPackages(string path, Engine engine, bool updatePackages)
         {
             PackageManager packageManager = new PackageManager(_packageRepository, path);
             packageManager.PackageInstalled += (sender, args) =>
@@ -53,7 +53,7 @@ namespace Wyam.Core.NuGet
             };
             foreach (Package package in _packages)
             {
-                package.InstallPackage(packageManager, engine);
+                package.InstallPackage(packageManager, engine, updatePackages);
             }
         }
     }

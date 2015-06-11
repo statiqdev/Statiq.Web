@@ -33,7 +33,7 @@ namespace Wyam.Core.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script, bool installPackages)
+        public void Configure(string script, bool updatePackages)
         {
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
@@ -46,7 +46,7 @@ namespace Wyam.Core.Configuration
             // Setup (install packages, specify additional assemblies, etc.)
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
-                Setup(configParts.Item1, installPackages);
+                Setup(configParts.Item1, updatePackages);
             }
 
             // Configuration
@@ -87,7 +87,7 @@ namespace Wyam.Core.Configuration
             return new Tuple<string, string, string>(setup, declarations, string.Join(Environment.NewLine, configLines));
         }
 
-        private void Setup(string script, bool installPackages)
+        private void Setup(string script, bool updatePackages)
         {
             _engine.Trace.Verbose("Evaluating setup script...");
             int indent = _engine.Trace.Indent();
@@ -112,14 +112,11 @@ namespace Wyam.Core.Configuration
                 _engine.Trace.Verbose("Evaluated setup script.");
 
                 // Install packages
-                if (installPackages)
-                {
-                    _engine.Trace.Verbose("Installing packages...");
-                    indent = _engine.Trace.Indent();
-                    _packages.InstallPackages();
-                    _engine.Trace.IndentLevel = indent;
-                    _engine.Trace.Verbose("Packages installed.");
-                }
+                _engine.Trace.Verbose("Installing packages...");
+                indent = _engine.Trace.Indent();
+                _packages.InstallPackages(updatePackages);
+                _engine.Trace.IndentLevel = indent;
+                _engine.Trace.Verbose("Packages installed.");
             }
             catch (CompilationErrorException compilationError)
             {
@@ -224,16 +221,11 @@ namespace Wyam.Core.Configuration
         {
             // Get path to all assemblies (except those specified by name)
             List<string> assemblyPaths = new List<string>();
-            _engine.Trace.Verbose("Scanning for assemblies and modules in NuGet packages.");
             assemblyPaths.AddRange(_packages.GetCompatibleAssemblyPaths());
+            assemblyPaths.AddRange(Directory.GetFiles(Path.GetDirectoryName(typeof(Configurator).Assembly.Location), "*.dll", SearchOption.AllDirectories));
             assemblyPaths.AddRange(_assemblies.Directories
                 .Select(x => new Tuple<string, SearchOption>(Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))
-                .Select(x =>
-                {
-                    _engine.Trace.Verbose("Scanning for assemblies and modules in path {0}.", x.Item1);
-                    return x;
-                })
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
             assemblyPaths.AddRange(_assemblies.ByFile
                 .Select(x => Path.Combine(_engine.RootFolder, x))
@@ -244,16 +236,16 @@ namespace Wyam.Core.Configuration
             {
                 try
                 {
-                    _engine.Trace.Verbose("Loading assembly from {0}.", assemblyPath);
+                    _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
                     Assembly assembly = Assembly.LoadFile(assemblyPath);
                     if (!assemblies.Add(assembly))
                     {
-                        _engine.Trace.Verbose("Skipping assembly from {0} because it was already added.", assemblyPath);
+                        _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _engine.Trace.Verbose("{0} exception while loading assembly from {1}: {2}.", ex.GetType().Name, assemblyPath, ex.Message);
+                    _engine.Trace.Verbose("{0} exception while loading assembly file {1}: {2}.", ex.GetType().Name, assemblyPath, ex.Message);
                 }
             }
 
@@ -281,15 +273,16 @@ namespace Wyam.Core.Configuration
             HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in assemblies)
             {
-                _engine.Trace.Verbose("Loading modules from assembly {0}...", assembly.FullName);
+                _engine.Trace.Verbose("Searching for modules in assembly {0}...", assembly.FullName);
+                int indent = _engine.Trace.Indent();
                 foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
                     && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
                 {
-                    _engine.Trace.Verbose("* Found module {0} in assembly {1}.", moduleType.Name, assembly.FullName);
+                    _engine.Trace.Verbose("Found module {0} in assembly {1}.", moduleType.Name, assembly.FullName);
                     moduleTypes.Add(moduleType);
                     namespaces.Add(moduleType.Namespace);
                 }
-                _engine.Trace.Verbose("Loaded modules from assembly {0}.", assembly.FullName);
+                _engine.Trace.IndentLevel = indent;
             }
             return moduleTypes;
         }

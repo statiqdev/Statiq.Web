@@ -38,13 +38,21 @@ namespace Wyam.Core.NuGet
             _allowUnlisted = allowUnlisted;
         }
 
-        public void InstallPackage(PackageManager packageManager, Engine engine)
+        public void InstallPackage(PackageManager packageManager, Engine engine, bool updatePackages)
         {
             engine.Trace.Verbose("Installing package {0}{1} from {2}...", 
                 _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
 
             // Find the local package
             IPackage localPackage = packageManager.LocalRepository.FindPackage(_packageId);
+
+            // Check if we're up to date
+            if (localPackage != null && _versionSpec.Satisfies(localPackage.Version) && !updatePackages)
+            {
+                engine.Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping.",
+                    _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
+                return;
+            }
 
             // Find the source package
             IPackage sourcePackage = packageManager.SourceRepository
@@ -57,9 +65,9 @@ namespace Wyam.Core.NuGet
             }
 
             // Check if we're up to date
-            if (localPackage != null && _versionSpec.Satisfies(localPackage.Version) && localPackage.Version >= sourcePackage.Version)
+            if (localPackage != null && localPackage.Version >= sourcePackage.Version)
             {
-                engine.Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping.",
+                engine.Trace.Verbose("Package {0}{1} is up to date with version {2}, skipping.",
                     _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
                 return;
             }

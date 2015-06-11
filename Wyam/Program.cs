@@ -38,7 +38,7 @@ namespace Wyam
         private string _logFile = null;
         private bool _verbose = false;
         private bool _pause = false;
-        private bool _skipPackages = false;
+        private bool _updatePackages = false;
         private string _rootFolder = null;
         private string _configFile = null;
         private readonly Dictionary<string, object> _globalVariables = new Dictionary<string,object>();
@@ -239,9 +239,9 @@ namespace Wyam
                     }
                     _configFile = args[c++];
                 }
-                else if (args[c] == "--skip-packages")
+                else if (args[c] == "--update-packages")
                 {
-                    _skipPackages = true;
+                    _updatePackages = true;
                 }
                 else if (args[c] == "--verbose")
                 {
@@ -276,7 +276,7 @@ namespace Wyam
             {
                 Console.WriteLine("Invalid arguments.");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--config file] [--no-clean] [--skip-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--config file] [--no-clean] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private bool Configure()
@@ -289,12 +289,12 @@ namespace Wyam
                 if (File.Exists(configFile))
                 {
                     _engine.Trace.Information("Loading configuration from {0}.", configFile);
-                    _engine.Configure(File.ReadAllText(configFile), !_skipPackages);
+                    _engine.Configure(File.ReadAllText(configFile), _updatePackages);
                 }
                 else
                 {
                     _engine.Trace.Information("Could not find configuration file {0}, using default configuration.", configFile);
-                    _engine.Configure(null, !_skipPackages);
+                    _engine.Configure(null, _updatePackages);
                 }
             }
             catch (Exception ex)

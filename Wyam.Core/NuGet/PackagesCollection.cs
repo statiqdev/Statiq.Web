@@ -51,11 +51,11 @@ namespace Wyam.Core.NuGet
             return this;
         }
 
-        public void InstallPackages()
+        public void InstallPackages(bool updatePackages)
         {
             foreach (Repository repository in _repositories)
             {
-                repository.InstallPackages(Path, _engine);
+                repository.InstallPackages(Path, _engine, updatePackages);
             }
         }
 

@@ -110,7 +110,7 @@ namespace Wyam.Core
                 { DiagnosticSeverity.Info, TraceEventType.Information }
             };
 
-        public void Configure(string configScript = null, bool installPackages = true)
+        public void Configure(string configScript = null, bool updatePackages = false)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace Wyam.Core
                 }
                 _configured = true;
                 Configurator configurator = new Configurator(this);
-                configurator.Configure(configScript, installPackages);
+                configurator.Configure(configScript, updatePackages);
             }
             catch (Exception ex)
             {

@@ -89,6 +89,18 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
+      <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
+      <Name>Wyam.Modules.Markdown</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
+      <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
+      <Name>Wyam.Modules.Razor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
+      <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
+      <Name>Wyam.Modules.Yaml</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
