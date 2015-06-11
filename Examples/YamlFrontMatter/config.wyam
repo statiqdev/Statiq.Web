@@ -1,6 +1,6 @@
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Yaml\bin\Debug");
----
+===
 Pipelines.Add(
 	ReadFiles("*.md"),
 	FrontMatter(Yaml()),

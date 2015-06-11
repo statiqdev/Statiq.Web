@@ -13,14 +13,12 @@ namespace Wyam.Core.Configuration
         private readonly Engine _engine;
         private readonly IPackagesCollection _packages;
         private readonly IAssemblyCollection _assemblies;
-        private readonly INamespacesCollection _namespaces;
 
-        internal SetupGlobals(Engine engine, IPackagesCollection packages, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        internal SetupGlobals(Engine engine, IPackagesCollection packages, IAssemblyCollection assemblies)
         {
             _engine = engine;
             _packages = packages;
             _assemblies = assemblies;
-            _namespaces = namespaces;
         }
 
         public string RootFolder
@@ -46,11 +44,6 @@ namespace Wyam.Core.Configuration
         public IAssemblyCollection Assemblies
         {
             get { return _assemblies; }
-        }
-
-        public INamespacesCollection Namespaces
-        {
-            get { return _namespaces; }
         }
     }
 }

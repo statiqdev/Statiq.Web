@@ -24,7 +24,6 @@ namespace Wyam.Core.Configuration
         private readonly Engine _engine;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblies = new AssemblyCollection();
-        private readonly NamespacesCollection _namespaces = new NamespacesCollection();
 
         public Configurator(Engine engine)
         {
@@ -42,33 +41,50 @@ namespace Wyam.Core.Configuration
                 return;
             }
 
-            // Setup (install packages, specify additional assemblies and namespaces, etc.)
-            Tuple<string, string> configParts = GetConfigParts(script);
+            Tuple<string, string, string> configParts = GetConfigParts(script);
+
+            // Setup (install packages, specify additional assemblies, etc.)
             if (!string.IsNullOrWhiteSpace(configParts.Item1))
             {
                 Setup(configParts.Item1, installPackages);
             }
 
             // Configuration
-            Config(configParts.Item2);
+            Config(configParts.Item2, configParts.Item3);
         }
 
-        // Item1 = setup (possibly null), Item2 = config
-        public Tuple<string, string> GetConfigParts(string script)
+        // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
+        public Tuple<string, string, string> GetConfigParts(string script)
         {
-            string setup = null;
             List<string> configLines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            // Get setup
+            string setup = null;
             int setupLine = configLines.FindIndex(x =>
             {
                 string trimmed = x.TrimEnd();
-                return trimmed.Length > 0 && trimmed.All(y => y == '-');
+                return trimmed.Length > 0 && trimmed.All(y => y == '=');
             });
             if (setupLine != -1)
             {
                 setup = string.Join(Environment.NewLine, configLines.Take(setupLine));
                 configLines.RemoveRange(0, setupLine + 1);
             }
-            return new Tuple<string, string>(setup, string.Join(Environment.NewLine, configLines));
+
+            // Get declarations
+            string declarations = null;
+            int declarationLine = configLines.FindIndex(x =>
+            {
+                string trimmed = x.TrimEnd();
+                return trimmed.Length > 0 && trimmed.All(y => y == '-');
+            });
+            if (declarationLine != -1)
+            {
+                declarations = string.Join(Environment.NewLine, configLines.Take(declarationLine));
+                configLines.RemoveRange(0, declarationLine + 1);
+            }
+
+            return new Tuple<string, string, string>(setup, declarations, string.Join(Environment.NewLine, configLines));
         }
 
         private void Setup(string script, bool installPackages)
@@ -91,7 +107,7 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(IAssemblyCollection)));  // Wyam.Abstractions
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies, _namespaces));
+                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies));
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated setup script.");
 
@@ -132,7 +148,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private void Config(string script)
+        private void Config(string declarations, string script)
         {
             _engine.Trace.Verbose("Initializing scripting environment...");
             int indent = _engine.Trace.Indent();
@@ -165,7 +181,6 @@ namespace Wyam.Core.Configuration
                     "Wyam.Core.Helpers",
                     "Wyam.Abstractions"
                 };
-                namespaces.AddRange(_namespaces.Namespaces);
 
                 // Add specified assemblies from packages, etc.
                 GetAssemblies(assemblies);
@@ -179,7 +194,7 @@ namespace Wyam.Core.Configuration
                 indent = _engine.Trace.Indent();
 
                 // Generate the script
-                script = GenerateScript(script, moduleTypes, namespaces);
+                script = GenerateScript(declarations, script, moduleTypes, namespaces);
 
                 // Evaluate the script
                 ScriptOptions options = new ScriptOptions()
@@ -319,7 +334,7 @@ namespace Wyam.Core.Configuration
         }
 
         // This creates a wrapper class for the config script that contains static methods for constructing modules
-        private string GenerateScript(string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
+        private string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
         {
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
             SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(script, new CSharpParseOptions(kind: SourceCodeKind.Script));
@@ -329,6 +344,10 @@ namespace Wyam.Core.Configuration
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
             scriptBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
+            if (declarations != null)
+            {
+                scriptBuilder.AppendLine(declarations);
+            }
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {

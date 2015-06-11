@@ -1,5 +1,5 @@
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
----
+===
 Pipelines.Add(
 	ReadFiles("*.md"),
 	Markdown(),

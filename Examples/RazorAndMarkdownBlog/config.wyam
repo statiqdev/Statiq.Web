@@ -1,7 +1,7 @@
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Markdown\bin\Debug");
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Yaml\bin\Debug");
 Assemblies.LoadDirectory(@"..\..\Wyam.Modules.Razor\bin\Debug");
----
+===
 
 Pipelines.Add("Posts",
 	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory

@@ -44,7 +44,6 @@
     <Compile Include="IMetadata.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="IDocument.cs" />
-    <Compile Include="INamespacesCollection.cs" />
     <Compile Include="IPipeline.cs" />
     <Compile Include="IPipelineCollection.cs" />
     <Compile Include="IExecutionContext.cs" />
