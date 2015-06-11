@@ -53,15 +53,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                 return null;
             }
 
-            // Check the cache
-            CacheEntry cacheEntry;
-            string hash = RazorFileHash.GetHash(fileInfo);
-            if (_pageCache.TryGetValue(relativePath, out cacheEntry))
+            // If relative path is the root, it probably means this isn't from reading a file so don't bother with caching
+            string hash = null;
+            if (relativePath != "/")
             {
-                // It was found in the cache, see if it still matches
-                if (cacheEntry.Length == fileInfo.Length
-                    && cacheEntry.LastModified == fileInfo.LastModified
-                    && cacheEntry.Hash == hash)
+                // Check the cache, always just use the hash because we're going to have to store it anyway and the content might not come from a file
+                CacheEntry cacheEntry;
+                hash = RazorFileHash.GetHash(fileInfo);
+                if (_pageCache.TryGetValue(relativePath, out cacheEntry) && cacheEntry.Hash == hash)
                 {
                     return cacheEntry.Page;
                 }
@@ -72,21 +71,20 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             Type result = _razorcompilationService.Compile(relativeFileInfo);
             IRazorPage page = (IRazorPage)Activator.CreateInstance(result);
             page.Path = relativePath;
-            _pageCache[relativePath] = new CacheEntry
+            if (relativePath != "/")
             {
-                Page = page,
-                Length = fileInfo.Length,
-                LastModified = fileInfo.LastModified,
-                Hash = hash
-            };
+                _pageCache[relativePath] = new CacheEntry
+                {
+                    Page = page,
+                    Hash = hash
+                };
+            }
             return page;
         }
 
         private class CacheEntry
         {
             public IRazorPage Page { get; set; }
-            public long Length { get; set; }
-            public DateTimeOffset LastModified { get; set; }
             public string Hash { get; set; }
         }
     }

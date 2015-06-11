@@ -313,7 +313,10 @@ namespace Wyam
                 try
                 {
                     _engine.Trace.Information("Cleaning output directory {0}...", _engine.OutputFolder);
-                    Directory.Delete(_engine.OutputFolder, true);
+                    if (Directory.Exists(_engine.OutputFolder))
+                    {
+                        Directory.Delete(_engine.OutputFolder, true);
+                    }
                     _engine.Trace.Information("Cleaned output directory.");
                 }
                 catch (Exception ex)
