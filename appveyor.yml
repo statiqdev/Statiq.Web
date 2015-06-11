@@ -1,0 +1,26 @@
+branches:
+  only:
+    - master
+
+configuration: Release
+
+before_build:
+  - nuget restore
+  
+build:
+  project: Wyam.sln
+  publish_nuget: true
+  
+artifacts:
+  - path: Wyam\bin\Release
+    name: Wyam.zip
+  - path: '**\*.nupkg'
+ 
+deploy:
+  provider: NuGet
+  api_key:
+    secure: amWULnZVsv5qbKalO9tM+5OvexyHcd36bp/t9D79yjaA/A5LVx+Uho7MG90d3/Bf
+  artifact: /.*\.nupkg/
+  
+on_failure:
+  - ps: Update-AppveyorBuild -Version "$($env:appveyor_build_version)-$(Get-Date -format HHmmss)-failed"
