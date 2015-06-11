@@ -330,7 +330,7 @@ namespace Wyam.Core.Configuration
         private string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
         {
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
-            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(script, new CSharpParseOptions(kind: SourceCodeKind.Script));
+            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(script, new CSharpParseOptions(kind: SourceCodeKind.Regular));
             ModuleMethodQualifier moduleMethodQualifier = new ModuleMethodQualifier(moduleTypes);
             script = moduleMethodQualifier.Visit(scriptTree.GetRoot()).ToFullString();
 
@@ -355,13 +355,13 @@ namespace Wyam.Core.Configuration
             {
                 CSharpCompilation compilation = CSharpCompilation
                     .Create("ScriptCtorMethodGen")
-                    .AddReferences(MetadataReference.CreateFromAssembly(moduleType.Assembly));
+                    .AddReferences(MetadataReference.CreateFromFile(moduleType.Assembly.Location));
                 foreach (AssemblyName referencedAssembly in moduleType.Assembly.GetReferencedAssemblies())
                 {
                     try
                     {
                         compilation = compilation.AddReferences(
-                            MetadataReference.CreateFromAssembly(Assembly.Load(referencedAssembly)));
+                            MetadataReference.CreateFromFile(Assembly.Load(referencedAssembly).Location));
                     }
                     catch (Exception)
                     {
