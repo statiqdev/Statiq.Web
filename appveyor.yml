@@ -16,8 +16,8 @@ build:
   
 artifacts:
   - path: Wyam\bin\Release
-    name: Wyam.zip
-  - path: '**\*.nupkg'
+    name: Wyam
+  - path: '**\Wyam.*.nupkg'
  
 deploy:
   provider: NuGet

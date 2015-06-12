@@ -106,7 +106,7 @@ namespace Wyam
                 messagePump = true;
                 try
                 {
-                    _engine.Trace.Information("Preview server listening on port {0}...", _previewPort);
+                    _engine.Trace.Information("Preview server listening on port {0} and serving from {1}...", _previewPort, _engine.OutputFolder);
                     previewServer = Preview();
                 }
                 catch (Exception ex)
@@ -209,7 +209,7 @@ namespace Wyam
                     _preview = true;
                     while (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
                     {
-                        if (args[c] == "force-ext")
+                        if (args[c + 1] == "force-ext")
                         {
                             _previewForceExtension = true;
                             c++;
@@ -227,8 +227,26 @@ namespace Wyam
                     _logFile = string.Format("wyam-{0:yyyyMMddHHmmssfff}.txt", DateTime.Now);
                     if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
                     {
-                        _logFile = args[c++];
+                        _logFile = args[++c];
                     }
+                }
+                else if (args[c] == "--input")
+                {
+                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
+                    {
+                        Help(true);
+                        return false;
+                    }
+                    _engine.InputFolder = args[++c];
+                }
+                else if (args[c] == "--output")
+                {
+                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
+                    {
+                        Help(true);
+                        return false;
+                    }
+                    _engine.OutputFolder = args[++c];
                 }
                 else if (args[c] == "--config")
                 {
@@ -237,7 +255,7 @@ namespace Wyam
                         Help(true);
                         return false;
                     }
-                    _configFile = args[c++];
+                    _configFile = args[++c];
                 }
                 else if (args[c] == "--update-packages")
                 {
@@ -276,7 +294,7 @@ namespace Wyam
             {
                 Console.WriteLine("Invalid arguments.");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--config file] [--no-clean] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--input path] [--output path] [--config file] [--no-clean] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private bool Configure()
