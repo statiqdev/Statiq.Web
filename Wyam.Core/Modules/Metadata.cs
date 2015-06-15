@@ -12,7 +12,7 @@ namespace Wyam.Core.Modules
         private readonly string _key;
         private readonly Func<IDocument, object> _metadata;
         private readonly IModule[] _modules;
-        private readonly bool _forEachDocument;
+        private bool _forEachDocument;
 
         public Metadata(string key, object metadata)
             : this(key, x => metadata)
@@ -39,10 +39,10 @@ namespace Wyam.Core.Modules
 
         // Setting true for forEachDocument results in the whole sequence of modules being executed for every input document
         // (as opposed to only being executed once with an empty initial document)
-        public Metadata(bool forEachDocument, params IModule[] modules)
+        public Metadata ForEachDocument()
         {
-            _forEachDocument = forEachDocument;
-            _modules = modules;
+            _forEachDocument = true;
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
