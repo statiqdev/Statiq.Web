@@ -17,10 +17,10 @@ namespace Wyam.Modules.Yaml
     {
         private readonly bool _flatten;
         private readonly string _key;
-
-        public Yaml(bool flatten = true)
+        
+        public Yaml()
         {
-            _flatten = flatten;
+            _flatten = true;
         }
 
         public Yaml(string key, bool flatten = false)

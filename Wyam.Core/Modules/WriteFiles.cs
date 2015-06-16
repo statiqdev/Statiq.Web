@@ -64,7 +64,11 @@ namespace Wyam.Core.Modules
                     path = Path.Combine(context.OutputFolder, path);
                     if (!string.IsNullOrWhiteSpace(path))
                     {
-                        Directory.CreateDirectory(Path.GetDirectoryName(path));
+                        string pathDirectory = Path.GetDirectoryName(path);
+                        if (!Directory.Exists(pathDirectory))
+                        {
+                            Directory.CreateDirectory(pathDirectory);
+                        }
                         File.WriteAllText(path, input.Content);
                         context.Trace.Verbose("Wrote file {0}", path);
                     }

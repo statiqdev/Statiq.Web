@@ -32,7 +32,11 @@ namespace Wyam.Core.NuGet
                 foreach (IPackageFile packageFile in args.Package.GetContentFiles())
                 {
                     string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    string filePathDirectory = Path.GetDirectoryName(filePath);
+                    if (!Directory.Exists(filePathDirectory))
+                    {
+                        Directory.CreateDirectory(filePathDirectory);
+                    }
                     using (var fileStream = File.Create(filePath))
                     {
                         packageFile.GetStream().CopyTo(fileStream);

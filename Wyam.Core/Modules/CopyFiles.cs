@@ -82,25 +82,25 @@ namespace Wyam.Core.Modules
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, path);
-                    string directory = Path.GetDirectoryName(path);
-                    if (directory != null && Directory.Exists(directory))
+                    string fileRoot = Path.GetDirectoryName(path);
+                    if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        foreach (string file in Directory.EnumerateFiles(directory, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
+                        foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
                         {
                             string destination = _destinationPath == null
                                 ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(Path.GetDirectoryName(path), Path.GetDirectoryName(file)), Path.GetFileName(file)) 
                                 : _destinationPath(file);
-                            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                            string destinationDirectory = Path.GetDirectoryName(destination);
+                            if (!Directory.Exists(destinationDirectory))
+                            {
+                                Directory.CreateDirectory(destinationDirectory);
+                            }
                             File.Copy(file, destination, true);
                             context.Trace.Verbose("Copied file {0} to {1}", file, destination);
                             yield return input.Clone(new Dictionary<string, object>
                             {
-                                {"FileRoot", Path.GetDirectoryName(path)},
-                                {"FileBase", Path.GetFileNameWithoutExtension(file)},
-                                {"FileExt", Path.GetExtension(file)},
-                                {"FileName", Path.GetFileName(file)},
-                                {"FileDir", Path.GetDirectoryName(file)},
-                                {"FilePath", file}
+                                {"SourcePath", file},
+                                {"DestinatioPath", destination}
                             });
                         }
                     }

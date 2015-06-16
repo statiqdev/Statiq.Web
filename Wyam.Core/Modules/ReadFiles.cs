@@ -68,22 +68,20 @@ namespace Wyam.Core.Modules
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, path);
-                    string directory = Path.GetDirectoryName(path);
-                    if(directory != null && Directory.Exists(directory))
+                    string fileRoot = Path.GetDirectoryName(path);
+                    if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        foreach (string file in Directory.EnumerateFiles(directory, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
+                        foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
                         {
                             string content = File.ReadAllText(file);
                             context.Trace.Verbose("Read file {0}", file);
-                            string fileRoot = Path.GetDirectoryName(path);
-                            string fileDir = Path.GetDirectoryName(file);
                             yield return input.Clone(content, new Dictionary<string, object>
                             {
                                 {"FileRoot", fileRoot},
                                 {"FileBase", Path.GetFileNameWithoutExtension(file)},
                                 {"FileExt", Path.GetExtension(file)},
                                 {"FileName", Path.GetFileName(file)},
-                                {"FileDir", fileDir},
+                                {"FileDir", Path.GetDirectoryName(file)},
                                 {"FilePath", file},
                                 {"FileRelative", Path.Combine(PathHelper.GetRelativePath(context.InputFolder, file))}
                             });

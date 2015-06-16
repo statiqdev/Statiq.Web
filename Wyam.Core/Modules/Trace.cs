@@ -12,29 +12,27 @@ namespace Wyam.Core.Modules
     // This is useful for debugging or reporting custom status during build
     public class Trace : ContentModule
     {
-        private readonly TraceEventType _traceEventType;
+        private TraceEventType _traceEventType = TraceEventType.Information;
 
-        public Trace(object content, TraceEventType traceEventType = TraceEventType.Information)
+        public Trace(object content)
             : base(content)
         {
-            _traceEventType = traceEventType;
         }
 
-        public Trace(Func<IDocument, object> content, TraceEventType traceEventType = TraceEventType.Information)
+        public Trace(Func<IDocument, object> content)
             : base(content)
         {
-            _traceEventType = traceEventType;
         }
 
         public Trace(params IModule[] modules)
-            : this(TraceEventType.Information, modules)
+            : base(modules)
         {
         }
 
-        public Trace(TraceEventType traceEventType, params IModule[] modules)
-            : base(modules)
+        public Trace EventType(TraceEventType traceEventType)
         {
             _traceEventType = traceEventType;
+            return this;
         }
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
