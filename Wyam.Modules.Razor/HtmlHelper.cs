@@ -69,5 +69,10 @@ namespace Wyam.Modules.Razor
                 AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
             }
         }
+
+        public ViewContext ViewContext
+        {
+            get { return _viewContext; }
+        }
     }
 }
