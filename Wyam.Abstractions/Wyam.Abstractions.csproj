@@ -46,6 +46,7 @@
     <Compile Include="IPipelineCollection.cs" />
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="ITrace.cs" />
+    <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

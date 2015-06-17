@@ -34,7 +34,7 @@ namespace Wyam.Core.Modules
 
             _path = x =>
             {
-                string fileRelative = x.Metadata.Get("FileRelative") as string;
+                string fileRelative = x.Metadata.Get(MetadataKeys.FileRelative) as string;
                 if (!string.IsNullOrWhiteSpace(fileRelative))
                 {
                     return Path.ChangeExtension(fileRelative, extension);
@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules
 
         public WriteFiles()
         {
-            _path = m => (string)m.Metadata.Get("FileRelative");
+            _path = m => (string)m.Metadata.Get(MetadataKeys.FileRelative);
         }
 
         public WriteFiles Where(Func<IDocument, bool> predicate)
@@ -58,6 +58,7 @@ namespace Wyam.Core.Modules
         {
             foreach (IDocument input in inputs.Where(x => _where == null || _where(x)))
             {
+                bool wrote = false;
                 string path = _path(input);
                 if (path != null)
                 {
@@ -71,9 +72,17 @@ namespace Wyam.Core.Modules
                         }
                         File.WriteAllText(path, input.Content);
                         context.Trace.Verbose("Wrote file {0}", path);
+                        wrote = true;
+                        yield return input.Clone(new Dictionary<string, object>
+                        {
+                            { MetadataKeys.DestinationPath, path }
+                        });
                     }
                 }
-                yield return input;
+                if (!wrote)
+                {
+                    yield return input;
+                }
             }
         }
     }

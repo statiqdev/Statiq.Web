@@ -77,13 +77,14 @@ namespace Wyam.Core.Modules
                             context.Trace.Verbose("Read file {0}", file);
                             yield return input.Clone(content, new Dictionary<string, object>
                             {
-                                {"FileRoot", fileRoot},
-                                {"FileBase", Path.GetFileNameWithoutExtension(file)},
-                                {"FileExt", Path.GetExtension(file)},
-                                {"FileName", Path.GetFileName(file)},
-                                {"FileDir", Path.GetDirectoryName(file)},
-                                {"FilePath", file},
-                                {"FileRelative", Path.Combine(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                {MetadataKeys.FileRoot, fileRoot},
+                                {MetadataKeys.FileBase, Path.GetFileNameWithoutExtension(file)},
+                                {MetadataKeys.FileExt, Path.GetExtension(file)},
+                                {MetadataKeys.FileName, Path.GetFileName(file)},
+                                {MetadataKeys.FileDir, Path.GetDirectoryName(file)},
+                                {MetadataKeys.FilePath, file},
+                                {MetadataKeys.SourcePath, file},
+                                {MetadataKeys.FileRelative, Path.Combine(PathHelper.GetRelativePath(context.InputFolder, file))}
                             });
                         }
                     }

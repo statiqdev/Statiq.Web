@@ -26,15 +26,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "Wyam.Abstractions"
         };
 
-        // CodeGenerationContext.DefaultBaseClass is set to MyBaseType<dynamic>.
-        // This field holds the type name without the generic decoration (MyBaseType)
-        private readonly string _baseType;
-
         internal MvcRazorHost()
             : base(new CSharpRazorCodeLanguage())
         {
-            _baseType = BaseType;
-
             DefaultBaseClass = BaseType;
             DefaultNamespace = "Wyam.Modules.Razor";
             GeneratedClassContext = new GeneratedClassContext(

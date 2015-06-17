@@ -99,8 +99,8 @@ namespace Wyam.Core.Modules
                             context.Trace.Verbose("Copied file {0} to {1}", file, destination);
                             yield return input.Clone(new Dictionary<string, object>
                             {
-                                {"SourcePath", file},
-                                {"DestinatioPath", destination}
+                                {MetadataKeys.SourcePath, file},
+                                {MetadataKeys.DestinationPath, destination}
                             });
                         }
                     }
