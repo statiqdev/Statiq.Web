@@ -52,7 +52,19 @@ namespace Wyam.Core
             get { return _trace; }
         }
 
-        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer());
+        // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
+        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new[]
+        {
+            Assembly.GetAssembly(typeof (object)), // System
+            Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
+            Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
+            Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
+            Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
+            Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
+            Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
+            Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
+            Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
+        }, new AssemblyEqualityComparer());
 
         public HashSet<Assembly> Assemblies
         {

@@ -138,19 +138,6 @@ namespace Wyam.Core.Configuration
             int indent = _engine.Trace.Indent();
             try
             {
-                _engine.Assemblies.UnionWith(new []
-                {
-                    Assembly.GetAssembly(typeof (object)), // System
-                    Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
-                    Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
-                    Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
-                    Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
-                    Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
-                    Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
-                    Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
-                    Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
-                });
-                
                 HashSet<string> namespaces = new HashSet<string>()
                 {
                     "System",

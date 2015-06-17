@@ -28,6 +28,7 @@ namespace Wyam.Modules.Razor.Tests
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
             context.InputFolder.Returns(inputFolder);
+            context.Assemblies.Returns(new Engine().Assemblies);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             List<string> items = new List<string>();
@@ -58,6 +59,7 @@ namespace Wyam.Modules.Razor.Tests
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(Environment.CurrentDirectory);
             context.InputFolder.Returns(inputFolder);
+            context.Assemblies.Returns(new Engine().Assemblies);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata.Get("FileBase", "/").Returns("/");
             document.Metadata["MyKey"].Returns("MyValue");
