@@ -39,8 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IAssemblyCollection.cs" />
-    <Compile Include="IEngine.cs" />
     <Compile Include="IMetadata.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="IDocument.cs" />

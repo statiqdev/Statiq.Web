@@ -9,10 +9,11 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.CodeAnalysis;
 using Wyam.Abstractions;
-using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
+using HtmlString = Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering.HtmlString;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 {
@@ -129,7 +130,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <param name="writer">The <see cref="TextWriter"/> instance to write to.</param>
         /// <param name="value">The <see cref="object"/> to write.</param>
         /// <remarks>
-        /// <paramref name="value"/>s of type <see cref="HtmlString"/> are written without encoding and the
+        /// <paramref name="value"/>s of type <see cref="Rendering.HtmlString"/> are written without encoding and the
         /// <see cref="HelperResult.WriteTo(TextWriter)"/> is invoked for <see cref="HelperResult"/> types.
         /// For all other types, the encoded result of <see cref="object.ToString"/> is written to the
         /// <paramref name="writer"/>.
@@ -146,11 +147,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <param name="encoder">The <see cref="IHtmlEncoder"/> to use when encoding <paramref name="value"/>.</param>
         /// <param name="value">The <see cref="object"/> to write.</param>
         /// <param name="escapeQuotes">
-        /// If <c>true</c> escapes double quotes in a <paramref name="value"/> of type <see cref="HtmlString"/>.
-        /// Otherwise writes <see cref="HtmlString"/> values as-is.
+        /// If <c>true</c> escapes double quotes in a <paramref name="value"/> of type <see cref="Rendering.HtmlString"/>.
+        /// Otherwise writes <see cref="Rendering.HtmlString"/> values as-is.
         /// </param>
         /// <remarks>
-        /// <paramref name="value"/>s of type <see cref="HtmlString"/> are written without encoding and the
+        /// <paramref name="value"/>s of type <see cref="Rendering.HtmlString"/> are written without encoding and the
         /// <see cref="HelperResult.WriteTo(TextWriter)"/> is invoked for <see cref="HelperResult"/> types.
         /// For all other types, the encoded result of <see cref="object.ToString"/> is written to the
         /// <paramref name="writer"/>.
@@ -193,6 +194,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
                 htmlString.WriteTo(writer);
                 return;
+            }
+
+            // One more check to see if it's an old-school IHtmlString
+            var iHtmlString = value as IHtmlString;
+            if (iHtmlString != null)
+            {
+                writer.Write(iHtmlString.ToHtmlString());
             }
 
             WriteTo(writer, value.ToString());

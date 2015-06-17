@@ -57,19 +57,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         // Use the Roslyn scripting engine for compilation - in MVC, this part is done in RoslynCompilationService
         private Type Compile([NotNull] string compilationContent, [NotNull] RelativeFileInfo file)
         {
-            // TODO: Get assemblies from Wyam engine
             HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
             {
-                Assembly.GetAssembly(typeof (object)),  // System
-                Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)),  // System.Collections.Generic 
-                Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)),  // System.Linq
-                Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
-                Assembly.GetAssembly(typeof (Binder)), // Microsoft.CSharp (needed for dynamic)
-                Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
-                Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
-                Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)), // Wyam.Abstractions
                 Assembly.GetAssembly(typeof (Modules.Razor.Razor))  // Wyam.Modules.Razor
             };
+            assemblies.UnionWith(_executionContext.Assemblies);
             
             var assemblyName = Path.GetRandomFileName();
             var parseOptions = new CSharpParseOptions();

@@ -23,7 +23,7 @@ namespace Wyam.Core.Configuration
     {
         private readonly Engine _engine;
         private readonly PackagesCollection _packages;
-        private readonly AssemblyCollection _assemblies = new AssemblyCollection();
+        private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
 
         public Configurator(Engine engine)
         {
@@ -103,11 +103,11 @@ namespace Wyam.Core.Configuration
                         "Wyam.Abstractions")
                     .AddReferences(
                         Assembly.GetAssembly(typeof(object)),  // System
-                        Assembly.GetAssembly(typeof(Engine)),  //Wyam.Core
-                        Assembly.GetAssembly(typeof(IAssemblyCollection)));  // Wyam.Abstractions
+                        Assembly.GetAssembly(typeof(Wyam.Core.Engine)),  //Wyam.Core
+                        Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule)));  // Wyam.Abstractions
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblies));
+                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblyCollection));
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated setup script.");
 
@@ -132,27 +132,13 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private class AssemblyEqualityComparer : IEqualityComparer<Assembly>
-        {
-            public bool Equals(Assembly x, Assembly y)
-            {
-                return String.CompareOrdinal(x.FullName, y.FullName) == 0;
-            }
-
-            public int GetHashCode(Assembly obj)
-            {
-                return obj.FullName.GetHashCode();
-            }
-        }
-
         private void Config(string declarations, string script)
         {
             _engine.Trace.Verbose("Initializing scripting environment...");
             int indent = _engine.Trace.Indent();
             try
             {
-
-                HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
+                _engine.Assemblies.UnionWith(new []
                 {
                     Assembly.GetAssembly(typeof (object)), // System
                     Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
@@ -163,8 +149,8 @@ namespace Wyam.Core.Configuration
                     Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
                     Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
                     Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
-                };
-
+                });
+                
                 HashSet<string> namespaces = new HashSet<string>()
                 {
                     "System",
@@ -180,10 +166,10 @@ namespace Wyam.Core.Configuration
                 };
 
                 // Add specified assemblies from packages, etc.
-                GetAssemblies(assemblies);
+                GetAssemblies();
 
                 // Get modules
-                HashSet<Type> moduleTypes = GetModules(assemblies, namespaces);
+                HashSet<Type> moduleTypes = GetModules(namespaces);
 
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Initialized scripting environment.");
@@ -195,7 +181,7 @@ namespace Wyam.Core.Configuration
 
                 // Evaluate the script
                 ScriptOptions options = new ScriptOptions()
-                    .WithReferences(assemblies)
+                    .WithReferences(_engine.Assemblies)
                     .WithNamespaces(namespaces);
                 CSharpScript.Eval(script, options, new ConfigGlobals(_engine.Metadata, _engine.Pipelines));
 
@@ -217,17 +203,17 @@ namespace Wyam.Core.Configuration
         }
         
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
-        private void GetAssemblies(HashSet<Assembly> assemblies)
+        private void GetAssemblies()
         {
             // Get path to all assemblies (except those specified by name)
             List<string> assemblyPaths = new List<string>();
             assemblyPaths.AddRange(_packages.GetCompatibleAssemblyPaths());
             assemblyPaths.AddRange(Directory.GetFiles(Path.GetDirectoryName(typeof(Configurator).Assembly.Location), "*.dll", SearchOption.AllDirectories));
-            assemblyPaths.AddRange(_assemblies.Directories
+            assemblyPaths.AddRange(_assemblyCollection.Directories
                 .Select(x => new Tuple<string, SearchOption>(Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
-            assemblyPaths.AddRange(_assemblies.ByFile
+            assemblyPaths.AddRange(_assemblyCollection.ByFile
                 .Select(x => Path.Combine(_engine.RootFolder, x))
                 .Where(File.Exists));
 
@@ -238,7 +224,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
                     Assembly assembly = Assembly.LoadFile(assemblyPath);
-                    if (!assemblies.Add(assembly))
+                    if (!_engine.Assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
                     }
@@ -250,13 +236,13 @@ namespace Wyam.Core.Configuration
             }
 
             // Also iterate assemblies specified by name
-            foreach (string assemblyName in _assemblies.ByName)
+            foreach (string assemblyName in _assemblyCollection.ByName)
             {
                 try
                 {
                     _engine.Trace.Verbose("Loading assembly {0}.", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
-                    if (!assemblies.Add(assembly))
+                    if (!_engine.Assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly {0} because it was already added.", assemblyName);
                     }
@@ -268,10 +254,10 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private HashSet<Type> GetModules(HashSet<Assembly> assemblies, HashSet<string> namespaces)
+        private HashSet<Type> GetModules(HashSet<string> namespaces)
         {
             HashSet<Type> moduleTypes = new HashSet<Type>();
-            foreach (Assembly assembly in assemblies)
+            foreach (Assembly assembly in _engine.Assemblies)
             {
                 _engine.Trace.Verbose("Searching for modules in assembly {0}...", assembly.FullName);
                 int indent = _engine.Trace.Indent();

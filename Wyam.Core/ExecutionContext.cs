@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Abstractions;
@@ -18,9 +19,9 @@ namespace Wyam.Core
             _pipeline = pipeline;
         }
 
-        public IEngine Engine
+        public IEnumerable<Assembly> Assemblies
         {
-            get {  return _engine; }
+            get { return _engine.Assemblies; }
         }
 
         public IPipeline Pipeline

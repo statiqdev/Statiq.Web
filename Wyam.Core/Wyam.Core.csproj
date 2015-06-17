@@ -99,6 +99,7 @@
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\ConfigGlobals.cs" />
     <Compile Include="Configuration\Configurator.cs" />
+    <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\SetupGlobals.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="Modules\ContentModule.cs" />

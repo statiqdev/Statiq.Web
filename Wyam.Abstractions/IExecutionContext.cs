@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace Wyam.Abstractions
 {
     public interface IExecutionContext
     {
-        IEngine Engine { get; }
+        IEnumerable<Assembly> Assemblies { get; } 
         IPipeline Pipeline { get; }
         string RootFolder { get; }
         string InputFolder { get; }

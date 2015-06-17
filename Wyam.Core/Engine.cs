@@ -18,7 +18,7 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    public class Engine : IEngine
+    public class Engine
     {
         private bool _configured = false;
 
@@ -50,6 +50,26 @@ namespace Wyam.Core
         public ITrace Trace
         {
             get { return _trace; }
+        }
+
+        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer());
+
+        public HashSet<Assembly> Assemblies
+        {
+            get { return _assemblies; }
+        }
+
+        private class AssemblyEqualityComparer : IEqualityComparer<Assembly>
+        {
+            public bool Equals(Assembly x, Assembly y)
+            {
+                return String.CompareOrdinal(x.FullName, y.FullName) == 0;
+            }
+
+            public int GetHashCode(Assembly obj)
+            {
+                return obj.FullName.GetHashCode();
+            }
         }
 
         private string _rootFolder = Environment.CurrentDirectory;
