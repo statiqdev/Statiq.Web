@@ -478,23 +478,20 @@ namespace Wyam
         private string GetDefaultConfigScript()
         {
             return @"
-                Pipelines.Add(""Markdown"",
-	                ReadFiles(@""*.md""),
+                Pipelines.Add(""Content"",
+	                ReadFiles(""*.md""),
 	                FrontMatter(Yaml()),
 	                Markdown(),
-	                Razor(),
-	                WriteFiles("".html"")
-                );
-
-                Pipelines.Add(""Razor"",
-	                ReadFiles(@""*.cshtml"").Where(x => Path.GetFileName(x)[0] != '_'),
-	                FrontMatter(Yaml()),
+	                Concat(
+		                ReadFiles(""*.cshtml"").Where(x => Path.GetFileName(x)[0] != '_'),
+		                FrontMatter(Yaml())		
+	                ),
 	                Razor(),
 	                WriteFiles("".html"")
                 );
 
                 Pipelines.Add(""Resources"",
-	                CopyFiles(@""*"").Where(x => Path.GetExtension(x) != "".cshtml"" && Path.GetExtension(x) != "".md"")
+	                CopyFiles(""*"").Where(x => Path.GetExtension(x) != "".cshtml"" && Path.GetExtension(x) != "".md"")
                 );
             ";
         }
