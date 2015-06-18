@@ -7,23 +7,36 @@ namespace Wyam.Core.Configuration
     // This gets passed to the scripting engine as a global object and all members can be accessed globally from the script
     public class ConfigGlobals
     {
-        private readonly IDictionary<string, object> _metadata;
-        private readonly IPipelineCollection _pipelines;
+        private readonly Engine _engine;
 
-        internal ConfigGlobals(IDictionary<string, object> metadata, IPipelineCollection pipelines)
+        internal ConfigGlobals(Engine engine)
         {
-            _metadata = metadata;
-            _pipelines = pipelines;
+            _engine = engine;
         }
 
         public IDictionary<string, object> Metadata
         {
-            get { return _metadata; }
+            get { return _engine.Metadata; }
         }
 
         public IPipelineCollection Pipelines
         {
-            get { return _pipelines; }
+            get { return _engine.Pipelines; }
+        }
+
+        public string RootFolder
+        {
+            get { return _engine.RootFolder; }
+        }
+
+        public string InputFolder
+        {
+            get { return _engine.InputFolder; }
+        }
+
+        public string OutputFolder
+        {
+            get { return _engine.OutputFolder; }
         }
     }
 }

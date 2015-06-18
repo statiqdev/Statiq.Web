@@ -119,7 +119,7 @@
     <Compile Include="Modules\Content.cs" />
     <Compile Include="Modules\Execute.cs" />
     <Compile Include="Modules\If.cs" />
-    <Compile Include="Modules\Metadata.cs" />
+    <Compile Include="Modules\Meta.cs" />
     <Compile Include="Modules\Prepend.cs" />
     <Compile Include="Modules\ReadFiles.cs" />
     <Compile Include="Modules\WriteFiles.cs" />

@@ -170,7 +170,7 @@ namespace Wyam.Core.Configuration
                 ScriptOptions options = new ScriptOptions()
                     .WithReferences(_engine.Assemblies)
                     .WithNamespaces(namespaces);
-                CSharpScript.Eval(script, options, new ConfigGlobals(_engine.Metadata, _engine.Pipelines));
+                CSharpScript.Eval(script, options, new ConfigGlobals(_engine));
 
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated configuration script.");
@@ -317,7 +317,7 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {
-                    public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines)
+                    public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
                     {
                         " + script + @"
                     }");
@@ -388,7 +388,7 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append(@"
                 }
 
-                ConfigScript.Run(Metadata, Pipelines);");
+                ConfigScript.Run(Metadata, Pipelines, RootFolder, InputFolder, OutputFolder);");
 
             return scriptBuilder.ToString();
         }

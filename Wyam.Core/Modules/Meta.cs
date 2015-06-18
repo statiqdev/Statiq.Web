@@ -7,19 +7,19 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core.Modules
 {
-    public class Metadata : IModule
+    public class Meta : IModule
     {
         private readonly string _key;
         private readonly Func<IDocument, object> _metadata;
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
-        public Metadata(string key, object metadata)
+        public Meta(string key, object metadata)
             : this(key, x => metadata)
         {
         }
 
-        public Metadata(string key, Func<IDocument, object> metadata)
+        public Meta(string key, Func<IDocument, object> metadata)
         {
             if (key == null)
             {
@@ -32,14 +32,14 @@ namespace Wyam.Core.Modules
         // For performance reasons, the specified modules will only be run once with a newly initialized, isolated document
         // Otherwise, we'd need to run the whole set for each input document (I.e., multiple duplicate file reads, transformations, etc. for each input)
         // The metadata from all outputs will be added to the metadata for each input (possibly overwriting)
-        public Metadata(params IModule[] modules)
+        public Meta(params IModule[] modules)
         {
             _modules = modules;
         }
 
         // Setting true for forEachDocument results in the whole sequence of modules being executed for every input document
         // (as opposed to only being executed once with an empty initial document)
-        public Metadata ForEachDocument()
+        public Meta ForEachDocument()
         {
             _forEachDocument = true;
             return this;
