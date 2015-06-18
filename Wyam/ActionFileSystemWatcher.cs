@@ -12,13 +12,13 @@ namespace Wyam
         private readonly FileSystemWatcher _watcher;
         private readonly Action<string> _callback;
 
-        public ActionFileSystemWatcher(string path, Action<string> callback)
+        public ActionFileSystemWatcher(string path, bool includeSubdirectories, string filter, Action<string> callback)
         {
             _watcher = new FileSystemWatcher
             {
                 Path = path,
-                Filter = "*.*",
-                IncludeSubdirectories = true,
+                IncludeSubdirectories = includeSubdirectories,
+                Filter = filter,
                 EnableRaisingEvents = true
             };
             _watcher.Changed += OnChanged;
