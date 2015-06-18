@@ -12,18 +12,18 @@ namespace Wyam.Core.Modules
     // In other words, the branch does affect the primary pipeline module flow
     public class Branch : IModule
     {
-        private readonly Func<IDocument, bool> _predicate;
         private readonly IModule[] _modules;
+        private Func<IDocument, bool> _predicate;
 
         public Branch(params IModule[] modules)
         {
             _modules = modules;
         }
 
-        public Branch(Func<IDocument, bool> predicate, params IModule[] modules)
+        public Branch Where(Func<IDocument, bool> predicate)
         {
             _predicate = predicate;
-            _modules = modules;
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)

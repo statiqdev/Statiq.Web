@@ -24,9 +24,9 @@ namespace Wyam.Core
             get { return _engine.Assemblies; }
         }
 
-        public IPipeline Pipeline
+        public IReadOnlyPipeline Pipeline
         {
-            get { return _pipeline; }
+            get { return new ReadOnlyPipeline(_pipeline); }
         }
 
         public ITrace Trace

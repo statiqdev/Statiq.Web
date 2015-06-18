@@ -2,9 +2,10 @@
 
 namespace Wyam.Abstractions
 {
-    public interface IPipeline
+    public interface IPipeline : IList<IModule>
     {
         string Name { get; }
-        int Count { get; }
+        void Add(params IModule[] items);
+        void Insert(int index, params IModule[] items);
     }
 }

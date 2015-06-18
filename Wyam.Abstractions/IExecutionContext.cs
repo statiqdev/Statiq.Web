@@ -10,7 +10,7 @@ namespace Wyam.Abstractions
     public interface IExecutionContext
     {
         IEnumerable<Assembly> Assemblies { get; } 
-        IPipeline Pipeline { get; }
+        IReadOnlyPipeline Pipeline { get; }
         string RootFolder { get; }
         string InputFolder { get; }
         string OutputFolder { get; }

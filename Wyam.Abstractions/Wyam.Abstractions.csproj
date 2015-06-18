@@ -45,6 +45,7 @@
     <Compile Include="IPipeline.cs" />
     <Compile Include="IPipelineCollection.cs" />
     <Compile Include="IExecutionContext.cs" />
+    <Compile Include="IReadOnlyPipeline.cs" />
     <Compile Include="ITrace.cs" />
     <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

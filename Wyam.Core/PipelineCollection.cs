@@ -47,5 +47,49 @@ namespace Wyam.Core
         {
             get { return _pipelines.Count; }
         }
+
+        public bool ContainsKey(string key)
+        {
+            return _pipelines.ContainsKey(key);
+        }
+
+        public bool TryGetValue(string key, out IPipeline value)
+        {
+            Pipeline pipeline;
+            if (_pipelines.TryGetValue(key, out pipeline))
+            {
+                value = pipeline;
+                return true;
+            }
+            value = null;
+            return false;
+        }
+
+        public IPipeline this[string key]
+        {
+            get { return _pipelines[key]; }
+        }
+
+        public IEnumerable<string> Keys
+        {
+            get { return _pipelines.Keys; }
+        }
+
+        public IEnumerable<IPipeline> Values
+        {
+            get { return _pipelines.Values; }
+        }
+
+        public IEnumerator<KeyValuePair<string, IPipeline>> GetEnumerator()
+        {
+            return _pipelines
+                .Select(x => new KeyValuePair<string, IPipeline>(x.Key, x.Value))
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
