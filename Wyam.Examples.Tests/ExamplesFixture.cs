@@ -11,7 +11,7 @@ using Wyam.Core;
 
 namespace Wyam.Examples.Tests
 {
-    [TestFixture]
+    [TestFixture(Category = "ExcludeFromAppVeyor")]
     public class ExamplesFixture
     {
         [Test]
