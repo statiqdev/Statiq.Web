@@ -13,6 +13,11 @@ before_build:
 build:
   project: Wyam.sln
   publish_nuget: true
+
+test:
+  categories:
+    except:
+      - ExcludeFromAppVeyor
   
 artifacts:
   - path: Wyam\bin\Release
