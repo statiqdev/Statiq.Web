@@ -9,5 +9,6 @@ namespace Wyam.Core.NuGet
     public interface IRepository
     {
         IRepository Install(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
+        IRepository Install(string packageId, bool allowPrereleaseVersions = false, bool allowUnlisted = false);
     }
 }
