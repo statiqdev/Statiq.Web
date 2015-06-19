@@ -44,7 +44,7 @@ namespace Wyam.Core.NuGet
             return repository;
         }
 
-        public IRepository Install(string packageId, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public IRepository Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
         {
             return Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
         }

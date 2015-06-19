@@ -29,9 +29,9 @@ namespace Wyam.Modules.Razor
             {
                 ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
                 string relativePath = "/";
-                if (x.Metadata.ContainsKey(MetadataKeys.FileRelative))
+                if (x.Metadata.ContainsKey(MetadataKeys.RelativeFilePath))
                 {
-                    relativePath += x.Get<string>(MetadataKeys.FileRelative);
+                    relativePath += x.Get<string>(MetadataKeys.RelativeFilePath);
                 }
                 ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
                 using (StringWriter writer = new StringWriter())

@@ -16,7 +16,7 @@ namespace Wyam.Core.NuGet
                 string.IsNullOrWhiteSpace(packageSource) ? "https://packages.nuget.org/api/v2" : packageSource);
         }
 
-        public IRepository Install(string packageId, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public IRepository Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
         {
             return Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
         }

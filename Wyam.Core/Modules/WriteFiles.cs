@@ -34,7 +34,7 @@ namespace Wyam.Core.Modules
 
             _path = x =>
             {
-                string fileRelative = x.Metadata.Get(MetadataKeys.FileRelative) as string;
+                string fileRelative = x.Metadata.Get(MetadataKeys.RelativeFilePath) as string;
                 if (!string.IsNullOrWhiteSpace(fileRelative))
                 {
                     return Path.ChangeExtension(fileRelative, extension);
@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules
 
         public WriteFiles()
         {
-            _path = m => (string)m.Metadata.Get(MetadataKeys.FileRelative);
+            _path = m => (string)m.Metadata.Get(MetadataKeys.RelativeFilePath);
         }
 
         public WriteFiles Where(Func<IDocument, bool> predicate)
@@ -75,7 +75,7 @@ namespace Wyam.Core.Modules
                         wrote = true;
                         yield return input.Clone(new Dictionary<string, object>
                         {
-                            { MetadataKeys.DestinationPath, path }
+                            { MetadataKeys.DestinationFilePath, path }
                         });
                     }
                 }

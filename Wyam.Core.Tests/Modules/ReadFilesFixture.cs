@@ -161,12 +161,12 @@ namespace Wyam.Core.Tests.Modules
             Assert.AreEqual("aaa", document.Content);
         }
 
-        [TestCase("FileRoot", @"TestFiles\Input")]
-        [TestCase("FileBase", @"test-c")]
-        [TestCase("FileExt", @".txt")]
-        [TestCase("FileName", @"test-c.txt")]
-        [TestCase("FileDir", @"TestFiles\Input\Subfolder")]
-        [TestCase("FilePath", @"TestFiles\Input\Subfolder\test-c.txt")]
+        [TestCase("SourceFileRoot", @"TestFiles\Input")]
+        [TestCase("SourceFileBase", @"test-c")]
+        [TestCase("SourceFileExt", @".txt")]
+        [TestCase("SourceFileName", @"test-c.txt")]
+        [TestCase("SourceFileDir", @"TestFiles\Input\Subfolder")]
+        [TestCase("SourceFilePath", @"TestFiles\Input\Subfolder\test-c.txt")]
         public void PrepareSetsMetadata(string key, string expectedEnding)
         {
             // Given

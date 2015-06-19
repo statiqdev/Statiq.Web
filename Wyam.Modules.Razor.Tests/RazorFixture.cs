@@ -30,7 +30,7 @@ namespace Wyam.Modules.Razor.Tests
             context.InputFolder.Returns(inputFolder);
             context.Assemblies.Returns(new Engine().Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.Metadata.Get("FileBase", "/").Returns("/");
+            document.Metadata.Get("SourceFileBase", "/").Returns("/");
             List<string> items = new List<string>();
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -61,7 +61,7 @@ namespace Wyam.Modules.Razor.Tests
             context.InputFolder.Returns(inputFolder);
             context.Assemblies.Returns(new Engine().Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.Metadata.Get("FileBase", "/").Returns("/");
+            document.Metadata.Get("SourceFileBase", "/").Returns("/");
             document.Metadata["MyKey"].Returns("MyValue");
             List<string> items = new List<string>();
             document

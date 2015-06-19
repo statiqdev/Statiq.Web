@@ -89,6 +89,10 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Less\Wyam.Modules.Less.csproj">
+      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
+      <Name>Wyam.Modules.Less</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Modules.Markdown</Name>

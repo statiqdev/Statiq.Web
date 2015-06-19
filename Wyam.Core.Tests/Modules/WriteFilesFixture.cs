@@ -46,7 +46,7 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["FileRelative"] = @"Subfolder\write-test.abc";
+            engine.Metadata["RelativeFilePath"] = @"Subfolder\write-test.abc";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -67,7 +67,7 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["FileRelative"] = @"Subfolder\write-test.abc";
+            engine.Metadata["RelativeFilePath"] = @"Subfolder\write-test.abc";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -88,9 +88,9 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["FileRoot"] = @"TestFiles\Input";
-            engine.Metadata["FileDir"] = @"TestFiles\Input\Subfolder";
-            engine.Metadata["FileBase"] = @"write-test";
+            engine.Metadata["SourceFileRoot"] = @"TestFiles\Input";
+            engine.Metadata["SourceFileDir"] = @"TestFiles\Input\Subfolder";
+            engine.Metadata["SourceFileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
