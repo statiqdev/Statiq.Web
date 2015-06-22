@@ -16,6 +16,7 @@ namespace Wyam.Core
 
         public Trace()
         {
+            System.Diagnostics.Trace.Listeners.Clear();
             System.Diagnostics.Trace.Listeners.Add(new DiagnosticsTraceListener(this));
         }
 
