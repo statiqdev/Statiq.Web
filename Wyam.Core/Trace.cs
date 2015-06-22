@@ -9,20 +9,21 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    public class Trace : ITrace
+    public class Trace : ITrace, IDisposable
     {
         private readonly TraceSource _traceSource = new TraceSource("Wyam", SourceLevels.Information);
         private int _indent = 0;
+        private readonly DiagnosticsTraceListener _diagnosticsTraceListener;
+        private bool _disposed;
 
         public Trace()
         {
-            System.Diagnostics.Trace.Listeners.Clear();
-            System.Diagnostics.Trace.Listeners.Add(new DiagnosticsTraceListener(this));
+            _diagnosticsTraceListener = new DiagnosticsTraceListener(this);
+            System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
         }
 
         public void SetLevel(SourceLevels level)
         {
-            
             _traceSource.Switch.Level = level;
         }
 
@@ -68,6 +69,11 @@ namespace Wyam.Core
 
         public void TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Trace");
+            }
+
             if (args == null || args.Length == 0)
             {
                 _traceSource.TraceEvent(eventType, 0, messageOrFormat);
@@ -88,6 +94,11 @@ namespace Wyam.Core
             get { return _indent; }
             set
             {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException("Trace");
+                }
+
                 if (value >= 0)
                 {
                     _indent = value;
@@ -97,6 +108,16 @@ namespace Wyam.Core
                     }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Trace");
+            }
+            _disposed = true;
+            System.Diagnostics.Trace.Listeners.Remove(_diagnosticsTraceListener);
         }
     }
 }

@@ -18,9 +18,10 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    public class Engine
+    public class Engine : IDisposable
     {
         private bool _configured = false;
+        private bool _disposed;
 
         private readonly Dictionary<string, object> _metadata;
 
@@ -144,6 +145,11 @@ namespace Wyam.Core
 
         public void Configure(string configScript = null, bool updatePackages = false)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Engine");
+            }
+
             try
             {
                 if(_configured)
@@ -162,7 +168,12 @@ namespace Wyam.Core
         }
 
         public void Execute()
-        {         
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Engine");
+            }
+
             // Configure with defaults if not already configured
             if(!_configured)
             {
@@ -209,6 +220,16 @@ namespace Wyam.Core
                 Trace.Verbose("Exception: {0}", ex);
                 throw;
             }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Engine");
+            }
+            _disposed = true;
+            _trace.Dispose();
         }
     }
 }

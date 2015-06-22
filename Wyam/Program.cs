@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
+using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Core;
@@ -162,6 +163,7 @@ namespace Wyam
                     {
                         // Get a new engine
                         engine.Trace.Information("Configuration file {0} has changed, re-running...", _configFile);
+                        engine.Dispose();
                         engine = GetEngine();
 
                         // Configure and execute
@@ -215,6 +217,7 @@ namespace Wyam
 
                 // Shutdown
                 engine.Trace.Information("Shutting down...");
+                engine.Dispose();
                 if (inputFolderWatcher != null)
                 {
                     inputFolderWatcher.Dispose();
@@ -436,8 +439,13 @@ namespace Wyam
 
         private IDisposable Preview(Engine engine)
         {
-            string url = "http://localhost:" + _previewPort;
-            return WebApp.Start(url, app =>
+            StartOptions options = new StartOptions("http://localhost:" + _previewPort);
+            
+            // Disable built-in owin tracing by using a null trace output
+            // http://stackoverflow.com/questions/17948363/tracelistener-in-owin-self-hosting
+            options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
+
+            return WebApp.Start(options, app =>
             {
                 IFileSystem outputFolder = new PhysicalFileSystem(engine.OutputFolder);
 
@@ -472,6 +480,14 @@ namespace Wyam
                     FileSystem = outputFolder, 
                 });
             });
+        }
+
+        private class NullTraceOutputFactory : ITraceOutputFactory
+        {
+            public TextWriter Create(string outputFile)
+            {
+                return StreamWriter.Null;
+            }
         }
 
         // This is a hack until recipes are implemented, at which point it should be removed
