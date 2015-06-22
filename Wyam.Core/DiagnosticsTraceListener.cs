@@ -58,27 +58,27 @@ namespace Wyam.Core
                 sb.Append("}");
             }
 
-            _trace.Verbose(source + ": " + sb.ToString());
+            _trace.Verbose(sb.ToString());
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
         {
-            _trace.TraceEvent(eventType, source + ": " + id);
+            _trace.TraceEvent(eventType, id.ToString());
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            _trace.TraceEvent(eventType, source + ": " + format, args);
+            _trace.TraceEvent(eventType, format, args);
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
-            _trace.TraceEvent(eventType, source + ": " + message);
+            _trace.TraceEvent(eventType, message);
         }
 
         public override void TraceTransfer(TraceEventCache eventCache, string source, int id, string message, Guid relatedActivityId)
         {
-            _trace.Verbose(source + ": " + message);
+            _trace.Verbose(message);
         }
     }
 }
