@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dotless.Core;
 using dotless.Core.configuration;
+using Pandora.Fluent;
 using Wyam.Abstractions;
 
 namespace Wyam.Modules.Less
@@ -16,10 +17,11 @@ namespace Wyam.Modules.Less
         {
             DotlessConfiguration config = DotlessConfiguration.GetDefault();
             config.RootPath = context.InputFolder;
-            EngineFactory factory = new EngineFactory(config);
+            config.Logger = typeof (LessLogger);
+            EngineFactory engineFactory = new EngineFactory(config);
             return inputs.Select(x =>
             {
-                ILessEngine engine = factory.GetEngine();
+                ILessEngine engine = engineFactory.GetEngine();
                 string path = x.Get<string>(MetadataKeys.SourceFilePath, null);
                 string fileName = null;
                 if (path != null)

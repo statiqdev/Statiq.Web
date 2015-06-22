@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,14 @@ namespace Wyam.Core
         private readonly TraceSource _traceSource = new TraceSource("Wyam", SourceLevels.Information);
         private int _indent = 0;
 
+        public Trace()
+        {
+            System.Diagnostics.Trace.Listeners.Add(new DiagnosticsTraceListener(this));
+        }
+
         public void SetLevel(SourceLevels level)
         {
+            
             _traceSource.Switch.Level = level;
         }
 
