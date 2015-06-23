@@ -53,6 +53,13 @@ namespace Wyam.Core
             get { return _trace; }
         }
 
+        private object _configReference;
+
+        public object ConfigReference
+        {
+            get { return _configReference; }
+        }
+
         // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
         private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new[]
         {
@@ -158,7 +165,7 @@ namespace Wyam.Core
                 }
                 _configured = true;
                 Configurator configurator = new Configurator(this);
-                configurator.Configure(configScript, updatePackages);
+                _configReference = configurator.Configure(configScript, updatePackages);
             }
             catch (Exception ex)
             {

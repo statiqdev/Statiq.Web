@@ -10,8 +10,10 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using NuGet;
 using Wyam.Core.NuGet;
 using Wyam.Abstractions;
@@ -33,12 +35,12 @@ namespace Wyam.Core.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script, bool updatePackages)
+        public object Configure(string script, bool updatePackages)
         {
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                return;
+                return null;
             }
 
             Tuple<string, string, string> configParts = GetConfigParts(script);
@@ -50,13 +52,13 @@ namespace Wyam.Core.Configuration
             }
 
             // Configuration
-            Config(configParts.Item2, configParts.Item3);
+            return Config(configParts.Item2, configParts.Item3);
         }
 
         // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
-        public Tuple<string, string, string> GetConfigParts(string script)
+        public Tuple<string, string, string> GetConfigParts(string code)
         {
-            List<string> configLines = script.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> configLines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             // Get setup
             string setup = null;
@@ -87,7 +89,7 @@ namespace Wyam.Core.Configuration
             return new Tuple<string, string, string>(setup, declarations, string.Join(Environment.NewLine, configLines));
         }
 
-        private void Setup(string script, bool updatePackages)
+        private void Setup(string code, bool updatePackages)
         {
             _engine.Trace.Verbose("Evaluating setup script...");
             int indent = _engine.Trace.Indent();
@@ -107,7 +109,7 @@ namespace Wyam.Core.Configuration
                         Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule)));  // Wyam.Abstractions
 
                 // Evaluate the script
-                CSharpScript.Eval(script, scriptOptions, new SetupGlobals(_engine, _packages, _assemblyCollection));
+                CSharpScript.Eval(code, scriptOptions, new SetupGlobals(_engine, _packages, _assemblyCollection));
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated setup script.");
 
@@ -132,7 +134,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private void Config(string declarations, string script)
+        private object Config(string declarations, string code)
         {
             _engine.Trace.Verbose("Initializing scripting environment...");
             int indent = _engine.Trace.Indent();
@@ -164,22 +166,50 @@ namespace Wyam.Core.Configuration
                 indent = _engine.Trace.Indent();
 
                 // Generate the script
-                script = GenerateScript(declarations, script, moduleTypes, namespaces);
+                code = GenerateScript(declarations, code, moduleTypes, namespaces);
 
-                // Evaluate the script
-                ScriptOptions options = new ScriptOptions()
-                    .WithReferences(_engine.Assemblies)
-                    .WithNamespaces(namespaces);
-                CSharpScript.Eval(script, options, new ConfigGlobals(_engine));
+
+
+                var assemblyName = Path.GetRandomFileName();
+                var parseOptions = new CSharpParseOptions();
+                var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
+                var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+                var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+                var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
+                    _engine.Assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                    .AddReferences(
+                        // For some reason, Roslyn really wants these added by filename
+                        // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
+                );
+
+                byte[] assemblyBytes;
+                using (var ms = new MemoryStream())
+                {
+                    EmitResult result = compilation.Emit(ms);
+
+                    if (!result.Success)
+                    {
+                        _engine.Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
+                        throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
+                    }
+
+                    ms.Seek(0, SeekOrigin.Begin);
+                    assemblyBytes = ms.ToArray();
+                }
+
+                Assembly assembly = Assembly.Load(assemblyBytes);
+                var configScriptType = assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                runMethod.Invoke(null, new object[] {_engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder});
 
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated configuration script.");
-            }
-            catch (CompilationErrorException compilationError)
-            {
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Error("Error compiling configuration: {0}", compilationError.Message);
-                throw;
+
+                return assemblyBytes;
             }
             catch (Exception ex)
             {
@@ -210,7 +240,7 @@ namespace Wyam.Core.Configuration
                 try
                 {
                     _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
-                    Assembly assembly = Assembly.LoadFile(assemblyPath);
+                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
                     if (!_engine.Assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
@@ -385,11 +415,7 @@ namespace Wyam.Core.Configuration
                 }
             }
 
-            scriptBuilder.Append(@"
-                }
-
-                ConfigScript.Run(Metadata, Pipelines, RootFolder, InputFolder, OutputFolder);");
-
+            scriptBuilder.Append("}");
             return scriptBuilder.ToString();
         }
     }

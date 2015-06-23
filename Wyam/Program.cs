@@ -397,7 +397,7 @@ namespace Wyam
             }
             catch (Exception ex)
             {
-                engine.Trace.Critical("Error while loading configuration: {0}.", ex.Message);
+                engine.Trace.Critical("Error while loading configuration: {0}", ex.Message);
                 return false;
             }
 

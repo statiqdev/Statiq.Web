@@ -78,6 +78,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
                 );
+            //if (_executionContext.ConfigReference != null)
+            //{
+            //    using (MemoryStream memoryStream = new MemoryStream((byte[])_executionContext.ConfigReference))
+            //    {
+            //        compilation = compilation.AddReferences(MetadataReference.CreateFromStream(memoryStream));
+            //    }
+            //}
 
             using (var ms = new MemoryStream())
             {

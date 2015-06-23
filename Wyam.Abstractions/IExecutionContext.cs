@@ -9,6 +9,7 @@ namespace Wyam.Abstractions
 {
     public interface IExecutionContext
     {
+        object ConfigReference { get; }  // The Roslyn MetadataReference for the config script
         IEnumerable<Assembly> Assemblies { get; } 
         IReadOnlyPipeline Pipeline { get; }
         string RootFolder { get; }
