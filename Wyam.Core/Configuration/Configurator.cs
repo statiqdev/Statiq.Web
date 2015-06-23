@@ -21,26 +21,79 @@ using Wyam.Abstractions;
 namespace Wyam.Core.Configuration
 {
     // This just encapsulates configuration logic
-    internal class Configurator
+    internal class Configurator : IDisposable
     {
         private readonly Engine _engine;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
+        private bool _disposed;
+        private Assembly _configAssembly;
+        private byte[] _rawConfigAssembly;
 
         public Configurator(Engine engine)
         {
             _engine = engine;
             _packages = new PackagesCollection(engine);
+
+            // Manually resolve included assemblies
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException("Configurator");
+            }
+            _disposed = true;
+            AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
+        }
+
+        // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
+        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new[]
+        {
+            Assembly.GetAssembly(typeof (object)), // System
+            Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
+            Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
+            Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
+            Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
+            Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
+            Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
+            Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
+            Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
+        }, new AssemblyEqualityComparer());
+
+        private class AssemblyEqualityComparer : IEqualityComparer<Assembly>
+        {
+            public bool Equals(Assembly x, Assembly y)
+            {
+                return String.CompareOrdinal(x.FullName, y.FullName) == 0;
+            }
+
+            public int GetHashCode(Assembly obj)
+            {
+                return obj.FullName.GetHashCode();
+            }
+        }
+
+        public HashSet<Assembly> Assemblies
+        {
+            get { return _assemblies; }
+        }
+        
+        public byte[] RawConfigAssembly
+        {
+            get {  return _rawConfigAssembly; }
         }
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public object Configure(string script, bool updatePackages)
+        public void Configure(string script, bool updatePackages)
         {
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                return null;
+                return;
             }
 
             Tuple<string, string, string> configParts = GetConfigParts(script);
@@ -52,7 +105,7 @@ namespace Wyam.Core.Configuration
             }
 
             // Configuration
-            return Config(configParts.Item2, configParts.Item3);
+            Config(configParts.Item2, configParts.Item3);
         }
 
         // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
@@ -134,7 +187,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private object Config(string declarations, string code)
+        private void Config(string declarations, string code)
         {
             _engine.Trace.Verbose("Initializing scripting environment...");
             int indent = _engine.Trace.Indent();
@@ -168,15 +221,14 @@ namespace Wyam.Core.Configuration
                 // Generate the script
                 code = GenerateScript(declarations, code, moduleTypes, namespaces);
 
-
-
+                // Create the compilation
                 var assemblyName = Path.GetRandomFileName();
                 var parseOptions = new CSharpParseOptions();
                 var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
                 var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
                 var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
                 var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
-                    _engine.Assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                    _assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
                     .AddReferences(
                         // For some reason, Roslyn really wants these added by filename
                         // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
@@ -186,30 +238,27 @@ namespace Wyam.Core.Configuration
                         MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
                 );
 
-                byte[] assemblyBytes;
+                // Emit the assembly
                 using (var ms = new MemoryStream())
                 {
                     EmitResult result = compilation.Emit(ms);
-
                     if (!result.Success)
                     {
                         _engine.Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
                         throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
                     }
-
                     ms.Seek(0, SeekOrigin.Begin);
-                    assemblyBytes = ms.ToArray();
+                    _rawConfigAssembly = ms.ToArray();
                 }
 
-                Assembly assembly = Assembly.Load(assemblyBytes);
-                var configScriptType = assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                // Load the dynamic assembly
+                _configAssembly = Assembly.Load(_rawConfigAssembly);
+                var configScriptType = _configAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
                 MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
                 runMethod.Invoke(null, new object[] {_engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder});
 
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated configuration script.");
-
-                return assemblyBytes;
             }
             catch (Exception ex)
             {
@@ -241,7 +290,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                    if (!_engine.Assemblies.Add(assembly))
+                    if (!_assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
                     }
@@ -259,7 +308,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("Loading assembly {0}.", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
-                    if (!_engine.Assemblies.Add(assembly))
+                    if (!_assemblies.Add(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly {0} because it was already added.", assemblyName);
                     }
@@ -271,10 +320,24 @@ namespace Wyam.Core.Configuration
             }
         }
 
+        private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        {
+            // Only start resolving after we've generated the config assembly
+            if (_configAssembly != null)
+            {
+                if (args.Name == _configAssembly.FullName)
+                {
+                    return _configAssembly;
+                }
+                return _assemblies.FirstOrDefault(x => x.FullName == args.Name);
+            }
+            return null;
+        }
+
         private HashSet<Type> GetModules(HashSet<string> namespaces)
         {
             HashSet<Type> moduleTypes = new HashSet<Type>();
-            foreach (Assembly assembly in _engine.Assemblies)
+            foreach (Assembly assembly in _assemblies)
             {
                 _engine.Trace.Verbose("Searching for modules in assembly {0}...", assembly.FullName);
                 int indent = _engine.Trace.Indent();

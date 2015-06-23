@@ -19,9 +19,9 @@ namespace Wyam.Core
             _pipeline = pipeline;
         }
 
-        public object ConfigReference
+        public byte[] RawConfigAssembly
         {
-            get {  return _engine.ConfigReference; }
+            get {  return _engine.RawConfigAssembly; }
         }
 
         public IEnumerable<Assembly> Assemblies

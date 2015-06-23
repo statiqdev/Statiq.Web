@@ -20,7 +20,7 @@ namespace Wyam.Core
 {
     public class Engine : IDisposable
     {
-        private bool _configured = false;
+        private Configurator _configurator = null;
         private bool _disposed;
 
         private readonly Dictionary<string, object> _metadata;
@@ -52,46 +52,17 @@ namespace Wyam.Core
         {
             get { return _trace; }
         }
-
-        private object _configReference;
-
-        public object ConfigReference
+        
+        public byte[] RawConfigAssembly
         {
-            get { return _configReference; }
+            get { return _configurator == null ? null : _configurator.RawConfigAssembly; }
         }
-
-        // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
-        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new[]
-        {
-            Assembly.GetAssembly(typeof (object)), // System
-            Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
-            Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
-            Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
-            Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
-            Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
-            Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
-            Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
-            Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
-        }, new AssemblyEqualityComparer());
 
         public HashSet<Assembly> Assemblies
         {
-            get { return _assemblies; }
+            get { return _configurator == null ? null : _configurator.Assemblies; }
         }
-
-        private class AssemblyEqualityComparer : IEqualityComparer<Assembly>
-        {
-            public bool Equals(Assembly x, Assembly y)
-            {
-                return String.CompareOrdinal(x.FullName, y.FullName) == 0;
-            }
-
-            public int GetHashCode(Assembly obj)
-            {
-                return obj.FullName.GetHashCode();
-            }
-        }
-
+        
         private string _rootFolder = Environment.CurrentDirectory;
         private string _inputFolder = @".\Input";
         private string _outputFolder = @".\Output";
@@ -159,13 +130,12 @@ namespace Wyam.Core
 
             try
             {
-                if(_configured)
+                if(_configurator != null)
                 {
                     throw new InvalidOperationException("This engine has already been configured.");
                 }
-                _configured = true;
-                Configurator configurator = new Configurator(this);
-                _configReference = configurator.Configure(configScript, updatePackages);
+                _configurator = new Configurator(this);
+                _configurator.Configure(configScript, updatePackages);
             }
             catch (Exception ex)
             {
@@ -182,7 +152,7 @@ namespace Wyam.Core
             }
 
             // Configure with defaults if not already configured
-            if(!_configured)
+            if(_configurator == null)
             {
                 Configure();
             }
@@ -237,6 +207,10 @@ namespace Wyam.Core
             }
             _disposed = true;
             _trace.Dispose();
+            if (_configurator != null)
+            {
+                _configurator.Dispose();
+            }
         }
     }
 }
