@@ -26,14 +26,27 @@ namespace Wyam.Core.Configuration
         private readonly Engine _engine;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
+        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>(); 
         private bool _disposed;
         private Assembly _configAssembly;
+        private string _configAssemblyFullName;
         private byte[] _rawConfigAssembly;
 
         public Configurator(Engine engine)
         {
             _engine = engine;
             _packages = new PackagesCollection(engine);
+
+            // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
+            AddAssembly(Assembly.GetAssembly(typeof (object))); // System
+            AddAssembly(Assembly.GetAssembly(typeof (System.Collections.Generic.List<>))); // System.Collections.Generic 
+            AddAssembly(Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions))); // System.Linq
+            AddAssembly(Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
+            AddAssembly(Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)
+            AddAssembly(Assembly.GetAssembly(typeof (System.IO.Path))); // System.IO
+            AddAssembly(Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource))); // System.Diagnostics
+            AddAssembly(Assembly.GetAssembly(typeof (Wyam.Core.Engine))); // Wyam.Core
+            AddAssembly(Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule))); // Wyam.Abstractions
 
             // Manually resolve included assemblies
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
@@ -49,36 +62,9 @@ namespace Wyam.Core.Configuration
             AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
         }
 
-        // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
-        private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>(new[]
+        public IEnumerable<Assembly> Assemblies
         {
-            Assembly.GetAssembly(typeof (object)), // System
-            Assembly.GetAssembly(typeof (System.Collections.Generic.List<>)), // System.Collections.Generic 
-            Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions)), // System.Linq
-            Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject)), // System.Core (needed for dynamic)
-            Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo)), // Microsoft.CSharp (needed for dynamic)
-            Assembly.GetAssembly(typeof (System.IO.Path)), // System.IO
-            Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource)), // System.Diagnostics
-            Assembly.GetAssembly(typeof (Wyam.Core.Engine)), // Wyam.Core
-            Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
-        }, new AssemblyEqualityComparer());
-
-        private class AssemblyEqualityComparer : IEqualityComparer<Assembly>
-        {
-            public bool Equals(Assembly x, Assembly y)
-            {
-                return String.CompareOrdinal(x.FullName, y.FullName) == 0;
-            }
-
-            public int GetHashCode(Assembly obj)
-            {
-                return obj.FullName.GetHashCode();
-            }
-        }
-
-        public HashSet<Assembly> Assemblies
-        {
-            get { return _assemblies; }
+            get { return _assemblies.Values; }
         }
         
         public byte[] RawConfigAssembly
@@ -228,7 +214,7 @@ namespace Wyam.Core.Configuration
                 var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
                 var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
                 var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
-                    _assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                    _assemblies.Select(x => MetadataReference.CreateFromFile(x.Value.Location)), compilationOptions)
                     .AddReferences(
                         // For some reason, Roslyn really wants these added by filename
                         // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
@@ -253,6 +239,7 @@ namespace Wyam.Core.Configuration
 
                 // Load the dynamic assembly
                 _configAssembly = Assembly.Load(_rawConfigAssembly);
+                _configAssemblyFullName = _configAssembly.FullName;
                 var configScriptType = _configAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
                 MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
                 runMethod.Invoke(null, new object[] {_engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder});
@@ -290,7 +277,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
-                    if (!_assemblies.Add(assembly))
+                    if (!AddAssembly(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
                     }
@@ -308,7 +295,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("Loading assembly {0}.", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
-                    if (!_assemblies.Add(assembly))
+                    if (!AddAssembly(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly {0} because it was already added.", assemblyName);
                     }
@@ -320,16 +307,31 @@ namespace Wyam.Core.Configuration
             }
         }
 
+        private bool AddAssembly(Assembly assembly)
+        {
+            if (_assemblies.ContainsKey(assembly.FullName))
+            {
+                return false;
+            }
+            _assemblies.Add(assembly.FullName, assembly);
+            return true;
+        }
+
         private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {
             // Only start resolving after we've generated the config assembly
             if (_configAssembly != null)
             {
-                if (args.Name == _configAssembly.FullName)
+                if (args.Name == _configAssemblyFullName)
                 {
                     return _configAssembly;
                 }
-                return _assemblies.FirstOrDefault(x => x.FullName == args.Name);
+
+                Assembly assembly;
+                if (_assemblies.TryGetValue(args.Name, out assembly))
+                {
+                    return assembly;
+                }
             }
             return null;
         }
@@ -337,7 +339,7 @@ namespace Wyam.Core.Configuration
         private HashSet<Type> GetModules(HashSet<string> namespaces)
         {
             HashSet<Type> moduleTypes = new HashSet<Type>();
-            foreach (Assembly assembly in _assemblies)
+            foreach (Assembly assembly in _assemblies.Values)
             {
                 _engine.Trace.Verbose("Searching for modules in assembly {0}...", assembly.FullName);
                 int indent = _engine.Trace.Indent();

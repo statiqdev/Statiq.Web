@@ -58,7 +58,7 @@ namespace Wyam.Core
             get { return _configurator == null ? null : _configurator.RawConfigAssembly; }
         }
 
-        public HashSet<Assembly> Assemblies
+        public IEnumerable<Assembly> Assemblies
         {
             get { return _configurator == null ? null : _configurator.Assemblies; }
         }
