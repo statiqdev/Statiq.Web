@@ -48,10 +48,18 @@ namespace Wyam.Modules.Yaml
                         {
                             foreach (YamlDocument document in yamlStream.Documents)
                             {
+                                // Map scalar-to-scalar children
                                 foreach (KeyValuePair<YamlNode, YamlNode> child in 
                                     ((YamlMappingNode)document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
                                 {
                                     items[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;
+                                }
+
+                                // Map simple sequences
+                                foreach (KeyValuePair<YamlNode, YamlNode> child in
+                                    ((YamlMappingNode) document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlScalarNode)))
+                                {
+                                    items[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
                                 }
                             }
                         }
