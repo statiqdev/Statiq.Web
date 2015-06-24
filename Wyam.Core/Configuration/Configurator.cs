@@ -230,7 +230,8 @@ namespace Wyam.Core.Configuration
                     EmitResult result = compilation.Emit(ms);
                     if (!result.Success)
                     {
-                        _engine.Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
+                        _engine.Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine, 
+                            string.Join(Environment.NewLine, result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)));
                         throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
                     }
                     ms.Seek(0, SeekOrigin.Begin);

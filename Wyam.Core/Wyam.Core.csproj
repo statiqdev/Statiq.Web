@@ -106,6 +106,7 @@
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Modules\CopyFiles.cs" />
     <Compile Include="Modules\ConcatDocuments.cs" />
+    <Compile Include="Modules\Documents.cs" />
     <Compile Include="Modules\FrontMatter.cs" />
     <Compile Include="Modules\Replace.cs" />
     <Compile Include="Modules\ReplaceIn.cs" />
