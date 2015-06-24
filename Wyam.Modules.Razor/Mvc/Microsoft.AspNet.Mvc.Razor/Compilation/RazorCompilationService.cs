@@ -61,8 +61,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             {
                 Assembly.GetAssembly(typeof (Modules.Razor.Razor))  // Wyam.Modules.Razor
             };
-            assemblies.UnionWith(_executionContext.Assemblies);
-            
+            if (_executionContext.Assemblies != null)
+            {
+                assemblies.UnionWith(_executionContext.Assemblies);
+            }
+
             var assemblyName = Path.GetRandomFileName();
             var parseOptions = new CSharpParseOptions();
             var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(compilationContent, Encoding.UTF8), parseOptions, assemblyName);
@@ -78,7 +81,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
                 );
-            if (_executionContext.RawConfigAssembly != null)
+            if (_executionContext.RawConfigAssembly != null && _executionContext.RawConfigAssembly.Length > 0)
             {
                 using (MemoryStream memoryStream = new MemoryStream(_executionContext.RawConfigAssembly))
                 {

@@ -37,23 +37,6 @@ namespace Wyam.Core.Tests
         }
 
         [Test]
-        public void ConfigureSetsAnonymousObjectMetadata()
-        {
-            // Given
-            Engine engine = new Engine();
-            string configScript = @"
-                Metadata[""TestAnonymous""] = new { A = 1, B = ""b"" };
-            ";
-
-            // When
-            engine.Configure(configScript);
-
-            // Then
-            Assert.AreEqual(1, ((dynamic)engine.Metadata["TestAnonymous"]).A);
-            Assert.AreEqual("b", ((dynamic)engine.Metadata["TestAnonymous"]).B);
-        }
-
-        [Test]
         public void ConfigureAddsPipelineAndModules()
         {
             // Given
