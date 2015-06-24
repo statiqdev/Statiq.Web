@@ -208,7 +208,7 @@ namespace Wyam.Core.Configuration
                 code = GenerateScript(declarations, code, moduleTypes, namespaces);
 
                 // Create the compilation
-                var assemblyName = Path.GetRandomFileName();
+                var assemblyName = "WyamConfig";
                 var parseOptions = new CSharpParseOptions();
                 var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
                 var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
