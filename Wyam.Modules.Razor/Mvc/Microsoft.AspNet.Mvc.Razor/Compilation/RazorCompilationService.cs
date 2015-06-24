@@ -30,10 +30,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         private readonly IMvcRazorHost _razorHost;
         private readonly IExecutionContext _executionContext;
 
-        public RazorCompilationService(IExecutionContext executionContext)
+        public RazorCompilationService(IExecutionContext executionContext, Type basePageType)
         {
             _executionContext = executionContext;
-            _razorHost = new MvcRazorHost();
+            _razorHost = new MvcRazorHost(basePageType);
         }
 
         /// <inheritdoc />

@@ -22,11 +22,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         private readonly IRazorCompilationService _razorcompilationService;
         private readonly Dictionary<string, CacheEntry> _pageCache = new Dictionary<string, CacheEntry>(); 
 
-        public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext)
+        public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext, Type basePageType)
         {
             _rootDirectory = rootDirectory;
             _fileProvider = new PhysicalFileProvider(rootDirectory);
-            _razorcompilationService = new RazorCompilationService(executionContext);
+            _razorcompilationService = new RazorCompilationService(executionContext, basePageType);
         }
 
         /// <inheritdoc />

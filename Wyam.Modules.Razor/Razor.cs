@@ -18,9 +18,20 @@ namespace Wyam.Modules.Razor
 {
     public class Razor : IModule
     {
+        private readonly Type _basePageType;
+        
+        public Razor(Type basePageType = null)
+        {
+            if (basePageType != null && !typeof(BaseRazorPage).IsAssignableFrom(basePageType))
+            {
+                throw new ArgumentException("The Razor base page type must derive from BaseRazorPage.");
+            }
+            _basePageType = basePageType;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context);
+            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context, _basePageType);
             IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory);
             IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
             IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);

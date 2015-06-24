@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNet.FileProviders;
@@ -14,9 +15,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 {
     public class MvcRazorHost : RazorEngineHost, IMvcRazorHost
     {
-        private const string BaseType = "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.RazorPage";
+        private const string DefaultBaseType = "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.RazorPage";
 
-        private static readonly string[] _defaultNamespaces = new[]
+        private static readonly string[] DefaultNamespaces = new[]
         {
             "System",
             "System.Linq",
@@ -26,10 +27,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "Wyam.Abstractions"
         };
 
-        internal MvcRazorHost()
+        internal MvcRazorHost(Type basePageType)
             : base(new CSharpRazorCodeLanguage())
         {
-            DefaultBaseClass = BaseType;
+            DefaultBaseClass = basePageType == null ? DefaultBaseType : basePageType.FullName;
             DefaultNamespace = "Wyam.Modules.Razor";
             GeneratedClassContext = new GeneratedClassContext(
                 executeMethodName: "ExecuteAsync",
@@ -46,7 +47,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                 EndContextMethodName = "EndContext"
             };
 
-            foreach (var ns in _defaultNamespaces)
+            foreach (var ns in DefaultNamespaces)
             {
                 NamespaceImports.Add(ns);
             }

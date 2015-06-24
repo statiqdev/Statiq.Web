@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseRazorPage.cs" />
     <Compile Include="Common\Microsoft.Framework.BufferEntryCollection.Sources\BufferEntryCollection.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
     <Compile Include="DocumentFileProvider.cs" />
