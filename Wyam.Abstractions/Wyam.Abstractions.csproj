@@ -47,7 +47,6 @@
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="IReadOnlyPipeline.cs" />
     <Compile Include="ITrace.cs" />
-    <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

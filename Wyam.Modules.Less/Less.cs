@@ -22,7 +22,7 @@ namespace Wyam.Modules.Less
             return inputs.Select(x =>
             {
                 ILessEngine engine = engineFactory.GetEngine();
-                string path = x.Get<string>(MetadataKeys.SourceFilePath, null);
+                string path = x.Get<string>("SourceFilePath", null);
                 string fileName = null;
                 if (path != null)
                 {

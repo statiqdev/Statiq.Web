@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Abstractions
+namespace Wyam.Core
 {
-    // Not an abstraction, but makes sense to put it here so other libraries can use it
+    // Other modules outside Core might refer to these as strings, so make sure to do a text search if renaming
     public static class MetadataKeys
     {
         // ReadFile/WriteFiles/CopyFiles
@@ -18,5 +18,7 @@ namespace Wyam.Abstractions
         public const string SourceFilePath = "SourceFilePath";
         public const string RelativeFilePath = "RelativeFilePath";
         public const string DestinationFilePath = "DestinationFilePath";
+        public const string WriteExtension = "WriteExtension";
+        public const string WritePath = "WritePath";
     }
 }
