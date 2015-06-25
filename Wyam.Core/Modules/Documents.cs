@@ -25,8 +25,8 @@ namespace Wyam.Core.Modules
         public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IEnumerable<IDocument> documents = string.IsNullOrEmpty(_pipeline)
-                ? context.Documents.Where(x => x.Key != context.Pipeline.Name).SelectMany(x => x.Value)
-                : context.Documents[_pipeline];
+                ? context.Documents.ExceptPipeline(context.Pipeline.Name)
+                : context.Documents.FromPipeline(_pipeline);
             if (_predicate != null)
             {
                 documents = documents.Where(_predicate);

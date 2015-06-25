@@ -113,7 +113,7 @@ namespace Wyam.Core
             set { _modules[index] = value; }
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments, Action<IReadOnlyList<IDocument>> setDocuments)
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
             List<IDocument> documents = inputDocuments == null
                 ? new List<IDocument> { new Document(new Metadata(_engine)) } : inputDocuments.ToList();
@@ -128,10 +128,7 @@ namespace Wyam.Core
                     // Make sure we clone the output context if it's the same as the input
                     IEnumerable<IDocument> outputs = module.Execute(documents, context);
                     documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
-                    if (setDocuments != null)
-                    {
-                        setDocuments(documents.AsReadOnly());
-                    }
+                    _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
                     _engine.Trace.IndentLevel = indent;
                     _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s).", moduleName, documents.Count);
                 }
@@ -141,19 +138,16 @@ namespace Wyam.Core
                     _engine.Trace.Verbose(ex.ToString());
                     _engine.Trace.IndentLevel = indent;
                     documents = new List<IDocument>();
-                    if (setDocuments != null)
-                    {
-                        setDocuments(documents.AsReadOnly());
-                    }
+                    _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
                     break;
                 }
             }
             return documents.AsReadOnly();
         }
 
-        public void Execute(Action<IReadOnlyList<IDocument>> setDocuments)
+        public void Execute()
         {
-            Execute(_modules, null, setDocuments);
+            Execute(_modules, null);
         }
     }
 }

@@ -97,8 +97,8 @@ namespace Wyam.Modules.Razor.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(1, engine.Documents["Pipeline"].Count);
-            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents["Pipeline"].First().Content);
+            Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
+            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
         }
 
         [Test]
@@ -115,8 +115,8 @@ namespace Wyam.Modules.Razor.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(1, engine.Documents["Pipeline"].Count);
-            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents["Pipeline"].First().Content);
+            Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
+            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace Wyam.Modules.Razor.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(1, engine.Documents["Pipeline"].Count);
-            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents["Pipeline"].First().Content);
+            Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
+            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
         }
     }
 }

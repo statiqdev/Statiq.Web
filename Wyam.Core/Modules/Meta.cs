@@ -58,7 +58,7 @@ namespace Wyam.Core.Modules
                     {
                         foreach (IDocument result in context.Execute(_modules, new[] { input }))
                         {
-                            foreach (KeyValuePair<string, object> kvp in result.Metadata)
+                            foreach (KeyValuePair<string, object> kvp in result)
                             {
                                 metadata[kvp.Key] = kvp.Value;
                             }
@@ -70,7 +70,7 @@ namespace Wyam.Core.Modules
                 // Execute the modules once and apply to each input document
                 foreach (IDocument result in context.Execute(_modules, null))
                 {
-                    foreach (KeyValuePair<string, object> kvp in result.Metadata)
+                    foreach (KeyValuePair<string, object> kvp in result)
                     {
                         metadata[kvp.Key] = kvp.Value;
                     }

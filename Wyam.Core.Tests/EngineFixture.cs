@@ -129,21 +129,21 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.Documents["Pipeline"].Count);
+            Assert.AreEqual(2, engine.Documents.FromPipeline("Pipeline").Count());
 
-            Assert.IsTrue(engine.Documents["Pipeline"][0].Metadata.ContainsKey("0"));
-            Assert.AreEqual(0, engine.Documents["Pipeline"][0].Metadata["0"]);
-            Assert.IsTrue(engine.Documents["Pipeline"][0].Metadata.ContainsKey("2"));
-            Assert.AreEqual(2, engine.Documents["Pipeline"][0].Metadata["2"]);
-            Assert.IsFalse(engine.Documents["Pipeline"][0].Metadata.ContainsKey("1"));
-            Assert.IsFalse(engine.Documents["Pipeline"][0].Metadata.ContainsKey("3"));
+            Assert.IsTrue(engine.Documents.FromPipeline("Pipeline").First().Metadata.ContainsKey("0"));
+            Assert.AreEqual(0, engine.Documents.FromPipeline("Pipeline").First().Metadata["0"]);
+            Assert.IsTrue(engine.Documents.FromPipeline("Pipeline").First().Metadata.ContainsKey("2"));
+            Assert.AreEqual(2, engine.Documents.FromPipeline("Pipeline").First().Metadata["2"]);
+            Assert.IsFalse(engine.Documents.FromPipeline("Pipeline").First().Metadata.ContainsKey("1"));
+            Assert.IsFalse(engine.Documents.FromPipeline("Pipeline").First().Metadata.ContainsKey("3"));
 
-            Assert.IsTrue(engine.Documents["Pipeline"][1].Metadata.ContainsKey("1"));
-            Assert.AreEqual(1, engine.Documents["Pipeline"][1].Metadata["1"]);
-            Assert.IsTrue(engine.Documents["Pipeline"][1].Metadata.ContainsKey("3"));
-            Assert.AreEqual(3, engine.Documents["Pipeline"][1].Metadata["3"]);
-            Assert.IsFalse(engine.Documents["Pipeline"][1].Metadata.ContainsKey("0"));
-            Assert.IsFalse(engine.Documents["Pipeline"][1].Metadata.ContainsKey("2"));
+            Assert.IsTrue(engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata.ContainsKey("1"));
+            Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata["1"]);
+            Assert.IsTrue(engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata.ContainsKey("3"));
+            Assert.AreEqual(3, engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata["3"]);
+            Assert.IsFalse(engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata.ContainsKey("0"));
+            Assert.IsFalse(engine.Documents.FromPipeline("Pipeline").Skip(1).First().Metadata.ContainsKey("2"));
         }
 
         [Test]
@@ -167,9 +167,9 @@ namespace Wyam.Core.Tests
             engine.Execute();
 
             // Then
-            Assert.AreEqual(2, engine.Documents["Pipeline 1"].Count);
-            Assert.AreEqual("2", engine.Documents["Pipeline 1"][0].Content);
-            Assert.AreEqual("3", engine.Documents["Pipeline 1"][1].Content);
+            Assert.AreEqual(2, engine.Documents.FromPipeline("Pipeline 1").Count());
+            Assert.AreEqual("2", engine.Documents.FromPipeline("Pipeline 1").First().Content);
+            Assert.AreEqual("3", engine.Documents.FromPipeline("Pipeline 1").Skip(1).First().Content);
         }
     }
 }

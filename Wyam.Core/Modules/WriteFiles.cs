@@ -34,7 +34,7 @@ namespace Wyam.Core.Modules
 
             _path = x =>
             {
-                string fileRelative = x.Get<string>(MetadataKeys.RelativeFilePath, null);
+                string fileRelative = x.String(MetadataKeys.RelativeFilePath);
                 if (!string.IsNullOrWhiteSpace(fileRelative))
                 {
                     return Path.ChangeExtension(fileRelative, extension);
@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules
 
         public WriteFiles()
         {
-            _path = m => (string)m.Metadata.Get(MetadataKeys.RelativeFilePath);
+            _path = m => m.String(MetadataKeys.RelativeFilePath);
         }
 
         public WriteFiles Where(Func<IDocument, bool> predicate)
@@ -59,11 +59,11 @@ namespace Wyam.Core.Modules
             foreach (IDocument input in inputs.Where(x => _where == null || _where(x)))
             {
                 bool wrote = false;
-                string path = input.Get<string>(MetadataKeys.WritePath, null);
-                if (path == null && input.Metadata.ContainsKey(MetadataKeys.WriteExtension)
-                    && input.Metadata.ContainsKey(MetadataKeys.RelativeFilePath))
+                string path = input.String(MetadataKeys.WritePath);
+                if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
+                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
                 {
-                    path = Path.ChangeExtension(input.Get<string>(MetadataKeys.RelativeFilePath), input.Get<string>(MetadataKeys.WriteExtension));
+                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath), input.String(MetadataKeys.WriteExtension));
                 }
                 if (path == null)
                 {

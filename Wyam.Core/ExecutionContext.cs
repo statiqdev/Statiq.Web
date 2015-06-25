@@ -39,7 +39,7 @@ namespace Wyam.Core
             get { return _engine.Trace; }
         }
 
-        public IReadOnlyDictionary<string, IReadOnlyList<IDocument>> Documents
+        public IDocumentCollection Documents
         {
             get { return _engine.Documents; }
         }
@@ -61,7 +61,11 @@ namespace Wyam.Core
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
-            return _pipeline.Execute(modules, inputDocuments, null);
+            // Store the document list before executing the child modules and restore it afterwards
+            IReadOnlyList<IDocument> documents = _engine.DocumentCollection.Get(_pipeline.Name);
+            IReadOnlyList<IDocument> results = _pipeline.Execute(modules, inputDocuments);
+            _engine.DocumentCollection.Set(_pipeline.Name, documents);
+            return results;
         }
     }
 }
