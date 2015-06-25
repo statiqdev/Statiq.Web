@@ -137,7 +137,7 @@
     <Compile Include="Trace.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="MetadataOf.cs" />
+    <Compile Include="MetadataAs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

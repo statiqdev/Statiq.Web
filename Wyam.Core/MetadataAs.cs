@@ -12,11 +12,12 @@ namespace Wyam.Core
 {
     // This wraps the Metadata class and provides strongly-typed access
     // See http://www.codeproject.com/Articles/248440/Universal-Type-Converter for conversion library
-    internal class MetadataOf<T> : IMetadata<T>
+    // Only values that can be converted to the requested type are considered part of the dictionary
+    internal class MetadataAs<T> : IMetadata<T>
     {
         private readonly IMetadata _metadata;
 
-        public MetadataOf(IMetadata metadata)
+        public MetadataAs(IMetadata metadata)
         {
             if (metadata == null)
             {

@@ -46,9 +46,9 @@ namespace Wyam.Core
             }
         }
 
-        public IMetadata<T> Of<T>()
+        public IMetadata<T> MetadataAs<T>()
         {
-            return new MetadataOf<T>(this);
+            return new MetadataAs<T>(this);
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
@@ -90,12 +90,17 @@ namespace Wyam.Core
 
         public T Get<T>(string key)
         {
-            return Of<T>().Get(key);
+            return MetadataAs<T>().Get(key);
         }
 
         public T Get<T>(string key, T defaultValue)
         {
-            return Of<T>().Get(key, defaultValue);
+            return MetadataAs<T>().Get(key, defaultValue);
+        }
+
+        public string String(string key, string defaultValue = null)
+        {
+            return Get<string>(key, defaultValue);
         }
 
         public object this[string key]
