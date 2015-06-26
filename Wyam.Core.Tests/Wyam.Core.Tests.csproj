@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfiguratorFixture.cs" />
+    <Compile Include="DocumentCollectionExtensionsFixture.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="Helpers\PathHelperFixture.cs" />
     <Compile Include="MetadataAsFixture.cs" />
