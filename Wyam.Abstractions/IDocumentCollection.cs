@@ -12,6 +12,5 @@ namespace Wyam.Abstractions
         IReadOnlyDictionary<string, IEnumerable<IDocument>> ByPipeline();
         IEnumerable<IDocument> FromPipeline(string pipeline);
         IEnumerable<IDocument> ExceptPipeline(string pipeline);
-        IEnumerable<IDocument> ContainsKey(string key);
     }
 }

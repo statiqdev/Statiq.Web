@@ -55,10 +55,5 @@ namespace Wyam.Core
         {
             return _documents.Where(x => x.Key != pipeline).SelectMany(x => x.Value).Distinct();
         }
-
-        public IEnumerable<IDocument> ContainsKey(string key)
-        {
-            return this.Where(x => x.ContainsKey(key));
-        }
     }
 }

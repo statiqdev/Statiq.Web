@@ -103,6 +103,7 @@
     <Compile Include="Configuration\SetupGlobals.cs" />
     <Compile Include="DiagnosticsTraceListener.cs" />
     <Compile Include="DocumentCollection.cs" />
+    <Compile Include="MetadataTypeConverter.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="MetadataKeys.cs" />
     <Compile Include="Modules\ContentModule.cs" />
