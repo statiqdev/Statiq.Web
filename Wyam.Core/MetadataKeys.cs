@@ -19,6 +19,7 @@ namespace Wyam.Core
         public const string RelativeFilePath = "RelativeFilePath";
         public const string DestinationFilePath = "DestinationFilePath";
         public const string WriteExtension = "WriteExtension";
+        public const string WriteFileName = "WriteFileName";
         public const string WritePath = "WritePath";
     }
 }

@@ -59,16 +59,30 @@ namespace Wyam.Core.Modules
             foreach (IDocument input in inputs.Where(x => _where == null || _where(x)))
             {
                 bool wrote = false;
+                
+                // WritePath
                 string path = input.String(MetadataKeys.WritePath);
+
+                // WriteFileName
+                if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
+                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
+                {
+                    path = Path.Combine(Path.GetDirectoryName(input.String(MetadataKeys.RelativeFilePath)), input.String(MetadataKeys.WriteFileName));
+                }
+
+                // WriteExtension
                 if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
                     && input.ContainsKey(MetadataKeys.RelativeFilePath))
                 {
                     path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath), input.String(MetadataKeys.WriteExtension));
                 }
+
+                // Func
                 if (path == null)
                 {
                     path = _path(input);
                 }
+
                 if (path != null)
                 {
                     path = Path.Combine(context.OutputFolder, path);
