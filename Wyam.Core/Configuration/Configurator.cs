@@ -43,7 +43,7 @@ namespace Wyam.Core.Configuration
             AddAssembly(Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions))); // System.Linq
             AddAssembly(Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
             AddAssembly(Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)
-            AddAssembly(Assembly.GetAssembly(typeof (System.IO.Path))); // System.IO
+            AddAssembly(Assembly.GetAssembly(typeof (System.IO.Stream))); // System.IO
             AddAssembly(Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource))); // System.Diagnostics
             AddAssembly(Assembly.GetAssembly(typeof (Wyam.Core.Engine))); // Wyam.Core
             AddAssembly(Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule))); // Wyam.Abstractions
@@ -268,8 +268,10 @@ namespace Wyam.Core.Configuration
                 .Where(x => Directory.Exists(x.Item1))
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
             assemblyPaths.AddRange(_assemblyCollection.ByFile
-                .Select(x => Path.Combine(_engine.RootFolder, x))
-                .Where(File.Exists));
+                .Select(x => new Tuple<string, string>(x, Path.Combine(_engine.RootFolder, x)))
+                .Select(x => File.Exists(x.Item2) ? x.Item2 : x.Item1));
+
+            List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
 
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
             foreach (string assemblyPath in assemblyPaths.Distinct())
@@ -281,6 +283,10 @@ namespace Wyam.Core.Configuration
                     if (!AddAssembly(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
+                    }
+                    else
+                    {
+                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                     }
                 }
                 catch (Exception ex)
@@ -300,11 +306,34 @@ namespace Wyam.Core.Configuration
                     {
                         _engine.Trace.Verbose("Skipping assembly {0} because it was already added.", assemblyName);
                     }
+                    else
+                    {
+                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                    }
                 }
                 catch (Exception ex)
                 {
                     _engine.Trace.Verbose("{0} exception while loading assembly {1}: {2}.", ex.GetType().Name, assemblyName, ex.Message);
                 }
+            }
+        }
+
+        private void LoadReferencedAssemblies(IEnumerable<AssemblyName> assemblyNames)
+        {
+            foreach (AssemblyName assemblyName in assemblyNames.Where(x => !_assemblies.ContainsKey(x.FullName)))
+            {
+                try
+                {
+                    _engine.Trace.Verbose("Loading referenced assembly {0}.", assemblyName);
+                    Assembly assembly = Assembly.Load(assemblyName);
+                    AddAssembly(assembly);
+                    LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                }
+                catch (Exception ex)
+                {
+                    _engine.Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}.", ex.GetType().Name, assemblyName, ex.Message);
+                }
+                
             }
         }
 
