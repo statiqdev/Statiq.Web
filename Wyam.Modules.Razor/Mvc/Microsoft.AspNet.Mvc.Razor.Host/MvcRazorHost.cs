@@ -24,7 +24,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "System.Collections.Generic",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
-            "Wyam.Abstractions"
+            "Wyam.Abstractions",
+            "Wyam.Core",
+            "Wyam.Core.Helpers"
         };
 
         internal MvcRazorHost(Type basePageType)
