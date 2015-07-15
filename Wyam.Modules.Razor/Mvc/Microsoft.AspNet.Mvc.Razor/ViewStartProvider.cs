@@ -12,16 +12,20 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
     public class ViewStartProvider : IViewStartProvider
     {
         private readonly IRazorPageFactory _pageFactory;
+        private readonly string _viewStartPath;
 
-        public ViewStartProvider(IRazorPageFactory pageFactory)
+        public ViewStartProvider(IRazorPageFactory pageFactory, string viewStartPath)
         {
             _pageFactory = pageFactory;
+            _viewStartPath = viewStartPath;
         }
 
         /// <inheritdoc />
         public IEnumerable<IRazorPage> GetViewStartPages([NotNull] string path)
         {
-            var viewStartLocations = ViewHierarchyUtility.GetViewStartLocations(path);
+            var viewStartLocations = _viewStartPath == null
+                ? ViewHierarchyUtility.GetViewStartLocations(path)
+                : new [] {_viewStartPath};
             var viewStarts = viewStartLocations.Select(_pageFactory.CreateInstance)
                                                .Where(p => p != null)
                                                .ToArray();

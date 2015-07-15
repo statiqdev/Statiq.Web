@@ -19,6 +19,8 @@ namespace Wyam.Modules.Razor
     public class Razor : IModule
     {
         private readonly Type _basePageType;
+        private Func<IDocument, string> _viewStartPath;
+        private string _ignorePrefix = "_";
         
         public Razor(Type basePageType = null)
         {
@@ -29,30 +31,53 @@ namespace Wyam.Modules.Razor
             _basePageType = basePageType;
         }
 
+        public Razor SetViewStart(string path)
+        {
+            _viewStartPath = x => path;
+            return this;
+        }
+
+        public Razor SetViewStart(Func<IDocument, string> path)
+        {
+            _viewStartPath = path;
+            return this;
+        }
+
+        public Razor IgnorePrefix(string prefix)
+        {
+            _ignorePrefix = prefix;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context, _basePageType);
-            IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory);
-            IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
-            IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
 
-            return inputs.Select(x =>
-            {
-                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
-                string relativePath = "/";
-                if (x.ContainsKey(MetadataKeys.RelativeFilePath))
+            return inputs
+                .Where(x => _ignorePrefix == null || !x.ContainsKey("SourceFileName") || !x.String("SourceFileName").StartsWith(_ignorePrefix))
+                .Select(x =>
                 {
-                    relativePath += x.String(MetadataKeys.RelativeFilePath);
-                }
-                ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
-                using (StringWriter writer = new StringWriter())
-                {
-                    viewContext.View = viewEngineResult.View;
-                    viewContext.Writer = writer;
-                    AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
-                    return x.Clone(writer.ToString());
-                }
-            });
+                    IViewStartProvider viewStartProvider = new ViewStartProvider(
+                        pageFactory, _viewStartPath == null ? null : _viewStartPath(x));
+                    IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
+                    IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
+
+                    ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
+                    string relativePath = "/";
+                    if (x.ContainsKey(MetadataKeys.RelativeFilePath))
+                    {
+                        relativePath += x.String(MetadataKeys.RelativeFilePath);
+                    }
+                    ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
+
+                    using (StringWriter writer = new StringWriter())
+                    {
+                        viewContext.View = viewEngineResult.View;
+                        viewContext.Writer = writer;
+                        AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
+                        return x.Clone(writer.ToString());
+                    }
+                });
         }
     }
 }
