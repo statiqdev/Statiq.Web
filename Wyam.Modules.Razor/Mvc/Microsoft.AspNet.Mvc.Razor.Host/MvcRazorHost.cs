@@ -17,7 +17,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
     {
         private const string DefaultBaseType = "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.RazorPage";
 
-        private static readonly string[] DefaultNamespaces = new[]
+        private static readonly string[] _defaultNamespaces = new[]
         {
             "System",
             "System.Linq",
@@ -49,7 +49,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
                 EndContextMethodName = "EndContext"
             };
 
-            foreach (var ns in DefaultNamespaces)
+            foreach (var ns in _defaultNamespaces)
             {
                 NamespaceImports.Add(ns);
             }

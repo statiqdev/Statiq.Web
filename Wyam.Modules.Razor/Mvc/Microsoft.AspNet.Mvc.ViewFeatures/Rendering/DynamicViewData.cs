@@ -17,7 +17,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering
             _viewDataFunc = viewDataFunc;
         }
 
-        private IDictionary<string, object> ViewData
+        private ViewDataDictionary ViewData
         {
             get
             {

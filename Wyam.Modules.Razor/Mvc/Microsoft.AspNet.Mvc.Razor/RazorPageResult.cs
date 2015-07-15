@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+﻿﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// Initializes a new instance of <see cref="RazorPageResult"/> for an unsuccessful discovery.
         /// </summary>
         /// <param name="name">The name of the page that was located.</param>
-        /// <param name="page">The locations that were searched.</param>
+        /// <param name="searchedLocations">The locations that were searched.</param>
         public RazorPageResult([NotNull] string name, [NotNull] IEnumerable<string> searchedLocations)
         {
             Name = name;

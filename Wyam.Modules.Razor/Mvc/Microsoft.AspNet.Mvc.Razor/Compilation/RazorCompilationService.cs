@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+﻿﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -30,6 +30,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         private readonly IMvcRazorHost _razorHost;
         private readonly IExecutionContext _executionContext;
 
+        /// <summary>
+        /// Instantiates a new instance of the <see cref="RazorCompilationService"/> class.
+        /// </summary>
+        /// <param name="compilationService">The <see cref="ICompilationService"/> to compile generated code.</param>
+        /// <param name="razorHost">The <see cref="IMvcRazorHost"/> to generate code from Razor files.</param>
+        /// <param name="viewEngineOptions">
+        /// The <see cref="IFileProvider"/> to read Razor files referenced in error messages.
+        /// </param>
         public RazorCompilationService(IExecutionContext executionContext, Type basePageType)
         {
             _executionContext = executionContext;
@@ -42,7 +50,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             GeneratorResults results;
             using (var inputStream = file.FileInfo.CreateReadStream())
             {
-                results = _razorHost.GenerateCode(file.RelativePath, inputStream);
+                results = GenerateCode(file.RelativePath, inputStream);
             }
 
             if (!results.Success)
@@ -51,11 +59,27 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                 throw new AggregateException(results.ParserErrors.Select(x => new Exception(x.Message)));
             }
 
-            return Compile(results.GeneratedCode, file);
+            return Compile(file, results.GeneratedCode);
         }
 
-        // Use the Roslyn scripting engine for compilation - in MVC, this part is done in RoslynCompilationService
-        private Type Compile([NotNull] string compilationContent, [NotNull] RelativeFileInfo file)
+        /// <summary>
+        /// Generate code for the Razor file at <paramref name="relativePath"/> with content
+        /// <paramref name="inputStream"/>.
+        /// </summary>
+        /// <param name="relativePath">
+        /// The path of the Razor file relative to the root of the application. Used to generate line pragmas and
+        /// calculate the class name of the generated type.
+        /// </param>
+        /// <param name="inputStream">A <see cref="Stream"/> that contains the Razor content.</param>
+        /// <returns>A <see cref="GeneratorResults"/> instance containing results of code generation.</returns>
+        protected virtual GeneratorResults GenerateCode(string relativePath, Stream inputStream)
+        {
+            return _razorHost.GenerateCode(relativePath, inputStream);
+        }
+
+        // Wyam - Use the Roslyn scripting engine for compilation
+        // In MVC, this part is done in RoslynCompilationService
+        private Type Compile([NotNull] RelativeFileInfo file, [NotNull] string compilationContent)
         {
             HashSet<Assembly> assemblies = new HashSet<Assembly>(new AssemblyEqualityComparer())
             {

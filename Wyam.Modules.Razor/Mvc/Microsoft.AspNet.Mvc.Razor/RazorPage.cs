@@ -433,7 +433,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             EnsureMethodCanBeInvoked("RenderSection");
 
             var task = RenderSectionAsyncCore(name, required);
-            return TaskHelper.WaitAndThrowIfFaulted(task);
+            return task.GetAwaiter().GetResult();
         }
 
         /// <summary>

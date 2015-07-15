@@ -16,7 +16,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         /// <summary>
         /// Initializes a new instance of <see cref="ViewContext"/>.
         /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/>.</param>
         /// <param name="view">The <see cref="IView"/> being rendered.</param>
+        /// <param name="viewData">The <see cref="ViewDataDictionary"/>.</param>
+        /// <param name="tempData">The <see cref="ITempDataDictionary"/>.</param>
         /// <param name="writer">The <see cref="TextWriter"/> to render output to.</param>
         public ViewContext(
             [NotNull] IView view,
@@ -78,8 +81,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
         public IView View { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="T:Microsoft.AspNet.Mvc.ViewDataDictionary"/>.
-        /// 
+        /// Gets or sets the <see cref="ViewDataDictionary"/>.
         /// </summary>
         public ViewDataDictionary ViewData { get; set; }
 

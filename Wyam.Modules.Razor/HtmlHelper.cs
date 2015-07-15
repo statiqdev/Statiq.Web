@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Html.Abstractions;
 using Wyam.Core;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -21,24 +22,25 @@ namespace Wyam.Modules.Razor
             _viewContext = viewContext;
         }
 
-        public HtmlString Raw(string value)
+        public IHtmlContent Raw(string value)
         {
             return new HtmlString(value);
         }
 
-        public HtmlString Raw(object value)
+        public IHtmlContent Raw(object value)
         {
             return new HtmlString(value == null ? (string)null : value.ToString());
         }
 
         // Partial support from HtmlHelperPartialExtensions.cs
+        // Core code is in HtmlHelper.cs
 
-        public HtmlString Partial(string partialViewName)
+        public IHtmlContent Partial(string partialViewName)
         {
             using (var writer = new StringCollectionTextWriter(Encoding.UTF8))
             {
                 RenderPartialCore(partialViewName, writer);
-                return new HtmlString(writer);
+                return writer.Content;
             }
         }
 

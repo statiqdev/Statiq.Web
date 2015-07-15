@@ -116,15 +116,6 @@ namespace Wyam.Core
             _pipelines = new PipelineCollection(this);
         }
 
-        // This maps Roslyn diagnostic levels to tracing levels
-        private static readonly Dictionary<DiagnosticSeverity, TraceEventType> DiagnosticMapping 
-            = new Dictionary<DiagnosticSeverity, TraceEventType>()
-            {
-                { DiagnosticSeverity.Error, TraceEventType.Error },
-                { DiagnosticSeverity.Warning, TraceEventType.Warning },
-                { DiagnosticSeverity.Info, TraceEventType.Information }
-            };
-
         public void Configure(string configScript = null, bool updatePackages = false)
         {
             if (_disposed)

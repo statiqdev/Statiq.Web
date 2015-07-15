@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
+﻿﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
@@ -26,12 +26,10 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// Represent the prefix off the main entry class in the view.
         /// </summary>
         string MainClassNamePrefix { get; }
-        
+
         /// <summary>
         /// Represent the namespace the main entry class in the view.
         /// </summary>
         string DefaultNamespace { get; }
-
-        ISet<string> NamespaceImports { get; }
     }
 }
