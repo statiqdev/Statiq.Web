@@ -62,19 +62,27 @@ namespace Wyam.Core.Modules
                 
                 // WritePath
                 string path = input.String(MetadataKeys.WritePath);
+                if (path != null)
+                {
+                    path = Path.GetFullPath(Path.Combine(context.OutputFolder, PathHelper.NormalizePath(path)));
+                }
 
                 // WriteFileName
                 if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
-                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
+                    && input.ContainsKey(MetadataKeys.RelativeFileDir))
                 {
-                    path = Path.Combine(Path.GetDirectoryName(input.String(MetadataKeys.RelativeFilePath)), input.String(MetadataKeys.WriteFileName));
+                    path = Path.GetFullPath(
+                        Path.Combine(input.String(MetadataKeys.RelativeFileDir), 
+                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName))));
                 }
 
                 // WriteExtension
                 if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
                     && input.ContainsKey(MetadataKeys.RelativeFilePath))
                 {
-                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath), input.String(MetadataKeys.WriteExtension));
+                    path = Path.GetFullPath(
+                        Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
+                        input.String(MetadataKeys.WriteExtension)));
                 }
 
                 // Func
@@ -85,7 +93,7 @@ namespace Wyam.Core.Modules
 
                 if (path != null)
                 {
-                    path = Path.Combine(context.OutputFolder, path);
+                    path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                         string pathDirectory = Path.GetDirectoryName(path);
@@ -98,7 +106,12 @@ namespace Wyam.Core.Modules
                         wrote = true;
                         yield return input.Clone(new Dictionary<string, object>
                         {
-                            { MetadataKeys.DestinationFilePath, path }
+                            {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
+                            {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
+                            {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
+                            {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
+                            {MetadataKeys.DestinationFilePath, path },
+                            {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path) }
                         });
                     }
                 }

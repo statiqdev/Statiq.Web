@@ -15,6 +15,7 @@ using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Abstractions;
+using Wyam.Core.Helpers;
 
 namespace Wyam.Core
 {
@@ -68,8 +69,8 @@ namespace Wyam.Core
         }
         
         private string _rootFolder = Environment.CurrentDirectory;
-        private string _inputFolder = @".\Input";
-        private string _outputFolder = @".\Output";
+        private string _inputFolder = "Input";
+        private string _outputFolder = "Output";
 
         public string RootFolder
         {
@@ -80,33 +81,41 @@ namespace Wyam.Core
                 {
                     throw new ArgumentException("RootFolder");
                 }
-                _rootFolder = value;
+                _rootFolder = Path.GetFullPath(PathHelper.NormalizePath(value));
             }
         }
 
         public string InputFolder
         {
-            get { return Path.Combine(RootFolder, _inputFolder); }
+            get
+            {
+                // Calculate this each time in case the root folder changes after setting it
+                return Path.GetFullPath(Path.Combine(RootFolder, PathHelper.NormalizePath(_inputFolder)));
+            }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentException("InputFolder");
                 }
-                _inputFolder = value;
+                _inputFolder = PathHelper.NormalizePath(value);;
             }
         }
 
         public string OutputFolder
         {
-            get { return Path.Combine(RootFolder, _outputFolder); }
+            get
+            {
+                // Calculate this each time in case the root folder changes after setting it
+                return Path.GetFullPath(Path.Combine(RootFolder, PathHelper.NormalizePath(_outputFolder)));
+            }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentException("OutputFolder");
                 }
-                _outputFolder = value;
+                _outputFolder = PathHelper.NormalizePath(value);
             }
         }
 

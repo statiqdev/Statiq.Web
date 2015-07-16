@@ -46,7 +46,7 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["RelativeFilePath"] = @"Subfolder\write-test.abc";
+            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -67,7 +67,7 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["RelativeFilePath"] = @"Subfolder\write-test.abc";
+            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -88,8 +88,8 @@ namespace Wyam.Core.Tests.Modules
             // Given
             Engine engine = new Engine();
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["SourceFileRoot"] = @"TestFiles\Input";
-            engine.Metadata["SourceFileDir"] = @"TestFiles\Input\Subfolder";
+            engine.Metadata["SourceFileRoot"] = @"TestFiles/Input";
+            engine.Metadata["SourceFileDir"] = @"TestFiles/Input/Subfolder";
             engine.Metadata["SourceFileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
             IDocument[] inputs = { new Document(metadata).Clone("Test") };
@@ -102,6 +102,31 @@ namespace Wyam.Core.Tests.Modules
 
             // Then
             Assert.AreEqual("Test", document.Content);
+        }
+
+        [TestCase("DestinationFileBase", @"write-test")]
+        [TestCase("DestinationFileExt", @".txt")]
+        [TestCase("DestinationFileName", @"write-test.txt")]
+        [TestCase("DestinationFileDir", @"TestFiles\Output\Subfolder")]
+        [TestCase("DestinationFilePath", @"TestFiles\Output\Subfolder\write-test.txt")]
+        [TestCase("DestinationFilePathBase", @"TestFiles\Output\Subfolder\write-test")]
+        public void WriteFilesSetsMetadata(string key, string expectedEnding)
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.OutputFolder = @"TestFiles\Output\";
+            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
+            Metadata metadata = new Metadata(engine);
+            IDocument[] inputs = { new Document(metadata).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            WriteFiles writeFiles = new WriteFiles("txt");
+
+            // When
+            IDocument document = writeFiles.Execute(inputs, context).First();
+
+            // Then
+            Assert.That(document.Metadata[key], Is.StringEnding(expectedEnding));
         }
     }
 }

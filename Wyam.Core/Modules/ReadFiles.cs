@@ -67,7 +67,8 @@ namespace Wyam.Core.Modules
                 string path = _path(input);
                 if (path != null)
                 {
-                    path = Path.Combine(context.InputFolder, path);
+                    path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                    path = Path.Combine(Path.GetFullPath(Path.GetDirectoryName(path)), Path.GetFileName(path));
                     string fileRoot = Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
@@ -83,7 +84,10 @@ namespace Wyam.Core.Modules
                                 {MetadataKeys.SourceFileName, Path.GetFileName(file)},
                                 {MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)},
                                 {MetadataKeys.SourceFilePath, file},
-                                {MetadataKeys.RelativeFilePath, Path.Combine(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                {MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)},
+                                {MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)},
+                                {MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))},
+                                {MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file))}
                             });
                         }
                     }

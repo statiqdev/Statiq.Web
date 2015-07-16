@@ -23,6 +23,7 @@ namespace Wyam.Examples.Tests
                 path = Directory.GetParent(path).Parent.FullName;
                 path = Path.Combine(path, "Examples");
             }
+            int count = 0;
             foreach(string example in Directory.EnumerateDirectories(path))
             {
                 Console.WriteLine("Executing example " + example);
@@ -37,7 +38,9 @@ namespace Wyam.Examples.Tests
                     engine.Configure(File.ReadAllText(config));
                 }
                 engine.Execute();
+                count++;
             }
+            Assert.AreEqual(4, count);
         }
     }
 }

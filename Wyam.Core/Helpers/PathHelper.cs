@@ -10,6 +10,14 @@ namespace Wyam.Core.Helpers
     // This contains some additional helpers for the file system
     public class PathHelper
     {
+        // Converts slashes to Path.DirectorySeparatorChar
+        public static string NormalizePath(string path)
+        {
+            return path
+                .Replace('\\', Path.DirectorySeparatorChar)
+                .Replace('/', Path.DirectorySeparatorChar);
+        }
+
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
         public static string GetRelativePath(string fromPath, string toPath)
         {

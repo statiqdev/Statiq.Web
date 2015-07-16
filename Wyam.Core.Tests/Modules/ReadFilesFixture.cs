@@ -167,7 +167,11 @@ namespace Wyam.Core.Tests.Modules
         [TestCase("SourceFileName", @"test-c.txt")]
         [TestCase("SourceFileDir", @"TestFiles\Input\Subfolder")]
         [TestCase("SourceFilePath", @"TestFiles\Input\Subfolder\test-c.txt")]
-        public void PrepareSetsMetadata(string key, string expectedEnding)
+        [TestCase("SourceFilePathBase", @"TestFiles\Input\Subfolder\test-c")]
+        [TestCase("RelativeFilePath", @"Subfolder\test-c.txt")]
+        [TestCase("RelativeFilePathBase", @"Subfolder\test-c")]
+        [TestCase("RelativeFileDir", @"Subfolder")]
+        public void ReadFilesSetsMetadata(string key, string expectedEnding)
         {
             // Given
             Engine engine = new Engine();
@@ -180,7 +184,7 @@ namespace Wyam.Core.Tests.Modules
 
             // When
             IDocument document = readFiles.Execute(inputs, context).First();
-            
+
             // Then
             Assert.That(document.Metadata[key], Is.StringEnding(expectedEnding));
         }
