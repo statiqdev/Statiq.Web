@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Wyam.Abstractions;
 
 namespace Wyam.Core
@@ -101,6 +102,12 @@ namespace Wyam.Core
         public string String(string key, string defaultValue = null)
         {
             return Get<string>(key, defaultValue);
+        }
+
+        public string Link(string key, string defaultValue = null)
+        {
+            string value = Get<string>(key, defaultValue);
+            return value == null ? null : value.Replace('\\', '/');
         }
 
         public object this[string key]

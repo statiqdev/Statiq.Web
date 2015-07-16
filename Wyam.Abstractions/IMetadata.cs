@@ -18,6 +18,9 @@ namespace Wyam.Abstractions
 
         // This method doesn't throw, equivalent to Get<string>(key, defaultValue)
         string String(string key, string defaultValue = null);
+
+        // Another shortcut method that gets strings, but replaces forward-slashes with back-slashes
+        string Link(string key, string defaultValue = null);
     }
 
     public interface IMetadata<T> : IReadOnlyDictionary<string, T>

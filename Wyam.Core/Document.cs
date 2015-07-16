@@ -111,6 +111,11 @@ namespace Wyam.Core
             return _metadata.String(key, defaultValue);
         }
 
+        public string Link(string key, string defaultValue = null)
+        {
+            return _metadata.Link(key, defaultValue);
+        }
+
         public int Count
         {
             get { return _metadata.Count; }
