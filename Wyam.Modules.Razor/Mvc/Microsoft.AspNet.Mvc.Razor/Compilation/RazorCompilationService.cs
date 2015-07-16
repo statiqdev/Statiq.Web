@@ -13,8 +13,6 @@ using Microsoft.AspNet.Razor.Parser.SyntaxTree;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Scripting.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Abstractions;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;

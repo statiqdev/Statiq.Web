@@ -11,8 +11,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Scripting.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using NuGet;
 using Wyam.Core.NuGet;
@@ -28,9 +26,9 @@ namespace Wyam.Core.Configuration
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>(); 
         private bool _disposed;
-        private Assembly _configAssembly;
+        private Assembly _setupAssembly;
         private string _configAssemblyFullName;
-        private byte[] _rawConfigAssembly;
+        private byte[] _rawSetupAssembly;
 
         public Configurator(Engine engine)
         {
@@ -69,7 +67,7 @@ namespace Wyam.Core.Configuration
         
         public byte[] RawConfigAssembly
         {
-            get {  return _rawConfigAssembly; }
+            get {  return _rawSetupAssembly; }
         }
 
         // Setup is separated from config by a line with only '-' characters
@@ -132,23 +130,40 @@ namespace Wyam.Core.Configuration
         {
             _engine.Trace.Verbose("Evaluating setup script...");
             int indent = _engine.Trace.Indent();
+
             try
             {
-                // Create the script options
-                ScriptOptions scriptOptions = new ScriptOptions()
-                    .AddNamespaces(
-                        "System",
-                        "Wyam.Core",
-                        "Wyam.Core.Configuration",
-                        "Wyam.Core.NuGet",
-                        "Wyam.Abstractions")
-                    .AddReferences(
-                        Assembly.GetAssembly(typeof(object)),  // System
-                        Assembly.GetAssembly(typeof(Wyam.Core.Engine)),  //Wyam.Core
-                        Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule)));  // Wyam.Abstractions
+                // Create the setup script
+                code = @"
+                    using System;
+                    using Wyam.Core;
+                    using Wyam.Core.Configuration;
+                    using Wyam.Core.NuGet;
+                    using Wyam.Abstractions;
 
-                // Evaluate the script
-                CSharpScript.Eval(code, scriptOptions, new SetupGlobals(_engine, _packages, _assemblyCollection));
+                    public static class SetupScript
+                    {
+                        public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
+                        {
+                            " + code + @"
+                        }
+                    }";
+
+                // Assemblies
+                Assembly[] setupAssemblies = new[]
+                {
+                    Assembly.GetAssembly(typeof (object)), // System
+                    Assembly.GetAssembly(typeof (Wyam.Core.Engine)), //Wyam.Core
+                    Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
+                };
+
+                // Load the dynamic assembly and invoke
+                _rawSetupAssembly = CompileScript("WyamSetup", setupAssemblies, code, _engine.Trace);
+                _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
+                MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated setup script.");
 
@@ -158,12 +173,6 @@ namespace Wyam.Core.Configuration
                 _packages.InstallPackages(updatePackages);
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Packages installed.");
-            }
-            catch (CompilationErrorException compilationError)
-            {
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Error("Error compiling setup: {0}", compilationError.ToString());
-                throw;
             }
             catch (Exception ex)
             {
@@ -207,43 +216,13 @@ namespace Wyam.Core.Configuration
                 // Generate the script
                 code = GenerateScript(declarations, code, moduleTypes, namespaces);
 
-                // Create the compilation
-                var assemblyName = "WyamConfig";
-                var parseOptions = new CSharpParseOptions();
-                var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
-                var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-                var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-                var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
-                    _assemblies.Select(x => MetadataReference.CreateFromFile(x.Value.Location)), compilationOptions)
-                    .AddReferences(
-                        // For some reason, Roslyn really wants these added by filename
-                        // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
-                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
-                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
-                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
-                );
-
-                // Emit the assembly
-                using (var ms = new MemoryStream())
-                {
-                    EmitResult result = compilation.Emit(ms);
-                    if (!result.Success)
-                    {
-                        _engine.Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine, 
-                            string.Join(Environment.NewLine, result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)));
-                        throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
-                    }
-                    ms.Seek(0, SeekOrigin.Begin);
-                    _rawConfigAssembly = ms.ToArray();
-                }
-
-                // Load the dynamic assembly
-                _configAssembly = Assembly.Load(_rawConfigAssembly);
-                _configAssemblyFullName = _configAssembly.FullName;
-                var configScriptType = _configAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                // Load the dynamic assembly and invoke
+                _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
+                _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                _configAssemblyFullName = _setupAssembly.FullName;
+                var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
                 MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                runMethod.Invoke(null, new object[] {_engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder});
+                runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
 
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Verbose("Evaluated configuration script.");
@@ -253,6 +232,39 @@ namespace Wyam.Core.Configuration
                 _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Unexpected error during configuration evaluation: {0}", ex.Message);
                 throw;
+            }
+        }
+
+        private static byte[] CompileScript(string assemblyName, IEnumerable<Assembly> assemblies, string code, ITrace trace)
+        {
+            // Create the compilation
+            var parseOptions = new CSharpParseOptions();
+            var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
+                assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                .AddReferences(
+                // For some reason, Roslyn really wants these added by filename
+                // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
+            );
+
+            // Emit the assembly
+            using (var ms = new MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+                if (!result.Success)
+                {
+                    trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine,
+                        string.Join(Environment.NewLine, result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)));
+                    throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
+                }
+                ms.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
             }
         }
         
@@ -350,11 +362,11 @@ namespace Wyam.Core.Configuration
         private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {
             // Only start resolving after we've generated the config assembly
-            if (_configAssembly != null)
+            if (_setupAssembly != null)
             {
                 if (args.Name == _configAssemblyFullName)
                 {
-                    return _configAssembly;
+                    return _setupAssembly;
                 }
 
                 Assembly assembly;
