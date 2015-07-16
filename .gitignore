@@ -22,4 +22,3 @@ ipch
 /*.~vsd
 *UpgradeWizard*
 packages/*
-!packages/Microsoft.CodeAnalysis.*
