@@ -12,6 +12,8 @@ namespace Wyam.Abstractions
         byte[] RawConfigAssembly { get; }
         IEnumerable<Assembly> Assemblies { get; } 
         IReadOnlyPipeline Pipeline { get; }
+        IModule Module { get; }
+        IExecutionCache ExecutionCache { get; }
         string RootFolder { get; }
         string InputFolder { get; }
         string OutputFolder { get; }

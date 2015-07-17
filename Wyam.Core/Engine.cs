@@ -13,6 +13,7 @@ using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Abstractions;
+using Wyam.Core.Caching;
 using Wyam.Core.Helpers;
 
 namespace Wyam.Core
@@ -22,7 +23,7 @@ namespace Wyam.Core
         private Configurator _configurator = null;
         private bool _disposed;
 
-        private readonly Dictionary<string, object> _metadata;
+        private readonly Dictionary<string, object> _metadata = new Dictionary<string, object>();
 
         // This is used as the initial set of metadata for each run
         public IDictionary<string, object> Metadata
@@ -64,6 +65,13 @@ namespace Wyam.Core
         public IEnumerable<Assembly> Assemblies
         {
             get { return _configurator == null ? null : _configurator.Assemblies; }
+        }
+
+        private readonly ExecutionCacheManager _executionCacheManager = new ExecutionCacheManager();
+
+        internal ExecutionCacheManager ExecutionCacheManager
+        {
+            get { return _executionCacheManager; }
         }
         
         private string _rootFolder = Environment.CurrentDirectory;
@@ -119,7 +127,6 @@ namespace Wyam.Core
 
         public Engine()
         {
-            _metadata = new Dictionary<string, object>();
             _pipelines = new PipelineCollection(this);
         }
 
@@ -175,6 +182,7 @@ namespace Wyam.Core
                 Trace.Information("Executing {0} pipelines...", _pipelines.Count);
                 outerIndent = Trace.Indent();
                 _documents.Clear();
+                _executionCacheManager.ResetEntryHits();
                 int c = 1;
                 foreach(Pipeline pipeline in _pipelines.Pipelines)
                 {
@@ -186,6 +194,7 @@ namespace Wyam.Core
                     Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", 
                         pipeline.Name, c++, _pipelines.Count, _documents.FromPipeline(pipelineName).Count());
                 }
+                _executionCacheManager.ClearUnhitEntries();
                 Trace.IndentLevel = outerIndent;
                 Trace.Information("Executed {0} pipelines.", _pipelines.Count);
             }

@@ -34,6 +34,8 @@ namespace Wyam.Core
             get { return new ReadOnlyPipeline(_pipeline); }
         }
 
+        public IModule Module { get; internal set; }
+
         public ITrace Trace
         {
             get { return _engine.Trace; }
@@ -57,6 +59,11 @@ namespace Wyam.Core
         public string OutputFolder
         {
             get { return _engine.OutputFolder; }
+        }
+
+        public IExecutionCache ExecutionCache
+        {
+            get { return _engine.ExecutionCacheManager.Get(Module); }
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)

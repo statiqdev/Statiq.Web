@@ -126,6 +126,7 @@ namespace Wyam.Core
                 try
                 {
                     // Make sure we clone the output context if it's the same as the input
+                    context.Module = module;
                     IEnumerable<IDocument> outputs = module.Execute(documents, context);
                     documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
                     _engine.DocumentCollection.Set(Name, documents.AsReadOnly());

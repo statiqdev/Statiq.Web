@@ -48,6 +48,7 @@
     <Compile Include="IPipelineCollection.cs" />
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="IReadOnlyPipeline.cs" />
+    <Compile Include="IExecutionCache.cs" />
     <Compile Include="ITrace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -88,9 +88,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncHelper.cs" />
+    <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
+    <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="DiagnosticsTraceListener.cs" />
     <Compile Include="DocumentCollection.cs" />
     <Compile Include="MetadataTypeConverter.cs" />
