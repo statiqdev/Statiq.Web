@@ -13,57 +13,21 @@ namespace Wyam.Core
         private readonly Engine _engine;
         private readonly Pipeline _pipeline;
 
+        public byte[] RawConfigAssembly => _engine.RawConfigAssembly;
+        public IEnumerable<Assembly> Assemblies => _engine.Assemblies;
+        public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);
+        public IModule Module { get; internal set; }
+        public ITrace Trace => _engine.Trace;
+        public IDocumentCollection Documents => _engine.Documents;
+        public string RootFolder => _engine.RootFolder;
+        public string InputFolder => _engine.InputFolder;
+        public string OutputFolder => _engine.OutputFolder;
+        public IExecutionCache ExecutionCache => _engine.ExecutionCacheManager.Get(Module);
+
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
             _engine = engine;
             _pipeline = pipeline;
-        }
-
-        public byte[] RawConfigAssembly
-        {
-            get {  return _engine.RawConfigAssembly; }
-        }
-
-        public IEnumerable<Assembly> Assemblies
-        {
-            get { return _engine.Assemblies; }
-        }
-
-        public IReadOnlyPipeline Pipeline
-        {
-            get { return new ReadOnlyPipeline(_pipeline); }
-        }
-
-        public IModule Module { get; internal set; }
-
-        public ITrace Trace
-        {
-            get { return _engine.Trace; }
-        }
-
-        public IDocumentCollection Documents
-        {
-            get { return _engine.Documents; }
-        }
-
-        public string RootFolder
-        {
-            get { return _engine.RootFolder; }
-        }
-
-        public string InputFolder
-        {
-            get { return _engine.InputFolder; }
-        }
-
-        public string OutputFolder
-        {
-            get { return _engine.OutputFolder; }
-        }
-
-        public IExecutionCache ExecutionCache
-        {
-            get { return _engine.ExecutionCacheManager.Get(Module); }
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)

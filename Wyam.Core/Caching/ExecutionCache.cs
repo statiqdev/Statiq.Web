@@ -19,20 +19,40 @@ namespace Wyam.Core.Caching
 
         public bool TryGetValue(IDocument document, out object value)
         {
-            CacheEntry entry;
-            if (_cache.TryGetValue(document.Content, out entry))
-            {
-                entry.Hit = true;
-                value = entry.Value;
-                return true;
-            }
-            value = null;
-            return false;
+            return TryGetValue(document.Content, out value);
+        }
+
+        public bool TryGetValue<TValue>(IDocument document, out TValue value)
+        {
+            return TryGetValue<TValue>(document.Content, out value);
         }
 
         public void Set(IDocument document, object value)
         {
-            _cache[document.Content] = new CacheEntry
+            Set(document.Content, value);
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            return TryGetValue<object>(key, out value);
+        }
+
+        public bool TryGetValue<TValue>(string key, out TValue value)
+        {
+            CacheEntry entry;
+            if (_cache.TryGetValue(key, out entry))
+            {
+                entry.Hit = true;
+                value = (TValue)entry.Value;
+                return true;
+            }
+            value = default(TValue);
+            return false;
+        }
+
+        public void Set(string key, object value)
+        {
+            _cache[key] = new CacheEntry
             {
                 Value = value,
                 Hit = true

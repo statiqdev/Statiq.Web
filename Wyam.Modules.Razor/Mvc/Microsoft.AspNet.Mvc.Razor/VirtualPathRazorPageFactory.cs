@@ -20,13 +20,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         private readonly string _rootDirectory;
         private readonly IFileProvider _fileProvider;
         private readonly IRazorCompilationService _razorcompilationService;
-        private readonly Dictionary<string, CacheEntry> _pageCache = new Dictionary<string, CacheEntry>(); 
+        private readonly IExecutionContext _executionContext;
 
         public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext, Type basePageType)
         {
             _rootDirectory = rootDirectory;
             _fileProvider = new PhysicalFileProvider(rootDirectory);
             _razorcompilationService = new RazorCompilationService(executionContext, basePageType);
+            _executionContext = executionContext;
         }
 
         /// <inheritdoc />
@@ -54,13 +55,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             }
 
             // If relative path is the root, it probably means this isn't from reading a file so don't bother with caching
+            IExecutionCache cache = relativePath == "/" ? null : _executionContext.ExecutionCache;
             string hash = null;
-            if (relativePath != "/")
+            if (cache != null)
             {
                 // Check the cache, always just use the hash because we're going to have to store it anyway and the content might not come from a file
                 CacheEntry cacheEntry;
                 hash = RazorFileHash.GetHash(fileInfo);
-                if (_pageCache.TryGetValue(relativePath, out cacheEntry) && cacheEntry.Hash == hash)
+                if (cache.TryGetValue(relativePath, out cacheEntry) && cacheEntry.Hash == hash)
                 {
                     return cacheEntry.Page;
                 }
@@ -71,14 +73,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             Type result = _razorcompilationService.Compile(relativeFileInfo);
             IRazorPage page = (IRazorPage)Activator.CreateInstance(result);
             page.Path = relativePath;
-            if (relativePath != "/")
+            cache?.Set(relativePath, new CacheEntry
             {
-                _pageCache[relativePath] = new CacheEntry
-                {
-                    Page = page,
-                    Hash = hash
-                };
-            }
+                Page = page,
+                Hash = hash
+            });
             return page;
         }
 
