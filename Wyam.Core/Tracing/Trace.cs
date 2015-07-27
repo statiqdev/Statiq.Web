@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Tracing
 {
     public class Trace : ITrace, IDisposable
     {
@@ -71,7 +71,7 @@ namespace Wyam.Core
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Trace");
+                throw new ObjectDisposedException(nameof(Trace));
             }
 
             if (args == null || args.Length == 0)
@@ -96,7 +96,7 @@ namespace Wyam.Core
             {
                 if (_disposed)
                 {
-                    throw new ObjectDisposedException("Trace");
+                    throw new ObjectDisposedException(nameof(Trace));
                 }
 
                 if (value >= 0)
@@ -110,11 +110,16 @@ namespace Wyam.Core
             }
         }
 
+        public IIndentedTraceEvent WithIndent()
+        {
+            return new IndentedTraceEvent(this);
+        }
+
         public void Dispose()
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Trace");
+                throw new ObjectDisposedException(nameof(Trace));
             }
             _disposed = true;
             System.Diagnostics.Trace.Listeners.Remove(_diagnosticsTraceListener);

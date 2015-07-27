@@ -53,7 +53,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             {
                 return null;
             }
-
+            
             // If relative path is the root, it probably means this isn't from reading a file so don't bother with caching
             IExecutionCache cache = relativePath == "/" ? null : _executionContext.ExecutionCache;
             string hash = null;

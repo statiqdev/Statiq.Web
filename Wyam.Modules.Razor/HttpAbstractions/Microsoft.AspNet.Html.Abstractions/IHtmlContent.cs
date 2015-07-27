@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace Microsoft.AspNet.Html.Abstractions
+namespace Wyam.Modules.Razor.Microsoft.AspNet.Html.Abstractions
 {
     /// <summary>
     /// HTML content which can be written to a TextWriter.

@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using dotless.Core;
 using dotless.Core.configuration;
+using dotless.Core.Cache;
+using Microsoft.Practices.ServiceLocation;
 using Pandora.Fluent;
+using ReflectionMagic;
 using Wyam.Abstractions;
 
 namespace Wyam.Modules.Less
@@ -18,10 +21,15 @@ namespace Wyam.Modules.Less
             DotlessConfiguration config = DotlessConfiguration.GetDefault();
             config.RootPath = context.InputFolder;
             config.Logger = typeof (LessLogger);
+
             EngineFactory engineFactory = new EngineFactory(config);
+            ILessEngine engine = engineFactory.GetEngine();
+
+            // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
+            engine.AsDynamic().Underlying.Cache = new LessCache(context.ExecutionCache);
+
             return inputs.Select(x =>
             {
-                ILessEngine engine = engineFactory.GetEngine();
                 string path = x.Get<string>("SourceFilePath", null);
                 string fileName = null;
                 if (path != null)
@@ -29,8 +37,16 @@ namespace Wyam.Modules.Less
                     engine.CurrentDirectory = Path.GetDirectoryName(path);
                     fileName = Path.GetFileName(path);
                 }
-                string content = engine.TransformToCss(x.Content, fileName);
-                return x.Clone(content);
+                else
+                {
+                    engine.CurrentDirectory = context.InputFolder;
+                    fileName = Path.GetRandomFileName();
+                }
+                using (context.Trace.WithIndent().Verbose("Processing Less for {0}", path ?? "inline content"))
+                {
+                    string content = engine.TransformToCss(x.Content, fileName);
+                    return x.Clone(content);
+                }
             });
         }
     }

@@ -32,6 +32,7 @@ namespace Wyam
 
         private bool _watch = false;
         private bool _noClean = false;
+        private bool _noCache = false;
         private bool _preview = false;
         private int _previewPort = 5080;
         private bool _previewForceExtension = false;
@@ -73,7 +74,7 @@ namespace Wyam
             // Pause
             if (_pause)
             {
-                engine.Trace.Information("Pause requested, hit any key to continue.");
+                engine.Trace.Information("Pause requested, hit any key to continue");
                 Console.ReadKey();
             }
 
@@ -96,12 +97,12 @@ namespace Wyam
                 messagePump = true;
                 try
                 {
-                    engine.Trace.Information("Preview server listening on port {0} and serving from {1}...", _previewPort, engine.OutputFolder);
+                    engine.Trace.Information("Preview server listening on port {0} and serving from {1}", _previewPort, engine.OutputFolder);
                     previewServer = Preview(engine);
                 }
                 catch (Exception ex)
                 {
-                    engine.Trace.Critical("Error while running preview server: {0}.", ex.Message);
+                    engine.Trace.Critical("Error while running preview server: {0}", ex.Message);
                 }
             }
 
@@ -112,7 +113,7 @@ namespace Wyam
             {
                 messagePump = true;
                 
-                engine.Trace.Information("Watching folder {0}...", engine.InputFolder);
+                engine.Trace.Information("Watching folder {0}", engine.InputFolder);
                 inputFolderWatcher = new ActionFileSystemWatcher(engine.InputFolder, true, "*.*", path =>
                 {
                     _changedFiles.Enqueue(path);
@@ -121,7 +122,7 @@ namespace Wyam
 
                 if (_configFile != null)
                 {
-                    engine.Trace.Information("Watching configuration file {0}...", _configFile);
+                    engine.Trace.Information("Watching configuration file {0}", _configFile);
                     configFileWatcher = new ActionFileSystemWatcher(Path.GetDirectoryName(_configFile), false, Path.GetFileName(_configFile), path =>
                     {
                         if (path == _configFile)
@@ -137,7 +138,7 @@ namespace Wyam
             if (messagePump)
             {
                 // Start the key listening thread
-                engine.Trace.Information("Hit any key to exit...");
+                engine.Trace.Information("Hit any key to exit");
                 var thread = new Thread(() =>
                 {
                     Console.ReadKey();
@@ -162,7 +163,7 @@ namespace Wyam
                     if (_newEngine)
                     {
                         // Get a new engine
-                        engine.Trace.Information("Configuration file {0} has changed, re-running...", _configFile);
+                        engine.Trace.Information("Configuration file {0} has changed, re-running", _configFile);
                         engine.Dispose();
                         engine = GetEngine();
 
@@ -193,12 +194,12 @@ namespace Wyam
                         {
                             if (changedFiles.Add(changedFile))
                             {
-                                engine.Trace.Verbose("{0} has changed.", changedFile);
+                                engine.Trace.Verbose("{0} has changed", changedFile);
                             }
                         }
                         if (changedFiles.Count > 0)
                         {
-                            engine.Trace.Information("{0} files have changed, re-executing...", changedFiles.Count);
+                            engine.Trace.Information("{0} files have changed, re-executing", changedFiles.Count);
                             if (!Execute(engine))
                             {
                                 break;
@@ -211,12 +212,12 @@ namespace Wyam
                     {
                         break;
                     }
-                    engine.Trace.Information("Hit any key to exit...");
+                    engine.Trace.Information("Hit any key to exit");
                     _messageEvent.Reset();
                 }
 
                 // Shutdown
-                engine.Trace.Information("Shutting down...");
+                engine.Trace.Information("Shutting down");
                 engine.Dispose();
                 if (inputFolderWatcher != null)
                 {
@@ -242,9 +243,13 @@ namespace Wyam
                 {
                     _watch = true;
                 }
-                else if (args[c] == "--no-clean")
+                else if (args[c] == "--noclean")
                 {
                     _noClean = true;
+                }
+                else if (args[c] == "--nocache")
+                {
+                    _noCache = true;
                 }
                 else if (args[c] == "--preview")
                 {
@@ -334,9 +339,9 @@ namespace Wyam
         {
             if (invalid)
             {
-                Console.WriteLine("Invalid arguments.");
+                Console.WriteLine("Invalid arguments");
             }
-            Console.WriteLine("Usage: wyam.exe [path] [--input path] [--output path] [--config file] [--no-clean] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+            Console.WriteLine("Usage: wyam.exe [path] [--input path] [--output path] [--config file] [--noclean] [--nocache] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
         }
 
         private Engine GetEngine()
@@ -352,10 +357,16 @@ namespace Wyam
                 engine.Trace.SetLevel(SourceLevels.Verbose);
             }
 
+            // Set no cache if requested
+            if (_noCache)
+            {
+                engine.NoCache = true;
+            }
+
             // Make sure the root folder actually exists
             if (!Directory.Exists(_rootFolder))
             {
-                engine.Trace.Critical("Specified folder {0} does not exist.", _rootFolder);
+                engine.Trace.Critical("Specified folder {0} does not exist", _rootFolder);
                 return null;
             }
             engine.RootFolder = _rootFolder;
@@ -386,12 +397,12 @@ namespace Wyam
                 // If we have a configuration file use it, otherwise configure with defaults  
                 if (File.Exists(_configFile))
                 {
-                    engine.Trace.Information("Loading configuration from {0}...", _configFile);
+                    engine.Trace.Information("Loading configuration from {0}", _configFile);
                     engine.Configure(File.ReadAllText(_configFile), _updatePackages);
                 }
                 else
                 {
-                    engine.Trace.Information("Could not find configuration file {0}, using default configuration...", _configFile);
+                    engine.Trace.Information("Could not find configuration file {0}, using default configuration", _configFile);
                     engine.Configure(GetDefaultConfigScript(), _updatePackages);
                 }
             }
@@ -410,7 +421,7 @@ namespace Wyam
             {
                 try
                 {
-                    engine.Trace.Information("Cleaning output directory {0}...", engine.OutputFolder);
+                    engine.Trace.Information("Cleaning output directory {0}", engine.OutputFolder);
                     if (Directory.Exists(engine.OutputFolder))
                     {
                         Directory.Delete(engine.OutputFolder, true);
@@ -419,7 +430,7 @@ namespace Wyam
                 }
                 catch (Exception ex)
                 {
-                    engine.Trace.Critical("Error while cleaning output directory: {0}.", ex.Message);
+                    engine.Trace.Critical("Error while cleaning output directory: {0}", ex.Message);
                     return false;
                 }
             }
@@ -430,7 +441,7 @@ namespace Wyam
             }
             catch (Exception ex)
             {
-                engine.Trace.Critical("Error while executing: {0}.", ex.Message);
+                engine.Trace.Critical("Error while executing: {0}", ex.Message);
                 return false;
             }
 

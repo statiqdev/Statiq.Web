@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="AsyncHelper.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
+    <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
@@ -128,7 +129,8 @@
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
     <Compile Include="ReadOnlyPipeline.cs" />
-    <Compile Include="Trace.cs" />
+    <Compile Include="Tracing\IndentedTraceEvent.cs" />
+    <Compile Include="Tracing\Trace.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="MetadataAs.cs" />

@@ -11,9 +11,9 @@ namespace Wyam.Core
     // This routes trace and debug messages from the Trace/Debug classes to the Wyam Trace TraceSource
     internal class DiagnosticsTraceListener : TraceListener
     {
-        private readonly Trace _trace;
+        private readonly Tracing.Trace _trace;
 
-        public DiagnosticsTraceListener(Trace trace)
+        public DiagnosticsTraceListener(Tracing.Trace trace)
         {
             _trace = trace;
         }

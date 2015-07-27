@@ -128,55 +128,50 @@ namespace Wyam.Core.Configuration
 
         private void Setup(string code, bool updatePackages)
         {
-            _engine.Trace.Verbose("Evaluating setup script...");
-            int indent = _engine.Trace.Indent();
-
             try
             {
-                // Create the setup script
-                code = @"
-                    using System;
-                    using Wyam.Core;
-                    using Wyam.Core.Configuration;
-                    using Wyam.Core.NuGet;
-                    using Wyam.Abstractions;
-
-                    public static class SetupScript
-                    {
-                        public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
-                        {
-                            " + code + @"
-                        }
-                    }";
-
-                // Assemblies
-                Assembly[] setupAssemblies = new[]
+                using (_engine.Trace.WithIndent().Verbose("Evaluating setup script"))
                 {
-                    Assembly.GetAssembly(typeof (object)), // System
-                    Assembly.GetAssembly(typeof (Wyam.Core.Engine)), //Wyam.Core
-                    Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
-                };
+                    // Create the setup script
+                    code = @"
+                        using System;
+                        using Wyam.Core;
+                        using Wyam.Core.Configuration;
+                        using Wyam.Core.NuGet;
+                        using Wyam.Abstractions;
 
-                // Load the dynamic assembly and invoke
-                _rawSetupAssembly = CompileScript("WyamSetup", setupAssemblies, code, _engine.Trace);
-                _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
-                MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
-                
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Evaluated setup script.");
+                        public static class SetupScript
+                        {
+                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
+                            {
+                                " + code + @"
+                            }
+                        }";
+
+                    // Assemblies
+                    Assembly[] setupAssemblies = new[]
+                    {
+                        Assembly.GetAssembly(typeof (object)), // System
+                        Assembly.GetAssembly(typeof (Wyam.Core.Engine)), //Wyam.Core
+                        Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
+                    };
+
+                    // Load the dynamic assembly and invoke
+                    _rawSetupAssembly = CompileScript("WyamSetup", setupAssemblies, code, _engine.Trace);
+                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
+                    MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                    runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                }
 
                 // Install packages
-                _engine.Trace.Verbose("Installing packages...");
-                indent = _engine.Trace.Indent();
-                _packages.InstallPackages(updatePackages);
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Packages installed.");
+                using (_engine.Trace.WithIndent().Verbose("Installing packages"))
+                {
+                    _packages.InstallPackages(updatePackages);
+                }
             }
             catch (Exception ex)
             {
-                _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Unexpected error during setup: {0}", ex.Message);
                 throw;
             }
@@ -184,52 +179,50 @@ namespace Wyam.Core.Configuration
 
         private void Config(string declarations, string code)
         {
-            _engine.Trace.Verbose("Initializing scripting environment...");
-            int indent = _engine.Trace.Indent();
             try
             {
-                HashSet<string> namespaces = new HashSet<string>()
+                HashSet<string> namespaces;
+                HashSet<Type> moduleTypes;
+                using (_engine.Trace.WithIndent().Verbose("Initializing scripting environment"))
                 {
-                    "System",
-                    "System.Collections.Generic",
-                    "System.Linq",
-                    "System.IO",
-                    "System.Diagnostics",
-                    "Wyam.Core",
-                    "Wyam.Core.Configuration",
-                    "Wyam.Core.Modules",
-                    "Wyam.Core.Helpers",
-                    "Wyam.Abstractions"
-                };
+                    namespaces = new HashSet<string>()
+                    {
+                        "System",
+                        "System.Collections.Generic",
+                        "System.Linq",
+                        "System.IO",
+                        "System.Diagnostics",
+                        "Wyam.Core",
+                        "Wyam.Core.Configuration",
+                        "Wyam.Core.Modules",
+                        "Wyam.Core.Helpers",
+                        "Wyam.Abstractions"
+                    };
 
-                // Add specified assemblies from packages, etc.
-                GetAssemblies();
+                    // Add specified assemblies from packages, etc.
+                    GetAssemblies();
 
-                // Get modules
-                HashSet<Type> moduleTypes = GetModules(namespaces);
+                    // Get modules
+                    moduleTypes = GetModules(namespaces);
+                }
 
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Initialized scripting environment.");
-                _engine.Trace.Verbose("Evaluating configuration script...");
-                indent = _engine.Trace.Indent();
+                using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
+                {
 
-                // Generate the script
-                code = GenerateScript(declarations, code, moduleTypes, namespaces);
+                    // Generate the script
+                    code = GenerateScript(declarations, code, moduleTypes, namespaces);
 
-                // Load the dynamic assembly and invoke
-                _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
-                _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                _configAssemblyFullName = _setupAssembly.FullName;
-                var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
-                MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
-
-                _engine.Trace.IndentLevel = indent;
-                _engine.Trace.Verbose("Evaluated configuration script.");
+                    // Load the dynamic assembly and invoke
+                    _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
+                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                    _configAssemblyFullName = _setupAssembly.FullName;
+                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                    MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                    runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                }
             }
             catch (Exception ex)
             {
-                _engine.Trace.IndentLevel = indent;
                 _engine.Trace.Error("Unexpected error during configuration evaluation: {0}", ex.Message);
                 throw;
             }
@@ -290,11 +283,11 @@ namespace Wyam.Core.Configuration
             {
                 try
                 {
-                    _engine.Trace.Verbose("Loading assembly file {0}.", assemblyPath);
+                    _engine.Trace.Verbose("Loading assembly file {0}", assemblyPath);
                     Assembly assembly = Assembly.LoadFrom(assemblyPath);
                     if (!AddAssembly(assembly))
                     {
-                        _engine.Trace.Verbose("Skipping assembly file {0} because it was already added.", assemblyPath);
+                        _engine.Trace.Verbose("Skipping assembly file {0} because it was already added", assemblyPath);
                     }
                     else
                     {
@@ -303,7 +296,7 @@ namespace Wyam.Core.Configuration
                 }
                 catch (Exception ex)
                 {
-                    _engine.Trace.Verbose("{0} exception while loading assembly file {1}: {2}.", ex.GetType().Name, assemblyPath, ex.Message);
+                    _engine.Trace.Verbose("{0} exception while loading assembly file {1}: {2}", ex.GetType().Name, assemblyPath, ex.Message);
                 }
             }
 
@@ -312,11 +305,11 @@ namespace Wyam.Core.Configuration
             {
                 try
                 {
-                    _engine.Trace.Verbose("Loading assembly {0}.", assemblyName);
+                    _engine.Trace.Verbose("Loading assembly {0}", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
                     if (!AddAssembly(assembly))
                     {
-                        _engine.Trace.Verbose("Skipping assembly {0} because it was already added.", assemblyName);
+                        _engine.Trace.Verbose("Skipping assembly {0} because it was already added", assemblyName);
                     }
                     else
                     {
@@ -325,7 +318,7 @@ namespace Wyam.Core.Configuration
                 }
                 catch (Exception ex)
                 {
-                    _engine.Trace.Verbose("{0} exception while loading assembly {1}: {2}.", ex.GetType().Name, assemblyName, ex.Message);
+                    _engine.Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
             }
         }
@@ -336,14 +329,14 @@ namespace Wyam.Core.Configuration
             {
                 try
                 {
-                    _engine.Trace.Verbose("Loading referenced assembly {0}.", assemblyName);
+                    _engine.Trace.Verbose("Loading referenced assembly {0}", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
                     AddAssembly(assembly);
                     LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                 }
                 catch (Exception ex)
                 {
-                    _engine.Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}.", ex.GetType().Name, assemblyName, ex.Message);
+                    _engine.Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
                 
             }
@@ -383,16 +376,16 @@ namespace Wyam.Core.Configuration
             HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in _assemblies.Values)
             {
-                _engine.Trace.Verbose("Searching for modules in assembly {0}...", assembly.FullName);
-                int indent = _engine.Trace.Indent();
-                foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
-                    && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
+                using (_engine.Trace.WithIndent().Verbose("Searching for modules in assembly {0}", assembly.FullName))
                 {
-                    _engine.Trace.Verbose("Found module {0} in assembly {1}.", moduleType.Name, assembly.FullName);
-                    moduleTypes.Add(moduleType);
-                    namespaces.Add(moduleType.Namespace);
+                    foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
+                        && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
+                    {
+                        _engine.Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
+                        moduleTypes.Add(moduleType);
+                        namespaces.Add(moduleType.Namespace);
+                    }
                 }
-                _engine.Trace.IndentLevel = indent;
             }
             return moduleTypes;
         }

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="IDocumentCollection.cs" />
+    <Compile Include="IIndentedTraceEvent.cs" />
     <Compile Include="IMetadata.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="IDocument.cs" />

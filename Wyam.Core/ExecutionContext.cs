@@ -22,7 +22,7 @@ namespace Wyam.Core
         public string RootFolder => _engine.RootFolder;
         public string InputFolder => _engine.InputFolder;
         public string OutputFolder => _engine.OutputFolder;
-        public IExecutionCache ExecutionCache => _engine.ExecutionCacheManager.Get(Module);
+        public IExecutionCache ExecutionCache => _engine.ExecutionCacheManager.Get(Module, _engine);
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {

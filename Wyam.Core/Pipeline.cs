@@ -121,26 +121,25 @@ namespace Wyam.Core
             foreach (IModule module in modules.Where(x => x != null))
             {
                 string moduleName = module.GetType().Name;
-                _engine.Trace.Verbose("Executing module {0} with {1} input document(s)...", moduleName, documents.Count);
-                int indent = _engine.Trace.Indent();
-                try
+                using(_engine.Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Count))
                 {
-                    // Make sure we clone the output context if it's the same as the input
-                    context.Module = module;
-                    IEnumerable<IDocument> outputs = module.Execute(documents, context);
-                    documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
-                    _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
-                    _engine.Trace.IndentLevel = indent;
-                    _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s).", moduleName, documents.Count);
-                }
-                catch (Exception ex)
-                {
-                    _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
-                    _engine.Trace.Verbose(ex.ToString());
-                    _engine.Trace.IndentLevel = indent;
-                    documents = new List<IDocument>();
-                    _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
-                    break;
+                    try
+                    {
+                        // Make sure we clone the output context if it's the same as the input
+                        context.Module = module;
+                        IEnumerable<IDocument> outputs = module.Execute(documents, context);
+                        documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
+                        _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
+                        _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s)", moduleName, documents.Count);
+                    }
+                    catch (Exception ex)
+                    {
+                        _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
+                        _engine.Trace.Verbose(ex.ToString());
+                        documents = new List<IDocument>();
+                        _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
+                        break;
+                    }
                 }
             }
             return documents.AsReadOnly();

@@ -64,25 +64,22 @@ namespace Wyam.Core.Modules
                 string path = input.String(MetadataKeys.WritePath);
                 if (path != null)
                 {
-                    path = Path.GetFullPath(Path.Combine(context.OutputFolder, PathHelper.NormalizePath(path)));
+                    path = PathHelper.NormalizePath(path);
                 }
 
                 // WriteFileName
                 if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
                     && input.ContainsKey(MetadataKeys.RelativeFileDir))
                 {
-                    path = Path.GetFullPath(
-                        Path.Combine(input.String(MetadataKeys.RelativeFileDir), 
-                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName))));
+                    path = Path.Combine(input.String(MetadataKeys.RelativeFileDir), 
+                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
                 }
 
                 // WriteExtension
                 if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
                     && input.ContainsKey(MetadataKeys.RelativeFilePath))
                 {
-                    path = Path.GetFullPath(
-                        Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
-                        input.String(MetadataKeys.WriteExtension)));
+                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath), input.String(MetadataKeys.WriteExtension));
                 }
 
                 // Func

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNet.Html.Abstractions;
+using Wyam.Modules.Razor.Microsoft.AspNet.Html.Abstractions;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering

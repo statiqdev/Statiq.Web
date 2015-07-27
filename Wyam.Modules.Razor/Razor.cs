@@ -68,14 +68,18 @@ namespace Wyam.Modules.Razor
                     {
                         relativePath += x.String(MetadataKeys.RelativeFilePath);
                     }
-                    ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
 
-                    using (StringWriter writer = new StringWriter())
+                    using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", relativePath))
                     {
-                        viewContext.View = viewEngineResult.View;
-                        viewContext.Writer = writer;
-                        AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
-                        return x.Clone(writer.ToString());
+                        ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
+
+                        using (StringWriter writer = new StringWriter())
+                        {
+                            viewContext.View = viewEngineResult.View;
+                            viewContext.Writer = writer;
+                            AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
+                            return x.Clone(writer.ToString());
+                        }
                     }
                 });
         }

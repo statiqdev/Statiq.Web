@@ -20,5 +20,6 @@ namespace Wyam.Abstractions
         void TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args);
         int Indent();  // Returns the pre-incremented indent
         int IndentLevel { get; set; }
+        IIndentedTraceEvent WithIndent();
     }
 }

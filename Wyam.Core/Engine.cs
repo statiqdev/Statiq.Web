@@ -15,6 +15,7 @@ using Wyam.Core.NuGet;
 using Wyam.Abstractions;
 using Wyam.Core.Caching;
 using Wyam.Core.Helpers;
+using Wyam.Core.Tracing;
 
 namespace Wyam.Core
 {
@@ -50,7 +51,7 @@ namespace Wyam.Core
             get { return _pipelines; }
         }
 
-        private readonly Trace _trace = new Trace();
+        private readonly Tracing.Trace _trace = new Tracing.Trace();
 
         public ITrace Trace
         {
@@ -72,6 +73,12 @@ namespace Wyam.Core
         internal ExecutionCacheManager ExecutionCacheManager
         {
             get { return _executionCacheManager; }
+        }
+
+        public bool NoCache
+        {
+            get { return _executionCacheManager.NoCache; }
+            set { _executionCacheManager.NoCache = value; }
         }
         
         private string _rootFolder = Environment.CurrentDirectory;
@@ -175,33 +182,29 @@ namespace Wyam.Core
             {
                 Directory.CreateDirectory(OutputFolder);
             }
-
-            int outerIndent = Trace.IndentLevel;
+            
             try
             {
-                Trace.Information("Executing {0} pipelines...", _pipelines.Count);
-                outerIndent = Trace.Indent();
-                _documents.Clear();
-                _executionCacheManager.ResetEntryHits();
-                int c = 1;
-                foreach(Pipeline pipeline in _pipelines.Pipelines)
+                using (Trace.WithIndent().Information("Executing {0} pipelines", _pipelines.Count))
                 {
-                    Trace.Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)...", pipeline.Name, c, _pipelines.Count, pipeline.Count);
-                    int indent = Trace.Indent();
-                    string pipelineName = pipeline.Name;
-                    pipeline.Execute();
-                    Trace.IndentLevel = indent;
-                    Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s).", 
-                        pipeline.Name, c++, _pipelines.Count, _documents.FromPipeline(pipelineName).Count());
+                    _documents.Clear();
+                    _executionCacheManager.ResetEntryHits();
+                    int c = 1;
+                    foreach(Pipeline pipeline in _pipelines.Pipelines)
+                    {
+                        using (Trace.WithIndent().Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)", pipeline.Name, c, _pipelines.Count, pipeline.Count))
+                        {
+                            pipeline.Execute();
+                        }
+                        Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s)", 
+                            pipeline.Name, c++, _pipelines.Count, _documents.FromPipeline(pipeline.Name).Count());
+                    }
+                    _executionCacheManager.ClearUnhitEntries();
                 }
-                _executionCacheManager.ClearUnhitEntries();
-                Trace.IndentLevel = outerIndent;
-                Trace.Information("Executed {0} pipelines.", _pipelines.Count);
             }
             catch (Exception ex)
             {
-                Trace.IndentLevel = outerIndent;
-                Trace.Verbose("Exception: {0}", ex);
+                Trace.Verbose("Exception while executing pipelines: {0}", ex);
                 throw;
             }
         }
