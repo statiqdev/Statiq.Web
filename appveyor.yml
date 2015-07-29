@@ -8,6 +8,7 @@ init:
   - git config --global core.autocrlf true
 
 before_build:
+  - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
   - nuget restore
   
 build:
