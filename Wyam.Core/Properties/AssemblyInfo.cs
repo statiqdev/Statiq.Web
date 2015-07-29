@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.7.0.0")]
 [assembly: AssemblyFileVersion("0.7.0.0")]
-[assembly: AssemblyInformationalVersion("0.7.0")]  // Also update RELEASE file when changing version
+[assembly: AssemblyInformationalVersion("0.7.0-beta")]  // Also update RELEASE file when changing version
