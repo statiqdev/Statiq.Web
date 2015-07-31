@@ -4,12 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Razor;
-using Microsoft.AspNet.Razor.Generator;
-using Microsoft.AspNet.Razor.Parser.SyntaxTree;
-using Wyam.Core;
 using Wyam.Abstractions;
-using Wyam.Core.Helpers;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -57,16 +52,15 @@ namespace Wyam.Modules.Razor
                 .Where(x => _ignorePrefix == null || !x.ContainsKey("SourceFileName") || !x.String("SourceFileName").StartsWith(_ignorePrefix))
                 .Select(x =>
                 {
-                    IViewStartProvider viewStartProvider = new ViewStartProvider(
-                        pageFactory, _viewStartPath == null ? null : _viewStartPath(x));
+                    IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke(x));
                     IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                     IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
 
                     ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
                     string relativePath = "/";
-                    if (x.ContainsKey(MetadataKeys.RelativeFilePath))
+                    if (x.ContainsKey("RelativeFilePath"))
                     {
-                        relativePath += x.String(MetadataKeys.RelativeFilePath);
+                        relativePath += x.String("RelativeFilePath");
                     }
 
                     using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", relativePath))

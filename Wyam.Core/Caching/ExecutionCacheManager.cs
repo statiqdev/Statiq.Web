@@ -49,9 +49,9 @@ namespace Wyam.Core.Caching
 
         public void ClearUnhitEntries()
         {
-            foreach (ExecutionCache cache in _executionCaches.Values)
+            foreach (KeyValuePair<IModule, ExecutionCache> item in _executionCaches)
             {
-                cache.ClearUnhitEntries();
+                item.Value.ClearUnhitEntries(item.Key);
             }
         }
     }

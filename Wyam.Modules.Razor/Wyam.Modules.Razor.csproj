@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncHelper.cs" />
     <Compile Include="BaseRazorPage.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
     <Compile Include="DocumentFileProvider.cs" />
@@ -114,10 +115,6 @@
     <Compile Include="Razor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
-      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
-      <Name>Wyam.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Wyam.Abstractions\Wyam.Abstractions.csproj">
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
       <Name>Wyam.Abstractions</Name>

@@ -87,7 +87,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncHelper.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />

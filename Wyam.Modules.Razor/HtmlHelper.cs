@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Modules.Razor.Microsoft.AspNet.Html.Abstractions;
-using Wyam.Core;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;

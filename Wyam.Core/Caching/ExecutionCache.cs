@@ -55,11 +55,15 @@ namespace Wyam.Core.Caching
             {
                 entry.Hit = true;
                 value = (TValue)entry.Value;
-                _engine.Trace.Verbose("Cache hit for key {0}", key.Length <= 128 ? key : key.Substring(0, 128));
+                _engine.Trace.Verbose("Cache hit for key: {0}", key.Length <= 96 
+                    ? key.Replace('\r', ' ').Replace('\n', ' ') 
+                    : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
                 return true;
             }
             value = default(TValue);
-            _engine.Trace.Verbose("Cache miss for key {0}", key.Length <= 128 ? key : key.Substring(0, 128));
+            _engine.Trace.Verbose("Cache miss for key: {0}", key.Length <= 96
+                ? key.Replace('\r', ' ').Replace('\n', ' ') 
+                : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
             return false;
         }
 
@@ -75,7 +79,9 @@ namespace Wyam.Core.Caching
                 Value = value,
                 Hit = true
             };
-            _engine.Trace.Verbose("Cache set value for key {0}", key.Length <= 128 ? key : key.Substring(0, 128));
+            _engine.Trace.Verbose("Cache set for key: {0}", key.Length <= 96
+                ? key.Replace('\r', ' ').Replace('\n', ' ') 
+                : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
         }
 
         public void ResetEntryHits()
@@ -86,12 +92,12 @@ namespace Wyam.Core.Caching
             }
         }
 
-        public void ClearUnhitEntries()
+        public void ClearUnhitEntries(IModule module)
         {
             // Faster just to reset the dictionary then iterate twice, once to get keys to remove and again to actually remove
             int count = _cache.Count;
             _cache = _cache.Where(x => x.Value.Hit).ToDictionary(x => x.Key, x => x.Value);
-            _engine.Trace.Verbose("Removed {0} stale cache entries", count - _cache.Count);
+            _engine.Trace.Verbose("Removed {0} stale cache entries for module {1}", count - _cache.Count, module.GetType().Name);
         }
     }
 }
