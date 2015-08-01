@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Abstractions;
 using Wyam.Core.Helpers;
 
@@ -76,7 +74,6 @@ namespace Wyam.Core.Modules
 
         ISupportedImageFormat GetFormat(string extension)
         {
-            // Format is automatically detected though can be changed.
             ISupportedImageFormat format = null;
 
             if (extension == ".jpg" || extension == ".jpeg")
@@ -132,11 +129,10 @@ namespace Wyam.Core.Modules
 
                     context.Trace.Verbose($"Sending processed image to {processedDestination}");
 
-                    using (MemoryStream inStream = new MemoryStream(photoBytes))
+                    using (var inStream = new MemoryStream(photoBytes))
                     {
-                        using (MemoryStream outStream = new MemoryStream())
+                        using (var outStream = new MemoryStream())
                         {
-                            // Initialize the ImageFactory using the overload to preserve EXIF metadata.
                             using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
                             {
                                 // Load, resize, set the format and quality and save an image.
@@ -157,6 +153,7 @@ namespace Wyam.Core.Modules
                                 {
                                     fac.Resize(ins.GetSize());
                                 }
+
                                 fac.Save(outStream);
                             }
 
@@ -229,8 +226,6 @@ namespace Wyam.Core.Modules
             return this;
         }
 
-
-        // Input to function is the full file path (including file name), should return a full file path (including file name)
         public ProcessFiles To(Func<string, string> destinationPath)
         {
             if (destinationPath == null)
@@ -264,39 +259,9 @@ namespace Wyam.Core.Modules
                                 [MetadataKeys.SourceFileExt] = ext,
                                 [MetadataKeys.Base64] = true
                             });
-
-
-            context.Trace.Verbose("Document counts " + documents.Count());
-
+            
             context.Execute(_modules, documents);
             return inputs;
-
-            //foreach (IDocument input in inputs)
-            //{
-            //    string path = _sourcePath(input);
-            //    if (path != null)
-            //    {
-            //        path = Path.Combine(context.InputFolder, path);
-            //        string fileRoot = Path.GetDirectoryName(path);
-            //        if (fileRoot != null && Directory.Exists(fileRoot))
-            //        {
-            //            foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
-            //            {
-            //                var extension = Path.GetExtension(file);
-
-            //                byte[] photoBytes = File.ReadAllBytes(file);
-
-            //                yield return input.Clone(Convert.ToBase64String(photoBytes), new Dictionary<string, object>
-            //                {
-            //                    {MetadataKeys.SourceFilePath, file},
-            //                    {MetadataKeys.SourceFileExt, extension},
-            //                    {MetadataKeys.Base64, true }
-            //                });
-            //            }
-            //        }
-            //    }
-            //}
-
         }
     }
 }
