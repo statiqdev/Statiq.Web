@@ -91,9 +91,9 @@ namespace Wyam.Core.Modules
         {
             foreach (IDocument input in inputs.AsParallel())
             {
-                bool isHex = input.Get<bool>(MetadataKeys.Base64);
+                bool isBase64 = input.Get<bool>(MetadataKeys.Base64);
 
-                if (!isHex)
+                if (!isBase64)
                     continue;
 
                 var path = input.Get<string>(MetadataKeys.SourceFilePath);
