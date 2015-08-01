@@ -26,6 +26,7 @@ namespace Wyam.Core
         public const string DestinationFileDir = "DestinationFileDir";
         public const string DestinationFilePath = "DestinationFilePath";
         public const string DestinationFilePathBase = "DestinationFilePathBase";
+        public const string Base64 = "Base64";
         public const string WriteExtension = "WriteExtension";
         public const string WriteFileName = "WriteFileName";
         public const string WritePath = "WritePath";
