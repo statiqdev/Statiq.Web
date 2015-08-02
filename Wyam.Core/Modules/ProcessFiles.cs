@@ -1,5 +1,6 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging;
+using ImageProcessor.Imaging.Filters.Photo;
 using ImageProcessor.Imaging.Formats;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,20 @@ using Wyam.Core.Helpers;
 
 namespace Wyam.Core.Modules
 {
+
+    public enum ImageFilter
+    {
+        Sepia,
+        BlackAndWhite
+    }
+
     public class ImageInstruction
     {
         public int? Width { get; set; }
 
         public int? Height { get; set; }
+
+        public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
         public ImageInstruction()
         {
@@ -42,7 +52,7 @@ namespace Wyam.Core.Modules
             else
                 return new Size(0, Height.Value);
         }
-        
+
         public bool IsCropRequired
         {
             get
@@ -62,6 +72,16 @@ namespace Wyam.Core.Modules
 
             return suffix;
         }
+
+        public IMatrixFilter GetMatrixFilter(ImageFilter filter)
+        {
+            switch (filter)
+            {
+                case ImageFilter.Sepia: return MatrixFilters.Sepia;
+                case ImageFilter.BlackAndWhite: return MatrixFilters.BlackWhite;
+                default: return MatrixFilters.Comic;
+            }
+        }
     }
 
     public class ImageProcessor : IModule
@@ -72,6 +92,9 @@ namespace Wyam.Core.Modules
 
         List<ImageInstruction> _instructions;
 
+        ImageInstruction _currentInstruction;
+        private readonly object MatrixFilters;
+
         public ImageProcessor()
         {
             _instructions = new List<ImageInstruction>();
@@ -79,10 +102,39 @@ namespace Wyam.Core.Modules
 
         public ImageProcessor Resize(int? width, int? height)
         {
-            var instruction = new ImageInstruction(width, height);
-            _instructions.Add(instruction);
+            if (_currentInstruction == null)
+            {
+                _currentInstruction = new ImageInstruction(width, height);
+                _instructions.Add(_currentInstruction);
+            }
+            else
+            {
+                _currentInstruction.Width = width;
+                _currentInstruction.Height = height;
+            }
 
             return this;
+        }
+
+        public ImageProcessor ApplyFilter(ImageFilter filter)
+        {
+            if (_currentInstruction == null)
+            {
+                _currentInstruction = new ImageInstruction();
+            }
+
+            _currentInstruction.Filters.Add(filter);
+
+            return this;
+        }
+
+        public ImageProcessor And
+        {
+            get
+            {
+                _currentInstruction = null;
+                return this;
+            }
         }
 
         ISupportedImageFormat GetFormat(string extension)
@@ -165,6 +217,11 @@ namespace Wyam.Core.Modules
                                 else
                                 {
                                     fac.Resize(ins.GetSize());
+                                }
+
+                                foreach (var f in ins.Filters)
+                                {
+                                    fac.Filter(ins.GetMatrixFilter(f));
                                 }
 
                                 fac.Save(outStream);
@@ -268,7 +325,7 @@ namespace Wyam.Core.Modules
                                 [MetadataKeys.SourceFileExt] = ext,
                                 [MetadataKeys.Base64] = true
                             });
-            
+
             return documents;
         }
     }
