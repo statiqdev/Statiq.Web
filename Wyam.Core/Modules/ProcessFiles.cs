@@ -13,9 +13,14 @@ namespace Wyam.Core.Modules
 {
     public class ImageInstruction
     {
-        int? _width { get; set; }
+        public int? Width { get; set; }
 
-        int? _height { get; set; }
+        public int? Height { get; set; }
+
+        public ImageInstruction()
+        {
+
+        }
 
         public ImageInstruction(int? width, int? height)
         {
@@ -24,36 +29,36 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException($"{nameof(width)} or {nameof(height)} needs to be specified");
             }
 
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
         }
 
         public Size GetSize()
         {
-            if (_width.HasValue && _height.HasValue)
-                return new Size(_width.Value, _height.Value);
-            else if (_width.HasValue)
-                return new Size(_width.Value, 0);
+            if (Width.HasValue && Height.HasValue)
+                return new Size(Width.Value, Height.Value);
+            else if (Width.HasValue)
+                return new Size(Width.Value, 0);
             else
-                return new Size(0, _height.Value);
+                return new Size(0, Height.Value);
         }
         
         public bool IsCropRequired
         {
             get
             {
-                return _width.HasValue && _height.HasValue;
+                return Width.HasValue && Height.HasValue;
             }
         }
 
         public string GetSuffix()
         {
             string suffix = "";
-            if (_width.HasValue)
-                suffix += "-w" + _width.Value;
+            if (Width.HasValue)
+                suffix += "-w" + Width.Value;
 
-            if (_height.HasValue)
-                suffix += "-h" + _height.Value;
+            if (Height.HasValue)
+                suffix += "-h" + Height.Value;
 
             return suffix;
         }
@@ -65,11 +70,19 @@ namespace Wyam.Core.Modules
 
         int? _height { get; set; }
 
-        ImageInstruction[] _instructions;
+        List<ImageInstruction> _instructions;
 
-        public ImageProcessor(params ImageInstruction[] instructions)
+        public ImageProcessor()
         {
-            _instructions = instructions;
+            _instructions = new List<ImageInstruction>();
+        }
+
+        public ImageProcessor Resize(int? width, int? height)
+        {
+            var instruction = new ImageInstruction(width, height);
+            _instructions.Add(instruction);
+
+            return this;
         }
 
         ISupportedImageFormat GetFormat(string extension)
