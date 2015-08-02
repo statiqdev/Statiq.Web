@@ -178,8 +178,6 @@ namespace Wyam.Core.Modules
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _where = null;
 
-        private IModule[] _modules;
-
         public ProcessFiles(Func<IDocument, string> sourcePath)
         {
             if (sourcePath == null)
@@ -190,7 +188,7 @@ namespace Wyam.Core.Modules
             _sourcePath = sourcePath;
         }
 
-        public ProcessFiles(string searchPattern, params IModule[] modules)
+        public ProcessFiles(string searchPattern)
         {
             if (searchPattern == null)
             {
@@ -198,8 +196,6 @@ namespace Wyam.Core.Modules
             }
 
             _sourcePath = m => searchPattern;
-
-            _modules = modules;
         }
 
         public ProcessFiles SearchOption(SearchOption searchOption)
@@ -260,8 +256,7 @@ namespace Wyam.Core.Modules
                                 [MetadataKeys.Base64] = true
                             });
             
-            context.Execute(_modules, documents);
-            return inputs;
+            return documents;
         }
     }
 }
