@@ -12,11 +12,18 @@ using Wyam.Core.Helpers;
 
 namespace Wyam.Core.Modules
 {
-
     public enum ImageFilter
     {
+        BlackAndWhite,
+        Comic,
+        Gotham,
+        GreyScale,
+        HiSatch,
+        Invert,
+        Lomograph,
+        LoSatch,
+        Polariod,
         Sepia,
-        BlackAndWhite
     }
 
     public class ImageInstruction
@@ -77,8 +84,16 @@ namespace Wyam.Core.Modules
         {
             switch (filter)
             {
-                case ImageFilter.Sepia: return MatrixFilters.Sepia;
                 case ImageFilter.BlackAndWhite: return MatrixFilters.BlackWhite;
+                case ImageFilter.Comic: return MatrixFilters.Comic;
+                case ImageFilter.Gotham: return MatrixFilters.Gotham;
+                case ImageFilter.GreyScale: return MatrixFilters.GreyScale;
+                case ImageFilter.HiSatch: return MatrixFilters.HiSatch;
+                case ImageFilter.Invert: return MatrixFilters.Invert;
+                case ImageFilter.Lomograph: return MatrixFilters.Lomograph;
+                case ImageFilter.LoSatch: return MatrixFilters.LoSatch;
+                case ImageFilter.Polariod: return MatrixFilters.Polaroid;
+                case ImageFilter.Sepia: return MatrixFilters.Sepia;
                 default: return MatrixFilters.Comic;
             }
         }
