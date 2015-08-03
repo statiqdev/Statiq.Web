@@ -11,42 +11,50 @@ namespace Wyam.Core
     internal class Document : IDocument
     {
         private readonly Metadata _metadata;
-        private readonly string _content = string.Empty;
+
+        public string Source { get; } = "Initial Document";
+        public IMetadata Metadata => _metadata;
+        public string Content { get; } = string.Empty;
 
         internal Document(Metadata metadata)
         {
             _metadata = metadata;
         }
 
-        private Document(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        private Document(string source, Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                throw new ArgumentException(nameof(source));
+            }
+
+            Source = source;
             _metadata = metadata.Clone(items);
-            _content = content ?? string.Empty;
+            Content = content ?? string.Empty;
         }
 
-        public IMetadata Metadata
-        {
-            get { return _metadata; }
-        }
-
-        public string Content
-        {
-            get { return _content; }
-        }
-        
         public override string ToString()
         {
             return Content;
         }
 
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return new Document(source, _metadata, content, items);
+        }
+
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(_metadata, content, items);
+            return new Document(Source, _metadata, content, items);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return Clone(_content, items);
+            return Clone(Content, items);
         }
 
         // IMetadata
@@ -71,20 +79,11 @@ namespace Wyam.Core
             return _metadata.TryGetValue(key, out value);
         }
 
-        public object this[string key]
-        {
-            get { return _metadata[key]; }
-        }
+        public object this[string key] => _metadata[key];
 
-        public IEnumerable<string> Keys
-        {
-            get { return _metadata.Keys; }
-        }
+        public IEnumerable<string> Keys => _metadata.Keys;
 
-        public IEnumerable<object> Values
-        {
-            get { return _metadata.Values; }
-        }
+        public IEnumerable<object> Values => _metadata.Values;
 
         public IMetadata<T> MetadataAs<T>()
         {
@@ -116,9 +115,6 @@ namespace Wyam.Core
             return _metadata.Link(key, defaultValue);
         }
 
-        public int Count
-        {
-            get { return _metadata.Count; }
-        }
+        public int Count => _metadata.Count;
     }
 }

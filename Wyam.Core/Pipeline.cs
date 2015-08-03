@@ -10,31 +10,27 @@ namespace Wyam.Core
 {
     internal class Pipeline : IPipeline
     {
-        private readonly string _name;
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
+
+        public string Name { get; }
 
         public Pipeline(string name, Engine engine, IModule[] modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("name");
+                throw new ArgumentException(nameof(name));
             }
             if (engine == null)
             {
-                throw new ArgumentNullException("engine");
+                throw new ArgumentNullException(nameof(engine));
             }
-            _name = name;
+            Name = name;
             _engine = engine;
             if (modules != null)
             {
                 _modules.AddRange(modules);
             }
-        }
-
-        public string Name
-        {
-            get { return _name; }
         }
 
         public void Add(IModule item)
@@ -67,15 +63,9 @@ namespace Wyam.Core
             return _modules.Remove(item);
         }
 
-        public int Count
-        {
-            get { return _modules.Count; }
-        }
+        public int Count => _modules.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public IEnumerator<IModule> GetEnumerator()
         {
@@ -115,8 +105,7 @@ namespace Wyam.Core
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
-            List<IDocument> documents = inputDocuments == null
-                ? new List<IDocument> { new Document(new Metadata(_engine)) } : inputDocuments.ToList();
+            List<IDocument> documents = inputDocuments?.ToList() ?? new List<IDocument> { new Document(new Metadata(_engine)) };
             ExecutionContext context = new ExecutionContext(_engine, this);
             foreach (IModule module in modules.Where(x => x != null))
             {
@@ -128,7 +117,7 @@ namespace Wyam.Core
                         // Make sure we clone the output context if it's the same as the input
                         context.Module = module;
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
-                        documents = outputs == null ? new List<IDocument>() : outputs.Where(x => x != null).ToList();
+                        documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();
                         _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
                         _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s)", moduleName, documents.Count);
                     }

@@ -42,7 +42,7 @@ namespace Wyam.Modules.Less
                     engine.CurrentDirectory = context.InputFolder;
                     fileName = Path.GetRandomFileName();
                 }
-                using (context.Trace.WithIndent().Verbose("Processing Less for {0}", path ?? "inline content"))
+                using (context.Trace.WithIndent().Verbose("Processing Less for {0}", x.Source))
                 {
                     string content = engine.TransformToCss(x.Content, fileName);
                     return x.Clone(content);

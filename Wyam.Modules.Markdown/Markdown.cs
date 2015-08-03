@@ -13,8 +13,7 @@ namespace Wyam.Modules.Markdown
         {
             return inputs.Select(x =>
             {
-                string source = x.String("RelativeFilePath", "explicit content");
-                using (context.Trace.WithIndent().Verbose("Processing Markdown for {0}", source))
+                using (context.Trace.WithIndent().Verbose("Processing Markdown for {0}", x.Source))
                 {
                     string result;
                     IExecutionCache executionCache = context.ExecutionCache;
