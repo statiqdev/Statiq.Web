@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Examples.Tests", "Wyam.Examples.Tests\Wyam.Examples.Tests.csproj", "{6BDD24AD-D0CE-4B76-BC20-128299237505}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Less", "Wyam.Modules.Less\Wyam.Modules.Less.csproj", "{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.ImageProcessor", "Wyam.Modules.ImageProcessor\Wyam.Modules.ImageProcessor.csproj", "{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

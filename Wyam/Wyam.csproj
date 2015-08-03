@@ -89,6 +89,10 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.ImageProcessor\Wyam.Modules.ImageProcessor.csproj">
+      <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
+      <Name>Wyam.Modules.ImageProcessor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Less\Wyam.Modules.Less.csproj">
       <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
       <Name>Wyam.Modules.Less</Name>
