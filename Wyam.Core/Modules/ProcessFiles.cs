@@ -39,17 +39,6 @@ namespace Wyam.Core.Modules
 
         }
 
-        public ImageInstruction(int? width, int? height)
-        {
-            if (!width.HasValue && !height.HasValue)
-            {
-                throw new ArgumentNullException($"{nameof(width)} or {nameof(height)} needs to be specified");
-            }
-
-            Width = width;
-            Height = height;
-        }
-
         public Size GetSize()
         {
             if (Width.HasValue && Height.HasValue)
@@ -77,6 +66,11 @@ namespace Wyam.Core.Modules
             if (Height.HasValue)
                 suffix += "-h" + Height.Value;
 
+            foreach (var f in Filters)
+            {
+                suffix += $"-{f.ToString().ToLower()}";
+            }
+
             return suffix;
         }
 
@@ -101,42 +95,37 @@ namespace Wyam.Core.Modules
 
     public class ImageProcessor : IModule
     {
-        int? _width { get; set; }
-
-        int? _height { get; set; }
-
         List<ImageInstruction> _instructions;
 
         ImageInstruction _currentInstruction;
-        private readonly object MatrixFilters;
 
         public ImageProcessor()
         {
             _instructions = new List<ImageInstruction>();
         }
 
-        public ImageProcessor Resize(int? width, int? height)
+        void EnsureCurrentInstruction()
         {
             if (_currentInstruction == null)
             {
-                _currentInstruction = new ImageInstruction(width, height);
+                _currentInstruction = new ImageInstruction();
                 _instructions.Add(_currentInstruction);
             }
-            else
-            {
-                _currentInstruction.Width = width;
-                _currentInstruction.Height = height;
-            }
+        }
+
+        public ImageProcessor Resize(int? width, int? height)
+        {
+            EnsureCurrentInstruction();
+                        
+            _currentInstruction.Width = width;
+            _currentInstruction.Height = height;
 
             return this;
         }
 
         public ImageProcessor ApplyFilter(ImageFilter filter)
         {
-            if (_currentInstruction == null)
-            {
-                _currentInstruction = new ImageInstruction();
-            }
+            EnsureCurrentInstruction();
 
             _currentInstruction.Filters.Add(filter);
 
@@ -213,7 +202,7 @@ namespace Wyam.Core.Modules
                     {
                         using (var outStream = new MemoryStream())
                         {
-                            using (ImageFactory imageFactory = new ImageFactory(preserveExifData: true))
+                            using (var imageFactory = new ImageFactory(preserveExifData: true))
                             {
                                 // Load, resize, set the format and quality and save an image.
                                 var fac = imageFactory.Load(inStream)
