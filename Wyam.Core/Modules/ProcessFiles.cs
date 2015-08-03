@@ -191,7 +191,7 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs.AsParallel())
+            foreach (IDocument input in inputs)
             {
                 bool isBase64 = input.Get<bool>(MetadataKeys.Base64);
 
@@ -267,6 +267,11 @@ namespace Wyam.Core.Modules
                         foreach (var f in ins.Filters)
                         {
                             fac.Filter(ins.GetMatrixFilter(f));
+                        }
+
+                        if (ins.Brightness.HasValue)
+                        {
+                            fac.Brightness(ins.Brightness.Value);
                         }
 
                         fac.Save(outStream);
