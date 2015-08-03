@@ -1,5 +1,5 @@
 ﻿using ImageProcessor;
-using img = ImageProcessor.Imaging;
+using ImageProcessor.Imaging;
 using ImageProcessor.Imaging.Formats;
 using System;
 using System.Collections.Generic;
@@ -41,11 +41,11 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor ApplyFilter(ImageFilter filter)
+        public ImageProcessor ApplyFilters(params ImageFilter[] filters)
         {
             EnsureCurrentInstruction();
 
-            _currentInstruction.Filters.Add(filter);
+            _currentInstruction.Filters.AddRange(filters);
 
             return this;
         }
@@ -142,7 +142,7 @@ namespace Wyam.Modules.ImageProcessor
             }
         }
 
-        void ProduceImage(Byte[] photoBytes, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
+        void ProduceImage(byte[] photoBytes, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
         {
             using (var inStream = new MemoryStream(photoBytes))
             {
@@ -156,10 +156,10 @@ namespace Wyam.Modules.ImageProcessor
 
                         if (ins.IsCropRequired)
                         {
-                            var layer = new img.ResizeLayer(
+                            var layer = new ResizeLayer(
                                 size: ins.GetSize(),
-                                anchorPosition: img.AnchorPosition.Center,
-                                resizeMode: img.ResizeMode.Crop
+                                anchorPosition: AnchorPosition.Center,
+                                resizeMode: ResizeMode.Crop
                                 );
 
                             fac.Resize(layer);
@@ -189,20 +189,6 @@ namespace Wyam.Modules.ImageProcessor
                     }
                 }
             }
-        }
-    }
-
-    internal class ResizeLayer
-    {
-        private object anchorPosition;
-        private object resizeMode;
-        private Size size;
-
-        public ResizeLayer(Size size, object anchorPosition, object resizeMode)
-        {
-            this.size = size;
-            this.anchorPosition = anchorPosition;
-            this.resizeMode = resizeMode;
         }
     }
 }
