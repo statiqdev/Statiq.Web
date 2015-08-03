@@ -32,6 +32,8 @@ namespace Wyam.Core.Modules
 
         public int? Height { get; set; }
 
+        public int? Brightness { get; set; }
+
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
         public ImageInstruction()
@@ -71,6 +73,16 @@ namespace Wyam.Core.Modules
                 suffix += $"-{f.ToString().ToLower()}";
             }
 
+            if (Brightness.HasValue && Brightness > 0)
+            {
+                suffix += $"-b{Brightness.Value}";
+            }
+
+            if (Brightness.HasValue && Brightness < 0)
+            {
+                suffix += $"-d{Brightness.Value * -1}"; //only shows positive number
+            }
+
             return suffix;
         }
 
@@ -91,6 +103,7 @@ namespace Wyam.Core.Modules
                 default: return MatrixFilters.Comic;
             }
         }
+       
     }
 
     public class ImageProcessor : IModule
@@ -128,6 +141,26 @@ namespace Wyam.Core.Modules
             EnsureCurrentInstruction();
 
             _currentInstruction.Filters.Add(filter);
+
+            return this;
+        }
+
+        public ImageProcessor Brighten(short percentage)
+        {
+            if (percentage < 0 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            _currentInstruction.Brightness = percentage;
+
+            return this;
+        }
+
+        public ImageProcessor Darken(short percentage)
+        {
+            if (percentage < 0 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            _currentInstruction.Brightness = -percentage;
 
             return this;
         }
@@ -194,53 +227,57 @@ namespace Wyam.Core.Modules
                     string destinationFile = Path.GetFileNameWithoutExtension(path);
                     destinationFile += ins.GetSuffix() + extension;
 
-                    var processedDestination = Path.Combine(destinationDirectory, destinationFile);
+                    var destinationPath = Path.Combine(destinationDirectory, destinationFile);
+                    context.Trace.Verbose($"Sending processed image to {destinationPath}");
 
-                    context.Trace.Verbose($"Sending processed image to {processedDestination}");
-
-                    using (var inStream = new MemoryStream(photoBytes))
-                    {
-                        using (var outStream = new MemoryStream())
-                        {
-                            using (var imageFactory = new ImageFactory(preserveExifData: true))
-                            {
-                                // Load, resize, set the format and quality and save an image.
-                                var fac = imageFactory.Load(inStream)
-                                            .Format(format);
-
-                                if (ins.IsCropRequired)
-                                {
-                                    var layer = new ResizeLayer(
-                                        size: ins.GetSize(),
-                                        anchorPosition: AnchorPosition.Center,
-                                        resizeMode: ResizeMode.Crop
-                                        );
-
-                                    fac.Resize(layer);
-                                }
-                                else
-                                {
-                                    fac.Resize(ins.GetSize());
-                                }
-
-                                foreach (var f in ins.Filters)
-                                {
-                                    fac.Filter(ins.GetMatrixFilter(f));
-                                }
-
-                                fac.Save(outStream);
-                            }
-
-                            outStream.Seek(0, SeekOrigin.Begin);
-                            using (var f = File.Create(processedDestination))
-                            {
-                                outStream.CopyTo(f);
-                            }
-                        }
-                    }
+                    ProduceImage(photoBytes, format, ins, destinationPath);
                 }
 
                 yield return input;
+            }
+        }
+
+        void ProduceImage(Byte[] photoBytes, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
+        {
+            using (var inStream = new MemoryStream(photoBytes))
+            {
+                using (var outStream = new MemoryStream())
+                {
+                    using (var imageFactory = new ImageFactory(preserveExifData: true))
+                    {
+                        // Load, resize, set the format and quality and save an image.
+                        var fac = imageFactory.Load(inStream)
+                                    .Format(format);
+
+                        if (ins.IsCropRequired)
+                        {
+                            var layer = new ResizeLayer(
+                                size: ins.GetSize(),
+                                anchorPosition: AnchorPosition.Center,
+                                resizeMode: ResizeMode.Crop
+                                );
+
+                            fac.Resize(layer);
+                        }
+                        else
+                        {
+                            fac.Resize(ins.GetSize());
+                        }
+
+                        foreach (var f in ins.Filters)
+                        {
+                            fac.Filter(ins.GetMatrixFilter(f));
+                        }
+
+                        fac.Save(outStream);
+                    }
+
+                    outStream.Seek(0, SeekOrigin.Begin);
+                    using (var f = File.Create(destinationPath))
+                    {
+                        outStream.CopyTo(f);
+                    }
+                }
             }
         }
     }
