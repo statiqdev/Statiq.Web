@@ -8,10 +8,12 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    internal class Pipeline : IPipeline
+    internal class Pipeline : IPipeline, IDisposable
     {
+        private readonly List<Document> _clonedDocuments = new List<Document>();
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
+        private bool _disposed;
 
         public string Name { get; }
 
@@ -102,10 +104,15 @@ namespace Wyam.Core
             get { return _modules[index]; }
             set { _modules[index] = value; }
         }
-
+        
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
-            List<IDocument> documents = inputDocuments?.ToList() ?? new List<IDocument> { new Document(new Metadata(_engine)) };
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Pipeline));
+            }
+
+            List<IDocument> documents = inputDocuments?.ToList() ?? new List<IDocument> { new Document(new Metadata(_engine), this) };
             ExecutionContext context = new ExecutionContext(_engine, this);
             foreach (IModule module in modules.Where(x => x != null))
             {
@@ -136,7 +143,46 @@ namespace Wyam.Core
 
         public void Execute()
         {
-            Execute(_modules, null);
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Pipeline));
+            }
+
+            ResetClonedDocuments();
+            IReadOnlyList<IDocument> resultDocuments = Execute(_modules, null);
+
+            // Dispose any documents that aren't part of the final collection for this pipeline
+            List<Document> disposedDocuments = new List<Document>();
+            foreach (Document document in _clonedDocuments.Where(x => !resultDocuments.Contains(x)))
+            {
+                document.Dispose();
+                disposedDocuments.Add(document);
+            }
+            foreach (Document document in disposedDocuments)
+            {
+                _clonedDocuments.Remove(document);
+            }
+        }
+
+        public void AddClonedDocument(Document document) => _clonedDocuments.Add(document);
+
+        public void ResetClonedDocuments()
+        {
+            foreach (Document document in _clonedDocuments)
+            {
+                document.Dispose();
+            }
+            _clonedDocuments.Clear();
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Pipeline));
+            }
+            _disposed = true;
+            ResetClonedDocuments();
         }
     }
 }

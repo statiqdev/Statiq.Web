@@ -48,8 +48,8 @@ namespace Wyam.Core.Tests.Modules
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
@@ -69,8 +69,8 @@ namespace Wyam.Core.Tests.Modules
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles("txt");
 
@@ -92,8 +92,8 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["SourceFileDir"] = @"TestFiles/Input/Subfolder";
             engine.Metadata["SourceFileBase"] = @"write-test";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles(x => null);
 
@@ -117,8 +117,8 @@ namespace Wyam.Core.Tests.Modules
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata).Clone("Test") };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles("txt");
 

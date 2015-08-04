@@ -49,8 +49,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input\";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles(searchPattern).SearchOption(searchOption);
 
@@ -69,8 +69,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles("*.txt");
 
@@ -89,8 +89,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles("*.txt");
 
@@ -109,8 +109,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles(@"Subfolder\*.txt");
 
@@ -129,8 +129,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
@@ -149,8 +149,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
@@ -177,8 +177,8 @@ namespace Wyam.Core.Tests.Modules
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
-            IDocument[] inputs = { new Document(metadata) };
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             ReadFiles readFiles = new ReadFiles(@"test-c.txt");
 

@@ -117,12 +117,12 @@ namespace Wyam.Core.Tests
             engine.Pipelines.Add("Pipeline",
                 new Execute(x => new[]
                 {
-                    x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
-                    x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
+                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }),
                 new Execute(x => new[]
                 {
-                    x.Clone(null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }));
 
             // When
