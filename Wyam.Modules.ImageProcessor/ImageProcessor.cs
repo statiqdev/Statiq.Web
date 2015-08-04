@@ -1,4 +1,4 @@
-﻿using ImageProcessor;
+﻿using img = ImageProcessor;
 using ImageProcessor.Imaging;
 using ImageProcessor.Imaging.Formats;
 using System;
@@ -31,12 +31,22 @@ namespace Wyam.Modules.ImageProcessor
             }
         }
 
-        public ImageProcessor Resize(int? width, int? height)
+        public ImageProcessor Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
         {
             EnsureCurrentInstruction();
 
             _currentInstruction.Width = width;
             _currentInstruction.Height = height;
+            _currentInstruction.AnchorPosition = anchor;
+
+            return this;
+        }
+
+        public ImageProcessor Constrain(int width, int height)
+        {
+            EnsureCurrentInstruction();
+
+            _currentInstruction.Constraint = new Size(width, height);
 
             return this;
         }
@@ -148,7 +158,7 @@ namespace Wyam.Modules.ImageProcessor
             {
                 using (var outStream = new MemoryStream())
                 {
-                    using (var imageFactory = new ImageFactory(preserveExifData: true))
+                    using (var imageFactory = new img.ImageFactory(preserveExifData: true))
                     {
                         // Load, resize, set the format and quality and save an image.
                         var fac = imageFactory.Load(inStream)
@@ -158,7 +168,7 @@ namespace Wyam.Modules.ImageProcessor
                         {
                             var layer = new ResizeLayer(
                                 size: ins.GetSize(),
-                                anchorPosition: AnchorPosition.Center,
+                                anchorPosition: ins.GetAnchorPosition(),
                                 resizeMode: ResizeMode.Crop
                                 );
 
@@ -177,6 +187,11 @@ namespace Wyam.Modules.ImageProcessor
                         if (ins.Brightness.HasValue)
                         {
                             fac.Brightness(ins.Brightness.Value);
+                        }
+
+                        if (ins.Constraint.HasValue)
+                        {
+                            fac.Constrain(ins.Constraint.Value);
                         }
 
                         fac.Save(outStream);

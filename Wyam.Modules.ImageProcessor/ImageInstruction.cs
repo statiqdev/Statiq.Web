@@ -1,6 +1,7 @@
 ﻿using ImageProcessor.Imaging.Filters.Photo;
 using System.Collections.Generic;
 using System.Drawing;
+using img = ImageProcessor.Imaging;
 
 namespace Wyam.Modules.ImageProcessor
 {
@@ -9,6 +10,10 @@ namespace Wyam.Modules.ImageProcessor
         public int? Width { get; set; }
 
         public int? Height { get; set; }
+
+        public Size? Constraint { get; set; }
+
+        public AnchorPosition AnchorPosition { get; set; }
 
         public int? Brightness { get; set; }
 
@@ -74,6 +79,23 @@ namespace Wyam.Modules.ImageProcessor
                 case ImageFilter.Polariod: return MatrixFilters.Polaroid;
                 case ImageFilter.Sepia: return MatrixFilters.Sepia;
                 default: return MatrixFilters.Comic;
+            }
+        }
+
+        public img.AnchorPosition GetAnchorPosition()
+        {
+            switch (AnchorPosition)
+            {
+                case AnchorPosition.Bottom: return img.AnchorPosition.Bottom;
+                case AnchorPosition.BottomLeft: return img.AnchorPosition.BottomLeft;
+                case AnchorPosition.BottomRight: return img.AnchorPosition.BottomRight;
+                case AnchorPosition.Center: return img.AnchorPosition.Center;
+                case AnchorPosition.Left: return img.AnchorPosition.Left;
+                case AnchorPosition.Right: return img.AnchorPosition.Right;
+                case AnchorPosition.Top: return img.AnchorPosition.Top;
+                case AnchorPosition.TopLeft: return img.AnchorPosition.TopLeft;
+                case AnchorPosition.TopRight: return img.AnchorPosition.TopRight;
+                default: return img.AnchorPosition.Center;
             }
         }
     }

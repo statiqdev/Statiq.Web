@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnchorPosition.cs" />
     <Compile Include="ImageFilter.cs" />
     <Compile Include="ImageInstruction.cs" />
     <Compile Include="ImageProcessor.cs" />
