@@ -27,58 +27,30 @@ namespace Wyam.Core
         private readonly Dictionary<string, object> _metadata = new Dictionary<string, object>();
 
         // This is used as the initial set of metadata for each run
-        public IDictionary<string, object> Metadata
-        {
-            get { return _metadata; }
-        }
-        
-        private readonly DocumentCollection _documents = new DocumentCollection();
+        public IDictionary<string, object> Metadata => _metadata;
 
-        public IDocumentCollection Documents
-        {
-            get { return _documents; }
-        }
+        public IDocumentCollection Documents => DocumentCollection;
 
-        internal DocumentCollection DocumentCollection
-        {
-            get {  return _documents; }
-        }
+        internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
         private readonly PipelineCollection _pipelines;
 
-        public IPipelineCollection Pipelines
-        {
-            get { return _pipelines; }
-        }
+        public IPipelineCollection Pipelines => _pipelines;
 
         private readonly Tracing.Trace _trace = new Tracing.Trace();
 
-        public ITrace Trace
-        {
-            get { return _trace; }
-        }
-        
-        public byte[] RawConfigAssembly
-        {
-            get { return _configurator == null ? null : _configurator.RawConfigAssembly; }
-        }
+        public ITrace Trace => _trace;
 
-        public IEnumerable<Assembly> Assemblies
-        {
-            get { return _configurator == null ? null : _configurator.Assemblies; }
-        }
+        public byte[] RawConfigAssembly => _configurator?.RawConfigAssembly;
 
-        private readonly ExecutionCacheManager _executionCacheManager = new ExecutionCacheManager();
+        public IEnumerable<Assembly> Assemblies => _configurator?.Assemblies;
 
-        internal ExecutionCacheManager ExecutionCacheManager
-        {
-            get { return _executionCacheManager; }
-        }
+        internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
 
         public bool NoCache
         {
-            get { return _executionCacheManager.NoCache; }
-            set { _executionCacheManager.NoCache = value; }
+            get { return ExecutionCacheManager.NoCache; }
+            set { ExecutionCacheManager.NoCache = value; }
         }
         
         private string _rootFolder = Environment.CurrentDirectory;
@@ -92,7 +64,7 @@ namespace Wyam.Core
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException("RootFolder");
+                    throw new ArgumentException(nameof(value));
                 }
                 _rootFolder = Path.GetFullPath(PathHelper.NormalizePath(value));
             }
@@ -109,7 +81,7 @@ namespace Wyam.Core
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException("InputFolder");
+                    throw new ArgumentException(nameof(value));
                 }
                 _inputFolder = PathHelper.NormalizePath(value);;
             }
@@ -141,7 +113,7 @@ namespace Wyam.Core
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Engine");
+                throw new ObjectDisposedException(nameof(Engine));
             }
 
             try
@@ -164,7 +136,7 @@ namespace Wyam.Core
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Engine");
+                throw new ObjectDisposedException(nameof(Engine));
             }
 
             // Configure with defaults if not already configured
@@ -187,8 +159,8 @@ namespace Wyam.Core
             {
                 using (Trace.WithIndent().Information("Executing {0} pipelines", _pipelines.Count))
                 {
-                    _documents.Clear();
-                    _executionCacheManager.ResetEntryHits();
+                    DocumentCollection.Clear();
+                    ExecutionCacheManager.ResetEntryHits();
                     int c = 1;
                     foreach(Pipeline pipeline in _pipelines.Pipelines)
                     {
@@ -197,9 +169,9 @@ namespace Wyam.Core
                             pipeline.Execute();
                         }
                         Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s)", 
-                            pipeline.Name, c++, _pipelines.Count, _documents.FromPipeline(pipeline.Name).Count());
+                            pipeline.Name, c++, _pipelines.Count, DocumentCollection.FromPipeline(pipeline.Name).Count());
                     }
-                    _executionCacheManager.ClearUnhitEntries();
+                    ExecutionCacheManager.ClearUnhitEntries();
                 }
             }
             catch (Exception ex)
@@ -216,11 +188,12 @@ namespace Wyam.Core
                 throw new ObjectDisposedException("Engine");
             }
             _disposed = true;
-            _trace.Dispose();
-            if (_configurator != null)
+            foreach (Pipeline pipeline in _pipelines.Pipelines)
             {
-                _configurator.Dispose();
+                pipeline.Dispose();
             }
+            _trace.Dispose();
+            _configurator?.Dispose();
         }
     }
 }

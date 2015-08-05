@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,45 +9,184 @@ using Wyam.Abstractions;
 
 namespace Wyam.Core
 {
-    internal class Document : IDocument
+    internal class Document : IDocument, IDisposable
     {
+        private readonly Pipeline _pipeline; 
         private readonly Metadata _metadata;
-        private readonly string _content = string.Empty;
+        private string _content;
+        private Stream _contentStream;
+        private bool _disposeContentStream;
+        private bool _disposed;
 
-        internal Document(Metadata metadata)
+        internal Document(Metadata metadata, Pipeline pipeline)
+            : this("Initial Document", metadata, (string)null, pipeline)
         {
             _metadata = metadata;
         }
-
-        private Document(Metadata metadata, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        
+        private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items = null)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                throw new ArgumentException(nameof(source));
+            }
+
+            Source = source;
             _metadata = metadata.Clone(items);
-            _content = content ?? string.Empty;
+            _content = content;
+
+            _pipeline = pipeline;
+            _pipeline.AddClonedDocument(this);
         }
 
-        public IMetadata Metadata
+        private Document(string source, Metadata metadata, Stream contentStream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items = null)
+            : this(source, metadata, (string)null, pipeline, items)
         {
-            get { return _metadata; }
+            _contentStream = contentStream;
         }
+
+        public string Source { get; }
+
+        public IMetadata Metadata => _metadata;
 
         public string Content
         {
-            get { return _content; }
+            get
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(nameof(Document));
+                }
+
+                if (_content == null)
+                {
+                    if (_contentStream != null)
+                    {
+                        using (StreamReader reader = new StreamReader(_contentStream, true))
+                        {
+                            _content = reader.ReadToEnd();
+                        }
+                    }
+                    else
+                    {
+                        _content = string.Empty;
+                    }
+                }
+
+                return _content;
+            }
         }
-        
+
+        public Stream ContentStream
+        {
+            get
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(nameof(Document));
+                }
+
+                if (_contentStream == null)
+                {
+                    if (_content != null)
+                    {
+                        _contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content));
+                        _disposeContentStream = true;
+                    }
+                    else
+                    {
+                        _contentStream = Stream.Null;
+                    }
+                }
+
+                return _contentStream;
+            }
+        }
+
         public override string ToString()
         {
-            return Content;
+            if (_disposed)
+            {
+                return string.Empty;
+            }
+
+            if (_content != null)
+            {
+                return _content.Length < 128 ? _content : _content.Substring(0, 128);
+            }
+            using (StreamReader reader = new StreamReader(_contentStream, true))
+            {
+                char[] buffer = new char[128];
+                int count = reader.Read(buffer, 0, 128);
+                return new string(buffer, 0, count);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+            if (_disposeContentStream)
+            {
+                _contentStream.Dispose();
+            }
+            _disposed = true;
+        }
+
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+
+            return new Document(source, _metadata, content, _pipeline, items);
         }
 
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(_metadata, content, items);
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+
+            return new Document(Source, _metadata, content, _pipeline, items);
+        }
+
+        public IDocument Clone(string source, Stream contentStream, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+
+            return new Document(source, _metadata, contentStream, _pipeline, items);
+        }
+
+        public IDocument Clone(Stream contentStream, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+
+            return new Document(Source, _metadata, contentStream, _pipeline, items);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return Clone(_content, items);
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Document));
+            }
+
+            return Clone(Content, items);
         }
 
         // IMetadata
@@ -71,20 +211,11 @@ namespace Wyam.Core
             return _metadata.TryGetValue(key, out value);
         }
 
-        public object this[string key]
-        {
-            get { return _metadata[key]; }
-        }
+        public object this[string key] => _metadata[key];
 
-        public IEnumerable<string> Keys
-        {
-            get { return _metadata.Keys; }
-        }
+        public IEnumerable<string> Keys => _metadata.Keys;
 
-        public IEnumerable<object> Values
-        {
-            get { return _metadata.Values; }
-        }
+        public IEnumerable<object> Values => _metadata.Values;
 
         public IMetadata<T> MetadataAs<T>()
         {
@@ -116,9 +247,6 @@ namespace Wyam.Core
             return _metadata.Link(key, defaultValue);
         }
 
-        public int Count
-        {
-            get { return _metadata.Count; }
-        }
+        public int Count => _metadata.Count;
     }
 }

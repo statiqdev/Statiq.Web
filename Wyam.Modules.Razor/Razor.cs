@@ -63,7 +63,7 @@ namespace Wyam.Modules.Razor
                         relativePath += x.String("RelativeFilePath");
                     }
 
-                    using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", relativePath))
+                    using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", x.Source))
                     {
                         ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
 

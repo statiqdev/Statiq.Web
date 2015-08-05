@@ -20,7 +20,7 @@ namespace Wyam.Core.Modules
         {
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             _path = path;
@@ -30,7 +30,7 @@ namespace Wyam.Core.Modules
         {
             if (searchPattern == null)
             {
-                throw new ArgumentNullException("searchPattern");
+                throw new ArgumentNullException(nameof(searchPattern));
             }
 
             _path = m => searchPattern;
@@ -76,7 +76,7 @@ namespace Wyam.Core.Modules
                         {
                             string content = File.ReadAllText(file);
                             context.Trace.Verbose("Read file {0}", file);
-                            yield return input.Clone(content, new Dictionary<string, object>
+                            yield return input.Clone(file, content, new Dictionary<string, object>
                             {
                                 {MetadataKeys.SourceFileRoot, fileRoot},
                                 {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},
