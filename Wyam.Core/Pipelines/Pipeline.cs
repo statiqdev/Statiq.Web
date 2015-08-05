@@ -126,7 +126,7 @@ namespace Wyam.Core.Pipelines
                         context.Module = module;
                         foreach (Document document in documents.OfType<Document>())
                         {
-                            document.ResetContentStream();
+                            document.ResetStream();
                         }
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();

@@ -20,7 +20,7 @@ namespace Wyam.Core.Modules
         {
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             _path = path;
@@ -30,7 +30,7 @@ namespace Wyam.Core.Modules
         {
             if (extension == null)
             {
-                throw new ArgumentNullException("extension");
+                throw new ArgumentNullException(nameof(extension));
             }
 
             _path = x =>
@@ -99,7 +99,10 @@ namespace Wyam.Core.Modules
                         {
                             Directory.CreateDirectory(pathDirectory);
                         }
-                        File.WriteAllText(path, input.Content);
+                        using (FileStream stream = File.Open(path, FileMode.Create))
+                        {
+                            input.Stream.CopyTo(stream);
+                        }
                         context.Trace.Verbose("Wrote file {0}", path);
                         wrote = true;
                         yield return input.Clone(new Dictionary<string, object>
