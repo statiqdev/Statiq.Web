@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Abstractions;
+using Wyam.Core.Documents;
 
-namespace Wyam.Core
+namespace Wyam.Core.Pipelines
 {
     internal class Pipeline : IPipeline, IDisposable
     {
@@ -105,6 +104,8 @@ namespace Wyam.Core
             set { _modules[index] = value; }
         }
         
+        // This executes the specified modules with the specified input documents
+        // If inputDocuments is null, a new empty initial document is used
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
             if (_disposed)
@@ -123,6 +124,10 @@ namespace Wyam.Core
                     {
                         // Make sure we clone the output context if it's the same as the input
                         context.Module = module;
+                        foreach (Document document in documents.OfType<Document>())
+                        {
+                            document.ResetContentStream();
+                        }
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();
                         _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
@@ -141,6 +146,7 @@ namespace Wyam.Core
             return documents.AsReadOnly();
         }
 
+        // This is the main execute method called by the engine
         public void Execute()
         {
             if (_disposed)

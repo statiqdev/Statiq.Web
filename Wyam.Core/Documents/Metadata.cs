@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
 using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Documents
 {
     // This class contains a stack of all the metadata generated at a particular pipeline stage
     // Getting a value checks each of the stacks and returns the first hit

@@ -54,26 +54,31 @@ namespace Wyam.Core.Configuration
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Configurator");
+                return;
             }
-            _disposed = true;
+
             AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
+            _disposed = true;
         }
 
-        public IEnumerable<Assembly> Assemblies
+        private void CheckDisposed()
         {
-            get { return _assemblies.Values; }
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Configurator));
+            }
         }
-        
-        public byte[] RawConfigAssembly
-        {
-            get {  return _rawSetupAssembly; }
-        }
+
+        public IEnumerable<Assembly> Assemblies => _assemblies.Values;
+
+        public byte[] RawConfigAssembly => _rawSetupAssembly;
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
         public void Configure(string script, bool updatePackages)
         {
+            CheckDisposed();
+
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
@@ -95,6 +100,8 @@ namespace Wyam.Core.Configuration
         // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
         public Tuple<string, string, string> GetConfigParts(string code)
         {
+            CheckDisposed();
+
             List<string> configLines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             // Get setup
@@ -392,6 +399,8 @@ namespace Wyam.Core.Configuration
 
         public IEnumerable<Type> GetLoadableTypes(Assembly assembly)
         {
+            CheckDisposed();
+
             try
             {
                 return assembly.GetTypes();

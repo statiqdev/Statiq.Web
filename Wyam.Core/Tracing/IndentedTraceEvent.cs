@@ -21,6 +21,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable Critical(string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.Critical(messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -28,6 +29,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable Error(string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.Error(messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -35,6 +37,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable Warning(string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.Warning(messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -42,6 +45,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable Information(string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.Information(messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -49,6 +53,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable Verbose(string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.Verbose(messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -56,6 +61,7 @@ namespace Wyam.Core.Tracing
 
         public IDisposable TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
         {
+            CheckDisposed();
             _trace.TraceEvent(eventType, messageOrFormat, args);
             _indentLevel = _trace.Indent();
             return this;
@@ -65,13 +71,22 @@ namespace Wyam.Core.Tracing
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(IndentedTraceEvent));
+                return;
             }
+
             if (_indentLevel.HasValue)
             {
                 _trace.IndentLevel = _indentLevel.Value;
             }
             _disposed = true;
+        }
+
+        private void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(IndentedTraceEvent));
+            }
         }
     }
 }

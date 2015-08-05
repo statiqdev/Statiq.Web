@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Helpers;
 using Wyam.Abstractions;
+using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules
 {

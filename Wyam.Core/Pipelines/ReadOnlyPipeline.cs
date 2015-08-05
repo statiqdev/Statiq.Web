@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Pipelines
 {
     internal class ReadOnlyPipeline : IReadOnlyPipeline
     {

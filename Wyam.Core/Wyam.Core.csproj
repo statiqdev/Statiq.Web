@@ -93,11 +93,12 @@
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
-    <Compile Include="DiagnosticsTraceListener.cs" />
-    <Compile Include="DocumentCollection.cs" />
-    <Compile Include="MetadataTypeConverter.cs" />
-    <Compile Include="ExecutionContext.cs" />
-    <Compile Include="MetadataKeys.cs" />
+    <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
+    <Compile Include="Documents\DocumentCollection.cs" />
+    <Compile Include="Documents\SeekableStream.cs" />
+    <Compile Include="Documents\MetadataTypeConverter.cs" />
+    <Compile Include="Pipelines\ExecutionContext.cs" />
+    <Compile Include="Documents\MetadataKeys.cs" />
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Modules\CopyFiles.cs" />
     <Compile Include="Modules\ConcatDocuments.cs" />
@@ -121,18 +122,18 @@
     <Compile Include="Modules\ReadFiles.cs" />
     <Compile Include="Modules\WriteFiles.cs" />
     <Compile Include="NuGet\Package.cs" />
-    <Compile Include="Pipeline.cs" />
-    <Compile Include="PipelineCollection.cs" />
-    <Compile Include="Document.cs" />
+    <Compile Include="Pipelines\Pipeline.cs" />
+    <Compile Include="Pipelines\PipelineCollection.cs" />
+    <Compile Include="Documents\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
-    <Compile Include="ReadOnlyPipeline.cs" />
+    <Compile Include="Pipelines\ReadOnlyPipeline.cs" />
     <Compile Include="Tracing\IndentedTraceEvent.cs" />
     <Compile Include="Tracing\Trace.cs" />
-    <Compile Include="Metadata.cs" />
+    <Compile Include="Documents\Metadata.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="MetadataAs.cs" />
+    <Compile Include="Documents\MetadataAs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

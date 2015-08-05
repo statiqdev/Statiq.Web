@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Tracing
 {
     // This routes trace and debug messages from the Trace/Debug classes to the Wyam Trace TraceSource
     internal class DiagnosticsTraceListener : TraceListener

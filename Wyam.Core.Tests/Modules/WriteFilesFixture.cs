@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Core.Modules;
 using Wyam.Abstractions;
+using Wyam.Core.Documents;
+using Wyam.Core.Pipelines;
+using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
 
 namespace Wyam.Core.Tests.Modules
 {

@@ -2,12 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Wyam.Abstractions;
+using Wyam.Core.Pipelines;
 
-namespace Wyam.Core
+namespace Wyam.Core.Documents
 {
     internal class Document : IDocument, IDisposable
     {
@@ -46,7 +45,23 @@ namespace Wyam.Core
         private Document(string source, Metadata metadata, Stream contentStream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items = null)
             : this(source, metadata, (string)null, pipeline, items)
         {
-            _contentStream = contentStream;
+            if (contentStream != null)
+            {
+                if (!contentStream.CanRead)
+                {
+                    throw new ArgumentException("Document stream must support reading.", nameof(contentStream));
+                }
+
+                if (!contentStream.CanSeek)
+                {
+                    _contentStream = new SeekableStream(contentStream);
+                    _disposeContentStream = true;
+                }
+                else
+                {
+                    _contentStream = contentStream;
+                }
+            }
         }
 
         public string Source { get; }
@@ -57,10 +72,7 @@ namespace Wyam.Core
         {
             get
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(nameof(Document));
-                }
+                CheckDisposed();
 
                 if (_content == null)
                 {
@@ -85,10 +97,7 @@ namespace Wyam.Core
         {
             get
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(nameof(Document));
-                }
+                CheckDisposed();
 
                 if (_contentStream == null)
                 {
@@ -104,6 +113,14 @@ namespace Wyam.Core
                 }
 
                 return _contentStream;
+            }
+        }
+
+        public void ResetContentStream()
+        {
+            if (_contentStream != null)
+            {
+                _contentStream.Position = 0;
             }
         }
 
@@ -130,8 +147,9 @@ namespace Wyam.Core
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Document));
+                return;
             }
+
             if (_disposeContentStream)
             {
                 _contentStream.Dispose();
@@ -139,53 +157,41 @@ namespace Wyam.Core
             _disposed = true;
         }
 
-        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        private void CheckDisposed()
         {
             if (_disposed)
             {
                 throw new ObjectDisposedException(nameof(Document));
             }
+        }
 
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            CheckDisposed();
             return new Document(source, _metadata, content, _pipeline, items);
         }
 
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Document));
-            }
-
+            CheckDisposed();
             return new Document(Source, _metadata, content, _pipeline, items);
         }
 
         public IDocument Clone(string source, Stream contentStream, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Document));
-            }
-
+            CheckDisposed();
             return new Document(source, _metadata, contentStream, _pipeline, items);
         }
 
         public IDocument Clone(Stream contentStream, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Document));
-            }
-
+            CheckDisposed();
             return new Document(Source, _metadata, contentStream, _pipeline, items);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Document));
-            }
-
+            CheckDisposed();
             return Clone(Content, items);
         }
 

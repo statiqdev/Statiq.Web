@@ -14,7 +14,9 @@ using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Abstractions;
 using Wyam.Core.Caching;
+using Wyam.Core.Documents;
 using Wyam.Core.Helpers;
+using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
 
 namespace Wyam.Core
@@ -111,10 +113,7 @@ namespace Wyam.Core
 
         public void Configure(string configScript = null, bool updatePackages = false)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Engine));
-            }
+            CheckDisposed();
 
             try
             {
@@ -134,13 +133,10 @@ namespace Wyam.Core
 
         public void Execute()
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Engine));
-            }
+            CheckDisposed();
 
             // Configure with defaults if not already configured
-            if(_configurator == null)
+            if (_configurator == null)
             {
                 Configure();
             }
@@ -185,15 +181,24 @@ namespace Wyam.Core
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Engine");
+                return;
             }
-            _disposed = true;
+
             foreach (Pipeline pipeline in _pipelines.Pipelines)
             {
                 pipeline.Dispose();
             }
             _trace.Dispose();
             _configurator?.Dispose();
+            _disposed = true;
+        }
+
+        private void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Engine));
+            }
         }
     }
 }

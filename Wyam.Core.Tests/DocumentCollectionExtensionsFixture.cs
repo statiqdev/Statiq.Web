@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Abstractions;
+using Wyam.Core.Documents;
+using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Tests
 {

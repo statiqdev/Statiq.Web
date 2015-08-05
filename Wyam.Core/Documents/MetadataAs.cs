@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TB.ComponentModel;
 using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Documents
 {
     // This wraps the Metadata class and provides strongly-typed access
     // See http://www.codeproject.com/Articles/248440/Universal-Type-Converter for conversion library

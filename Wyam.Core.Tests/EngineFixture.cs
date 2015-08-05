@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Modules;
+using Wyam.Core.Pipelines;
 
 
 namespace Wyam.Core.Tests
