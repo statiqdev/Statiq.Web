@@ -140,7 +140,8 @@ namespace Wyam.Modules.ImageProcessor
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
                     context.Trace.Verbose($"WritePath: {destinationPath}");
-                    var output = ProduceImage(input.Stream, format, ins, destinationPath);
+
+                    var output = ProcessImage(input.Stream, format, ins);
 
                     yield return input.Clone(output, new Dictionary<string, object>
                         {
@@ -152,7 +153,7 @@ namespace Wyam.Modules.ImageProcessor
             }
         }
 
-        Stream ProduceImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
+        Stream ProcessImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins)
         {
             using (var imageFactory = new img.ImageFactory(preserveExifData: true))
             {
