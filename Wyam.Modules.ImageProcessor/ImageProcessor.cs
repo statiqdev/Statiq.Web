@@ -139,7 +139,7 @@ namespace Wyam.Modules.ImageProcessor
                     destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
-                    context.Trace.Verbose($"Sending processed image to {destinationPath}");
+                    context.Trace.Verbose($"WritePath: {destinationPath}");
                     var output = ProduceImage(input.Stream, format, ins, destinationPath);
 
                     yield return input.Clone(output, new Dictionary<string, object>
