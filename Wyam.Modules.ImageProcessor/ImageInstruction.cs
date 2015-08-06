@@ -19,15 +19,19 @@ namespace Wyam.Modules.ImageProcessor
 
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
-        public Size GetSize()
+        public Size? GetSize()
         {
             if (Width.HasValue && Height.HasValue)
                 return new Size(Width.Value, Height.Value);
             else if (Width.HasValue)
                 return new Size(Width.Value, 0);
-            else
+            else if (Height.HasValue)
                 return new Size(0, Height.Value);
+
+            return null;
         }
+
+        public bool IsNeedResize => GetSize() != null;
 
         public bool IsCropRequired
         {
@@ -45,6 +49,9 @@ namespace Wyam.Modules.ImageProcessor
 
             if (Height.HasValue)
                 suffix += "-h" + Height.Value;
+
+            if (Constraint.HasValue)
+                suffix += $"-cw{Constraint.Value.Width}h{Constraint.Value.Height}";
 
             foreach (var f in Filters)
             {

@@ -108,11 +108,6 @@ namespace Wyam.Modules.ImageProcessor
         {
             foreach (IDocument input in inputs)
             {
-                bool isBase64 = input.Get<bool>(MetadataKeys.Base64);
-
-                if (!isBase64)
-                    continue;
-
                 var path = input.Get<string>(MetadataKeys.SourceFilePath);
 
                 if (string.IsNullOrWhiteSpace(path))
@@ -132,42 +127,42 @@ namespace Wyam.Modules.ImageProcessor
                 ISupportedImageFormat format = GetFormat(extension);
                 if (format == null)
                     continue;
-
-                byte[] photoBytes = Convert.FromBase64String(input.Content);
-
+                
                 foreach (var ins in _instructions)
                 {
-                    Size size = ins.GetSize();
+                    if (input.Stream.CanSeek)
+                    {
+                        input.Stream.Seek(0, SeekOrigin.Begin);
+                    }
 
                     string destinationFile = Path.GetFileNameWithoutExtension(path);
                     destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
                     context.Trace.Verbose($"Sending processed image to {destinationPath}");
-
-                    ProduceImage(photoBytes, format, ins, destinationPath);
+                    ProduceImage(input.Stream, format, ins, destinationPath);
                 }
 
                 yield return input;
             }
         }
 
-        void ProduceImage(byte[] photoBytes, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
+        void ProduceImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
         {
-            using (var inStream = new MemoryStream(photoBytes))
+            using (var outStream = new MemoryStream())
             {
-                using (var outStream = new MemoryStream())
+                using (var imageFactory = new img.ImageFactory(preserveExifData: true))
                 {
-                    using (var imageFactory = new img.ImageFactory(preserveExifData: true))
-                    {
-                        // Load, resize, set the format and quality and save an image.
-                        var fac = imageFactory.Load(inStream)
-                                    .Format(format);
+                    // Load, resize, set the format and quality and save an image.
+                    var fac = imageFactory.Load(inStream)
+                                .Format(format);
 
+                    if (ins.IsNeedResize)
+                    {
                         if (ins.IsCropRequired)
                         {
                             var layer = new ResizeLayer(
-                                size: ins.GetSize(),
+                                size: ins.GetSize().Value,
                                 anchorPosition: ins.GetAnchorPosition(),
                                 resizeMode: ResizeMode.Crop
                                 );
@@ -176,32 +171,32 @@ namespace Wyam.Modules.ImageProcessor
                         }
                         else
                         {
-                            fac.Resize(ins.GetSize());
+                            fac.Resize(ins.GetSize().Value);
                         }
-
-                        foreach (var f in ins.Filters)
-                        {
-                            fac.Filter(ins.GetMatrixFilter(f));
-                        }
-
-                        if (ins.Brightness.HasValue)
-                        {
-                            fac.Brightness(ins.Brightness.Value);
-                        }
-
-                        if (ins.Constraint.HasValue)
-                        {
-                            fac.Constrain(ins.Constraint.Value);
-                        }
-
-                        fac.Save(outStream);
                     }
 
-                    outStream.Seek(0, SeekOrigin.Begin);
-                    using (var f = File.Create(destinationPath))
+                    foreach (var f in ins.Filters)
                     {
-                        outStream.CopyTo(f);
+                        fac.Filter(ins.GetMatrixFilter(f));
                     }
+
+                    if (ins.Brightness.HasValue)
+                    {
+                        fac.Brightness(ins.Brightness.Value);
+                    }
+
+                    if (ins.Constraint.HasValue)
+                    {
+                        fac.Constrain(ins.Constraint.Value);
+                    }
+
+                    fac.Save(outStream);
+                }
+
+                outStream.Seek(0, SeekOrigin.Begin);
+                using (var f = File.Create(destinationPath))
+                {
+                    outStream.CopyTo(f);
                 }
             }
         }

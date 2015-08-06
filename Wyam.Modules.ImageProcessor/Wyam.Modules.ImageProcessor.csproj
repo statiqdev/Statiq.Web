@@ -50,7 +50,6 @@
     <Compile Include="ImageInstruction.cs" />
     <Compile Include="ImageProcessor.cs" />
     <Compile Include="MetadataKeys.cs" />
-    <Compile Include="ProcessFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
