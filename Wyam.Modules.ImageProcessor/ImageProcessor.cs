@@ -127,7 +127,7 @@ namespace Wyam.Modules.ImageProcessor
                 ISupportedImageFormat format = GetFormat(extension);
                 if (format == null)
                     continue;
-                
+
                 foreach (var ins in _instructions)
                 {
                     if (input.Stream.CanSeek)
@@ -140,64 +140,63 @@ namespace Wyam.Modules.ImageProcessor
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
                     context.Trace.Verbose($"Sending processed image to {destinationPath}");
-                    ProduceImage(input.Stream, format, ins, destinationPath);
+                    var output = ProduceImage(input.Stream, format, ins, destinationPath);
+
+                    yield return input.Clone(output, new Dictionary<string, object>
+                        {
+                            {Wyam.Core.Documents.MetadataKeys.WritePath, destinationPath},
+                            {Wyam.Core.Documents.MetadataKeys.WriteExtension, extension }
+                        });
                 }
 
-                yield return input;
             }
         }
 
-        void ProduceImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
+        Stream ProduceImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins, string destinationPath)
         {
-            using (var outStream = new MemoryStream())
+            using (var imageFactory = new img.ImageFactory(preserveExifData: true))
             {
-                using (var imageFactory = new img.ImageFactory(preserveExifData: true))
+                // Load, resize, set the format and quality and save an image.
+                var fac = imageFactory.Load(inStream)
+                            .Format(format);
+
+                if (ins.IsNeedResize)
                 {
-                    // Load, resize, set the format and quality and save an image.
-                    var fac = imageFactory.Load(inStream)
-                                .Format(format);
-
-                    if (ins.IsNeedResize)
+                    if (ins.IsCropRequired)
                     {
-                        if (ins.IsCropRequired)
-                        {
-                            var layer = new ResizeLayer(
-                                size: ins.GetSize().Value,
-                                anchorPosition: ins.GetAnchorPosition(),
-                                resizeMode: ResizeMode.Crop
-                                );
+                        var layer = new ResizeLayer(
+                            size: ins.GetSize().Value,
+                            anchorPosition: ins.GetAnchorPosition(),
+                            resizeMode: ResizeMode.Crop
+                            );
 
-                            fac.Resize(layer);
-                        }
-                        else
-                        {
-                            fac.Resize(ins.GetSize().Value);
-                        }
+                        fac.Resize(layer);
                     }
-
-                    foreach (var f in ins.Filters)
+                    else
                     {
-                        fac.Filter(ins.GetMatrixFilter(f));
+                        fac.Resize(ins.GetSize().Value);
                     }
-
-                    if (ins.Brightness.HasValue)
-                    {
-                        fac.Brightness(ins.Brightness.Value);
-                    }
-
-                    if (ins.Constraint.HasValue)
-                    {
-                        fac.Constrain(ins.Constraint.Value);
-                    }
-
-                    fac.Save(outStream);
                 }
 
-                outStream.Seek(0, SeekOrigin.Begin);
-                using (var f = File.Create(destinationPath))
+                foreach (var f in ins.Filters)
                 {
-                    outStream.CopyTo(f);
+                    fac.Filter(ins.GetMatrixFilter(f));
                 }
+
+                if (ins.Brightness.HasValue)
+                {
+                    fac.Brightness(ins.Brightness.Value);
+                }
+
+                if (ins.Constraint.HasValue)
+                {
+                    fac.Constrain(ins.Constraint.Value);
+                }
+
+                var outputStream = new MemoryStream();
+                fac.Save(outputStream);
+                outputStream.Seek(0, SeekOrigin.Begin);
+                return outputStream;
             }
         }
     }
