@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Wyam.Modules.Razor.Microsoft.AspNet.Html.Abstractions;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 using HtmlString = Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering.HtmlString;
 

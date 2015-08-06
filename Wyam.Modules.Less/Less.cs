@@ -10,7 +10,7 @@ using dotless.Core.Cache;
 using Microsoft.Practices.ServiceLocation;
 using Pandora.Fluent;
 using ReflectionMagic;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Modules.Less
 {

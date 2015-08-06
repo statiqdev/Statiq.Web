@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Policy;
 using Microsoft.AspNet.FileProviders;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

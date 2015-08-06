@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Abstractions
+namespace Wyam.Common
 {
     public interface IExecutionContext
     {

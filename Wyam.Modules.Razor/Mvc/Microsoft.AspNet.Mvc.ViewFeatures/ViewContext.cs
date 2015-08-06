@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

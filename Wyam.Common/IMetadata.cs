@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Abstractions
+namespace Wyam.Common
 {
     public interface IMetadata : IReadOnlyDictionary<string, object>
     {

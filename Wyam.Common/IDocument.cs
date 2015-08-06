@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Wyam.Abstractions
+namespace Wyam.Common
 {
     // A document is immutable, call .Clone() to get a new document with persisted object and/or new metadata items
     // Documents also proxy their metadata and implement the entire IMetadata interface

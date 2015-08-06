@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Wyam.Abstractions
+namespace Wyam.Common
 {
     public interface IPipeline : IList<IModule>
     {

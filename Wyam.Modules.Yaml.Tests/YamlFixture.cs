@@ -8,7 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Core;
 using Wyam.Core.Modules;
-using Wyam.Abstractions;
+using Wyam.Common;
 using YamlDotNet.Dynamic;
 
 namespace Wyam.Modules.Yaml.Tests

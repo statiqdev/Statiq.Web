@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Modules
 {

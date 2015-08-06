@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Core.Tests", "Wyam.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Markdown", "Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj", "{AF8F5C85-2C54-4CFE-A509-C30515B7B943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Abstractions", "Wyam.Abstractions\Wyam.Abstractions.csproj", "{F40B73E9-C0CC-465C-925E-B51E686C1D5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Common", "Wyam.Common\Wyam.Common.csproj", "{F40B73E9-C0CC-465C-925E-B51E686C1D5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Yaml", "Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj", "{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}"
 EndProject

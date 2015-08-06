@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core;
 using Wyam.Core.Modules;
 
@@ -32,12 +32,11 @@ namespace Wyam.Modules.Razor.Tests
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.Metadata.Get("SourceFileBase", "/").Returns("/");
             List<string> items = new List<string>();
             document
                 .When(x => x.Clone(Arg.Any<string>()))
                 .Do(x => items.Add(x.Arg<string>()));
-            document.Content.Returns(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }");
+            document.Stream.Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
             Razor razor = new Razor();
 
             // When
@@ -65,13 +64,12 @@ namespace Wyam.Modules.Razor.Tests
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.Metadata.Get("SourceFileBase", "/").Returns("/");
             document.Metadata["MyKey"].Returns("MyValue");
             List<string> items = new List<string>();
             document
                 .When(x => x.Clone(Arg.Any<string>()))
                 .Do(x => items.Add(x.Arg<string>()));
-            document.Content.Returns(@"<p>@Metadata[""MyKey""]</p>");
+            document.Stream.Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
             Razor razor = new Razor();
 
             // When

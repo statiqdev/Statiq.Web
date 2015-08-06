@@ -24,7 +24,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "System.Collections.Generic",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
-            "Wyam.Abstractions",
+            "Wyam.Common",
             "Wyam.Core",
             "Wyam.Core.Helpers"
         };

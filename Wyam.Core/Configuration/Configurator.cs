@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using NuGet;
 using Wyam.Core.NuGet;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Configuration
 {
@@ -44,7 +44,7 @@ namespace Wyam.Core.Configuration
             AddAssembly(Assembly.GetAssembly(typeof (System.IO.Stream))); // System.IO
             AddAssembly(Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource))); // System.Diagnostics
             AddAssembly(Assembly.GetAssembly(typeof (Wyam.Core.Engine))); // Wyam.Core
-            AddAssembly(Assembly.GetAssembly(typeof(Wyam.Abstractions.IModule))); // Wyam.Abstractions
+            AddAssembly(Assembly.GetAssembly(typeof(Wyam.Common.IModule))); // Wyam.Common
 
             // Manually resolve included assemblies
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
@@ -145,7 +145,7 @@ namespace Wyam.Core.Configuration
                         using Wyam.Core;
                         using Wyam.Core.Configuration;
                         using Wyam.Core.NuGet;
-                        using Wyam.Abstractions;
+                        using Wyam.Common;
 
                         public static class SetupScript
                         {
@@ -160,7 +160,7 @@ namespace Wyam.Core.Configuration
                     {
                         Assembly.GetAssembly(typeof (object)), // System
                         Assembly.GetAssembly(typeof (Wyam.Core.Engine)), //Wyam.Core
-                        Assembly.GetAssembly(typeof (Wyam.Abstractions.IModule)) // Wyam.Abstractions
+                        Assembly.GetAssembly(typeof (Wyam.Common.IModule)) // Wyam.Common
                     };
 
                     // Load the dynamic assembly and invoke
@@ -203,7 +203,7 @@ namespace Wyam.Core.Configuration
                         "Wyam.Core.Configuration",
                         "Wyam.Core.Modules",
                         "Wyam.Core.Helpers",
-                        "Wyam.Abstractions"
+                        "Wyam.Common"
                     };
 
                     // Add specified assemblies from packages, etc.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Wyam.Abstractions
+namespace Wyam.Common
 {
     public interface IIndentedTraceEvent
     {

@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Wyam.Abstractions</id>
+    <id>Wyam.Common</id>
     <version>$version$</version>
-    <title>Wyam.Abstractions</title>
+    <title>Wyam.Common</title>
     <authors>Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
     <iconUrl>http://wyam.io/Content/Images/logo-square-32.png</iconUrl>
     <projectUrl>http://wyam.io</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides a common set of abstractions to make writing extensions easier.</description>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides a common set of abstractions and other classes to make writing extensions easier.</description>
     <copyright>Copyright 2015</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Helpers;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules

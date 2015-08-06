@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Pipelines
 {

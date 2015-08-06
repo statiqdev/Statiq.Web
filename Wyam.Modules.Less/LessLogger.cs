@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using dotless.Core.Loggers;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Modules.Less
 {
