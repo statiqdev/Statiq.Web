@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Policy;
 using Microsoft.AspNet.FileProviders;
 using Wyam.Abstractions;
@@ -36,7 +37,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             return CreateInstance(relativePath, null);
         }
 
-        public IRazorPage CreateInstance([NotNull] string relativePath, string content)
+        public IRazorPage CreateInstance([NotNull] string relativePath, Stream stream)
         {
             if (relativePath.StartsWith("~/", StringComparison.Ordinal))
             {
@@ -47,7 +48,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             // Code below is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
 
             // Check the file
-            var fileProvider = content == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, content);
+            var fileProvider = stream == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, stream);
             var fileInfo = fileProvider.GetFileInfo(relativePath);
             if (!fileInfo.Exists)
             {
@@ -56,35 +57,24 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             
             // If relative path is the root, it probably means this isn't from reading a file so don't bother with caching
             IExecutionCache cache = relativePath == "/" ? null : _executionContext.ExecutionCache;
-            string hash = null;
+            string key = null;
+            IRazorPage page;
             if (cache != null)
             {
-                // Check the cache, always just use the hash because we're going to have to store it anyway and the content might not come from a file
-                CacheEntry cacheEntry;
-                hash = RazorFileHash.GetHash(fileInfo);
-                if (cache.TryGetValue(relativePath, out cacheEntry) && cacheEntry.Hash == hash)
+                key = relativePath + " " + RazorFileHash.GetHash(fileInfo);
+                if (cache.TryGetValue(key, out page))
                 {
-                    return cacheEntry.Page;
+                    return page;
                 }
             }
 
             // Compile and store in cache
             var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
             Type result = _razorcompilationService.Compile(relativeFileInfo);
-            IRazorPage page = (IRazorPage)Activator.CreateInstance(result);
+            page = (IRazorPage)Activator.CreateInstance(result);
             page.Path = relativePath;
-            cache?.Set(relativePath, new CacheEntry
-            {
-                Page = page,
-                Hash = hash
-            });
+            cache?.Set(key, page);
             return page;
-        }
-
-        private class CacheEntry
-        {
-            public IRazorPage Page { get; set; }
-            public string Hash { get; set; }
         }
     }
 }

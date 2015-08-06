@@ -87,6 +87,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\Crc32.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />

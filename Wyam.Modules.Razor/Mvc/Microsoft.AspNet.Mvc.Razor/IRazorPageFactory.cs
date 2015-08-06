@@ -1,6 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.IO;
+
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <returns>The IRazorPage instance if it exists, null otherwise.</returns>
         IRazorPage CreateInstance(string relativePath);
 
-        // Creates a IRazorPage for the specified path that uses the specified content
-        IRazorPage CreateInstance(string relativePath, string content);
+        // Creates a IRazorPage for the specified path that uses the specified stream
+        IRazorPage CreateInstance(string relativePath, Stream stream);
     }
 }
