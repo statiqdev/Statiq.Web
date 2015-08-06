@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TB.ComponentModel;
 
-namespace Wyam.Core
+namespace Wyam.Core.Documents
 {
     // These are used by MetadataAs for enumerable conversions, but must be declared outside for easier reflection instantiation
     internal abstract class MetadataTypeConverter

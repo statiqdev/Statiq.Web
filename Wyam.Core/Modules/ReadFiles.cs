@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Abstractions;
+using Wyam.Core.Documents;
 using Wyam.Core.Helpers;
 
 namespace Wyam.Core.Modules
@@ -74,9 +75,8 @@ namespace Wyam.Core.Modules
                     {
                         foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
                         {
-                            string content = File.ReadAllText(file);
                             context.Trace.Verbose("Read file {0}", file);
-                            yield return input.Clone(file, content, new Dictionary<string, object>
+                            yield return input.Clone(file, File.OpenRead(file), new Dictionary<string, object>
                             {
                                 {MetadataKeys.SourceFileRoot, fileRoot},
                                 {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},

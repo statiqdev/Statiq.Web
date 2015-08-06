@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Abstractions;
 
-namespace Wyam.Core
+namespace Wyam.Core.Pipelines
 {
     internal class ExecutionContext : IExecutionContext
     {
