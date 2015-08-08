@@ -23,7 +23,7 @@ namespace Wyam.Core.Modules
         {
             if (sourcePath == null)
             {
-                throw new ArgumentNullException("sourcePath");
+                throw new ArgumentNullException(nameof(sourcePath));
             }
 
             _sourcePath = sourcePath;
@@ -33,7 +33,7 @@ namespace Wyam.Core.Modules
         {
             if (searchPattern == null)
             {
-                throw new ArgumentNullException("searchPattern");
+                throw new ArgumentNullException(nameof(searchPattern));
             }
 
             _sourcePath = m => searchPattern;
@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules
         {
             if (destinationPath == null)
             {
-                throw new ArgumentNullException("destinationPath");
+                throw new ArgumentNullException(nameof(destinationPath));
             }
 
             _destinationPath = destinationPath;
