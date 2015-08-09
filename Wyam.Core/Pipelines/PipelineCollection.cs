@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Pipelines
 {

@@ -1,6 +1,7 @@
 ﻿﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.IO;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
@@ -20,6 +21,6 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         RazorPageResult FindPage(ViewContext context, string page);
 
         // Added by Wyam
-        ViewEngineResult GetView(ViewContext context, string viewName, string content);
+        ViewEngineResult GetView(ViewContext context, string viewName, Stream stream);
     }
 }

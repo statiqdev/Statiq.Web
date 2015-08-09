@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Documents;
 
 namespace Wyam.Core.Tests

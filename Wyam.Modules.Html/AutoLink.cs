@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Modules.Html
 {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -65,7 +65,7 @@ namespace Wyam.Modules.Razor
 
                     using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", x.Source))
                     {
-                        ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Content).EnsureSuccessful();
+                        ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, relativePath, x.Stream).EnsureSuccessful();
 
                         using (StringWriter writer = new StringWriter())
                         {

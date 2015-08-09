@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Documents

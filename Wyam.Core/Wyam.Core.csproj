@@ -87,12 +87,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\Crc32.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
+    <Compile Include="Modules\ForEach.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Documents\SeekableStream.cs" />
@@ -143,9 +145,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Abstractions\Wyam.Abstractions.csproj">
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
-      <Name>Wyam.Abstractions</Name>
+      <Name>Wyam.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

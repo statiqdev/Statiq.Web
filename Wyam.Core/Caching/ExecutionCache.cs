@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Caching
 {
@@ -23,65 +23,104 @@ namespace Wyam.Core.Caching
             public bool Hit { get; set; }
         }
 
+        private string GetDocumentKey(IDocument document)
+        {
+            return document.Source + " " + Crc32.Calculate(document.Stream);
+        }
+
         public bool ContainsKey(IDocument document)
         {
-            return ContainsKey(document.Content);
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return ContainsKey(GetDocumentKey(document));
         }
 
         public bool ContainsKey(string key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return _cache.ContainsKey(key);
         }
 
         public bool TryGetValue(IDocument document, out object value)
         {
-            return TryGetValue(document.Content, out value);
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return TryGetValue(GetDocumentKey(document), out value);
         }
 
         public bool TryGetValue(string key, out object value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             return TryGetValue<object>(key, out value);
         }
 
         public bool TryGetValue<TValue>(IDocument document, out TValue value)
         {
-            return TryGetValue<TValue>(document.Content, out value);
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return TryGetValue<TValue>(GetDocumentKey(document), out value);
         }
 
         public bool TryGetValue<TValue>(string key, out TValue value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             CacheEntry entry;
             if (_cache.TryGetValue(key, out entry))
             {
                 entry.Hit = true;
                 value = (TValue)entry.Value;
-                _engine.Trace.Verbose("Cache hit for key: {0}", key.Length <= 96 
-                    ? key.Replace('\r', ' ').Replace('\n', ' ') 
-                    : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
+                _engine.Trace.Verbose("Cache hit for key: {0}", key);
                 return true;
             }
             value = default(TValue);
-            _engine.Trace.Verbose("Cache miss for key: {0}", key.Length <= 96
-                ? key.Replace('\r', ' ').Replace('\n', ' ') 
-                : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
+            _engine.Trace.Verbose("Cache miss for key: {0}", key);
             return false;
         }
 
         public void Set(IDocument document, object value)
         {
-            Set(document.Content, value);
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            Set(GetDocumentKey(document), value);
         }
 
         public void Set(string key, object value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             _cache[key] = new CacheEntry
             {
                 Value = value,
                 Hit = true
             };
-            _engine.Trace.Verbose("Cache set for key: {0}", key.Length <= 96
-                ? key.Replace('\r', ' ').Replace('\n', ' ') 
-                : key.Substring(0, 96).Replace('\r', ' ').Replace('\n', ' '));
+            _engine.Trace.Verbose("Cache set for key: {0}", key);
         }
 
         public void ResetEntryHits()

@@ -66,14 +66,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         // Gets a view that acts like a normal file-based view, but uses the provided content
         public ViewEngineResult GetView([NotNull] ViewContext context,
                                          string viewName,
-                                         string content)
+                                         Stream stream)
         {
             if (string.IsNullOrEmpty(viewName))
             {
                 throw new ArgumentException("viewName");
             }
 
-            var pageResult = GetRazorPageResult(context, viewName, isPartial: false, content: content);
+            var pageResult = GetRazorPageResult(context, viewName, isPartial: false, stream: stream);
             return CreateViewEngineResult(pageResult, _viewFactory, isPartial: false);
         }
 
@@ -118,7 +118,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         private RazorPageResult GetRazorPageResult(ViewContext context,
                                                    string pageName,
                                                    bool isPartial,
-                                                   string content = null)
+                                                   Stream stream = null)
         {
             if (!pageName.EndsWith(ViewExtension, StringComparison.OrdinalIgnoreCase))
             {
@@ -127,7 +127,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             if (IsApplicationRelativePath(pageName))
             {
                 var applicationRelativePath = pageName;
-                var page = _pageFactory.CreateInstance(applicationRelativePath, content);
+                var page = _pageFactory.CreateInstance(applicationRelativePath, stream);
                 if (page != null)
                 {
                     return new RazorPageResult(pageName, page);

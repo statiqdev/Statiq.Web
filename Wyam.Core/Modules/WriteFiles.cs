@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Helpers;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules
@@ -57,65 +57,70 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs.Where(x => _where == null || _where(x)))
+            foreach (IDocument input in inputs)
             {
                 bool wrote = false;
-                
-                // WritePath
-                string path = input.String(MetadataKeys.WritePath);
-                if (path != null)
-                {
-                    path = PathHelper.NormalizePath(path);
-                }
 
-                // WriteFileName
-                if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
-                    && input.ContainsKey(MetadataKeys.RelativeFileDir))
+                if (_where == null || _where(input))
                 {
-                    path = Path.Combine(input.String(MetadataKeys.RelativeFileDir), 
-                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
-                }
-
-                // WriteExtension
-                if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
-                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
-                {
-                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath), input.String(MetadataKeys.WriteExtension));
-                }
-
-                // Func
-                if (path == null)
-                {
-                    path = _path(input);
-                }
-
-                if (path != null)
-                {
-                    path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
-                    if (!string.IsNullOrWhiteSpace(path))
+                    // WritePath
+                    string path = input.String(MetadataKeys.WritePath);
+                    if (path != null)
                     {
-                        string pathDirectory = Path.GetDirectoryName(path);
-                        if (!Directory.Exists(pathDirectory))
+                        path = PathHelper.NormalizePath(path);
+                    }
+
+                    // WriteFileName
+                    if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
+                        && input.ContainsKey(MetadataKeys.RelativeFileDir))
+                    {
+                        path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
+                            PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
+                    }
+
+                    // WriteExtension
+                    if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
+                        && input.ContainsKey(MetadataKeys.RelativeFilePath))
+                    {
+                        path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
+                            input.String(MetadataKeys.WriteExtension));
+                    }
+
+                    // Func
+                    if (path == null)
+                    {
+                        path = _path(input);
+                    }
+
+                    if (path != null)
+                    {
+                        path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
+                        if (!string.IsNullOrWhiteSpace(path))
                         {
-                            Directory.CreateDirectory(pathDirectory);
+                            string pathDirectory = Path.GetDirectoryName(path);
+                            if (!Directory.Exists(pathDirectory))
+                            {
+                                Directory.CreateDirectory(pathDirectory);
+                            }
+                            using (FileStream stream = File.Open(path, FileMode.Create))
+                            {
+                                input.Stream.CopyTo(stream);
+                            }
+                            context.Trace.Verbose("Wrote file {0}", path);
+                            wrote = true;
+                            yield return input.Clone(new Dictionary<string, object>
+                            {
+                                {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
+                                {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
+                                {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
+                                {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
+                                {MetadataKeys.DestinationFilePath, path},
+                                {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path)}
+                            });
                         }
-                        using (FileStream stream = File.Open(path, FileMode.Create))
-                        {
-                            input.Stream.CopyTo(stream);
-                        }
-                        context.Trace.Verbose("Wrote file {0}", path);
-                        wrote = true;
-                        yield return input.Clone(new Dictionary<string, object>
-                        {
-                            {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
-                            {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
-                            {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
-                            {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
-                            {MetadataKeys.DestinationFilePath, path },
-                            {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path) }
-                        });
                     }
                 }
+
                 if (!wrote)
                 {
                     yield return input;

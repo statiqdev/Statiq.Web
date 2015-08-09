@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Wyam.Abstractions;
+using Wyam.Common;
 
 namespace Wyam.Core.Pipelines
 {
@@ -26,11 +26,11 @@ namespace Wyam.Core.Pipelines
             _pipeline = pipeline;
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
         {
             // Store the document list before executing the child modules and restore it afterwards
             IReadOnlyList<IDocument> documents = _engine.DocumentCollection.Get(_pipeline.Name);
-            IReadOnlyList<IDocument> results = _pipeline.Execute(modules, inputDocuments);
+            IReadOnlyList<IDocument> results = _pipeline.Execute(modules, inputs);
             _engine.DocumentCollection.Set(_pipeline.Name, documents);
             return results;
         }

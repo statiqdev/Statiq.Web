@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 using Wyam.Core.Helpers;
