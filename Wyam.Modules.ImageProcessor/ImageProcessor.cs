@@ -17,8 +17,6 @@ namespace Wyam.Modules.ImageProcessor
 
         ImageInstruction _currentInstruction;
 
-        IModule[] _modules;
-
         public ImageProcessor()
         {
             _instructions = new List<ImageInstruction>();
@@ -31,12 +29,6 @@ namespace Wyam.Modules.ImageProcessor
                 _currentInstruction = new ImageInstruction();
                 _instructions.Add(_currentInstruction);
             }
-        }
-
-        public ImageProcessor ForEachOutputDocument(params IModule[] modules)
-        {
-            _modules = modules;
-            return this; 
         }
 
         public ImageProcessor Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
@@ -157,15 +149,7 @@ namespace Wyam.Modules.ImageProcessor
                             {Wyam.Core.Documents.MetadataKeys.WriteExtension, extension }
                         });
 
-                    if (_modules != null)
-                    {
-                        foreach(var m in _modules)
-                        {
-                            m.Execute(new IDocument[] { clone }, context);
-                        }
-                    }
-                    else
-                        yield return clone;
+                    yield return clone;
                 }
             }
         }
