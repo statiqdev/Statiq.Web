@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Wyam.Abstractions;
+using Wyam.Common;
 using Wyam.Core.Helpers;
 
 namespace Wyam.Modules.ImageProcessor

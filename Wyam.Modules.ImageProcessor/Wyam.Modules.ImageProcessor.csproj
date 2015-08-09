@@ -56,9 +56,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Abstractions\Wyam.Abstractions.csproj">
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
-      <Name>Wyam.Abstractions</Name>
+      <Name>Wyam.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
