@@ -58,6 +58,10 @@ namespace Wyam.Core.Tests.Modules
 
             // When
             IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
+            foreach (IDocument document in inputs.Concat(outputs))
+            {
+                ((IDisposable)document).Dispose();
+            }
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -79,6 +83,10 @@ namespace Wyam.Core.Tests.Modules
 
             // When
             IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
+            foreach (IDocument document in inputs.Concat(outputs))
+            {
+                ((IDisposable)document).Dispose();
+            }
 
             // Then
             Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
@@ -101,10 +109,11 @@ namespace Wyam.Core.Tests.Modules
             WriteFiles writeFiles = new WriteFiles(x => null);
 
             // When
-            IDocument document = writeFiles.Execute(inputs, context).First();
+            IDocument output = writeFiles.Execute(inputs, context).First();
 
             // Then
-            Assert.AreEqual("Test", document.Content);
+            Assert.AreEqual("Test", output.Content);
+            ((IDisposable)output).Dispose();
         }
 
         [TestCase("DestinationFileBase", @"write-test")]
@@ -126,10 +135,15 @@ namespace Wyam.Core.Tests.Modules
             WriteFiles writeFiles = new WriteFiles("txt");
 
             // When
-            IDocument document = writeFiles.Execute(inputs, context).First();
+            IDocument output = writeFiles.Execute(inputs, context).First();
+            foreach (IDocument document in inputs)
+            {
+                ((IDisposable)document).Dispose();
+            }
 
             // Then
-            Assert.That(document.Metadata[key], Is.StringEnding(expectedEnding));
+            Assert.That(output.Metadata[key], Is.StringEnding(expectedEnding));
+            ((IDisposable)output).Dispose();
         }
     }
 }

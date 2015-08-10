@@ -7,17 +7,19 @@ namespace Wyam.Core.Documents
     internal class SeekableStream : Stream
     {
         private readonly Stream _stream;
+        private readonly bool _disposeStream;
         private readonly MemoryStream _memoryStream = new MemoryStream();
         private bool _endOfStream = false;
         private bool _disposed = false;
         
-        public SeekableStream(Stream stream)
+        public SeekableStream(Stream stream, bool disposeStream)
         {
             if (!stream.CanRead)
             {
                 throw new ArgumentException("Wrapped stream must be readable.");
             }
             _stream = stream;
+            _disposeStream = disposeStream;
         }
         
         public override bool CanRead => true;
@@ -150,6 +152,10 @@ namespace Wyam.Core.Documents
             }
 
             _memoryStream?.Dispose();
+            if (_disposeStream)
+            {
+                _stream.Dispose();
+            }
             _disposed = true;
         }
 

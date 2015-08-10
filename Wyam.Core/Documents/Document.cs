@@ -18,12 +18,12 @@ namespace Wyam.Core.Documents
         private bool _disposed;
 
         internal Document(Metadata metadata, Pipeline pipeline)
-            : this("Initial Document", metadata, (string)null, pipeline)
+            : this("Initial Document", metadata, (string)null, pipeline, null)
         {
             _metadata = metadata;
         }
         
-        private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items = null)
+        private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items)
         {
             if (source == null)
             {
@@ -42,7 +42,7 @@ namespace Wyam.Core.Documents
             _pipeline.AddClonedDocument(this);
         }
 
-        private Document(string source, Metadata metadata, Stream stream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items = null)
+        private Document(string source, Metadata metadata, Stream stream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
             : this(source, metadata, (string)null, pipeline, items)
         {
             if (stream != null)
@@ -54,12 +54,13 @@ namespace Wyam.Core.Documents
 
                 if (!stream.CanSeek)
                 {
-                    _stream = new SeekableStream(stream);
+                    _stream = new SeekableStream(stream, disposeStream);
                     _disposeStream = true;
                 }
                 else
                 {
                     _stream = stream;
+                    _disposeStream = disposeStream;
                 }
             }
         }
@@ -152,7 +153,7 @@ namespace Wyam.Core.Documents
 
             if (_disposeStream)
             {
-                _stream.Dispose();
+                _stream?.Dispose();
             }
             _disposed = true;
         }
@@ -177,16 +178,16 @@ namespace Wyam.Core.Documents
             return new Document(Source, _metadata, content, _pipeline, items);
         }
 
-        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(source, _metadata, stream, _pipeline, items);
+            return new Document(source, _metadata, stream, _pipeline, items, disposeStream);
         }
 
-        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, stream, _pipeline, items);
+            return new Document(Source, _metadata, stream, _pipeline, items, disposeStream);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
