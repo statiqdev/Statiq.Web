@@ -45,12 +45,10 @@ namespace Wyam.Modules.Html
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();
                     IHtmlDocument htmlDocument = parser.Parse(x.Stream);
-                    foreach (IElement element in htmlDocument.QuerySelectorAll(_querySelector)
-                        .Where(e => e.Ancestors().All(a => a.NodeName != "a")))
+                    foreach (IElement element in htmlDocument.QuerySelectorAll(_querySelector).Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                     {
                         // Enumerate all descendant text nodes not already in a link element
-                        foreach (IText text in element.Descendents().OfType<IText>()
-                            .Where(t => t.Ancestors().All(a => a.NodeName != "a")))
+                        foreach (IText text in element.Descendents().OfType<IText>().Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                         {
                             string newText = text.Text;
                             foreach (KeyValuePair<string, string> link in links)
