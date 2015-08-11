@@ -102,13 +102,11 @@ namespace Wyam.Core.Modules
                             {
                                 Directory.CreateDirectory(pathDirectory);
                             }
-                            using (FileStream stream = File.Open(path, FileMode.Create))
-                            {
-                                input.Stream.CopyTo(stream);
-                            }
+                            FileStream stream = File.Open(path, FileMode.Create);
+                            input.Stream.CopyTo(stream);
                             context.Trace.Verbose("Wrote file {0}", path);
                             wrote = true;
-                            yield return input.Clone(new Dictionary<string, object>
+                            yield return input.Clone(stream, new Dictionary<string, object>
                             {
                                 {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
                                 {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
