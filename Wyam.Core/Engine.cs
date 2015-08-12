@@ -155,8 +155,11 @@ namespace Wyam.Core
             {
                 using (Trace.WithIndent().Information("Executing {0} pipelines", _pipelines.Count))
                 {
+                    // Setup (clear the document collection and reset cache counters)
                     DocumentCollection.Clear();
                     ExecutionCacheManager.ResetEntryHits();
+
+                    // Enumerate pipelines and execute each in order
                     int c = 1;
                     foreach(Pipeline pipeline in _pipelines.Pipelines)
                     {
@@ -167,7 +170,13 @@ namespace Wyam.Core
                         Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) resulting in {3} output document(s)", 
                             pipeline.Name, c++, _pipelines.Count, DocumentCollection.FromPipeline(pipeline.Name).Count());
                     }
+
+                    // Clean up (clear unhit cache entries, dispose documents)
                     ExecutionCacheManager.ClearUnhitEntries();
+                    foreach (Pipeline pipeline in _pipelines.Pipelines)
+                    {
+                        pipeline.ResetClonedDocuments();
+                    }
                 }
             }
             catch (Exception ex)

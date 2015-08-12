@@ -14,8 +14,8 @@ namespace Wyam.Common
         Stream Stream { get; }
         IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
         IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null);
-        IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null);
-        IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
         IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null);
     }
 }

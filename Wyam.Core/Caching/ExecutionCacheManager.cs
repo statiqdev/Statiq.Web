@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,8 @@ namespace Wyam.Core.Caching
 {
     internal class ExecutionCacheManager
     {
-        private readonly Dictionary<IModule, ExecutionCache> _executionCaches = new Dictionary<IModule, ExecutionCache>();
+        private readonly ConcurrentDictionary<IModule, ExecutionCache> _executionCaches 
+            = new ConcurrentDictionary<IModule, ExecutionCache>();
         private bool _noCache;
 
         public bool NoCache
@@ -25,18 +27,9 @@ namespace Wyam.Core.Caching
         // Creates one if it doesn't exist
         public IExecutionCache Get(IModule module, Engine engine)
         {
-            if (_noCache)
-            {
-                return new NoCache();
-            }
-
-            ExecutionCache cache;
-            if (!_executionCaches.TryGetValue(module, out cache))
-            {
-                cache = new ExecutionCache(engine);
-                _executionCaches.Add(module, cache);
-            }
-            return cache;
+            return _noCache
+                ? (IExecutionCache) new NoCache()
+                : _executionCaches.GetOrAdd(module, new ExecutionCache(engine));
         }
 
         public void ResetEntryHits()

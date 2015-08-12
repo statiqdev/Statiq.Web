@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ namespace Wyam.Core.Caching
     internal class ExecutionCache : IExecutionCache
     {
         private readonly Engine _engine;
-        private Dictionary<string, CacheEntry> _cache = new Dictionary<string, CacheEntry>();
+        private ConcurrentDictionary<string, CacheEntry> _cache 
+            = new ConcurrentDictionary<string, CacheEntry>();
 
         public ExecutionCache(Engine engine)
         {
@@ -135,7 +137,8 @@ namespace Wyam.Core.Caching
         {
             // Faster just to reset the dictionary then iterate twice, once to get keys to remove and again to actually remove
             int count = _cache.Count;
-            _cache = _cache.Where(x => x.Value.Hit).ToDictionary(x => x.Key, x => x.Value);
+            _cache = new ConcurrentDictionary<string, CacheEntry>(
+                _cache.Where(x => x.Value.Hit).ToDictionary(x => x.Key, x => x.Value));
             _engine.Trace.Verbose("Removed {0} stale cache entries for module {1}", count - _cache.Count, module.GetType().Name);
         }
     }
