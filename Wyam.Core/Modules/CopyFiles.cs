@@ -77,7 +77,7 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            return inputs.AsParallel().SelectMany(input =>
             {
                 string path = _sourcePath(input);
                 if (path != null)
@@ -86,27 +86,31 @@ namespace Wyam.Core.Modules
                     string fileRoot = Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
-                        {
-                            string destination = _destinationPath == null
-                                ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(Path.GetDirectoryName(path), Path.GetDirectoryName(file)), Path.GetFileName(file)) 
-                                : _destinationPath(file);
-                            string destinationDirectory = Path.GetDirectoryName(destination);
-                            if (!Directory.Exists(destinationDirectory))
+                        return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
+                            .AsParallel()
+                            .Where(x => _where == null || _where(x))
+                            .Select(file =>
                             {
-                                Directory.CreateDirectory(destinationDirectory);
-                            }
-                            File.Copy(file, destination, true);
-                            context.Trace.Verbose("Copied file {0} to {1}", file, destination);
-                            yield return input.Clone(new Dictionary<string, object>
-                            {
-                                {MetadataKeys.SourceFilePath, file},
-                                {MetadataKeys.DestinationFilePath, destination}
+                                string destination = _destinationPath == null
+                                    ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(Path.GetDirectoryName(path), Path.GetDirectoryName(file)), Path.GetFileName(file)) 
+                                    : _destinationPath(file);
+                                string destinationDirectory = Path.GetDirectoryName(destination);
+                                if (!Directory.Exists(destinationDirectory))
+                                {
+                                    Directory.CreateDirectory(destinationDirectory);
+                                }
+                                File.Copy(file, destination, true);
+                                context.Trace.Verbose("Copied file {0} to {1}", file, destination);
+                                return input.Clone(new Dictionary<string, object>
+                                {
+                                    {MetadataKeys.SourceFilePath, file},
+                                    {MetadataKeys.DestinationFilePath, destination}
+                                });
                             });
-                        }
                     }
                 }
-            }
+                return null;
+            });
         }
     }
 }

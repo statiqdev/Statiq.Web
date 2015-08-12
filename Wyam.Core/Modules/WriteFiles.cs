@@ -57,10 +57,8 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            return inputs.AsParallel().Select(input =>
             {
-                bool wrote = false;
-
                 if (_where == null || _where(input))
                 {
                     // WritePath
@@ -105,8 +103,7 @@ namespace Wyam.Core.Modules
                             FileStream stream = File.Open(path, FileMode.Create);
                             input.Stream.CopyTo(stream);
                             context.Trace.Verbose("Wrote file {0}", path);
-                            wrote = true;
-                            yield return input.Clone(stream, new Dictionary<string, object>
+                            return input.Clone(stream, new Dictionary<string, object>
                             {
                                 {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
                                 {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
@@ -118,12 +115,8 @@ namespace Wyam.Core.Modules
                         }
                     }
                 }
-
-                if (!wrote)
-                {
-                    yield return input;
-                }
-            }
+                return input;
+            });
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Wyam.Common;
 using Wyam.Core.Documents;
@@ -9,7 +11,7 @@ namespace Wyam.Core.Pipelines
 {
     internal class Pipeline : IPipeline, IDisposable
     {
-        private readonly List<Document> _clonedDocuments = new List<Document>();
+        private ConcurrentBag<Document> _clonedDocuments = new ConcurrentBag<Document>();
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
         private bool _disposed;
@@ -118,6 +120,7 @@ namespace Wyam.Core.Pipelines
             foreach (IModule module in modules.Where(x => x != null))
             {
                 string moduleName = module.GetType().Name;
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 using(_engine.Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Count))
                 {
                     try
@@ -131,12 +134,13 @@ namespace Wyam.Core.Pipelines
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();
                         _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
-                        _engine.Trace.Verbose("Executed module {0} resulting in {1} output document(s)", moduleName, documents.Count);
+                        stopwatch.Stop();
+                        _engine.Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
+                            moduleName, stopwatch.ElapsedMilliseconds, documents.Count);
                     }
                     catch (Exception ex)
                     {
-                        _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.Message);
-                        _engine.Trace.Verbose(ex.ToString());
+                        _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.ToString());
                         documents = new List<IDocument>();
                         _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
                         break;
@@ -153,21 +157,14 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ObjectDisposedException(nameof(Pipeline));
             }
-
             ResetClonedDocuments();
             IReadOnlyList<IDocument> resultDocuments = Execute(_modules, null);
-
-            // Dispose any documents that aren't part of the final collection for this pipeline
-            List<Document> disposedDocuments = new List<Document>();
             foreach (Document document in _clonedDocuments.Where(x => !resultDocuments.Contains(x)))
             {
+                // Dispose documents that aren't part of the final collection for this pipeline
                 document.Dispose();
-                disposedDocuments.Add(document);
             }
-            foreach (Document document in disposedDocuments)
-            {
-                _clonedDocuments.Remove(document);
-            }
+            _clonedDocuments = new ConcurrentBag<Document>(resultDocuments.OfType<Document>());
         }
 
         public void AddClonedDocument(Document document) => _clonedDocuments.Add(document);
@@ -178,7 +175,7 @@ namespace Wyam.Core.Pipelines
             {
                 document.Dispose();
             }
-            _clonedDocuments.Clear();
+            _clonedDocuments = new ConcurrentBag<Document>();
         }
 
         public void Dispose()
