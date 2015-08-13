@@ -11,19 +11,17 @@ namespace Wyam.Modules.Markdown
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select(x =>
+            return inputs.AsParallel().Select(x =>
             {
-                using (context.Trace.WithIndent().Verbose("Processing Markdown for {0}", x.Source))
+                context.Trace.Verbose("Processing Markdown for {0}", x.Source);
+                string result;
+                IExecutionCache executionCache = context.ExecutionCache;
+                if (!executionCache.TryGetValue<string>(x, out result))
                 {
-                    string result;
-                    IExecutionCache executionCache = context.ExecutionCache;
-                    if (!executionCache.TryGetValue<string>(x, out result))
-                    {
-                        result = CommonMark.CommonMarkConverter.Convert(x.Content);
-                        executionCache.Set(x, result);
-                    }
-                    return x.Clone(result);
+                    result = CommonMark.CommonMarkConverter.Convert(x.Content);
+                    executionCache.Set(x, result);
                 }
+                return x.Clone(result);
             });
         }
     }

@@ -63,7 +63,7 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            return inputs.AsParallel().SelectMany(input =>
             {
                 string path = _path(input);
                 if (path != null)
@@ -73,26 +73,30 @@ namespace Wyam.Core.Modules
                     string fileRoot = Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        foreach (string file in Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption).Where(x => _where == null || _where(x)))
-                        {
-                            context.Trace.Verbose("Read file {0}", file);
-                            yield return input.Clone(file, File.OpenRead(file), new Dictionary<string, object>
+                        return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
+                            .AsParallel()
+                            .Where(x => _where == null || _where(x))
+                            .Select(file =>
                             {
-                                {MetadataKeys.SourceFileRoot, fileRoot},
-                                {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},
-                                {MetadataKeys.SourceFileExt, Path.GetExtension(file)},
-                                {MetadataKeys.SourceFileName, Path.GetFileName(file)},
-                                {MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)},
-                                {MetadataKeys.SourceFilePath, file},
-                                {MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)},
-                                {MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)},
-                                {MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))},
-                                {MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                context.Trace.Verbose("Read file {0}", file);
+                                return input.Clone(file, File.OpenRead(file), new Dictionary<string, object>
+                                {
+                                    {MetadataKeys.SourceFileRoot, fileRoot},
+                                    {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},
+                                    {MetadataKeys.SourceFileExt, Path.GetExtension(file)},
+                                    {MetadataKeys.SourceFileName, Path.GetFileName(file)},
+                                    {MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)},
+                                    {MetadataKeys.SourceFilePath, file},
+                                    {MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)},
+                                    {MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)},
+                                    {MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))},
+                                    {MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                });
                             });
-                        }
                     }
                 }
-            }
+                return null;
+            });
         }
     }
 }
