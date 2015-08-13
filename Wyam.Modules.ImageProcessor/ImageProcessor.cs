@@ -65,6 +65,8 @@ namespace Wyam.Modules.ImageProcessor
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
+            EnsureCurrentInstruction();
+
             _currentInstruction.Brightness = percentage;
 
             return this;
@@ -74,6 +76,8 @@ namespace Wyam.Modules.ImageProcessor
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            EnsureCurrentInstruction();
 
             _currentInstruction.Brightness = -percentage;
 
@@ -85,6 +89,8 @@ namespace Wyam.Modules.ImageProcessor
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
+            EnsureCurrentInstruction();
+
             _currentInstruction.Opacity = percentage;
 
             return this;
@@ -94,6 +100,8 @@ namespace Wyam.Modules.ImageProcessor
         {
             if (degrees < 0 && degrees > 360)
                 throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}%");
+
+            EnsureCurrentInstruction();
 
             _currentInstruction.Hue = new HueInstruction
             {
@@ -106,6 +114,8 @@ namespace Wyam.Modules.ImageProcessor
 
         public ImageProcessor Tint (Color color)
         {
+            EnsureCurrentInstruction();
+
             _currentInstruction.Tint = color;
 
             return this;
