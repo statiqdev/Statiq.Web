@@ -91,6 +91,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering
         {
             foreach (var entry in Entries)
             {
+                if (entry == null)
+                {
+                    continue;
+                }
+
                 var entryAsString = entry as string;
                 if (entryAsString != null)
                 {

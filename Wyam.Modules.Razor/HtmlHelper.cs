@@ -31,26 +31,25 @@ namespace Wyam.Modules.Razor
             return new HtmlString(value == null ? (string)null : value.ToString());
         }
 
-        // Partial support from HtmlHelperPartialExtensions.cs
-        // Core code is in HtmlHelper.cs
-
-        public IHtmlContent Partial(string partialViewName)
+        public async Task<IHtmlContent> PartialAsync(
+            [NotNull] string partialViewName)
         {
             using (var writer = new StringCollectionTextWriter(Encoding.UTF8))
             {
-                RenderPartialCore(partialViewName, writer);
+                await RenderPartialCoreAsync(partialViewName, writer);
                 return writer.Content;
             }
         }
 
-        public void RenderPartial(string partialViewName)
+        public Task RenderPartialAsync([NotNull] string partialViewName)
         {
-            RenderPartialCore(partialViewName, _viewContext.Writer);
+            return RenderPartialCoreAsync(partialViewName, _viewContext.Writer);
         }
 
-        private void RenderPartialCore(string partialViewName, TextWriter textWriter)
+        protected virtual async Task RenderPartialCoreAsync([NotNull] string partialViewName,
+                                                            TextWriter writer)
         {
-            var viewEngineResult = _viewContext.ViewEngine.FindPartialView(_viewContext, partialViewName);
+            var viewEngineResult = _viewContext.ViewEngine.FindPartialView(ViewContext, partialViewName);
             if (!viewEngineResult.Success)
             {
                 var locations = string.Empty;
@@ -60,14 +59,14 @@ namespace Wyam.Modules.Razor
                         string.Join(Environment.NewLine, viewEngineResult.SearchedLocations);
                 }
 
-                throw new InvalidOperationException(string.Format("Partial view {0} not found in {1}.", partialViewName, locations));
+                throw new InvalidOperationException($"Partial view {partialViewName} not found in {locations}.");
             }
 
             var view = viewEngineResult.View;
             using (view as IDisposable)
             {
-                var viewContext = new ViewContext(_viewContext, view, _viewContext.ViewData, textWriter);
-                AsyncHelper.RunSync(() => viewEngineResult.View.RenderAsync(viewContext));
+                var viewContext = new ViewContext(_viewContext, view, _viewContext.ViewData, writer);
+                await viewEngineResult.View.RenderAsync(viewContext);
             }
         }
 
