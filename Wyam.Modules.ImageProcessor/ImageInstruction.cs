@@ -5,6 +5,14 @@ using img = ImageProcessor.Imaging;
 
 namespace Wyam.Modules.ImageProcessor
 {
+
+    public class HueInstruction
+    {
+        public int Degrees { get; set; }
+
+        public bool Rotate { get; set; } = false;
+    }
+
     public class ImageInstruction
     {
         public int? Width { get; set; }
@@ -17,9 +25,15 @@ namespace Wyam.Modules.ImageProcessor
 
         public int? Brightness { get; set; }
 
+        public int? Opacity { get; set; }
+
+        public HueInstruction Hue { get; set; }
+
+        public Color? Tint { get; set; }
+
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
-        public Size? GetSize()
+        public Size? GetCropSize()
         {
             if (Width.HasValue && Height.HasValue)
                 return new Size(Width.Value, Height.Value);
@@ -31,7 +45,7 @@ namespace Wyam.Modules.ImageProcessor
             return null;
         }
 
-        public bool IsNeedResize => GetSize() != null;
+        public bool IsNeedResize => GetCropSize() != null;
 
         public bool IsCropRequired
         {
@@ -66,6 +80,21 @@ namespace Wyam.Modules.ImageProcessor
             if (Brightness.HasValue && Brightness < 0)
             {
                 suffix += $"-d{Brightness.Value * -1}"; //only shows positive number
+            }
+
+            if (Opacity.HasValue)
+            {
+                suffix += $"-o{Opacity.Value}";
+            }
+
+            if (Hue != null)
+            {
+                suffix += $"-h{Hue.Degrees}";
+            }
+
+            if (Tint.HasValue)
+            {
+                suffix += $"-t{Tint.Value.ToString()}";
             }
 
             return suffix;

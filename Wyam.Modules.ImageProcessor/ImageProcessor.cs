@@ -80,6 +80,37 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
+        public ImageProcessor Opacity(short percentage)
+        {
+            if (percentage < 0 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            _currentInstruction.Opacity = percentage;
+
+            return this;
+        }
+
+        public ImageProcessor Hue(int degrees, bool rotate = false)
+        {
+            if (degrees < 0 && degrees > 360)
+                throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}%");
+
+            _currentInstruction.Hue = new HueInstruction
+            {
+                Degrees = degrees,
+                Rotate = rotate
+            };
+
+            return this;
+        }
+
+        public ImageProcessor Tint (Color color)
+        {
+            _currentInstruction.Tint = color;
+
+            return this;
+        }
+
         public ImageProcessor And
         {
             get
@@ -167,7 +198,7 @@ namespace Wyam.Modules.ImageProcessor
                     if (ins.IsCropRequired)
                     {
                         var layer = new ResizeLayer(
-                            size: ins.GetSize().Value,
+                            size: ins.GetCropSize().Value,
                             anchorPosition: ins.GetAnchorPosition(),
                             resizeMode: ResizeMode.Crop
                             );
@@ -176,7 +207,7 @@ namespace Wyam.Modules.ImageProcessor
                     }
                     else
                     {
-                        fac.Resize(ins.GetSize().Value);
+                        fac.Resize(ins.GetCropSize().Value);
                     }
                 }
 
@@ -193,6 +224,21 @@ namespace Wyam.Modules.ImageProcessor
                 if (ins.Constraint.HasValue)
                 {
                     fac.Constrain(ins.Constraint.Value);
+                }
+
+                if (ins.Opacity.HasValue)
+                {
+                    fac.Alpha(ins.Opacity.Value);
+                }
+
+                if (ins.Hue != null)
+                {
+                    fac.Hue(ins.Hue.Degrees, ins.Hue.Rotate);
+                }
+
+                if (ins.Tint != null)
+                {
+                    fac.Tint(ins.Tint.Value);
                 }
 
                 var outputStream = new MemoryStream();
