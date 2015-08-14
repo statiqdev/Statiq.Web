@@ -37,6 +37,8 @@ namespace Wyam.Modules.ImageProcessor
 
         public int? Saturation { get; set; }
 
+        public int? Contrast { get; set; }
+
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
         public Size? GetCropSize()
@@ -116,6 +118,11 @@ namespace Wyam.Modules.ImageProcessor
             if (Saturation.HasValue && Saturation < 0)
             {
                 suffix += $"-ds{Saturation.Value * -1}"; //only shows positive number
+            }
+
+            if (Contrast.HasValue)
+            {
+                suffix += $"-c{Contrast.Value}"; 
             }
 
             return suffix;

@@ -96,7 +96,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetHue(int degrees, bool rotate = false)
+        public ImageProcessor SetHue(short degrees, bool rotate = false)
         {
             if (degrees < 0 && degrees > 360)
                 throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
@@ -128,7 +128,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Saturate(int percentage)
+        public ImageProcessor Saturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -138,7 +138,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Desaturate(int percentage)
+        public ImageProcessor Desaturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -148,13 +148,24 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetJpegQuality(int quality)
+
+        public ImageProcessor SetJpegQuality(short quality)
         {
             if (quality < 0 && quality > 100)
                 throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
 
             EnsureCurrentInstruction();
             _currentInstruction.JpegQuality = quality;
+            return this;
+        }
+
+        public ImageProcessor SetContrast(short percentage)
+        {
+            if (percentage < -100 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between -100 and 100 instead of {percentage}%");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.Contrast = percentage;
             return this;
         }
 
@@ -297,6 +308,11 @@ namespace Wyam.Modules.ImageProcessor
                 if (ins.Saturation.HasValue)
                 {
                     fac.Saturation(ins.Saturation.Value);
+                }
+
+                if (ins.Contrast.HasValue)
+                {
+                    fac.Contrast(ins.Contrast.Value);
                 }
 
                 var outputStream = new MemoryStream();
