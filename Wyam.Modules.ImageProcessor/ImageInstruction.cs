@@ -39,6 +39,12 @@ namespace Wyam.Modules.ImageProcessor
 
         public int? Contrast { get; set; }
 
+        public string FileNamePrefix { get; set; }
+
+        public string FileNameSuffix { get; set; }
+
+        public bool IsFileNameCustomized => !string.IsNullOrWhiteSpace(FileNamePrefix) || !string.IsNullOrWhiteSpace(FileNameSuffix);
+
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
         public Size? GetCropSize()

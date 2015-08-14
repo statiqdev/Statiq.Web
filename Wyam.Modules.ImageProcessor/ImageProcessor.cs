@@ -169,6 +169,26 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
+        public ImageProcessor SetSuffix(string suffix)
+        {
+            if (string.IsNullOrWhiteSpace(suffix))
+                throw new ArgumentException("Please supply the suffix");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.FileNameSuffix = suffix;
+            return this;
+        }
+
+        public ImageProcessor SetPrefix(string prefix)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+                throw new ArgumentException("Please supply the prefix");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.FileNamePrefix = prefix;
+            return this;
+        }
+
         public ImageProcessor And
         {
             get
@@ -226,7 +246,17 @@ namespace Wyam.Modules.ImageProcessor
                     }
 
                     string destinationFile = Path.GetFileNameWithoutExtension(path);
-                    destinationFile += ins.GetSuffix() + extension;
+
+                    if (ins.IsFileNameCustomized)
+                    {
+                        if (!string.IsNullOrWhiteSpace(ins.FileNamePrefix))
+                            destinationFile = ins.FileNamePrefix + destinationFile;
+
+                        if (!string.IsNullOrWhiteSpace(ins.FileNameSuffix))
+                            destinationFile += ins.FileNameSuffix + extension;
+                    }
+                    else
+                        destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
                     context.Trace.Verbose($"WritePath: {destinationPath}");
