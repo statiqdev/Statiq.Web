@@ -201,13 +201,13 @@ namespace Wyam.Modules.ImageProcessor
         ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
         {
             ISupportedImageFormat format = null;
-
-            if (extension == ".jpg" || extension == ".jpeg")
+            
+            if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
                 format = new JpegFormat { Quality = ins.JpegQuality };
             else
-                if (extension == ".gif")
+                if (extension.Equals(".gif", StringComparison.OrdinalIgnoreCase))
                 format = new GifFormat { };
-            else if (extension == ".png")
+            else if (extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
                 format = new PngFormat { };
 
             return format;
