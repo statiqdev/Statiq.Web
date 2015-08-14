@@ -94,7 +94,7 @@ namespace Wyam.Modules.ImageProcessor
 
             if (Tint.HasValue)
             {
-                suffix += $"-t{Tint.Value.ToString()}";
+                suffix += $"-t{Tint.Value.ToString().Replace("Color [", "").Replace("]", "")}";
             }
 
             return suffix;

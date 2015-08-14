@@ -115,7 +115,6 @@ namespace Wyam.Modules.ImageProcessor
         public ImageProcessor Tint (Color color)
         {
             EnsureCurrentInstruction();
-
             _currentInstruction.Tint = color;
 
             return this;
