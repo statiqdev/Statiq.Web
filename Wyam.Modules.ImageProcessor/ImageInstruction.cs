@@ -31,6 +31,12 @@ namespace Wyam.Modules.ImageProcessor
 
         public Color? Tint { get; set; }
 
+        public Color? Vignette { get; set; }
+
+        public int JpegQuality { get; set; } = 70;
+
+        public int? Saturation { get; set; }
+
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
         public Size? GetCropSize()
@@ -95,6 +101,21 @@ namespace Wyam.Modules.ImageProcessor
             if (Tint.HasValue)
             {
                 suffix += $"-t{Tint.Value.ToString().Replace("Color [", "").Replace("]", "")}";
+            }
+
+            if (Vignette.HasValue)
+            {
+                suffix += $"-v{Vignette.Value.ToString().Replace("Color [", "").Replace("]", "")}";
+            }
+
+            if (Saturation.HasValue && Saturation > 0)
+            {
+                suffix += $"-s{Saturation.Value}";
+            }
+
+            if (Saturation.HasValue && Saturation < 0)
+            {
+                suffix += $"-ds{Saturation.Value * -1}"; //only shows positive number
             }
 
             return suffix;

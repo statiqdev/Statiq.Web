@@ -84,7 +84,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Opacity(short percentage)
+        public ImageProcessor SetOpacity(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -96,10 +96,10 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Hue(int degrees, bool rotate = false)
+        public ImageProcessor SetHue(int degrees, bool rotate = false)
         {
             if (degrees < 0 && degrees > 360)
-                throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}%");
+                throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
 
             EnsureCurrentInstruction();
 
@@ -120,6 +120,44 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
+        public ImageProcessor Vignette(Color color)
+        {
+            EnsureCurrentInstruction();
+            _currentInstruction.Vignette = color;
+
+            return this;
+        }
+
+        public ImageProcessor Saturate(int percentage)
+        {
+            if (percentage < 0 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.Saturation = percentage;
+            return this;
+        }
+
+        public ImageProcessor Desaturate(int percentage)
+        {
+            if (percentage < 0 && percentage > 100)
+                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.Saturation = -percentage;
+            return this;
+        }
+
+        public ImageProcessor SetJpegQuality(int quality)
+        {
+            if (quality < 0 && quality > 100)
+                throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
+
+            EnsureCurrentInstruction();
+            _currentInstruction.JpegQuality = quality;
+            return this;
+        }
+
         public ImageProcessor And
         {
             get
@@ -129,12 +167,12 @@ namespace Wyam.Modules.ImageProcessor
             }
         }
 
-        ISupportedImageFormat GetFormat(string extension)
+        ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
         {
             ISupportedImageFormat format = null;
 
             if (extension == ".jpg" || extension == ".jpeg")
-                format = new JpegFormat { Quality = 70 };
+                format = new JpegFormat { Quality = ins.JpegQuality };
             else
                 if (extension == ".gif")
                 format = new GifFormat { };
@@ -164,12 +202,13 @@ namespace Wyam.Modules.ImageProcessor
 
                 var extension = Path.GetExtension(path);
 
-                ISupportedImageFormat format = GetFormat(extension);
-                if (format == null)
-                    continue;
-
+                
                 foreach (var ins in _instructions)
                 {
+                    ISupportedImageFormat format = GetFormat(extension, ins);
+                    if (format == null)
+                        continue;
+
                     if (input.Stream.CanSeek)
                     {
                         input.Stream.Seek(0, SeekOrigin.Begin);
@@ -248,6 +287,16 @@ namespace Wyam.Modules.ImageProcessor
                 if (ins.Tint != null)
                 {
                     fac.Tint(ins.Tint.Value);
+                }
+
+                if (ins.Vignette != null)
+                {
+                    fac.Vignette(ins.Vignette.Value);
+                }
+
+                if (ins.Saturation.HasValue)
+                {
+                    fac.Saturation(ins.Saturation.Value);
                 }
 
                 var outputStream = new MemoryStream();
