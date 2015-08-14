@@ -7,7 +7,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Wyam.Common;
-using Wyam.Core.Helpers;
 
 namespace Wyam.Modules.ImageProcessor
 {
@@ -265,8 +264,8 @@ namespace Wyam.Modules.ImageProcessor
 
                     var clone = input.Clone(output, new Dictionary<string, object>
                         {
-                            {Wyam.Core.Documents.MetadataKeys.WritePath, destinationPath},
-                            {Wyam.Core.Documents.MetadataKeys.WriteExtension, extension }
+                            { "WritePath", destinationPath},
+                            { "WriteExtension", extension }
                         });
 
                     yield return clone;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core.Helpers
+namespace Wyam.Common
 {
     // This contains some additional helpers for the file system
     public class PathHelper

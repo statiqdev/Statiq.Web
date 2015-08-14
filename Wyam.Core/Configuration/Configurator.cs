@@ -202,7 +202,6 @@ namespace Wyam.Core.Configuration
                         "Wyam.Core",
                         "Wyam.Core.Configuration",
                         "Wyam.Core.Modules",
-                        "Wyam.Core.Helpers",
                         "Wyam.Common"
                     };
 

@@ -8,9 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Wyam.Core.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dave Glick")]
 [assembly: AssemblyProduct("Wyam.Core.Tests")]
-[assembly: AssemblyCopyright("Copyright © Dave Glick")]
+[assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Wyam.Modules.Html")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dave Glick")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Wyam.Modules.Html")]
-[assembly: AssemblyCopyright("Copyright © Dave Glick")]
+[assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

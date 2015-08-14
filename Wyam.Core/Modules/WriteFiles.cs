@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
-using Wyam.Core.Helpers;
 using Wyam.Common;
 using Wyam.Core.Documents;
 

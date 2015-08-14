@@ -113,7 +113,6 @@
     <Compile Include="Modules\Where.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
-    <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Modules\Append.cs" />
     <Compile Include="Modules\Branch.cs" />
     <Compile Include="Modules\Content.cs" />

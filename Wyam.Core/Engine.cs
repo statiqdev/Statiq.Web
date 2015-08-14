@@ -15,7 +15,6 @@ using Wyam.Core.NuGet;
 using Wyam.Common;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
-using Wyam.Core.Helpers;
 using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
 

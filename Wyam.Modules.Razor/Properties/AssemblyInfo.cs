@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Wyam.Modules.Razor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dave Glick")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Wyam.Modules.Razor")]
-[assembly: AssemblyCopyright("Copyright © Dave Glick")]
+[assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

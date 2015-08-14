@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Wyam.Core.Helpers;
+using Wyam.Common;
 
 namespace Wyam.Core.Tests.Helpers
 {
