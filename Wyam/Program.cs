@@ -58,6 +58,9 @@ namespace Wyam
                 return;
             }
 
+            // It's not a serious console app unless there's some ASCII art
+            OutputLogo();
+
             // Fix the root folder and other files
             _rootFolder = _rootFolder == null ? Environment.CurrentDirectory : Path.Combine(Environment.CurrentDirectory, _rootFolder);
             _logFile = _logFile == null ? null : Path.Combine(_rootFolder, _logFile);
@@ -521,6 +524,21 @@ namespace Wyam
 	                CopyFiles(""*"").Where(x => Path.GetExtension(x) != "".cshtml"" && Path.GetExtension(x) != "".md"")
                 );
             ";
+        }
+
+        private void OutputLogo()
+        {
+            Console.WriteLine(@"
+   ,@@@@@       /@\        @@@@@       |                                        
+   @@@@@@      @@@@@|     $@@@@@h      |                                        
+  $@@@@@     ,@@@@@@@    g@@@@@P       |                                        
+ ]@@@@@M    g@@@@@@@    g@@@@@P        |     @@P  @@@ ,@@%@  g$r,g@p   ,@@   ,@g
+ $@@@@@    @@@@@@@@@   g@@@@@P         |    ]@@ ,@@@ ,$@` $@@@ g@P$@  ,@@@gg@@@@
+j@@@@@   g@@@@@@@@@p ,@@@@@@@          |    $@g@@@9@@@@`  g@P g@$@$@@,@@ *P^`]@h
+$@@@@@g@@@@@@@@B@@@@@@@@@@@P           |     *R^`  `BP   ?@`  B`  ?0` 0      ?P 
+`$@@@@@@@@@@@`  ]@@@@@@@@@`            |                                        
+  $@@@@@@@P`     ?$@@@@@P              |                                        
+    `^``           *P*`                |                                        ");
         }
     }
 }

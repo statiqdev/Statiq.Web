@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncHelper.cs" />
     <Compile Include="BaseRazorPage.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
     <Compile Include="DocumentFileProvider.cs" />
@@ -80,6 +79,7 @@
     <Compile Include="HttpAbstractions\Microsoft.AspNet.Html.Abstractions\IHtmlContent.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\BufferedHtmlContent.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\DynamicViewData.cs" />
+    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\HtmlHelperPartialExtensions.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\HtmlString.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\StringCollectionTextWriter.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\ViewEngine\IView.cs" />

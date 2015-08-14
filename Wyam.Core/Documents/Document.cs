@@ -18,12 +18,22 @@ namespace Wyam.Core.Documents
         private bool _disposed;
 
         internal Document(Metadata metadata, Pipeline pipeline)
-            : this("Initial Document", metadata, (string)null, pipeline, null)
+            : this("Initial Document", metadata, null, null, pipeline, null, true)
         {
             _metadata = metadata;
         }
         
         private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items)
+            : this(source, metadata, null, content, pipeline, items, true)
+        {
+        }
+
+        private Document(string source, Metadata metadata, Stream stream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(source, metadata, stream, null, pipeline, items, disposeStream)
+        {
+        }
+
+        private Document(string source, Metadata metadata, Stream stream, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
             if (source == null)
             {
@@ -40,11 +50,7 @@ namespace Wyam.Core.Documents
 
             _pipeline = pipeline;
             _pipeline.AddClonedDocument(this);
-        }
 
-        private Document(string source, Metadata metadata, Stream stream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(source, metadata, (string)null, pipeline, items)
-        {
             if (stream != null)
             {
                 if (!stream.CanRead)
@@ -79,7 +85,8 @@ namespace Wyam.Core.Documents
                 {
                     if (_stream != null)
                     {
-                        using (StreamReader reader = new StreamReader(_stream, true))
+                        _stream.Position = 0;
+                        using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
                         {
                             _content = reader.ReadToEnd();
                         }
@@ -193,7 +200,10 @@ namespace Wyam.Core.Documents
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
-            return _stream != null ? Clone(_stream, items) : Clone(_content, items);
+
+            // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
+            _disposeStream = false;
+            return new Document(Source, _metadata, _stream, _content, _pipeline, items, _disposeStream);
         }
 
         // IMetadata

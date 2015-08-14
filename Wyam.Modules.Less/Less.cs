@@ -20,15 +20,16 @@ namespace Wyam.Modules.Less
         {
             DotlessConfiguration config = DotlessConfiguration.GetDefault();
             config.Logger = typeof (LessLogger);
-
             EngineFactory engineFactory = new EngineFactory(config);
-            ILessEngine engine = engineFactory.GetEngine();
-
-            // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
-            engine.AsDynamic().Underlying.Cache = new LessCache(context.ExecutionCache);
-
-            return inputs.Select(x =>
+            
+            return inputs.AsParallel().Select(x =>
             {
+                context.Trace.Verbose("Processing Less for {0}", x.Source);
+                ILessEngine engine = engineFactory.GetEngine();
+                
+                // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
+                engine.AsDynamic().Underlying.Cache = new LessCache(context.ExecutionCache);
+
                 string path = x.Get<string>("SourceFilePath", null);
                 string fileName = null;
                 if (path != null)
@@ -41,11 +42,8 @@ namespace Wyam.Modules.Less
                     engine.CurrentDirectory = context.InputFolder;
                     fileName = Path.GetRandomFileName();
                 }
-                using (context.Trace.WithIndent().Verbose("Processing Less for {0}", x.Source))
-                {
-                    string content = engine.TransformToCss(x.Content, fileName);
-                    return x.Clone(content);
-                }
+                string content = engine.TransformToCss(x.Content, fileName);
+                return x.Clone(content);
             });
         }
     }
