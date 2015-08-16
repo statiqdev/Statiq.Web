@@ -169,7 +169,7 @@ namespace Wyam.Core.Pipelines
 
         public void AddClonedDocument(Document document) => _clonedDocuments.Add(document);
 
-        public void ResetClonedDocuments()
+        private void ResetClonedDocuments()
         {
             foreach (Document document in _clonedDocuments)
             {

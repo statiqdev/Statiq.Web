@@ -139,11 +139,15 @@ namespace Wyam.Core.Documents
                 return string.Empty;
             }
 
+            // Return from the buffered string content if available
             if (_content != null)
             {
                 return _content.Length < 128 ? _content : _content.Substring(0, 128);
             }
-            using (StreamReader reader = new StreamReader(_stream, true))
+
+            // Otherwise, use the stream
+            _stream.Position = 0;
+            using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
             {
                 char[] buffer = new char[128];
                 int count = reader.Read(buffer, 0, 128);
