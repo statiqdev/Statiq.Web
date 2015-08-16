@@ -8,15 +8,15 @@ using System.IO;
 using System.Linq;
 using Wyam.Common;
 
-namespace Wyam.Modules.ImageProcessor
+namespace Wyam.Modules.Images
 {
-    public class ImageProcessor : IModule
+    public class Image : IModule
     {
         List<ImageInstruction> _instructions;
 
         ImageInstruction _currentInstruction;
 
-        public ImageProcessor()
+        public Image()
         {
             _instructions = new List<ImageInstruction>();
         }
@@ -30,7 +30,7 @@ namespace Wyam.Modules.ImageProcessor
             }
         }
 
-        public ImageProcessor Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
+        public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
         {
             EnsureCurrentInstruction();
 
@@ -41,7 +41,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Constrain(int width, int height)
+        public Image Constrain(int width, int height)
         {
             EnsureCurrentInstruction();
 
@@ -50,7 +50,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor ApplyFilters(params ImageFilter[] filters)
+        public Image ApplyFilters(params ImageFilter[] filters)
         {
             EnsureCurrentInstruction();
 
@@ -59,7 +59,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Brighten(short percentage)
+        public Image Brighten(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -71,7 +71,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Darken(short percentage)
+        public Image Darken(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -83,7 +83,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetOpacity(short percentage)
+        public Image SetOpacity(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -95,7 +95,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetHue(short degrees, bool rotate = false)
+        public Image SetHue(short degrees, bool rotate = false)
         {
             if (degrees < 0 && degrees > 360)
                 throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
@@ -111,7 +111,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Tint (Color color)
+        public Image Tint (Color color)
         {
             EnsureCurrentInstruction();
             _currentInstruction.Tint = color;
@@ -119,7 +119,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Vignette(Color color)
+        public Image Vignette(Color color)
         {
             EnsureCurrentInstruction();
             _currentInstruction.Vignette = color;
@@ -127,7 +127,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Saturate(short percentage)
+        public Image Saturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -137,7 +137,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor Desaturate(short percentage)
+        public Image Desaturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
@@ -148,7 +148,7 @@ namespace Wyam.Modules.ImageProcessor
         }
 
 
-        public ImageProcessor SetJpegQuality(short quality)
+        public Image SetJpegQuality(short quality)
         {
             if (quality < 0 && quality > 100)
                 throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
@@ -158,7 +158,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetContrast(short percentage)
+        public Image SetContrast(short percentage)
         {
             if (percentage < -100 && percentage > 100)
                 throw new ArgumentException($"Percentage must be between -100 and 100 instead of {percentage}%");
@@ -168,7 +168,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetSuffix(string suffix)
+        public Image SetSuffix(string suffix)
         {
             if (string.IsNullOrWhiteSpace(suffix))
                 throw new ArgumentException("Please supply the suffix");
@@ -178,7 +178,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor SetPrefix(string prefix)
+        public Image SetPrefix(string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
                 throw new ArgumentException("Please supply the prefix");
@@ -188,7 +188,7 @@ namespace Wyam.Modules.ImageProcessor
             return this;
         }
 
-        public ImageProcessor And
+        public Image And
         {
             get
             {

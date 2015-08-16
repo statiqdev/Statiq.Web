@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using img = ImageProcessor.Imaging;
 
-namespace Wyam.Modules.ImageProcessor
+namespace Wyam.Modules.Images
 {
 
     public class HueInstruction

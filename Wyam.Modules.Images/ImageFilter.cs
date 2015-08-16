@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Modules.ImageProcessor
+namespace Wyam.Modules.Images
 {
     public enum ImageFilter
     {

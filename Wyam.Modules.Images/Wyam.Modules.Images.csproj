@@ -7,8 +7,8 @@
     <ProjectGuid>{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wyam.Modules.ImageProcessor</RootNamespace>
-    <AssemblyName>Wyam.Modules.ImageProcessor</AssemblyName>
+    <RootNamespace>Wyam.Modules.Images</RootNamespace>
+    <AssemblyName>Wyam.Modules.Images</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -48,7 +48,7 @@
     <Compile Include="AnchorPosition.cs" />
     <Compile Include="ImageFilter.cs" />
     <Compile Include="ImageInstruction.cs" />
-    <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Image.cs" />
     <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

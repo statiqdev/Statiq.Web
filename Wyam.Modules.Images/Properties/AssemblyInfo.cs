@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wyam.Modules.ImageProcessor")]
+[assembly: AssemblyTitle("Wyam.Modules.Images")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Wyam.Modules.ImageProcessor")]
+[assembly: AssemblyProduct("Wyam.Modules.Images")]
 [assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

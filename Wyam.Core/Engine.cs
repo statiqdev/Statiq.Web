@@ -174,12 +174,8 @@ namespace Wyam.Core
                         }
                     }
 
-                    // Clean up (clear unhit cache entries, dispose documents)
+                    // Clean up (clear unhit cache entries)
                     ExecutionCacheManager.ClearUnhitEntries();
-                    foreach (Pipeline pipeline in _pipelines.Pipelines)
-                    {
-                        pipeline.ResetClonedDocuments();
-                    }
 
                     engineStopwatch.Stop();
                     Trace.Information("Executed {0} pipelines in {1} ms",

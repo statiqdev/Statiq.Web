@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ImageProcessor;
 using ImageProcessor.Imaging;
 
-namespace Wyam.Modules.ImageProcessor
+namespace Wyam.Modules.Images
 {
     public enum AnchorPosition
     {

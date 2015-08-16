@@ -1,4 +1,4 @@
-﻿namespace Wyam.Modules.ImageProcessor
+﻿namespace Wyam.Modules.Images
 {
     public static class MetadataKeys
     {
