@@ -14,13 +14,17 @@ namespace Wyam.Modules.Html
 {
     public class Excerpt : IModule
     {
-        private string _querySelector;
-        private string _metadataKey;
+        private string _querySelector = "p";
+        private string _metadataKey = "Excerpt";
+        private bool _outerHtml = true;
 
-        public Excerpt(string querySelector = "p", string metadataKey = "Excerpt")
+        public Excerpt()
+        {
+        }
+
+        public Excerpt(string querySelector)
         {
             _querySelector = querySelector;
-            _metadataKey = metadataKey;
         }
 
         public Excerpt SetMatadataKey(string metadataKey)
@@ -32,6 +36,12 @@ namespace Wyam.Modules.Html
         public Excerpt SetQuerySelector(string querySelector)
         {
             _querySelector = querySelector;
+            return this;
+        }
+
+        public Excerpt SetOuterHtml(bool outerHtml)
+        {
+            _outerHtml = outerHtml;
             return this;
         }
 
@@ -48,7 +58,7 @@ namespace Wyam.Modules.Html
                     {
                         return x.Clone(new Dictionary<string, object>()
                         {
-                            {_metadataKey, element.OuterHtml}
+                            {_metadataKey, _outerHtml ? element.OuterHtml : element.InnerHtml}
                         });
                     }
                     return x;
