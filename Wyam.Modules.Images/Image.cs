@@ -16,6 +16,8 @@ namespace Wyam.Modules.Images
 
         ImageInstruction _currentInstruction;
 
+        bool _skipIfExists;
+
         public Image()
         {
             _instructions = new List<ImageInstruction>();
@@ -28,6 +30,12 @@ namespace Wyam.Modules.Images
                 _currentInstruction = new ImageInstruction();
                 _instructions.Add(_currentInstruction);
             }
+        }
+
+        public Image SkipIfExists()
+        {
+            _skipIfExists = true;
+            return this;
         }
 
         public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
@@ -258,6 +266,13 @@ namespace Wyam.Modules.Images
                         destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
+
+                    if (_skipIfExists && File.Exists(destinationPath))
+                    {
+                        context.Trace.Verbose($"SkipPath: {destinationPath}");
+                        continue;
+                    }
+
                     context.Trace.Verbose($"WritePath: {destinationPath}");
 
                     var output = ProcessImage(input.Stream, format, ins);
