@@ -162,15 +162,16 @@ namespace Wyam.Core.Tests
                 new Execute(x => new[]
                 {
                     x.Clone((c++).ToString())
-                }));
+                }),
+                new Meta("Content", x => x.Content));
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(2, engine.Documents.FromPipeline("Pipeline 1").Count());
-            Assert.AreEqual("2", engine.Documents.FromPipeline("Pipeline 1").First().Content);
-            Assert.AreEqual("3", engine.Documents.FromPipeline("Pipeline 1").Skip(1).First().Content);
+            Assert.AreEqual("2", engine.Documents.FromPipeline("Pipeline 1").First().String("Content"));
+            Assert.AreEqual("3", engine.Documents.FromPipeline("Pipeline 1").Skip(1).First().String("Content"));
         }
     }
 }

@@ -89,14 +89,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
             Razor razor = new Razor();
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
 
         [Test]
@@ -107,14 +108,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"Layout\Test.cshtml");
             Razor razor = new Razor();
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
 
         [Test]
@@ -125,14 +127,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"ViewStartAndLayout\Test.cshtml");
             Razor razor = new Razor();
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
 
         [Test]
@@ -143,14 +146,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"AlternateViewStartPath\Test.cshtml");
             Razor razor = new Razor().SetViewStart(@"AlternateViewStart\_ViewStart.cshtml");
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
 
         [Test]
@@ -161,14 +165,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"IgnoreUnderscores\*.cshtml");
             Razor razor = new Razor();
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
 
         [Test]
@@ -179,14 +184,15 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"AlternateIgnorePrefix\*.cshtml");
             Razor razor = new Razor().IgnorePrefix("Ignore");
-            engine.Pipelines.Add("Pipeline", readFiles, razor);
+            Meta meta = new Meta("Content", x => x.Content);
+            engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
             engine.Execute();
 
             // Then
             Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().Content);
+            Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
         }
     }
 }
