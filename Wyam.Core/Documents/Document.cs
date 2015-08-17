@@ -8,6 +8,7 @@ using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Documents
 {
+    // Because it's immutable, document metadata can still be accessed after disposal
     internal class Document : IDocument, IDisposable
     {
         private readonly Pipeline _pipeline; 
