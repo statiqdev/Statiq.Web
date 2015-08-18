@@ -9,6 +9,7 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Documents
 {
     // Because it's immutable, document metadata can still be accessed after disposal
+    // Document source must be unique within the pipeline
     internal class Document : IDocument, IDisposable
     {
         private readonly Pipeline _pipeline; 
@@ -19,7 +20,7 @@ namespace Wyam.Core.Documents
         private bool _disposed;
 
         internal Document(Metadata metadata, Pipeline pipeline)
-            : this("Initial Document", metadata, null, null, pipeline, null, true)
+            : this(string.Empty, metadata, null, null, pipeline, null, true)
         {
             _metadata = metadata;
         }
@@ -39,10 +40,6 @@ namespace Wyam.Core.Documents
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
-            }
-            if (string.IsNullOrWhiteSpace(source))
-            {
-                throw new ArgumentException(nameof(source));
             }
 
             Source = source;
@@ -181,6 +178,7 @@ namespace Wyam.Core.Documents
         public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
+            _pipeline.AddDocumentSource(source);
             return new Document(source, _metadata, content, _pipeline, items);
         }
 
@@ -193,6 +191,7 @@ namespace Wyam.Core.Documents
         public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
+            _pipeline.AddDocumentSource(source);
             return new Document(source, _metadata, stream, _pipeline, items, disposeStream);
         }
 

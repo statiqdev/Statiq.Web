@@ -6,5 +6,7 @@ namespace Wyam.Common
     {
         IPipeline Add(params IModule[] modules);
         IPipeline Add(string name, params IModule[] modules);
+        IPipeline Add(string name, bool processDocumentsOnce, params IModule[] modules);
+        IPipeline Add(bool processDocumentsOnce, params IModule[] modules);
     }
 }
