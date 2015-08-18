@@ -18,9 +18,10 @@ namespace Wyam.Modules.Images
 
         bool _skipIfExists;
 
-        public Image()
+        public Image(bool skipIfExists = false)
         {
             _instructions = new List<ImageInstruction>();
+            _skipIfExists = skipIfExists;
         }
 
         void EnsureCurrentInstruction()
@@ -30,12 +31,6 @@ namespace Wyam.Modules.Images
                 _currentInstruction = new ImageInstruction();
                 _instructions.Add(_currentInstruction);
             }
-        }
-
-        public Image SkipIfExists()
-        {
-            _skipIfExists = true;
-            return this;
         }
 
         public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
