@@ -40,11 +40,12 @@ namespace Wyam.Core.Caching
             }
         }
 
-        public void ClearUnhitEntries()
+        public void ClearUnhitEntries(Engine engine)
         {
             foreach (KeyValuePair<IModule, ExecutionCache> item in _executionCaches)
             {
-                item.Value.ClearUnhitEntries(item.Key);
+                int count = item.Value.ClearUnhitEntries().Count;
+                engine.Trace.Verbose("Removed {0} stale cache entries for module {1}", count, item.Key.GetType().Name);
             }
         }
     }

@@ -15,6 +15,7 @@ namespace Wyam.Core.Tests
         public int ExecuteCount { get; set; }
         public int InputCount { get; set; }
         public int OutputCount { get; set; }
+        public bool CloneSource { get; set; }  // Indicates whether the clone call should output a source
 
         public CountModule(string valueKey)
         {
@@ -23,6 +24,7 @@ namespace Wyam.Core.Tests
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            int sourceCount = 0;
             ExecuteCount++;
             foreach (IDocument input in inputs)
             {
@@ -31,8 +33,16 @@ namespace Wyam.Core.Tests
                 {
                     OutputCount++;
                     Value++;
-                    yield return input.Clone(input.Content == null ? Value.ToString() : input.Content + Value, 
-                        new Dictionary<string, object> { { ValueKey, Value } });
+                    if(CloneSource)
+                    {
+                        yield return input.Clone(ValueKey + sourceCount++, input.Content == null ? Value.ToString() : input.Content + Value, 
+                            new Dictionary<string, object> { { ValueKey, Value } });
+                    }
+                    else
+                    {
+                        yield return input.Clone(input.Content == null ? Value.ToString() : input.Content + Value,
+                            new Dictionary<string, object> { { ValueKey, Value } });
+                    }
                 }
             }
         }

@@ -58,22 +58,27 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             // If relative path is the root, it probably means this isn't from reading a file so don't bother with caching
             IExecutionCache cache = relativePath == "/" ? null : _executionContext.ExecutionCache;
             string key = null;
-            IRazorPage page;
+            Type pageType = null;
             if (cache != null)
             {
                 key = relativePath + " " + RazorFileHash.GetHash(fileInfo);
-                if (cache.TryGetValue(key, out page))
+                if (!cache.TryGetValue(key, out pageType))
                 {
-                    return page;
+                    pageType = null;
                 }
             }
 
-            // Compile and store in cache
-            var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
-            Type result = _razorcompilationService.Compile(relativeFileInfo);
-            page = (IRazorPage)Activator.CreateInstance(result);
+            // Compile and store in cache if not found
+            if (pageType == null)
+            {
+                var relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
+                pageType = _razorcompilationService.Compile(relativeFileInfo);
+                cache?.Set(key, pageType);
+            }
+
+            // Create an return a new page instance
+            IRazorPage page = (IRazorPage)Activator.CreateInstance(pageType);
             page.Path = relativePath;
-            cache?.Set(key, page);
             return page;
         }
     }

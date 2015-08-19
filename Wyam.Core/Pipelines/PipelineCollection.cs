@@ -18,10 +18,20 @@ namespace Wyam.Core.Pipelines
 
         public IPipeline Add(params IModule[] modules)
         {
-            return Add(null, modules);
+            return Add(null, false, modules);
         }
 
         public IPipeline Add(string name, params IModule[] modules)
+        {
+            return Add(name, false, modules);
+        }
+
+        public IPipeline Add(bool processDocumentsOnce, params IModule[] modules)
+        {
+            return Add(null, processDocumentsOnce, modules);
+        }
+
+        public IPipeline Add(string name, bool processDocumentsOnce, params IModule[] modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -31,15 +41,12 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ArgumentException("Pipelines must have a unique name.");
             }
-            Pipeline pipeline = new Pipeline(name, _engine, modules);
+            Pipeline pipeline = new Pipeline(name, processDocumentsOnce, _engine, modules);
             _pipelines.Add(name, pipeline);
             return pipeline;
         }
 
-        public IEnumerable<Pipeline> Pipelines
-        {
-            get { return _pipelines.Values; }
-        }
+        public IEnumerable<Pipeline> Pipelines => _pipelines.Values;
 
         public int Count
         {

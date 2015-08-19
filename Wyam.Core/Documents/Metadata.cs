@@ -57,7 +57,7 @@ namespace Wyam.Core.Documents
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             return _metadataStack.FirstOrDefault(x => x.ContainsKey(key)) != null;
         }
@@ -66,7 +66,7 @@ namespace Wyam.Core.Documents
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             value = null;
             IDictionary<string, object> meta = _metadataStack.FirstOrDefault(x => x.ContainsKey(key));
@@ -102,7 +102,7 @@ namespace Wyam.Core.Documents
         public string Link(string key, string defaultValue = null)
         {
             string value = Get<string>(key, defaultValue);
-            return value == null ? null : value.Replace('\\', '/');
+            return value?.Replace('\\', '/');
         }
 
         public object this[string key]
@@ -111,7 +111,7 @@ namespace Wyam.Core.Documents
             {
                 if (key == null)
                 {
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
                 object value;
                 if (!TryGetValue(key, out value))

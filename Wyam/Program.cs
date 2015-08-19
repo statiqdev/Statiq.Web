@@ -52,6 +52,10 @@ namespace Wyam
         
         private void Run(string[] args)
         {
+            AssemblyInformationalVersionAttribute versionAttribute 
+                = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
+            Console.WriteLine("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
+
             // Parse the command line
             if (!ParseArgs(args))
             {

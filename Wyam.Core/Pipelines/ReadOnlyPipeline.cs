@@ -23,19 +23,9 @@ namespace Wyam.Core.Pipelines
             return GetEnumerator();
         }
 
-        public int Count
-        {
-            get { return _pipeline.Count; }
-        }
-
-        public IModule this[int index]
-        {
-            get { return _pipeline[index]; }
-        }
-
-        public string Name
-        {
-            get { return _pipeline.Name; }
-        }
+        public int Count => _pipeline.Count;
+        public IModule this[int index] => _pipeline[index];
+        public string Name => _pipeline.Name;
+        public bool ProcessDocumentsOnce => _pipeline.ProcessDocumentsOnce;
     }
 }

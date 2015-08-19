@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Wyam.Common;
+using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 
 namespace Wyam.Core.Pipelines
@@ -14,11 +15,20 @@ namespace Wyam.Core.Pipelines
         private ConcurrentBag<Document> _clonedDocuments = new ConcurrentBag<Document>();
         private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
+        private readonly HashSet<string> _documentSources = new HashSet<string>(); 
+        private readonly Cache<List<Document>>  _previouslyProcessedCache;
+        private readonly Dictionary<string, List<Document>> _processedSources; 
         private bool _disposed;
 
         public string Name { get; }
+        public bool ProcessDocumentsOnce => _previouslyProcessedCache != null;
 
         public Pipeline(string name, Engine engine, IModule[] modules)
+            : this(name, false, engine, modules)
+        {
+        }
+
+        public Pipeline(string name, bool processDocumentsOnce, Engine engine, IModule[] modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -29,6 +39,11 @@ namespace Wyam.Core.Pipelines
                 throw new ArgumentNullException(nameof(engine));
             }
             Name = name;
+            if (processDocumentsOnce)
+            {
+                _previouslyProcessedCache = new Cache<List<Document>>();
+                _processedSources = new Dictionary<string, List<Document>>();
+            }
             _engine = engine;
             if (modules != null)
             {
@@ -125,14 +140,50 @@ namespace Wyam.Core.Pipelines
                 {
                     try
                     {
-                        // Make sure we clone the output context if it's the same as the input
+                        // Setup for a new module
                         context.Module = module;
                         foreach (Document document in documents.OfType<Document>())
                         {
                             document.ResetStream();
                         }
+
+                        // Execute the module
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
                         documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();
+
+                        // Remove any documents that were previously processed (checking will also mark the cache entry as hit)
+                        if (_previouslyProcessedCache != null)
+                        {
+                            List<IDocument> newDocuments = new List<IDocument>();
+                            foreach (IDocument document in documents)
+                            {
+                                if (_processedSources.ContainsKey(document.Source))
+                                {
+                                    // We've seen this source before and already added it to the processed cache
+                                    newDocuments.Add(document);
+                                }
+                                else
+                                {
+                                    List<Document> processedDocuments;
+                                    if (!_previouslyProcessedCache.TryGetValue(document, out processedDocuments))
+                                    {
+                                        // This document was not previously processed, so add it to the current result and set up a list to track final results
+                                        newDocuments.Add(document);
+                                        processedDocuments = new List<Document>();
+                                        _previouslyProcessedCache.Set(document, processedDocuments);
+                                        _processedSources.Add(document.Source, processedDocuments);
+                                    }
+                                    // Otherwise, this document was previously processed so don't add it to the results
+                                }
+                            }
+                            if (newDocuments.Count != documents.Count)
+                            {
+                                _engine.Trace.Verbose("Removed {0} previously processed document(s)", documents.Count - newDocuments.Count);
+                            }
+                            documents = newDocuments;
+                        }
+
+                        // Set results in engine and trace
                         _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
                         stopwatch.Stop();
                         _engine.Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
@@ -157,17 +208,68 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ObjectDisposedException(nameof(Pipeline));
             }
+
+            // Setup for pipeline execution
+            _documentSources.Clear();
             ResetClonedDocuments();
+            _previouslyProcessedCache?.ResetEntryHits();
+            _processedSources?.Clear();
+
+            // Execute all modules in the pipeline
             IReadOnlyList<IDocument> resultDocuments = Execute(_modules, null);
+
+            // Dispose documents that aren't part of the final collection for this pipeline
             foreach (Document document in _clonedDocuments.Where(x => !resultDocuments.Contains(x)))
             {
-                // Dispose documents that aren't part of the final collection for this pipeline
                 document.Dispose();
             }
             _clonedDocuments = new ConcurrentBag<Document>(resultDocuments.OfType<Document>());
+
+            // Check the previously processed cache for any previously processed documents that need to be added
+            if (_previouslyProcessedCache != null)
+            {
+                // Dispose the previously processed documents that we didn't get this time around
+                foreach (Document unhitDocument in _previouslyProcessedCache.ClearUnhitEntries().SelectMany(x => x))
+                {
+                    unhitDocument.Dispose();
+                }
+
+                // Trace the number of previously processed documents
+                _engine.Trace.Verbose("{0} previously processed document(s) were not reprocessed", _previouslyProcessedCache.GetValues().Sum(x => x.Count));
+
+                // Add new result documents to the cache
+                foreach (Document resultDocument in _clonedDocuments)
+                {
+                    List<Document> processedResultDocuments;
+                    if (_processedSources.TryGetValue(resultDocument.Source, out processedResultDocuments))
+                    {
+                        processedResultDocuments.Add(resultDocument);
+                    }
+                    else
+                    {
+                        _engine.Trace.Warning("Could not find processed document cache for source {0}, please report this warning to the developers", resultDocument.Source);
+                    }
+                }
+
+                // Reset cloned documents (since we're tracking them in the previously processed cache now) and set new aggregate results
+                _clonedDocuments = new ConcurrentBag<Document>();
+                _engine.DocumentCollection.Set(Name, _previouslyProcessedCache.GetValues().SelectMany(x => x).Cast<IDocument>().ToList().AsReadOnly());
+            }
         }
 
         public void AddClonedDocument(Document document) => _clonedDocuments.Add(document);
+
+        public void AddDocumentSource(string source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                throw new ArgumentException(nameof(source));
+            }
+            if (!_documentSources.Add(source))
+            {
+                throw new ArgumentException("Document source must be unique within the pipeline.");
+            }
+        }
 
         public void ResetClonedDocuments()
         {
@@ -186,6 +288,13 @@ namespace Wyam.Core.Pipelines
             }
             _disposed = true;
             ResetClonedDocuments();
+            if (_previouslyProcessedCache != null)
+            {
+                foreach (Document document in _previouslyProcessedCache.GetValues().SelectMany(x => x))
+                {
+                    document.Dispose();
+                }
+            }
         }
     }
 }

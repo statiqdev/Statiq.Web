@@ -5,5 +5,6 @@ namespace Wyam.Common
     public interface IReadOnlyPipeline : IReadOnlyList<IModule>
     {
         string Name { get; }
+        bool ProcessDocumentsOnce { get; }
     }
 }
