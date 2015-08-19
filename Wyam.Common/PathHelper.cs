@@ -18,17 +18,27 @@ namespace Wyam.Common
                 .Replace('/', Path.DirectorySeparatorChar);
         }
 
+        public static string ToLink(string path)
+        {
+            return path.Replace("\\", "/");
+        }
+
+        public static string ToRootLink(string path)
+        {
+            return "/" + ToLink(path);
+        }
+
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
         public static string GetRelativePath(string fromPath, string toPath)
         {
             if (fromPath == null)
             {
-                throw new ArgumentNullException("fromPath");
+                throw new ArgumentNullException(nameof(fromPath));
             }
 
             if (toPath == null)
             { 
-                throw new ArgumentNullException("toPath");
+                throw new ArgumentNullException(nameof(toPath));
             }
             
             // Check if both paths are rooted
@@ -50,7 +60,7 @@ namespace Wyam.Common
 
             int lastCommonRoot = -1;
 
-            // find common root
+            // Find common root
             for (int x = 0; x < length; x++)
             {
                 if (String.Compare(fromDirectories[x], toDirectories[x], StringComparison.Ordinal) != 0)
@@ -66,7 +76,7 @@ namespace Wyam.Common
                 return toPath;
             }
 
-            // add relative folders in from path
+            // Add relative folders in from path
             for (int x = lastCommonRoot + 1; x < fromDirectories.Length; x++)
             {
                 if (fromDirectories[x].Length > 0)
@@ -75,13 +85,13 @@ namespace Wyam.Common
                 }
             }
 
-            // add to folders to path
+            // Add to folders to path
             for (int x = lastCommonRoot + 1; x < toDirectories.Length; x++)
             {
                 relativePath.Add(toDirectories[x]);
             }
 
-            // create relative path
+            // Create relative path
             string[] relativeParts = new string[relativePath.Count];
             relativePath.CopyTo(relativeParts, 0);
 
