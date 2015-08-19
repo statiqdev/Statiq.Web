@@ -173,11 +173,7 @@ namespace Wyam.Core.Pipelines
                                         _previouslyProcessedCache.Set(document, processedDocuments);
                                         _processedSources.Add(document.Source, processedDocuments);
                                     }
-                                    else
-                                    {
-                                        // This document was previously processed, so dispose this version and don't add it to the results
-                                        ((IDisposable)document).Dispose();
-                                    }
+                                    // Otherwise, this document was previously processed so don't add it to the results
                                 }
                             }
                             if (newDocuments.Count != documents.Count)
