@@ -15,6 +15,7 @@ namespace Wyam.Core.Caching
 
         protected static string GetDocumentKey(IDocument document)
         {
+            document.Stream.Position = 0;
             return document.Source + " " + Crc32.Calculate(document.Stream);
         }
 

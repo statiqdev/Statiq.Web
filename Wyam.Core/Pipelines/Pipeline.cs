@@ -167,10 +167,16 @@ namespace Wyam.Core.Pipelines
                                     List<Document> processedDocuments;
                                     if (!_previouslyProcessedCache.TryGetValue(document, out processedDocuments))
                                     {
+                                        // This document was not previously processed, so add it to the current result and set up a list to track final results
                                         newDocuments.Add(document);
                                         processedDocuments = new List<Document>();
                                         _previouslyProcessedCache.Set(document, processedDocuments);
                                         _processedSources.Add(document.Source, processedDocuments);
+                                    }
+                                    else
+                                    {
+                                        // This document was previously processed, so dispose this version and don't add it to the results
+                                        ((IDisposable)document).Dispose();
                                     }
                                 }
                             }

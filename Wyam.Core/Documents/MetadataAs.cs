@@ -17,7 +17,7 @@ namespace Wyam.Core.Documents
         {
             if (metadata == null)
             {
-                throw new ArgumentNullException("metadata");
+                throw new ArgumentNullException(nameof(metadata));
             }
             _metadata = metadata;
         }

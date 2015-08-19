@@ -12,7 +12,7 @@ namespace Wyam.Core.Tests
     public class PipelineFixture
     {
         [Test]
-        public void ProcessesPreviousDocumentsWithDistinctSources()
+        public void ReprocessesPreviousDocumentsWithDistinctSources()
         {
             // Given
             Engine engine = new Engine();
@@ -72,6 +72,7 @@ namespace Wyam.Core.Tests
 
             // When
             engine.Execute();
+            a.Value = 0;  // Reset a.Value so output from a has same content
             engine.Execute();
 
             // Then
@@ -87,16 +88,41 @@ namespace Wyam.Core.Tests
             Assert.AreEqual(24, c.OutputCount);
         }
 
-        // TODO: Test for reprocess if content changes
-
         [Test]
-        public void AccessingMetadataWhileProcessDocumentsOnceIsTrueThrowsException()
+        public void ReprocessPreviousDocumentsWithDifferentContent()
         {
             // Given
+            Engine engine = new Engine();
+            CountModule a = new CountModule("A")
+            {
+                CloneSource = true,
+                AdditionalOutputs = 1
+            };
+            CountModule b = new CountModule("B")
+            {
+                AdditionalOutputs = 2
+            };
+            CountModule c = new CountModule("C")
+            {
+                AdditionalOutputs = 3
+            };
+            engine.Pipelines.Add("Count", true, a, b, c);
 
             // When
+            engine.Execute();
+            engine.Execute();
 
             // Then
+            Assert.AreEqual(24, engine.Documents.FromPipeline("Count").Count());
+            Assert.AreEqual(2, a.ExecuteCount);
+            Assert.AreEqual(2, b.ExecuteCount);
+            Assert.AreEqual(2, c.ExecuteCount);
+            Assert.AreEqual(2, a.InputCount);
+            Assert.AreEqual(4, b.InputCount);
+            Assert.AreEqual(12, c.InputCount);
+            Assert.AreEqual(4, a.OutputCount);
+            Assert.AreEqual(12, b.OutputCount);
+            Assert.AreEqual(48, c.OutputCount);
         }
     }
 }
