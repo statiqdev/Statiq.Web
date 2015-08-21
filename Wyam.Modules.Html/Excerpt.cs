@@ -48,7 +48,7 @@ namespace Wyam.Modules.Html
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            return inputs.Select(x =>
+            return inputs.AsParallel().Select(x =>
             {
                 try
                 {
