@@ -98,7 +98,7 @@ namespace Wyam.Modules.Html.Tests
             document
                 .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                 .Do(x => metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-            Excerpt excerpt = new Excerpt().SetMatadataKey("Baz");
+            Excerpt excerpt = new Excerpt().SetMetadataKey("Baz");
 
             // When
             excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
