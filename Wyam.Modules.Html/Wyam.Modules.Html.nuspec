@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Wyam.Modules.Html</id>
+    <version>$version$</version>
+    <title>Wyam.Modules.Html</title>
+    <authors>Dave Glick</authors>
+    <owners>Dave Glick</owners>
+    <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
+    <iconUrl>http://wyam.io/Content/Images/logo-square-32.png</iconUrl>
+    <projectUrl>http://wyam.io</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for parsing and manipulating HTML content.</description>
+    <copyright>Copyright 2015</copyright>
+    <tags>Wyam Static StaticContent StaticSite Blog BlogEngine HTML</tags>
+  </metadata>
+  <files></files>
+</package>
