@@ -432,5 +432,48 @@ namespace Wyam.Modules.Html.Tests
             Assert.AreEqual(output, content);
             stream.Dispose();
         }
+
+        [Test]
+        public void AddLinkMethodTakesPrecedence()
+        {
+            // Given
+            string input = @"<html>
+                    <head>
+                        <title>Foobar</title>
+                    </head>
+                    <body>
+                        <h1>Title</h1>
+                        <p>This is some <i>Foobar</i> text Foobaz</p>
+                    </body>
+                </html>";
+            string output = @"<html><head>
+                        <title>Foobar</title>
+                    </head>
+                    <body>
+                        <h1>Title</h1>
+                        <p>This is some <i><a href=""http://www.google.com"">Foobar</a></i> text <a href=""http://www.yahoo.com"">Foobaz</a></p>
+                    
+                </body></html>".Replace("\r\n", "\n");
+            IDocument document = Substitute.For<IDocument>();
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+            document.Stream.Returns(stream);
+            string content = null;
+            document
+                .When(x => x.Clone(Arg.Any<string>()))
+                .Do(x => content = x.Arg<string>()); ;
+            AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+            {
+                { "Foobar", "http://www.google.com" },
+                { "Foobaz", "http://www.bing.com" }
+            }).AddLink("Foobaz", "http://www.yahoo.com");
+
+            // When
+            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+
+            // Then
+            document.Received().Clone(Arg.Any<string>());
+            Assert.AreEqual(output, content);
+            stream.Dispose();
+        }
     }
 }

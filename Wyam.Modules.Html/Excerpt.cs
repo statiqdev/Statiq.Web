@@ -27,7 +27,7 @@ namespace Wyam.Modules.Html
             _querySelector = querySelector;
         }
 
-        public Excerpt SetMatadataKey(string metadataKey)
+        public Excerpt SetMetadataKey(string metadataKey)
         {
             _metadataKey = metadataKey;
             return this;
