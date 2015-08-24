@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{822FDD27-DAA4-4816-A0EA-DC079430445C}</ProjectGuid>
+    <ProjectGuid>{6F3632FB-2550-443A-9992-E47088C08970}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wyam.Modules.Html.Tests</RootNamespace>
-    <AssemblyName>Wyam.Modules.Html.Tests</AssemblyName>
+    <RootNamespace>Wyam.Modules.Opml.Tests</RootNamespace>
+    <AssemblyName>Wyam.Modules.Opml.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NSubstitute, Version=1.8.1.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSubstitute.1.8.1.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -49,22 +44,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoLinkFixture.cs" />
-    <Compile Include="ExcerptFixture.cs" />
+    <Compile Include="OpmlDocFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Html\Wyam.Modules.Html.csproj">
-      <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
-      <Name>Wyam.Modules.Html</Name>
+    <ProjectReference Include="..\Wyam.Modules.Opml\Wyam.Modules.Opml.csproj">
+      <Project>{0e7729f7-aad3-4060-b1c4-a9d909e478e4}</Project>
+      <Name>Wyam.Modules.Opml</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

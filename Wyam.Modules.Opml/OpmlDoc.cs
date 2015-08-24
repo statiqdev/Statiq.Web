@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Xml.Linq;
 
 namespace Wyam.Modules.Opml
 {
-    public class OpmlDoc
+    public class OpmlDoc : IEnumerable<Outline>
     {
         public string Title { get; set; }
         public DateTime? DateCreated { get; set; }
@@ -75,7 +76,7 @@ namespace Wyam.Modules.Opml
             }
         }
 
-        private void TraverseBody(XElement outline, Outline ot)
+        void TraverseBody(XElement outline, Outline ot)
         {
             if (outline != null)
             {
@@ -118,7 +119,7 @@ namespace Wyam.Modules.Opml
             return root;
         }
 
-        private void AddRecursiveChild(XElement element, Outline o)
+        void AddRecursiveChild(XElement element, Outline o)
         {
 
             element.Add(from y in o.Attributes
@@ -131,6 +132,33 @@ namespace Wyam.Modules.Opml
                 element.Add(newOutline);
                 AddRecursiveChild(newOutline, oo);
             }
+        }
+
+        IEnumerable<Outline> Enumerator(Outline o)
+        {
+            foreach (var ou in o.Outlines)
+            {
+                yield return ou;
+                foreach (var m in Enumerator(ou))
+                    yield return m;
+            }
+        }
+
+        public IEnumerator<Outline> GetEnumerator()
+        {
+            foreach (var c in Outlines)
+            {
+                yield return c;
+                foreach (var x in Enumerator(c))
+                {
+                    yield return x;
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
