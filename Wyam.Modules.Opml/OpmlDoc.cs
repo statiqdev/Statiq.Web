@@ -67,16 +67,21 @@ namespace Wyam.Modules.Opml
             WindowRight = selectInt("windowRight");
 
             var bodies = elements.Element("body").Elements();
-            //todo: make it recursive
+
+            var level = 0;
             foreach (var b in bodies)
             {
-                var o = new Outline();
+                var o = new Outline
+                {
+                    Level = level
+                };
+
                 Outlines.Add(o);
-                TraverseBody(b, o);
+                TraverseBody(b, o, ++level);
             }
         }
 
-        void TraverseBody(XElement outline, Outline ot)
+        void TraverseBody(XElement outline, Outline ot, int level)
         {
             if (outline != null)
             {
@@ -85,11 +90,16 @@ namespace Wyam.Modules.Opml
                     ot.Attributes[att.Name.ToString()] = att.Value;
                 }
 
+                var childLevel = level + 1;
+
                 foreach (var x in outline.Elements())
                 {
-                    var o = new Outline();
+                    var o = new Outline
+                    {
+                        Level = level
+                    };
                     ot.Outlines.Add(o);
-                    TraverseBody(x, o);
+                    TraverseBody(x, o, childLevel);
                 }
             }
         }
@@ -121,7 +131,6 @@ namespace Wyam.Modules.Opml
 
         void AddRecursiveChild(XElement element, Outline o)
         {
-
             element.Add(from y in o.Attributes
                         select new XAttribute(y.Key, y.Value));
 

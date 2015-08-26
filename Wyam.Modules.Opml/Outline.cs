@@ -8,6 +8,8 @@ namespace Wyam.Modules.Opml
 {
     public class Outline
     {
+        public int Level { get; set; }
+
         public Dictionary<string, string> Attributes { get; private set; } 
             = new Dictionary<string, string>();
 

@@ -89,7 +89,7 @@ namespace Wyam.Modules.Opml.Tests
 
                 foreach(var o in doc)
                 {
-                    Console.WriteLine($"{o.Attributes["text"]}");
+                    Console.WriteLine($"{o.Level} - {o.Attributes["text"]}");
                 }
             }
         }
