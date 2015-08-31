@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Add(a, new If(x => x.Content == "1", b), c);
+            engine.Pipelines.Add(a, new If((x, y) => x.Content == "1", b), c);
 
             // When
             engine.Execute();
@@ -68,8 +68,8 @@ namespace Wyam.Core.Tests.Modules
             };
             engine.Pipelines.Add(
                 a, 
-                new If(x => x.Content == "1", b)
-                    .ElseIf(x => x.Content == "2", c),
+                new If((x, y) => x.Content == "1", b)
+                    .ElseIf((x, y) => x.Content == "2", c),
                 d);
 
             // When
@@ -113,7 +113,7 @@ namespace Wyam.Core.Tests.Modules
             };
             engine.Pipelines.Add(
                 a,
-                new If(x => x.Content == "1", b)
+                new If((x, y) => x.Content == "1", b)
                     .Else(c),
                 d);
 
@@ -162,8 +162,8 @@ namespace Wyam.Core.Tests.Modules
             };
             engine.Pipelines.Add(
                 a,
-                new If(x => x.Content == "1", b)
-                    .ElseIf(x => x.Content == "3", c)
+                new If((x, y) => x.Content == "1", b)
+                    .ElseIf((x, y) => x.Content == "3", c)
                     .Else(d),
                 e);
 

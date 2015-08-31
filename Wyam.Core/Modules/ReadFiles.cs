@@ -12,11 +12,11 @@ namespace Wyam.Core.Modules
 {
     public class ReadFiles : IModule
     {
-        private readonly Func<IDocument, string> _path;
+        private readonly Func<IDocument, IExecutionContext, string> _path;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _where = null; 
 
-        public ReadFiles(Func<IDocument, string> path)
+        public ReadFiles(Func<IDocument, IExecutionContext, string> path)
         {
             if (path == null)
             {
@@ -33,7 +33,7 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException(nameof(searchPattern));
             }
 
-            _path = m => searchPattern;
+            _path = (x, y) => searchPattern;
         }
 
         public ReadFiles SearchOption(SearchOption searchOption)
@@ -64,7 +64,7 @@ namespace Wyam.Core.Modules
         {
             return inputs.AsParallel().SelectMany(input =>
             {
-                string path = _path(input);
+                string path = _path(input, context);
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));

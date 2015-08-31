@@ -15,7 +15,12 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Prepend(Func<IDocument, object> content)
+        public Prepend(Func<IExecutionContext, object> content)
+            : base(content)
+        {
+        }
+
+        public Prepend(Func<IDocument, IExecutionContext, object> content) 
             : base(content)
         {
         }

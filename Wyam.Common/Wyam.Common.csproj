@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentModule.cs" />
     <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="IIndentedTraceEvent.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="IReadOnlyPipeline.cs" />
     <Compile Include="IExecutionCache.cs" />
     <Compile Include="ITrace.cs" />
+    <Compile Include="ModuleConstructorHelper.cs" />
     <Compile Include="PathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

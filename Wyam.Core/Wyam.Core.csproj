@@ -103,7 +103,6 @@
     <Compile Include="Documents\MetadataTypeConverter.cs" />
     <Compile Include="Pipelines\ExecutionContext.cs" />
     <Compile Include="Documents\MetadataKeys.cs" />
-    <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Modules\CopyFiles.cs" />
     <Compile Include="Modules\ConcatDocuments.cs" />
     <Compile Include="Modules\Documents.cs" />

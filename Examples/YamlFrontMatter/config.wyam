@@ -3,7 +3,7 @@ Pipelines.Add(
 	FrontMatter(Yaml()),
 	Markdown(),
 	ReplaceIn("{{CONTENT}}", ReadFiles("template.html")),
-	Replace("{{TITLE}}", doc => doc.Get("Title", "Default Title")),
-	Replace("{{DESC}}", doc => doc.Get("Description", "Default Description")),
+	Replace("{{TITLE}}", @doc.Get("Title", "Default Title")),
+	Replace("{{DESC}}", @doc.Get("Description", "Default Description")),
 	WriteFiles(".html")
 );

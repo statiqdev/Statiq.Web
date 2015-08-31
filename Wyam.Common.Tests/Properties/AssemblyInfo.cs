@@ -5,11 +5,10 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wyam.Core")]
+[assembly: AssemblyTitle("Wyam.Common.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Wyam.Core")]
+[assembly: AssemblyProduct("Wyam.Common.Tests")]
 [assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,11 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ae85f027-c319-4e8f-9373-5521afc7d8d8")]
-
-// Allow unit testing internal classes
-[assembly: InternalsVisibleTo("Wyam.Core.Tests")]
-[assembly: InternalsVisibleTo("Wyam.Common.Tests")]
+[assembly: Guid("3e93b31c-5670-413a-947a-77a46456cd13")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -36,6 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.8.0.0")]
-[assembly: AssemblyFileVersion("0.8.0.0")]
-[assembly: AssemblyInformationalVersion("0.8.0-beta")]  // Also update RELEASE file when changing version
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

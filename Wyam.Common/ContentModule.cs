@@ -1,23 +1,30 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Wyam.Common;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Wyam.Core.Modules
+namespace Wyam.Common
 {
+    // This class can be used as a base class for modules that operate on arbitrary content (as represented by an object)
     public abstract class ContentModule : IModule
     {
-        private readonly Func<IDocument, object> _content;
+        private readonly ModuleConstructorHelper<object> _content;
         private readonly IModule[] _modules;
-        
+
         protected ContentModule(object content)
         {
-            _content = x => content;
+            _content = new ModuleConstructorHelper<object>(content);
         }
 
-        protected ContentModule(Func<IDocument, object> content)
+        protected ContentModule(Func<IExecutionContext, object> content)
         {
-            _content = content ?? (x => null);
+            _content = new ModuleConstructorHelper<object>(content);
+        }
+
+        protected ContentModule(Func<IDocument, IExecutionContext, object> content)
+        {
+            _content = new ModuleConstructorHelper<object>(content);
         }
 
         // If only one input document is available, it will be used as the initial document for the specified modules
@@ -36,7 +43,7 @@ namespace Wyam.Core.Modules
             {
                 return context.Execute(_modules, inputs.Count == 1 ? inputs : null).SelectMany(x => inputs.SelectMany(y => Execute(x.Content, y, context)));
             }
-            return inputs.SelectMany(x => Execute(_content(x), x, context));
+            return inputs.SelectMany(x => Execute(_content.GetValue(x, context), x, context));
         }
 
         // Note that content can be passed in as null, implementers should guard against that

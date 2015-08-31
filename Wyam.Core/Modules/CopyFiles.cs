@@ -13,12 +13,12 @@ namespace Wyam.Core.Modules
     // Sets the same metadata as ReadFiles, but doesn't set any content
     public class CopyFiles : IModule
     {
-        private readonly Func<IDocument, string> _sourcePath;
+        private readonly Func<IDocument, IExecutionContext, string> _sourcePath;
         private Func<string, string> _destinationPath;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _where = null;
 
-        public CopyFiles(Func<IDocument, string> sourcePath)
+        public CopyFiles(Func<IDocument, IExecutionContext, string> sourcePath)
         {
             if (sourcePath == null)
             {
@@ -35,7 +35,7 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException(nameof(searchPattern));
             }
 
-            _sourcePath = m => searchPattern;
+            _sourcePath = (x, y) => searchPattern;
         }
 
         public CopyFiles SearchOption(SearchOption searchOption)
@@ -78,7 +78,7 @@ namespace Wyam.Core.Modules
         {
             return inputs.AsParallel().SelectMany(input =>
             {
-                string path = _sourcePath(input);
+                string path = _sourcePath(input, context);
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, path);

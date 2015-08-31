@@ -89,7 +89,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -108,7 +108,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"Layout\Test.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -127,7 +127,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"ViewStartAndLayout\Test.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -146,7 +146,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"AlternateViewStartPath\Test.cshtml");
             Razor razor = new Razor().SetViewStart(@"AlternateViewStart\_ViewStart.cshtml");
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -165,7 +165,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"IgnoreUnderscores\*.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -184,7 +184,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"AlternateIgnorePrefix\*.cshtml");
             Razor razor = new Razor().IgnorePrefix("Ignore");
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -203,7 +203,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When
@@ -222,7 +222,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
             Razor razor = new Razor();
-            Meta meta = new Meta("Content", x => x.Content);
+            Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
             // When

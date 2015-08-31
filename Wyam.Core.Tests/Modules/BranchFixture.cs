@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Add(a, new Branch(b).Where(x => x.Content == "1"), c);
+            engine.Pipelines.Add(a, new Branch(b).Where((x, y) => x.Content == "1"), c);
 
             // When
             engine.Execute();

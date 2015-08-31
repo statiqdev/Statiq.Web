@@ -10,23 +10,23 @@ namespace Wyam.Core.Modules
     public class Meta : IModule
     {
         private readonly string _key;
-        private readonly Func<IDocument, object> _metadata;
+        private readonly Func<IDocument, IExecutionContext, object> _metadata;
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
         public Meta(string key, object metadata)
-            : this(key, x => metadata)
+            : this(key, (x, y) => metadata)
         {
         }
 
-        public Meta(string key, Func<IDocument, object> metadata)
+        public Meta(string key, Func<IDocument, IExecutionContext, object> metadata)
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
             _key = key;
-            _metadata = metadata ?? (x => null);
+            _metadata = metadata ?? ((x, y) => null);
         }
 
         // For performance reasons, the specified modules will only be run once with a newly initialized, isolated document
@@ -78,7 +78,7 @@ namespace Wyam.Core.Modules
                 return inputs.Select(input => input.Clone(metadata));
             }
 
-            return inputs.Select(x => x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata(x)) }));
+            return inputs.Select(x => x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata(x, context)) }));
         }
     }
 }

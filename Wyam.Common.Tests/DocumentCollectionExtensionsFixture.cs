@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Pipelines;
 
-namespace Wyam.Core.Tests
+namespace Wyam.Common.Tests
 {
     [TestFixture]
     public class DocumentCollectionExtensionsFixture

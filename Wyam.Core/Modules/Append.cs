@@ -12,7 +12,12 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Append(Func<IDocument, object> content) 
+        public Append(Func<IExecutionContext, object> content)
+            : base(content)
+        {
+        }
+
+        public Append(Func<IDocument, IExecutionContext, object> content) 
             : base(content)
         {
         }

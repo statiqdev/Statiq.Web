@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
 
-namespace Wyam.Core.Tests.Helpers
+namespace Wyam.Common.Tests
 {
     [TestFixture]
     public class PathHelperFixture

@@ -414,37 +414,101 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private class ModuleMethodQualifier : CSharpSyntaxRewriter
+        private class ConfigRewriter : CSharpSyntaxRewriter
         {
-            private readonly HashSet<string> _moduleTypeName;
+            private readonly HashSet<string> _moduleTypeNames;
 
-            public ModuleMethodQualifier(HashSet<Type> moduleTypes)
+            public ConfigRewriter(HashSet<Type> moduleTypes)
             {
-                _moduleTypeName = new HashSet<string>(moduleTypes.Select(x => x.Name));    
+                _moduleTypeNames = new HashSet<string>(moduleTypes.Select(x => x.Name));    
             }
 
             public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
             {
-                IdentifierNameSyntax identifierName = node.Expression as IdentifierNameSyntax;
-                if (identifierName != null && _moduleTypeName.Contains(identifierName.Identifier.Text))
+                // Replace the module method name with a qualified one if this is a module ctor
+                bool nodeChanged = IsInvocationAModuleCtor(node);
+                ExpressionSyntax nodeExpression = nodeChanged 
+                    ? ((IdentifierNameSyntax)node.Expression).WithIdentifier(
+                        SyntaxFactory.Identifier("ConfigScript." + ((IdentifierNameSyntax)node.Expression).Identifier.Text)) 
+                    : node.Expression;
+                
+                // Only do the replacement if this is a module ctor or a module fluent method
+                bool argumentReplacement = nodeChanged 
+                    || IsInvocationAModuleCtor(node
+                        .DescendantNodes()
+                        .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
+                        .OfType<InvocationExpressionSyntax>()
+                        .LastOrDefault());
+
+                // Get a hash of all the previous @doc and @ctx lambda parameters and don't replace the same
+                HashSet<string> currentScopeLambdaParameters = new HashSet<string>(
+                    node.Ancestors().OfType<LambdaExpressionSyntax>().SelectMany(
+                        x => x.DescendantNodes().OfType<ParameterSyntax>()).Select(x => x.Identifier.Text));
+
+                // Replace @doc and @ctx argument expressions with the appropriate Func<> expressions, and stop descending if we hit another module ctor
+                ArgumentListSyntax argumentList = node.ArgumentList;
+                SeparatedSyntaxList<ArgumentSyntax> arguments = new SeparatedSyntaxList<ArgumentSyntax>();
+                foreach (ArgumentSyntax argument in argumentList.Arguments)
                 {
-                    return
-                        node.WithExpression(
-                            identifierName.WithIdentifier(
-                                SyntaxFactory.Identifier("ConfigScript." + identifierName.Identifier.Text)));
+                    if (argumentReplacement && !(argument.Expression is LambdaExpressionSyntax))
+                    {
+                        IdentifierNameSyntax docReplacementName = argument
+                            .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax) x))
+                            .OfType<IdentifierNameSyntax>()
+                            .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@doc") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
+                        IdentifierNameSyntax ctxReplacementName = argument
+                            .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax) x))
+                            .OfType<IdentifierNameSyntax>()
+                            .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@ctx") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
+                        if (docReplacementName != null)
+                        {
+                            arguments = arguments.Add(SyntaxFactory.Argument(
+                                SyntaxFactory.ParenthesizedLambdaExpression(
+                                    SyntaxFactory.ParameterList(
+                                        new SeparatedSyntaxList<ParameterSyntax>()
+                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
+                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
+                                    argument.Expression)));
+                            nodeChanged = true;
+                        }
+                        else if (ctxReplacementName != null)
+                        {
+                            arguments = arguments.Add(SyntaxFactory.Argument(
+                                SyntaxFactory.SimpleLambdaExpression(
+                                    SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName.Identifier.Text)),
+                                    argument.Expression)));
+                            nodeChanged = true;
+                        }
+                        else
+                        {
+                            arguments = arguments.Add(argument);
+                        }
+                    }
+                    else
+                    {
+                        arguments = arguments.Add(argument);
+                    }
                 }
-                return base.VisitInvocationExpression(node);
+                argumentList = SyntaxFactory.ArgumentList(arguments);
+
+                // Build and return the result node (or just return the original node)
+                return base.VisitInvocationExpression(nodeChanged ? node.WithExpression(nodeExpression).WithArgumentList(argumentList) : node);
+            }
+
+            private bool IsInvocationAModuleCtor(InvocationExpressionSyntax invocation)
+            {
+                if (invocation == null)
+                {
+                    return false;
+                }
+                IdentifierNameSyntax name = invocation.Expression as IdentifierNameSyntax;
+                return name != null && _moduleTypeNames.Contains(name.Identifier.Text);
             }
         }
 
         // This creates a wrapper class for the config script that contains static methods for constructing modules
-        private string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
+        internal string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
         {
-            // Need to replace all instances of module type method name shortcuts to make them fully-qualified
-            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(script, new CSharpParseOptions(kind: SourceCodeKind.Regular));
-            ModuleMethodQualifier moduleMethodQualifier = new ModuleMethodQualifier(moduleTypes);
-            script = moduleMethodQualifier.Visit(scriptTree.GetRoot()).ToFullString();
-
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
             scriptBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
@@ -524,7 +588,12 @@ namespace Wyam.Core.Configuration
             }
 
             scriptBuilder.Append("}");
-            return scriptBuilder.ToString();
+
+            // Need to replace all instances of module type method name shortcuts to make them fully-qualified
+            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString(), new CSharpParseOptions(kind: SourceCodeKind.Regular));
+            ConfigRewriter configRewriter = new ConfigRewriter(moduleTypes);
+            script = configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
+            return script;
         }
     }
 }

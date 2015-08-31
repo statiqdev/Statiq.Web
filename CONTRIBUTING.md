@@ -42,7 +42,8 @@ Wyam generally follows accepted .NET coding styles (see the [Framework Design Gu
 - Use the C# type aliases for types that have them, e.g. `int` instead of `Int32`, `string` instead of `String` etc.
 - Use meaningful names (regardless of length) and try not to use abbreviations in your type names.
 - Wrap `if`, `else` and `using` blocks (or blocks in general, really) in curly braces, even if it's a single line. The open and closing braces should go on their own line.
-- Pay attention to whitespace and extra blank lines
+- Pay attention to whitespace and extra blank lines.
+- Be explicit with access modifiers. If a class member is private, add the `private` access modifier even though it's implied. 
 
 ### Dependencies
 
