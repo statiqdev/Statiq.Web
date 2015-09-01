@@ -2,8 +2,8 @@ Pipelines.Add(
 	ReadFiles("*.md"),
 	Markdown(),
 	Meta("Header", File.ReadAllText(Path.Combine(InputFolder, "header.html"))),
-	Prepend(x => x["Header"]),
+	Prepend(@doc["Header"]),
 	Meta("Footer", File.ReadAllText(Path.Combine(InputFolder, "footer.html"))),
-	Append(x => x["Footer"]),
+	Append(@doc["Footer"]),
 	WriteFiles(".html")
 );

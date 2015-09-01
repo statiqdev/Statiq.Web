@@ -16,55 +16,34 @@ namespace Wyam.Modules.Html
     public class AutoLink : IModule
     {
         // Key = text to replace, Value = url
-        private readonly Func<IExecutionContext, IDictionary<string, string>> _contextLinks;
-        private readonly Func<IDocument, IExecutionContext, IDictionary<string, string>> _documentLinks;
+        private readonly ModuleConstructorHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
 
 
         public AutoLink()
         {
-            _contextLinks = c => new Dictionary<string, string>();
+            _links = new ModuleConstructorHelper<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
         public AutoLink(IDictionary<string, string> links)
         {
-            if (links == null)
-            {
-                throw new ArgumentNullException(nameof(links));
-            }
-
-            _contextLinks = c => links;
+            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
         }
 
         public AutoLink(Func<IExecutionContext, IDictionary<string, string>> links)
         {
-            if (links == null)
-            {
-                throw new ArgumentNullException(nameof(links));
-            }
-
-            _contextLinks = links;
+            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
         public AutoLink(Func<IDocument, IExecutionContext, IDictionary<string, string>> links)
         {
-            if (links == null)
-            {
-                throw new ArgumentNullException(nameof(links));
-            }
-
-            _documentLinks = links;
+            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
         public AutoLink SetQuerySelector(string querySelector)
         {
-            if (querySelector == null)
-            {
-                throw new ArgumentNullException(nameof(querySelector));
-            }
-
-            _querySelector = querySelector;
+            _querySelector = querySelector ?? "p";
             return this;
         }
 
@@ -76,30 +55,15 @@ namespace Wyam.Modules.Html
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            HtmlParser parser = new HtmlParser();
-
-            // Order by longest so substring matches don't take precedence
-            IDictionary<string, string> links = null;
-            IDictionary<string, string> contextLinks = _contextLinks?.Invoke(context);
-            if (contextLinks != null)
-            {
-                links = _extraLinks
-                    .Concat(contextLinks.Where(l => !_extraLinks.ContainsKey(l.Key)))
-                    .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>");
-            }
-
+            HtmlParser parser = new HtmlParser();            
             return inputs.AsParallel().Select(x =>
             {
                 try
                 {
-                    // If we didn't get the links from the context, get them from the document
-                    if (links == null)
-                    {
-                        IDictionary<string, string> documentLinks = _documentLinks(x, context);
-                        links = _extraLinks
-                            .Concat(documentLinks.Where(l => !_extraLinks.ContainsKey(l.Key)))
-                            .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>");
-                    }
+                    // Get the links
+                    IDictionary<string, string> links = _links.GetValue(x, context, v => _extraLinks
+                        .Concat(v.Where(l => !_extraLinks.ContainsKey(l.Key)))
+                        .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>"));
 
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();

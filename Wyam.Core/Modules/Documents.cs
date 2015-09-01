@@ -9,14 +9,14 @@ namespace Wyam.Core.Modules
     public class Documents : IModule
     {
         private readonly string _pipeline;
-        private Func<IDocument, bool> _predicate;
+        private Func<IDocument, IExecutionContext, bool> _predicate;
 
         public Documents(string pipeline = null)
         {
             _pipeline = pipeline;
         }
 
-        public Documents Where(Func<IDocument, bool> predicate)
+        public Documents Where(Func<IDocument, IExecutionContext, bool> predicate)
         {
             _predicate = predicate;
             return this;
@@ -29,7 +29,7 @@ namespace Wyam.Core.Modules
                 : context.Documents.FromPipeline(_pipeline);
             if (_predicate != null)
             {
-                documents = documents.Where(_predicate);
+                documents = documents.Where(x => _predicate(x, context));
             }
             return documents;
         }

@@ -163,7 +163,7 @@ namespace Wyam.Core.Tests
                 {
                     x.Clone((c++).ToString())
                 }),
-                new Meta("Content", x => x.Content));
+                new Meta("Content", (x, y) => x.Content));
 
             // When
             engine.Execute();

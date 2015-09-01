@@ -19,7 +19,12 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Trace(Func<IDocument, object> content)
+        public Trace(Func<IExecutionContext, object> content)
+            : base(content)
+        {
+        }
+
+        public Trace(Func<IDocument, IExecutionContext, object> content) 
             : base(content)
         {
         }

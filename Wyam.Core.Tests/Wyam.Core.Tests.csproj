@@ -54,18 +54,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfiguratorFixture.cs" />
-    <Compile Include="DocumentCollectionExtensionsFixture.cs" />
+    <Compile Include="Configuration\ConfiguratorFixture.cs" />
     <Compile Include="EngineFixture.cs" />
-    <Compile Include="Helpers\PathHelperFixture.cs" />
-    <Compile Include="MetadataAsFixture.cs" />
-    <Compile Include="MetadataFixture.cs" />
+    <Compile Include="Documents\MetadataAsFixture.cs" />
+    <Compile Include="Documents\MetadataFixture.cs" />
     <Compile Include="Modules\BranchFixture.cs" />
     <Compile Include="Modules\FrontMatterFixture.cs" />
     <Compile Include="Modules\IfFixture.cs" />
     <Compile Include="Modules\ReadFilesFixture.cs" />
     <Compile Include="Modules\WriteFilesFixture.cs" />
-    <Compile Include="PipelineFixture.cs" />
+    <Compile Include="Pipelines\PipelineFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CountModule.cs" />
   </ItemGroup>

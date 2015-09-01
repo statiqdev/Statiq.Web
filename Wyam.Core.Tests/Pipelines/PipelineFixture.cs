@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
 
-namespace Wyam.Core.Tests
+namespace Wyam.Core.Tests.Pipelines
 {
     [TestFixture]
     public class PipelineFixture

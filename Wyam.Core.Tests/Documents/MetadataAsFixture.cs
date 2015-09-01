@@ -8,7 +8,7 @@ using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Core.Documents;
 
-namespace Wyam.Core.Tests
+namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
     public class MetadataAsFixture

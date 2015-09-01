@@ -10,16 +10,16 @@ namespace Wyam.Core.Modules
     // This filters the documents
     public class Where : IModule
     {
-        private readonly Func<IDocument, bool> _predicate;
+        private readonly Func<IDocument, IExecutionContext, bool> _predicate;
 
-        public Where(Func<IDocument, bool> predicate)
+        public Where(Func<IDocument, IExecutionContext, bool> predicate)
         {
             _predicate = predicate;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Where(_predicate);
+            return inputs.Where(x => _predicate(x, context));
         }
     }
 }

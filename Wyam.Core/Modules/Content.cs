@@ -15,7 +15,12 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Content(Func<IDocument, object> content)
+        public Content(Func<IExecutionContext, object> content)
+            : base(content)
+        {
+        }
+
+        public Content(Func<IDocument, IExecutionContext, object> content) 
             : base(content)
         {
         }

@@ -12,10 +12,10 @@ namespace Wyam.Core.Modules
 {
     public class WriteFiles : IModule
     {
-        private readonly Func<IDocument, string> _path;
-        private Func<IDocument, bool> _where = null; 
+        private readonly Func<IDocument, IExecutionContext, string> _path;
+        private Func<IDocument, IExecutionContext, bool> _where = null; 
 
-        public WriteFiles(Func<IDocument, string> path)
+        public WriteFiles(Func<IDocument, IExecutionContext, string> path)
         {
             if (path == null)
             {
@@ -32,7 +32,7 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException(nameof(extension));
             }
 
-            _path = x =>
+            _path = (x, y) =>
             {
                 string fileRelative = x.String(MetadataKeys.RelativeFilePath);
                 if (!string.IsNullOrWhiteSpace(fileRelative))
@@ -45,10 +45,10 @@ namespace Wyam.Core.Modules
 
         public WriteFiles()
         {
-            _path = m => m.String(MetadataKeys.RelativeFilePath);
+            _path = (x, y) => x.String(MetadataKeys.RelativeFilePath);
         }
 
-        public WriteFiles Where(Func<IDocument, bool> predicate)
+        public WriteFiles Where(Func<IDocument, IExecutionContext, bool> predicate)
         {
             _where = predicate;
             return this;
@@ -58,7 +58,7 @@ namespace Wyam.Core.Modules
         {
             return inputs.AsParallel().Select(input =>
             {
-                if (_where == null || _where(input))
+                if (_where == null || _where(input, context))
                 {
                     // WritePath
                     string path = input.String(MetadataKeys.WritePath);
@@ -86,7 +86,7 @@ namespace Wyam.Core.Modules
                     // Func
                     if (path == null)
                     {
-                        path = _path(input);
+                        path = _path(input, context);
                     }
 
                     if (path != null)

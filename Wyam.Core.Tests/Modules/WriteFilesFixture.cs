@@ -106,7 +106,7 @@ namespace Wyam.Core.Tests.Modules
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
-            WriteFiles writeFiles = new WriteFiles(x => null);
+            WriteFiles writeFiles = new WriteFiles((x, y) => null);
 
             // When
             IDocument output = writeFiles.Execute(inputs, context).First();

@@ -23,7 +23,7 @@ namespace Wyam.Core.Tests.Modules
             // When
 
             // Then
-            Assert.Throws<ArgumentNullException>(() => new ReadFiles((Func<dynamic, string>)null));
+            Assert.Throws<ArgumentNullException>(() => new ReadFiles((Func<IDocument, IExecutionContext, string>)null));
         }
 
         [Test]
