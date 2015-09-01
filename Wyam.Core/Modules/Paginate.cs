@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,12 +26,13 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            List<IEnumerable<IDocument>> partitions = Partition(inputs, _pageSize).ToList();
+            ImmutableList<IEnumerable<IDocument>> partitions = Partition(inputs, _pageSize).ToImmutableList();
             for(int c = 0 ; c < partitions.Count ; c++)
             {
                 foreach (IDocument result in context.Execute(_modules, 
                     new Dictionary<string, object>
                     {
+                        { MetadataKeys.PageDocuments, partitions[c].ToImmutableList() },
                         { MetadataKeys.CurrentPage, c + 1 },
                         { MetadataKeys.TotalPages, partitions.Count },
                         { MetadataKeys.HasNextPage, partitions.Count > c + 1 },

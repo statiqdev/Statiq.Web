@@ -24,7 +24,8 @@
         public const string WriteFileName = "WriteFileName";
         public const string WritePath = "WritePath";
 
-        // Partition
+        // Paginate
+        public const string PageDocuments = "PageDocuments";
         public const string CurrentPage = "CurrentPage";
         public const string TotalPages = "TotalPages";
         public const string HasNextPage = "HasNextPage";

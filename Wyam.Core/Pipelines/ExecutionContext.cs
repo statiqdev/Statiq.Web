@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Wyam.Common;
@@ -59,7 +60,8 @@ namespace Wyam.Core.Pipelines
             {
                 metadata = metadata.Clone(items);
             }
-            List<IDocument> documents = inputs?.ToList() ?? new List<IDocument> { new Document(metadata, _pipeline) };
+            ImmutableArray<IDocument> documents = inputs?.ToImmutableArray() 
+                ?? new IDocument[] { new Document(metadata, _pipeline) }.ToImmutableArray();
             IReadOnlyList<IDocument> results = _pipeline.Execute(this, modules, documents);
             _engine.DocumentCollection.Set(_pipeline.Name, originalDocuments);
             return results;

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Wyam.Common;
@@ -122,7 +123,7 @@ namespace Wyam.Core.Pipelines
         }
         
         // This executes the specified modules with the specified input documents
-        public IReadOnlyList<IDocument> Execute(ExecutionContext context, IEnumerable<IModule> modules, List<IDocument> documents)
+        public IReadOnlyList<IDocument> Execute(ExecutionContext context, IEnumerable<IModule> modules, ImmutableArray<IDocument> documents)
         {
             if (_disposed)
             {
@@ -133,7 +134,7 @@ namespace Wyam.Core.Pipelines
             {
                 string moduleName = module.GetType().Name;
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                using(_engine.Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Count))
+                using(_engine.Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Length))
                 {
                     try
                     {
@@ -146,12 +147,12 @@ namespace Wyam.Core.Pipelines
 
                         // Execute the module
                         IEnumerable<IDocument> outputs = module.Execute(documents, context);
-                        documents = outputs?.Where(x => x != null).ToList() ?? new List<IDocument>();
+                        documents = outputs?.Where(x => x != null).ToImmutableArray() ?? ImmutableArray<IDocument>.Empty;
 
                         // Remove any documents that were previously processed (checking will also mark the cache entry as hit)
                         if (_previouslyProcessedCache != null)
                         {
-                            List<IDocument> newDocuments = new List<IDocument>();
+                            ImmutableArray<IDocument>.Builder newDocuments = ImmutableArray.CreateBuilder<IDocument>();
                             foreach (IDocument document in documents)
                             {
                                 if (_processedSources.ContainsKey(document.Source))
@@ -173,29 +174,29 @@ namespace Wyam.Core.Pipelines
                                     // Otherwise, this document was previously processed so don't add it to the results
                                 }
                             }
-                            if (newDocuments.Count != documents.Count)
+                            if (newDocuments.Count != documents.Length)
                             {
-                                _engine.Trace.Verbose("Removed {0} previously processed document(s)", documents.Count - newDocuments.Count);
+                                _engine.Trace.Verbose("Removed {0} previously processed document(s)", documents.Length - newDocuments.Count);
                             }
-                            documents = newDocuments;
+                            documents = newDocuments.ToImmutable();
                         }
 
                         // Set results in engine and trace
-                        _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
+                        _engine.DocumentCollection.Set(Name, documents);
                         stopwatch.Stop();
                         _engine.Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
-                            moduleName, stopwatch.ElapsedMilliseconds, documents.Count);
+                            moduleName, stopwatch.ElapsedMilliseconds, documents.Length);
                     }
                     catch (Exception ex)
                     {
                         _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.ToString());
-                        documents = new List<IDocument>();
-                        _engine.DocumentCollection.Set(Name, documents.AsReadOnly());
+                        documents = ImmutableArray<IDocument>.Empty;
+                        _engine.DocumentCollection.Set(Name, documents);
                         break;
                     }
                 }
             }
-            return documents.AsReadOnly();
+            return documents;
         }
 
         // This is the main execute method called by the engine
@@ -214,7 +215,7 @@ namespace Wyam.Core.Pipelines
 
             // Execute all modules in the pipeline
             ExecutionContext context = new ExecutionContext(_engine, this);
-            List<IDocument> inputs = new List<IDocument> { new Document(new Metadata(_engine), this) };
+            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(new Metadata(_engine), this) }.ToImmutableArray();
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline
