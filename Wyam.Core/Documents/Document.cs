@@ -175,39 +175,39 @@ namespace Wyam.Core.Documents
             }
         }
 
-        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
         {
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(source, _metadata, content, _pipeline, items);
+            return new Document(source, _metadata, content, _pipeline, metadata);
         }
 
-        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, content, _pipeline, items);
+            return new Document(Source, _metadata, content, _pipeline, metadata);
         }
 
-        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
         {
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(source, _metadata, stream, _pipeline, items, disposeStream);
+            return new Document(source, _metadata, stream, _pipeline, metadata, disposeStream);
         }
 
-        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, stream, _pipeline, items, disposeStream);
+            return new Document(Source, _metadata, stream, _pipeline, metadata, disposeStream);
         }
 
-        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
         {
             CheckDisposed();
 
             // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
             _disposeStream = false;
-            return new Document(Source, _metadata, _stream, _content, _pipeline, items, _disposeStream);
+            return new Document(Source, _metadata, _stream, _content, _pipeline, metadata, _disposeStream);
         }
 
         // IMetadata

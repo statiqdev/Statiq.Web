@@ -123,7 +123,7 @@ namespace Wyam.Core.Pipelines
         
         // This executes the specified modules with the specified input documents
         // If inputDocuments is null, a new empty initial document is used
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
+        public IReadOnlyList<IDocument> Execute(ExecutionContext context, IEnumerable<IModule> modules, IEnumerable<IDocument> inputDocuments)
         {
             if (_disposed)
             {
@@ -131,7 +131,6 @@ namespace Wyam.Core.Pipelines
             }
 
             List<IDocument> documents = inputDocuments?.ToList() ?? new List<IDocument> { new Document(new Metadata(_engine), this) };
-            ExecutionContext context = new ExecutionContext(_engine, this);
             foreach (IModule module in modules.Where(x => x != null))
             {
                 string moduleName = module.GetType().Name;
@@ -141,7 +140,7 @@ namespace Wyam.Core.Pipelines
                     try
                     {
                         // Setup for a new module
-                        context.Module = module;
+                        context = context.Clone(module);
                         foreach (Document document in documents.OfType<Document>())
                         {
                             document.ResetStream();
@@ -216,7 +215,8 @@ namespace Wyam.Core.Pipelines
             _processedSources?.Clear();
 
             // Execute all modules in the pipeline
-            IReadOnlyList<IDocument> resultDocuments = Execute(_modules, null);
+            ExecutionContext context = new ExecutionContext(_engine, this);
+            IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, null);
 
             // Dispose documents that aren't part of the final collection for this pipeline
             foreach (Document document in _clonedDocuments.Where(x => !resultDocuments.Contains(x)))

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common
 {
-    public interface IExecutionContext
+    public interface IExecutionContext : IMetadata
     {
         byte[] RawConfigAssembly { get; }
         IEnumerable<Assembly> Assemblies { get; } 
@@ -19,9 +19,12 @@ namespace Wyam.Common
         string OutputFolder { get; }
         ITrace Trace { get; }
         IDocumentCollection Documents { get; }
+        IMetadata Metadata { get; }
+
+        IExecutionContext Clone(IEnumerable<KeyValuePair<string, object>> metadata);
 
         // This executes the specified modules with the specified input documents and returns the result documents
         // If you pass in null for inputDocuments, a new input document with the initial metadata from the engine will be used
-        IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs);
+        IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> metadata = null);
     }
 }
