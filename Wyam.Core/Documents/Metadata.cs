@@ -26,16 +26,16 @@ namespace Wyam.Core.Documents
             _metadataStack.Push(dictionary);
         }
 
-        private Metadata(Metadata variableStack, IEnumerable<KeyValuePair<string, object>> items)
+        private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            _engine = variableStack._engine;
-            _metadataStack = new Stack<IDictionary<string, object>>(variableStack._metadataStack.Reverse());
+            _engine = original._engine;
+            _metadataStack = new Stack<IDictionary<string, object>>(original._metadataStack.Reverse());
             _metadataStack.Push(new Dictionary<string, object>());
 
             // Set new items
-            if (items != null)
+            if (metadata != null)
             {
-                foreach (KeyValuePair<string, object> item in items)
+                foreach (KeyValuePair<string, object> item in metadata)
                 {
                     _metadataStack.Peek()[item.Key] = item.Value;
                 }
@@ -48,9 +48,9 @@ namespace Wyam.Core.Documents
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
+        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            return new Metadata(this, items);
+            return new Metadata(this, metadata);
         }
 
         public bool ContainsKey(string key)
