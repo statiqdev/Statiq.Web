@@ -16,6 +16,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 2
@@ -50,6 +51,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 2
@@ -95,6 +97,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 2
@@ -140,6 +143,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 3

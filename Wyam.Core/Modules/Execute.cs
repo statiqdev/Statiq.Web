@@ -23,7 +23,7 @@ namespace Wyam.Core.Modules
 
         IEnumerable<IDocument> IModule.Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.SelectMany(x => _execute(x, context));
+            return inputs.SelectMany(x => _execute(x, context) ?? new IDocument[] {});
         }
     }
 }

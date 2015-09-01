@@ -23,5 +23,11 @@
         public const string WriteExtension = "WriteExtension";
         public const string WriteFileName = "WriteFileName";
         public const string WritePath = "WritePath";
+
+        // Partition
+        public const string CurrentPage = "CurrentPage";
+        public const string TotalPages = "TotalPages";
+        public const string HasNextPage = "HasNextPage";
+        public const string HasPreviousPage = "HasPreviousPage";
     }
 }

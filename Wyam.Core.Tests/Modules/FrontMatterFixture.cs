@@ -19,6 +19,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -51,6 +52,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -84,6 +86,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -116,6 +119,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -148,6 +152,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -180,6 +185,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -213,6 +219,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -249,6 +256,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -281,6 +289,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);

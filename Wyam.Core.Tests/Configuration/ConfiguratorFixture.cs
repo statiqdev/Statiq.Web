@@ -17,6 +17,7 @@ namespace Wyam.Core.Tests.Configuration
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -40,6 +41,7 @@ D", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -63,6 +65,7 @@ D", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -88,6 +91,7 @@ D", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -113,6 +117,7 @@ D", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -139,6 +144,7 @@ C", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -166,6 +172,7 @@ F", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -193,6 +200,7 @@ D", configParts.Item2);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -224,6 +232,7 @@ F", configParts.Item3);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -255,6 +264,7 @@ D", configParts.Item2);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             string configScript = @"A=
 =B
@@ -312,6 +322,7 @@ C", configParts.Item2);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Configurator configurator = new Configurator(engine);
             HashSet<Type> moduleTypes = new HashSet<Type> {typeof (Content)};
             string expected = $@"
