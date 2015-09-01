@@ -22,7 +22,6 @@ namespace Wyam.Core.Documents
         internal Document(Metadata metadata, Pipeline pipeline)
             : this(string.Empty, metadata, null, null, pipeline, null, true)
         {
-            _metadata = metadata;
         }
         
         private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items)
@@ -43,7 +42,7 @@ namespace Wyam.Core.Documents
             }
 
             Source = source;
-            _metadata = metadata.Clone(items);
+            _metadata = items == null ? metadata : metadata.Clone(items);
             _content = content;
 
             _pipeline = pipeline;

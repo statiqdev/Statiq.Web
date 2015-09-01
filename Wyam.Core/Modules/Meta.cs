@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules
                 }
 
                 // Execute the modules once and apply to each input document
-                foreach (IDocument result in context.Execute(_modules, null))
+                foreach (IDocument result in context.Execute(_modules))
                 {
                     foreach (KeyValuePair<string, object> kvp in result)
                     {

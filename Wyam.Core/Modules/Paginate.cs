@@ -28,7 +28,7 @@ namespace Wyam.Core.Modules
             List<IEnumerable<IDocument>> partitions = Partition(inputs, _pageSize).ToList();
             for(int c = 0 ; c < partitions.Count ; c++)
             {
-                foreach (IDocument result in context.Execute(_modules, partitions[c], 
+                foreach (IDocument result in context.Execute(_modules, 
                     new Dictionary<string, object>
                     {
                         { MetadataKeys.CurrentPage, c + 1 },
