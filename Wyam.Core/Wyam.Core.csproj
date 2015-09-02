@@ -96,6 +96,7 @@
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
+    <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Modules\ForEach.cs" />
     <Compile Include="Modules\Paginate.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />

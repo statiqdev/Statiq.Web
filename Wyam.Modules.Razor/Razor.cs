@@ -63,9 +63,12 @@ namespace Wyam.Modules.Razor
                 IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                 IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
                 ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
-                ViewEngineResult viewEngineResult = viewEngine.GetView(viewContext, GetRelativePath(x), x.Stream).EnsureSuccessful();
+                ViewEngineResult viewEngineResult;
+                using (Stream stream = x.GetStream())
+                {
+                    viewEngineResult = viewEngine.GetView(viewContext, GetRelativePath(x), stream).EnsureSuccessful();
+                }
                 compilationResults[x] = new Tuple<ViewContext, ViewEngineResult>(viewContext, viewEngineResult);
-                x.Stream.Position = 0;
             });
 
             // Now evaluate them in sequence - have to do this because BufferedHtmlContent doesn't appear to work well in multi-threaded parallel execution

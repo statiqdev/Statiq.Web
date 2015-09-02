@@ -138,15 +138,8 @@ namespace Wyam.Core.Pipelines
                 {
                     try
                     {
-                        // Setup for a new module
-                        context = context.Clone(module);
-                        foreach (Document document in documents.OfType<Document>())
-                        {
-                            document.ResetStream();
-                        }
-
                         // Execute the module
-                        IEnumerable<IDocument> outputs = module.Execute(documents, context);
+                        IEnumerable<IDocument> outputs = module.Execute(documents, context.Clone(module));
                         documents = outputs?.Where(x => x != null).ToImmutableArray() ?? ImmutableArray<IDocument>.Empty;
 
                         // Remove any documents that were previously processed (checking will also mark the cache entry as hit)

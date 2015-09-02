@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,7 +68,11 @@ namespace Wyam.Modules.Html
 
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();
-                    IHtmlDocument htmlDocument = parser.Parse(x.Stream);
+                    IHtmlDocument htmlDocument;
+                    using (Stream stream = x.GetStream())
+                    {
+                        htmlDocument = parser.Parse(stream);
+                    }
                     foreach (IElement element in htmlDocument.QuerySelectorAll(_querySelector).Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                     {
                         // Enumerate all descendant text nodes not already in a link element

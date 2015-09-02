@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using Wyam.Common;
 using Wyam.Core.Pipelines;
 
@@ -16,25 +17,26 @@ namespace Wyam.Core.Documents
         private readonly Metadata _metadata;
         private string _content;
         private Stream _stream;
+        private readonly object _streamLock;
         private bool _disposeStream;
         private bool _disposed;
 
         internal Document(Metadata metadata, Pipeline pipeline)
-            : this(string.Empty, metadata, null, null, pipeline, null, true)
+            : this(string.Empty, metadata, null, null, null, pipeline, null, true)
         {
         }
         
         private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items)
-            : this(source, metadata, null, content, pipeline, items, true)
+            : this(source, metadata, null, null, content, pipeline, items, true)
         {
         }
 
-        private Document(string source, Metadata metadata, Stream stream, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(source, metadata, stream, null, pipeline, items, disposeStream)
+        private Document(string source, Metadata metadata, Stream stream, object streamLock, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(source, metadata, stream, streamLock, null, pipeline, items, disposeStream)
         {
         }
 
-        private Document(string source, Metadata metadata, Stream stream, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string source, Metadata metadata, Stream stream, object streamLock, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
             if (source == null)
             {
@@ -66,6 +68,7 @@ namespace Wyam.Core.Documents
                     _disposeStream = disposeStream;
                 }
             }
+            _streamLock = stream != null && streamLock != null ? streamLock : new object();
         }
 
         public string Source { get; }
@@ -80,17 +83,25 @@ namespace Wyam.Core.Documents
 
                 if (_content == null)
                 {
-                    if (_stream != null)
+                    Monitor.Enter(_streamLock);
+                    try
                     {
-                        _stream.Position = 0;
-                        using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+                        if (_stream != null)
                         {
-                            _content = reader.ReadToEnd();
+                            _stream.Position = 0;
+                            using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+                            {
+                                _content = reader.ReadToEnd();
+                            }
+                        }
+                        else
+                        {
+                            _content = string.Empty;
                         }
                     }
-                    else
+                    finally
                     {
-                        _content = string.Empty;
+                        Monitor.Exit(_streamLock);
                     }
                 }
 
@@ -98,35 +109,34 @@ namespace Wyam.Core.Documents
             }
         }
 
-        public Stream Stream
+        // The stream you get from this call must be disposed as soon as reading is complete
+        // Other threads will block until the previous stream is disposed
+        public Stream GetStream()
         {
-            get
+            CheckDisposed();
+
+            Monitor.Enter(_streamLock);
+
+            if (_stream == null)
             {
-                CheckDisposed();
-
-                if (_stream == null)
+                if (_content != null)
                 {
-                    if (_content != null)
-                    {
-                        _stream = new MemoryStream(Encoding.UTF8.GetBytes(_content));
-                        _disposeStream = true;
-                    }
-                    else
-                    {
-                        _stream = Stream.Null;
-                    }
+                    _stream = new MemoryStream(Encoding.UTF8.GetBytes(_content));
+                    _disposeStream = true;
                 }
-
-                return _stream;
+                else
+                {
+                    _stream = Stream.Null;
+                }
             }
+
+            _stream.Position = 0;
+            return new BlockingStream(_stream, this);
         }
 
-        public void ResetStream()
+        internal void ReleaseStream()
         {
-            if (_stream != null)
-            {
-                _stream.Position = 0;
-            }
+            Monitor.Exit(_streamLock);
         }
 
         public override string ToString()
@@ -143,12 +153,20 @@ namespace Wyam.Core.Documents
             }
 
             // Otherwise, use the stream
-            _stream.Position = 0;
-            using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+            Monitor.Enter(_streamLock);
+            try
             {
-                char[] buffer = new char[128];
-                int count = reader.Read(buffer, 0, 128);
-                return new string(buffer, 0, count);
+                _stream.Position = 0;
+                using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+                {
+                    char[] buffer = new char[128];
+                    int count = reader.Read(buffer, 0, 128);
+                    return new string(buffer, 0, count);
+                }
+            }
+            finally
+            {
+                Monitor.Exit(_streamLock);
             }
         }
 
@@ -191,13 +209,13 @@ namespace Wyam.Core.Documents
         {
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(source, _metadata, stream, _pipeline, metadata, disposeStream);
+            return new Document(source, _metadata, stream, null, _pipeline, metadata, disposeStream);
         }
 
         public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, stream, _pipeline, metadata, disposeStream);
+            return new Document(Source, _metadata, stream, null, _pipeline, metadata, disposeStream);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
@@ -206,7 +224,7 @@ namespace Wyam.Core.Documents
 
             // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
             _disposeStream = false;
-            return new Document(Source, _metadata, _stream, _content, _pipeline, metadata, _disposeStream);
+            return new Document(Source, _metadata, _stream, _streamLock, _content, _pipeline, metadata, _disposeStream);
         }
 
         // IMetadata

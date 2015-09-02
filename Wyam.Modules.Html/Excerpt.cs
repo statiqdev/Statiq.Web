@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +53,11 @@ namespace Wyam.Modules.Html
             {
                 try
                 {
-                    IHtmlDocument htmlDocument = parser.Parse(x.Stream);
+                    IHtmlDocument htmlDocument;
+                    using (Stream stream = x.GetStream())
+                    {
+                        htmlDocument = parser.Parse(stream);
+                    }
                     IElement element = htmlDocument.QuerySelector(_querySelector);
                     if (element != null)
                     {

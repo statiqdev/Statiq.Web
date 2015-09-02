@@ -28,7 +28,7 @@ namespace Wyam.Modules.Html.Tests
                 </html>";
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             bool cloned = false;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -70,7 +70,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -114,7 +114,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -156,7 +156,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -198,7 +198,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -240,7 +240,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -282,7 +282,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -327,7 +327,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -370,7 +370,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -413,7 +413,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
@@ -456,7 +456,7 @@ namespace Wyam.Modules.Html.Tests
                 </body></html>".Replace("\r\n", "\n");
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.Stream.Returns(stream);
+            document.GetStream().Returns(stream);
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
