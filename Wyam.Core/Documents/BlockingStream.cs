@@ -44,13 +44,7 @@ namespace Wyam.Core.Documents
             CheckDisposed();
             return _stream.CopyToAsync(destination, bufferSize, cancellationToken);
         }
-
-        public override void Close()
-        {
-            CheckDisposed();
-            _stream.Close();
-        }
-
+        
         public override void Flush()
         {
             CheckDisposed();
