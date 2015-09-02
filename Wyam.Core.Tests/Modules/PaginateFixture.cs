@@ -27,15 +27,16 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 7
             };
-            Paginate paginate = new Paginate(3, new Execute((d, c) =>
+            Paginate paginate = new Paginate(3, count);
+            Execute gatherData = new Execute((d, c) =>
             {
                 currentPage.Add(d.Get<int>(MetadataKeys.CurrentPage));
                 totalPages.Add(d.Get<int>(MetadataKeys.TotalPages));
                 hasNextPage.Add(d.Get<bool>(MetadataKeys.HasNextPage));
                 hasPreviousPage.Add(d.Get<bool>(MetadataKeys.HasPreviousPage));
                 return null;
-            }));
-            engine.Pipelines.Add(count, paginate);
+            });
+            engine.Pipelines.Add(paginate, gatherData);
 
             // When
             engine.Execute();
@@ -58,12 +59,13 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 7
             };
-            Paginate paginate = new Paginate(3, new Execute((d, c) =>
+            Paginate paginate = new Paginate(3, count);
+            Execute gatherData = new Execute((d, c) =>
             {
                 content.Add(d.Get<IList<IDocument>>(MetadataKeys.PageDocuments).Select(x => x.Content).ToList());
                 return null;
-            }));
-            engine.Pipelines.Add(count, paginate);
+            });
+            engine.Pipelines.Add(paginate, gatherData);
 
             // When
             engine.Execute();

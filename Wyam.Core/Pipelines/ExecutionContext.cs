@@ -53,6 +53,11 @@ namespace Wyam.Core.Pipelines
 
         private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)
         {
+            if (modules == null)
+            {
+                return ImmutableArray<IDocument>.Empty;
+            }
+
             // Store the document list before executing the child modules and restore it afterwards
             IReadOnlyList<IDocument> originalDocuments = _engine.DocumentCollection.Get(_pipeline.Name);
             Metadata metadata = new Metadata(_engine);

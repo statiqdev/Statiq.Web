@@ -94,7 +94,7 @@ namespace Wyam.Core.Modules
                             });
                     }
                 }
-                return null;
+                return (IEnumerable<IDocument>) Array.Empty<IDocument>();
             });
         }
     }
