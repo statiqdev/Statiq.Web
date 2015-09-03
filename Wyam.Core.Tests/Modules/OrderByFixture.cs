@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules
                 AdditionalOutputs = 2
             };
             Concat concat = new Concat(count2);
-            OrderBy<int> orderBy = new OrderBy<int>((d, c) => d.Get<int>("A"));
+            OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A"));
             Execute gatherData = new Execute((d, c) =>
             {
                 content.Add(d.Content);
@@ -60,7 +60,7 @@ namespace Wyam.Core.Tests.Modules
                 AdditionalOutputs = 2
             };
             Concat concat = new Concat(count2);
-            OrderBy<int> orderBy = new OrderBy<int>((d, c) => d.Get<int>("A")).Descending();
+            OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A")).Descending();
             Execute gatherData = new Execute((d, c) =>
             {
                 content.Add(d.Content);

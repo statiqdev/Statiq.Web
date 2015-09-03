@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common
 {
-    public delegate T DocumentConfig<out T>(IDocument doc, IExecutionContext ctx);
-
     public delegate object DocumentConfig(IDocument doc, IExecutionContext ctx);
 }

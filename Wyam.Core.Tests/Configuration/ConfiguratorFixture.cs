@@ -404,7 +404,7 @@ C", configParts.Item2);
                         {{
                             return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
                         }}
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(Wyam.Common.DocumentConfig<T> input)
+                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(System.Action<T> input)
                         {{
                             return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
                         }}";
@@ -424,7 +424,7 @@ C", configParts.Item2);
 
         }
 
-        public GenericModule(DocumentConfig<T> input)
+        public GenericModule(Action<T> input)
         {
 
         }

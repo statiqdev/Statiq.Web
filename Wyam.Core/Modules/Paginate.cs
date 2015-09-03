@@ -27,7 +27,7 @@ namespace Wyam.Core.Modules
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<ImmutableArray<IDocument>> partitions 
-                = Partition(context.Execute(_modules), _pageSize).ToImmutableArray();
+                = Partition(context.Execute(_modules, inputs), _pageSize).ToImmutableArray();
             if (partitions.Length == 0)
             {
                 return inputs;

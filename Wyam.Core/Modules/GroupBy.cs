@@ -9,12 +9,12 @@ using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules
 {
-    public class GroupBy<TKey> : IModule
+    public class GroupBy : IModule
     {
-        private readonly DocumentConfig<TKey> _groupFunc;
+        private readonly DocumentConfig _groupFunc;
         private readonly IModule[] _modules;
 
-        public GroupBy(DocumentConfig<TKey> groupFunc, params IModule[] modules)
+        public GroupBy(DocumentConfig groupFunc, params IModule[] modules)
         {
             if (groupFunc == null)
             {
@@ -26,8 +26,8 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            ImmutableArray<IGrouping<TKey, IDocument>> groupings
-                = context.Execute(_modules).GroupBy(x => _groupFunc(x, context)).ToImmutableArray();
+            ImmutableArray<IGrouping<object, IDocument>> groupings
+                = context.Execute(_modules, inputs).GroupBy(x => _groupFunc(x, context)).ToImmutableArray();
             if (groupings.Length == 0)
             {
                 return inputs;

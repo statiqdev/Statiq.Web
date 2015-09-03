@@ -7,12 +7,12 @@ using Wyam.Common;
 
 namespace Wyam.Core.Modules
 {
-    public class OrderBy<TKey> : IModule
+    public class OrderBy : IModule
     {
-        private readonly DocumentConfig<TKey> _orderFunc;
+        private readonly DocumentConfig _orderFunc;
         private bool _descending;
 
-        public OrderBy(DocumentConfig<TKey> orderFunc)
+        public OrderBy(DocumentConfig orderFunc)
         {
             if (orderFunc == null)
             {
@@ -21,7 +21,7 @@ namespace Wyam.Core.Modules
             _orderFunc = orderFunc;
         }
 
-        public OrderBy<TKey> Descending(bool descending = true)
+        public OrderBy Descending(bool descending = true)
         {
             _descending = descending;
             return this;

@@ -24,7 +24,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 7
             };
-            GroupBy<int> groupBy = new GroupBy<int>((d, c) => d.Get<int>("A") % 3, count);
+            GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
             Execute gatherData = new Execute((d, c) =>
             {
                 groupKey.Add(d.Get<int>(MetadataKeys.GroupKey));
@@ -50,8 +50,8 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 7
             };
-            GroupBy<int> groupBy = new GroupBy<int>((d, c) => d.Get<int>("A") % 3, count);
-            OrderBy<int> orderBy = new OrderBy<int>((d, c) => d.Get<int>(MetadataKeys.GroupKey));
+            GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
+            OrderBy orderBy = new OrderBy((d, c) => d.Get<int>(MetadataKeys.GroupKey));
             Execute gatherData = new Execute((d, c) =>
             {
                 content.Add(d.Get<IList<IDocument>>(MetadataKeys.GroupDocuments).Select(x => x.Content).ToList());

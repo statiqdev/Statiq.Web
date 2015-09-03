@@ -12,9 +12,7 @@ namespace Wyam.Common
     public class ConfigHelper<T>
     {
         private readonly ContextConfig _contextConfig;
-        private readonly ContextConfig<T> _typedContextConfig;
         private readonly DocumentConfig _documentConfig;
-        private readonly DocumentConfig<T> _typedDocumentConfig;
         private readonly T _defaultValue;
         private T _value;
         private bool _gotValue;
@@ -31,21 +29,9 @@ namespace Wyam.Common
             _defaultValue = defaultValue;
         }
 
-        public ConfigHelper(ContextConfig<T> config, T defaultValue = default(T))
-        {
-            _typedContextConfig = config;
-            _defaultValue = defaultValue;
-        }
-
         public ConfigHelper(DocumentConfig config, T defaultValue = default(T))
         {
             _documentConfig = config;
-            _defaultValue = defaultValue;
-        }
-
-        public ConfigHelper(DocumentConfig<T> config, T defaultValue = default(T))
-        {
-            _typedDocumentConfig = config;
             _defaultValue = defaultValue;
         }
 
@@ -53,14 +39,13 @@ namespace Wyam.Common
         // If no document delegate is specified, then this will get and cache the value on first request
         public T GetValue(IDocument document, IExecutionContext context, Func<T, T> postProcessing = null)
         {
-            if (_documentConfig == null && _typedDocumentConfig == null)
+            if (_documentConfig == null)
             {
                 if (_gotValue)
                 {
                     return _value;
                 }
-                _value = (_contextConfig == null && _typedContextConfig == null) 
-                    ? _defaultValue : (_typedContextConfig == null ? _contextConfig.Invoke<T>(context) : _typedContextConfig(context));
+                _value = _contextConfig == null ? _defaultValue : _contextConfig.Invoke<T>(context);
                 if (postProcessing != null)
                 {
                     _value = postProcessing(_value);
@@ -69,7 +54,7 @@ namespace Wyam.Common
                 return _value;
             }
 
-            T value = _typedDocumentConfig == null ? _documentConfig.Invoke<T>(document, context) : _typedDocumentConfig(document, context);
+            T value = _documentConfig.Invoke<T>(document, context);
             if (postProcessing != null)
             {
                 value = postProcessing(value);
