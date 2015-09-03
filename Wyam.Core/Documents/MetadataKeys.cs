@@ -30,5 +30,9 @@
         public const string TotalPages = "TotalPages";
         public const string HasNextPage = "HasNextPage";
         public const string HasPreviousPage = "HasPreviousPage";
+
+        // GroupBy
+        public const string GroupDocuments = "GroupDocuments";
+        public const string GroupKey = "GroupKey";
     }
 }

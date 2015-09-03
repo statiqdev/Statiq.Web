@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Common;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules;
 
@@ -355,6 +356,82 @@ C", configParts.Item2);
 
             // Then
             Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void GenerateModuleConstructorMethodsGeneratesOverloadedConstructors()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Configurator configurator = new Configurator(engine);
+            Type moduleType = typeof (Content);
+            string expected = $@"
+                        public static Wyam.Core.Modules.Content Content(object content)
+                        {{
+                            return new Wyam.Core.Modules.Content(content);  
+                        }}
+                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IExecutionContext, object> content)
+                        {{
+                            return new Wyam.Core.Modules.Content(content);  
+                        }}
+                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IDocument, Wyam.Common.IExecutionContext, object> content)
+                        {{
+                            return new Wyam.Core.Modules.Content(content);  
+                        }}
+                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.IModule[] modules)
+                        {{
+                            return new Wyam.Core.Modules.Content(modules);  
+                        }}";
+
+            // When
+            string generated = configurator.GenerateModuleConstructorMethods(moduleType);
+
+            // Then
+            Assert.AreEqual(expected, generated);
+        }
+
+        [Test]
+        public void GenerateModuleConstructorMethodsGeneratesGenericConstructors()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Configurator configurator = new Configurator(engine);
+            Type moduleType = typeof(GenericModule<>);
+            string expected = $@"
+                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(T input)
+                        {{
+                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
+                        }}
+                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(System.Func<Wyam.Common.IDocument, T> input)
+                        {{
+                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
+                        }}";
+
+            // When
+            string generated = configurator.GenerateModuleConstructorMethods(moduleType);
+
+            // Then
+            Assert.AreEqual(expected, generated);
+        }
+    }
+
+    public class GenericModule<T> : IModule
+    {
+        public GenericModule(T input)
+        {
+
+        }
+
+        public GenericModule(Func<IDocument, T> input)
+        {
+
+        }
+
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 }

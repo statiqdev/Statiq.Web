@@ -93,11 +93,14 @@
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
+    <Compile Include="Configuration\ConfigRewriter.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Modules\ForEach.cs" />
+    <Compile Include="Modules\GroupBy.cs" />
+    <Compile Include="Modules\OrderBy.cs" />
     <Compile Include="Modules\Paginate.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />

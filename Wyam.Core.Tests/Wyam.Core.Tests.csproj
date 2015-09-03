@@ -61,7 +61,9 @@
     <Compile Include="Modules\BranchFixture.cs" />
     <Compile Include="Modules\ExecuteFixture.cs" />
     <Compile Include="Modules\FrontMatterFixture.cs" />
+    <Compile Include="Modules\GroupByFixture.cs" />
     <Compile Include="Modules\IfFixture.cs" />
+    <Compile Include="Modules\OrderByFixture.cs" />
     <Compile Include="Modules\PaginateFixture.cs" />
     <Compile Include="Modules\ReadFilesFixture.cs" />
     <Compile Include="Modules\TraceFixture.cs" />

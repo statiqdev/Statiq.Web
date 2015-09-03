@@ -8,7 +8,8 @@ Pipelines.Add("Content",
 Pipelines.Add("Index",
 	ReadFiles("*.cshtml"),
 	Paginate(2,
-		Documents("Content")		
+		Documents("Content"),
+		OrderBy((d, c) => d["SourceFileBase"])		
 	),
 	Razor(),
 	WriteFiles(@doc.Get<int>("CurrentPage") == 1 ? "index.html" : ("index-" + @doc.Get<int>("CurrentPage") + ".html"))
