@@ -10,7 +10,7 @@ namespace Wyam.Core.Modules
     public class Meta : IModule
     {
         private readonly string _key;
-        private readonly Func<IDocument, IExecutionContext, object> _metadata;
+        private readonly DocumentConfig _metadata;
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Meta(string key, Func<IDocument, IExecutionContext, object> metadata)
+        public Meta(string key, DocumentConfig metadata)
         {
             if (key == null)
             {

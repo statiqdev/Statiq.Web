@@ -33,13 +33,21 @@ namespace Wyam.Modules.Html.Tests
             document
                 .When(x => x.Clone(Arg.Any<string>()))
                 .Do(x => cloned = true);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobaz", "http://www.google.com" }
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.DidNotReceive().Clone(Arg.Any<string>());
@@ -74,14 +82,22 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -118,14 +134,22 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
             }).SetQuerySelector("baz");
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -160,14 +184,22 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -202,14 +234,22 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -244,14 +284,22 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -286,7 +334,15 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" },
@@ -294,7 +350,7 @@ namespace Wyam.Modules.Html.Tests
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -331,7 +387,15 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" },
@@ -339,7 +403,7 @@ namespace Wyam.Modules.Html.Tests
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -374,7 +438,15 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" },
@@ -382,7 +454,7 @@ namespace Wyam.Modules.Html.Tests
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -417,7 +489,15 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foo", "http://www.google.com" },
@@ -425,7 +505,7 @@ namespace Wyam.Modules.Html.Tests
             });
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());
@@ -460,7 +540,15 @@ namespace Wyam.Modules.Html.Tests
             string content = null;
             document
                 .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>()); ;
+                .Do(x => content = x.Arg<string>());
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" },
@@ -468,7 +556,7 @@ namespace Wyam.Modules.Html.Tests
             }).AddLink("Foobaz", "http://www.yahoo.com");
 
             // When
-            autoLink.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             document.Received().Clone(Arg.Any<string>());

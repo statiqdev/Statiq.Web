@@ -9,10 +9,10 @@ namespace Wyam.Core.Modules
 {
     public class OrderBy<TKey> : IModule
     {
-        private readonly Func<IDocument, IExecutionContext, TKey> _orderFunc;
+        private readonly DocumentConfig<TKey> _orderFunc;
         private bool _descending;
 
-        public OrderBy(Func<IDocument, IExecutionContext, TKey> orderFunc)
+        public OrderBy(DocumentConfig<TKey> orderFunc)
         {
             if (orderFunc == null)
             {

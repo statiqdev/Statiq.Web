@@ -116,12 +116,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Add("Pipeline",
-                new Execute(x => new[]
+                new Execute((x, ctx) => new[]
                 {
                     x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
                     x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }),
-                new Execute(x => new[]
+                new Execute((x, ctx) => new[]
                 {
                     x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }));
@@ -154,12 +154,12 @@ namespace Wyam.Core.Tests
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Add(
-                new Execute(x => new[]
+                new Execute((x, ctx) => new[]
                 {
                     x.Clone((c++).ToString()), 
                     x.Clone((c++).ToString())
                 }),
-                new Execute(x => new[]
+                new Execute((x, ctx) => new[]
                 {
                     x.Clone((c++).ToString())
                 }),

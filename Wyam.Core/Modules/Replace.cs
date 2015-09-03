@@ -18,13 +18,13 @@ namespace Wyam.Core.Modules
             _search = search;
         }
 
-        public Replace(string search, Func<IExecutionContext, object> content)
+        public Replace(string search, ContextConfig content)
             : base(content)
         {
             _search = search;
         }
 
-        public Replace(string search, Func<IDocument, IExecutionContext, object> content) 
+        public Replace(string search, DocumentConfig content) 
             : base(content)
         {
             _search = search;

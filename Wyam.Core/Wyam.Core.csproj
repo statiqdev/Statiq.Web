@@ -109,7 +109,6 @@
     <Compile Include="Pipelines\ExecutionContext.cs" />
     <Compile Include="Documents\MetadataKeys.cs" />
     <Compile Include="Modules\CopyFiles.cs" />
-    <Compile Include="Modules\ConcatDocuments.cs" />
     <Compile Include="Modules\Documents.cs" />
     <Compile Include="Modules\FrontMatter.cs" />
     <Compile Include="Modules\Replace.cs" />
@@ -141,6 +140,7 @@
     <Compile Include="Documents\Metadata.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Documents\MetadataAs.cs" />
+    <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

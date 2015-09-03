@@ -17,29 +17,29 @@ namespace Wyam.Modules.Html
     public class AutoLink : IModule
     {
         // Key = text to replace, Value = url
-        private readonly ModuleConstructorHelper<IDictionary<string, string>> _links;
+        private readonly ConfigHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
 
 
         public AutoLink()
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
         public AutoLink(IDictionary<string, string> links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
         }
 
-        public AutoLink(Func<IExecutionContext, IDictionary<string, string>> links)
+        public AutoLink(ContextConfig links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
-        public AutoLink(Func<IDocument, IExecutionContext, IDictionary<string, string>> links)
+        public AutoLink(DocumentConfig links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
         public AutoLink SetQuerySelector(string querySelector)

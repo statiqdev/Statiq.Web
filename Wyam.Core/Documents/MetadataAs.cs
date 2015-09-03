@@ -28,7 +28,7 @@ namespace Wyam.Core.Documents
                 .Select(x =>
                 {
                     T value;
-                    return TryConvert(x.Value, out value)
+                    return TypeHelper.TryConvert(x.Value, out value)
                         ? new KeyValuePair<string, T>?(new KeyValuePair<string, T>(x.Key, value))
                         : null;
                 })
@@ -49,7 +49,7 @@ namespace Wyam.Core.Documents
                 return _metadata.Count(x =>
                 {
                     T value;
-                    return TryConvert(x.Value, out value);
+                    return TypeHelper.TryConvert(x.Value, out value);
                 });
             }
         }
@@ -99,59 +99,7 @@ namespace Wyam.Core.Documents
         {
             value = default(T);
             object untypedValue;
-            return _metadata.TryGetValue(key, out untypedValue) && TryConvert(untypedValue, out value);
-        }
-
-        private static bool TryConvert(object value, out T result)
-        {
-            // Just return if they're the same type
-            if (typeof (T) == value.GetType())
-            {
-                result = (T) value;
-                return true;
-            }
-
-            // Check a normal conversion (in case it's a special type that implements a cast, IConvertible, or something)
-            if (MetadataTypeConverter<T>.TryConvert(value, out result))
-            {
-                return true;
-            }
-
-            // Check for enumerable conversions (but don't treat string as an enumerable)
-            IEnumerable enumerable = value is string ? null : value as IEnumerable;
-            enumerable = enumerable ?? new[] { value };
-
-            // IList<>
-            if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IList<>))
-            {
-                Type elementType = typeof (T).GetGenericArguments()[0];
-                Type adapterType = typeof (MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToList(enumerable);
-                return true;
-            }
-
-            // Array
-            if (typeof(T).IsArray && typeof(T).GetArrayRank() == 1)
-            {
-                Type elementType = typeof(T).GetElementType();
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToArray(enumerable);
-                return true;
-            }
-
-            // IEnumerable<>
-            if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            {
-                Type elementType = typeof(T).GetGenericArguments()[0];
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToEnumerable(enumerable);
-                return true;
-            }
-
-            return false;
+            return _metadata.TryGetValue(key, out untypedValue) && TypeHelper.TryConvert(untypedValue, out value);
         }
     }
 }

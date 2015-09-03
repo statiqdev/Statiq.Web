@@ -11,10 +11,10 @@ namespace Wyam.Core.Modules
 {
     public class GroupBy<TKey> : IModule
     {
-        private readonly Func<IDocument, IExecutionContext, TKey> _groupFunc;
+        private readonly DocumentConfig<TKey> _groupFunc;
         private readonly IModule[] _modules;
 
-        public GroupBy(Func<IDocument, IExecutionContext, TKey> groupFunc, params IModule[] modules)
+        public GroupBy(DocumentConfig<TKey> groupFunc, params IModule[] modules)
         {
             if (groupFunc == null)
             {

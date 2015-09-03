@@ -20,6 +20,9 @@ namespace Wyam.Common
         ITrace Trace { get; }
         IDocumentCollection Documents { get; }
 
+        // This provides access to the same enhanced type conversion used to convert metadata types
+        bool TryConvert<T>(object value, out T result);
+
         // This executes the specified modules with the specified input documents and returns the result documents
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs);
 

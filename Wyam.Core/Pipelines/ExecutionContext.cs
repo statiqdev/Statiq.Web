@@ -41,6 +41,11 @@ namespace Wyam.Core.Pipelines
             return new ExecutionContext(this, module);
         }
 
+        public bool TryConvert<T>(object value, out T result)
+        {
+            return TypeHelper.TryConvert(value, out result);
+        }
+
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
         {
             return Execute(modules, inputs, null);

@@ -338,11 +338,11 @@ C", configParts.Item2);
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IExecutionContext, object> content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.ContextConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IDocument, Wyam.Common.IExecutionContext, object> content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.DocumentConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
@@ -371,11 +371,11 @@ C", configParts.Item2);
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IExecutionContext, object> content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.ContextConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(System.Func<Wyam.Common.IDocument, Wyam.Common.IExecutionContext, object> content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.DocumentConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
@@ -404,7 +404,7 @@ C", configParts.Item2);
                         {{
                             return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
                         }}
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(System.Func<Wyam.Common.IDocument, T> input)
+                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(Wyam.Common.DocumentConfig<T> input)
                         {{
                             return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
                         }}";
@@ -424,7 +424,7 @@ C", configParts.Item2);
 
         }
 
-        public GenericModule(Func<IDocument, T> input)
+        public GenericModule(DocumentConfig<T> input)
         {
 
         }

@@ -29,7 +29,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter(new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new [] {x};
@@ -62,7 +62,7 @@ FM2
 Content1
 Content2") };
             bool executed = false;
-            FrontMatter frontMatter = new FrontMatter("-", new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter("-", new Execute((x, ctx) =>
             {
                 executed = true;
                 return new[] { x };
@@ -96,7 +96,7 @@ ABC
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter("ABC", new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter("ABC", new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -129,7 +129,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -162,7 +162,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -195,7 +195,7 @@ FM2
 Content1
 Content2") };
             bool executed = false;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 executed = true;
                 return new[] { x };
@@ -231,7 +231,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -266,7 +266,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -299,7 +299,7 @@ XX"), new Document(metadata, pipeline).Clone(@"BB
 -
 YY") };
             string frontMatterContent = string.Empty;
-            FrontMatter frontMatter = new FrontMatter(new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
             {
                 frontMatterContent += x.Content;
                 return new[] { x };
