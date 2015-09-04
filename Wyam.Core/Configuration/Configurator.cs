@@ -102,9 +102,10 @@ namespace Wyam.Core.Configuration
         {
             CheckDisposed();
 
-            List<string> configLines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> configLines = code.Replace("\r", "").Split(new[] { '\n' }, StringSplitOptions.None).ToList();
 
             // Get setup
+            int startLine = 1;
             string setup = null;
             int setupLine = configLines.FindIndex(x =>
             {
@@ -113,7 +114,9 @@ namespace Wyam.Core.Configuration
             });
             if (setupLine != -1)
             {
-                setup = string.Join(Environment.NewLine, configLines.Take(setupLine));
+                List<string> setupLines = configLines.Take(setupLine).ToList();
+                setup = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, setupLines)}";
+                startLine = setupLines.Count + 2;
                 configLines.RemoveRange(0, setupLine + 1);
             }
 
@@ -126,11 +129,16 @@ namespace Wyam.Core.Configuration
             });
             if (declarationLine != -1)
             {
-                declarations = string.Join(Environment.NewLine, configLines.Take(declarationLine));
+                List<string> declarationLines = configLines.Take(declarationLine).ToList();
+                declarations = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, declarationLines)}";
+                startLine += declarationLines.Count + 1;
                 configLines.RemoveRange(0, declarationLine + 1);
             }
 
-            return new Tuple<string, string, string>(setup, declarations, string.Join(Environment.NewLine, configLines));
+            // Get config
+            string config = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, configLines)}";
+
+            return new Tuple<string, string, string>(setup, declarations, config);
         }
 
         private void Setup(string code, bool updatePackages)
@@ -150,8 +158,7 @@ namespace Wyam.Core.Configuration
                         public static class SetupScript
                         {
                             public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
-                            {
-                                " + code + @"
+                            {" + Environment.NewLine + code + @"
                             }
                         }";
 
@@ -258,13 +265,23 @@ namespace Wyam.Core.Configuration
                 EmitResult result = compilation.Emit(ms);
                 if (!result.Success)
                 {
+                    List<string> diagnosticMessages = result.Diagnostics
+                        .Where(x => x.Severity == DiagnosticSeverity.Error)
+                        .Select(GetCompilationErrorMessage)
+                        .ToList();
                     trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine,
-                        string.Join(Environment.NewLine, result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)));
-                    throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
+                        string.Join(Environment.NewLine, diagnosticMessages));
+                    throw new AggregateException(diagnosticMessages.Select(x => new Exception(x)));
                 }
                 ms.Seek(0, SeekOrigin.Begin);
                 return ms.ToArray();
             }
+        }
+
+        private static string GetCompilationErrorMessage(Diagnostic diagnostic)
+        {
+            string line = diagnostic.Location.IsInSource ? "Line " + (diagnostic.Location.GetMappedLineSpan().Span.Start.Line + 1) : "Metadata";
+            return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
         
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
@@ -428,8 +445,7 @@ namespace Wyam.Core.Configuration
                 public static class ConfigScript
                 {
                     public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
-                    {
-                        " + script + @"
+                    {" + Environment.NewLine + script + @"
                     }");
 
             // Add static methods to construct each module
@@ -442,7 +458,7 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append("}");
 
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
-            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString(), new CSharpParseOptions(kind: SourceCodeKind.Regular));
+            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString());
             ConfigRewriter configRewriter = new ConfigRewriter(moduleTypes);
             script = configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
             return script;

@@ -9,16 +9,16 @@ namespace Wyam.Core.Modules
 {
     public class OrderBy : IModule
     {
-        private readonly DocumentConfig _orderFunc;
+        private readonly DocumentConfig _key;
         private bool _descending;
 
-        public OrderBy(DocumentConfig orderFunc)
+        public OrderBy(DocumentConfig key)
         {
-            if (orderFunc == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(orderFunc));
+                throw new ArgumentNullException(nameof(key));
             }
-            _orderFunc = orderFunc;
+            _key = key;
         }
 
         public OrderBy Descending(bool descending = true)
@@ -30,8 +30,8 @@ namespace Wyam.Core.Modules
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _descending 
-                ? inputs.OrderByDescending(x => _orderFunc(x, context)) 
-                : inputs.OrderBy(x => _orderFunc(x, context));
+                ? inputs.OrderByDescending(x => _key(x, context)) 
+                : inputs.OrderBy(x => _key(x, context));
         }
     }
 }

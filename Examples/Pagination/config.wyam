@@ -1,4 +1,3 @@
-// Read the template first so we only do it once (but wait to process for each page)
 Pipelines.Add("Content",
 	ReadFiles("*.md"),
 	Markdown(),

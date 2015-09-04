@@ -359,6 +359,207 @@ C", configParts.Item2);
         }
 
         [Test]
+        public void ErrorInSetupContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+foo
+===
+class Y { };
+---
+int z = 0;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(2, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 3", exception.InnerExceptions[0].Message);
+            StringAssert.StartsWith("Line 3", exception.InnerExceptions[1].Message);
+        }
+
+        [Test]
+        public void ErrorInDeclarationsContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+class Y { };
+foo bar;
+---
+int z = 0;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(2, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 5", exception.InnerExceptions[0].Message);
+            StringAssert.StartsWith("Line 5", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void ErrorInDeclarationsWithEmptyLinesContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+
+===
+
+class Y { };
+
+foo bar;
+
+---
+
+int z = 0;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(2, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
+            StringAssert.StartsWith("Line 8", exception.InnerExceptions[1].Message);
+        }
+
+        [Test]
+        public void ErrorInDeclarationsWithoutSetupContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+class Y { };
+
+foo bar;
+
+---
+
+int z = 0;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(2, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
+            StringAssert.StartsWith("Line 4", exception.InnerExceptions[1].Message);
+        }
+
+        [Test]
+        public void ErrorInConfigContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+
+===
+
+class Y { };
+class X { };
+
+---
+
+int z = 0;
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 13", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void ErrorInConfigWithoutDeclarationsContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+int z = 0;
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 6", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
         public void GenerateModuleConstructorMethodsGeneratesOverloadedConstructors()
         {
             // Given

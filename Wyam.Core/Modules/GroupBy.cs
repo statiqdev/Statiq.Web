@@ -11,23 +11,23 @@ namespace Wyam.Core.Modules
 {
     public class GroupBy : IModule
     {
-        private readonly DocumentConfig _groupFunc;
+        private readonly DocumentConfig _key;
         private readonly IModule[] _modules;
 
-        public GroupBy(DocumentConfig groupFunc, params IModule[] modules)
+        public GroupBy(DocumentConfig key, params IModule[] modules)
         {
-            if (groupFunc == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(groupFunc));
+                throw new ArgumentNullException(nameof(key));
             }
-            _groupFunc = groupFunc;
+            _key = key;
             _modules = modules;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings
-                = context.Execute(_modules, inputs).GroupBy(x => _groupFunc(x, context)).ToImmutableArray();
+                = context.Execute(_modules, inputs).GroupBy(x => _key(x, context)).ToImmutableArray();
             if (groupings.Length == 0)
             {
                 return inputs;
