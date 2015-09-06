@@ -15,5 +15,7 @@ namespace Wyam.Modules.Opml
 
         public List<Outline> Outlines { get; private set; } 
             = new List<Outline>();
+
+        public string Text => Attributes["text"];
     }
 }

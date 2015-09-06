@@ -12,9 +12,9 @@ namespace Wyam.Modules.Opml
     {
         OpmlDoc _doc = new OpmlDoc();
 
-        public async Task<OpmlRenderer> Download(string url)
+        public OpmlRenderer Download(string url)
         {
-            var outline = await DownloadUrl(url);
+            var outline = DownloadUrl(url).Result;
 
             _doc.LoadFromXML(outline);
 
@@ -34,8 +34,7 @@ namespace Wyam.Modules.Opml
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-
-            return inputs.ToList();
+            return null;
         }
     }
 }
