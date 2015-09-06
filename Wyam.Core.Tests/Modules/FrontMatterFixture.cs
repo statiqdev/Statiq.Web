@@ -19,6 +19,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -28,7 +29,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter(new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new [] {x};
@@ -51,6 +52,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -60,7 +62,7 @@ FM2
 Content1
 Content2") };
             bool executed = false;
-            FrontMatter frontMatter = new FrontMatter("-", new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter("-", new Execute((x, ctx) =>
             {
                 executed = true;
                 return new[] { x };
@@ -84,6 +86,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -93,7 +96,7 @@ ABC
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter("ABC", new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter("ABC", new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -116,6 +119,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -125,7 +129,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -148,6 +152,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -157,7 +162,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -180,6 +185,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -189,7 +195,7 @@ FM2
 Content1
 Content2") };
             bool executed = false;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 executed = true;
                 return new[] { x };
@@ -213,6 +219,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -224,7 +231,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -249,6 +256,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -258,7 +266,7 @@ FM2
 Content1
 Content2") };
             string frontMatterContent = null;
-            FrontMatter frontMatter = new FrontMatter('!', new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
             {
                 frontMatterContent = x.Content;
                 return new[] { x };
@@ -281,6 +289,7 @@ Content2", documents.First().Content);
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -290,7 +299,7 @@ XX"), new Document(metadata, pipeline).Clone(@"BB
 -
 YY") };
             string frontMatterContent = string.Empty;
-            FrontMatter frontMatter = new FrontMatter(new Execute(x =>
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
             {
                 frontMatterContent += x.Content;
                 return new[] { x };

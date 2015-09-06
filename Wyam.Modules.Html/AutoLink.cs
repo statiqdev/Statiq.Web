@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,29 +17,29 @@ namespace Wyam.Modules.Html
     public class AutoLink : IModule
     {
         // Key = text to replace, Value = url
-        private readonly ModuleConstructorHelper<IDictionary<string, string>> _links;
+        private readonly ConfigHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
 
 
         public AutoLink()
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
         public AutoLink(IDictionary<string, string> links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
         }
 
-        public AutoLink(Func<IExecutionContext, IDictionary<string, string>> links)
+        public AutoLink(ContextConfig links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
-        public AutoLink(Func<IDocument, IExecutionContext, IDictionary<string, string>> links)
+        public AutoLink(DocumentConfig links)
         {
-            _links = new ModuleConstructorHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
+            _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
         public AutoLink SetQuerySelector(string querySelector)
@@ -67,7 +68,11 @@ namespace Wyam.Modules.Html
 
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();
-                    IHtmlDocument htmlDocument = parser.Parse(x.Stream);
+                    IHtmlDocument htmlDocument;
+                    using (Stream stream = x.GetStream())
+                    {
+                        htmlDocument = parser.Parse(stream);
+                    }
                     foreach (IElement element in htmlDocument.QuerySelectorAll(_querySelector).Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                     {
                         // Enumerate all descendant text nodes not already in a link element

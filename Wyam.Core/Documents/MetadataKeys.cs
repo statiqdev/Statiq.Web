@@ -23,5 +23,16 @@
         public const string WriteExtension = "WriteExtension";
         public const string WriteFileName = "WriteFileName";
         public const string WritePath = "WritePath";
+
+        // Paginate
+        public const string PageDocuments = "PageDocuments";
+        public const string CurrentPage = "CurrentPage";
+        public const string TotalPages = "TotalPages";
+        public const string HasNextPage = "HasNextPage";
+        public const string HasPreviousPage = "HasPreviousPage";
+
+        // GroupBy
+        public const string GroupDocuments = "GroupDocuments";
+        public const string GroupKey = "GroupKey";
     }
 }

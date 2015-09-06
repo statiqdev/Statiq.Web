@@ -36,7 +36,7 @@ namespace Wyam.Modules.Razor.Tests
             document
                 .When(x => x.Clone(Arg.Any<string>()))
                 .Do(x => items.Add(x.Arg<string>()));
-            document.Stream.Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
             Razor razor = new Razor();
 
             // When
@@ -69,7 +69,7 @@ namespace Wyam.Modules.Razor.Tests
             document
                 .When(x => x.Clone(Arg.Any<string>()))
                 .Do(x => items.Add(x.Arg<string>()));
-            document.Stream.Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
             Razor razor = new Razor();
 
             // When

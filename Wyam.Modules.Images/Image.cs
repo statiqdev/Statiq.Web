@@ -241,12 +241,7 @@ namespace Wyam.Modules.Images
                     ISupportedImageFormat format = GetFormat(extension, ins);
                     if (format == null)
                         continue;
-
-                    if (input.Stream.CanSeek)
-                    {
-                        input.Stream.Seek(0, SeekOrigin.Begin);
-                    }
-
+                    
                     string destinationFile = Path.GetFileNameWithoutExtension(path);
 
                     if (ins.IsFileNameCustomized)
@@ -270,7 +265,7 @@ namespace Wyam.Modules.Images
 
                     context.Trace.Verbose($"WritePath: {destinationPath}");
 
-                    var output = ProcessImage(input.Stream, format, ins);
+                    var output = ProcessImage(input, format, ins);
 
                     var clone = input.Clone(output, new Dictionary<string, object>
                         {
@@ -283,13 +278,16 @@ namespace Wyam.Modules.Images
             }
         }
 
-        Stream ProcessImage(Stream inStream, ISupportedImageFormat format, ImageInstruction ins)
+        Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)
         {
             using (var imageFactory = new img.ImageFactory(preserveExifData: true))
             {
                 // Load, resize, set the format and quality and save an image.
-                var fac = imageFactory.Load(inStream)
-                            .Format(format);
+                img.ImageFactory fac;
+                using (Stream stream = input.GetStream())
+                {
+                    fac = imageFactory.Load(stream).Format(format);
+                }
 
                 if (ins.IsNeedResize)
                 {

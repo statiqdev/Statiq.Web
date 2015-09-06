@@ -48,6 +48,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
@@ -73,6 +74,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);
@@ -98,6 +100,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["SourceFileRoot"] = @"TestFiles/Input";
             engine.Metadata["SourceFileDir"] = @"TestFiles/Input/Subfolder";
@@ -126,6 +129,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
             Metadata metadata = new Metadata(engine);

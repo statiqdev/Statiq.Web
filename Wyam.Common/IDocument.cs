@@ -11,7 +11,7 @@ namespace Wyam.Common
         string Source { get; }
         IMetadata Metadata { get; }
         string Content { get; }
-        Stream Stream { get; }
+        Stream GetStream();
         IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> metadata = null);
         IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null);
         IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true);

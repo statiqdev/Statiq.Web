@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Concat(context.Execute(_modules, null));
+            return inputs.Concat(context.Execute(_modules));
         }
     }
 }

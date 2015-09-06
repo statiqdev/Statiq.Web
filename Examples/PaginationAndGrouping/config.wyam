@@ -1,0 +1,21 @@
+Pipelines.Add("Content",
+	ReadFiles("*.md"),
+	FrontMatter(Yaml()),
+	Markdown(),
+	WriteFiles("html")
+);
+
+Pipelines.Add("Archive",
+	ReadFiles("archive.cshtml"),
+	GroupBy(@doc["Color"], 
+		Documents("Content")
+	),
+	ForEach(
+		Paginate(2,
+			Documents(@doc["GroupDocuments"]),
+			OrderBy(@doc["SourceFileBase"])
+		)
+	),
+	Razor(),
+	WriteFiles(string.Format("archive-{0}-{1}.html", @doc["GroupKey"], @doc["CurrentPage"]))
+);

@@ -12,24 +12,26 @@ namespace Wyam.Core.Modules
     // Like a Branch module, but results replace the input documents at the end (instead of being dropped)
     public class If : IModule
     {
-        private readonly List<Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]>> _conditions 
-            = new List<Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]>>();
-
-        public If(Func<IDocument, IExecutionContext, bool> predicate, params IModule[] modules)
+        private readonly List<Tuple<DocumentConfig, IModule[]>> _conditions 
+            = new List<Tuple<DocumentConfig, IModule[]>>();
+        
+        // The delegate should return a bool
+        public If(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]>(predicate, modules));
+            _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
         }
 
-        public If ElseIf(Func<IDocument, IExecutionContext, bool> predicate, params IModule[] modules)
+        // The delegate should return a bool
+        public If ElseIf(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]>(predicate, modules));
+            _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
             return this;
         }
 
         // Returns IModule instead of If to discourage further conditions
         public IModule Else(params IModule[] modules)
         {
-            _conditions.Add(new Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]>((x, y) => true, modules));
+            _conditions.Add(new Tuple<DocumentConfig, IModule[]>((x, y) => true, modules));
             return this;
         }
 
@@ -37,14 +39,14 @@ namespace Wyam.Core.Modules
         {
             List<IDocument> results = new List<IDocument>();
             IEnumerable<IDocument> documents = inputs;
-            foreach (Tuple<Func<IDocument, IExecutionContext, bool>, IModule[]> condition in _conditions)
+            foreach (Tuple<DocumentConfig, IModule[]> condition in _conditions)
             {
                 // Split the documents into ones that satisfy the predicate and ones that don't
                 List<IDocument> handled = new List<IDocument>();
                 List<IDocument> unhandled = new List<IDocument>();
                 foreach (IDocument document in documents)
                 {
-                    if (condition.Item1 == null || condition.Item1(document, context))
+                    if (condition.Item1 == null || condition.Item1.Invoke<bool>(document, context))
                     {
                         handled.Add(document);
                     }

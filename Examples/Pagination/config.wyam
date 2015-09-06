@@ -1,0 +1,15 @@
+Pipelines.Add("Content",
+	ReadFiles("*.md"),
+	Markdown(),
+	WriteFiles("html")
+);
+
+Pipelines.Add("Index",
+	ReadFiles("*.cshtml"),
+	Paginate(2,
+		Documents("Content"),
+		OrderBy((d, c) => d["SourceFileBase"])		
+	),
+	Razor(),
+	WriteFiles(@doc.Get<int>("CurrentPage") == 1 ? "index.html" : ("index-" + @doc.Get<int>("CurrentPage") + ".html"))
+);

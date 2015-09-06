@@ -10,7 +10,7 @@ namespace Wyam.Core.Modules
     public class Meta : IModule
     {
         private readonly string _key;
-        private readonly Func<IDocument, IExecutionContext, object> _metadata;
+        private readonly DocumentConfig _metadata;
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules
         {
         }
 
-        public Meta(string key, Func<IDocument, IExecutionContext, object> metadata)
+        public Meta(string key, DocumentConfig metadata)
         {
             if (key == null)
             {
@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules
                 }
 
                 // Execute the modules once and apply to each input document
-                foreach (IDocument result in context.Execute(_modules, null))
+                foreach (IDocument result in context.Execute(_modules))
                 {
                     foreach (KeyValuePair<string, object> kvp in result)
                     {

@@ -102,9 +102,10 @@ namespace Wyam.Core.Configuration
         {
             CheckDisposed();
 
-            List<string> configLines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> configLines = code.Replace("\r", "").Split(new[] { '\n' }, StringSplitOptions.None).ToList();
 
             // Get setup
+            int startLine = 1;
             string setup = null;
             int setupLine = configLines.FindIndex(x =>
             {
@@ -113,7 +114,9 @@ namespace Wyam.Core.Configuration
             });
             if (setupLine != -1)
             {
-                setup = string.Join(Environment.NewLine, configLines.Take(setupLine));
+                List<string> setupLines = configLines.Take(setupLine).ToList();
+                setup = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, setupLines)}";
+                startLine = setupLines.Count + 2;
                 configLines.RemoveRange(0, setupLine + 1);
             }
 
@@ -126,11 +129,16 @@ namespace Wyam.Core.Configuration
             });
             if (declarationLine != -1)
             {
-                declarations = string.Join(Environment.NewLine, configLines.Take(declarationLine));
+                List<string> declarationLines = configLines.Take(declarationLine).ToList();
+                declarations = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, declarationLines)}";
+                startLine += declarationLines.Count + 1;
                 configLines.RemoveRange(0, declarationLine + 1);
             }
 
-            return new Tuple<string, string, string>(setup, declarations, string.Join(Environment.NewLine, configLines));
+            // Get config
+            string config = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, configLines)}";
+
+            return new Tuple<string, string, string>(setup, declarations, config);
         }
 
         private void Setup(string code, bool updatePackages)
@@ -150,8 +158,7 @@ namespace Wyam.Core.Configuration
                         public static class SetupScript
                         {
                             public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
-                            {
-                                " + code + @"
+                            {" + Environment.NewLine + code + @"
                             }
                         }";
 
@@ -258,13 +265,23 @@ namespace Wyam.Core.Configuration
                 EmitResult result = compilation.Emit(ms);
                 if (!result.Success)
                 {
+                    List<string> diagnosticMessages = result.Diagnostics
+                        .Where(x => x.Severity == DiagnosticSeverity.Error)
+                        .Select(GetCompilationErrorMessage)
+                        .ToList();
                     trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine,
-                        string.Join(Environment.NewLine, result.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)));
-                    throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
+                        string.Join(Environment.NewLine, diagnosticMessages));
+                    throw new AggregateException(diagnosticMessages.Select(x => new Exception(x)));
                 }
                 ms.Seek(0, SeekOrigin.Begin);
                 return ms.ToArray();
             }
+        }
+
+        private static string GetCompilationErrorMessage(Diagnostic diagnostic)
+        {
+            string line = diagnostic.Location.IsInSource ? "Line " + (diagnostic.Location.GetMappedLineSpan().Span.Start.Line + 1) : "Metadata";
+            return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
         
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
@@ -385,7 +402,7 @@ namespace Wyam.Core.Configuration
                 using (_engine.Trace.WithIndent().Verbose("Searching for modules in assembly {0}", assembly.FullName))
                 {
                     foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
-                        && x.IsPublic && !x.IsAbstract && x.IsClass && !x.ContainsGenericParameters))
+                        && x.IsPublic && !x.IsAbstract && x.IsClass))
                     {
                         _engine.Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
                         moduleTypes.Add(moduleType);
@@ -414,98 +431,6 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private class ConfigRewriter : CSharpSyntaxRewriter
-        {
-            private readonly HashSet<string> _moduleTypeNames;
-
-            public ConfigRewriter(HashSet<Type> moduleTypes)
-            {
-                _moduleTypeNames = new HashSet<string>(moduleTypes.Select(x => x.Name));    
-            }
-
-            public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
-            {
-                // Replace the module method name with a qualified one if this is a module ctor
-                bool nodeChanged = IsInvocationAModuleCtor(node);
-                ExpressionSyntax nodeExpression = nodeChanged 
-                    ? ((IdentifierNameSyntax)node.Expression).WithIdentifier(
-                        SyntaxFactory.Identifier("ConfigScript." + ((IdentifierNameSyntax)node.Expression).Identifier.Text)) 
-                    : node.Expression;
-                
-                // Only do the replacement if this is a module ctor or a module fluent method
-                bool argumentReplacement = nodeChanged 
-                    || IsInvocationAModuleCtor(node
-                        .DescendantNodes()
-                        .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
-                        .OfType<InvocationExpressionSyntax>()
-                        .LastOrDefault());
-
-                // Get a hash of all the previous @doc and @ctx lambda parameters and don't replace the same
-                HashSet<string> currentScopeLambdaParameters = new HashSet<string>(
-                    node.Ancestors().OfType<LambdaExpressionSyntax>().SelectMany(
-                        x => x.DescendantNodes().OfType<ParameterSyntax>()).Select(x => x.Identifier.Text));
-
-                // Replace @doc and @ctx argument expressions with the appropriate Func<> expressions, and stop descending if we hit another module ctor
-                ArgumentListSyntax argumentList = node.ArgumentList;
-                SeparatedSyntaxList<ArgumentSyntax> arguments = new SeparatedSyntaxList<ArgumentSyntax>();
-                foreach (ArgumentSyntax argument in argumentList.Arguments)
-                {
-                    if (argumentReplacement && !(argument.Expression is LambdaExpressionSyntax))
-                    {
-                        IdentifierNameSyntax docReplacementName = argument
-                            .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax) x))
-                            .OfType<IdentifierNameSyntax>()
-                            .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@doc") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
-                        IdentifierNameSyntax ctxReplacementName = argument
-                            .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax) x))
-                            .OfType<IdentifierNameSyntax>()
-                            .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@ctx") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
-                        if (docReplacementName != null)
-                        {
-                            arguments = arguments.Add(SyntaxFactory.Argument(
-                                SyntaxFactory.ParenthesizedLambdaExpression(
-                                    SyntaxFactory.ParameterList(
-                                        new SeparatedSyntaxList<ParameterSyntax>()
-                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
-                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
-                                    argument.Expression)));
-                            nodeChanged = true;
-                        }
-                        else if (ctxReplacementName != null)
-                        {
-                            arguments = arguments.Add(SyntaxFactory.Argument(
-                                SyntaxFactory.SimpleLambdaExpression(
-                                    SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName.Identifier.Text)),
-                                    argument.Expression)));
-                            nodeChanged = true;
-                        }
-                        else
-                        {
-                            arguments = arguments.Add(argument);
-                        }
-                    }
-                    else
-                    {
-                        arguments = arguments.Add(argument);
-                    }
-                }
-                argumentList = SyntaxFactory.ArgumentList(arguments);
-
-                // Build and return the result node (or just return the original node)
-                return base.VisitInvocationExpression(nodeChanged ? node.WithExpression(nodeExpression).WithArgumentList(argumentList) : node);
-            }
-
-            private bool IsInvocationAModuleCtor(InvocationExpressionSyntax invocation)
-            {
-                if (invocation == null)
-                {
-                    return false;
-                }
-                IdentifierNameSyntax name = invocation.Expression as IdentifierNameSyntax;
-                return name != null && _moduleTypeNames.Contains(name.Identifier.Text);
-            }
-        }
-
         // This creates a wrapper class for the config script that contains static methods for constructing modules
         internal string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
         {
@@ -520,80 +445,92 @@ namespace Wyam.Core.Configuration
                 public static class ConfigScript
                 {
                     public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
-                    {
-                        " + script + @"
+                    {" + Environment.NewLine + script + @"
                     }");
 
             // Add static methods to construct each module
             // Use Roslyn to get a display string for each constructor
             foreach (Type moduleType in moduleTypes)
             {
-                CSharpCompilation compilation = CSharpCompilation
-                    .Create("ScriptCtorMethodGen")
-                    .AddReferences(MetadataReference.CreateFromFile(moduleType.Assembly.Location));
-                foreach (AssemblyName referencedAssembly in moduleType.Assembly.GetReferencedAssemblies())
-                {
-                    try
-                    {
-                        compilation = compilation.AddReferences(
-                            MetadataReference.CreateFromFile(Assembly.Load(referencedAssembly).Location));
-                    }
-                    catch (Exception)
-                    {
-                        // We don't care about problems loading referenced assemblies, just ignore them
-                    }
-                }
-                INamedTypeSymbol moduleSymbol = compilation.GetTypeByMetadataName(moduleType.FullName);
-                bool foundInstanceConstructor = false;
-                foreach (IMethodSymbol ctorSymbol in moduleSymbol.InstanceConstructors
-                    .Where(x => x.DeclaredAccessibility == Accessibility.Public))
-                {
-                    foundInstanceConstructor = true;
-                    string ctorDisplayString = ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
-                        typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-                        genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-                        parameterOptions: SymbolDisplayParameterOptions.IncludeName
-                            | SymbolDisplayParameterOptions.IncludeDefaultValue
-                            | SymbolDisplayParameterOptions.IncludeParamsRefOut
-                            | SymbolDisplayParameterOptions.IncludeType,
-                        memberOptions: SymbolDisplayMemberOptions.IncludeParameters
-                            | SymbolDisplayMemberOptions.IncludeContainingType,
-                        miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
-                    string ctorCallDisplayString = ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
-                        parameterOptions: SymbolDisplayParameterOptions.IncludeName
-                            | SymbolDisplayParameterOptions.IncludeParamsRefOut,
-                        memberOptions: SymbolDisplayMemberOptions.IncludeParameters));
-                    scriptBuilder.AppendFormat(@"
-                        public static {0} {1}{2}
-                        {{
-                            return new {0}{3};  
-                        }}",
-                        moduleType.FullName,
-                        moduleType.Name,
-                        ctorDisplayString.Substring(ctorDisplayString.IndexOf("(", StringComparison.Ordinal)),
-                        ctorCallDisplayString.Substring(ctorCallDisplayString.IndexOf("(", StringComparison.Ordinal)));
-                }
-
-                // Add a default constructor if we need to
-                if (!foundInstanceConstructor)
-                {
-                    scriptBuilder.AppendFormat(@"
-                        public static {0} {1}()
-                        {{
-                            return new {0}();  
-                        }}",
-                        moduleType.FullName,
-                        moduleType.Name);
-                }
+                scriptBuilder.Append(GenerateModuleConstructorMethods(moduleType));
             }
 
             scriptBuilder.Append("}");
 
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
-            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString(), new CSharpParseOptions(kind: SourceCodeKind.Regular));
+            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString());
             ConfigRewriter configRewriter = new ConfigRewriter(moduleTypes);
             script = configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
             return script;
+        }
+
+        public string GenerateModuleConstructorMethods(Type moduleType)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            CSharpCompilation compilation = CSharpCompilation
+                    .Create("ScriptCtorMethodGen")
+                    .AddReferences(MetadataReference.CreateFromFile(moduleType.Assembly.Location));
+            foreach (AssemblyName referencedAssembly in moduleType.Assembly.GetReferencedAssemblies())
+            {
+                try
+                {
+                    compilation = compilation.AddReferences(
+                        MetadataReference.CreateFromFile(Assembly.Load(referencedAssembly).Location));
+                }
+                catch (Exception)
+                {
+                    // We don't care about problems loading referenced assemblies, just ignore them
+                }
+            }
+            INamedTypeSymbol moduleSymbol = compilation.GetTypeByMetadataName(moduleType.FullName);
+            bool foundInstanceConstructor = false;
+            string moduleFullName = moduleSymbol.ToDisplayString(new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+            string moduleName = moduleSymbol.ToDisplayString(new SymbolDisplayFormat(
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+            foreach (IMethodSymbol ctorSymbol in moduleSymbol.InstanceConstructors
+                .Where(x => x.DeclaredAccessibility == Accessibility.Public))
+            {
+                foundInstanceConstructor = true;
+                string ctorDisplayString = ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                    genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                    parameterOptions: SymbolDisplayParameterOptions.IncludeName
+                        | SymbolDisplayParameterOptions.IncludeDefaultValue
+                        | SymbolDisplayParameterOptions.IncludeParamsRefOut
+                        | SymbolDisplayParameterOptions.IncludeType,
+                    memberOptions: SymbolDisplayMemberOptions.IncludeParameters
+                        | SymbolDisplayMemberOptions.IncludeContainingType,
+                    miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+                string ctorCallDisplayString = ctorSymbol.ToDisplayString(new SymbolDisplayFormat(
+                    parameterOptions: SymbolDisplayParameterOptions.IncludeName
+                        | SymbolDisplayParameterOptions.IncludeParamsRefOut,
+                    memberOptions: SymbolDisplayMemberOptions.IncludeParameters));
+                stringBuilder.AppendFormat(@"
+                        public static {0} {1}{2}
+                        {{
+                            return new {0}{3};  
+                        }}",
+                    moduleFullName,
+                    moduleName,
+                    ctorDisplayString.Substring(ctorDisplayString.IndexOf("(", StringComparison.Ordinal)),
+                    ctorCallDisplayString.Substring(ctorCallDisplayString.IndexOf("(", StringComparison.Ordinal)));
+            }
+
+            // Add a default constructor if we need to
+            if (!foundInstanceConstructor)
+            {
+                stringBuilder.AppendFormat(@"
+                        public static {0} {1}()
+                        {{
+                            return new {0}();  
+                        }}",
+                    moduleType.FullName,
+                    moduleType.Name);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

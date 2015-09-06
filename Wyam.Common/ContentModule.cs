@@ -9,22 +9,22 @@ namespace Wyam.Common
     // This class can be used as a base class for modules that operate on arbitrary content (as represented by an object)
     public abstract class ContentModule : IModule
     {
-        private readonly ModuleConstructorHelper<object> _content;
+        private readonly ConfigHelper<object> _content;
         private readonly IModule[] _modules;
 
         protected ContentModule(object content)
         {
-            _content = new ModuleConstructorHelper<object>(content);
+            _content = new ConfigHelper<object>(content);
         }
 
-        protected ContentModule(Func<IExecutionContext, object> content)
+        protected ContentModule(ContextConfig content)
         {
-            _content = new ModuleConstructorHelper<object>(content);
+            _content = new ConfigHelper<object>(content);
         }
 
-        protected ContentModule(Func<IDocument, IExecutionContext, object> content)
+        protected ContentModule(DocumentConfig content)
         {
-            _content = new ModuleConstructorHelper<object>(content);
+            _content = new ConfigHelper<object>(content);
         }
 
         // If only one input document is available, it will be used as the initial document for the specified modules

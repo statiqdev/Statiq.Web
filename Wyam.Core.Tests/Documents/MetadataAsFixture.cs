@@ -18,6 +18,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -34,6 +35,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -50,6 +52,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -66,6 +69,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -82,6 +86,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -98,6 +103,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -114,6 +120,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When

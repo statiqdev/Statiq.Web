@@ -16,6 +16,7 @@ namespace Wyam.Core.Tests.Pipelines
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,
@@ -55,6 +56,7 @@ namespace Wyam.Core.Tests.Pipelines
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,
@@ -93,6 +95,7 @@ namespace Wyam.Core.Tests.Pipelines
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,

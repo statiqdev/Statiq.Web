@@ -23,7 +23,7 @@ namespace Wyam.Core.Tests.Modules
             // When
 
             // Then
-            Assert.Throws<ArgumentNullException>(() => new ReadFiles((Func<IDocument, IExecutionContext, string>)null));
+            Assert.Throws<ArgumentNullException>(() => new ReadFiles((DocumentConfig)null));
         }
 
         [Test]
@@ -49,6 +49,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input\";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -69,6 +70,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -89,6 +91,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -109,6 +112,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -129,6 +133,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -149,6 +154,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -177,6 +183,7 @@ namespace Wyam.Core.Tests.Modules
         {
             // Given
             Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
             engine.InputFolder = @"TestFiles\Input";
             Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);

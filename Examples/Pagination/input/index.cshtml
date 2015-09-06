@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>Index - Page @Model.String("CurrentPage")</title>
+	</head>
+	<body>
+		<h1>Page @Model.String("CurrentPage") of @Model.String("TotalPages")</h1>
+		@foreach(IDocument doc in Model.Get<IEnumerable<IDocument>>("PageDocuments"))
+		{
+			<div><a href="@doc.String("DestinationFileName")">@Html.Raw(doc.Content)</a></div>
+			<hr />
+		}
+		<div>
+			@for(int page = 1 ; page <= @Model.Get<int>("TotalPages") ; page++)
+			{
+				<span>
+					@if(page == @Model.Get<int>("CurrentPage"))
+					{
+						<strong>Page @page</strong>
+					}	
+					else
+					{
+						string pageLink = page == 1 ? "index.html" : ("index-" + page + ".html");
+						<a href="@pageLink">Page @page</a>
+					}
+					&nbsp;&nbsp;
+			 	</span>
+			}
+		</div>
+	</body>
+</html>

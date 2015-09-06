@@ -12,11 +12,12 @@ namespace Wyam.Core.Modules
 {
     public class ReadFiles : IModule
     {
-        private readonly Func<IDocument, IExecutionContext, string> _path;
+        private readonly DocumentConfig _path;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _where = null; 
 
-        public ReadFiles(Func<IDocument, IExecutionContext, string> path)
+        // The delegate should return a string
+        public ReadFiles(DocumentConfig path)
         {
             if (path == null)
             {
@@ -64,7 +65,7 @@ namespace Wyam.Core.Modules
         {
             return inputs.AsParallel().SelectMany(input =>
             {
-                string path = _path(input, context);
+                string path = _path.Invoke<string>(input, context);
                 if (path != null)
                 {
                     path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
@@ -94,7 +95,7 @@ namespace Wyam.Core.Modules
                             });
                     }
                 }
-                return null;
+                return (IEnumerable<IDocument>) Array.Empty<IDocument>();
             });
         }
     }

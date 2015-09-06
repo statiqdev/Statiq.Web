@@ -12,10 +12,11 @@ namespace Wyam.Core.Modules
 {
     public class WriteFiles : IModule
     {
-        private readonly Func<IDocument, IExecutionContext, string> _path;
-        private Func<IDocument, IExecutionContext, bool> _where = null; 
+        private readonly DocumentConfig _path;
+        private DocumentConfig _where = null; 
 
-        public WriteFiles(Func<IDocument, IExecutionContext, string> path)
+        // The predicate should return a string
+        public WriteFiles(DocumentConfig path)
         {
             if (path == null)
             {
@@ -48,7 +49,8 @@ namespace Wyam.Core.Modules
             _path = (x, y) => x.String(MetadataKeys.RelativeFilePath);
         }
 
-        public WriteFiles Where(Func<IDocument, IExecutionContext, bool> predicate)
+        // The delegate should return a bool
+        public WriteFiles Where(DocumentConfig predicate)
         {
             _where = predicate;
             return this;
@@ -58,7 +60,7 @@ namespace Wyam.Core.Modules
         {
             return inputs.AsParallel().Select(input =>
             {
-                if (_where == null || _where(input, context))
+                if (_where == null || _where.Invoke<bool>(input, context))
                 {
                     // WritePath
                     string path = input.String(MetadataKeys.WritePath);
@@ -86,7 +88,7 @@ namespace Wyam.Core.Modules
                     // Func
                     if (path == null)
                     {
-                        path = _path(input, context);
+                        path = _path.Invoke<string>(input, context);
                     }
 
                     if (path != null)
@@ -99,10 +101,13 @@ namespace Wyam.Core.Modules
                             {
                                 Directory.CreateDirectory(pathDirectory);
                             }
-                            FileStream stream = File.Open(path, FileMode.Create);
-                            input.Stream.CopyTo(stream);
+                            FileStream outputStream = File.Open(path, FileMode.Create);
+                            using (Stream inputStream = input.GetStream())
+                            {
+                                inputStream.CopyTo(outputStream);
+                            }
                             context.Trace.Verbose("Wrote file {0}", path);
-                            return input.Clone(stream, new Dictionary<string, object>
+                            return input.Clone(outputStream, new Dictionary<string, object>
                             {
                                 {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
                                 {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
