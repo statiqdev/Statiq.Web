@@ -94,7 +94,6 @@ namespace Wyam.Modules.Opml.Tests
             }
         }
 
-
         async Task<string> DownloadUrl(string url)
         {
             using (var client = new HttpClient())

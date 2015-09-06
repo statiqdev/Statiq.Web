@@ -12,29 +12,33 @@ namespace Wyam.Modules.Opml
     {
         OpmlDoc _doc = new OpmlDoc();
 
-        public OpmlRenderer Download(string url)
+        public int _levelFilter { get; set; } = 0;
+
+        public OpmlRenderer()
         {
-            var outline = DownloadUrl(url).Result;
 
-            _doc.LoadFromXML(outline);
-
-            return this;
         }
 
-        async Task<string> DownloadUrl(string url)
+        public OpmlRenderer(int level)
         {
-            using (var client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(url))
-            using (HttpContent content = response.Content)
-            {
-                string result = await content.ReadAsStringAsync();
-                return result;
-            }
+            _levelFilter = level;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return null;
+            return inputs.SelectMany((IDocument input) =>
+            {
+                var opml = new OpmlDoc();
+                opml.LoadFromXML(input.Content);
+
+                var docs = new List<IDocument>();
+
+                return opml.Where(x => x.Level >= _levelFilter).Select(o =>
+                {
+                    var metadata = o.Attributes.Select(x => new KeyValuePair<string, object>(x.Key, x.Value));
+                    return input.Clone(o.Text, metadata);
+                });
+            });
         }
     }
 }
