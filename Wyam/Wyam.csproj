@@ -109,6 +109,10 @@
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Modules.Razor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
+      <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
+      <Name>Wyam.Modules.TextGeneration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Modules.Yaml</Name>

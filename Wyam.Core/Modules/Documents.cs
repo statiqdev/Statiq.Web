@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Wyam.Common;
 
 namespace Wyam.Core.Modules
@@ -44,6 +45,38 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException(nameof(documents));
             }
             _documentDocuments = documents;
+        }
+
+        // Generates count number of new documents
+        public Documents(int count)
+        {
+            _contextDocuments = ctx =>
+            {
+                List<IDocument> documents = new List<IDocument>();
+                for (int c = 0; c < count; c++)
+                {
+                    documents.Add(ctx.GetNewDocument());
+                }
+                return documents;
+            };
+        }
+
+        // Generates new documents with the defined content
+        public Documents(params string[] content)
+        {
+            _contextDocuments = ctx => content.Select(x => ctx.GetNewDocument().Clone(x));
+        }
+
+        // Generates new documents with the defined metadata
+        public Documents(params IEnumerable<KeyValuePair<string, object>>[] metadata)
+        {
+            _contextDocuments = ctx => metadata.Select(ctx.GetNewDocument);
+        }
+
+        // Generates new documents with the defined content and metadata
+        public Documents(params Tuple<string, IEnumerable<KeyValuePair<string, object>>>[] contentAndMetadata)
+        {
+            _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetNewDocument(x.Item2).Clone(x.Item1));
         }
 
         // The delegate should return a bool
