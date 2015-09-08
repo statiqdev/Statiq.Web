@@ -30,10 +30,12 @@ D";
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B", configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"=C
+            Assert.AreEqual(@"#line 4
+=C
 D", configParts.Item3);
         }
 
@@ -54,10 +56,12 @@ D";
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B", configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"=C
+            Assert.AreEqual(@"#line 4
+=C
 D", configParts.Item3);
         }
 
@@ -80,7 +84,8 @@ D";
             // Then
             Assert.IsNull(configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B
   ===
 =C
@@ -106,10 +111,14 @@ D";
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
-=B", configParts.Item1);
+            Assert.AreEqual(@"#line 1
+A=
+=B
+", configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"=C
+            Assert.AreEqual(@"#line 5
+
+=C
 D", configParts.Item3);
         }
 
@@ -130,7 +139,8 @@ C";
             // Then
             Assert.IsNull(configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B
 C", configParts.Item3);
             
@@ -160,11 +170,14 @@ F";
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B", configParts.Item1);
-            Assert.AreEqual(@"=C
+            Assert.AreEqual(@"#line 4
+=C
 D", configParts.Item2);
-            Assert.AreEqual(@"-E
+            Assert.AreEqual(@"#line 7
+-E
 F", configParts.Item3);
         }
 
@@ -188,11 +201,14 @@ E
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B", configParts.Item1);
-            Assert.AreEqual(@"=C
+            Assert.AreEqual(@"#line 4
+=C
 D", configParts.Item2);
-            Assert.AreEqual(@"E
+            Assert.AreEqual(@"#line 7
+E
 =F", configParts.Item3);
         }
 
@@ -218,7 +234,8 @@ F";
             // Then
             Assert.IsNull(configParts.Item1);
             Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B
   ===
 =C
@@ -252,11 +269,18 @@ E-
             Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
 
             // Then
-            Assert.AreEqual(@"A=
-=B", configParts.Item1);
-            Assert.AreEqual(@"=C
-D", configParts.Item2);
-            Assert.AreEqual(@"E-
+            Assert.AreEqual(@"#line 1
+A=
+=B
+", configParts.Item1);
+            Assert.AreEqual(@"#line 5
+
+=C
+D
+", configParts.Item2);
+            Assert.AreEqual(@"#line 10
+
+E-
 -F", configParts.Item3);
         }
 
@@ -279,10 +303,12 @@ E-
 
             // Then
             Assert.IsNull(configParts.Item1);
-            Assert.AreEqual(@"A=
+            Assert.AreEqual(@"#line 1
+A=
 =B
 C", configParts.Item2);
-            Assert.AreEqual(@"E-
+            Assert.AreEqual(@"#line 5
+E-
 -F", configParts.Item3);
 
         }
@@ -332,7 +358,7 @@ C", configParts.Item2);
                 {{
                     public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
                     {{
-                        {output}
+{output}
                     }}
                         public static Wyam.Core.Modules.Content Content(object content)
                         {{
@@ -557,6 +583,143 @@ foo bar;
             // Then
             Assert.AreEqual(1, exception.InnerExceptions.Count);
             StringAssert.StartsWith("Line 6", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void ErrorInConfigAfterLambdaExpansionContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+Pipelines.Add(
+    Content(true
+        && @doc.Get<bool>(""Key"") == false
+    )
+);
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void ErrorInConfigAfterLambdaExpansionOnNewLineContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+Pipelines.Add(
+    Content(
+        @doc.Get<bool>(""Key"") == false
+    )
+);
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void ErrorInConfigAfterLambdaExpansionWithArgumentSeparatorNewLinesContainsCorrectLineNumbers()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+Pipelines.Add(
+    If(
+        @doc.Get<bool>(""Key""),
+        Content(""Baz"")
+    )
+);
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 11", exception.InnerExceptions[0].Message);
+        }
+
+        [Test]
+        public void TODOLambdaExpansionWithNestedModulesExpandsInnerMostModule()
+        {
+            // Given
+            Engine engine = new Engine();
+            Configurator configurator = new Configurator(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+Pipelines.Add(
+    Concat(
+        ReadFiles(""*.md"").Where(@doc.Get<bool>(""key""))
+    )
+);
+
+foo bar;
+";
+
+            // When
+            AggregateException exception = null;
+            try
+            {
+                configurator.Configure(configScript, false);
+            }
+            catch (AggregateException ex)
+            {
+                exception = ex;
+            }
+
+            // Then
+            Assert.AreEqual(1, exception.InnerExceptions.Count);
+            StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
         }
 
         [Test]

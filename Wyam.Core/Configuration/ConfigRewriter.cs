@@ -26,7 +26,8 @@ namespace Wyam.Core.Configuration
             bool nodeChanged = IsInvocationAModuleCtor(node);
             ExpressionSyntax nodeExpression = nodeChanged
                 ? ((IdentifierNameSyntax)node.Expression).WithIdentifier(
-                    SyntaxFactory.Identifier("ConfigScript." + ((IdentifierNameSyntax)node.Expression).Identifier.Text))
+                    SyntaxFactory.Identifier("ConfigScript." + ((IdentifierNameSyntax)node.Expression).Identifier.Text)
+                        .WithTriviaFrom(((IdentifierNameSyntax)node.Expression).Identifier))
                 : node.Expression;
 
             // Only do the replacement if this is a module ctor or a module fluent method
@@ -44,8 +45,7 @@ namespace Wyam.Core.Configuration
 
             // Replace @doc and @ctx argument expressions with the appropriate Func<> expressions, and stop descending if we hit another module ctor
             ArgumentListSyntax argumentList = node.ArgumentList;
-            SeparatedSyntaxList<ArgumentSyntax> arguments = new SeparatedSyntaxList<ArgumentSyntax>();
-            foreach (ArgumentSyntax argument in argumentList.Arguments)
+            foreach (ArgumentSyntax argument in node.ArgumentList.Arguments)
             {
                 if (argumentReplacement && !(argument.Expression is LambdaExpressionSyntax))
                 {
@@ -59,34 +59,27 @@ namespace Wyam.Core.Configuration
                         .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@ctx") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
                     if (docReplacementName != null)
                     {
-                        arguments = arguments.Add(SyntaxFactory.Argument(
+                        argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
                             SyntaxFactory.ParenthesizedLambdaExpression(
                                 SyntaxFactory.ParameterList(
                                     new SeparatedSyntaxList<ParameterSyntax>()
                                         .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
                                         .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
-                                argument.Expression)));
+                                argument.Expression))
+                            .WithTriviaFrom(argument));
                         nodeChanged = true;
                     }
                     else if (ctxReplacementName != null)
                     {
-                        arguments = arguments.Add(SyntaxFactory.Argument(
+                        argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
                             SyntaxFactory.SimpleLambdaExpression(
                                 SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName.Identifier.Text)),
-                                argument.Expression)));
+                                argument.Expression))
+                            .WithTriviaFrom(argument));
                         nodeChanged = true;
                     }
-                    else
-                    {
-                        arguments = arguments.Add(argument);
-                    }
-                }
-                else
-                {
-                    arguments = arguments.Add(argument);
                 }
             }
-            argumentList = SyntaxFactory.ArgumentList(arguments);
 
             // Build and return the result node (or just return the original node)
             return base.VisitInvocationExpression(nodeChanged ? node.WithExpression(nodeExpression).WithArgumentList(argumentList) : node);
