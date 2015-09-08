@@ -30,53 +30,49 @@ namespace Wyam.Core.Configuration
                         .WithTriviaFrom(((IdentifierNameSyntax)node.Expression).Identifier))
                 : node.Expression;
 
-            // Only do the replacement if this is a module ctor or a module fluent method
-            bool argumentReplacement = nodeChanged
-                || IsInvocationAModuleCtor(node
-                    .DescendantNodes()
-                    .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
-                    .OfType<InvocationExpressionSyntax>()
-                    .LastOrDefault());
-
             // Get a hash of all the previous @doc and @ctx lambda parameters and don't replace the same
             HashSet<string> currentScopeLambdaParameters = new HashSet<string>(
                 node.Ancestors().OfType<LambdaExpressionSyntax>().SelectMany(
                     x => x.DescendantNodes().OfType<ParameterSyntax>()).Select(x => x.Identifier.Text));
 
-            // Replace @doc and @ctx argument expressions with the appropriate Func<> expressions, and stop descending if we hit another module ctor
+            // Only do the replacement if this is a module ctor or a module fluent method
             ArgumentListSyntax argumentList = node.ArgumentList;
-            foreach (ArgumentSyntax argument in node.ArgumentList.Arguments)
+            if(nodeChanged || IsInvocationAFluentMethod(node))
             {
-                if (argumentReplacement && !(argument.Expression is LambdaExpressionSyntax))
+                // Replace @doc and @ctx argument expressions with the appropriate lambda expressions, and stop descending if we hit another module ctor
+                foreach (ArgumentSyntax argument in node.ArgumentList.Arguments)
                 {
-                    IdentifierNameSyntax docReplacementName = argument
-                        .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax)x))
-                        .OfType<IdentifierNameSyntax>()
-                        .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@doc") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
-                    IdentifierNameSyntax ctxReplacementName = argument
-                        .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtor((InvocationExpressionSyntax)x))
-                        .OfType<IdentifierNameSyntax>()
-                        .FirstOrDefault(x => x != null && x.Identifier.Text.StartsWith("@ctx") && !currentScopeLambdaParameters.Contains(x.Identifier.Text));
-                    if (docReplacementName != null)
+                    // Don't replace existing lambda expressions
+                    if (!(argument.Expression is LambdaExpressionSyntax))
                     {
-                        argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
-                            SyntaxFactory.ParenthesizedLambdaExpression(
-                                SyntaxFactory.ParameterList(
-                                    new SeparatedSyntaxList<ParameterSyntax>()
-                                        .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
-                                        .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
-                                argument.Expression))
-                            .WithTriviaFrom(argument));
-                        nodeChanged = true;
-                    }
-                    else if (ctxReplacementName != null)
-                    {
-                        argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
-                            SyntaxFactory.SimpleLambdaExpression(
-                                SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName.Identifier.Text)),
-                                argument.Expression))
-                            .WithTriviaFrom(argument));
-                        nodeChanged = true;
+                        List<IdentifierNameSyntax> identifierNames = argument
+                            .DescendantNodes(x => !(x is InvocationExpressionSyntax) || !IsInvocationAModuleCtorOrFluentMethod((InvocationExpressionSyntax)x))
+                            .OfType<IdentifierNameSyntax>()
+                            .Where(x => x != null && !currentScopeLambdaParameters.Contains(x.Identifier.Text))
+                            .ToList();
+                        IdentifierNameSyntax docReplacementName = identifierNames.FirstOrDefault(x => x.Identifier.Text.StartsWith("@doc"));
+                        IdentifierNameSyntax ctxReplacementName = identifierNames.FirstOrDefault(x => x.Identifier.Text.StartsWith("@ctx"));
+                        if (docReplacementName != null)
+                        {
+                            argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
+                                SyntaxFactory.ParenthesizedLambdaExpression(
+                                    SyntaxFactory.ParameterList(
+                                        new SeparatedSyntaxList<ParameterSyntax>()
+                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(docReplacementName.Identifier.Text)))
+                                            .Add(SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName == null ? "_" : ctxReplacementName.Identifier.Text)))),
+                                    argument.Expression))
+                                .WithTriviaFrom(argument));
+                            nodeChanged = true;
+                        }
+                        else if (ctxReplacementName != null)
+                        {
+                            argumentList = argumentList.ReplaceNode(argument, SyntaxFactory.Argument(
+                                SyntaxFactory.SimpleLambdaExpression(
+                                    SyntaxFactory.Parameter(SyntaxFactory.Identifier(ctxReplacementName.Identifier.Text)),
+                                    argument.Expression))
+                                .WithTriviaFrom(argument));
+                            nodeChanged = true;
+                        }
                     }
                 }
             }
@@ -93,6 +89,19 @@ namespace Wyam.Core.Configuration
             }
             IdentifierNameSyntax name = invocation.Expression as IdentifierNameSyntax;
             return name != null && _moduleTypeNames.Contains(name.Identifier.Text);
+        }
+
+        private bool IsInvocationAFluentMethod(InvocationExpressionSyntax invocation)
+        {
+            return IsInvocationAModuleCtor(invocation?.DescendantNodes()
+                .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
+                .OfType<InvocationExpressionSyntax>()
+                .LastOrDefault());
+        }
+
+        private bool IsInvocationAModuleCtorOrFluentMethod(InvocationExpressionSyntax invocation)
+        {
+            return IsInvocationAModuleCtor(invocation) || IsInvocationAFluentMethod(invocation);
         }
     }
 }

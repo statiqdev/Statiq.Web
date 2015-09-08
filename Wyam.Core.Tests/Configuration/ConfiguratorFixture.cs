@@ -345,6 +345,7 @@ E-
         [TestCase(@"Pipelines.Add(Content(Bar(@ctx2.Foo())))", @"Pipelines.Add(ConfigScript.Content(@ctx2=>Bar(@ctx2.Foo())))")]
         [TestCase(@"Pipelines.Add(Content().Where(Bar(@doc.Foo())))", @"Pipelines.Add(ConfigScript.Content().Where((@doc,_)=>Bar(@doc.Foo())))")]
         [TestCase(@"Pipelines.Add(Content().Where(Bar(@ctx.Foo())))", @"Pipelines.Add(ConfigScript.Content().Where(@ctx=>Bar(@ctx.Foo())))")]
+        [TestCase(@"Pipelines.Add(Content(Content(""*.md"").Where(@doc.Foo())))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content(""*.md"").Where((@doc,_)=>@doc.Foo())))")]
         public void GenerateScriptGeneratesCorrectScript(string input, string output)
         {
             // Given
@@ -686,40 +687,6 @@ foo bar;
             // Then
             Assert.AreEqual(1, exception.InnerExceptions.Count);
             StringAssert.StartsWith("Line 11", exception.InnerExceptions[0].Message);
-        }
-
-        [Test]
-        public void TODOLambdaExpansionWithNestedModulesExpandsInnerMostModule()
-        {
-            // Given
-            Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
-            string configScript = @"
-Assemblies.Load("""");
-===
-Pipelines.Add(
-    Concat(
-        ReadFiles(""*.md"").Where(@doc.Get<bool>(""key""))
-    )
-);
-
-foo bar;
-";
-
-            // When
-            AggregateException exception = null;
-            try
-            {
-                configurator.Configure(configScript, false);
-            }
-            catch (AggregateException ex)
-            {
-                exception = ex;
-            }
-
-            // Then
-            Assert.AreEqual(1, exception.InnerExceptions.Count);
-            StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
         }
 
         [Test]
