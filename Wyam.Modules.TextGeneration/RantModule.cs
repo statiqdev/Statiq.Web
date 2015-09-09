@@ -10,6 +10,7 @@ namespace Wyam.Modules.TextGeneration
     {
         private RantEngine _engine;
         private long? _seed;
+        private bool _incrementSeed;
 
         protected RantModule(object template) : base(template)
         {
@@ -34,7 +35,8 @@ namespace Wyam.Modules.TextGeneration
         private void SetEngine()
         {
             _engine = new RantEngine();
-            using (Stream stream = typeof(RantModule).Assembly.GetManifestResourceStream("Rantionary.rantpkg"))
+            using (Stream stream = typeof(RantModule).Assembly
+                .GetManifestResourceStream(typeof(RantModule).Assembly.GetName().Name + ".Rantionary.rantpkg"))
             {
                 _engine.LoadPackage(RantPackage.Load(stream));
             }
@@ -44,6 +46,15 @@ namespace Wyam.Modules.TextGeneration
         public RantModule SetSeed(long seed)
         {
             _seed = seed;
+            _incrementSeed = true;
+            return this;
+        }
+
+        // This indicates if the seed should be incremented for each document
+        // Setting this to false with always generate the same output for the same pattern
+        public RantModule IncrementSeed(bool increment = true)
+        {
+            _incrementSeed = increment;
             return this;
         }
 
@@ -62,9 +73,19 @@ namespace Wyam.Modules.TextGeneration
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            string output = _seed.HasValue
-                ? _engine.Do(content.ToString(), _seed.Value)
-                : _engine.Do(content.ToString());
+            string output;
+            if(_seed.HasValue)
+            {
+                output = _engine.Do(content.ToString(), _seed.Value);
+                if (_incrementSeed)
+                {
+                    _seed++;
+                }
+            }
+            else
+            {
+                output = _engine.Do(content.ToString());
+            }
             return new[] {Execute(output, input)};
         }
 

@@ -1,0 +1,19 @@
+Pipelines.Add("Posts",
+	Documents(10),
+	GenerateContent(
+		ReadFiles("post-template.txt")
+	).SetSeed(1000),
+	GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").SetSeed(2000),	
+	GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").SetSeed(3000),
+	Markdown(),
+	Razor(),
+	Index(),
+	WriteFiles($"post-{@doc.String("Index")}.html")
+);
+
+Pipelines.Add("Index",
+	ReadFiles("index.cshtml"),
+	FrontMatter(Yaml()),
+	Razor(),
+	WriteFiles(".html")
+);
