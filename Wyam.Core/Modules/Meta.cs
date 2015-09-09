@@ -10,13 +10,28 @@ namespace Wyam.Core.Modules
     public class Meta : IModule
     {
         private readonly string _key;
-        private readonly DocumentConfig _metadata;
+        private readonly ConfigHelper<object> _metadata; 
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
         public Meta(string key, object metadata)
-            : this(key, (x, y) => metadata)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            _key = key;
+            _metadata = new ConfigHelper<object>(metadata);
+        }
+
+        public Meta(string key, ContextConfig metadata)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            _key = key;
+            _metadata = new ConfigHelper<object>(metadata);
         }
 
         public Meta(string key, DocumentConfig metadata)
@@ -26,7 +41,7 @@ namespace Wyam.Core.Modules
                 throw new ArgumentNullException(nameof(key));
             }
             _key = key;
-            _metadata = metadata ?? ((x, y) => null);
+            _metadata = new ConfigHelper<object>(metadata);
         }
 
         // For performance reasons, the specified modules will only be run once with a newly initialized, isolated document
@@ -78,7 +93,7 @@ namespace Wyam.Core.Modules
                 return inputs.Select(input => input.Clone(metadata));
             }
 
-            return inputs.Select(x => x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata(x, context)) }));
+            return inputs.Select(x => x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
         }
     }
 }
