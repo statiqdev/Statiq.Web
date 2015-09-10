@@ -26,7 +26,6 @@ namespace Wyam.Modules.Download.Tests
                     }
                 );
 
-
             IModule download = new Download().Uris("http://www.siwawi.com/");
             IExecutionContext context = Substitute.For<IExecutionContext>();
 
@@ -44,9 +43,10 @@ namespace Wyam.Modules.Download.Tests
             // Then
             stream.Seek(0, SeekOrigin.Begin);
             var content = new StreamReader(stream).ReadToEnd();
+
+            Assert.IsNotEmpty(content, "Download cannot be empty");
             Console.WriteLine("Content " + content);
             stream.Dispose();
-
         }
     }
 }
