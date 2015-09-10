@@ -18,35 +18,41 @@ namespace Wyam.Modules.Download.Tests
         {
             IDocument document = Substitute.For<IDocument>();
             Stream stream = null;
+            IEnumerable<KeyValuePair<string, object>> metadata = null;
 
             document
                 .When(x => x.Clone(Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
                 .Do(x => {
                     stream = x.Arg<Stream>();
+                    metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     }
                 );
 
             IModule download = new Download().Uris("http://www.siwawi.com/");
             IExecutionContext context = Substitute.For<IExecutionContext>();
 
-            object result;
-            context.TryConvert(new object(), out result)
-                .ReturnsForAnyArgs(x =>
-                {
-                    x[1] = x[0];
-                    return true;
-                });
-
             // When
             download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
+
             // Then
+            var headers = metadata.FirstOrDefault(x => x.Key == MetadataKeys.SourceHeaders).Value as Dictionary<string, string>;
+
+            Assert.IsNotNull(headers, "Header cannot be null");
+            Assert.IsTrue(headers.Count > 0, "Headers must contain contents");
+
+            foreach (var h in headers)
+            {
+                Console.WriteLine($"{h.Key} - {h.Value}");
+            }
+
             stream.Seek(0, SeekOrigin.Begin);
             var content = new StreamReader(stream).ReadToEnd();
+            stream.Dispose();
 
             Assert.IsNotEmpty(content, "Download cannot be empty");
             Console.WriteLine("Content " + content);
-            stream.Dispose();
+
         }
     }
 }
