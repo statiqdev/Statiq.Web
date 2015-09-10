@@ -1,5 +1,5 @@
 Pipelines.Add("Posts",
-	Documents(10),
+	Documents(100),
 	GenerateContent(
 		ReadFiles("post-template.txt")
 	).SetSeed(1000),

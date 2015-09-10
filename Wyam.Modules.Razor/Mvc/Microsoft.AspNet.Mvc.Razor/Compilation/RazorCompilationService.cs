@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -75,6 +76,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             return _razorHost.GenerateCode(relativePath, inputStream);
         }
 
+        // Cache all MetadataReferences used during compilation
+        private static readonly ConcurrentDictionary<string, MetadataReference> _metadataReferences = new ConcurrentDictionary<string, MetadataReference>(); 
+
         // Wyam - Use the Roslyn scripting engine for compilation
         // In MVC, this part is done in RoslynCompilationService
         private Type Compile([NotNull] RelativeFileInfo file, [NotNull] string compilationContent)
@@ -94,14 +98,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(assemblyName, new[] {syntaxTree},
-                assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                assemblies.Select(x => _metadataReferences.GetOrAdd(x.Location, y => MetadataReference.CreateFromFile(y))), compilationOptions)
                 .AddReferences(
                     // For some reason, Roslyn really wants these added by filename
                     // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
-                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
+                    _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "mscorlib.dll"), x => MetadataReference.CreateFromFile(x)),
+                    _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.dll"), x => MetadataReference.CreateFromFile(x)),
+                    _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Core.dll"), x => MetadataReference.CreateFromFile(x)),
+                    _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Runtime.dll"), x => MetadataReference.CreateFromFile(x))
                 );
             if (_executionContext.RawConfigAssembly != null && _executionContext.RawConfigAssembly.Length > 0)
             {
