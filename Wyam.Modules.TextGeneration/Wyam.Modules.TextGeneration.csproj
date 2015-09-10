@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6BDD24AD-D0CE-4B76-BC20-128299237505}</ProjectGuid>
+    <ProjectGuid>{0D7F4902-C048-46AA-BDD1-B87B657003FF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wyam.Examples.Tests</RootNamespace>
-    <AssemblyName>Wyam.Examples.Tests</AssemblyName>
+    <RootNamespace>Wyam.Modules.TextGeneration</RootNamespace>
+    <AssemblyName>Wyam.Modules.TextGeneration</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,9 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    <Reference Include="Rant, Version=2.0.252.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rant.2.0.252\lib\net45\Rant.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ad5f9f4a55b5020b, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnmanagedExports.1.2.6\lib\net\RGiesecke.DllExport.Metadata.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -41,57 +45,31 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExamplesFixture.cs" />
+    <Compile Include="GenerateContent.cs" />
+    <Compile Include="GenerateMeta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="RantModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
-      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
-      <Name>Wyam.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Html\Wyam.Modules.Html.csproj">
-      <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
-      <Name>Wyam.Modules.Html</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Images\Wyam.Modules.Images.csproj">
-      <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
-      <Name>Wyam.Modules.Images</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Less\Wyam.Modules.Less.csproj">
-      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
-      <Name>Wyam.Modules.Less</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
-      <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
-      <Name>Wyam.Modules.Markdown</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
-      <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
-      <Name>Wyam.Modules.Razor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
-      <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
-      <Name>Wyam.Modules.TextGeneration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
-      <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
-      <Name>Wyam.Modules.Yaml</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Rantionary.rantpkg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Rant License.txt" />
+    <Content Include="Rant.h" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- <Import Project="../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets" Condition="Exists('../packages/UnmanagedExports.1.2.6/tools/RGiesecke.DllExport.targets')" /> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

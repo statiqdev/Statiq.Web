@@ -34,5 +34,8 @@
         // GroupBy
         public const string GroupDocuments = "GroupDocuments";
         public const string GroupKey = "GroupKey";
+
+        // Index
+        public const string Index = "Index";
     }
 }

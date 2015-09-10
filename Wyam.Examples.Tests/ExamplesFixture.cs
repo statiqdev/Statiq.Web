@@ -40,7 +40,7 @@ namespace Wyam.Examples.Tests
                 engine.Execute();
                 count++;
             }
-            Assert.AreEqual(6, count);
+            Assert.AreEqual(7, count);
         }
     }
 }

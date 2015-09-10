@@ -30,7 +30,7 @@
 		<hr />
 		<div>
 			<span>Colors: </span>
-			@foreach(string groupKey in Documents.FromPipeline("Archive").Select(x => x.String("GroupKey")).Distinct())
+			@foreach(string groupKey in Documents.FromPipeline("Archive").Select(x => x.String("GroupKey")).Distinct().OrderBy(x => x))
 			{
 				<span>
 					@if(groupKey == @Model.String("GroupKey"))
