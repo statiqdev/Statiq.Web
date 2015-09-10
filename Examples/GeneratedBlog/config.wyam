@@ -1,13 +1,25 @@
+int seed = 1000;
+
+string postTemplate = @"[case:sentence]
+[rs:[n:4;8];\2,N]
+{
+    [rs:14;\s]
+    {
+        [rs:[n:10;24];\s]{[r:[n:1;8]]{\c}}.
+    }
+}";
+
 Pipelines.Add("Posts",
 	Documents(100),
-	GenerateContent(
-		ReadFiles("post-template.txt")
-	).SetSeed(1000),
-	GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").SetSeed(2000),	
-	GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").SetSeed(3000),
+	Index(),
+	ForEach(
+		// Do generation in a ForEach module so we generate synchronously and it's repeatable
+		GenerateContent(postTemplate).SetSeed(seed++),
+		GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").SetSeed(seed++),	
+		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").SetSeed(seed++)
+	),
 	Markdown(),
 	Razor(),
-	Index(),
 	WriteFiles($"post-{@doc.String("Index")}.html")
 );
 
