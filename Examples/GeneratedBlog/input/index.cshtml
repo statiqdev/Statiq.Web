@@ -1,0 +1,13 @@
+Title: Index and Archive
+---
+<p>Welcome to my blog! All the posts were generated procedurally...</p>
+@foreach(IGrouping<int, IDocument> monthGroup in @Documents.FromPipeline("Posts")
+	.GroupBy(x => x.Get<DateTime>("Date").Month)
+	.OrderBy(x => x.Key))
+{
+	<h3>@(monthGroup.First().Get<DateTime>("Date").ToString("MMMM"))</h3>
+	foreach(IDocument post in monthGroup.OrderBy(x => x.Get<DateTime>("Date")))
+	{
+		<div><strong><a href="@(post["DestinationFileName"])">@post["Title"]</a></strong> Posted on @(post.Get<DateTime>("Date").ToShortDateString())</div>
+	}
+}
