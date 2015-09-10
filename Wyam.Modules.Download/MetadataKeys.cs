@@ -9,5 +9,7 @@ namespace Wyam.Modules.Download
     public static class MetadataKeys
     {
         public static string SourceUri = "SourceUri";
+
+        public static string SourceHeaders = "SourceHeaders";
     }
 }

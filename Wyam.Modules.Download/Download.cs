@@ -98,8 +98,10 @@ namespace Wyam.Modules.Download
                     var stream = result.Stream;
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    var metadata = result.Headers.Select(x => new KeyValuePair<string, object>(x.Key, x.Value)).ToList();
-                    metadata.Add(new KeyValuePair<string, object>(MetadataKeys.SourceUri, result.Uri.ToString()));
+                    var metadata = new List<KeyValuePair<string, object>>(){
+                        new KeyValuePair<string, object>(MetadataKeys.SourceUri, result.Uri.ToString()),
+                        new KeyValuePair<string, object>(MetadataKeys.SourceHeaders, result.Headers)
+                     };
 
                     doc = input.Clone(stream, metadata);
 
