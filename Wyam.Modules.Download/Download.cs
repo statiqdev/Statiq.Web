@@ -50,9 +50,12 @@ namespace Wyam.Modules.Download
             {
                 Stream result = await content.ReadAsStreamAsync();
 
+                var mem = new MemoryStream();
+                result.CopyTo(mem);
+
                 var headers = content.Headers.ToDictionary(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
 
-                return new DownloadResult(url, result, headers);
+                return new DownloadResult(url, mem, headers);
             }
         }
 
