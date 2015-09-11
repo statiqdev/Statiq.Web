@@ -7,12 +7,34 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using System.IO;
 using System.Globalization;
+using System.Net.Http.Headers;
 
 namespace Wyam.Modules.Download
 {
     public class RequestHeader
     {
         public List<string> Accept { get; set; } = new List<string>();
+
+        public List<string> AcceptCharset { get; set; } = new List<string>();
+
+        public List<string> AcceptEncoding { get; set; } = new List<string>();
+
+        public List<string> AcceptLanguage { get; set; } = new List<string>();
+
+        Tuple<string, string> _basicAuthorization;
+
+        public Tuple<string, string> BasicAuthorization
+        {
+            get
+            {
+                return _basicAuthorization;
+            }
+        }
+
+        public void SetBasicAuthorization(string username, string password)
+        {
+            _basicAuthorization = Tuple.Create(username, password);
+        }
     }
 
     class DownloadInstruction
@@ -82,13 +104,33 @@ namespace Wyam.Modules.Download
                     //create the necessary request header
 
                     var requestHeader = instruction.RequestHeader;
-                    
-                    if (requestHeader.Accept.Any())
+                    foreach (var a in requestHeader.Accept)
                     {
-                        foreach(var a in requestHeader.Accept)
-                        {
-                            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
-                        }
+                        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
+                    }
+
+                    foreach (var a in requestHeader.AcceptCharset)
+                    {
+                        client.DefaultRequestHeaders.AcceptCharset.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                    }
+
+                    foreach (var a in requestHeader.AcceptEncoding)
+                    {
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                    }
+
+                    foreach (var a in requestHeader.AcceptLanguage)
+                    {
+                        client.DefaultRequestHeaders.AcceptLanguage.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                    }
+
+                    if (requestHeader.BasicAuthorization != null)
+                    {
+                        var auth = requestHeader.BasicAuthorization;
+
+                        client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Basic",
+                            Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
                     }
                 }
 
@@ -141,7 +183,7 @@ namespace Wyam.Modules.Download
                      };
 
                     doc = input.Clone(uri, stream, metadata);
-                    
+
                     if (_isCacheResponse)
                     {
                         context.ExecutionCache.Set(key, doc);
