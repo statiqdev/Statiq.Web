@@ -11,72 +11,6 @@ using System.Net.Http.Headers;
 
 namespace Wyam.Modules.Download
 {
-    public class RequestHeader
-    {
-        public List<string> Accept { get; set; } = new List<string>();
-
-        public List<string> AcceptCharset { get; set; } = new List<string>();
-
-        public List<string> AcceptEncoding { get; set; } = new List<string>();
-
-        public List<string> AcceptLanguage { get; set; } = new List<string>();
-
-        Tuple<string, string> _basicAuthorization;
-
-        public Tuple<string, string> BasicAuthorization
-        {
-            get
-            {
-                return _basicAuthorization;
-            }
-        }
-
-        public List<string> Connection { get; set; } = new List<string>();
-
-        public DateTimeOffset? Date;
-
-        public List<string> Expect { get; set; } = new List<string>();
-
-        public bool? ExpectContinue { get; set; }
-
-        public string From { get; set; }
-
-        public string Host { get; set; }
-
-        public List<string> IfMatch { get; set; } = new List<string>();
-
-        public DateTimeOffset? IfModifiedSince;
-
-        public void SetBasicAuthorization(string username, string password)
-        {
-            _basicAuthorization = Tuple.Create(username, password);
-        }
-    }
-
-    class DownloadInstruction
-    {
-        public Uri Uri { get; set; }
-
-        public RequestHeader RequestHeader { get; set; }
-
-        public bool ContainRequestHeader => RequestHeader != null;
-
-        public DownloadInstruction()
-        {
-
-        }
-
-        public DownloadInstruction(Uri uri)
-        {
-            Uri = uri;
-        }
-
-        public DownloadInstruction(Uri uri, RequestHeader requestHeader) : this(uri)
-        {
-            RequestHeader = requestHeader;
-        }
-    }
-
     public class Download : IModule
     {
         List<DownloadInstruction> _urls = new List<DownloadInstruction>();
@@ -117,76 +51,7 @@ namespace Wyam.Modules.Download
                 //prepare request headers
                 if (instruction.ContainRequestHeader)
                 {
-                    //create the necessary request header
-
-                    var requestHeader = instruction.RequestHeader;
-                    foreach (var a in requestHeader.Accept)
-                    {
-                        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
-                    }
-
-                    foreach (var a in requestHeader.AcceptCharset)
-                    {
-                        client.DefaultRequestHeaders.AcceptCharset.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
-                    }
-
-                    foreach (var a in requestHeader.AcceptEncoding)
-                    {
-                        client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
-                    }
-
-                    foreach (var a in requestHeader.AcceptLanguage)
-                    {
-                        client.DefaultRequestHeaders.AcceptLanguage.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
-                    }
-
-                    if (requestHeader.BasicAuthorization != null)
-                    {
-                        var auth = requestHeader.BasicAuthorization;
-
-                        client.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Basic",
-                            Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
-                    }
-
-                    foreach (var c in requestHeader.Connection)
-                    {
-                        client.DefaultRequestHeaders.Connection.Add(c);
-                    }
-
-                    if (requestHeader.Date.HasValue) {
-                        client.DefaultRequestHeaders.Date = requestHeader.Date;
-                    }
-
-                    foreach (var e in requestHeader.Expect)
-                    {
-                        client.DefaultRequestHeaders.Expect.Add(new NameValueWithParametersHeaderValue(e));
-                    }
-
-                    if (requestHeader.ExpectContinue.HasValue)
-                    {
-                        client.DefaultRequestHeaders.ExpectContinue = requestHeader.ExpectContinue;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(requestHeader.From))
-                    {
-                        client.DefaultRequestHeaders.From = requestHeader.From;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(requestHeader.Host))
-                    {
-                        client.DefaultRequestHeaders.Host = requestHeader.Host;
-                    }
-                    
-                    foreach(var i in requestHeader.IfMatch)
-                    {
-                        client.DefaultRequestHeaders.IfMatch.Add(new EntityTagHeaderValue(i));
-                    }
-                    
-                    if (requestHeader.IfModifiedSince.HasValue)
-                    {
-                        client.DefaultRequestHeaders.IfModifiedSince = requestHeader.IfModifiedSince;
-                    }
+                    ModifyRequestHeader(client.DefaultRequestHeaders, instruction.RequestHeader);
                 }
 
                 //Now that we are set and ready, go and do the download call
@@ -203,6 +68,108 @@ namespace Wyam.Modules.Download
                         return new DownloadResult(instruction.Uri, mem, headers);
                     }
                 }
+            }
+        }
+
+        void ModifyRequestHeader(HttpRequestHeaders request, RequestHeader requestHeader)
+        {
+            foreach (var a in requestHeader.Accept)
+            {
+                request.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
+            }
+
+            foreach (var a in requestHeader.AcceptCharset)
+            {
+                request.AcceptCharset.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+            }
+
+            foreach (var a in requestHeader.AcceptEncoding)
+            {
+                request.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+            }
+
+            foreach (var a in requestHeader.AcceptLanguage)
+            {
+                request.AcceptLanguage.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+            }
+
+            if (requestHeader.BasicAuthorization != null)
+            {
+                var auth = requestHeader.BasicAuthorization;
+
+                request.Authorization =
+                new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
+            }
+
+            foreach (var c in requestHeader.Connection)
+            {
+                request.Connection.Add(c);
+            }
+
+            if (requestHeader.Date.HasValue)
+            {
+                request.Date = requestHeader.Date;
+            }
+
+            foreach (var e in requestHeader.Expect)
+            {
+                request.Expect.Add(new NameValueWithParametersHeaderValue(e));
+            }
+
+            if (requestHeader.ExpectContinue.HasValue)
+            {
+                request.ExpectContinue = requestHeader.ExpectContinue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestHeader.From))
+            {
+                request.From = requestHeader.From;
+            }
+
+            if (!string.IsNullOrWhiteSpace(requestHeader.Host))
+            {
+                request.Host = requestHeader.Host;
+            }
+
+            foreach (var i in requestHeader.IfMatch)
+            {
+                request.IfMatch.Add(new EntityTagHeaderValue(i));
+            }
+
+            if (requestHeader.IfModifiedSince.HasValue)
+            {
+                request.IfModifiedSince = requestHeader.IfModifiedSince;
+            }
+
+            foreach (var i in requestHeader.IfNoneMatch)
+            {
+                request.IfNoneMatch.Add(new EntityTagHeaderValue(i));
+            }
+
+            if (requestHeader.IfUnmodifiedSince.HasValue)
+            {
+                request.IfUnmodifiedSince = requestHeader.IfUnmodifiedSince;
+            }
+
+            if (requestHeader.MaxForwards.HasValue)
+            {
+                request.MaxForwards = requestHeader.MaxForwards;
+            }
+
+            if (requestHeader.Referrer != null)
+            {
+                request.Referrer = requestHeader.Referrer;
+            }
+
+            foreach (var t in requestHeader.TransferEncoding)
+            {
+                request.TransferEncoding.Add(new TransferCodingHeaderValue(t));
+            }
+
+            if (requestHeader.TransferEncodingChunked.HasValue)
+            {
+                request.TransferEncodingChunked = requestHeader.TransferEncodingChunked;
             }
         }
 
