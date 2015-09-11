@@ -10,54 +10,11 @@ using System.Globalization;
 
 namespace Wyam.Modules.Download
 {
-    public class DownloadResult
-    {
-        public Uri Uri { get; set; }
-
-        public Stream Stream { get; set; }
-
-        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
-
-        public DownloadResult()
-        {
-
-        }
-
-        public DownloadResult(Uri uri, Stream stream, Dictionary<string, string> headers)
-        {
-            Uri = uri;
-            Stream = stream;
-            Headers = headers;
-        }
-    }
-
     public class Download : IModule
     {
         List<Uri> _urls = new List<Uri>();
 
         bool _isCacheResponse = false;
-
-        public Download()
-        {
-
-        }
-
-        async Task<DownloadResult> DownloadUrl(Uri url)
-        {
-            using (var client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(url))
-            using (HttpContent content = response.Content)
-            {
-                Stream result = await content.ReadAsStreamAsync();
-
-                var mem = new MemoryStream();
-                result.CopyTo(mem);
-
-                var headers = content.Headers.ToDictionary(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
-
-                return new DownloadResult(url, mem, headers);
-            }
-        }
 
         public Download Uris(params string[] uris)
         {
@@ -74,6 +31,22 @@ namespace Wyam.Modules.Download
             _isCacheResponse = isCache;
 
             return this;
+        }
+
+        async Task<DownloadResult> DownloadUrl(Uri url)
+        {
+            using (var client = new HttpClient())
+            using (HttpResponseMessage response = await client.GetAsync(url))
+            using (HttpContent content = response.Content)
+            {
+                Stream result = await content.ReadAsStreamAsync();
+
+                var mem = new MemoryStream();
+                result.CopyTo(mem);
+
+                var headers = content.Headers.ToDictionary(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
+                return new DownloadResult(url, mem, headers);
+            }
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -101,13 +74,14 @@ namespace Wyam.Modules.Download
                     var stream = result.Stream;
                     stream.Seek(0, SeekOrigin.Begin);
 
+                    var uri = result.Uri.ToString();
                     var metadata = new List<KeyValuePair<string, object>>(){
-                        new KeyValuePair<string, object>(MetadataKeys.SourceUri, result.Uri.ToString()),
+                        new KeyValuePair<string, object>(MetadataKeys.SourceUri, uri),
                         new KeyValuePair<string, object>(MetadataKeys.SourceHeaders, result.Headers)
                      };
 
-                    doc = input.Clone(stream, metadata);
-
+                    doc = input.Clone(uri, stream, metadata);
+                    
                     if (_isCacheResponse)
                     {
                         context.ExecutionCache.Set(key, doc);
