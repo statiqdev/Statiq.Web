@@ -31,6 +31,22 @@ namespace Wyam.Modules.Download
             }
         }
 
+        public List<string> Connection { get; set; } = new List<string>();
+
+        public DateTimeOffset? Date;
+
+        public List<string> Expect { get; set; } = new List<string>();
+
+        public bool? ExpectContinue { get; set; }
+
+        public string From { get; set; }
+
+        public string Host { get; set; }
+
+        public List<string> IfMatch { get; set; } = new List<string>();
+
+        public DateTimeOffset? IfModifiedSince;
+
         public void SetBasicAuthorization(string username, string password)
         {
             _basicAuthorization = Tuple.Create(username, password);
@@ -131,6 +147,45 @@ namespace Wyam.Modules.Download
                         client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Basic",
                             Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
+                    }
+
+                    foreach (var c in requestHeader.Connection)
+                    {
+                        client.DefaultRequestHeaders.Connection.Add(c);
+                    }
+
+                    if (requestHeader.Date.HasValue) {
+                        client.DefaultRequestHeaders.Date = requestHeader.Date;
+                    }
+
+                    foreach (var e in requestHeader.Expect)
+                    {
+                        client.DefaultRequestHeaders.Expect.Add(new NameValueWithParametersHeaderValue(e));
+                    }
+
+                    if (requestHeader.ExpectContinue.HasValue)
+                    {
+                        client.DefaultRequestHeaders.ExpectContinue = requestHeader.ExpectContinue;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(requestHeader.From))
+                    {
+                        client.DefaultRequestHeaders.From = requestHeader.From;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(requestHeader.Host))
+                    {
+                        client.DefaultRequestHeaders.Host = requestHeader.Host;
+                    }
+                    
+                    foreach(var i in requestHeader.IfMatch)
+                    {
+                        client.DefaultRequestHeaders.IfMatch.Add(new EntityTagHeaderValue(i));
+                    }
+                    
+                    if (requestHeader.IfModifiedSince.HasValue)
+                    {
+                        client.DefaultRequestHeaders.IfModifiedSince = requestHeader.IfModifiedSince;
                     }
                 }
 
