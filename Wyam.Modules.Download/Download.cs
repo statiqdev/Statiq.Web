@@ -10,18 +10,57 @@ using System.Globalization;
 
 namespace Wyam.Modules.Download
 {
+    public class RequestHeader
+    {
+        public List<string> Accept { get; set; } = new List<string>();
+    }
+
+    class DownloadInstruction
+    {
+        public Uri Uri { get; set; }
+
+        public RequestHeader RequestHeader { get; set; }
+
+        public bool ContainRequestHeader => RequestHeader != null;
+
+        public DownloadInstruction()
+        {
+
+        }
+
+        public DownloadInstruction(Uri uri)
+        {
+            Uri = uri;
+        }
+
+        public DownloadInstruction(Uri uri, RequestHeader requestHeader) : this(uri)
+        {
+            RequestHeader = requestHeader;
+        }
+    }
+
     public class Download : IModule
     {
-        List<Uri> _urls = new List<Uri>();
+        List<DownloadInstruction> _urls = new List<DownloadInstruction>();
 
         bool _isCacheResponse = false;
 
         public Download Uris(params string[] uris)
         {
-            foreach (var u in uris)
+            foreach (var u in uris.Select(x => new Uri(x)))
             {
-                _urls.Add(new Uri(u));
+                _urls.Add(new DownloadInstruction(u));
             }
+
+            return this;
+        }
+
+        public Download UriWithRequestHeader(string uri, RequestHeader requestHeader)
+        {
+            if (requestHeader == null)
+                throw new ArgumentNullException("requestHeader cannot be null");
+
+            _urls.Add(new DownloadInstruction(new Uri(uri), requestHeader));
 
             return this;
         }
@@ -33,19 +72,40 @@ namespace Wyam.Modules.Download
             return this;
         }
 
-        async Task<DownloadResult> DownloadUrl(Uri url)
+        async Task<DownloadResult> DownloadUrl(DownloadInstruction instruction)
         {
             using (var client = new HttpClient())
-            using (HttpResponseMessage response = await client.GetAsync(url))
-            using (HttpContent content = response.Content)
             {
-                Stream result = await content.ReadAsStreamAsync();
+                //prepare request headers
+                if (instruction.ContainRequestHeader)
+                {
+                    //create the necessary request header
 
-                var mem = new MemoryStream();
-                result.CopyTo(mem);
+                    var requestHeader = instruction.RequestHeader;
+                    
+                    if (requestHeader.Accept.Any())
+                    {
+                        foreach(var a in requestHeader.Accept)
+                        {
+                            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
+                        }
+                    }
+                }
 
-                var headers = content.Headers.ToDictionary(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
-                return new DownloadResult(url, mem, headers);
+                //Now that we are set and ready, go and do the download call
+                using (HttpResponseMessage response = await client.GetAsync(instruction.Uri))
+                {
+                    using (HttpContent content = response.Content)
+                    {
+                        Stream result = await content.ReadAsStreamAsync();
+
+                        var mem = new MemoryStream();
+                        result.CopyTo(mem);
+
+                        var headers = content.Headers.ToDictionary(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
+                        return new DownloadResult(instruction.Uri, mem, headers);
+                    }
+                }
             }
         }
 
