@@ -56,67 +56,83 @@ namespace Wyam.Core.Modules
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        protected bool ShouldProcess(IDocument input, IExecutionContext context)
+        {
+            return _where == null || _where.Invoke<bool>(input, context);
+        }
+
+        protected string GetPath(IDocument input, IExecutionContext context)
+        {
+            // WritePath
+            string path = input.String(MetadataKeys.WritePath);
+            if (path != null)
+            {
+                path = PathHelper.NormalizePath(path);
+            }
+
+            // WriteFileName
+            if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
+                && input.ContainsKey(MetadataKeys.RelativeFileDir))
+            {
+                path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
+                    PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
+            }
+
+            // WriteExtension
+            if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
+                && input.ContainsKey(MetadataKeys.RelativeFilePath))
+            {
+                path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
+                    input.String(MetadataKeys.WriteExtension));
+            }
+
+            // Func
+            if (path == null)
+            {
+                path = _path.Invoke<string>(input, context);
+            }
+
+            if (path != null)
+            {
+                path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    return path;
+                }
+            }
+
+            return null;
+        }
+
+        public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(input =>
             {
-                if (_where == null || _where.Invoke<bool>(input, context))
+                if (ShouldProcess(input, context))
                 {
-                    // WritePath
-                    string path = input.String(MetadataKeys.WritePath);
+                    string path = GetPath(input, context);
                     if (path != null)
                     {
-                        path = PathHelper.NormalizePath(path);
-                    }
-
-                    // WriteFileName
-                    if (path == null && input.ContainsKey(MetadataKeys.WriteFileName)
-                        && input.ContainsKey(MetadataKeys.RelativeFileDir))
-                    {
-                        path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
-                            PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
-                    }
-
-                    // WriteExtension
-                    if (path == null && input.ContainsKey(MetadataKeys.WriteExtension)
-                        && input.ContainsKey(MetadataKeys.RelativeFilePath))
-                    {
-                        path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
-                            input.String(MetadataKeys.WriteExtension));
-                    }
-
-                    // Func
-                    if (path == null)
-                    {
-                        path = _path.Invoke<string>(input, context);
-                    }
-
-                    if (path != null)
-                    {
-                        path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
-                        if (!string.IsNullOrWhiteSpace(path))
+                        string pathDirectory = Path.GetDirectoryName(path);
+                        if (pathDirectory != null && !Directory.Exists(pathDirectory))
                         {
-                            string pathDirectory = Path.GetDirectoryName(path);
-                            if (!Directory.Exists(pathDirectory))
-                            {
-                                Directory.CreateDirectory(pathDirectory);
-                            }
-                            FileStream outputStream = File.Open(path, FileMode.Create);
-                            using (Stream inputStream = input.GetStream())
-                            {
-                                inputStream.CopyTo(outputStream);
-                            }
-                            context.Trace.Verbose("Wrote file {0}", path);
-                            return input.Clone(outputStream, new Dictionary<string, object>
-                            {
-                                {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
-                                {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
-                                {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
-                                {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
-                                {MetadataKeys.DestinationFilePath, path},
-                                {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path)}
-                            });
+                            Directory.CreateDirectory(pathDirectory);
                         }
+                        FileStream outputStream = File.Open(path, FileMode.Create);
+                        using (Stream inputStream = input.GetStream())
+                        {
+                            inputStream.CopyTo(outputStream);
+                        }
+                        context.Trace.Verbose("Wrote file {0}", path);
+                        return input.Clone(outputStream, new Dictionary<string, object>
+                        {
+                            {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
+                            {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
+                            {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
+                            {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
+                            {MetadataKeys.DestinationFilePath, path},
+                            {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path)}
+                        });
                     }
                 }
                 return input;
