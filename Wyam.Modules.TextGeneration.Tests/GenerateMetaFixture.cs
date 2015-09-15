@@ -24,7 +24,7 @@ namespace Wyam.Modules.TextGeneration.Tests
             document
                 .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                 .Do(x => metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-            IModule generateContent = new GenerateMeta("Foo", @"[rs:4;,\s]{<noun>}").SetSeed(1000);
+            IModule generateContent = new GenerateMeta("Foo", @"[rs:4;,\s]{<noun>}").WithSeed(1000);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             object result;
             context.TryConvert(new object(), out result)

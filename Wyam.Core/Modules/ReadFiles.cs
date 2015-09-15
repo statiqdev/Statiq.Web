@@ -38,19 +38,19 @@ namespace Wyam.Core.Modules
             _path = (x, y) => searchPattern;
         }
 
-        public ReadFiles SearchOption(SearchOption searchOption)
+        public ReadFiles WithSearchOption(SearchOption searchOption)
         {
             _searchOption = searchOption;
             return this;
         }
 
-        public ReadFiles AllDirectories()
+        public ReadFiles FromAllDirectories()
         {
             _searchOption = System.IO.SearchOption.AllDirectories;
             return this;
         }
 
-        public ReadFiles TopDirectoryOnly()
+        public ReadFiles FromTopDirectoryOnly()
         {
             _searchOption = System.IO.SearchOption.TopDirectoryOnly;
             return this;

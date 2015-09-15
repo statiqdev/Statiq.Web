@@ -39,19 +39,19 @@ namespace Wyam.Core.Modules
             _sourcePath = (x, y) => searchPattern;
         }
 
-        public CopyFiles SearchOption(SearchOption searchOption)
+        public CopyFiles WithSearchOption(SearchOption searchOption)
         {
             _searchOption = searchOption;
             return this;
         }
 
-        public CopyFiles AllDirectories()
+        public CopyFiles FromAllDirectories()
         {
             _searchOption = System.IO.SearchOption.AllDirectories;
             return this;
         }
 
-        public CopyFiles TopDirectoryOnly()
+        public CopyFiles FromTopDirectoryOnly()
         {
             _searchOption = System.IO.SearchOption.TopDirectoryOnly;
             return this;

@@ -14,9 +14,9 @@ Pipelines.Add("Posts",
 	Index(),
 	ForEach(
 		// Do generation in a ForEach module so we generate synchronously and it's repeatable
-		GenerateContent(postTemplate).SetSeed(seed++),
-		GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").SetSeed(seed++),	
-		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").SetSeed(seed++)
+		GenerateContent(postTemplate).WithSeed(seed++),
+		GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").WithSeed(seed++),	
+		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").WithSeed(seed++)
 	),
 	Markdown(),
 	Razor(),

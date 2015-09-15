@@ -42,13 +42,13 @@ namespace Wyam.Modules.Html
             _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
-        public AutoLink SetQuerySelector(string querySelector)
+        public AutoLink WithQuerySelector(string querySelector)
         {
             _querySelector = querySelector ?? "p";
             return this;
         }
 
-        public AutoLink AddLink(string text, string link)
+        public AutoLink WithLink(string text, string link)
         {
             _extraLinks[text] = link;
             return this;

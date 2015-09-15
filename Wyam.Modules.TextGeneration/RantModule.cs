@@ -43,7 +43,7 @@ namespace Wyam.Modules.TextGeneration
         }
 
         // Allows you to set a seed for repeatability and testing
-        public RantModule SetSeed(long seed)
+        public RantModule WithSeed(long seed)
         {
             _seed = seed;
             _incrementSeed = true;

@@ -55,7 +55,7 @@ namespace Wyam.Core.Tests.Modules
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(metadata, pipeline) };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
-            ReadFiles readFiles = new ReadFiles(searchPattern).SearchOption(searchOption);
+            ReadFiles readFiles = new ReadFiles(searchPattern).WithSearchOption(searchOption);
 
             // When
             IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);

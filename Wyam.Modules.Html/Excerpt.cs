@@ -34,13 +34,13 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public Excerpt SetQuerySelector(string querySelector)
+        public Excerpt WithQuerySelector(string querySelector)
         {
             _querySelector = querySelector;
             return this;
         }
 
-        public Excerpt SetOuterHtml(bool outerHtml)
+        public Excerpt GetOuterHtml(bool outerHtml)
         {
             _outerHtml = outerHtml;
             return this;
@@ -48,32 +48,16 @@ namespace Wyam.Modules.Html
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            HtmlParser parser = new HtmlParser();
-            return inputs.AsParallel().Select(x =>
+            HtmlQuery query = new HtmlQuery(_querySelector).First();
+            if (_outerHtml)
             {
-                try
-                {
-                    IHtmlDocument htmlDocument;
-                    using (Stream stream = x.GetStream())
-                    {
-                        htmlDocument = parser.Parse(stream);
-                    }
-                    IElement element = htmlDocument.QuerySelector(_querySelector);
-                    if (element != null)
-                    {
-                        return x.Clone(new Dictionary<string, object>()
-                        {
-                            {_metadataKey, _outerHtml ? element.OuterHtml : element.InnerHtml}
-                        });
-                    }
-                    return x;
-                }
-                catch (Exception ex)
-                {
-                    context.Trace.Warning("Exception while parsing HTML for {0}: {1}", x.Source, ex.Message);
-                    return x;
-                }
-            });
+                query.GetOuterHtml(_metadataKey);
+            }
+            else
+            {
+                query.GetInnerHtml(_metadataKey);
+            }
+            return query.Execute(inputs, context);
         }
     }
 }

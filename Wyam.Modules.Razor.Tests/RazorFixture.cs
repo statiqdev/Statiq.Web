@@ -145,7 +145,7 @@ namespace Wyam.Modules.Razor.Tests
             Engine engine = new Engine();
             engine.InputFolder = @"TestFiles\Input\";
             ReadFiles readFiles = new ReadFiles(@"AlternateViewStartPath\Test.cshtml");
-            Razor razor = new Razor().SetViewStart(@"AlternateViewStart\_ViewStart.cshtml");
+            Razor razor = new Razor().WithViewStart(@"AlternateViewStart\_ViewStart.cshtml");
             Meta meta = new Meta("Content", (x, y) => x.Content);
             engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 

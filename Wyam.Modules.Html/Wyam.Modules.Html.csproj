@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AutoLink.cs" />
     <Compile Include="Excerpt.cs" />
+    <Compile Include="HtmlQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

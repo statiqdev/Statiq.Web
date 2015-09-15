@@ -28,13 +28,13 @@ namespace Wyam.Modules.Razor
             _basePageType = basePageType;
         }
 
-        public Razor SetViewStart(string path)
+        public Razor WithViewStart(string path)
         {
             _viewStartPath = x => path;
             return this;
         }
 
-        public Razor SetViewStart(Func<IDocument, string> path)
+        public Razor WithViewStart(Func<IDocument, string> path)
         {
             _viewStartPath = path;
             return this;

@@ -146,7 +146,7 @@ namespace Wyam.Modules.Html.Tests
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foobar", "http://www.google.com" }
-            }).SetQuerySelector("baz");
+            }).WithQuerySelector("baz");
 
             // When
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -553,7 +553,7 @@ namespace Wyam.Modules.Html.Tests
             {
                 { "Foobar", "http://www.google.com" },
                 { "Foobaz", "http://www.bing.com" }
-            }).AddLink("Foobaz", "http://www.yahoo.com");
+            }).WithLink("Foobaz", "http://www.yahoo.com");
 
             // When
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
