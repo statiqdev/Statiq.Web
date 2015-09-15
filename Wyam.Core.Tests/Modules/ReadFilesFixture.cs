@@ -197,5 +197,89 @@ namespace Wyam.Core.Tests.Modules
             // Then
             Assert.That(document.Metadata[key], Is.StringEnding(expectedEnding));
         }
+
+        [Test]
+        public void WithExtensionsGetsCorrectFiles()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.InputFolder = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            ReadFiles readFiles = new ReadFiles("*.*").WithExtensions(".txt");
+
+            // When
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
+            int count = documents.Count();
+
+            // Then
+            Assert.AreEqual(3, count);
+        }
+
+        [Test]
+        public void WithExtensionsWorksWithoutDotPrefix()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.InputFolder = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            ReadFiles readFiles = new ReadFiles("*.*").WithExtensions("txt", "md");
+
+            // When
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
+            int count = documents.Count();
+
+            // Then
+            Assert.AreEqual(5, count);
+        }
+
+        [Test]
+        public void WhereGetsCorrectFiles()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.InputFolder = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("test"));
+
+            // When
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
+            int count = documents.Count();
+
+            // Then
+            Assert.AreEqual(3, count);
+        }
+
+        [Test]
+        public void WhereAndWithExtensionsGetsCorrectFiles()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.InputFolder = @"TestFiles\Input";
+            Metadata metadata = new Metadata(engine);
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(metadata, pipeline) };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("-c")).WithExtensions("txt");
+
+            // When
+            IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
+            int count = documents.Count();
+
+            // Then
+            Assert.AreEqual(1, count);
+        }
     }
 }

@@ -14,7 +14,8 @@ namespace Wyam.Core.Modules
     {
         private readonly DocumentConfig _path;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
-        private Func<string, bool> _where = null; 
+        private Func<string, bool> _where = null;
+        private string[] _extensions; 
 
         // The delegate should return a string
         public ReadFiles(DocumentConfig path)
@@ -61,6 +62,12 @@ namespace Wyam.Core.Modules
             return this;
         }
 
+        public ReadFiles WithExtensions(params string[] extensions)
+        {
+            _extensions = extensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().SelectMany(input =>
@@ -75,7 +82,7 @@ namespace Wyam.Core.Modules
                     {
                         return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => _where == null || _where(x))
+                            .Where(x => (_where == null || _where(x)) && (_extensions == null || _extensions.Contains(Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);
