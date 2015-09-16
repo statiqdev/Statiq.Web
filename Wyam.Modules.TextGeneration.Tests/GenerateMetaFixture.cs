@@ -20,10 +20,6 @@ namespace Wyam.Modules.TextGeneration.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(string.Empty));
             document.GetStream().Returns(stream);
-            IEnumerable<KeyValuePair<string, object>> metadata = null;
-            document
-                .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                .Do(x => metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
             IModule generateContent = new GenerateMeta("Foo", @"[rs:4;,\s]{<noun>}").WithSeed(1000);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             object result;
@@ -38,8 +34,9 @@ namespace Wyam.Modules.TextGeneration.Tests
             generateContent.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-            CollectionAssert.AreEqual(new[] { new KeyValuePair<string, object>("Foo", "nectarine, gambler, marijuana, chickadee") }, metadata);
+            document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+            document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(
+                x => x.SequenceEqual(new[] { new KeyValuePair<string, object>("Foo", "nectarine, gambler, marijuana, chickadee") })));
             stream.Dispose();
         }
 

@@ -32,10 +32,6 @@ namespace Wyam.Modules.Razor.Tests
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            List<string> items = new List<string>();
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => items.Add(x.Arg<string>()));
             document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
             Razor razor = new Razor();
 
@@ -43,9 +39,8 @@ namespace Wyam.Modules.Razor.Tests
             razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(1, items.Count());
-            Assert.AreEqual(" <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ", items.First());
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(" <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ");
         }
 
         [Test]
@@ -65,10 +60,6 @@ namespace Wyam.Modules.Razor.Tests
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
             document.Metadata["MyKey"].Returns("MyValue");
-            List<string> items = new List<string>();
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => items.Add(x.Arg<string>()));
             document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
             Razor razor = new Razor();
 
@@ -76,9 +67,8 @@ namespace Wyam.Modules.Razor.Tests
             razor.Execute(new[] { document }, context).ToList();
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(1, items.Count());
-            Assert.AreEqual("<p>MyValue</p>", items.First());
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone("<p>MyValue</p>");
         }
 
         [Test]

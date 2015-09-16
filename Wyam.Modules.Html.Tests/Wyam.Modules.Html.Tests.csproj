@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AutoLinkFixture.cs" />
     <Compile Include="ExcerptFixture.cs" />
+    <Compile Include="HtmlQueryFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

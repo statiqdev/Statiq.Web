@@ -20,10 +20,6 @@ namespace Wyam.Modules.TextGeneration.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(string.Empty));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IModule generateContent = new GenerateContent(@"[rs:4;,\s]{<noun>}").WithSeed(1000);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             object result;
@@ -38,8 +34,8 @@ namespace Wyam.Modules.TextGeneration.Tests
             generateContent.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual("nectarine, gambler, marijuana, chickadee", content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone("nectarine, gambler, marijuana, chickadee");
             stream.Dispose();
         }
     }

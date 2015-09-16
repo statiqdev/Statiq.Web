@@ -127,7 +127,7 @@ namespace Wyam.Modules.Html
 
                                 // Clone the document and optionally change content to the HTML element
                                 documents.Add(_outerHtmlContent.HasValue
-                                    ? x.Clone(_outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata)
+                                    ? x.Clone(_outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
                                     : x.Clone(metadata));
                             }
                             return (IEnumerable<IDocument>) documents;

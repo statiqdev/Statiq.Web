@@ -29,10 +29,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            bool cloned = false;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => cloned = true);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -50,8 +46,7 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.DidNotReceive().Clone(Arg.Any<string>());
-            Assert.IsFalse(cloned);
+            document.DidNotReceiveWithAnyArgs().Clone(null);
             stream.Dispose();
         }
 
@@ -79,10 +74,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -100,8 +91,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -131,10 +122,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -152,8 +139,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -181,10 +168,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -202,8 +185,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -231,10 +214,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -252,8 +231,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -281,10 +260,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -302,8 +277,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -331,10 +306,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -353,8 +324,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -384,10 +355,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -406,8 +373,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -435,10 +402,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -457,8 +420,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -486,10 +449,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -508,8 +467,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
 
@@ -537,10 +496,6 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             document.GetStream().Returns(stream);
-            string content = null;
-            document
-                .When(x => x.Clone(Arg.Any<string>()))
-                .Do(x => content = x.Arg<string>());
             IExecutionContext context = Substitute.For<IExecutionContext>();
             Dictionary<string, string> convertedLinks;
             context.TryConvert(new object(), out convertedLinks)
@@ -559,8 +514,8 @@ namespace Wyam.Modules.Html.Tests
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.Received().Clone(Arg.Any<string>());
-            Assert.AreEqual(output, content);
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
             stream.Dispose();
         }
     }
