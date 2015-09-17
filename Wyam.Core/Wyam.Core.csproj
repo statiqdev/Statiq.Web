@@ -46,24 +46,28 @@
       <HintPath>..\packages\NuGet.Core.2.8.6\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Frameworks, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.1.0.0-pre-20150220044603\lib\net45\NuGet.Frameworks.dll</HintPath>
+    <Reference Include="NuGet.Frameworks, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Frameworks.3.2.0\lib\net45\NuGet.Frameworks.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Packaging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.1.0.0-pre-20150220044603\lib\net45\NuGet.Packaging.dll</HintPath>
+    <Reference Include="NuGet.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Logging.3.2.0\lib\net45\NuGet.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.PackagingCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.1.0.0-pre-20150220044603\lib\net45\NuGet.PackagingCore.dll</HintPath>
+    <Reference Include="NuGet.Packaging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Packaging.3.2.0\lib\net45\NuGet.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Resolver, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Packaging.1.0.0-pre-20150220044603\lib\net45\NuGet.Resolver.dll</HintPath>
+    <Reference Include="NuGet.Packaging.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Packaging.Core.3.2.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NuGet.Versioning, Version=1.0.7.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Versioning.1.0.7\lib\portable-net40+win\NuGet.Versioning.dll</HintPath>
+    <Reference Include="NuGet.Packaging.Core.Types, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Packaging.Core.Types.3.2.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NuGet.Versioning, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Versioning.3.2.0\lib\net45\NuGet.Versioning.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -72,6 +76,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
