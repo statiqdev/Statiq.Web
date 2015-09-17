@@ -43,7 +43,7 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public HtmlQuery GetOuterHtml(string metadataKey)
+        public HtmlQuery GetOuterHtml(string metadataKey = "OuterHtml")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {
@@ -52,7 +52,7 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public HtmlQuery GetInnerHtml(string metadataKey)
+        public HtmlQuery GetInnerHtml(string metadataKey = "InnerHtml")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {
@@ -61,7 +61,7 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public HtmlQuery GetTextContent(string metadataKey)
+        public HtmlQuery GetTextContent(string metadataKey = "TextContent")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {
@@ -70,18 +70,41 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public HtmlQuery GetAttributeValue(string attributeName, string metadataKey)
+        // If metadataKey is null, attributeName will be used as the metadata key
+        public HtmlQuery GetAttributeValue(string attributeName, string metadataKey = null)
         {
-            if (!string.IsNullOrWhiteSpace(metadataKey))
+            if (string.IsNullOrWhiteSpace(metadataKey))
             {
-                _metadataActions.Add((e, d) =>
-                {
-                    if (e.HasAttribute(attributeName))
-                    {
-                        d[metadataKey] = e.GetAttribute(attributeName);
-                    }
-                });
+                metadataKey = attributeName;
             }
+            _metadataActions.Add((e, d) =>
+            {
+                if (e.HasAttribute(attributeName))
+                {
+                    d[metadataKey] = e.GetAttribute(attributeName);
+                }
+            });
+            return this;
+        }
+
+        public HtmlQuery GetAttributeValues()
+        {
+            _metadataActions.Add((e, d) =>
+            {
+                foreach (IAttr attribute in e.Attributes)
+                {
+                    d[attribute.LocalName] = attribute.Value;
+                }
+            });
+            return this;
+        }
+
+        public HtmlQuery GetAll()
+        {
+            GetOuterHtml();
+            GetInnerHtml();
+            GetTextContent();
+            GetAttributeValues();
             return this;
         }
 
