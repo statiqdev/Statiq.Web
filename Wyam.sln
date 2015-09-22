@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.TextGeneration
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.TextGeneration.Tests", "Wyam.Modules.TextGeneration.Tests\Wyam.Modules.TextGeneration.Tests.csproj", "{704624AF-5081-4EC7-BD47-AB93292D7B4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.CodeAnalysis", "Wyam.Modules.CodeAnalysis\Wyam.Modules.CodeAnalysis.csproj", "{F4C0C025-5E08-4ED2-A089-67C41702AE7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{704624AF-5081-4EC7-BD47-AB93292D7B4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{704624AF-5081-4EC7-BD47-AB93292D7B4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{704624AF-5081-4EC7-BD47-AB93292D7B4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4C0C025-5E08-4ED2-A089-67C41702AE7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4C0C025-5E08-4ED2-A089-67C41702AE7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4C0C025-5E08-4ED2-A089-67C41702AE7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4C0C025-5E08-4ED2-A089-67C41702AE7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
