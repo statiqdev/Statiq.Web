@@ -32,6 +32,9 @@ namespace Wyam.Modules.CodeAnalysis
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 MetadataHelper.New(MetadataKeys.Symbol, namespaceSymbol),
+                MetadataHelper.New(MetadataKeys.Name, namespaceSymbol.Name),
+                MetadataHelper.New(MetadataKeys.DisplayString, namespaceSymbol.ToDisplayString()),
+                MetadataHelper.New(MetadataKeys.Kind, namespaceSymbol.Kind.ToString()),
                 MetadataHelper.New(MetadataKeys.NestedNamespaces, nestedNamespaceDocuments),
                 MetadataHelper.New(MetadataKeys.Types, typeDocuments)
             };
@@ -61,6 +64,9 @@ namespace Wyam.Modules.CodeAnalysis
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 MetadataHelper.New(MetadataKeys.Symbol, typeSymbol),
+                MetadataHelper.New(MetadataKeys.Name, typeSymbol.Name),
+                MetadataHelper.New(MetadataKeys.DisplayString, typeSymbol.ToDisplayString()),
+                MetadataHelper.New(MetadataKeys.Kind, typeSymbol.Kind.ToString()),
                 MetadataHelper.New(MetadataKeys.Namespace, namespaceDocument),
                 MetadataHelper.New(MetadataKeys.NestedTypes, nestedTypeDocuments),
                 MetadataHelper.New(MetadataKeys.Members, memberDocuments)
@@ -89,6 +95,9 @@ namespace Wyam.Modules.CodeAnalysis
             IDocument memberDocument = _context.GetNewDocument(new[]
             {
                 MetadataHelper.New(MetadataKeys.Symbol, memberSymbol),
+                MetadataHelper.New(MetadataKeys.Name, memberSymbol.Name),
+                MetadataHelper.New(MetadataKeys.DisplayString, memberSymbol.ToDisplayString()),
+                MetadataHelper.New(MetadataKeys.Kind, memberSymbol.Kind.ToString()),
                 MetadataHelper.New(MetadataKeys.Type, typeDocument)
             });
             _allDocuments.Add(memberDocument);
@@ -99,6 +108,9 @@ namespace Wyam.Modules.CodeAnalysis
     internal static class MetadataKeys
     {
         public const string Symbol = "Symbol"; // ISymbol
+        public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
+        public const string DisplayString = "DisplayString"; // string, a full string representation of the symbol
+        public const string Kind = "Kind"; // string, the kind of symbol (Namespace, etc.)
 
         // Namespace
         public const string ParentNamespace = "ParentNamespace"; // IDocument, absent if not nested
