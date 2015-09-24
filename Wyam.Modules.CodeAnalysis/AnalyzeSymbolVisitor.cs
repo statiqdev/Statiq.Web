@@ -48,7 +48,7 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
                 MetadataHelper.New(MetadataKeys.DisplayString, (k, m) => symbol.ToDisplayString()),
-                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
+                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.TypeKind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
                 MetadataHelper.New(MetadataKeys.ContainingType, Document(symbol.ContainingType)),
                 MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers()))

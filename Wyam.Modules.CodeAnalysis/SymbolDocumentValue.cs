@@ -21,7 +21,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             if (!_cached)
             {
-                if (!_documents.TryGetValue(_symbol, out _value))
+                if (_symbol == null || !_documents.TryGetValue(_symbol, out _value))
                 {
                     _value = null;
                 }

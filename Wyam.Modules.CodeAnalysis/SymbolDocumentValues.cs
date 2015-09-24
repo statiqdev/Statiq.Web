@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -17,7 +18,7 @@ namespace Wyam.Modules.CodeAnalysis
         public SymbolDocumentValues(ConcurrentDictionary<ISymbol, IDocument> documents, IEnumerable<ISymbol> symbols)
         {
             _documents = documents;
-            _symbols = symbols;
+            _symbols = symbols ?? Array.Empty<ISymbol>();
         }
 
         public object Get(string key, IMetadata metadata)
