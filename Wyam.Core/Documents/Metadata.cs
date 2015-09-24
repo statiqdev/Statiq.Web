@@ -74,7 +74,7 @@ namespace Wyam.Core.Documents
             {
                 return false;
             }
-            value = meta[key];
+            value = GetValue(meta[key]);
             return true;
         }
 
@@ -129,12 +129,12 @@ namespace Wyam.Core.Documents
 
         public IEnumerable<object> Values
         {
-            get { return _metadataStack.SelectMany(x => x.Values); }
+            get { return _metadataStack.SelectMany(x => x.Values.Select(GetValue)); }
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return _metadataStack.SelectMany(x => x).GetEnumerator();
+            return _metadataStack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -146,5 +146,20 @@ namespace Wyam.Core.Documents
         {
             get { return _metadataStack.Sum(x => x.Count); }
         }
+
+        // This resolves the metadata value by expanding IMetadataValue
+        private object GetValue(object value)
+        {
+            IMetadataValue metadataValue = value as IMetadataValue;
+            return metadataValue != null ? metadataValue.Get(this) : value;
+        }
+
+        // This resolves the metadata value by expanding IMetadataValue
+        // To reduce allocations, it returns the input KeyValuePair if value is not IMetadataValue
+        private KeyValuePair<string, object> GetItem(KeyValuePair<string, object> item)
+        {
+            IMetadataValue metadataValue = item.Value as IMetadataValue;
+            return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(this)) : item;
+        } 
     }
 }

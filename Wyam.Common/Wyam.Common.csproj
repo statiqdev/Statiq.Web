@@ -48,6 +48,7 @@
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="IIndentedTraceEvent.cs" />
     <Compile Include="IMetadata.cs" />
+    <Compile Include="IMetadataValue.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="IDocument.cs" />
     <Compile Include="IPipeline.cs" />
