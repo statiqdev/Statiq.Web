@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
@@ -30,10 +31,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new [] { string.Empty, "Foo", "Bar" }, test.Metadata.Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new [] { string.Empty, "Foo", "Bar" }, results.Select(x => x["Name"]));
             test.Stream.Dispose();
         }
 
@@ -57,12 +58,12 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, test.Metadata.Select(x => x["Name"]));
-            CollectionAssert.AreEquivalent(new [] { "Foo", "Bar" },
-                test.GetChildMetadata<string>(x => (string)x["Name"] == string.Empty, "NestedNamespaces", "Name"));
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, results.Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new [] { "Foo", "Bar" }, 
+                results.Single(x => x["Name"].Equals(string.Empty)).Get<IEnumerable<IDocument>>("MemberNamespaces").Select(x => x["Name"]));
             test.Stream.Dispose();
         }
 
@@ -86,12 +87,12 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, test.Metadata.Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, results.Select(x => x["Name"]));
             CollectionAssert.AreEquivalent(new[] { "Baz", "Bar" },
-                test.GetChildMetadata<string>(x => (string)x["Name"] == "Foo", "NestedNamespaces", "Name"));
+                results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberNamespaces").Select(x => x["Name"]));
             test.Stream.Dispose();
         }
 
@@ -111,10 +112,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "<global namespace>", "Foo", "Foo.Bar" }, test.Metadata.Select(x => x["DisplayString"]));
+            CollectionAssert.AreEquivalent(new[] { "<global namespace>", "Foo", "Foo.Bar" }, results.Select(x => x["DisplayString"]));
             test.Stream.Dispose();
         }
 
@@ -134,10 +135,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "Namespace", "Namespace", "Namespace" }, test.Metadata.Select(x => x["Kind"]));
+            CollectionAssert.AreEquivalent(new[] { "Namespace", "Namespace", "Namespace" }, results.Select(x => x["Kind"]));
             test.Stream.Dispose();
         }
 
@@ -157,10 +158,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Foo", test.GetMetadata<IDocument>(x => (string)x["Name"] == "Bar", "ParentNamespace").Get("Name"));
+            Assert.AreEqual("Foo", results.Single(x => x["Name"].Equals("Bar")).Get<IDocument>("ContainingNamespace")["Name"]);
             test.Stream.Dispose();
         }
 
@@ -190,18 +191,18 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
             CollectionAssert.AreEquivalent(new [] { "Red" }, 
-                test.GetMetadata<IEnumerable<IDocument>>(x => (string)x["Name"] == "Foo", "Types").Select(x => x.Get("Name")));
+                results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             CollectionAssert.AreEquivalent(new[] { "Blue", "Green" },
-                test.GetMetadata<IEnumerable<IDocument>>(x => (string)x["Name"] == "Bar", "Types").Select(x => x.Get("Name")));
+                results.Single(x => x["Name"].Equals("Bar")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             test.Stream.Dispose();
         }
 
         [Test]
-        public void NamespacesContainNestedTypes()
+        public void NamespacesDoNotContainNestedTypes()
         {
             // Given
             string code = @"
@@ -218,11 +219,11 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             TestObjects test = new TestObjects(code);
 
             // When
-            test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
+            List<IDocument> results = test.Module.Execute(new[] { test.Document }, test.Context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "Blue", "Green" },
-                test.GetMetadata<IEnumerable<IDocument>>(x => (string)x["Name"] == "Foo", "Types").Select(x => x.Get("Name")));
+            CollectionAssert.AreEquivalent(new[] { "Blue" }, 
+                results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             test.Stream.Dispose();
         }
 
@@ -232,7 +233,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             public IDocument Document { get; } = Substitute.For<IDocument>();
             public IExecutionContext Context { get; } = Substitute.For<IExecutionContext>();
             public MemoryStream Stream { get; }
-            public List<Dictionary<string, object>> Metadata { get; } = new List<Dictionary<string, object>>();
             public IModule Module { get; } = new AnalyzeCSharp();
 
             public TestObjects(string code)
@@ -240,32 +240,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 Stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
                 Document.GetStream().Returns(Stream);
                 Context.GetNewDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x =>
-                    {
-                        IDocument newDocument = Substitute.For<IDocument>();
-                        newDocument.GetEnumerator().Returns(((IEnumerable<KeyValuePair<string, object>>)x[0]).GetEnumerator());
-                        newDocument.Get(Arg.Any<string>(), Arg.Any<object>()).Returns(y =>
-                        {
-                            KeyValuePair<string, object> kvp = ((IEnumerable<KeyValuePair<string, object>>)x[0]).FirstOrDefault(z => z.Key == (string)y[0]);
-                            return kvp.Equals(default(KeyValuePair<string, object>)) ? y[1] : kvp.Value;
-                        });
-                        Metadata.Add(((IEnumerable<KeyValuePair<string, object>>)x[0]).ToDictionary(y => y.Key, y => y.Value));
-                        return newDocument;
-                    });
-            }
-
-            // Gets a specific metadata value from the metadata collection
-            public T GetMetadata<T>(Func<Dictionary<string, object>, bool> metadataSelector, string metadataKey)
-            {
-                return (T)Metadata.Single(metadataSelector)[metadataKey];
-            }
-
-            // Gets metadata Name values for children given a parent IDocument and a metadata key containing an IEnumerable<IDocument>
-            public IEnumerable<T> GetChildMetadata<T>(Func<Dictionary<string, object>, bool> parentSelector, string documentsKey, string childKey)
-            {
-                return GetMetadata<IEnumerable<IDocument>>(parentSelector, documentsKey)
-                    .Select(x => x.Get(childKey))
-                    .Cast<T>();
+                    .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[0]));
             }
         }
     }

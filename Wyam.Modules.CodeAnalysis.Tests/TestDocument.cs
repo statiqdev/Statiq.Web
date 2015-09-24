@@ -1,56 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Wyam.Common;
 
-namespace Wyam.Core.Documents
+namespace Wyam.Modules.CodeAnalysis.Tests
 {
-    // This class contains a stack of all the metadata generated at a particular pipeline stage
-    // Getting a value checks each of the stacks and returns the first hit
-    // This class is immutable, use IDocument.Clone() to get a new one with additional values
-    internal class Metadata : IMetadata
+    internal class TestDocument : IDocument
     {
-        private readonly Engine _engine;
-        private readonly Stack<IDictionary<string, object>> _metadataStack;
-        
-        internal Metadata(Engine engine)
-        {
-            _engine = engine;
-            _metadataStack = new Stack<IDictionary<string, object>>();
-            Dictionary<string, object> dictionary = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> item in engine.Metadata)
-            {
-                dictionary[item.Key] = item.Value;
-            }
-            _metadataStack.Push(dictionary);
-        }
+        private readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
 
-        private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> metadata)
+        public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            _engine = original._engine;
-            _metadataStack = new Stack<IDictionary<string, object>>(original._metadataStack.Reverse());
-            _metadataStack.Push(new Dictionary<string, object>());
-
-            // Set new items
-            if (metadata != null)
+            foreach (KeyValuePair<string, object> item in metadata)
             {
-                foreach (KeyValuePair<string, object> item in metadata)
-                {
-                    _metadataStack.Peek()[item.Key] = item.Value;
-                }
+                _metadata[item.Key] = item.Value;
             }
         }
 
         public IMetadata<T> MetadataAs<T>()
         {
-            return new MetadataAs<T>(this);
-        }
-
-        // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> metadata)
-        {
-            return new Metadata(this, metadata);
+            throw new NotSupportedException();
         }
 
         public bool ContainsKey(string key)
@@ -59,7 +33,7 @@ namespace Wyam.Core.Documents
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            return _metadataStack.FirstOrDefault(x => x.ContainsKey(key)) != null;
+            return _metadata.ContainsKey(key);
         }
 
         public bool TryGetValue(string key, out object value)
@@ -68,14 +42,12 @@ namespace Wyam.Core.Documents
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            value = null;
-            IDictionary<string, object> meta = _metadataStack.FirstOrDefault(x => x.ContainsKey(key));
-            if (meta == null)
+            if (_metadata.TryGetValue(key, out value))
             {
-                return false;
+                value = GetValue(key, value);
+                return true;
             }
-            value = GetValue(key, meta[key]);
-            return true;
+            return false;
         }
 
         public object Get(string key, object defaultValue = null)
@@ -86,23 +58,22 @@ namespace Wyam.Core.Documents
 
         public T Get<T>(string key)
         {
-            return MetadataAs<T>().Get(key);
+            return (T) Get(key);
         }
 
         public T Get<T>(string key, T defaultValue)
         {
-            return MetadataAs<T>().Get(key, defaultValue);
+            return (T) Get(key, (object)defaultValue);
         }
 
         public string String(string key, string defaultValue = null)
         {
-            return Get<string>(key, defaultValue);
+            throw new NotSupportedException();
         }
 
         public string Link(string key, string defaultValue = null)
         {
-            string value = Get<string>(key, defaultValue);
-            return value?.Replace('\\', '/');
+            throw new NotSupportedException();
         }
 
         public object this[string key]
@@ -124,17 +95,17 @@ namespace Wyam.Core.Documents
 
         public IEnumerable<string> Keys
         {
-            get { return _metadataStack.SelectMany(x => x.Keys); }
+            get { return _metadata.Keys; }
         }
 
         public IEnumerable<object> Values
         {
-            get { return _metadataStack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value))); }
+            get { return _metadata.Select(x => GetValue(x.Key, x.Value)); }
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return _metadataStack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
+            return _metadata.Select(GetItem).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -144,7 +115,7 @@ namespace Wyam.Core.Documents
 
         public int Count
         {
-            get { return _metadataStack.Sum(x => x.Count); }
+            get { return _metadata.Count; }
         }
 
         // This resolves the metadata value by expanding IMetadataValue
@@ -160,6 +131,51 @@ namespace Wyam.Core.Documents
         {
             IMetadataValue metadataValue = item.Value as IMetadataValue;
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(item.Key, this)) : item;
-        } 
+        }
+
+        public string Source
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public IMetadata Metadata
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public string Content
+        {
+            get { throw new NotSupportedException(); }
+        }
+
+        public Stream GetStream()
+        {
+            throw new NotSupportedException();
+        }
+
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

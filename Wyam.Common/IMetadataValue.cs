@@ -11,6 +11,6 @@ namespace Wyam.Common
     public interface IMetadataValue
     {
         // The implementation of this method must be thread-safe
-        object Get(IMetadata metadata);
+        object Get(string key, IMetadata metadata);
     }
 }

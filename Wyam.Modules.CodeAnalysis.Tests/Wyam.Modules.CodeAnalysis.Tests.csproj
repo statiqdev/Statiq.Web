@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AnalyzeCSharpNamespacesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">

@@ -30,7 +30,9 @@ namespace Wyam.Modules.CodeAnalysis
             CSharpCompilation compilation = CSharpCompilation.Create("CodeAnalysisModule", syntaxTrees).WithReferences(mscorlib);
 
             // Get and return the document tree
-            return new DocumentTreeBuilder(context).BuildDocumentTree(compilation.Assembly.GlobalNamespace);
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context);
+            visitor.Visit(compilation.Assembly.GlobalNamespace);
+            return visitor.GetNamespaceOrTypeDocuments();
         }
     }
 }

@@ -309,7 +309,7 @@ namespace Wyam.Core.Tests.Documents
             public string Value { get; set; }
             public int Calls { get; set; }
 
-            public object Get(IMetadata metadata)
+            public object Get(string key, IMetadata metadata)
             {
                 Calls++;
                 return Value;
@@ -320,7 +320,7 @@ namespace Wyam.Core.Tests.Documents
         {
             public string Key { get; set; }
 
-            public object Get(IMetadata metadata)
+            public object Get(string key, IMetadata metadata)
             {
                 return metadata[Key];
             }

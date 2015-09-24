@@ -58,9 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalyzeCSharp.cs" />
-    <Compile Include="DocumentTreeBuilder.cs" />
-    <Compile Include="MutableReadOnlyList.cs" />
+    <Compile Include="AnalyzeSymbolVisitor.cs" />
+    <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SymbolDocumentValue.cs" />
+    <Compile Include="SymbolDocumentValues.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
