@@ -21,22 +21,28 @@ namespace Wyam.Core.Documents
         private bool _disposeStream;
         private bool _disposed;
 
-        internal Document(Metadata metadata, Pipeline pipeline)
-            : this(string.Empty, metadata, null, null, null, pipeline, null, true)
+        internal Document(Engine engine, Pipeline pipeline)
+            : this(engine, pipeline, string.Empty, null, null, null, true)
+        {
+            
+        }
+
+        internal Document(Engine engine, Pipeline pipeline, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(pipeline, new Metadata(engine), source, stream, null, content, items, disposeStream)
         {
         }
         
-        private Document(string source, Metadata metadata, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items)
-            : this(source, metadata, null, null, content, pipeline, items, true)
+        private Document(Pipeline pipeline, Metadata metadata, string source, string content, IEnumerable<KeyValuePair<string, object>> items)
+            : this(pipeline, metadata, source, null, null, content, items, true)
         {
         }
 
-        private Document(string source, Metadata metadata, Stream stream, object streamLock, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(source, metadata, stream, streamLock, null, pipeline, items, disposeStream)
+        private Document(Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(pipeline, metadata, source, stream, streamLock, null, items, disposeStream)
         {
         }
 
-        private Document(string source, Metadata metadata, Stream stream, object streamLock, string content, Pipeline pipeline, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
             if (source == null)
             {
@@ -192,39 +198,39 @@ namespace Wyam.Core.Documents
             }
         }
 
-        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(source, _metadata, content, _pipeline, metadata);
+            return new Document(_pipeline, _metadata, source, content, items);
         }
 
-        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, content, _pipeline, metadata);
+            return new Document(_pipeline, _metadata, Source, content, items);
         }
 
-        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
+        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(source, _metadata, stream, null, _pipeline, metadata, disposeStream);
+            return new Document(_pipeline, _metadata, source, stream, null, items, disposeStream);
         }
 
-        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
+        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(Source, _metadata, stream, null, _pipeline, metadata, disposeStream);
+            return new Document(_pipeline, _metadata, Source, stream, null, items, disposeStream);
         }
 
-        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
+        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
             CheckDisposed();
 
             // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
             _disposeStream = false;
-            return new Document(Source, _metadata, _stream, _streamLock, _content, _pipeline, metadata, _disposeStream);
+            return new Document(_pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
         }
 
         // IMetadata

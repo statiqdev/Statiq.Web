@@ -14,7 +14,7 @@ namespace Wyam.Core.Documents
         private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadataStack;
         
-        internal Metadata(Engine engine)
+        internal Metadata(Engine engine, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             _engine = engine;
             _metadataStack = new Stack<IDictionary<string, object>>();
@@ -23,19 +23,26 @@ namespace Wyam.Core.Documents
             {
                 dictionary[item.Key] = item.Value;
             }
+            if (items != null)
+            {
+                foreach (KeyValuePair<string, object> item in items)
+                {
+                    dictionary[item.Key] = item.Value;
+                }
+            }
             _metadataStack.Push(dictionary);
         }
 
-        private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> metadata)
+        private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> items)
         {
             _engine = original._engine;
             _metadataStack = new Stack<IDictionary<string, object>>(original._metadataStack.Reverse());
             _metadataStack.Push(new Dictionary<string, object>());
 
             // Set new items
-            if (metadata != null)
+            if (items != null)
             {
-                foreach (KeyValuePair<string, object> item in metadata)
+                foreach (KeyValuePair<string, object> item in items)
                 {
                     _metadataStack.Peek()[item.Key] = item.Value;
                 }
@@ -48,9 +55,9 @@ namespace Wyam.Core.Documents
         }
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> metadata)
+        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
-            return new Metadata(this, metadata);
+            return new Metadata(this, items);
         }
 
         public bool ContainsKey(string key)

@@ -51,9 +51,8 @@ namespace Wyam.Core.Tests.Modules
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
-            Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
+            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles(".txt");
 
@@ -77,9 +76,8 @@ namespace Wyam.Core.Tests.Modules
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
-            Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
+            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles("txt");
 
@@ -105,9 +103,8 @@ namespace Wyam.Core.Tests.Modules
             engine.Metadata["SourceFileRoot"] = @"TestFiles/Input";
             engine.Metadata["SourceFileDir"] = @"TestFiles/Input/Subfolder";
             engine.Metadata["SourceFileBase"] = @"write-test";
-            Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
+            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles((x, y) => null);
 
@@ -132,9 +129,8 @@ namespace Wyam.Core.Tests.Modules
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
-            Metadata metadata = new Metadata(engine);
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(metadata, pipeline).Clone("Test") };
+            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             WriteFiles writeFiles = new WriteFiles("txt");
 

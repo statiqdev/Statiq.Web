@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -22,8 +23,12 @@ namespace Wyam.Common
 
         // This provides access to the same enhanced type conversion used to convert metadata types
         bool TryConvert<T>(object value, out T result);
-
-        IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> metadata = null);
+        
+        IDocument GetNewDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument GetNewDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument GetNewDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument GetNewDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> items = null);
 
         // This executes the specified modules with the specified input documents and returns the result documents
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs);

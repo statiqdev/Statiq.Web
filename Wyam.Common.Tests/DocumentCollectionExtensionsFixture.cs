@@ -20,13 +20,13 @@ namespace Wyam.Common.Tests
             // Given
             Engine engine = new Engine();
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument a = new Document(new Metadata(engine), pipeline)
+            IDocument a = new Document(engine, pipeline)
                 .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new [] { 1, 2, 3 }) });
-            IDocument b = new Document(new Metadata(engine), pipeline)
+            IDocument b = new Document(engine, pipeline)
                 .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new [] { 2, 3, 4 }) });
-            IDocument c = new Document(new Metadata(engine), pipeline)
+            IDocument c = new Document(engine, pipeline)
                 .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
-            IDocument d = new Document(new Metadata(engine), pipeline)
+            IDocument d = new Document(engine, pipeline)
                 .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
             List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
@@ -47,13 +47,13 @@ namespace Wyam.Common.Tests
             // Given
             Engine engine = new Engine();
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument a = new Document(new Metadata(engine), pipeline)
+            IDocument a = new Document(engine, pipeline)
                 .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }) });
-            IDocument b = new Document(new Metadata(engine), pipeline)
+            IDocument b = new Document(engine, pipeline)
                 .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }) });
-            IDocument c = new Document(new Metadata(engine), pipeline)
+            IDocument c = new Document(engine, pipeline)
                 .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
-            IDocument d = new Document(new Metadata(engine), pipeline)
+            IDocument d = new Document(engine, pipeline)
                 .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
             List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 

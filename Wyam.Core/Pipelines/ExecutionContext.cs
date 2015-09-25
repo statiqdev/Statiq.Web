@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Wyam.Common;
@@ -46,14 +47,29 @@ namespace Wyam.Core.Pipelines
             return TypeHelper.TryConvert(value, out result);
         }
 
-        public IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> metadata = null)
+        public IDocument GetNewDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            Metadata md = new Metadata(_engine);
-            if (metadata != null)
-            {
-                md = md.Clone(metadata);
-            }
-            return new Document(md, _pipeline);
+            return new Document(_engine, _pipeline, source, null, content, items, true);
+        }
+
+        public IDocument GetNewDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return new Document(_engine, _pipeline, string.Empty, null, content, items, true);
+        }
+
+        public IDocument GetNewDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        {
+            return new Document(_engine, _pipeline, source, stream, null, items, disposeStream);
+        }
+
+        public IDocument GetNewDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        {
+            return new Document(_engine, _pipeline, string.Empty, stream, null, items, disposeStream);
+        }
+
+        public IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return new Document(_engine, _pipeline, string.Empty, null, null, items, true);
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
@@ -61,12 +77,13 @@ namespace Wyam.Core.Pipelines
             return Execute(modules, inputs, null);
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        // Executes the module with an empty document containing the specified metadata items
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return Execute(modules, null, metadata);
+            return Execute(modules, null, items);
         }
 
-        private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> metadata)
+        private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)
         {
             if (modules == null)
             {
@@ -76,7 +93,7 @@ namespace Wyam.Core.Pipelines
             // Store the document list before executing the child modules and restore it afterwards
             IReadOnlyList<IDocument> originalDocuments = _engine.DocumentCollection.Get(_pipeline.Name);
             ImmutableArray<IDocument> documents = inputs?.ToImmutableArray() 
-                ?? new [] { GetNewDocument(metadata) }.ToImmutableArray();
+                ?? new [] { GetNewDocument(items) }.ToImmutableArray();
             IReadOnlyList<IDocument> results = _pipeline.Execute(this, modules, documents);
             _engine.DocumentCollection.Set(_pipeline.Name, originalDocuments);
             return results;

@@ -28,7 +28,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
-            _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(new[]
+            _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(symbol.ToDisplayString(), null, new[]
             {
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
@@ -43,15 +43,18 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(new[]
+            _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(symbol.ToDisplayString(), null, new[]
             {
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
                 MetadataHelper.New(MetadataKeys.DisplayString, (k, m) => symbol.ToDisplayString()),
-                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.TypeKind.ToString()),
+                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
+                MetadataHelper.New(MetadataKeys.TypeKind, (k, m) => symbol.TypeKind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
                 MetadataHelper.New(MetadataKeys.ContainingType, Document(symbol.ContainingType)),
-                MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers()))
+                MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers())),
+                MetadataHelper.New(MetadataKeys.BaseType, Document(symbol.BaseType)),
+                MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces))
             }));
             Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName), s => s.Accept(this));
         }

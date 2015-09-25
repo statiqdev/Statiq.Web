@@ -17,6 +17,9 @@ namespace Wyam.Modules.CodeAnalysis
 
         // Type
         public const string ContainingType = "ContainingType"; // IDocument, null if not nested
+        public const string TypeKind = "TypeKind"; // string
+        public const string BaseType = "BaseType"; // IDocument
+        public const string AllInterfaces = "AllInterfaces"; // IEnumerable<IDocument>
         //                  ContainingNamespace
         //                  MemberTypes
 
