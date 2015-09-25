@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core.Caching
+namespace Wyam.Common
 {
     // This is taken from the ASP.NET v5 Razor caching implementation
-    internal static class Crc32
+    public static class Crc32
     {
         private static readonly int BufferSize = 4 * 1024;
 
@@ -87,6 +87,17 @@ namespace Wyam.Core.Caching
                 }
             }
 
+            return crc32 ^ 0xffffffffU;
+        }
+
+        public static uint Calculate(string str)
+        {
+            var crc32 = 0xffffffffU;
+            var offset = 0;
+            while (offset < str.Length)
+            {
+                crc32 = _crcTable[(crc32 ^ str[offset++]) & 0xFF] ^ (crc32 >> 8);
+            }
             return crc32 ^ 0xffffffffU;
         }
     }

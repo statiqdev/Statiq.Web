@@ -30,6 +30,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(symbol.ToDisplayString(), null, new[]
             {
+                MetadataHelper.New(MetadataKeys.SymbolId, GetId(symbol)),
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
                 MetadataHelper.New(MetadataKeys.DisplayString, (k, m) => symbol.ToDisplayString()),
@@ -45,6 +46,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             _documents.GetOrAdd(symbol, _ => _context.GetNewDocument(symbol.ToDisplayString(), null, new[]
             {
+                MetadataHelper.New(MetadataKeys.SymbolId, GetId(symbol)),
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
                 MetadataHelper.New(MetadataKeys.DisplayString, (k, m) => symbol.ToDisplayString()),
@@ -57,6 +59,11 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces))
             }));
             Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName), s => s.Accept(this));
+        }
+
+        private static string GetId(ISymbol symbol)
+        {
+            return BitConverter.ToString(BitConverter.GetBytes(Crc32.Calculate(symbol.GetDocumentationCommentId() ?? symbol.ToDisplayString()))).Replace("-", string.Empty);
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)

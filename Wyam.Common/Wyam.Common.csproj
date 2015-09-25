@@ -44,6 +44,7 @@
     <Compile Include="ContentModule.cs" />
     <Compile Include="ContextConfig.cs" />
     <Compile Include="ConfigExtensions.cs" />
+    <Compile Include="Crc32.cs" />
     <Compile Include="DelegateMetadataValue.cs" />
     <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="DocumentConfig.cs" />

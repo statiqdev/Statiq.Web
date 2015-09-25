@@ -3,6 +3,7 @@ namespace Wyam.Modules.CodeAnalysis
     // Note that if we ever introduce code analysis for other formats (such as Java or CSS), the metadata should be kept as similar as possible
     internal static class MetadataKeys
     {
+        public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
         public const string DisplayString = "DisplayString"; // string, a full string representation of the symbol

@@ -94,7 +94,6 @@
   <ItemGroup>
     <Compile Include="Caching\Cache.cs" />
     <Compile Include="Caching\CacheEntry.cs" />
-    <Compile Include="Caching\Crc32.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />

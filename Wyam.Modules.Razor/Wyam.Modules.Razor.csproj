@@ -96,7 +96,6 @@
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RazorFileHash.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RelativeFileInfo.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\HelperResult.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Internal\Crc32.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPage.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPageFactory.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorViewEngine.cs" />
