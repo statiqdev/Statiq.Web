@@ -17,6 +17,7 @@ namespace Wyam.Core.Modules
         private Func<string, string> _destinationPath;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _where = null;
+        private string[] _withoutExtensions;
 
         // The delegate should return a string
         public CopyFiles(DocumentConfig sourcePath)
@@ -63,6 +64,12 @@ namespace Wyam.Core.Modules
             return this;
         }
 
+        public CopyFiles WithoutExtensions(params string[] withoutExtensions)
+        {
+            _withoutExtensions = withoutExtensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();
+            return this;
+        }
+
         // Input to function is the full file path (including file name), should return a full file path (including file name)
         public CopyFiles To(Func<string, string> destinationPath)
         {
@@ -88,7 +95,7 @@ namespace Wyam.Core.Modules
                     {
                         return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => _where == null || _where(x))
+                            .Where(x => (_where == null || _where(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 string destination = _destinationPath == null
