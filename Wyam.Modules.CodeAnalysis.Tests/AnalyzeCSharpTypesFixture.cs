@@ -274,7 +274,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void TypeKindIsCorrect()
+        public void SpecificKindIsCorrect()
         {
             // Given
             string code = @"
@@ -311,10 +311,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Class", results.Single(x => x["Name"].Equals("Green"))["TypeKind"]);
-            Assert.AreEqual("Class", results.Single(x => x["Name"].Equals("Blue"))["TypeKind"]);
-            Assert.AreEqual("Struct", results.Single(x => x["Name"].Equals("Red"))["TypeKind"]);
-            Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Yellow"))["TypeKind"]);
+            Assert.AreEqual("Class", results.Single(x => x["Name"].Equals("Green"))["SpecificKind"]);
+            Assert.AreEqual("Class", results.Single(x => x["Name"].Equals("Blue"))["SpecificKind"]);
+            Assert.AreEqual("Struct", results.Single(x => x["Name"].Equals("Red"))["SpecificKind"]);
+            Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Yellow"))["SpecificKind"]);
             stream.Dispose();
         }
 

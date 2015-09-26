@@ -7,7 +7,8 @@ namespace Wyam.Modules.CodeAnalysis
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
         public const string DisplayString = "DisplayString"; // string, a full string representation of the symbol
-        public const string Kind = "Kind"; // string, the kind of symbol (Namespace, etc.)
+        public const string Kind = "Kind"; // string, the general kind of symbol (Namespace, NamedType, etc.)
+        public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc.)
         public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
         public const string Documentation = "Documentation"; // string, the documentation specific to this symbol (as gathered from documentation comment XML on this or a parent) or an empty string
 
@@ -18,7 +19,6 @@ namespace Wyam.Modules.CodeAnalysis
 
         // Type
         public const string ContainingType = "ContainingType"; // IDocument, null if not nested
-        public const string TypeKind = "TypeKind"; // string
         public const string BaseType = "BaseType"; // IDocument
         public const string AllInterfaces = "AllInterfaces"; // IEnumerable<IDocument>
         //                  ContainingNamespace

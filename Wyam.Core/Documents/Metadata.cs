@@ -109,7 +109,7 @@ namespace Wyam.Core.Documents
         public string Link(string key, string defaultValue = null)
         {
             string value = Get<string>(key, defaultValue);
-            return value?.Replace('\\', '/');
+            return value == null ? null : PathHelper.ToRootLink(value);
         }
 
         public object this[string key]
