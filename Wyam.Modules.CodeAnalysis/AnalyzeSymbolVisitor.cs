@@ -30,7 +30,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
-            AddDocument(symbol, new[]
+            AddDocument(symbol, string.Empty, new[]
             {
                 MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
@@ -42,7 +42,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            AddDocument(symbol, new[]
+            AddDocument(symbol, "DOCS GO HERE", new[]
             {
                 MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
@@ -54,15 +54,20 @@ namespace Wyam.Modules.CodeAnalysis
             Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName), s => s.Accept(this));
         }
 
-        private void AddDocument(ISymbol symbol, IEnumerable<KeyValuePair<string, object>> items)
+        private void AddDocument(ISymbol symbol, string documentation, IEnumerable<KeyValuePair<string, object>> items)
         {
             IDocument document = _context.GetNewDocument(symbol.ToDisplayString(), null, items.Concat(new[]
             {
-                MetadataHelper.New(MetadataKeys.SymbolId, GetId(symbol)),
+                // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
+                MetadataHelper.New(MetadataKeys.SymbolId, (k, m) => GetId(symbol), true),
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
-                MetadataHelper.New(MetadataKeys.DisplayString, (k, m) => symbol.ToDisplayString()),
-                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString())
+                MetadataHelper.New(MetadataKeys.FullName, (k, m) => GetFullName(symbol), true),
+                MetadataHelper.New(MetadataKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
+                MetadataHelper.New(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
+                MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
+                MetadataHelper.New(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(), true),
+                MetadataHelper.New(MetadataKeys.Documentation, documentation)
             }));
             if (_withMetadata.Count > 0)
             {
@@ -76,7 +81,30 @@ namespace Wyam.Modules.CodeAnalysis
 
         private static string GetId(ISymbol symbol)
         {
-            return BitConverter.ToString(BitConverter.GetBytes(Crc32.Calculate(symbol.GetDocumentationCommentId() ?? symbol.ToDisplayString()))).Replace("-", string.Empty);
+            return BitConverter.ToString(BitConverter.GetBytes(Crc32.Calculate(symbol.GetDocumentationCommentId() ?? GetFullName(symbol)))).Replace("-", string.Empty);
+        }
+
+        private static string GetFullName(ISymbol symbol)
+        {
+            return symbol.ToDisplayString(new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
+
+        private static string GetQualifiedName(ISymbol symbol)
+        {
+            return symbol.ToDisplayString(new SymbolDisplayFormat(
+                typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+        }
+
+        private static string GetDisplayName(ISymbol symbol)
+        {
+            if (symbol.Kind == SymbolKind.Namespace)
+            {
+                return GetQualifiedName(symbol);
+            }
+            return GetFullName(symbol);
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)

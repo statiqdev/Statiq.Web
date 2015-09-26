@@ -115,7 +115,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void NamespaceDisplayStringContainsFullHierarchy()
+        public void NamespaceFullNameDoesNotContainFullHierarchy()
         {
             // Given
             string code = @"
@@ -139,7 +139,65 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "<global namespace>", "Foo", "Foo.Bar" }, results.Select(x => x["DisplayString"]));
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Bar" }, results.Select(x => x["FullName"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void NamespaceQualifiedNameContainsFullHierarchy()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                }
+
+                namespace Foo.Bar
+                {
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Foo.Bar" }, results.Select(x => x["QualifiedName"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void NamespaceDisplayNameContainsFullHierarchy()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                }
+
+                namespace Foo.Bar
+                {
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
             stream.Dispose();
         }
 
@@ -275,6 +333,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             stream.Dispose();
         }
+
+        // TODO: Test that FullName contains containing namespaces
     }
 
 }

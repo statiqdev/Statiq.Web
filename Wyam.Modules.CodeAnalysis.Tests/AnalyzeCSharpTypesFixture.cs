@@ -97,7 +97,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void DisplayStringContainsNamespaceAndContainingType()
+        public void FullNameContainsContainingType()
         {
             // Given
             string code = @"
@@ -134,7 +134,91 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "<global namespace>", "Foo", "Foo.Green", "Foo.Green.Blue", "Foo.Red", "Foo.Bar.Yellow", "Foo.Bar" }, results.Select(x => x["DisplayString"]));
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Green", "Green.Blue", "Red", "Yellow", "Bar" }, results.Select(x => x["FullName"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void DisplayNameContainsContainingType()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Green
+                    {
+                        private class Blue
+                        {
+                        }
+                    }
+
+                    struct Red
+                    {
+                    }
+                }
+
+                namespace Foo.Bar
+                {
+                    enum Yellow
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Green", "Green.Blue", "Red", "Yellow", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void QualifiedNameContainsNamespaceAndContainingType()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Green
+                    {
+                        private class Blue
+                        {
+                        }
+                    }
+
+                    struct Red
+                    {
+                    }
+                }
+
+                namespace Foo.Bar
+                {
+                    enum Yellow
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { String.Empty, "Foo", "Foo.Green", "Foo.Green.Blue", "Foo.Red", "Foo.Bar.Yellow", "Foo.Bar" }, results.Select(x => x["QualifiedName"]));
             stream.Dispose();
         }
 
@@ -365,5 +449,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             Assert.IsNull(results.Single(x => x["Name"].Equals("Orange")).Get<IDocument>("BaseType"));
             stream.Dispose();
         }
+
+        // TODO: Test that FullName contains generic type parameters
+        // TODO: Test that QualifiedName contains generic type parameters
     }
 }

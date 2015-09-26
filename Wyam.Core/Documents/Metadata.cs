@@ -123,7 +123,7 @@ namespace Wyam.Core.Documents
                 object value;
                 if (!TryGetValue(key, out value))
                 {
-                    throw new KeyNotFoundException();
+                    throw new KeyNotFoundException("The key " + key + " was not found in metadata, use Get() to provide a default value.");
                 }
                 return value;
             }
