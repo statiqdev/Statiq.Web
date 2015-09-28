@@ -106,10 +106,13 @@ namespace Wyam.Core.Documents
             return Get<string>(key, defaultValue);
         }
 
-        public string Link(string key, string defaultValue = null)
+        public string Link(string key, string defaultValue = null, bool pretty = true)
         {
             string value = Get<string>(key, defaultValue);
-            return value == null ? null : PathHelper.ToRootLink(value);
+            value = value == null ? null : PathHelper.ToRootLink(value);
+            return value != null && pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm"))
+                ? value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal))
+                : value;
         }
 
         public object this[string key]

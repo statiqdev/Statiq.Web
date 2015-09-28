@@ -49,8 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzeCSharpMethodsFixture.cs" />
     <Compile Include="AnalyzeCSharpNamespacesFixture.cs" />
     <Compile Include="AnalyzeCSharpTypesFixture.cs" />
+    <Compile Include="AnalyzeCSharpXmlDocumentationFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDocument.cs" />
   </ItemGroup>

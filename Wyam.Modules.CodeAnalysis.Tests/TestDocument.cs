@@ -71,7 +71,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             throw new NotSupportedException();
         }
 
-        public string Link(string key, string defaultValue = null)
+        public string Link(string key, string defaultValue = null, bool pretty = true)
         {
             throw new NotSupportedException();
         }

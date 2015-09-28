@@ -13,8 +13,29 @@ namespace Wyam.Modules.CodeAnalysis
 {
     public class AnalyzeCSharp : IModule
     {
-        private readonly List<KeyValuePair<string, ConfigHelper<object>>> _withMetadata
-            = new List<KeyValuePair<string, ConfigHelper<object>>>();
+        private Func<IMetadata, string> _writePath = md =>
+        {
+            IDocument ns = md.Get<IDocument>("ContainingNamespace");
+
+            // Make namespaces output to the index page
+            if (md.String("Kind") == "Namespace")
+            {
+                return ns == null ? "index.html" : $"{md["DisplayName"]}\\index.html";
+            }
+
+            // Account both for types that don't have a containing namespace as well as those contained in the global namespace
+            return (ns?["ContainingNamespace"] == null) 
+                ? $"{md["SymbolId"]}.html" 
+                : $"{ns["DisplayName"]}\\{md["SymbolId"]}.html";
+        };
+
+        // Use an intermediate Dictionary to initialize with defaults
+        private readonly ConcurrentDictionary<string, string> _cssClasses 
+            = new ConcurrentDictionary<string, string>(
+                new Dictionary<string, string>
+                {
+                    { "table", "table" }
+                }); 
          
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -34,46 +55,35 @@ namespace Wyam.Modules.CodeAnalysis
             CSharpCompilation compilation = CSharpCompilation.Create("CodeAnalysisModule", syntaxTrees).WithReferences(mscorlib);
 
             // Get and return the document tree
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _withMetadata);
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _writePath, _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.GetNamespaceOrTypeDocuments();
         }
 
-        // These methods add metadata to the symbol documents as they're being constructed
-        // They're important because if you add the metadata later as part of the pipeline,
-        // it'll clone the symbol documents and document collections on the original symbol
-        // documents like MemberTypes will still return the original documents without
-        // the new metadata.
-        public AnalyzeCSharp WithMeta(string key, object metadata)
+        // This value is used on every table generated as part of documentation HTML
+        public AnalyzeCSharp WithTableCssClass(string tableCssClass)
         {
-            if (key == null)
+            if (string.IsNullOrWhiteSpace(tableCssClass))
             {
-                throw new ArgumentNullException(nameof(key));
+                _cssClasses.TryRemove("table", out tableCssClass);
             }
-            _withMetadata.Add(new KeyValuePair<string, ConfigHelper<object>>(
-                key, new ConfigHelper<object>(metadata)));
+            else
+            {
+                _cssClasses["table"] = tableCssClass;
+            }
             return this;
         }
 
-        public AnalyzeCSharp WithMeta(string key, ContextConfig metadata)
+        // This changes the default behavior for the WritePath metadata value added to every document
+        // Default behavior is to place files in a path with the same name as their containing namespace
+        // Namespace documents will be named "index.html" while other documents will get a name equal to their SymbolId
+        public AnalyzeCSharp WithWritePath(Func<IMetadata, string> writePath)
         {
-            if (key == null)
+            if (writePath == null)
             {
-                throw new ArgumentNullException(nameof(key));
+                throw new ArgumentNullException(nameof(writePath));
             }
-            _withMetadata.Add(new KeyValuePair<string, ConfigHelper<object>>(
-                key, new ConfigHelper<object>(metadata)));
-            return this;
-        }
-
-        public AnalyzeCSharp WithMeta(string key, DocumentConfig metadata)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            _withMetadata.Add(new KeyValuePair<string, ConfigHelper<object>>(
-                key, new ConfigHelper<object>(metadata)));
+            _writePath = writePath;
             return this;
         }
     }

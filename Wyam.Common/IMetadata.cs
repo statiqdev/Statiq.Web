@@ -20,7 +20,8 @@ namespace Wyam.Common
         string String(string key, string defaultValue = null);
 
         // Another shortcut method that gets strings, but replaces forward-slashes with back-slashes
-        string Link(string key, string defaultValue = null);
+        // pretty = trailing /index.html will be trimmed
+        string Link(string key, string defaultValue = null, bool pretty = true);
     }
 
     public interface IMetadata<T> : IReadOnlyDictionary<string, T>

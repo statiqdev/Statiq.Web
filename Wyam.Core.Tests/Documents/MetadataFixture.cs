@@ -215,6 +215,29 @@ namespace Wyam.Core.Tests.Documents
             Assert.AreEqual("a", value);
         }
 
+        [TestCase("foo/bar", false, "/foo/bar")]
+        [TestCase("foo/bar", true, "/foo/bar")]
+        [TestCase("/foo/bar", false, "/foo/bar")]
+        [TestCase("/foo/bar", true, "/foo/bar")]
+        [TestCase("/foo/bar/index.html", false, "/foo/bar/index.html")]
+        [TestCase("/foo/bar/index.html", true, "/foo/bar")]
+        [TestCase("/foo/bar/index.htm", false, "/foo/bar/index.htm")]
+        [TestCase("/foo/bar/index.htm", true, "/foo/bar")]
+        public void LinkReturnsCorrectResult(string value, bool pretty, string link)
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.Metadata["A"] = new SimpleMetadataValue { Value = value };
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            object result = metadata.Link("A", pretty: pretty);
+
+            // Then
+            Assert.AreEqual(link, result);
+        }
+
         [Test]
         public void IndexerWithMetadataValueReturnsCorrectResult()
         {

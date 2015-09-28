@@ -286,9 +286,9 @@ namespace Wyam.Core.Documents
             return _metadata.String(key, defaultValue);
         }
 
-        public string Link(string key, string defaultValue = null)
+        public string Link(string key, string defaultValue = null, bool pretty = true)
         {
-            return _metadata.Link(key, defaultValue);
+            return _metadata.Link(key, defaultValue, pretty);
         }
 
         public int Count => _metadata.Count;

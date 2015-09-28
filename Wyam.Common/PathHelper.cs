@@ -25,7 +25,7 @@ namespace Wyam.Common
 
         public static string ToRootLink(string path)
         {
-            return "/" + ToLink(path);
+            return path.StartsWith("/") ? ToLink(path) : "/" + ToLink(path);
         }
 
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path

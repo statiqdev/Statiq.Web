@@ -3,6 +3,8 @@ namespace Wyam.Modules.CodeAnalysis
     // Note that if we ever introduce code analysis for other formats (such as Java or CSS), the metadata should be kept as similar as possible
     internal static class MetadataKeys
     {
+        // All
+        public const string WritePath = "WritePath"; // string, feeds WriteFiles and tells it where to place the output file
         public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
@@ -11,22 +13,25 @@ namespace Wyam.Modules.CodeAnalysis
         public const string DisplayName = "DisplayName"; // string, namespace = QualifiedName, type = FullName
         public const string Kind = "Kind"; // string, the general kind of symbol (Namespace, NamedType, etc.)
         public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc.)
+        public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
         public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string Documentation = "Documentation"; // string, the documentation specific to this symbol (as gathered from documentation comment XML on this or a parent) or an empty string
+        public const string ExampleHtml = "ExampleHtml"; // string, contained in <div class="doc-example"> tag, multiple entries are concatenated
+        public const string RemarksHtml = "RemarksHtml"; // string, contained in <div class="doc-remarks"> tag, multiple entries are concatenated
+        public const string SummaryHtml = "SummaryHtml"; // string, contained in <div class="doc-summary"> tag, multiple entries are concatenated
 
         // Namespace
-        public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
         public const string MemberNamespaces = "MemberNamespaces"; // IReadOnlyList<IDocument>, empty if none
 
         // Type
         public const string ContainingType = "ContainingType"; // IDocument, null if not nested
         public const string BaseType = "BaseType"; // IDocument
-        public const string AllInterfaces = "AllInterfaces"; // IEnumerable<IDocument>
-        //                  ContainingNamespace
+        public const string AllInterfaces = "AllInterfaces"; // IReadOnlyList<IDocument>
+        public const string Members = "Members"; // IReadOnlyList<IDocument>
         //                  MemberTypes
 
         // Method
+        public const string ExceptionHtml = "ExceptionHtml"; // string, contained in <div class="doc-exception"> tags with a <table> child
         //                  ContainingType
     }
 }
