@@ -134,7 +134,9 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
                 MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
                 MetadataHelper.New(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
-                MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml())
+                MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
+                MetadataHelper.New(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
+                MetadataHelper.New(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml())
             }));
             _symbolToDocument.GetOrAdd(symbol, _ => document);
             string documentationCommentId = symbol.GetDocumentationCommentId();

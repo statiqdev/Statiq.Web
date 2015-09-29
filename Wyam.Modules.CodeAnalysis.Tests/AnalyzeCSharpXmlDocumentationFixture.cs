@@ -43,8 +43,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("This is a summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
-            Assert.AreEqual("This is another summary.", GetClass(results, "Red").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("This is a summary.", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
+            Assert.AreEqual("This is another summary.", GetRootHtml(results, "Red", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -83,8 +83,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("\n    This is a summary.\n    ", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
-            Assert.AreEqual("\n    This is\n    another summary.\n    ", GetClass(results, "Red").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    This is a summary.\n    ", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
+            Assert.AreEqual("\n    This is\n    another summary.\n    ", GetRootHtml(results, "Red", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -114,9 +114,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(2, GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml").Count);
-            Assert.AreEqual("This is a summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
-            Assert.AreEqual("This is another summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[1]);
+            Assert.AreEqual(2, GetRootHtml(results, "Green", "SummaryHtml").Count);
+            Assert.AreEqual("This is a summary.", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
+            Assert.AreEqual("This is another summary.", GetRootHtml(results, "Green", "SummaryHtml")[1].Key);
             stream.Dispose();
         }
 
@@ -144,7 +144,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.IsEmpty(GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml"));
+            CollectionAssert.IsEmpty(GetRootHtml(results, "Green", "SummaryHtml"));
             stream.Dispose();
         }
 
@@ -175,8 +175,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("\n    This is <code>some code</code> in a summary.\n    ", 
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    This is <code>some code</code> in a summary.\n    ",
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -208,7 +208,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             Assert.AreEqual("\n    This is <code class=\"code\">some code</code> in a summary.\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -240,7 +240,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             Assert.AreEqual("\n    This is <code class=\"code\">some code</code> in a summary.\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -272,7 +272,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             Assert.AreEqual("\n    This is <code class=\"code more-code\">some code</code> in a summary.\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -304,7 +304,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             Assert.AreEqual("\n    This is <code>some code</code> in <code>a</code> summary.\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -339,8 +339,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("\n    This is\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    ", 
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    This is\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    ",
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -376,7 +376,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             Assert.AreEqual("\n    This is <code>some code</code> and\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
         
@@ -591,7 +591,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 <span class=""description"">y</span>
                 </li>
                 </ul>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -652,7 +652,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 <span class=""description"">y</span>
                 </li>
                 </ol>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -713,7 +713,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 <td>y</td>
                 </tr>
                 </table>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -745,8 +745,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("\n    <p>ABC</p>\n    <p>XYZ</p>\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    <p>ABC</p>\n    <p>XYZ</p>\n    ", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -778,8 +777,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("\n    <p>ABC</p>\n    <p>X<code>Y</code>Z</p>\n    ",
-                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    <p>ABC</p>\n    <p>X<code>Y</code>Z</p>\n    ", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -812,7 +810,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html\">Red</a> class", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html\">Red</a> class", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -848,7 +846,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html#00F22A50\">Blue</a> method", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html#00F22A50\">Blue</a> method", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
         }
 
@@ -877,8 +875,80 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Check Red class", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("Check Red class", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
             stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithSeealsoElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>Check this out <seealso cref=""Red""/></summary>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Check this out ", GetRootHtml(results, "Green", "SummaryHtml")[0].Key);
+            Assert.AreEqual("<a href=\"/Foo/414E2165.html\">Red</a>", GetRootHtml(results, "Green", "SummaryHtml")[0].Value[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void RootSeealsoElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <seealso cref=""Red""/>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("<a href=\"/Foo/414E2165.html\">Red</a>", GetClass(results, "Green").Get<IReadOnlyList<string>>("SeeAlsoHtml")[0]);
+            stream.Dispose();
+        }
+
+        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> GetRootHtml(List<IDocument> results, string className, string metadataKey)
+        {
+            return GetClass(results, className).Get<IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>>>(metadataKey);
         }
     }
 }
