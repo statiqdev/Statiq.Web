@@ -11,7 +11,7 @@ using Wyam.Common;
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
-    public class AnalyzeCSharpTypesFixture
+    public class AnalyzeCSharpTypesFixture : AnalyzeCSharpFixtureBase
     {
         [Test]
         public void ReturnsAllTypes()
@@ -452,5 +452,43 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
         // TODO: Test that FullName contains generic type parameters
         // TODO: Test that QualifiedName contains generic type parameters
+
+        [Test]
+        public void MembersReturnsAlMembers()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Blue
+                    {
+                        void Green()
+                        {
+                        }
+
+                        int Red { get; }
+
+                        string _yellow;
+
+                        event ChangedEventHandler Changed;
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "Green", "Red", "_yellow", "Changed" },
+                GetClass(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
+            stream.Dispose();
+        }
     }
 }

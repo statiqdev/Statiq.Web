@@ -68,12 +68,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
         public string String(string key, string defaultValue = null)
         {
-            throw new NotSupportedException();
+            return Get<string>(key, defaultValue);
         }
 
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {
-            throw new NotSupportedException();
+            string value = Get<string>(key, defaultValue);
+            value = value == null ? null : PathHelper.ToRootLink(value);
+            return value != null && pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm"))
+                ? value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal))
+                : value;
         }
 
         public object this[string key]

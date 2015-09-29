@@ -12,12 +12,8 @@ namespace Wyam.Modules.CodeAnalysis
         public const string QualifiedName = "QualifiedName"; // string, the qualified name including containing namespaces
         public const string DisplayName = "DisplayName"; // string, namespace = QualifiedName, type = FullName
         public const string Kind = "Kind"; // string, the general kind of symbol (Namespace, NamedType, etc.)
-        public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc.)
+        public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
-        public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string ExampleHtml = "ExampleHtml"; // string, contained in <div class="doc-example"> tag, multiple entries are concatenated
-        public const string RemarksHtml = "RemarksHtml"; // string, contained in <div class="doc-remarks"> tag, multiple entries are concatenated
-        public const string SummaryHtml = "SummaryHtml"; // string, contained in <div class="doc-summary"> tag, multiple entries are concatenated
 
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
@@ -28,10 +24,22 @@ namespace Wyam.Modules.CodeAnalysis
         public const string BaseType = "BaseType"; // IDocument
         public const string AllInterfaces = "AllInterfaces"; // IReadOnlyList<IDocument>
         public const string Members = "Members"; // IReadOnlyList<IDocument>
-        //                  MemberTypes
+                                                 //                  MemberTypes
 
         // Method
-        public const string ExceptionHtml = "ExceptionHtml"; // string, contained in <div class="doc-exception"> tags with a <table> child
         //                  ContainingType
+
+        // Field
+        //                  ContainingType
+
+        // Event
+        //                  ContainingType
+
+        // Documentation Comments
+        public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
+        public const string ExampleHtml = "ExampleHtml"; // IReadOnlyList<string>
+        public const string RemarksHtml = "RemarksHtml"; // IReadOnlyList<string>
+        public const string SummaryHtml = "SummaryHtml"; // IReadOnlyList<string>
+        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception html
     }
 }

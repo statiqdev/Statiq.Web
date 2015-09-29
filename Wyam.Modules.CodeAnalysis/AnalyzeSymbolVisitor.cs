@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
@@ -15,9 +16,9 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private readonly IExecutionContext _context;
         private readonly Func<IMetadata, string> _writePath;
-        private readonly ConcurrentDictionary<string, string> _cssClasses;
+        private readonly CssClasses _cssClasses;
 
-        public AnalyzeSymbolVisitor(IExecutionContext context, Func<IMetadata, string> writePath, ConcurrentDictionary<string, string> cssClasses)
+        public AnalyzeSymbolVisitor(IExecutionContext context, Func<IMetadata, string> writePath, CssClasses cssClasses)
         {
             _context = context;
             _writePath = writePath;
@@ -64,16 +65,52 @@ namespace Wyam.Modules.CodeAnalysis
         {
             XmlDocumentationParser xmlDocumentationParser 
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocument(symbol, xmlDocumentationParser, new[]
+            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
             {
                 MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString()),
-                MetadataHelper.New(MetadataKeys.ContainingType, Document(symbol.ContainingType)),
                 MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml())
             });
+        }
 
+        public override void VisitField(IFieldSymbol symbol)
+        {
+            XmlDocumentationParser xmlDocumentationParser
+                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
+            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            {
+                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString())
+            });
+        }
+
+        public override void VisitEvent(IEventSymbol symbol)
+        {
+            XmlDocumentationParser xmlDocumentationParser
+                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
+            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            {
+                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString())
+            });
+        }
+
+        public override void VisitProperty(IPropertySymbol symbol)
+        {
+            XmlDocumentationParser xmlDocumentationParser
+                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
+            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            {
+                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString())
+            });
         }
 
         // Helpers below...
+
+        private void AddDocumentForMember(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
+        {
+            AddDocument(symbol, xmlDocumentationParser, items.Concat(new[]
+            {
+                MetadataHelper.New(MetadataKeys.ContainingType, Document(symbol.ContainingType))
+            }));
+        }
 
         private void AddDocument(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
         {

@@ -13,7 +13,7 @@ using Wyam.Common;
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
-    public class AnalyzeCSharpNamespacesFixture
+    public class AnalyzeCSharpNamespacesFixture : AnalyzeCSharpFixtureBase
     {
         [Test]
         public void GetsTopLevelNamespaces()

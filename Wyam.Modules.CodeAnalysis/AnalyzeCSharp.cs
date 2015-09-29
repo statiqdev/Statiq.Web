@@ -13,6 +13,8 @@ namespace Wyam.Modules.CodeAnalysis
 {
     public class AnalyzeCSharp : IModule
     {
+        private readonly CssClasses _cssClasses = new CssClasses();
+
         private Func<IMetadata, string> _writePath = md =>
         {
             IDocument ns = md.Get<IDocument>("ContainingNamespace");
@@ -28,14 +30,6 @@ namespace Wyam.Modules.CodeAnalysis
                 ? $"{md["SymbolId"]}.html" 
                 : $"{ns["DisplayName"]}\\{md["SymbolId"]}.html";
         };
-
-        // Use an intermediate Dictionary to initialize with defaults
-        private readonly ConcurrentDictionary<string, string> _cssClasses 
-            = new ConcurrentDictionary<string, string>(
-                new Dictionary<string, string>
-                {
-                    { "table", "table" }
-                }); 
          
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -63,14 +57,7 @@ namespace Wyam.Modules.CodeAnalysis
         // This value is used on every table generated as part of documentation HTML
         public AnalyzeCSharp WithTableCssClass(string tableCssClass)
         {
-            if (string.IsNullOrWhiteSpace(tableCssClass))
-            {
-                _cssClasses.TryRemove("table", out tableCssClass);
-            }
-            else
-            {
-                _cssClasses["table"] = tableCssClass;
-            }
+            _cssClasses.Table = tableCssClass;
             return this;
         }
 

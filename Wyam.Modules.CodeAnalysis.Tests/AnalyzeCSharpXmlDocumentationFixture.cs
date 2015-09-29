@@ -11,7 +11,7 @@ using Wyam.Common;
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
-    public class AnalyzeCSharpXmlDocumentationFixture
+    public class AnalyzeCSharpXmlDocumentationFixture : AnalyzeCSharpFixtureBase
     {
         [Test]
         public void SingleLineSummary()
@@ -43,8 +43,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">This is a summary.</div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
-            Assert.AreEqual("<div class=\"doc-summary\">This is another summary.</div>", results.Single(x => x["Name"].Equals("Red"))["SummaryHtml"]);
+            Assert.AreEqual("This is a summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("This is another summary.", GetClass(results, "Red").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
 
@@ -83,8 +83,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">\n    This is a summary.\n    </div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
-            Assert.AreEqual("<div class=\"doc-summary\">\n    This is\n    another summary.\n    </div>", results.Single(x => x["Name"].Equals("Red"))["SummaryHtml"]);
+            Assert.AreEqual("\n    This is a summary.\n    ", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("\n    This is\n    another summary.\n    ", GetClass(results, "Red").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
 
@@ -114,7 +114,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">This is a summary.</div>\n<div class=\"doc-summary\">This is another summary.</div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
+            Assert.AreEqual(2, GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml").Count);
+            Assert.AreEqual("This is a summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            Assert.AreEqual("This is another summary.", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[1]);
             stream.Dispose();
         }
 
@@ -142,7 +144,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(string.Empty, results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
+            CollectionAssert.IsEmpty(GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml"));
             stream.Dispose();
         }
 
@@ -173,7 +175,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">\n    This is <code>some code</code> in a summary.\n    </div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
+            Assert.AreEqual("\n    This is <code>some code</code> in a summary.\n    ", 
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
 
@@ -208,7 +211,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">\n    This is\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    </div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
+            Assert.AreEqual("\n    This is\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    ", 
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
 
@@ -243,7 +247,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("<div class=\"doc-summary\">\n    This is <code>some code</code> and\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    </div>", results.Single(x => x["Name"].Equals("Green"))["SummaryHtml"]);
+            Assert.AreEqual("\n    This is <code>some code</code> and\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
         
@@ -279,8 +284,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            string test = results.Single(x => x["Name"].Equals("Green")).Get<IEnumerable<IDocument>>("Members").Single(x => x["Name"].Equals("Go"))["ExceptionHtml"].ToString();
-            Assert.AreEqual("", results.Single(x => x["Name"].Equals("Green")).Get<IEnumerable<IDocument>>("Members").Single(x => x["Name"].Equals("Go"))["ExceptionHtml"]);
+            Assert.AreEqual("<a href=\"/Foo/6412642C.html\">FooException</a>",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Key);
+            Assert.AreEqual("Throws when null",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Value);
             stream.Dispose();
         }
 
@@ -312,11 +319,91 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("", results.Single(x => x["Name"].Equals("Green")).Get<IEnumerable<IDocument>>("Members").Single(x => x["Name"].Equals("Go"))["SummaryHtml"]);
+            Assert.AreEqual("FooException",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Key);
+            Assert.AreEqual("Throws when null",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Value);
             stream.Dispose();
         }
 
-        // TODO: ExceptionWithoutCrefAttribute
-        // TODO: MultipleExceptions
+        [Test]
+        public void ExceptionElementWithoutCref()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green
+                    {
+                        /// <exception>Throws when null</exception>
+                        void Go()
+                        {
+                        }
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(string.Empty,
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Key);
+            Assert.AreEqual("Throws when null",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Value);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void MultipleExceptionElements()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green
+                    {
+                        /// <exception cref=""FooException"">Throws when null</exception>
+                        /// <exception cref=""BarException"">Throws for another reason</exception>
+                        void Go()
+                        {
+                        }
+                    }
+
+                    class FooException : Exception
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(2, GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml").Count);
+            Assert.AreEqual("<a href=\"/Foo/6412642C.html\">FooException</a>",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Key);
+            Assert.AreEqual("Throws when null",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[0].Value);
+            Assert.AreEqual("BarException",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[1].Key);
+            Assert.AreEqual("Throws for another reason",
+                GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[1].Value);
+            stream.Dispose();
+        }
     }
 }

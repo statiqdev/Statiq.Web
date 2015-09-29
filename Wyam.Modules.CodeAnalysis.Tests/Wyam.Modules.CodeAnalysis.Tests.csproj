@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzeCSharpFixtureBase.cs" />
     <Compile Include="AnalyzeCSharpMethodsFixture.cs" />
     <Compile Include="AnalyzeCSharpNamespacesFixture.cs" />
     <Compile Include="AnalyzeCSharpTypesFixture.cs" />
