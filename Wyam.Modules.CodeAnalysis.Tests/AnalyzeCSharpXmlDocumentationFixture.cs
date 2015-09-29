@@ -579,16 +579,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 This is a summary.
                 <ul>
                 <li>
-                <strong>A</strong>
-                <span>a</span>
+                <span class=""term"">A</span>
+                <span class=""description"">a</span>
                 </li>
                 <li>
-                <strong>X</strong>
-                <span>x</span>
+                <span class=""term"">X</span>
+                <span class=""description"">x</span>
                 </li>
                 <li>
-                <strong>Y</strong>
-                <span>y</span>
+                <span class=""term"">Y</span>
+                <span class=""description"">y</span>
                 </li>
                 </ul>
                 ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
@@ -640,16 +640,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 This is a summary.
                 <ol>
                 <li>
-                <strong>A</strong>
-                <span>a</span>
+                <span class=""term"">A</span>
+                <span class=""description"">a</span>
                 </li>
                 <li>
-                <strong>X</strong>
-                <span>x</span>
+                <span class=""term"">X</span>
+                <span class=""description"">x</span>
                 </li>
                 <li>
-                <strong>Y</strong>
-                <span>y</span>
+                <span class=""term"">Y</span>
+                <span class=""description"">y</span>
                 </li>
                 </ol>
                 ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
@@ -780,6 +780,104 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             // Then
             Assert.AreEqual("\n    <p>ABC</p>\n    <p>X<code>Y</code>Z</p>\n    ",
                 GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithSeeElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>Check <see cref=""Red""/> class</summary>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html\">Red</a> class", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithSeeElementToMethod()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>Check <see cref=""Red.Blue""/> method</summary>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                        void Blue()
+                        {
+                        }
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165.html#00F22A50\">Blue</a> method", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithUnknownSeeElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>Check <see cref=""Red""/> class</summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Check Red class", GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
     }

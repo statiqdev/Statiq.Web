@@ -68,8 +68,7 @@ namespace Wyam.Modules.CodeAnalysis
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
             AddDocumentForMember(symbol, xmlDocumentationParser, new[]
             {
-                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString()),
-                MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml())
+                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString())
             });
         }
 
@@ -127,10 +126,15 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
                 MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
+
+                // XML Documentation
                 MetadataHelper.New(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
                 MetadataHelper.New(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
                 MetadataHelper.New(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
-                MetadataHelper.New(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml())
+                MetadataHelper.New(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
+                MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
+                MetadataHelper.New(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
+                MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml())
             }));
             _symbolToDocument.GetOrAdd(symbol, _ => document);
             string documentationCommentId = symbol.GetDocumentationCommentId();

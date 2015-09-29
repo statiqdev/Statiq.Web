@@ -24,6 +24,11 @@ namespace Wyam.Modules.CodeAnalysis
         private IReadOnlyList<string> _summaryHtml = ImmutableArray<string>.Empty;
         private IReadOnlyList<KeyValuePair<string, string>> _exceptionHtml 
             = ImmutableArray<KeyValuePair<string, string>>.Empty;
+        private IReadOnlyList<KeyValuePair<string, string>> _paramHtml
+            = ImmutableArray<KeyValuePair<string, string>>.Empty;
+        private IReadOnlyList<KeyValuePair<string, string>> _permissionHtml
+            = ImmutableArray<KeyValuePair<string, string>>.Empty;
+        private IReadOnlyList<string> _returnsHtml = ImmutableArray<string>.Empty;
 
         public XmlDocumentationParser(ISymbol symbol, ConcurrentDictionary<string, IDocument> commentIdToDocument,
             ConcurrentDictionary<string, string> cssClasses, ITrace trace)
@@ -58,6 +63,24 @@ namespace Wyam.Modules.CodeAnalysis
             return _exceptionHtml;
         }
 
+        public IReadOnlyList<KeyValuePair<string, string>> GetParamHtml()
+        {
+            Parse();
+            return _paramHtml;
+        }
+
+        public IReadOnlyList<KeyValuePair<string, string>> GetPermissionHtml()
+        {
+            Parse();
+            return _permissionHtml;
+        }
+
+        public IReadOnlyList<string> GetReturnsHtml()
+        {
+            Parse();
+            return _returnsHtml;
+        }
+
         private void Parse()
         {
             if (_parsed)
@@ -77,6 +100,9 @@ namespace Wyam.Modules.CodeAnalysis
                     _remarksHtml = ProcessTopLevelElement(xdoc.Root, "remarks");
                     _summaryHtml = ProcessTopLevelElement(xdoc.Root, "summary");
                     _exceptionHtml = ProcessExceptionElements(xdoc.Root);
+                    _paramHtml = ProcessParamElements(xdoc.Root);
+                    _permissionHtml = ProcessPermissionElements(xdoc.Root);
+                    _returnsHtml = ProcessTopLevelElement(xdoc.Root, "returns");
                 }
                 catch (Exception ex)
                 {
@@ -107,26 +133,57 @@ namespace Wyam.Modules.CodeAnalysis
         {
             return root.Elements("exception").Select(exceptionElement =>
             {
-                // Get exception class link or name
-                XAttribute crefAttribute = exceptionElement.Attribute("cref");
-                IDocument crefDoc;
-                string linkOrName;
-                if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
-                {
-                    linkOrName = $"<a href=\"{crefDoc.Link(MetadataKeys.WritePath)}\">{crefDoc[MetadataKeys.DisplayName]}</a>";
-                }
-                else
-                {
-                    linkOrName = crefAttribute?.Value.Substring(crefAttribute.Value.IndexOf(':') + 1) ?? string.Empty;
-                }
-
-                // Process nested elements in the exception description, get InnerXml, and return the KeyValuePair
+                bool link;
+                string linkOrName = GetCrefLinkOrName(exceptionElement, out link);
                 ProcessChildElements(exceptionElement);
                 AddCssClasses(exceptionElement);
                 XmlReader reader = exceptionElement.CreateReader();
                 reader.MoveToContent();
                 return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
             }).ToImmutableArray();
+        }
+
+        // <param>
+        private IReadOnlyList<KeyValuePair<string, string>> ProcessParamElements(XElement root)
+        {
+            return root.Elements("param").Select(paramElement =>
+            {
+                XAttribute nameAttribute = paramElement.Attribute("name");
+                string name = nameAttribute?.Value ?? string.Empty;
+                ProcessChildElements(paramElement);
+                AddCssClasses(paramElement);
+                XmlReader reader = paramElement.CreateReader();
+                reader.MoveToContent();
+                return new KeyValuePair<string, string>(name, reader.ReadInnerXml());
+            }).ToImmutableArray();
+        }
+
+        // <permission>
+        private IReadOnlyList<KeyValuePair<string, string>> ProcessPermissionElements(XElement root)
+        {
+            return root.Elements("permission").Select(permissionElement =>
+            {
+                bool link;
+                string linkOrName = GetCrefLinkOrName(permissionElement, out link);
+                ProcessChildElements(permissionElement);
+                AddCssClasses(permissionElement);
+                XmlReader reader = permissionElement.CreateReader();
+                reader.MoveToContent();
+                return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
+            }).ToImmutableArray();
+        }
+
+        private string GetCrefLinkOrName(XElement element, out bool link)
+        {
+            XAttribute crefAttribute = element.Attribute("cref");
+            IDocument crefDoc;
+            if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
+            {
+                link = true;
+                return $"<a href=\"{crefDoc.Link(MetadataKeys.WritePath)}\">{crefDoc[MetadataKeys.DisplayName]}</a>";
+            }
+            link = false;
+            return crefAttribute?.Value.Substring(crefAttribute.Value.IndexOf(':') + 1) ?? string.Empty;
         }
 
         // Adds/updates CSS classes for all nested elements
@@ -137,16 +194,21 @@ namespace Wyam.Modules.CodeAnalysis
                 string cssClasses;
                 if (_cssClasses.TryGetValue(element.Name.ToString(), out cssClasses) && !string.IsNullOrWhiteSpace(cssClasses))
                 {
-                    XAttribute classAttribute = element.Attribute("class");
-                    if (classAttribute != null)
-                    {
-                        classAttribute.Value = classAttribute.Value + " " + cssClasses;
-                    }
-                    else
-                    {
-                        element.Add(new XAttribute("class", cssClasses));
-                    }
+                    AddCssClasses(element, cssClasses);
                 }
+            }
+        }
+
+        private void AddCssClasses(XElement element, string cssClasses)
+        {
+            XAttribute classAttribute = element.Attribute("class");
+            if (classAttribute != null)
+            {
+                classAttribute.Value = classAttribute.Value + " " + cssClasses;
+            }
+            else
+            {
+                element.Add(new XAttribute("class", cssClasses));
             }
         }
 
@@ -157,6 +219,8 @@ namespace Wyam.Modules.CodeAnalysis
             ProcessChildCElements(parentElement);
             ProcessChildListElements(parentElement);
             ProcessChildParaElements(parentElement);
+            ProcessChildParamrefElements(parentElement);
+            ProcessChildSeeElements(parentElement);
         }
 
         // <code>
@@ -213,12 +277,14 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 foreach (XElement termElement in itemElement.Elements("term"))
                 {
-                    termElement.Name = "strong";
+                    termElement.Name = "span";
+                    AddCssClasses(termElement, "term");
                     ProcessChildElements(termElement);
                 }
                 foreach (XElement descriptionElement in itemElement.Elements("description"))
                 {
                     descriptionElement.Name = "span";
+                    AddCssClasses(descriptionElement, "description");
                     ProcessChildElements(descriptionElement);
                 }
 
@@ -254,5 +320,27 @@ namespace Wyam.Modules.CodeAnalysis
             }
         }
 
+        // <paramref>
+        private void ProcessChildParamrefElements(XElement parentElement)
+        {
+            foreach (XElement paramrefElement in parentElement.Elements("paramref"))
+            {
+                XAttribute nameAttribute = paramrefElement.Attribute("name");
+                paramrefElement.Value = nameAttribute?.Value ?? string.Empty;
+                paramrefElement.Name = "span";
+                AddCssClasses(paramrefElement, "paramref");
+            }
+        }
+
+        // <see>
+        private void ProcessChildSeeElements(XElement parentElement)
+        {
+            foreach (XElement seeElement in parentElement.Elements("see"))
+            {
+                bool link;
+                string linkOrName = GetCrefLinkOrName(seeElement, out link);
+                seeElement.ReplaceWith(link ? (object)XElement.Parse(linkOrName) : linkOrName);
+            }
+        }
     }
 }

@@ -15,6 +15,15 @@ namespace Wyam.Modules.CodeAnalysis
         public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
 
+        public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
+        public const string ExampleHtml = "ExampleHtml"; // IReadOnlyList<string>, needs to be a list to support multiple elements
+        public const string RemarksHtml = "RemarksHtml"; // IReadOnlyList<string>, needs to be a list to support multiple elements
+        public const string SummaryHtml = "SummaryHtml"; // IReadOnlyList<string>, needs to be a list to support multiple elements
+        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception html
+        public const string ParamHtml = "ParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param description
+        public const string PermissionHtml = "PermissionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to permission (or name if not found), value = permission html
+        public const string ReturnsHtml = "ReturnsHtml"; // IReadOnlyList<string>, needs to be a list to support multiple elements
+
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
         public const string MemberNamespaces = "MemberNamespaces"; // IReadOnlyList<IDocument>, empty if none
@@ -24,22 +33,17 @@ namespace Wyam.Modules.CodeAnalysis
         public const string BaseType = "BaseType"; // IDocument
         public const string AllInterfaces = "AllInterfaces"; // IReadOnlyList<IDocument>
         public const string Members = "Members"; // IReadOnlyList<IDocument>
-                                                 //                  MemberTypes
+        //                  MemberTypes
+
+        // All Members
+        //                  ContainingType
 
         // Method
-        //                  ContainingType
 
         // Field
-        //                  ContainingType
 
         // Event
-        //                  ContainingType
 
-        // Documentation Comments
-        public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string ExampleHtml = "ExampleHtml"; // IReadOnlyList<string>
-        public const string RemarksHtml = "RemarksHtml"; // IReadOnlyList<string>
-        public const string SummaryHtml = "SummaryHtml"; // IReadOnlyList<string>
-        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception html
+        // Property
     }
 }
