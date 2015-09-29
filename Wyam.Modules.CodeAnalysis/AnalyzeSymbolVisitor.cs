@@ -16,9 +16,10 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private readonly IExecutionContext _context;
         private readonly Func<IMetadata, string> _writePath;
-        private readonly CssClasses _cssClasses;
+        private readonly ConcurrentDictionary<string, string> _cssClasses;
 
-        public AnalyzeSymbolVisitor(IExecutionContext context, Func<IMetadata, string> writePath, CssClasses cssClasses)
+        public AnalyzeSymbolVisitor(IExecutionContext context, 
+            Func<IMetadata, string> writePath, ConcurrentDictionary<string, string> cssClasses)
         {
             _context = context;
             _writePath = writePath;

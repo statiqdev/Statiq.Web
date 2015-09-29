@@ -16,7 +16,7 @@ namespace Wyam.Modules.CodeAnalysis
     {
         private readonly ISymbol _symbol;
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
-        private readonly CssClasses _cssClasses;
+        private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly ITrace _trace;
         private bool _parsed;
         private IReadOnlyList<string> _exampleHtml = ImmutableArray<string>.Empty;
@@ -25,8 +25,8 @@ namespace Wyam.Modules.CodeAnalysis
         private IReadOnlyList<KeyValuePair<string, string>> _exceptionHtml 
             = ImmutableArray<KeyValuePair<string, string>>.Empty;
 
-        public XmlDocumentationParser(ISymbol symbol, ConcurrentDictionary<string, IDocument> commentIdToDocument, 
-            CssClasses cssClasses, ITrace trace)
+        public XmlDocumentationParser(ISymbol symbol, ConcurrentDictionary<string, IDocument> commentIdToDocument,
+            ConcurrentDictionary<string, string> cssClasses, ITrace trace)
         {
             _symbol = symbol;
             _commentIdToDocument = commentIdToDocument;
@@ -92,7 +92,8 @@ namespace Wyam.Modules.CodeAnalysis
         {
             return root.Elements(elementName).Select(element =>
             {
-                ProcessNestedElements(element);
+                ProcessChildElements(element);
+                AddCssClasses(element);
 
                 // Return InnerXml
                 XmlReader reader = element.CreateReader();
@@ -120,35 +121,138 @@ namespace Wyam.Modules.CodeAnalysis
                 }
 
                 // Process nested elements in the exception description, get InnerXml, and return the KeyValuePair
-                ProcessNestedElements(exceptionElement);
+                ProcessChildElements(exceptionElement);
+                AddCssClasses(exceptionElement);
                 XmlReader reader = exceptionElement.CreateReader();
                 reader.MoveToContent();
                 return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
             }).ToImmutableArray();
         }
 
-        // Groups all the nested element processing together so it can be used from multiple parent elements
-        private void ProcessNestedElements(XElement parentElement)
+        // Adds/updates CSS classes for all nested elements
+        private void AddCssClasses(XElement parentElement)
         {
-            ProcessCodeElement(parentElement);
-            ProcessCElement(parentElement);
+            foreach (XElement element in parentElement.Descendants())
+            {
+                string cssClasses;
+                if (_cssClasses.TryGetValue(element.Name.ToString(), out cssClasses) && !string.IsNullOrWhiteSpace(cssClasses))
+                {
+                    XAttribute classAttribute = element.Attribute("class");
+                    if (classAttribute != null)
+                    {
+                        classAttribute.Value = classAttribute.Value + " " + cssClasses;
+                    }
+                    else
+                    {
+                        element.Add(new XAttribute("class", cssClasses));
+                    }
+                }
+            }
+        }
+
+        // Groups all the nested element processing together so it can be used from multiple parent elements
+        private void ProcessChildElements(XElement parentElement)
+        {
+            ProcessChildCodeElements(parentElement);
+            ProcessChildCElements(parentElement);
+            ProcessChildListElements(parentElement);
+            ProcessChildParaElements(parentElement);
         }
 
         // <code>
-        private void ProcessCodeElement(XElement parentElement)
+        private void ProcessChildCodeElements(XElement parentElement)
         {
-            XElement codeElement = parentElement.Element("code");
-            codeElement?.ReplaceWith(new XElement("pre", codeElement));
+            foreach (XElement codeElement in parentElement.Elements("code"))
+            {
+                codeElement.ReplaceWith(new XElement("pre", codeElement));
+            }
         }
 
         // <c>
-        private void ProcessCElement(XElement parentElement)
+        private void ProcessChildCElements(XElement parentElement)
         {
-            XElement cElement = parentElement.Element("c");
-            if (cElement != null)
+            foreach (XElement cElement in parentElement.Elements("c"))
             {
                 cElement.Name = "code";
             }
         }
+
+        // <list>
+        private void ProcessChildListElements(XElement parentElement)
+        {
+            foreach (XElement listElement in parentElement.Elements("list"))
+            {
+                XAttribute typeAttribute = listElement.Attribute("type");
+                if (typeAttribute != null && typeAttribute.Value == "table")
+                {
+                    ProcessListElementTable(listElement, typeAttribute);
+                }
+                else
+                {
+                    ProcessListElementList(listElement, typeAttribute);
+                }
+            }
+        }
+
+        private void ProcessListElementList(XElement listElement, XAttribute typeAttribute)
+        {
+            // Number or bullet
+            if (typeAttribute != null && typeAttribute.Value == "number")
+            {
+                listElement.Name = "ol";
+            }
+            else
+            {
+                listElement.Name = "ul";
+            }
+            typeAttribute?.Remove();
+
+            // Replace children
+            foreach(XElement itemElement in listElement.Elements("listheader")
+                .Concat(listElement.Elements("item")).ToList())
+            {
+                foreach (XElement termElement in itemElement.Elements("term"))
+                {
+                    termElement.Name = "strong";
+                    ProcessChildElements(termElement);
+                }
+                foreach (XElement descriptionElement in itemElement.Elements("description"))
+                {
+                    descriptionElement.Name = "span";
+                    ProcessChildElements(descriptionElement);
+                }
+
+                itemElement.Name = "li";
+            }
+        }
+
+        private void ProcessListElementTable(XElement listElement, XAttribute typeAttribute)
+        {
+            listElement.Name = "table";
+            typeAttribute?.Remove();
+            
+            foreach (XElement itemElement in listElement.Elements("listheader")
+                .Concat(listElement.Elements("item")).ToList())
+            {
+                foreach (XElement termElement in itemElement.Elements("term"))
+                {
+                    termElement.Name = itemElement.Name == "listheader" ? "th" : "td";
+                    ProcessChildElements(termElement);
+                }
+
+                itemElement.Name = "tr";
+            }
+        }
+
+        // <para>
+        private void ProcessChildParaElements(XElement parentElement)
+        {
+            foreach (XElement paraElement in parentElement.Elements("para"))
+            {
+                paraElement.Name = "p";
+                ProcessChildElements(paraElement);
+            }
+        }
+
     }
 }

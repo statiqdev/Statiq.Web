@@ -13,8 +13,6 @@ namespace Wyam.Modules.CodeAnalysis
 {
     public class AnalyzeCSharp : IModule
     {
-        private readonly CssClasses _cssClasses = new CssClasses();
-
         private Func<IMetadata, string> _writePath = md =>
         {
             IDocument ns = md.Get<IDocument>("ContainingNamespace");
@@ -30,6 +28,14 @@ namespace Wyam.Modules.CodeAnalysis
                 ? $"{md["SymbolId"]}.html" 
                 : $"{ns["DisplayName"]}\\{md["SymbolId"]}.html";
         };
+
+        // Use an intermediate Dictionary to initialize with defaults
+        private readonly ConcurrentDictionary<string, string> _cssClasses 
+            = new ConcurrentDictionary<string, string>(
+                new Dictionary<string, string>
+                {
+                    { "table", "table" }
+                }); 
          
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -54,10 +60,22 @@ namespace Wyam.Modules.CodeAnalysis
             return visitor.GetNamespaceOrTypeDocuments();
         }
 
-        // This value is used on every table generated as part of documentation HTML
-        public AnalyzeCSharp WithTableCssClass(string tableCssClass)
+        // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)
+        // Separate multiple CSS classes with a space (just like you would in HTML)
+        public AnalyzeCSharp WithCssClasses(string tagName, string cssClasses)
         {
-            _cssClasses.Table = tableCssClass;
+            if (tagName == null)
+            {
+                throw new ArgumentNullException(nameof(tagName));
+            }
+            if (string.IsNullOrWhiteSpace(cssClasses))
+            {
+                _cssClasses.TryRemove(tagName, out cssClasses);
+            }
+            else
+            {
+                _cssClasses[tagName] = cssClasses;
+            }
             return this;
         }
 

@@ -181,6 +181,134 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
+        public void SummaryWithCElementAndInlineCssClass()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is <c class=""code"">some code</c> in a summary.
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    This is <code class=\"code\">some code</code> in a summary.\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithCElementAndDeclaredCssClass()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is <c>some code</c> in a summary.
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp().WithCssClasses("code", "code");
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    This is <code class=\"code\">some code</code> in a summary.\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithCElementAndInlineAndDeclaredCssClasses()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is <c class=""code"">some code</c> in a summary.
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp().WithCssClasses("code", "more-code");
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    This is <code class=\"code more-code\">some code</code> in a summary.\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithMultipleCElements()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is <c>some code</c> in <c>a</c> summary.
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    This is <code>some code</code> in <code>a</code> summary.\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
         public void SummaryWithCodeElement()
         {
             // Given
@@ -403,6 +531,255 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[1].Key);
             Assert.AreEqual("Throws for another reason",
                 GetMember(results, "Green", "Go").Get<IReadOnlyList<KeyValuePair<string, string>>>("ExceptionHtml")[1].Value);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithBulletListElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is a summary.
+                    /// <list type=""bullet"">
+                    /// <listheader>
+                    /// <term>A</term>
+                    /// <description>a</description>
+                    /// </listheader>
+                    /// <item>
+                    /// <term>X</term>
+                    /// <description>x</description>
+                    /// </item>
+                    /// <item>
+                    /// <term>Y</term>
+                    /// <description>y</description>
+                    /// </item>
+                    /// </list>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"
+                This is a summary.
+                <ul>
+                <li>
+                <strong>A</strong>
+                <span>a</span>
+                </li>
+                <li>
+                <strong>X</strong>
+                <span>x</span>
+                </li>
+                <li>
+                <strong>Y</strong>
+                <span>y</span>
+                </li>
+                </ul>
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithNumberListElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is a summary.
+                    /// <list type=""number"">
+                    /// <listheader>
+                    /// <term>A</term>
+                    /// <description>a</description>
+                    /// </listheader>
+                    /// <item>
+                    /// <term>X</term>
+                    /// <description>x</description>
+                    /// </item>
+                    /// <item>
+                    /// <term>Y</term>
+                    /// <description>y</description>
+                    /// </item>
+                    /// </list>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"
+                This is a summary.
+                <ol>
+                <li>
+                <strong>A</strong>
+                <span>a</span>
+                </li>
+                <li>
+                <strong>X</strong>
+                <span>x</span>
+                </li>
+                <li>
+                <strong>Y</strong>
+                <span>y</span>
+                </li>
+                </ol>
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithTableListElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is a summary.
+                    /// <list type=""table"">
+                    /// <listheader>
+                    /// <term>A</term>
+                    /// <term>a</term>
+                    /// </listheader>
+                    /// <item>
+                    /// <term>X</term>
+                    /// <term>x</term>
+                    /// </item>
+                    /// <item>
+                    /// <term>Y</term>
+                    /// <term>y</term>
+                    /// </item>
+                    /// </list>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"
+                This is a summary.
+                <table class=""table"">
+                <tr>
+                <th>A</th>
+                <th>a</th>
+                </tr>
+                <tr>
+                <td>X</td>
+                <td>x</td>
+                </tr>
+                <tr>
+                <td>Y</td>
+                <td>y</td>
+                </tr>
+                </table>
+                ".Replace("\r\n", "\n").Replace("                ", "    "), GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithParaElements()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// <para>ABC</para>
+                    /// <para>XYZ</para>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    <p>ABC</p>\n    <p>XYZ</p>\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void SummaryWithParaElementsAndNestedCElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// <para>ABC</para>
+                    /// <para>X<c>Y</c>Z</para>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    <p>ABC</p>\n    <p>X<code>Y</code>Z</p>\n    ",
+                GetClass(results, "Green").Get<IReadOnlyList<string>>("SummaryHtml")[0]);
             stream.Dispose();
         }
     }
