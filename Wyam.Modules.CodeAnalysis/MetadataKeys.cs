@@ -4,7 +4,7 @@ namespace Wyam.Modules.CodeAnalysis
     internal static class MetadataKeys
     {
         // All
-        public const string WritePath = "WritePath"; // string, feeds WriteFiles and tells it where to place the output file
+        public const string WritePath = "WritePath"; // string, feeds WriteFiles and tells it where to place the output file (or missing for external symbols)
         public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
@@ -15,6 +15,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
 
+        // Documentation (not present for external symbols)
         public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
         public const string ExampleHtml = "ExampleHtml"; // string, multiple entries are concatenated
         public const string RemarksHtml = "RemarksHtml"; // string, multiple entries are concatenated

@@ -197,7 +197,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
+            CollectionAssert.AreEquivalent(new[] { "global", "Foo", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
             stream.Dispose();
         }
 

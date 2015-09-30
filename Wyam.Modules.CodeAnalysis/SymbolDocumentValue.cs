@@ -6,24 +6,33 @@ namespace Wyam.Modules.CodeAnalysis
 {
     internal class SymbolDocumentValue : IMetadataValue
     {
-        private readonly ConcurrentDictionary<ISymbol, IDocument> _documents;
         private readonly ISymbol _symbol;
+        private readonly AnalyzeSymbolVisitor _visitor;
         private bool _cached;
         private IDocument _value;
 
-        public SymbolDocumentValue(ConcurrentDictionary<ISymbol, IDocument> documents, ISymbol symbol)
+        public SymbolDocumentValue(ISymbol symbol, AnalyzeSymbolVisitor visitor)
         {
-            _documents = documents;
             _symbol = symbol;
+            _visitor = visitor;
         }
 
         public object Get(string key, IMetadata metadata)
         {
             if (!_cached)
             {
-                if (_symbol == null || !_documents.TryGetValue(_symbol, out _value))
+                if (_symbol == null)
                 {
                     _value = null;
+                }
+                else if (!_visitor.TryGetDocument(_symbol, out _value))
+                {
+                    // Visit the symbol and try again
+                    _symbol.Accept(_visitor);
+                    if (!_visitor.TryGetDocument(_symbol, out _value))
+                    {
+                        _value = null;
+                    }
                 }
                 _cached = true;
             }

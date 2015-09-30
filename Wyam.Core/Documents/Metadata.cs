@@ -110,9 +110,15 @@ namespace Wyam.Core.Documents
         {
             string value = Get<string>(key, defaultValue);
             value = string.IsNullOrWhiteSpace(value) ? "#" : PathHelper.ToRootLink(value);
-            return pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm"))
-                ? value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal))
-                : value;
+            if (pretty && (value == "/index.html" || value == "/index.htm"))
+            {
+                return "/";
+            }
+            if(pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm")))
+            {
+                return value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal));
+            }
+            return value;
         }
 
         public object this[string key]

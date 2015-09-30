@@ -67,6 +67,7 @@ namespace Wyam.Modules.CodeAnalysis
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _writePath, _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
+            visitor.PostExecution = true;
             return visitor.GetAllDocuments();
         }
 

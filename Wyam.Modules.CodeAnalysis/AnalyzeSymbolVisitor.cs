@@ -18,6 +18,9 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly Func<IMetadata, string> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
 
+        // When this is true, we're visiting external symbols and should omit certain metadata
+        public bool PostExecution { get; set; }
+
         public AnalyzeSymbolVisitor(IExecutionContext context, 
             Func<IMetadata, string> writePath, ConcurrentDictionary<string, string> cssClasses)
         {
@@ -31,6 +34,11 @@ namespace Wyam.Modules.CodeAnalysis
             return _symbolToDocument.Select(x => x.Value);
         }
 
+        public bool TryGetDocument(ISymbol symbol, out IDocument document)
+        {
+            return _symbolToDocument.TryGetValue(symbol, out document);
+        }
+
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
             XmlDocumentationParser xmlDocumentationParser 
@@ -41,7 +49,10 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.MemberNamespaces, Documents(symbol.GetNamespaceMembers())),
                 MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers()))
             });
-            Parallel.ForEach(symbol.GetMembers(), s => s.Accept(this));
+            if (!PostExecution)
+            {
+                Parallel.ForEach(symbol.GetMembers(), s => s.Accept(this));
+            }
         }
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
@@ -55,9 +66,12 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers())),
                 MetadataHelper.New(MetadataKeys.BaseType, Document(symbol.BaseType)),
                 MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces)),
-                MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers()))
+                MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared)))
             });
-            Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName), s => s.Accept(this));
+            if (!PostExecution)
+            {
+                Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared), s => s.Accept(this));
+            }
         }
 
         public override void VisitMethod(IMethodSymbol symbol)
@@ -112,10 +126,10 @@ namespace Wyam.Modules.CodeAnalysis
 
         private void AddDocument(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
         {
-            IDocument document = _context.GetNewDocument(symbol.ToDisplayString(), null, items.Concat(new[]
+            // Get universal metadata
+            List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
-                MetadataHelper.New(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
                 MetadataHelper.New(MetadataKeys.SymbolId, (k, m) => GetId(symbol), true),
                 MetadataHelper.New(MetadataKeys.Symbol, symbol),
                 MetadataHelper.New(MetadataKeys.Name, (k, m) => symbol.Name),
@@ -123,26 +137,43 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
                 MetadataHelper.New(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
                 MetadataHelper.New(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
-                MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace)),
+                MetadataHelper.New(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace))
+            };
 
-                // XML Documentation
-                MetadataHelper.New(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
-                MetadataHelper.New(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
-                MetadataHelper.New(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
-                MetadataHelper.New(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
-                MetadataHelper.New(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
-                MetadataHelper.New(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetValueHtml()),
-                MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
-                MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
-                MetadataHelper.New(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
-                MetadataHelper.New(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
-                MetadataHelper.New(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml())
-            }));
-            _symbolToDocument.GetOrAdd(symbol, _ => document);
-            string documentationCommentId = symbol.GetDocumentationCommentId();
-            if (documentationCommentId != null)
+            // Add metadata that's specific to initially-processed symbols
+            if (!PostExecution)
             {
-                _commentIdToDocument.GetOrAdd(documentationCommentId, _ => document);
+                metadata.AddRange(new[]
+                {
+                    MetadataHelper.New(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
+
+                    // XML Documentation
+                    MetadataHelper.New(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
+                    MetadataHelper.New(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
+                    MetadataHelper.New(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
+                    MetadataHelper.New(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
+                    MetadataHelper.New(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
+                    MetadataHelper.New(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetValueHtml()),
+                    MetadataHelper.New(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
+                    MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
+                    MetadataHelper.New(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
+                    MetadataHelper.New(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
+                    MetadataHelper.New(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml())
+                });
+            }
+
+            // Create the document and add it to the cache
+            IDocument document = _context.GetNewDocument(symbol.ToDisplayString(), null, items.Concat(metadata));
+            _symbolToDocument.GetOrAdd(symbol, _ => document);
+
+            // Map the comment ID to the document
+            if (!PostExecution)
+            {
+                string documentationCommentId = symbol.GetDocumentationCommentId();
+                if (documentationCommentId != null)
+                {
+                    _commentIdToDocument.GetOrAdd(documentationCommentId, _ => document);
+                }
             }
         }
 
@@ -169,19 +200,20 @@ namespace Wyam.Modules.CodeAnalysis
         {
             if (symbol.Kind == SymbolKind.Namespace)
             {
-                return GetQualifiedName(symbol);
+                // Use "global" for the global namespace display name since it's a reserved keyword and it's used to refer to the global namespace in code
+                return symbol.ContainingNamespace == null ? "global" : GetQualifiedName(symbol);
             }
             return GetFullName(symbol);
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)
         {
-            return new SymbolDocumentValue(_symbolToDocument, symbol);
+            return new SymbolDocumentValue(symbol, this);
         }
 
         private SymbolDocumentValues Documents(IEnumerable<ISymbol> symbols)
         {
-            return new SymbolDocumentValues(_symbolToDocument, symbols);
+            return new SymbolDocumentValues(symbols, this);
         }
     }
 }

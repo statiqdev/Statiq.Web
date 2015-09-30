@@ -10,15 +10,15 @@ namespace Wyam.Modules.CodeAnalysis
 {
     internal class SymbolDocumentValues : IMetadataValue
     {
-        private readonly ConcurrentDictionary<ISymbol, IDocument> _documents;
         private readonly IEnumerable<ISymbol> _symbols;
+        private readonly AnalyzeSymbolVisitor _visitor;
         private bool _cached;
         private ImmutableArray<IDocument> _values;
 
-        public SymbolDocumentValues(ConcurrentDictionary<ISymbol, IDocument> documents, IEnumerable<ISymbol> symbols)
+        public SymbolDocumentValues(IEnumerable<ISymbol> symbols, AnalyzeSymbolVisitor visitor)
         {
-            _documents = documents;
             _symbols = symbols ?? Array.Empty<ISymbol>();
+            _visitor = visitor;
         }
 
         public object Get(string key, IMetadata metadata)
@@ -26,10 +26,17 @@ namespace Wyam.Modules.CodeAnalysis
             if (!_cached)
             {
                 _values = _symbols
+                    .Where(x => x != null)
                     .Select(x =>
                     {
                         IDocument document;
-                        return !_documents.TryGetValue(x, out document) ? null : document;
+                        if (!_visitor.TryGetDocument(x, out document))
+                        {
+                            // Visit the symbol and try again
+                            x.Accept(_visitor);
+                            return !_visitor.TryGetDocument(x, out document) ? null : document;
+                        }
+                        return document;
                     })
                     .Where(x => x != null)
                     .ToImmutableArray();

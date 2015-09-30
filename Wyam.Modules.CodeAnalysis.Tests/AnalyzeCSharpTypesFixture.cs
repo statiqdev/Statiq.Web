@@ -176,7 +176,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Green", "Green.Blue", "Red", "Yellow", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
+            CollectionAssert.AreEquivalent(new[] { "global", "Foo", "Green", "Green.Blue", "Red", "Yellow", "Foo.Bar" }, results.Select(x => x["DisplayName"]));
             stream.Dispose();
         }
 
@@ -442,11 +442,11 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.IsNull(results.Single(x => x["Name"].Equals("Red")).Get<IDocument>("BaseType"));
+            Assert.AreEqual("Object", results.Single(x => x["Name"].Equals("Red")).Get<IDocument>("BaseType")["Name"]);
             Assert.AreEqual("Red", results.Single(x => x["Name"].Equals("Green")).Get<IDocument>("BaseType")["Name"]);
-            Assert.IsNull(results.Single(x => x["Name"].Equals("Blue")).Get<IDocument>("BaseType"));
+            Assert.AreEqual("ValueType", results.Single(x => x["Name"].Equals("Blue")).Get<IDocument>("BaseType")["Name"]);
             Assert.IsNull(results.Single(x => x["Name"].Equals("Yellow")).Get<IDocument>("BaseType"));
-            Assert.IsNull(results.Single(x => x["Name"].Equals("Orange")).Get<IDocument>("BaseType"));
+            Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Orange")).Get<IDocument>("BaseType")["Name"]);
             stream.Dispose();
         }
 
@@ -531,7 +531,68 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 results.Where(x => x["Kind"].Equals("NamedType")).Select(x => x["WritePath"]));
             stream.Dispose();
         }
-        
+
+        [Test]
+        public void GetDocumentForExternalBaseType()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Object", GetClass(results, "Red").Get<IDocument>("BaseType")["Name"]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void GetDocumentsForExternalInterfaces()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Red : IBlue, IFoo
+                    {
+                    }
+
+                    interface IBlue
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Red", "IBlue" }, results.Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new [] { "IBlue", "IFoo" }, GetClass(results, "Red").Get<IEnumerable<IDocument>>("AllInterfaces").Select(x => x["Name"]));
+            stream.Dispose();
+        }
+
         // TODO: Test that Name does not contain generic type parameters
         // TODO: Test that FullName contains generic type parameters
         // TODO: Test that QualifiedName contains generic type parameters
