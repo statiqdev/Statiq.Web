@@ -89,6 +89,10 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Download\Wyam.Modules.Download.csproj">
+      <Project>{5c4855a3-89aa-4310-8de1-6aac415d46d9}</Project>
+      <Name>Wyam.Modules.Download</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Images\Wyam.Modules.Images.csproj">
       <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
       <Name>Wyam.Modules.Images</Name>

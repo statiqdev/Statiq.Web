@@ -93,8 +93,6 @@ namespace Wyam.Modules.Download.Tests
 
             var output = new List<Tuple<Stream, IEnumerable<KeyValuePair<string, object>>>>();
 
-            IEnumerable<KeyValuePair<string, object>> metadata = null;
-
             document
                 .When(x => x.Clone(Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
                 .Do(x =>
