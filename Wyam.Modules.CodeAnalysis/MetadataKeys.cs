@@ -16,14 +16,16 @@ namespace Wyam.Modules.CodeAnalysis
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
 
         public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string ExampleHtml = "ExampleHtml"; // IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>>, list of <example> HTML, key = html, value = list of <seealso> links
-        public const string RemarksHtml = "RemarksHtml"; // IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>>, list of <remarks> HTML, key = html, value = list of <seealso> links
-        public const string SummaryHtml = "SummaryHtml"; // IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>>, list of <summary> HTML, key = html, value = list of <seealso> links
-        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception html
-        public const string ParamHtml = "ParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param description
-        public const string PermissionHtml = "PermissionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to permission (or name if not found), value = permission html
-        public const string ReturnsHtml = "ReturnsHtml"; // IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>>, list of <returns> HTML, key = html, value = list of <seealso> links
-        public const string SeeAlsoHtml = "SeeAlsoHtml"; // IReadOnlyList<string>, list of top-level <seealso> links
+        public const string ExampleHtml = "ExampleHtml"; // string, multiple entries are concatenated
+        public const string RemarksHtml = "RemarksHtml"; // string, multiple entries are concatenated
+        public const string SummaryHtml = "SummaryHtml"; // string, multiple entries are concatenated
+        public const string ReturnsHtml = "ReturnsHtml"; // string, multiple entries are concatenated
+        public const string ValueHtml = "ValueHtml"; // string, multiple entries are concatenated
+        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception HTML
+        public const string PermissionHtml = "PermissionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to permission (or name if not found), value = permission HTML
+        public const string ParamHtml = "ParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
+        public const string TypeParamHtml = "TypeParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
+        public const string SeeAlsoHtml = "SeeAlsoHtml"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
 
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants

@@ -19,21 +19,20 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly ITrace _trace;
         private bool _parsed;
-        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> _exampleHtml 
-            = ImmutableArray<KeyValuePair<string, IReadOnlyList<string>>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> _remarksHtml
-            = ImmutableArray<KeyValuePair<string, IReadOnlyList<string>>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> _summaryHtml
-            = ImmutableArray<KeyValuePair<string, IReadOnlyList<string>>>.Empty;
+        private IReadOnlyList<string> _seeAlsoHtml = ImmutableArray<string>.Empty;
+        private string _exampleHtml = string.Empty;
+        private string _remarksHtml = string.Empty;
+        private string _summaryHtml = string.Empty;
+        private string _returnsHtml = string.Empty;
+        private string _valueHtml = string.Empty;
         private IReadOnlyList<KeyValuePair<string, string>> _exceptionHtml 
-            = ImmutableArray<KeyValuePair<string, string>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, string>> _paramHtml
             = ImmutableArray<KeyValuePair<string, string>>.Empty;
         private IReadOnlyList<KeyValuePair<string, string>> _permissionHtml
             = ImmutableArray<KeyValuePair<string, string>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> _returnsHtml 
-            = ImmutableArray<KeyValuePair<string, IReadOnlyList<string>>>.Empty;
-        private IReadOnlyList<string> _seeAlsoHtml = ImmutableArray<string>.Empty; 
+        private IReadOnlyList<KeyValuePair<string, string>> _paramHtml
+            = ImmutableArray<KeyValuePair<string, string>>.Empty;
+        private IReadOnlyList<KeyValuePair<string, string>> _typeParamHtml
+            = ImmutableArray<KeyValuePair<string, string>>.Empty;
 
         public XmlDocumentationParser(ISymbol symbol, ConcurrentDictionary<string, IDocument> commentIdToDocument,
             ConcurrentDictionary<string, string> cssClasses, ITrace trace)
@@ -44,22 +43,40 @@ namespace Wyam.Modules.CodeAnalysis
             _cssClasses = cssClasses;
         }
 
-        public IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> GetExampleHtml()
+        public IReadOnlyList<string> GetSeeAlsoHtml()
+        {
+            Parse();
+            return _seeAlsoHtml;
+        }
+
+        public string GetExampleHtml()
         {
             Parse();
             return _exampleHtml;
         }
 
-        public IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> GetRemarksHtml()
+        public string GetRemarksHtml()
         {
             Parse();
             return _remarksHtml;
         }
 
-        public IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> GetSummaryHtml()
+        public string GetSummaryHtml()
         {
             Parse();
             return _summaryHtml;
+        }
+
+        public string GetReturnsHtml()
+        {
+            Parse();
+            return _returnsHtml;
+        }
+
+        public string GetValueHtml()
+        {
+            Parse();
+            return _valueHtml;
         }
 
         public IReadOnlyList<KeyValuePair<string, string>> GetExceptionHtml()
@@ -68,28 +85,22 @@ namespace Wyam.Modules.CodeAnalysis
             return _exceptionHtml;
         }
 
-        public IReadOnlyList<KeyValuePair<string, string>> GetParamHtml()
-        {
-            Parse();
-            return _paramHtml;
-        }
-
         public IReadOnlyList<KeyValuePair<string, string>> GetPermissionHtml()
         {
             Parse();
             return _permissionHtml;
         }
 
-        public IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> GetReturnsHtml()
+        public IReadOnlyList<KeyValuePair<string, string>> GetParamHtml()
         {
             Parse();
-            return _returnsHtml;
+            return _paramHtml;
         }
 
-        public IReadOnlyList<string> GetSeeAlsoHtml()
+        public IReadOnlyList<KeyValuePair<string, string>> GetTypeParamHtml()
         {
             Parse();
-            return _seeAlsoHtml;
+            return _typeParamHtml;
         }
 
         private void Parse()
@@ -107,14 +118,16 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     // We shouldn't need a root element, the compiler adds a "<member name='Foo.Bar'>" root for us
                     XDocument xdoc = XDocument.Parse(documentationCommentXml, LoadOptions.PreserveWhitespace);
+                    _seeAlsoHtml = ProcessSeeAlsoElements(xdoc.Root);
                     _exampleHtml = ProcessRootElement(xdoc.Root, "example");
                     _remarksHtml = ProcessRootElement(xdoc.Root, "remarks");
                     _summaryHtml = ProcessRootElement(xdoc.Root, "summary");
-                    _exceptionHtml = ProcessExceptionElements(xdoc.Root);
-                    _paramHtml = ProcessParamElements(xdoc.Root);
-                    _permissionHtml = ProcessPermissionElements(xdoc.Root);
                     _returnsHtml = ProcessRootElement(xdoc.Root, "returns");
-                    _seeAlsoHtml = ProcessChildSeeAlsoElements(xdoc.Root);
+                    _valueHtml = ProcessRootElement(xdoc.Root, "value");
+                    _exceptionHtml = ProcessExceptionOrPermissionElements(xdoc.Root, "exception");
+                    _permissionHtml = ProcessExceptionOrPermissionElements(xdoc.Root, "permission");
+                    _paramHtml = ProcessParamOrTypeParamElements(xdoc.Root, "param");
+                    _typeParamHtml = ProcessParamOrTypeParamElements(xdoc.Root, "typeparam");
                 }
                 catch (Exception ex)
                 {
@@ -125,64 +138,61 @@ namespace Wyam.Modules.CodeAnalysis
             _parsed = true;
         }
 
-        // <example>, <remarks>, <summary>, <returns>
-        private IReadOnlyList<KeyValuePair<string, IReadOnlyList<string>>> ProcessRootElement(XElement root, string elementName)
+        // <seealso>
+        private IReadOnlyList<string> ProcessSeeAlsoElements(XElement root)
         {
-            return root.Elements(elementName).Select(element =>
+            List<string> seeAlso = new List<string>();
+            foreach (XElement seealsoElement in root.Descendants("seealso").ToList())
             {
-                IReadOnlyList<string> seealso = ProcessChildSeeAlsoElements(element);
+                bool link;
+                seeAlso.Add(GetCrefLinkOrName(seealsoElement, out link));
+                seealsoElement.Remove();
+            }
+            return seeAlso.ToImmutableArray();
+        }
+
+        // <example>, <remarks>, <summary>, <returns>, <value>
+        private string ProcessRootElement(XElement root, string elementName)
+        {
+            return string.Join("\n", root.Elements(elementName).Select(element =>
+            {
                 ProcessChildElements(element);
                 AddCssClasses(element);
 
                 // Return InnerXml
                 XmlReader reader = element.CreateReader();
                 reader.MoveToContent();
-                return new KeyValuePair<string, IReadOnlyList<string>>(reader.ReadInnerXml(), seealso);
-            }).ToImmutableArray();
+                return reader.ReadInnerXml();
+            }));
         }
 
-        // <exception>
-        private IReadOnlyList<KeyValuePair<string, string>> ProcessExceptionElements(XElement root)
+        // <exception>, <permission>
+        private IReadOnlyList<KeyValuePair<string, string>> ProcessExceptionOrPermissionElements(XElement root, string elementName)
         {
-            return root.Elements("exception").Select(exceptionElement =>
+            return root.Elements(elementName).Select(element =>
             {
                 bool link;
-                string linkOrName = GetCrefLinkOrName(exceptionElement, out link);
-                ProcessChildElements(exceptionElement);
-                AddCssClasses(exceptionElement);
-                XmlReader reader = exceptionElement.CreateReader();
+                string linkOrName = GetCrefLinkOrName(element, out link);
+                ProcessChildElements(element);
+                AddCssClasses(element);
+                XmlReader reader = element.CreateReader();
                 reader.MoveToContent();
                 return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
             }).ToImmutableArray();
         }
 
-        // <param>
-        private IReadOnlyList<KeyValuePair<string, string>> ProcessParamElements(XElement root)
+        // <param>, <typeparam>
+        private IReadOnlyList<KeyValuePair<string, string>> ProcessParamOrTypeParamElements(XElement root, string elementName)
         {
-            return root.Elements("param").Select(paramElement =>
+            return root.Elements(elementName).Select(element =>
             {
-                XAttribute nameAttribute = paramElement.Attribute("name");
+                XAttribute nameAttribute = element.Attribute("name");
                 string name = nameAttribute?.Value ?? string.Empty;
-                ProcessChildElements(paramElement);
-                AddCssClasses(paramElement);
-                XmlReader reader = paramElement.CreateReader();
+                ProcessChildElements(element);
+                AddCssClasses(element);
+                XmlReader reader = element.CreateReader();
                 reader.MoveToContent();
                 return new KeyValuePair<string, string>(name, reader.ReadInnerXml());
-            }).ToImmutableArray();
-        }
-
-        // <permission>
-        private IReadOnlyList<KeyValuePair<string, string>> ProcessPermissionElements(XElement root)
-        {
-            return root.Elements("permission").Select(permissionElement =>
-            {
-                bool link;
-                string linkOrName = GetCrefLinkOrName(permissionElement, out link);
-                ProcessChildElements(permissionElement);
-                AddCssClasses(permissionElement);
-                XmlReader reader = permissionElement.CreateReader();
-                reader.MoveToContent();
-                return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
             }).ToImmutableArray();
         }
 
@@ -232,7 +242,8 @@ namespace Wyam.Modules.CodeAnalysis
             ProcessChildCElements(parentElement);
             ProcessChildListElements(parentElement);
             ProcessChildParaElements(parentElement);
-            ProcessChildParamrefElements(parentElement);
+            ProcessChildParamrefAndTypeparamrefElements(parentElement, "paramref");
+            ProcessChildParamrefAndTypeparamrefElements(parentElement, "typeparamref");
             ProcessChildSeeElements(parentElement);
         }
 
@@ -333,15 +344,15 @@ namespace Wyam.Modules.CodeAnalysis
             }
         }
 
-        // <paramref>
-        private void ProcessChildParamrefElements(XElement parentElement)
+        // <paramref>, <typeparamref>
+        private void ProcessChildParamrefAndTypeparamrefElements(XElement parentElement, string elementName)
         {
-            foreach (XElement paramrefElement in parentElement.Elements("paramref"))
+            foreach (XElement paramrefElement in parentElement.Elements(elementName))
             {
                 XAttribute nameAttribute = paramrefElement.Attribute("name");
                 paramrefElement.Value = nameAttribute?.Value ?? string.Empty;
                 paramrefElement.Name = "span";
-                AddCssClasses(paramrefElement, "paramref");
+                AddCssClasses(paramrefElement, elementName);
             }
         }
 
@@ -355,18 +366,5 @@ namespace Wyam.Modules.CodeAnalysis
                 seeElement.ReplaceWith(link ? (object)XElement.Parse(linkOrName) : linkOrName);
             }
         }
-
-        // <seealso>
-        private IReadOnlyList<string> ProcessChildSeeAlsoElements(XElement parentElement)
-        {
-            List<string> seealso = new List<string>();
-            foreach (XElement seealsoElement in parentElement.Elements("seealso").ToList())
-            {
-                bool link;
-                seealso.Add(GetCrefLinkOrName(seealsoElement, out link));
-                seealsoElement.Remove();
-            }
-            return seealso.ToImmutableArray();
-        } 
     }
 }
