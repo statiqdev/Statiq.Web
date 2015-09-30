@@ -16,9 +16,12 @@ namespace Wyam.Modules.Images
 
         ImageInstruction _currentInstruction;
 
-        public Image()
+        bool _skipIfExists;
+
+        public Image(bool skipIfExists = false)
         {
             _instructions = new List<ImageInstruction>();
+            _skipIfExists = skipIfExists;
         }
 
         void EnsureCurrentInstruction()
@@ -253,6 +256,13 @@ namespace Wyam.Modules.Images
                         destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
+
+                    if (_skipIfExists && File.Exists(destinationPath))
+                    {
+                        context.Trace.Verbose($"SkipPath: {destinationPath}");
+                        continue;
+                    }
+
                     context.Trace.Verbose($"WritePath: {destinationPath}");
 
                     var output = ProcessImage(input, format, ins);
