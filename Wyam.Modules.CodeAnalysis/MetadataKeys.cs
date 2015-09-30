@@ -8,7 +8,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)
-        public const string FullName = "FullName"; // string, namespaces = all containing namespaces, types = with generic type parameters
+        public const string FullName = "FullName"; // string, namespaces = name of the namespace, types = with generic type parameters
         public const string QualifiedName = "QualifiedName"; // string, the qualified name including containing namespaces
         public const string DisplayName = "DisplayName"; // string, namespace = QualifiedName, type = FullName
         public const string Kind = "Kind"; // string, the general kind of symbol (Namespace, NamedType, etc.)

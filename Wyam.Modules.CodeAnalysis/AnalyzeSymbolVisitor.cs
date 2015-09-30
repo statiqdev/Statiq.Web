@@ -26,11 +26,9 @@ namespace Wyam.Modules.CodeAnalysis
             _cssClasses = cssClasses;
         }
 
-        public IEnumerable<IDocument> GetNamespaceOrTypeDocuments()
+        public IEnumerable<IDocument> GetAllDocuments()
         {
-            return _symbolToDocument
-                .Where(x => x.Key is INamespaceOrTypeSymbol)
-                .Select(x => x.Value);
+            return _symbolToDocument.Select(x => x.Value);
         }
 
         public override void VisitNamespace(INamespaceSymbol symbol)

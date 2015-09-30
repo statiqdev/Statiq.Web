@@ -223,6 +223,12 @@ namespace Wyam.Core.Tests.Documents
         [TestCase("/foo/bar/index.html", true, "/foo/bar")]
         [TestCase("/foo/bar/index.htm", false, "/foo/bar/index.htm")]
         [TestCase("/foo/bar/index.htm", true, "/foo/bar")]
+        [TestCase(null, false, "#")]
+        [TestCase(null, true, "#")]
+        [TestCase("", false, "#")]
+        [TestCase("", true, "#")]
+        [TestCase(" ", false, "#")]
+        [TestCase(" ", true, "#")]
         public void LinkReturnsCorrectResult(string value, bool pretty, string link)
         {
             // Given

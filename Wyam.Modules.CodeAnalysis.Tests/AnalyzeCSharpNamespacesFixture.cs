@@ -115,7 +115,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void NamespaceFullNameDoesNotContainFullHierarchy()
+        public void FullNameDoesNotContainFullHierarchy()
         {
             // Given
             string code = @"
@@ -144,7 +144,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void NamespaceQualifiedNameContainsFullHierarchy()
+        public void QualifiedNameContainsFullHierarchy()
         {
             // Given
             string code = @"
@@ -173,7 +173,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         }
 
         [Test]
-        public void NamespaceDisplayNameContainsFullHierarchy()
+        public void DisplayNameContainsFullHierarchy()
         {
             // Given
             string code = @"
@@ -334,7 +334,34 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             stream.Dispose();
         }
 
-        // TODO: Test that FullName contains containing namespaces
+        [Test]
+        public void WritePathIsCorrect()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    namespace Bar
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "index.html", "Foo\\index.html", "Foo.Bar\\index.html" },
+                results.Where(x => x["Kind"].Equals("Namespace")).Select(x => x["WritePath"]));
+            stream.Dispose();
+        }
     }
 
 }

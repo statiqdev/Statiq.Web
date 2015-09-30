@@ -17,24 +17,26 @@ namespace Wyam.Modules.CodeAnalysis
         {
             IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
 
-            // Make namespaces output to the index page
+            // Namespaces output to the index page in a folder of their full name
             if (metadata.String(MetadataKeys.Kind) == "Namespace")
             {
+                // If this namespace does not have a containing namespace, it's the global namespace
                 return namespaceDocument == null ? "index.html" : $"{metadata[MetadataKeys.DisplayName]}\\index.html";
             }
 
-            // Account both for types that don't have a containing namespace as well as those contained in the global namespace
+            // Types output to the index page in a folder of their SymbolId under the folder for their namespace
             if (metadata.String(MetadataKeys.Kind) == "NamedType")
             {
+                // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
                 return (namespaceDocument?[MetadataKeys.ContainingNamespace] == null)
-                    ? $"{metadata[MetadataKeys.SymbolId]}.html"
-                    : $"{namespaceDocument[MetadataKeys.DisplayName]}\\{metadata[MetadataKeys.SymbolId]}.html";
+                    ? $"{metadata[MetadataKeys.SymbolId]}\\index.html"
+                    : $"{namespaceDocument[MetadataKeys.DisplayName]}\\{metadata[MetadataKeys.SymbolId]}\\index.html";
             }
 
-            // Not a namespace or type, so output as an anchor to the containing type
+            // Members output to a page equal to their SymbolId under the folder for their type
             IDocument containingTypeDocument = metadata.Get<IDocument>(MetadataKeys.ContainingType, null);
-            return containingTypeDocument == null ? "#" 
-                : $"{containingTypeDocument[MetadataKeys.WritePath]}#{metadata[MetadataKeys.SymbolId]}";
+            return containingTypeDocument?.String(MetadataKeys.WritePath)
+                .Replace("index.html", metadata.String(MetadataKeys.SymbolId) + ".html");
         };
 
         // Use an intermediate Dictionary to initialize with defaults
@@ -65,7 +67,7 @@ namespace Wyam.Modules.CodeAnalysis
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _writePath, _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
-            return visitor.GetNamespaceOrTypeDocuments();
+            return visitor.GetAllDocuments();
         }
 
         // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)

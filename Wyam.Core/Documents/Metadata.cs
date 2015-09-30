@@ -109,8 +109,8 @@ namespace Wyam.Core.Documents
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {
             string value = Get<string>(key, defaultValue);
-            value = value == null ? null : PathHelper.ToRootLink(value);
-            return value != null && pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm"))
+            value = string.IsNullOrWhiteSpace(value) ? "#" : PathHelper.ToRootLink(value);
+            return pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm"))
                 ? value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal))
                 : value;
         }
