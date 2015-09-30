@@ -37,6 +37,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string BaseType = "BaseType"; // IDocument
         public const string AllInterfaces = "AllInterfaces"; // IReadOnlyList<IDocument>
         public const string Members = "Members"; // IReadOnlyList<IDocument>
+        public const string DerivedTypes = "DerivedTypes"; // IReadOnlyList<IDocument>
         //                  MemberTypes
 
         // All Members

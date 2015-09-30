@@ -425,6 +425,10 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                     {
                     }
 
+                    interface Purple : Yellow
+                    {
+                    }
+
                     enum Orange
                     {
                     }
@@ -446,6 +450,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             Assert.AreEqual("Red", results.Single(x => x["Name"].Equals("Green")).Get<IDocument>("BaseType")["Name"]);
             Assert.AreEqual("ValueType", results.Single(x => x["Name"].Equals("Blue")).Get<IDocument>("BaseType")["Name"]);
             Assert.IsNull(results.Single(x => x["Name"].Equals("Yellow")).Get<IDocument>("BaseType"));
+            Assert.IsNull(results.Single(x => x["Name"].Equals("Purple")).Get<IDocument>("BaseType"));
             Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Orange")).Get<IDocument>("BaseType")["Name"]);
             stream.Dispose();
         }
@@ -590,6 +595,54 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             // Then
             CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Red", "IBlue" }, results.Select(x => x["Name"]));
             CollectionAssert.AreEquivalent(new [] { "IBlue", "IFoo" }, GetClass(results, "Red").Get<IEnumerable<IDocument>>("AllInterfaces").Select(x => x["Name"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void GetDerivedTypes()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Red : IBlue, IFoo
+                    {
+                    }
+
+                    class Blue : Red, IBlue
+                    {
+                    }
+
+                    class Green : Blue
+                    {
+                    }
+
+                    class Yellow : Blue
+                    {
+                    }
+
+                    interface IBlue
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "Blue" }, GetClass(results, "Red").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new[] { "Green", "Yellow" }, GetClass(results, "Blue").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
+            CollectionAssert.IsEmpty(GetClass(results, "Green").Get<IEnumerable<IDocument>>("DerivedTypes"));
+            CollectionAssert.IsEmpty(GetClass(results, "Yellow").Get<IEnumerable<IDocument>>("DerivedTypes"));
+            CollectionAssert.IsEmpty(GetClass(results, "IBlue").Get<IEnumerable<IDocument>>("DerivedTypes"));
             stream.Dispose();
         }
 

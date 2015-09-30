@@ -14,12 +14,11 @@ namespace Wyam.Modules.CodeAnalysis
     {
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
+        private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
         private readonly IExecutionContext _context;
         private readonly Func<IMetadata, string> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
-
-        // When this is true, we're visiting external symbols and should omit certain metadata
-        public bool PostExecution { get; set; }
+        private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(IExecutionContext context, 
             Func<IMetadata, string> writePath, ConcurrentDictionary<string, string> cssClasses)
@@ -29,8 +28,13 @@ namespace Wyam.Modules.CodeAnalysis
             _cssClasses = cssClasses;
         }
 
-        public IEnumerable<IDocument> GetAllDocuments()
+        public IEnumerable<IDocument> Finish()
         {
+            _finished = true;
+            _namedTypes = _symbolToDocument
+                .Where(x => x.Key.Kind == SymbolKind.NamedType)
+                .Select(x => new KeyValuePair<INamedTypeSymbol, IDocument>((INamedTypeSymbol)x.Key, x.Value))
+                .ToImmutableArray();
             return _symbolToDocument.Select(x => x.Value);
         }
 
@@ -49,7 +53,7 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.MemberNamespaces, Documents(symbol.GetNamespaceMembers())),
                 MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers()))
             });
-            if (!PostExecution)
+            if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers(), s => s.Accept(this));
             }
@@ -59,7 +63,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             XmlDocumentationParser xmlDocumentationParser 
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocument(symbol, xmlDocumentationParser, new[]
+            List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
                 MetadataHelper.New(MetadataKeys.ContainingType, Document(symbol.ContainingType)),
@@ -67,8 +71,16 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.BaseType, Document(symbol.BaseType)),
                 MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces)),
                 MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared)))
-            });
-            if (!PostExecution)
+            };
+            if (!_finished)
+            {
+                metadata.AddRange(new[]
+                {
+                    MetadataHelper.New(MetadataKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true)
+                });
+            }
+            AddDocument(symbol, xmlDocumentationParser, metadata);
+            if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared), s => s.Accept(this));
             }
@@ -141,7 +153,7 @@ namespace Wyam.Modules.CodeAnalysis
             };
 
             // Add metadata that's specific to initially-processed symbols
-            if (!PostExecution)
+            if (!_finished)
             {
                 metadata.AddRange(new[]
                 {
@@ -167,7 +179,7 @@ namespace Wyam.Modules.CodeAnalysis
             _symbolToDocument.GetOrAdd(symbol, _ => document);
 
             // Map the comment ID to the document
-            if (!PostExecution)
+            if (!_finished)
             {
                 string documentationCommentId = symbol.GetDocumentationCommentId();
                 if (documentationCommentId != null)
@@ -204,6 +216,14 @@ namespace Wyam.Modules.CodeAnalysis
                 return symbol.ContainingNamespace == null ? "global" : GetQualifiedName(symbol);
             }
             return GetFullName(symbol);
+        }
+
+        private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol)
+        {
+            return _namedTypes
+                .Where(x => x.Key.BaseType != null && x.Key.BaseType.Equals(symbol))
+                .Select(x => x.Value)
+                .ToImmutableArray();
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)

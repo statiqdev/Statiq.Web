@@ -67,8 +67,7 @@ namespace Wyam.Modules.CodeAnalysis
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _writePath, _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
-            visitor.PostExecution = true;
-            return visitor.GetAllDocuments();
+            return visitor.Finish();
         }
 
         // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)
