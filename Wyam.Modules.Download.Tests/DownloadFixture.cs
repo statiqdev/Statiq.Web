@@ -141,7 +141,7 @@ namespace Wyam.Modules.Download.Tests
             IEnumerable<KeyValuePair<string, object>> metadata = null;
 
             document
-                .When(x => x.Clone(Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
+                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                 .Do(x =>
                 {
                     stream = x.Arg<Stream>();
