@@ -164,5 +164,40 @@ namespace Wyam.Modules.Download.Tests
 
             Assert.IsTrue(File.Exists(path), "Download cannot be empty");
         }
+
+        [Test]
+        public void SingleImageDownloadWithRequestHeader()
+        {
+            IDocument document = Substitute.For<IDocument>();
+            Stream stream = null;
+            IEnumerable<KeyValuePair<string, object>> metadata = null;
+
+            document
+                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                .Do(x =>
+                {
+                    stream = x.Arg<Stream>();
+                    metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                });
+
+            var header = new RequestHeader();
+            header.Accept.Add("image/jpeg");
+
+            IModule download = new Download().UriWithRequestHeader("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg", header);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.OutputFolder.Returns(x => AssemblyDirectory);
+
+            // When
+            download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var path = Path.Combine(context.OutputFolder, "test-with-request-header.jpg");
+            File.WriteAllBytes(path, ReadToByte(stream));
+            stream.Dispose();
+
+            Assert.IsTrue(File.Exists(path), "Download cannot be empty");
+        }
     }
 }
