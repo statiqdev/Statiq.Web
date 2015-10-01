@@ -70,13 +70,15 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers())),
                 MetadataHelper.New(MetadataKeys.BaseType, Document(symbol.BaseType)),
                 MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces)),
-                MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared)))
+                MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared))),
+                MetadataHelper.New(MetadataKeys.TypeParams, (k, m) => symbol.TypeParameters.Select(x => x.Name).ToImmutableArray(), true)
             };
             if (!_finished)
             {
                 metadata.AddRange(new[]
                 {
-                    MetadataHelper.New(MetadataKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true)
+                    MetadataHelper.New(MetadataKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true),
+                    MetadataHelper.New(MetadataKeys.ImplementingTypes, (k, m) => GetImplementingTypes(symbol), true)
                 });
             }
             AddDocument(symbol, xmlDocumentationParser, metadata);
@@ -92,7 +94,8 @@ namespace Wyam.Modules.CodeAnalysis
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
             AddDocumentForMember(symbol, xmlDocumentationParser, new[]
             {
-                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString())
+                MetadataHelper.New(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString()),
+                MetadataHelper.New(MetadataKeys.TypeParams, (k, m) => symbol.TypeParameters.Select(x => x.Name).ToImmutableArray(), true)
             });
         }
 
@@ -222,6 +225,14 @@ namespace Wyam.Modules.CodeAnalysis
         {
             return _namedTypes
                 .Where(x => x.Key.BaseType != null && x.Key.BaseType.Equals(symbol))
+                .Select(x => x.Value)
+                .ToImmutableArray();
+        }
+
+        private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol)
+        {
+            return _namedTypes
+                .Where(x => x.Key.AllInterfaces.Contains(symbol))
                 .Select(x => x.Value)
                 .ToImmutableArray();
         }

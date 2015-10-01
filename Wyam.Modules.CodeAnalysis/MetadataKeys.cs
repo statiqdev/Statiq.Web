@@ -38,12 +38,16 @@ namespace Wyam.Modules.CodeAnalysis
         public const string AllInterfaces = "AllInterfaces"; // IReadOnlyList<IDocument>
         public const string Members = "Members"; // IReadOnlyList<IDocument>
         public const string DerivedTypes = "DerivedTypes"; // IReadOnlyList<IDocument>
+        public const string ImplementingTypes = "ImplementingTypes"; // IReadOnlyList<IDocument>
+        public const string TypeParams = "TypeParams"; // IReadOnlyList<string>
         //                  MemberTypes
+
 
         // All Members
         //                  ContainingType
 
         // Method
+        //                  TypeParams
 
         // Field
 
