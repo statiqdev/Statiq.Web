@@ -9,7 +9,7 @@ namespace Wyam.Common
     /// <remarks>
     /// Documents are immutable so you must call one of the <c>Clone</c> methods to create a new document. 
     /// Implements <see cref="IMetadata"/> and all metadata calls are passed through to the document's internal 
-    /// <see cref="IMetadata"/> instance (exposed via the <see cref="Metadata"/> property. Note that both the 
+    /// <see cref="IMetadata"/> instance (exposed via the <see cref="Metadata"/> property). Note that both the 
     /// <see cref="Content"/> property and the result of the <see cref="GetStream"/> method are guaranteed not 
     /// to be null. When a document is created, either a string or a <see cref="Stream"/> is provided. Whenever 
     /// the other of the two is requested, the system will convert the current representation for you.

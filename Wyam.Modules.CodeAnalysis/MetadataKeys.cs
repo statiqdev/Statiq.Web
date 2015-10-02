@@ -27,6 +27,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string ParamHtml = "ParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
         public const string TypeParamHtml = "TypeParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
         public const string SeeAlsoHtml = "SeeAlsoHtml"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
+        public const string Syntax = "Syntax"; // string
 
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
@@ -39,6 +40,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string Members = "Members"; // IReadOnlyList<IDocument>
         public const string DerivedTypes = "DerivedTypes"; // IReadOnlyList<IDocument>
         public const string ImplementingTypes = "ImplementingTypes"; // IReadOnlyList<IDocument>
+        public const string Constructors = "Constructors"; // IReadOnlyList<IDocument>
         public const string TypeParams = "TypeParams"; // IReadOnlyList<string>
         //                  MemberTypes
 

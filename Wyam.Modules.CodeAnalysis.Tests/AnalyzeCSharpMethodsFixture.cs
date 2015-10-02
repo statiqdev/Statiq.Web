@@ -118,5 +118,43 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 results.Where(x => x["Kind"].Equals("Method")).Select(x => x["WritePath"]));
             stream.Dispose();
         }
+
+        [Test]
+        public void DisplayNameIsCorrect()
+        {
+            // Given
+            string code = @"
+                class Yellow
+                {
+                    public X()
+                    {
+                    }
+
+                    void Y<T>(T a, int b)
+                    {
+                    }
+
+                    Z(bool a)
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("X()", GetMember(results, "Yellow", "X")["DisplayName"]);
+            Assert.AreEqual("Y<T>(T, int)", GetMember(results, "Yellow", "Y")["DisplayName"]);
+            Assert.AreEqual("Z(bool)", GetMember(results, "Yellow", "Z")["DisplayName"]);
+            stream.Dispose();
+        }
     }
 }

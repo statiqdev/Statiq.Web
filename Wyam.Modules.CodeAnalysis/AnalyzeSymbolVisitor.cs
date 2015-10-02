@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Common;
 
 namespace Wyam.Modules.CodeAnalysis
@@ -71,6 +72,7 @@ namespace Wyam.Modules.CodeAnalysis
                 MetadataHelper.New(MetadataKeys.BaseType, Document(symbol.BaseType)),
                 MetadataHelper.New(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces)),
                 MetadataHelper.New(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared))),
+                MetadataHelper.New(MetadataKeys.Constructors, Documents(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
                 MetadataHelper.New(MetadataKeys.TypeParams, (k, m) => symbol.TypeParameters.Select(x => x.Name).ToImmutableArray(), true)
             };
             if (!_finished)
@@ -84,7 +86,10 @@ namespace Wyam.Modules.CodeAnalysis
             AddDocument(symbol, xmlDocumentationParser, metadata);
             if (!_finished)
             {
-                Parallel.ForEach(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared), s => s.Accept(this));
+                Parallel.ForEach(symbol.GetMembers()
+                    .Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared)
+                    .Concat(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)), 
+                    s => s.Accept(this));
             }
         }
 
@@ -173,7 +178,8 @@ namespace Wyam.Modules.CodeAnalysis
                     MetadataHelper.New(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
                     MetadataHelper.New(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
                     MetadataHelper.New(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
-                    MetadataHelper.New(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml())
+                    MetadataHelper.New(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
+                    MetadataHelper.New(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
                 });
             }
 
@@ -201,7 +207,10 @@ namespace Wyam.Modules.CodeAnalysis
         {
             return symbol.ToDisplayString(new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
-                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+                genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
+                parameterOptions: SymbolDisplayParameterOptions.IncludeType, 
+                memberOptions: SymbolDisplayMemberOptions.IncludeParameters,
+                miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
         }
 
         private static string GetQualifiedName(ISymbol symbol)
@@ -235,6 +244,34 @@ namespace Wyam.Modules.CodeAnalysis
                 .Where(x => x.Key.AllInterfaces.Contains(symbol))
                 .Select(x => x.Value)
                 .ToImmutableArray();
+        }
+
+        private string GetSyntax(ISymbol symbol)
+        {
+            SyntaxReference syntaxReference = symbol.DeclaringSyntaxReferences.FirstOrDefault();
+            if (syntaxReference != null)
+            {
+                SyntaxNode syntaxNode = syntaxReference.GetSyntax();
+                bool inside = false;
+                string[] lines = syntaxNode.RemoveNodes(syntaxNode.ChildNodesAndTokens()
+                    .Where(x =>
+                    {
+                        if (!inside && x.IsToken && x.AsToken().IsKind(SyntaxKind.OpenBraceToken))
+                        {
+                            inside = true;
+                        }
+                        else if (inside && x.IsToken && x.AsToken().IsKind(SyntaxKind.CloseBraceToken))
+                        {
+                            inside = false;
+                        }
+                        return !x.IsToken && inside;
+                    })
+                    .Select(x => x.AsNode()), SyntaxRemoveOptions.KeepNoTrivia)
+                    .ToString()
+                    .Split('\n');
+                return string.Join("\n", lines.Select(x => x.Trim()));
+            }
+            return string.Empty;
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)

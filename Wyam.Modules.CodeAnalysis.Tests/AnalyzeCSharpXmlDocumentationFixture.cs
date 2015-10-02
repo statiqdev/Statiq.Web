@@ -838,7 +838,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Check <a href=\"/Foo/414E2165/00F22A50.html\">Blue</a> method", GetClass(results, "Green")["SummaryHtml"]);
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165/00F22A50.html\">Blue()</a> method", GetClass(results, "Green")["SummaryHtml"]);
             stream.Dispose();
         }
 
@@ -937,5 +937,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             Assert.AreEqual("<a href=\"/Foo/414E2165\">Red</a>", GetClass(results, "Green").Get<IReadOnlyList<string>>("SeeAlsoHtml")[0]);
             stream.Dispose();
         }
+
+        // TODO: Remark content with a <see> where the cref points to a member (method or property) of the described class
+        // TODO: Remark content with a <see> where the cref points to a member (method or property) of a different class
     }
 }
