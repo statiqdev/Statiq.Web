@@ -248,30 +248,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         private string GetSyntax(ISymbol symbol)
         {
-            SyntaxReference syntaxReference = symbol.DeclaringSyntaxReferences.FirstOrDefault();
-            if (syntaxReference != null)
-            {
-                SyntaxNode syntaxNode = syntaxReference.GetSyntax();
-                bool inside = false;
-                string[] lines = syntaxNode.RemoveNodes(syntaxNode.ChildNodesAndTokens()
-                    .Where(x =>
-                    {
-                        if (!inside && x.IsToken && x.AsToken().IsKind(SyntaxKind.OpenBraceToken))
-                        {
-                            inside = true;
-                        }
-                        else if (inside && x.IsToken && x.AsToken().IsKind(SyntaxKind.CloseBraceToken))
-                        {
-                            inside = false;
-                        }
-                        return !x.IsToken && inside;
-                    })
-                    .Select(x => x.AsNode()), SyntaxRemoveOptions.KeepNoTrivia)
-                    .ToString()
-                    .Split('\n');
-                return string.Join("\n", lines.Select(x => x.Trim()));
-            }
-            return string.Empty;
+            return SyntaxHelper.GetSyntax(symbol);
         }
 
         private SymbolDocumentValue Document(ISymbol symbol)

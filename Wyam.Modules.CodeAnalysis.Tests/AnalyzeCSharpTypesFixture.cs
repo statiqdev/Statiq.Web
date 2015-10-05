@@ -493,7 +493,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             CollectionAssert.AreEquivalent(new[] { "Green", "Red", "_yellow", "Changed" },
-                GetClass(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
+                GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             stream.Dispose();
         }
 
@@ -538,7 +538,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(2, GetClass(results, "Blue").Get<IReadOnlyList<IDocument>>("Constructors").Count);
+            Assert.AreEqual(2, GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Constructors").Count);
             stream.Dispose();
         }
 
@@ -610,7 +610,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Object", GetClass(results, "Red").Get<IDocument>("BaseType")["Name"]);
+            Assert.AreEqual("Object", GetResult(results, "Red").Get<IDocument>("BaseType")["Name"]);
             stream.Dispose();
         }
 
@@ -643,7 +643,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Red", "IBlue" }, results.Select(x => x["Name"]));
-            CollectionAssert.AreEquivalent(new [] { "IBlue", "IFoo" }, GetClass(results, "Red").Get<IEnumerable<IDocument>>("AllInterfaces").Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new [] { "IBlue", "IFoo" }, GetResult(results, "Red").Get<IEnumerable<IDocument>>("AllInterfaces").Select(x => x["Name"]));
             stream.Dispose();
         }
 
@@ -687,11 +687,11 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "Blue" }, GetClass(results, "Red").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
-            CollectionAssert.AreEquivalent(new[] { "Green", "Yellow" }, GetClass(results, "Blue").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
-            CollectionAssert.IsEmpty(GetClass(results, "Green").Get<IEnumerable<IDocument>>("DerivedTypes"));
-            CollectionAssert.IsEmpty(GetClass(results, "Yellow").Get<IEnumerable<IDocument>>("DerivedTypes"));
-            CollectionAssert.IsEmpty(GetClass(results, "IBlue").Get<IEnumerable<IDocument>>("DerivedTypes"));
+            CollectionAssert.AreEquivalent(new[] { "Blue" }, GetResult(results, "Red").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
+            CollectionAssert.AreEquivalent(new[] { "Green", "Yellow" }, GetResult(results, "Blue").Get<IEnumerable<IDocument>>("DerivedTypes").Select(x => x["Name"]));
+            CollectionAssert.IsEmpty(GetResult(results, "Green").Get<IEnumerable<IDocument>>("DerivedTypes"));
+            CollectionAssert.IsEmpty(GetResult(results, "Yellow").Get<IEnumerable<IDocument>>("DerivedTypes"));
+            CollectionAssert.IsEmpty(GetResult(results, "IBlue").Get<IEnumerable<IDocument>>("DerivedTypes"));
             stream.Dispose();
         }
 
@@ -723,8 +723,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEqual(new[] { "T" }, GetClass(results, "Red").Get<IEnumerable<string>>("TypeParams"));
-            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetClass(results, "IBlue").Get<IEnumerable<string>>("TypeParams"));
+            CollectionAssert.AreEqual(new[] { "T" }, GetResult(results, "Red").Get<IEnumerable<string>>("TypeParams"));
+            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetResult(results, "IBlue").Get<IEnumerable<string>>("TypeParams"));
             stream.Dispose();
         }
 

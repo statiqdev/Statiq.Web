@@ -9,14 +9,14 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 {
     public abstract class AnalyzeCSharpFixtureBase
     {
-        protected IDocument GetClass(List<IDocument> results, string className)
+        protected IDocument GetResult(List<IDocument> results, string name)
         {
-            return results.Single(x => x["Name"].Equals(className));
+            return results.Single(x => x["Name"].Equals(name));
         }
 
         protected IDocument GetMember(List<IDocument> results, string className, string memberName)
         {
-            return GetClass(results, className)
+            return GetResult(results, className)
                 .Get<IEnumerable<IDocument>>("Members")
                 .Single(x => x["Name"].Equals(memberName));
         }

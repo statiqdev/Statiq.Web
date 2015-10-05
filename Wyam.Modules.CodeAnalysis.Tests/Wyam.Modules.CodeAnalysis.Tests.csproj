@@ -52,6 +52,7 @@
     <Compile Include="AnalyzeCSharpFixtureBase.cs" />
     <Compile Include="AnalyzeCSharpMethodsFixture.cs" />
     <Compile Include="AnalyzeCSharpNamespacesFixture.cs" />
+    <Compile Include="AnalyzeCSharpSyntaxFixture.cs" />
     <Compile Include="AnalyzeCSharpTypesFixture.cs" />
     <Compile Include="AnalyzeCSharpXmlDocumentationFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

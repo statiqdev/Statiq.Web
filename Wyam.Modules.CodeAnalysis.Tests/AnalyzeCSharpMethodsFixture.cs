@@ -45,7 +45,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             CollectionAssert.AreEquivalent(new[] { "Green", "Red" }, 
-                GetClass(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
+                GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             stream.Dispose();
         }
 
