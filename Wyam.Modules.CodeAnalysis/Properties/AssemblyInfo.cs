@@ -22,6 +22,9 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("f4c0c025-5e08-4ed2-a089-67c41702ae7b")]
 
+// Allow unit testing internal classes
+[assembly: InternalsVisibleTo("Wyam.Modules.CodeAnalysis.Tests")]
+
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version

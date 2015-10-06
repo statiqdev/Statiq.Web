@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="AnalyzeCSharp.cs" />
     <Compile Include="AnalyzeSymbolVisitor.cs" />
+    <Compile Include="WrappingStringBuilder.cs" />
     <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymbolDocumentValue.cs" />

@@ -234,8 +234,7 @@ private int Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
             // Then
             Assert.AreEqual(@"[Foo]
 [Bar(5)]
-internal class Green :
-    Blue", GetResult(results, "Green")["Syntax"]);
+internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             stream.Dispose();
         }
 
@@ -406,8 +405,7 @@ internal class Green :
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(@"internal class Green<out TKey, TValue>
-    where TValue : class", GetResult(results, "Green")["Syntax"]);
+            Assert.AreEqual(@"internal class Green<out TKey, TValue> where TValue : class", GetResult(results, "Green")["Syntax"]);
             stream.Dispose();
         }
 
@@ -444,9 +442,7 @@ internal class Green :
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(@"internal class Green<out TKey, TValue> :
-    Blue, IFoo
-    where TValue : class", GetResult(results, "Green")["Syntax"]);
+            Assert.AreEqual(@"internal class Green<out TKey, TValue> : Blue, IFoo where TValue : class", GetResult(results, "Green")["Syntax"]);
             stream.Dispose();
         }
 
@@ -510,8 +506,7 @@ internal class Green :
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag)
-    where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
+            Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag) where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
             stream.Dispose();
         }
 
@@ -633,6 +628,98 @@ internal class Green :
 
             // Then
             Assert.AreEqual(@"public int Blue { get; set; }", GetMember(results, "Green", "Blue")["Syntax"]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void WrapsForLongMethodSignature()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green
+                    {
+                        public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag, int something, int somethingElse, int anotherThing) where TKey : class
+                        {
+                            return value;
+                        }
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag, int something, int somethingElse, int anotherThing) 
+    where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void WrapsForLongClassSignature()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green<TKey, TValue> : IReallyLongInterface, INameToForceWrapping, IFoo, IBar, IFooBar, ICircle, ISquare, IRectangle where TKey : class
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"internal class Green<TKey, TValue> : IReallyLongInterface, INameToForceWrapping, IFoo, IBar, 
+    IFooBar, ICircle, ISquare, IRectangle
+    where TKey : class", GetResult(results, "Green")["Syntax"]);
+            stream.Dispose();
+        }
+
+
+        [Test]
+        public void ClassWithInterfaces()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green : IFoo, IBar, IFooBar
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(@"internal class Green : IFoo, IBar, IFooBar", GetResult(results, "Green")["Syntax"]);
             stream.Dispose();
         }
     }

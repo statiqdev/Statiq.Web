@@ -9,6 +9,9 @@ namespace Wyam.Modules.CodeAnalysis
 {
     internal static class SyntaxHelper
     {
+        private const int MaximumLineLength = 100;
+        private const string NewLinePrefix = "    ";
+
         private readonly static SymbolDisplayFormat _symbolDisplayFormat = new SymbolDisplayFormat(
             typeQualificationStyle:
                 SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
@@ -77,7 +80,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         private static string GetCSharpSyntax(ISymbol symbol)
         {
-            StringBuilder builder = new StringBuilder();
+            WrappingStringBuilder builder = new WrappingStringBuilder(MaximumLineLength);
 
             // Attributes
             foreach (SyntaxNode attributeListNode in symbol.GetAttributes()
@@ -85,6 +88,7 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 builder.AppendLine(attributeListNode.ReplaceTrivia(attributeListNode.DescendantTrivia(), (x, y) => new SyntaxTrivia()).NormalizeWhitespace().ToString());
             }
+            builder.NewLinePrefix = NewLinePrefix;
 
             // Accessors, etc.
             INamedTypeSymbol namedTypeSymbol = symbol as INamedTypeSymbol;
@@ -112,61 +116,55 @@ namespace Wyam.Modules.CodeAnalysis
             }
 
             // Symbol
-            builder.Append(symbol.ToDisplayString(_symbolDisplayFormat));
+            string symbolDisplayString = symbol.ToDisplayString(_symbolDisplayFormat);
+            int constraintsLocation = symbolDisplayString.IndexOf(" where", StringComparison.Ordinal);
+            string genericConstraints = constraintsLocation == -1 ? string.Empty : symbolDisplayString.Substring(constraintsLocation + 1);
+            builder.Append(constraintsLocation == -1 ? symbolDisplayString : symbolDisplayString.Substring(0, constraintsLocation));
 
             // Insert base types and interfaces if a named type	
-            StringBuilder baseBuilder = new StringBuilder();
             if (namedTypeSymbol != null && namedTypeSymbol.TypeKind != TypeKind.Enum)
             {
-                // Base type (checking the base's base excludes object)
-                int baseLength = 0;
-                if (namedTypeSymbol.BaseType != null && namedTypeSymbol.BaseType.BaseType != null)
+                // Base type (exclude object base)
+                bool baseType = false;
+                if (namedTypeSymbol.BaseType != null && namedTypeSymbol.BaseType.Name != "Object")
                 {
-                    string baseDisplayString = namedTypeSymbol.BaseType.ToDisplayString(_baseTypeDisplayFormat);
-                    baseLength = baseDisplayString.Length;
-                    baseBuilder.Append(" :" + Environment.NewLine + "    ");
-                    baseBuilder.Append(baseDisplayString);
+                    builder.Append(" : ");
+                    builder.Append(namedTypeSymbol.BaseType.ToDisplayString(_baseTypeDisplayFormat), true);
+                    baseType = true;
                 }
 
-                // Interfaces (wrap around if they get too long)
+                // Interfaces
                 if (namedTypeSymbol.AllInterfaces.Length > 0)
                 {
-                    baseBuilder.Append(baseBuilder.Length == 0 ? " :" + Environment.NewLine + "    " : ",");
+                    builder.Append(baseType ? ", " : " : ");
                 }
-                int lineCount = -1;
+                bool first = true;
                 foreach (INamedTypeSymbol interfaceSymbol in namedTypeSymbol.AllInterfaces)
                 {
-                    if (lineCount > -1)
+                    if (first)
                     {
-                        baseBuilder.Append(",");
+                        first = false;
                     }
                     else
                     {
-                        lineCount = baseLength;
+                        builder.Append(", ");
                     }
-                    string interfaceDisplayString = interfaceSymbol.ToDisplayString(_baseTypeDisplayFormat);
-                    lineCount += interfaceDisplayString.Length;
-                    if (lineCount > 100)
-                    {
-                        baseBuilder.Append(Environment.NewLine + "    " + interfaceDisplayString);
-                        lineCount = interfaceDisplayString.Length;
-                    }
-                    else
-                    {
-                        baseBuilder.Append(" " + interfaceDisplayString);
-                    }
+                    builder.Append(interfaceSymbol.ToDisplayString(_baseTypeDisplayFormat), true);
                 }
             }
 
-            // Insert any base classes and move generic constraints to the next line
-            int insert = builder.ToString().IndexOf(" where", StringComparison.Ordinal);
-            if (insert == -1)
+            // Add generic constraints (wrap to new line if already wrapped another part of the signature)
+            if (constraintsLocation != -1)
             {
-                builder.Append(baseBuilder);
-            }
-            else
-            {
-                builder.Insert(insert, baseBuilder + Environment.NewLine + "   ");
+                if (builder.ToString().Contains(Environment.NewLine + NewLinePrefix))
+                {
+                    builder.AppendLine();
+                }
+                else
+                {
+                    builder.Append(" ");
+                }
+                builder.Append(genericConstraints, true);
             }
 
             return builder.ToString();
