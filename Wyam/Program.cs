@@ -26,8 +26,15 @@ namespace Wyam
     {
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
             Program program = new Program();
             program.Run(args);
+        }
+
+        static void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
+        {
+            // Exit with a error exit code
+            Environment.Exit(1);
         }
 
         private bool _watch = false;
@@ -226,18 +233,9 @@ namespace Wyam
                 // Shutdown
                 engine.Trace.Information("Shutting down");
                 engine.Dispose();
-                if (inputFolderWatcher != null)
-                {
-                    inputFolderWatcher.Dispose();
-                }
-                if (configFileWatcher != null)
-                {
-                    configFileWatcher.Dispose();
-                }
-                if (previewServer != null)
-                {
-                    previewServer.Dispose();
-                }
+                inputFolderWatcher?.Dispose();
+                configFileWatcher?.Dispose();
+                previewServer?.Dispose();
             }
         }
 
@@ -278,7 +276,7 @@ namespace Wyam
                 }
                 else if (args[c] == "--log")
                 {
-                    _logFile = string.Format("wyam-{0:yyyyMMddHHmmssfff}.txt", DateTime.Now);
+                    _logFile = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                     if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
                     {
                         _logFile = args[++c];

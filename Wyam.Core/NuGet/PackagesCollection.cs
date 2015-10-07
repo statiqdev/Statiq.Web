@@ -68,7 +68,7 @@ namespace Wyam.Core.NuGet
         {
             List<string> assemblyPaths = new List<string>();
             FrameworkReducer reducer = new FrameworkReducer();
-            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.5"));  // If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched
+            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));  // If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched
             NuGetFrameworkFullComparer frameworkComparer = new NuGetFrameworkFullComparer();
             IPackageRepository packageRepository = PackageRepositoryFactory.Default.CreateRepository(Path);
             PackageManager packageManager = new PackageManager(packageRepository, Path);
