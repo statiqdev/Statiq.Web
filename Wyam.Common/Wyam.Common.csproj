@@ -61,7 +61,7 @@
     <Compile Include="IExecutionCache.cs" />
     <Compile Include="ITrace.cs" />
     <Compile Include="ConfigHelper.cs" />
-    <Compile Include="MetadataHelper.cs" />
+    <Compile Include="Metadata.cs" />
     <Compile Include="PathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

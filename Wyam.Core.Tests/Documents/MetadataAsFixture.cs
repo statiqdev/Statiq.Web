@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Core.Documents;
+using Metadata = Wyam.Core.Documents.Metadata;
 
 namespace Wyam.Core.Tests.Documents
 {
