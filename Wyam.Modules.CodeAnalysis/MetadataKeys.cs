@@ -41,7 +41,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string DerivedTypes = "DerivedTypes"; // IReadOnlyList<IDocument>
         public const string ImplementingTypes = "ImplementingTypes"; // IReadOnlyList<IDocument>
         public const string Constructors = "Constructors"; // IReadOnlyList<IDocument>
-        public const string TypeParams = "TypeParams"; // IReadOnlyList<string>
+        public const string TypeParams = "TypeParams"; // IReadOnlyList<IDocument>
         //                  MemberTypes
 
 
@@ -49,6 +49,7 @@ namespace Wyam.Modules.CodeAnalysis
         //                  ContainingType
 
         // Method
+        public const string ReturnType = "ReturnType"; // IDocument, null if returns void
         //                  TypeParams
 
         // Field

@@ -723,8 +723,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEqual(new[] { "T" }, GetResult(results, "Red").Get<IEnumerable<string>>("TypeParams"));
-            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetResult(results, "IBlue").Get<IEnumerable<string>>("TypeParams"));
+            CollectionAssert.AreEqual(new[] { "T" }, GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParams").Select(x => x["Name"]));
+            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetResult(results, "IBlue").Get<IEnumerable<IDocument>>("TypeParams").Select(x => x["Name"]));
             stream.Dispose();
         }
 

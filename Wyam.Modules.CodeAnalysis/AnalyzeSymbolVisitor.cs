@@ -52,8 +52,8 @@ namespace Wyam.Modules.CodeAnalysis
             AddDocument(symbol, xmlDocumentationParser, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.MemberNamespaces, Documents(symbol.GetNamespaceMembers())),
-                Metadata.Create(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers()))
+                Metadata.Create(MetadataKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers())),
+                Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()))
             });
             if (!_finished)
             {
@@ -68,13 +68,13 @@ namespace Wyam.Modules.CodeAnalysis
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
-                Metadata.Create(MetadataKeys.ContainingType, Document(symbol.ContainingType)),
-                Metadata.Create(MetadataKeys.MemberTypes, Documents(symbol.GetTypeMembers())),
-                Metadata.Create(MetadataKeys.BaseType, Document(symbol.BaseType)),
-                Metadata.Create(MetadataKeys.AllInterfaces, Documents(symbol.AllInterfaces)),
-                Metadata.Create(MetadataKeys.Members, Documents(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared))),
-                Metadata.Create(MetadataKeys.Constructors, Documents(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
-                Metadata.Create(MetadataKeys.TypeParams, (k, m) => symbol.TypeParameters.Select(x => x.Name).ToImmutableArray(), true)
+                Metadata.Create(MetadataKeys.ContainingType, DocumentFor(symbol.ContainingType)),
+                Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers())),
+                Metadata.Create(MetadataKeys.BaseType, DocumentFor(symbol.BaseType)),
+                Metadata.Create(MetadataKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces)),
+                Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared))),
+                Metadata.Create(MetadataKeys.Constructors, DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
+                Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
             };
             if (!_finished)
             {
@@ -94,14 +94,23 @@ namespace Wyam.Modules.CodeAnalysis
             }
         }
 
+        public override void VisitTypeParameter(ITypeParameterSymbol symbol)
+        {
+            AddDocumentForMember(symbol, null, new[]
+            {
+                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString())
+            });
+        }
+
         public override void VisitMethod(IMethodSymbol symbol)
         {
             XmlDocumentationParser xmlDocumentationParser 
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
             AddDocumentForMember(symbol, xmlDocumentationParser, new[]
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind.ToString()),
-                Metadata.Create(MetadataKeys.TypeParams, (k, m) => symbol.TypeParameters.Select(x => x.Name).ToImmutableArray(), true)
+                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
+                Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
+                Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType))
             });
         }
 
@@ -141,7 +150,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             AddDocument(symbol, xmlDocumentationParser, items.Concat(new[]
             {
-                Metadata.Create(MetadataKeys.ContainingType, Document(symbol.ContainingType))
+                Metadata.Create(MetadataKeys.ContainingType, DocumentFor(symbol.ContainingType))
             }));
         }
 
@@ -158,7 +167,7 @@ namespace Wyam.Modules.CodeAnalysis
                 Metadata.Create(MetadataKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
                 Metadata.Create(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
                 Metadata.Create(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.ContainingNamespace, Document(symbol.ContainingNamespace))
+                Metadata.Create(MetadataKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace))
             };
 
             // Add metadata that's specific to initially-processed symbols
@@ -167,21 +176,27 @@ namespace Wyam.Modules.CodeAnalysis
                 metadata.AddRange(new[]
                 {
                     Metadata.Create(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
-
-                    // XML Documentation
-                    Metadata.Create(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
-                    Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
-                    Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
-                    Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
-                    Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
-                    Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetValueHtml()),
-                    Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
-                    Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
-                    Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
-                    Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
-                    Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
                     Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
                 });
+
+                // XML Documentation
+                if(xmlDocumentationParser != null)
+                {
+                    metadata.AddRange(new []
+                    {
+                        Metadata.Create(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
+                        Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
+                        Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
+                        Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
+                        Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
+                        Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetValueHtml()),
+                        Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
+                        Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
+                        Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
+                        Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
+                        Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
+                    });
+                }
             }
 
             // Create the document and add it to the cache
@@ -252,12 +267,12 @@ namespace Wyam.Modules.CodeAnalysis
             return SyntaxHelper.GetSyntax(symbol);
         }
 
-        private SymbolDocumentValue Document(ISymbol symbol)
+        private SymbolDocumentValue DocumentFor(ISymbol symbol)
         {
             return new SymbolDocumentValue(symbol, this);
         }
 
-        private SymbolDocumentValues Documents(IEnumerable<ISymbol> symbols)
+        private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols)
         {
             return new SymbolDocumentValues(symbols, this);
         }
