@@ -98,7 +98,17 @@ namespace Wyam.Modules.CodeAnalysis
         {
             AddDocumentForMember(symbol, null, new[]
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString())
+                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString()),
+                Metadata.Create(MetadataKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
+            });
+        }
+
+        public override void VisitParameter(IParameterSymbol symbol)
+        {
+            AddDocumentForMember(symbol, null, new[]
+            {
+                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
             });
         }
 
@@ -110,6 +120,7 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                 Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
+                Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
                 Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType))
             });
         }

@@ -18,14 +18,14 @@ namespace Wyam.Modules.CodeAnalysis
             IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
 
             // Namespaces output to the index page in a folder of their full name
-            if (metadata.String(MetadataKeys.Kind) == "Namespace")
+            if (metadata.String(MetadataKeys.Kind) == SymbolKind.Namespace.ToString())
             {
                 // If this namespace does not have a containing namespace, it's the global namespace
                 return namespaceDocument == null ? "index.html" : $"{metadata[MetadataKeys.DisplayName]}\\index.html";
             }
 
             // Types output to the index page in a folder of their SymbolId under the folder for their namespace
-            if (metadata.String(MetadataKeys.Kind) == "NamedType")
+            if (metadata.String(MetadataKeys.Kind) == SymbolKind.NamedType.ToString())
             {
                 // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
                 return (namespaceDocument?[MetadataKeys.ContainingNamespace] == null)

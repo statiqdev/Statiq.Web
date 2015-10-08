@@ -49,6 +49,7 @@ namespace Wyam.Modules.CodeAnalysis
         //                  ContainingType
 
         // Method
+        public const string Parameters = "Parameters"; // IDocument, null if returns void
         public const string ReturnType = "ReturnType"; // IDocument, null if returns void
         //                  TypeParams
 
@@ -57,5 +58,11 @@ namespace Wyam.Modules.CodeAnalysis
         // Event
 
         // Property
+
+        // Type Parameter
+        public const string DeclaringType = "DeclaringType"; // IDocument
+
+        // Parameter
+        public const string Type = "Type"; // IDocument
     }
 }

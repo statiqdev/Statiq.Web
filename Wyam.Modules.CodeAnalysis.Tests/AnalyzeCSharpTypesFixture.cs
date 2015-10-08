@@ -728,6 +728,34 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             stream.Dispose();
         }
 
+        [Test]
+        public void TypeParamReferencesClass()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Red<T>
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Red", GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParams").First().Get<IDocument>("DeclaringType")["Name"]);
+            stream.Dispose();
+        }
+
         // TODO: Test that Name does not contain generic type parameters
         // TODO: Test that FullName contains generic type parameters
         // TODO: Test that QualifiedName contains generic type parameters
