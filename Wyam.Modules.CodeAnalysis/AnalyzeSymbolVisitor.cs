@@ -151,7 +151,9 @@ namespace Wyam.Modules.CodeAnalysis
                 = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
             AddDocumentForMember(symbol, xmlDocumentationParser, new[]
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString())
+                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
+                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
             });
         }
 

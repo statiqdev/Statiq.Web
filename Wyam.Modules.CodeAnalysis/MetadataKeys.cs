@@ -58,11 +58,13 @@ namespace Wyam.Modules.CodeAnalysis
         // Event
 
         // Property
+        public const string Type = "Type"; // IDocument
+        //                  Parameters
 
         // Type Parameter
         public const string DeclaringType = "DeclaringType"; // IDocument
 
         // Parameter
-        public const string Type = "Type"; // IDocument
+        //                  Type
     }
 }
