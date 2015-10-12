@@ -72,7 +72,7 @@ namespace Wyam.Modules.CodeAnalysis
                 Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers())),
                 Metadata.Create(MetadataKeys.BaseType, DocumentFor(symbol.BaseType)),
                 Metadata.Create(MetadataKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces)),
-                Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared))),
+                Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
                 Metadata.Create(MetadataKeys.Constructors, DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
                 Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
             };
@@ -88,7 +88,7 @@ namespace Wyam.Modules.CodeAnalysis
             if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers()
-                    .Where(x => x.CanBeReferencedByName && !x.IsImplicitlyDeclared)
+                    .Where(MemberPredicate)
                     .Concat(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)), 
                     s => s.Accept(this));
             }
@@ -158,6 +158,17 @@ namespace Wyam.Modules.CodeAnalysis
         }
 
         // Helpers below...
+
+        private bool MemberPredicate(ISymbol symbol)
+        {
+            IPropertySymbol propertySymbol = symbol as IPropertySymbol;
+            if (propertySymbol != null && propertySymbol.IsIndexer)
+            {
+                // Special case for indexers
+                return true;
+            }
+            return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
+        }
 
         private void AddDocumentForMember(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
         {
