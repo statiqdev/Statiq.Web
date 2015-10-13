@@ -43,28 +43,32 @@ namespace Wyam.Modules.CodeAnalysis
         public const string Constructors = "Constructors"; // IReadOnlyList<IDocument>
         public const string TypeParams = "TypeParams"; // IReadOnlyList<IDocument>
         //                  MemberTypes
-
-
-        // All Members
+        
+        // Method
+        public const string Parameters = "Parameters"; // IDocument
+        public const string ReturnType = "ReturnType"; // IDocument, null if returns void
+        public const string Overridden = "Overridden"; // IDocument
+        //                  TypeParams
         //                  ContainingType
 
-        // Method
-        public const string Parameters = "Parameters"; // IDocument, null if returns void
-        public const string ReturnType = "ReturnType"; // IDocument, null if returns void
-        //                  TypeParams
-
         // Field
+        public const string Type = "Type"; // IDocument
+        //                  ContainingType
 
         // Event
+        //                  Type
+        //                  ContainingType
 
         // Property
-        public const string Type = "Type"; // IDocument
-        //                  Parameters
+        //                  ContainingType
+        //                  Type
+        //                  Parameters (I.e., for indexers)
 
         // Type Parameter
         public const string DeclaringType = "DeclaringType"; // IDocument
 
         // Parameter
         //                  Type
+        //                  ContainingType
     }
 }
