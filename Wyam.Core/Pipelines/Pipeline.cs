@@ -260,7 +260,7 @@ namespace Wyam.Core.Pipelines
             }
             if (!_documentSources.Add(source))
             {
-                throw new ArgumentException("Document source must be unique within the pipeline.");
+                throw new ArgumentException("Document source must be unique within the pipeline: " + source);
             }
         }
 

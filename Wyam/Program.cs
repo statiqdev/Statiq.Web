@@ -97,6 +97,9 @@ namespace Wyam
             {
                 return;
             }
+            Console.WriteLine("Root folder: {0}", engine.RootFolder);
+            Console.WriteLine("Input folder: {0}", engine.InputFolder);
+            Console.WriteLine("Output folder: {0}", engine.OutputFolder);
             if (!Execute(engine))
             {
                 return;
@@ -186,6 +189,9 @@ namespace Wyam
                         {
                             break;
                         }
+                        Console.WriteLine("Root folder: {0}", engine.RootFolder);
+                        Console.WriteLine("Input folder: {0}", engine.InputFolder);
+                        Console.WriteLine("Output folder: {0}", engine.OutputFolder);
                         if (!Execute(engine))
                         {
                             break;
