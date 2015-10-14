@@ -52,5 +52,7 @@ namespace Wyam.Core.Documents
         {
             return _documents.Where(x => x.Key != pipeline).SelectMany(x => x.Value).Distinct();
         }
+
+        public IEnumerable<IDocument> this[string pipline] => FromPipeline(pipline);
     }
 }

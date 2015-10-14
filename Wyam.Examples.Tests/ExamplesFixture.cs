@@ -11,36 +11,49 @@ using Wyam.Core;
 
 namespace Wyam.Examples.Tests
 {
-    [TestFixture(Category = "ExcludeFromAppVeyor")]
-    public class ExamplesFixture
+    namespace Wyam.Examples.Tests
     {
-        [Test]
-        public void ExecuteAllExamples()
+        [TestFixture(Category = "ExcludeFromAppVeyor")]
+        public class ExamplesFixture
         {
-            string path = Path.Combine(Assembly.GetExecutingAssembly().Location, "Examples");
-            while (!Directory.Exists(path))
+            private static IEnumerable<string> _paths;
+
+            public static IEnumerable<string> Paths
             {
-                path = Directory.GetParent(path).Parent.FullName;
-                path = Path.Combine(path, "Examples");
+                get
+                {
+                    if (_paths == null)
+                    {
+                        string rootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Examples");
+                        while (!Directory.Exists(rootPath))
+                        {
+                            rootPath = Directory.GetParent(rootPath).Parent.FullName;
+                            rootPath = Path.Combine(rootPath, "Examples");
+                        }
+
+                        _paths = Directory.EnumerateDirectories(rootPath);
+                    }
+
+                    return _paths;
+                }
             }
-            int count = 0;
-            foreach(string example in Directory.EnumerateDirectories(path))
+
+            [Test]
+            [TestCaseSource(typeof(ExamplesFixture), nameof(Paths))]
+            public void ExecuteAllExamples(string example)
             {
-                Console.WriteLine("Executing example " + example);
                 Engine engine = new Engine
                 {
                     RootFolder = example
                 };
+                engine.Trace.AddListener(new TestTraceListener());
                 string config = Path.Combine(example, "config.wyam");
                 if (File.Exists(config))
                 {
-                    Console.WriteLine("Loading configuration file");
                     engine.Configure(File.ReadAllText(config));
                 }
                 engine.Execute();
-                count++;
             }
-            Assert.AreEqual(7, count);
         }
     }
 }

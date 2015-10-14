@@ -299,8 +299,6 @@ namespace Wyam.Core.Configuration
                 .Select(x => new Tuple<string, string>(x, Path.Combine(_engine.RootFolder, x)))
                 .Select(x => File.Exists(x.Item2) ? x.Item2 : x.Item1));
 
-            List<AssemblyName> referencedAssemblies = new List<AssemblyName>();
-
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
             foreach (string assemblyPath in assemblyPaths.Distinct())
             {

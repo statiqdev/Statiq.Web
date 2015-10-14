@@ -198,8 +198,13 @@ namespace Wyam.Core.Documents
             }
         }
 
+        // source is ignored if one is already set (use IExecutionContext.GetNewDocument if you want a whole new document)
         public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
+            if (Source != string.Empty)
+            {
+                return Clone(content, items);
+            }
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
             return new Document(_pipeline, _metadata, source, content, items);
@@ -211,8 +216,13 @@ namespace Wyam.Core.Documents
             return new Document(_pipeline, _metadata, Source, content, items);
         }
 
+        // source is ignored if one is already set (use IExecutionContext.GetNewDocument if you want a whole new document)
         public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
+            if (Source != string.Empty)
+            {
+                return Clone(stream, items, disposeStream);
+            }
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
             return new Document(_pipeline, _metadata, source, stream, null, items, disposeStream);
