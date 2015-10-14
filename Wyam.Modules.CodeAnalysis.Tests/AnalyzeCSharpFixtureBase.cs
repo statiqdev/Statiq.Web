@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
+using Wyam.Common.Documents;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {

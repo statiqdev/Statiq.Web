@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;
 

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
+using Wyam.Common.Documents;
 
 namespace Wyam.Modules.CodeAnalysis
 {

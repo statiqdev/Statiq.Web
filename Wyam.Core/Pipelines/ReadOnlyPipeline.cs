@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Wyam.Common;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Pipelines
 {

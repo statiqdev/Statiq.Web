@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Wyam.Common.Documents;
 
-namespace Wyam.Common
+namespace Wyam.Common.Caching
 {
     public interface IExecutionCache
     {

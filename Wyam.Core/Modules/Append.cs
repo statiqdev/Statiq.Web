@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Wyam.Common;
+using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {

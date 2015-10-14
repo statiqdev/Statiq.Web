@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Wyam.Common
+namespace Wyam.Common.Documents
 {
     // All methods return distinct sequences of documents
     public interface IDocumentCollection : IEnumerable<IDocument>

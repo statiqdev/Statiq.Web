@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dotless.Core.Cache;
 using Wyam.Common;
+using Wyam.Common.Caching;
 
 namespace Wyam.Modules.Less
 {

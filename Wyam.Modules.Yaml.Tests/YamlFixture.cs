@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Common;
+using Wyam.Common.Documents;
 using YamlDotNet.Dynamic;
 
 namespace Wyam.Modules.Yaml.Tests

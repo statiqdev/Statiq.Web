@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Common;
+using Wyam.Common.Pipelines;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 

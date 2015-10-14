@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.IO;
 
 namespace Wyam.Core.Documents
 {

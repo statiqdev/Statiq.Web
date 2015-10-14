@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Wyam.Common
+namespace Wyam.Common.Documents
 {
     // This uses a delegate to get the metadata value and caches the result
     // This results in a tradeoff between memory consumption and performance (both potentially greater if the value cached)

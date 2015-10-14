@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Documents;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules;
 

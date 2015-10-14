@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

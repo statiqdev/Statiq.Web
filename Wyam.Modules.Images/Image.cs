@@ -7,6 +7,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.IO;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Images
 {

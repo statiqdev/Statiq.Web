@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Wyam.Common
+namespace Wyam.Common.Documents
 {
     // This uses a delegate to get the metadata value
     // Note that the provided delegate should be thread-safe

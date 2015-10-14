@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
-namespace Wyam.Common
+namespace Wyam.Common.Caching
 {
     // This is taken from the ASP.NET v5 Razor caching implementation
     public static class Crc32

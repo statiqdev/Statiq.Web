@@ -7,6 +7,8 @@ using System.IO;
 using System.Security.Policy;
 using Microsoft.AspNet.FileProviders;
 using Wyam.Common;
+using Wyam.Common.Caching;
+using Wyam.Common.Pipelines;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

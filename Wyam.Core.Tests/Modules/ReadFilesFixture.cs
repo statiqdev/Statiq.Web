@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core.Modules;
 using Wyam.Common;
+using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Pipelines;
 

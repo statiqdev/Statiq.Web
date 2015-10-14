@@ -6,6 +6,8 @@ using System.Globalization;
 using System.IO;
 using Microsoft.AspNet.FileProviders;
 using Wyam.Common;
+using Wyam.Common.Caching;
+using Wyam.Common.Documents;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation

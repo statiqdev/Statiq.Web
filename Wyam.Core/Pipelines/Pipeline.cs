@@ -6,6 +6,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 

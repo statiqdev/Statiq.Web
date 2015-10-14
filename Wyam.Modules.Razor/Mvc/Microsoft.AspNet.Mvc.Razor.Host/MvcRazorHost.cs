@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNet.FileProviders;
 using Microsoft.AspNet.Razor;
 using Microsoft.AspNet.Razor.Generator;
@@ -24,8 +25,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             "System.Collections.Generic",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
-            "Wyam.Common",
             "Wyam.Core"
+            // All Wyam.Common namespaces are added in the constructor
         };
 
         internal MvcRazorHost(Type basePageType)
@@ -51,6 +52,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             foreach (var ns in _defaultNamespaces)
             {
                 NamespaceImports.Add(ns);
+                NamespaceImports.UnionWith(
+                    typeof(Wyam.Common.Modules.IModule).Assembly.GetTypes()
+                        .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
+                        .Select(x => x.Namespace)
+                        .Distinct());
             }
         }
 

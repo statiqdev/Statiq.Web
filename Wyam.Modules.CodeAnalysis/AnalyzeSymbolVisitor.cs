@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Common;
-using Metadata = Wyam.Common.Metadata;
+using Wyam.Common.Caching;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
+using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Modules.CodeAnalysis
 {

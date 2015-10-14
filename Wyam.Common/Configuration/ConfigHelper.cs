@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 
-namespace Wyam.Common
+namespace Wyam.Common.Configuration
 {
     // This class satisfies a common use case for modules where you need to get some configuration value
     // either directly, from a delegate at the module level, or from a delegate at a per-document level

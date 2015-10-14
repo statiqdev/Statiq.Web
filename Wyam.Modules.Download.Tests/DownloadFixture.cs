@@ -8,6 +8,9 @@ using Wyam.Common;
 using NUnit.Framework;
 using System.IO;
 using System.Reflection;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Download.Tests
 {

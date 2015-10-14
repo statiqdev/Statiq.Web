@@ -8,6 +8,9 @@ using Wyam.Common;
 using System.IO;
 using System.Globalization;
 using System.Net.Http.Headers;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Download
 {

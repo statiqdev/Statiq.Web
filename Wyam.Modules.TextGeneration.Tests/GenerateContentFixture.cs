@@ -7,6 +7,9 @@ using NUnit.Framework;
 using Wyam.Common;
 using System.IO;
 using NSubstitute;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.TextGeneration.Tests
 {

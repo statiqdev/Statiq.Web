@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Core;
 using Wyam.Core.Modules;
 

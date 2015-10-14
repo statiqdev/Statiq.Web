@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Wyam.Common
+namespace Wyam.Common.Tracing
 {
     public interface IIndentedTraceEvent
     {

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
+using Wyam.Common.Caching;
+using Wyam.Common.Documents;
 
 namespace Wyam.Core.Caching
 {

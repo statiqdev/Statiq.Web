@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 
-namespace Wyam.Common
+namespace Wyam.Common.Configuration
 {
     public static class ConfigExtensions
     {

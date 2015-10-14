@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Wyam.Common
+namespace Wyam.Common.Documents
 {
     /// <summary>
     /// Contains content and metadata for each item as it propagates through the pipeline.

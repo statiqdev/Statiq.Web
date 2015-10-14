@@ -40,31 +40,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachedDelegateMetadataValue.cs" />
-    <Compile Include="ContentModule.cs" />
-    <Compile Include="ContextConfig.cs" />
-    <Compile Include="ConfigExtensions.cs" />
-    <Compile Include="Crc32.cs" />
-    <Compile Include="DelegateMetadataValue.cs" />
-    <Compile Include="DocumentCollectionExtensions.cs" />
-    <Compile Include="DocumentConfig.cs" />
-    <Compile Include="IDocumentCollection.cs" />
-    <Compile Include="IIndentedTraceEvent.cs" />
-    <Compile Include="IMetadata.cs" />
-    <Compile Include="IMetadataValue.cs" />
-    <Compile Include="IModule.cs" />
-    <Compile Include="IDocument.cs" />
-    <Compile Include="IPipeline.cs" />
-    <Compile Include="IPipelineCollection.cs" />
-    <Compile Include="IExecutionContext.cs" />
-    <Compile Include="IReadOnlyPipeline.cs" />
-    <Compile Include="IExecutionCache.cs" />
-    <Compile Include="ITrace.cs" />
-    <Compile Include="ConfigHelper.cs" />
-    <Compile Include="Metadata.cs" />
-    <Compile Include="PathHelper.cs" />
+    <Compile Include="Documents\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Modules\ContentModule.cs" />
+    <Compile Include="Configuration\ContextConfig.cs" />
+    <Compile Include="Configuration\ConfigExtensions.cs" />
+    <Compile Include="Caching\Crc32.cs" />
+    <Compile Include="Documents\DelegateMetadataValue.cs" />
+    <Compile Include="Documents\DocumentCollectionExtensions.cs" />
+    <Compile Include="Configuration\DocumentConfig.cs" />
+    <Compile Include="Documents\IDocumentCollection.cs" />
+    <Compile Include="Tracing\IIndentedTraceEvent.cs" />
+    <Compile Include="Documents\IMetadata.cs" />
+    <Compile Include="Documents\IMetadataValue.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Documents\IDocument.cs" />
+    <Compile Include="Pipelines\IPipeline.cs" />
+    <Compile Include="Pipelines\IPipelineCollection.cs" />
+    <Compile Include="Pipelines\IExecutionContext.cs" />
+    <Compile Include="Pipelines\IReadOnlyPipeline.cs" />
+    <Compile Include="Caching\IExecutionCache.cs" />
+    <Compile Include="Tracing\ITrace.cs" />
+    <Compile Include="Configuration\ConfigHelper.cs" />
+    <Compile Include="Documents\Metadata.cs" />
+    <Compile Include="IO\PathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

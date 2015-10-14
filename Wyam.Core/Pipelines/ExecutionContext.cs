@@ -4,6 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Wyam.Common;
+using Wyam.Common.Caching;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 
 namespace Wyam.Core.Pipelines

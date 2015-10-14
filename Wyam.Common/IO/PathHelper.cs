@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Wyam.Common
+namespace Wyam.Common.IO
 {
     // This contains some additional helpers for the file system
     public class PathHelper

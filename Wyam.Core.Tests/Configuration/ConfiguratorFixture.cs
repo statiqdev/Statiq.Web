@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules;
 
@@ -365,15 +368,15 @@ E-
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.ContextConfig content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.ContextConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.DocumentConfig content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.DocumentConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.IModule[] modules)
+                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.Modules.IModule[] modules)
                         {{
                             return new Wyam.Core.Modules.Content(modules);  
                         }}}}";
@@ -702,15 +705,15 @@ foo bar;
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.ContextConfig content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.ContextConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.DocumentConfig content)
+                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.DocumentConfig content)
                         {{
                             return new Wyam.Core.Modules.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.IModule[] modules)
+                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.Modules.IModule[] modules)
                         {{
                             return new Wyam.Core.Modules.Content(modules);  
                         }}";

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.IO;
 
 namespace Wyam.Common.Tests
 {

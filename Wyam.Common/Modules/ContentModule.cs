@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 
-namespace Wyam.Common
+namespace Wyam.Common.Modules
 {
     // This class can be used as a base class for modules that operate on arbitrary content (as represented by an object)
     public abstract class ContentModule : IModule

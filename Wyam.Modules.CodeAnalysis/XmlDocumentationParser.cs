@@ -9,6 +9,8 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.CodeAnalysis
 {

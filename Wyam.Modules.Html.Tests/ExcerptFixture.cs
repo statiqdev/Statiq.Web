@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Documents;
 
 namespace Wyam.Modules.Html.Tests
 {

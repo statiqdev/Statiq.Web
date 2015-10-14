@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
+using Wyam.Common.Documents;
 
 namespace Wyam.Modules.CodeAnalysis
 {

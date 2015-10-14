@@ -10,7 +10,10 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
 using Wyam.Common;
-using IDocument = Wyam.Common.IDocument;
+using Wyam.Common.Configuration;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
+using IDocument = Wyam.Common.Documents.IDocument;
 
 namespace Wyam.Modules.Html
 {

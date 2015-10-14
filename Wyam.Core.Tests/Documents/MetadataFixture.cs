@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
+using Wyam.Common.Documents;
 using Wyam.Core;
 using Wyam.Core.Documents;
 using Metadata = Wyam.Core.Documents.Metadata;

@@ -9,6 +9,9 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {

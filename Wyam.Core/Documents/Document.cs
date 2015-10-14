@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Wyam.Common;
+using Wyam.Common.Documents;
 using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Documents
