@@ -50,9 +50,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser 
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocument(symbol, xmlDocumentationParser, new[]
+            AddDocument(symbol, true, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 Metadata.Create(MetadataKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers())),
@@ -66,8 +64,6 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser 
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
@@ -87,7 +83,7 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.ImplementingTypes, (k, m) => GetImplementingTypes(symbol), true)
                 });
             }
-            AddDocument(symbol, xmlDocumentationParser, metadata);
+            AddDocument(symbol, true, metadata);
             if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers()
@@ -99,7 +95,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitTypeParameter(ITypeParameterSymbol symbol)
         {
-            AddDocumentForMember(symbol, null, new[]
+            AddDocumentForMember(symbol, false, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString()),
                 Metadata.Create(MetadataKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
@@ -108,7 +104,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitParameter(IParameterSymbol symbol)
         {
-            AddDocumentForMember(symbol, null, new[]
+            AddDocumentForMember(symbol, false, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
@@ -117,9 +113,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitMethod(IMethodSymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser 
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            AddDocumentForMember(symbol, true, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                 Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
@@ -131,9 +125,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitField(IFieldSymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            AddDocumentForMember(symbol, true, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
@@ -142,9 +134,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitEvent(IEventSymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            AddDocumentForMember(symbol, true, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
@@ -154,9 +144,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitProperty(IPropertySymbol symbol)
         {
-            XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
-            AddDocumentForMember(symbol, xmlDocumentationParser, new[]
+            AddDocumentForMember(symbol, true, new[]
             {
                 Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                 Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
@@ -178,15 +166,15 @@ namespace Wyam.Modules.CodeAnalysis
             return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
         }
 
-        private void AddDocumentForMember(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
+        private void AddDocumentForMember(ISymbol symbol, bool xmlDocumentation, IEnumerable<KeyValuePair<string, object>> items)
         {
-            AddDocument(symbol, xmlDocumentationParser, items.Concat(new[]
+            AddDocument(symbol, xmlDocumentation, items.Concat(new[]
             {
                 Metadata.Create(MetadataKeys.ContainingType, DocumentFor(symbol.ContainingType))
             }));
         }
 
-        private void AddDocument(ISymbol symbol, XmlDocumentationParser xmlDocumentationParser, IEnumerable<KeyValuePair<string, object>> items)
+        private void AddDocument(ISymbol symbol, bool xmlDocumentation, IEnumerable<KeyValuePair<string, object>> items)
         {
             // Get universal metadata
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
@@ -212,22 +200,9 @@ namespace Wyam.Modules.CodeAnalysis
                 });
 
                 // XML Documentation
-                if(xmlDocumentationParser != null)
+                if (xmlDocumentation)
                 {
-                    metadata.AddRange(new []
-                    {
-                        Metadata.Create(MetadataKeys.DocumentationCommentXml, (k, m) => symbol.GetDocumentationCommentXml(expandIncludes: true), true),
-                        Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetExampleHtml()),
-                        Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetRemarksHtml()),
-                        Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSummaryHtml()),
-                        Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetReturnsHtml()),
-                        Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetValueHtml()),
-                        Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetExceptionHtml()),
-                        Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetPermissionHtml()),
-                        Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetParamHtml()),
-                        Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetTypeParamHtml()),
-                        Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
-                    });
+                    AddXmlDocumentation(symbol, metadata);
                 }
             }
 
@@ -244,6 +219,28 @@ namespace Wyam.Modules.CodeAnalysis
                     _commentIdToDocument.GetOrAdd(documentationCommentId, _ => document);
                 }
             }
+        }
+
+        private void AddXmlDocumentation(ISymbol symbol, List<KeyValuePair<string, object>> metadata)
+        {
+            string documentationCommentXml = symbol.GetDocumentationCommentXml(expandIncludes: true);
+            XmlDocumentationParser xmlDocumentationParser
+                = new XmlDocumentationParser(symbol, documentationCommentXml, _commentIdToDocument, _cssClasses, _context.Trace);
+
+            metadata.AddRange(new []
+            {
+                Metadata.Create(MetadataKeys.DocumentationCommentXml, documentationCommentXml),
+                Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("example")),
+                Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("remarks")),
+                Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("summary")),
+                Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("returns")),
+                Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("value")),
+                Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("exception", true)),
+                Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("permission", true)),
+                Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("param", false)),
+                Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("typeparam", false)),
+                Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
+            });
         }
 
         private static string GetId(ISymbol symbol)

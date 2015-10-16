@@ -16,187 +16,109 @@ namespace Wyam.Modules.CodeAnalysis
 {
     internal class XmlDocumentationParser
     {
-        private readonly ISymbol _symbol;
+        private readonly XDocument _xml;
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly ITrace _trace;
-        private bool _parsed;
-        private IReadOnlyList<string> _seeAlsoHtml = ImmutableArray<string>.Empty;
-        private string _exampleHtml = string.Empty;
-        private string _remarksHtml = string.Empty;
-        private string _summaryHtml = string.Empty;
-        private string _returnsHtml = string.Empty;
-        private string _valueHtml = string.Empty;
-        private IReadOnlyList<KeyValuePair<string, string>> _exceptionHtml 
-            = ImmutableArray<KeyValuePair<string, string>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, string>> _permissionHtml
-            = ImmutableArray<KeyValuePair<string, string>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, string>> _paramHtml
-            = ImmutableArray<KeyValuePair<string, string>>.Empty;
-        private IReadOnlyList<KeyValuePair<string, string>> _typeParamHtml
-            = ImmutableArray<KeyValuePair<string, string>>.Empty;
 
-        public XmlDocumentationParser(ISymbol symbol, ConcurrentDictionary<string, IDocument> commentIdToDocument,
-            ConcurrentDictionary<string, string> cssClasses, ITrace trace)
+        public XmlDocumentationParser(ISymbol symbol,
+            string documentationCommentXml, 
+            ConcurrentDictionary<string, IDocument> commentIdToDocument,
+            ConcurrentDictionary<string, string> cssClasses, 
+            ITrace trace)
         {
-            _symbol = symbol;
             _commentIdToDocument = commentIdToDocument;
             _trace = trace;
             _cssClasses = cssClasses;
-        }
 
-        public IReadOnlyList<string> GetSeeAlsoHtml()
-        {
-            Parse();
-            return _seeAlsoHtml;
-        }
-
-        public string GetExampleHtml()
-        {
-            Parse();
-            return _exampleHtml;
-        }
-
-        public string GetRemarksHtml()
-        {
-            Parse();
-            return _remarksHtml;
-        }
-
-        public string GetSummaryHtml()
-        {
-            Parse();
-            return _summaryHtml;
-        }
-
-        public string GetReturnsHtml()
-        {
-            Parse();
-            return _returnsHtml;
-        }
-
-        public string GetValueHtml()
-        {
-            Parse();
-            return _valueHtml;
-        }
-
-        public IReadOnlyList<KeyValuePair<string, string>> GetExceptionHtml()
-        {
-            Parse();
-            return _exceptionHtml;
-        }
-
-        public IReadOnlyList<KeyValuePair<string, string>> GetPermissionHtml()
-        {
-            Parse();
-            return _permissionHtml;
-        }
-
-        public IReadOnlyList<KeyValuePair<string, string>> GetParamHtml()
-        {
-            Parse();
-            return _paramHtml;
-        }
-
-        public IReadOnlyList<KeyValuePair<string, string>> GetTypeParamHtml()
-        {
-            Parse();
-            return _typeParamHtml;
-        }
-
-        private void Parse()
-        {
-            if (_parsed)
+            if (!string.IsNullOrEmpty(documentationCommentXml))
             {
-                return;
-            }
 
-            string documentationCommentXml;
-            if (_symbol != null && !string.IsNullOrWhiteSpace(
-                documentationCommentXml = _symbol.GetDocumentationCommentXml(expandIncludes: true)))
-            {
                 try
                 {
                     // We shouldn't need a root element, the compiler adds a "<member name='Foo.Bar'>" root for us
-                    XDocument xdoc = XDocument.Parse(documentationCommentXml, LoadOptions.PreserveWhitespace);
-                    _seeAlsoHtml = ProcessSeeAlsoElements(xdoc.Root);
-                    _exampleHtml = ProcessRootElement(xdoc.Root, "example");
-                    _remarksHtml = ProcessRootElement(xdoc.Root, "remarks");
-                    _summaryHtml = ProcessRootElement(xdoc.Root, "summary");
-                    _returnsHtml = ProcessRootElement(xdoc.Root, "returns");
-                    _valueHtml = ProcessRootElement(xdoc.Root, "value");
-                    _exceptionHtml = ProcessExceptionOrPermissionElements(xdoc.Root, "exception");
-                    _permissionHtml = ProcessExceptionOrPermissionElements(xdoc.Root, "permission");
-                    _paramHtml = ProcessParamOrTypeParamElements(xdoc.Root, "param");
-                    _typeParamHtml = ProcessParamOrTypeParamElements(xdoc.Root, "typeparam");
+                    _xml = XDocument.Parse(documentationCommentXml, LoadOptions.PreserveWhitespace);
                 }
                 catch (Exception ex)
                 {
-                    _trace.Warning($"Could not parse XML documentation comments for {_symbol.Name}: {ex.Message}");
+                    _trace.Warning($"Could not parse XML documentation comments for {symbol.Name}: {ex.Message}");
                 }
             }
-
-            _parsed = true;
-        }
-
-        // <seealso>
-        private IReadOnlyList<string> ProcessSeeAlsoElements(XElement root)
-        {
-            List<string> seeAlso = new List<string>();
-            foreach (XElement seealsoElement in root.Descendants("seealso").ToList())
-            {
-                bool link;
-                seeAlso.Add(GetCrefLinkOrName(seealsoElement, out link));
-                seealsoElement.Remove();
-            }
-            return seeAlso.ToImmutableArray();
         }
 
         // <example>, <remarks>, <summary>, <returns>, <value>
-        private string ProcessRootElement(XElement root, string elementName)
+        private readonly ConcurrentDictionary<string, string> _simpleHtmlCache
+            = new ConcurrentDictionary<string, string>();
+        
+        public string GetSimpleHtml(string elementName)
         {
-            return string.Join("\n", root.Elements(elementName).Select(element =>
-            {
-                ProcessChildElements(element);
-                AddCssClasses(element);
+            // Need to get the <seealso> elements first since they may be inside this element
+            GetSeeAlsoHtml();
 
-                // Return InnerXml
-                XmlReader reader = element.CreateReader();
-                reader.MoveToContent();
-                return reader.ReadInnerXml();
-            }));
+            return _xml?.Root == null 
+                ? string.Empty 
+                : _simpleHtmlCache.GetOrAdd(elementName, 
+                    _ => string.Join("\n", _xml.Root.Elements(elementName).Select(element =>
+                    {
+                        ProcessChildElements(element);
+                        AddCssClasses(element);
+
+                        // Return InnerXml
+                        XmlReader reader = element.CreateReader();
+                        reader.MoveToContent();
+                        return reader.ReadInnerXml();
+                    })));
         }
 
-        // <exception>, <permission>
-        private IReadOnlyList<KeyValuePair<string, string>> ProcessExceptionOrPermissionElements(XElement root, string elementName)
+        // <exception>, <permission>, <param>, <typeParam>
+        private readonly ConcurrentDictionary<string, IReadOnlyList<KeyValuePair<string, string>>> _keyedListHtmlCache
+            = new ConcurrentDictionary<string, IReadOnlyList<KeyValuePair<string, string>>>();
+        
+        public IReadOnlyList<KeyValuePair<string, string>> GetKeyedListHtml(string elementName, bool keyIsCref)
         {
-            return root.Elements(elementName).Select(element =>
-            {
-                bool link;
-                string linkOrName = GetCrefLinkOrName(element, out link);
-                ProcessChildElements(element);
-                AddCssClasses(element);
-                XmlReader reader = element.CreateReader();
-                reader.MoveToContent();
-                return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
-            }).ToImmutableArray();
+            // Need to get the <seealso> elements first since they may be inside this element
+            GetSeeAlsoHtml();
+
+            return _xml?.Root == null
+                ? ImmutableArray<KeyValuePair<string, string>>.Empty
+                : _keyedListHtmlCache.GetOrAdd(elementName,
+                    _ => _xml.Root.Elements(elementName).Select(element =>
+                    {
+                        bool link;
+                        string linkOrName = keyIsCref 
+                            ? GetCrefLinkOrName(element, out link) 
+                            : (element.Attribute("name")?.Value ?? string.Empty);
+                        ProcessChildElements(element);
+                        AddCssClasses(element);
+                        XmlReader reader = element.CreateReader();
+                        reader.MoveToContent();
+                        return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
+                    }).ToImmutableArray());
         }
 
-        // <param>, <typeparam>
-        private IReadOnlyList<KeyValuePair<string, string>> ProcessParamOrTypeParamElements(XElement root, string elementName)
+        // <seeAlso>
+        private readonly ConcurrentDictionary<string, IReadOnlyList<string>> _listHtmlCache
+            = new ConcurrentDictionary<string, IReadOnlyList<string>>();
+
+        public IReadOnlyList<string> GetSeeAlsoHtml()
         {
-            return root.Elements(elementName).Select(element =>
-            {
-                XAttribute nameAttribute = element.Attribute("name");
-                string name = nameAttribute?.Value ?? string.Empty;
-                ProcessChildElements(element);
-                AddCssClasses(element);
-                XmlReader reader = element.CreateReader();
-                reader.MoveToContent();
-                return new KeyValuePair<string, string>(name, reader.ReadInnerXml());
-            }).ToImmutableArray();
+            return _xml?.Root == null
+                ? ImmutableArray<string>.Empty
+                : _listHtmlCache.GetOrAdd("seealso",
+                    _ => _xml.Root.Descendants("seealso").ToList().Select(element =>
+                    {
+                        bool link;
+                        string value = GetCrefLinkOrName(element, out link);
+                        element.Remove();
+                        return value;
+                    }).ToImmutableArray());
         }
+
+        // Custom elements
+        private readonly ConcurrentDictionary<string, IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>> _multipleKeyedListHtmlCache
+            = new ConcurrentDictionary<string, IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>();
+
+        // TODO: parsing for custom elements
 
         private string GetCrefLinkOrName(XElement element, out bool link)
         {

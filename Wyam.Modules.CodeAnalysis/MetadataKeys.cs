@@ -28,6 +28,7 @@ namespace Wyam.Modules.CodeAnalysis
         public const string TypeParamHtml = "TypeParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
         public const string SeeAlsoHtml = "SeeAlsoHtml"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
         public const string Syntax = "Syntax"; // string
+        //                  [ElementName]Html // IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>, list of extra documentation elements, key = dictionary of attributes (or empty), value = HTML
 
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants

@@ -903,6 +903,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
+            // <seealso> should be removed from the summary and instead placed in the SeeAlsoHtml metadata
             Assert.AreEqual("Check this out ", GetResult(results, "Green")["SummaryHtml"]);
             Assert.AreEqual("<a href=\"/Foo/414E2165\">Red</a>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlsoHtml")[0]);
             stream.Dispose();
