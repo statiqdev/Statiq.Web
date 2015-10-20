@@ -23,6 +23,7 @@ namespace Wyam.Modules.Html
         private readonly ConfigHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
+        private bool _matchOnlyHowlWord =false;
 
 
         public AutoLink()
@@ -54,6 +55,12 @@ namespace Wyam.Modules.Html
         public AutoLink WithLink(string text, string link)
         {
             _extraLinks[text] = link;
+            return this;
+        }
+
+        public AutoLink WithMatchOnlyHowlWord()
+        {
+            _matchOnlyHowlWord = true;
             return this;
         }
 
@@ -138,7 +145,7 @@ namespace Wyam.Modules.Html
                     }
                 }
 
-                if (lastNode.IsRoot)
+                if (lastNode.IsRoot && CheckAdditonalConditions(s, matchIdx, i-1))
                 {
                     // Complete match
                     string key = new string(lastNode.Cumulative.ToArray());
@@ -167,6 +174,15 @@ namespace Wyam.Modules.Html
             return builder.ToString();
         }
 
+        private bool CheckAdditonalConditions(string stringToCheck, int matchStartIndex, int matchEndIndex)
+        {
+            return !_matchOnlyHowlWord || (
+                (matchEndIndex >= stringToCheck.Length -1|| !char.IsLetterOrDigit(stringToCheck[matchEndIndex+1])) 
+                && (matchStartIndex - 1 < 0 || !char.IsLetterOrDigit(stringToCheck[matchStartIndex - 1]))
+                );
+        }
+
+  
         private class Trie<T> where T : IComparable<T>
         {
             public Node Root { get; }
