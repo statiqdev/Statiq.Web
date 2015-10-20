@@ -942,7 +942,123 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             stream.Dispose();
         }
 
-        // TODO: Remark content with a <see> where the cref points to a member (method or property) of the described class
-        // TODO: Remark content with a <see> where the cref points to a member (method or property) of a different class
+        [Test]
+        public void OtherHtmlWithSeeElement()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <bar>Check <see cref=""Red""/> class</bar>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("Check <a href=\"/Foo/414E2165\">Red</a> class", 
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[0].Value);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void MultipleOtherHtml()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <bar>Circle</bar>
+                    /// <bar>Square</bar>
+                    /// <bar>Rectangle</bar>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(3,
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml").Count);
+            Assert.AreEqual("Circle",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[0].Value);
+            Assert.AreEqual("Square",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Value);
+            Assert.AreEqual("Rectangle",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[2].Value);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void OtherHtmlWithAttributes()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <bar a='x'>Circle</bar>
+                    /// <bar a='y' b='z'>Square</bar>
+                    class Green
+                    {
+                    }
+
+                    class Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(1,
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[0].Key.Count);
+            Assert.AreEqual("x",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[0].Key["a"]);
+            Assert.AreEqual(2,
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Key.Count);
+            Assert.AreEqual("y",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Key["a"]);
+            Assert.AreEqual("z",
+                GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Key["b"]);
+            stream.Dispose();
+        }
     }
 }

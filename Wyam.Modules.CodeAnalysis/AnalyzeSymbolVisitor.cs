@@ -225,22 +225,44 @@ namespace Wyam.Modules.CodeAnalysis
         {
             string documentationCommentXml = symbol.GetDocumentationCommentXml(expandIncludes: true);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, documentationCommentXml, _commentIdToDocument, _cssClasses, _context.Trace);
+                = new XmlDocumentationParser(_commentIdToDocument, _cssClasses, _context.Trace);
+            IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(symbol, documentationCommentXml);
 
+            // Add standard HTML elements
             metadata.AddRange(new []
             {
                 Metadata.Create(MetadataKeys.DocumentationCommentXml, documentationCommentXml),
-                Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("example")),
-                Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("remarks")),
-                Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("summary")),
-                Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("returns")),
-                Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.GetSimpleHtml("value")),
-                Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("exception", true)),
-                Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("permission", true)),
-                Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("param", false)),
-                Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.GetKeyedListHtml("typeparam", false)),
-                Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.GetSeeAlsoHtml()),
+                Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.Process().ExampleHtml),
+                Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.Process().RemarksHtml),
+                Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.Process().SummaryHtml),
+                Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.Process().ReturnsHtml),
+                Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.Process().ValueHtml),
+                Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.Process().ExceptionHtml),
+                Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.Process().PermissionHtml),
+                Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.Process().ParamHtml),
+                Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.Process().TypeParamHtml),
+                Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.Process().SeeAlsoHtml)
             });
+
+            // Add other HTML elements with keys of [ElementName]Html
+            metadata.AddRange(otherHtmlElementNames.Select(x => 
+                Metadata.Create(FirstLetterToUpper(x) + "Html",
+                    (k, m) => xmlDocumentationParser.Process().OtherHtml[x])));
+        }
+
+        public static string FirstLetterToUpper(string str)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            if (str.Length > 1)
+            {
+                return char.ToUpper(str[0]) + str.Substring(1);
+            }
+
+            return str.ToUpper();
         }
 
         private static string GetId(ISymbol symbol)
