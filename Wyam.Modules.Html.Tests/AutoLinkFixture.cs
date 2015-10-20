@@ -522,7 +522,7 @@ namespace Wyam.Modules.Html.Tests
         }
 
         [Test]
-        public void IgnoreSubstringIfSearchingForHowlWords()
+        public void IgnoreSubstringIfSearchingForWholeWords()
         {
             // Given
             string input = @"<html>
@@ -556,7 +556,7 @@ namespace Wyam.Modules.Html.Tests
             AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
             {
                 { "Foo", "http://www.google.com" },
-            }).WithMatchOnlyHowlWord();
+            }).WithMatchOnlyWholeWord();
 
             // When
             autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

@@ -23,7 +23,7 @@ namespace Wyam.Modules.Html
         private readonly ConfigHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
-        private bool _matchOnlyHowlWord =false;
+        private bool _matchOnlyWholeWord =false;
 
 
         public AutoLink()
@@ -58,9 +58,9 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public AutoLink WithMatchOnlyHowlWord()
+        public AutoLink WithMatchOnlyWholeWord()
         {
-            _matchOnlyHowlWord = true;
+            _matchOnlyWholeWord = true;
             return this;
         }
 
@@ -176,7 +176,7 @@ namespace Wyam.Modules.Html
 
         private bool CheckAdditonalConditions(string stringToCheck, int matchStartIndex, int matchEndIndex)
         {
-            return !_matchOnlyHowlWord || (
+            return !_matchOnlyWholeWord || (
                 (matchEndIndex >= stringToCheck.Length -1|| !char.IsLetterOrDigit(stringToCheck[matchEndIndex+1])) 
                 && (matchStartIndex - 1 < 0 || !char.IsLetterOrDigit(stringToCheck[matchStartIndex - 1]))
                 );
