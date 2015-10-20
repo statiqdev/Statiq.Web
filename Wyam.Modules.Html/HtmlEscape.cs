@@ -9,7 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
-namespace Wyam.Modules.CreateReferences
+namespace Wyam.Modules.Html
 {
     public class HtmlEscape : IModule
     {
@@ -131,7 +131,9 @@ namespace Wyam.Modules.CreateReferences
                 _standardCharacters.Add(c);
             for (char c = 'A'; c <= 'Z'; c++)
                 _standardCharacters.Add(c);
+            _standardCharacters.Add('\r');
             _standardCharacters.Add('\n');
+            _standardCharacters.Add(' ');
             return this;
         }
 
