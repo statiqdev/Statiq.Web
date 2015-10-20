@@ -239,5 +239,41 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             Assert.AreEqual("Red", GetMember(results, "Red", "Blue").Get<IDocument>("ReturnType").Get<IDocument>("DeclaringType")["Name"]);
             stream.Dispose();
         }
+
+        [Test]
+        public void ClassMemberExcludedByPredicate()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Blue
+                    {
+                        void Green()
+                        {
+                        }
+
+                        void Red()
+                        {
+                        }
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp().WhereSymbol(x => x.Name != "Green");
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "Red" },
+                GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
+            stream.Dispose();
+        }
     }
 }

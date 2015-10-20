@@ -16,6 +16,8 @@ namespace Wyam.Modules.CodeAnalysis
 {
     public class AnalyzeCSharp : IModule
     {
+        private Func<ISymbol, bool> _symbolPredicate;
+         
         private Func<IMetadata, string> _writePath = metadata =>
         {
             IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
@@ -68,9 +70,15 @@ namespace Wyam.Modules.CodeAnalysis
             CSharpCompilation compilation = CSharpCompilation.Create("CodeAnalysisModule", syntaxTrees).WithReferences(mscorlib);
 
             // Get and return the document tree
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _writePath, _cssClasses);
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, _writePath, _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.Finish();
+        }
+
+        public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
+        {
+            _symbolPredicate = predicate;
+            return this;
         }
 
         // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)

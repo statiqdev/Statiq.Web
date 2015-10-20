@@ -21,14 +21,19 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
         private readonly IExecutionContext _context;
+        private readonly Func<ISymbol, bool> _symbolPredicate;
         private readonly Func<IMetadata, string> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
-        public AnalyzeSymbolVisitor(IExecutionContext context, 
-            Func<IMetadata, string> writePath, ConcurrentDictionary<string, string> cssClasses)
+        public AnalyzeSymbolVisitor(
+            IExecutionContext context, 
+            Func<ISymbol, bool> symbolPredicate, 
+            Func<IMetadata, string> writePath, 
+            ConcurrentDictionary<string, string> cssClasses)
         {
             _context = context;
+            _symbolPredicate = symbolPredicate;
             _writePath = writePath;
             _cssClasses = cssClasses;
         }
@@ -50,12 +55,15 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
-            AddDocument(symbol, true, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers())),
-                Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()))
-            });
+                AddDocument(symbol, true, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    Metadata.Create(MetadataKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers())),
+                    Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()))
+                });
+            }
             if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers(), s => s.Accept(this));
@@ -64,26 +72,30 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
-                Metadata.Create(MetadataKeys.ContainingType, DocumentFor(symbol.ContainingType)),
-                Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers())),
-                Metadata.Create(MetadataKeys.BaseType, DocumentFor(symbol.BaseType)),
-                Metadata.Create(MetadataKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces)),
-                Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
-                Metadata.Create(MetadataKeys.Constructors, DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
-                Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
-            };
-            if (!_finished)
-            {
-                metadata.AddRange(new[]
+                List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
                 {
-                    Metadata.Create(MetadataKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true),
-                    Metadata.Create(MetadataKeys.ImplementingTypes, (k, m) => GetImplementingTypes(symbol), true)
-                });
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString()),
+                    Metadata.Create(MetadataKeys.ContainingType, DocumentFor(symbol.ContainingType)),
+                    Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers())),
+                    Metadata.Create(MetadataKeys.BaseType, DocumentFor(symbol.BaseType)),
+                    Metadata.Create(MetadataKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces)),
+                    Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
+                    Metadata.Create(MetadataKeys.Constructors,
+                        DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
+                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
+                };
+                if (!_finished)
+                {
+                    metadata.AddRange(new[]
+                    {
+                        Metadata.Create(MetadataKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true),
+                        Metadata.Create(MetadataKeys.ImplementingTypes, (k, m) => GetImplementingTypes(symbol), true)
+                    });
+                }
+                AddDocument(symbol, true, metadata);
             }
-            AddDocument(symbol, true, metadata);
             if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers()
@@ -95,62 +107,81 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitTypeParameter(ITypeParameterSymbol symbol)
         {
-            AddDocumentForMember(symbol, false, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString()),
-                Metadata.Create(MetadataKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
-            });
+                AddDocumentForMember(symbol, false, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString()),
+                    Metadata.Create(MetadataKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
+                });
+            }
         }
 
         public override void VisitParameter(IParameterSymbol symbol)
         {
-            AddDocumentForMember(symbol, false, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
-            });
+                AddDocumentForMember(symbol, false, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
+                });
+            }
         }
 
         public override void VisitMethod(IMethodSymbol symbol)
         {
-            AddDocumentForMember(symbol, true, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
-                Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
-                Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType)),
-                Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod))
-            });
+                AddDocumentForMember(symbol, true, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind,
+                        (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
+                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
+                    Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
+                    Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType)),
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod))
+                });
+            }
         }
 
         public override void VisitField(IFieldSymbol symbol)
         {
-            AddDocumentForMember(symbol, true, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
-            });
+                AddDocumentForMember(symbol, true, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
+                });
+            }
         }
 
         public override void VisitEvent(IEventSymbol symbol)
         {
-            AddDocumentForMember(symbol, true, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
-                Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenEvent))
-            });
+                AddDocumentForMember(symbol, true, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenEvent))
+                });
+            }
         }
 
         public override void VisitProperty(IPropertySymbol symbol)
         {
-            AddDocumentForMember(symbol, true, new[]
+            if (_symbolPredicate == null || _symbolPredicate(symbol))
             {
-                Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
-                Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenProperty))
-            });
+                AddDocumentForMember(symbol, true, new[]
+                {
+                    Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
+                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenProperty))
+                });
+            }
         }
 
         // Helpers below...
