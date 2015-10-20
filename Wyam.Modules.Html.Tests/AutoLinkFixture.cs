@@ -520,5 +520,51 @@ namespace Wyam.Modules.Html.Tests
             document.Received().Clone(output);
             stream.Dispose();
         }
+
+        [Test]
+        public void IgnoreSubstringIfSearchingForWholeWords()
+        {
+            // Given
+            string input = @"<html>
+                    <head>
+                        <title>Foobar</title>
+                    </head>
+                    <body>
+                        <h1>Title</h1>
+                        <p>This is some <i>Foo</i> text Foobaz</p>
+                    </body>
+                </html>";
+            string output = @"<html><head>
+                        <title>Foobar</title>
+                    </head>
+                    <body>
+                        <h1>Title</h1>
+                        <p>This is some <i><a href=""http://www.google.com"">Foo</a></i> text Foobaz</p>
+                    
+                </body></html>".Replace("\r\n", "\n");
+            IDocument document = Substitute.For<IDocument>();
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            Dictionary<string, string> convertedLinks;
+            context.TryConvert(new object(), out convertedLinks)
+                .ReturnsForAnyArgs(x =>
+                {
+                    x[1] = x[0];
+                    return true;
+                });
+            AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+            {
+                { "Foo", "http://www.google.com" },
+            }).WithMatchOnlyWholeWord();
+
+            // When
+            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(output);
+            stream.Dispose();
+        }
     }
 }
