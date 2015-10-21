@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules
     {
         private readonly DocumentConfig _path;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
-        private Func<string, bool> _where = null;
+        private Func<string, bool> _predicate = null;
         private string[] _extensions; 
 
         // The delegate should return a string
@@ -63,7 +63,8 @@ namespace Wyam.Core.Modules
 
         public ReadFiles Where(Func<string, bool> predicate)
         {
-            _where = predicate;
+            Func<string, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
 
@@ -87,7 +88,7 @@ namespace Wyam.Core.Modules
                     {
                         return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => (_where == null || _where(x)) && (_extensions == null || _extensions.Contains(Path.GetExtension(x))))
+                            .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);

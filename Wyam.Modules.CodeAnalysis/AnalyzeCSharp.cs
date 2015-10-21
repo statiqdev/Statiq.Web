@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -77,8 +78,22 @@ namespace Wyam.Modules.CodeAnalysis
 
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
         {
-            _symbolPredicate = predicate;
+            Func<ISymbol, bool> currentPredicate = _symbolPredicate;
+            _symbolPredicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
+        }
+
+        // Limits symbols to the specific namespaces
+        public AnalyzeCSharp WhereNamespaces(params string[] namespaces)
+        {
+            return WhereSymbol(x => (x.Kind == SymbolKind.Namespace && namespaces.Any(y => x.ToString().StartsWith(y)))
+                || (x.ContainingNamespace != null && namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y))));
+        }
+
+        // Limits to public symbols (and N/A like parameters)
+        public AnalyzeCSharp WherePublic()
+        {
+            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }
 
         // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)

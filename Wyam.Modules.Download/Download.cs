@@ -16,9 +16,8 @@ namespace Wyam.Modules.Download
 {
     public class Download : IModule
     {
-        List<DownloadInstruction> _urls = new List<DownloadInstruction>();
-
-        bool _isCacheResponse = false;
+        private readonly List<DownloadInstruction> _urls = new List<DownloadInstruction>();
+        private bool _isCacheResponse = false;
 
         public Download Uris(params string[] uris)
         {
@@ -47,7 +46,7 @@ namespace Wyam.Modules.Download
             return this;
         }
 
-        async Task<DownloadResult> DownloadUrl(DownloadInstruction instruction)
+        private async Task<DownloadResult> DownloadUrl(DownloadInstruction instruction)
         {
             using (var client = new HttpClient())
             {
@@ -74,7 +73,7 @@ namespace Wyam.Modules.Download
             }
         }
 
-        void ModifyRequestHeader(HttpRequestHeaders request, RequestHeader requestHeader)
+        private void ModifyRequestHeader(HttpRequestHeaders request, RequestHeader requestHeader)
         {
             foreach (var a in requestHeader.Accept)
             {

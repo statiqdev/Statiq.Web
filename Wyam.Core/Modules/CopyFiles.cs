@@ -21,7 +21,7 @@ namespace Wyam.Core.Modules
         private readonly DocumentConfig _sourcePath;
         private Func<string, string> _destinationPath;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
-        private Func<string, bool> _where = null;
+        private Func<string, bool> _predicate = null;
         private string[] _withoutExtensions;
 
         // The delegate should return a string
@@ -65,7 +65,8 @@ namespace Wyam.Core.Modules
 
         public CopyFiles Where(Func<string, bool> predicate)
         {
-            _where = predicate;
+            Func<string, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
 
@@ -100,7 +101,7 @@ namespace Wyam.Core.Modules
                     {
                         return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => (_where == null || _where(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(Path.GetExtension(x))))
+                            .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 string destination = _destinationPath == null

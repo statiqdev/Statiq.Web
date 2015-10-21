@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules
     public class Branch : IModule
     {
         private readonly IModule[] _modules;
-        private DocumentConfig _predicate;
+        private Func<IDocument, IExecutionContext, bool> _predicate;
 
         public Branch(params IModule[] modules)
         {
@@ -27,13 +27,16 @@ namespace Wyam.Core.Modules
         // The delegate should return a bool
         public Branch Where(DocumentConfig predicate)
         {
-            _predicate = predicate;
+            Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null 
+                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>) 
+                : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IEnumerable<IDocument> documents = _predicate == null ? inputs : inputs.Where(x => _predicate.Invoke<bool>(x, context));
+            IEnumerable<IDocument> documents = _predicate == null ? inputs : inputs.Where(x => _predicate(x, context));
             context.Execute(_modules, documents);
             return inputs;
         }

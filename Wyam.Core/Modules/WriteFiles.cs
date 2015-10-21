@@ -18,7 +18,7 @@ namespace Wyam.Core.Modules
     public class WriteFiles : IModule
     {
         private readonly DocumentConfig _path;
-        private DocumentConfig _where = null; 
+        private Func<IDocument, IExecutionContext, bool> _predicate = null; 
 
         // The predicate should return a string
         public WriteFiles(DocumentConfig path)
@@ -57,13 +57,16 @@ namespace Wyam.Core.Modules
         // The delegate should return a bool
         public WriteFiles Where(DocumentConfig predicate)
         {
-            _where = predicate;
+            Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null
+                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
 
         protected bool ShouldProcess(IDocument input, IExecutionContext context)
         {
-            return _where == null || _where.Invoke<bool>(input, context);
+            return _predicate == null || _predicate(input, context);
         }
 
         protected string GetPath(IDocument input, IExecutionContext context)

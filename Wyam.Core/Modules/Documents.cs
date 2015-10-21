@@ -16,7 +16,7 @@ namespace Wyam.Core.Modules
         private readonly string _pipeline;
         private readonly ContextConfig _contextDocuments;
         private readonly DocumentConfig _documentDocuments;
-        private DocumentConfig _predicate;
+        private Func<IDocument, IExecutionContext, bool> _predicate;
 
         // This will get all previously processed documents from all pipelines
         public Documents()
@@ -86,7 +86,10 @@ namespace Wyam.Core.Modules
         // The delegate should return a bool
         public Documents Where(DocumentConfig predicate)
         {
-            _predicate = predicate;
+            Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null
+                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
 
@@ -109,7 +112,7 @@ namespace Wyam.Core.Modules
             }
             if (_predicate != null)
             {
-                documents = documents.Where(x => _predicate.Invoke<bool>(x, context));
+                documents = documents.Where(x => _predicate(x, context));
             }
             return documents;
         }
