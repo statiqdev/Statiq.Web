@@ -18,32 +18,8 @@ namespace Wyam.Modules.CodeAnalysis
     public class AnalyzeCSharp : IModule
     {
         private Func<ISymbol, bool> _symbolPredicate;
-         
-        private Func<IMetadata, string> _writePath = metadata =>
-        {
-            IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
-
-            // Namespaces output to the index page in a folder of their full name
-            if (metadata.String(MetadataKeys.Kind) == SymbolKind.Namespace.ToString())
-            {
-                // If this namespace does not have a containing namespace, it's the global namespace
-                return namespaceDocument == null ? "index.html" : $"{metadata[MetadataKeys.DisplayName]}\\index.html";
-            }
-
-            // Types output to the index page in a folder of their SymbolId under the folder for their namespace
-            if (metadata.String(MetadataKeys.Kind) == SymbolKind.NamedType.ToString())
-            {
-                // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
-                return (namespaceDocument?[MetadataKeys.ContainingNamespace] == null)
-                    ? $"{metadata[MetadataKeys.SymbolId]}\\index.html"
-                    : $"{namespaceDocument[MetadataKeys.DisplayName]}\\{metadata[MetadataKeys.SymbolId]}\\index.html";
-            }
-
-            // Members output to a page equal to their SymbolId under the folder for their type
-            IDocument containingTypeDocument = metadata.Get<IDocument>(MetadataKeys.ContainingType, null);
-            return containingTypeDocument?.String(MetadataKeys.WritePath)
-                .Replace("index.html", metadata.String(MetadataKeys.SymbolId) + ".html");
-        };
+        private Func<IMetadata, string> _writePath;
+        private string _writePathPrefix = string.Empty;
 
         // Use an intermediate Dictionary to initialize with defaults
         private readonly ConcurrentDictionary<string, string> _cssClasses 
@@ -71,22 +47,27 @@ namespace Wyam.Modules.CodeAnalysis
             CSharpCompilation compilation = CSharpCompilation.Create("CodeAnalysisModule", syntaxTrees).WithReferences(mscorlib);
 
             // Get and return the document tree
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, _writePath, _cssClasses);
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, 
+                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.Finish();
         }
 
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
         {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
             Func<ISymbol, bool> currentPredicate = _symbolPredicate;
             _symbolPredicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
 
         // Limits symbols to the specific namespaces
-        public AnalyzeCSharp WhereNamespaces(params string[] namespaces)
+        public AnalyzeCSharp WhereNamespaces(bool includeGlobal, params string[] namespaces)
         {
-            return WhereSymbol(x => (x.Kind == SymbolKind.Namespace && namespaces.Any(y => x.ToString().StartsWith(y)))
+            return WhereSymbol(x => (x.Kind == SymbolKind.Namespace && (namespaces.Any(y => x.ToString().StartsWith(y)) || (includeGlobal && ((INamespaceSymbol)x).IsGlobalNamespace)))
                 || (x.ContainingNamespace != null && namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y))));
         }
 
@@ -124,12 +105,46 @@ namespace Wyam.Modules.CodeAnalysis
         // Note that this scheme makes the assumption that members will not have their own files, if that's not the case a new WritePath function will have to be supplied
         public AnalyzeCSharp WithWritePath(Func<IMetadata, string> writePath)
         {
-            if (writePath == null)
-            {
-                throw new ArgumentNullException(nameof(writePath));
-            }
             _writePath = writePath;
             return this;
+        }
+
+        // This lets you add a prefix to the default write path behavior
+        // This method has no effect if you've changed the default write path behavior
+        public AnalyzeCSharp WithWritePathPrefix(string prefix)
+        {
+            if (prefix == null)
+            {
+                throw new ArgumentNullException(nameof(prefix));
+            }
+            _writePathPrefix = prefix;
+            return this;
+        }
+
+        private string DefaultWritePath(IMetadata metadata, string prefix)
+        {
+            IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
+
+            // Namespaces output to the index page in a folder of their full name
+            if (metadata.String(MetadataKeys.Kind) == SymbolKind.Namespace.ToString())
+            {
+                // If this namespace does not have a containing namespace, it's the global namespace
+                return Path.Combine(prefix, namespaceDocument == null ? "global\\index.html" : $"{metadata[MetadataKeys.DisplayName]}\\index.html");
+            }
+
+            // Types output to the index page in a folder of their SymbolId under the folder for their namespace
+            if (metadata.String(MetadataKeys.Kind) == SymbolKind.NamedType.ToString())
+            {
+                // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
+                return Path.Combine(prefix, (namespaceDocument?[MetadataKeys.ContainingNamespace] == null)
+                    ? $"global\\{metadata[MetadataKeys.SymbolId]}\\index.html"
+                    : $"{namespaceDocument[MetadataKeys.DisplayName]}\\{metadata[MetadataKeys.SymbolId]}\\index.html");
+            }
+
+            // Members output to a page equal to their SymbolId under the folder for their type
+            IDocument containingTypeDocument = metadata.Get<IDocument>(MetadataKeys.ContainingType, null);
+            return containingTypeDocument?.String(MetadataKeys.WritePath)
+                .Replace("index.html", metadata.String(MetadataKeys.SymbolId) + ".html");
         }
     }
 }
