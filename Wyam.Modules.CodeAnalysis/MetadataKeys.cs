@@ -4,6 +4,7 @@ namespace Wyam.Modules.CodeAnalysis
     internal static class MetadataKeys
     {
         // All
+        public const string IsResult = "IsResult"; // bool, true = part of the initial result set (I.e., only those that matched the predicate, if any)
         public const string WritePath = "WritePath"; // string, feeds WriteFiles and tells it where to place the output file (or missing for external symbols)
         public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol

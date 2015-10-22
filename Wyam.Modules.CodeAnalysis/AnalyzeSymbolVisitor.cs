@@ -55,7 +55,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocument(symbol, true, new[]
                 {
@@ -64,6 +64,8 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()))
                 });
             }
+
+            // Descend if not finished, regardless if this namespace was included
             if (!_finished)
             {
                 Parallel.ForEach(symbol.GetMembers(), s => s.Accept(this));
@@ -72,7 +74,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
                 {
@@ -95,19 +97,21 @@ namespace Wyam.Modules.CodeAnalysis
                     });
                 }
                 AddDocument(symbol, true, metadata);
-            }
-            if (!_finished)
-            {
-                Parallel.ForEach(symbol.GetMembers()
-                    .Where(MemberPredicate)
-                    .Concat(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)), 
-                    s => s.Accept(this));
+
+                // Descend if not finished, and only if this type was included
+                if (!_finished)
+                {
+                    Parallel.ForEach(symbol.GetMembers()
+                        .Where(MemberPredicate)
+                        .Concat(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)),
+                        s => s.Accept(this));
+                }
             }
         }
 
         public override void VisitTypeParameter(ITypeParameterSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, false, new[]
                 {
@@ -119,7 +123,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitParameter(IParameterSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, false, new[]
                 {
@@ -131,7 +135,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitMethod(IMethodSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, true, new[]
                 {
@@ -147,7 +151,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitField(IFieldSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, true, new[]
                 {
@@ -159,7 +163,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitEvent(IEventSymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, true, new[]
                 {
@@ -172,7 +176,7 @@ namespace Wyam.Modules.CodeAnalysis
 
         public override void VisitProperty(IPropertySymbol symbol)
         {
-            if (_symbolPredicate == null || _symbolPredicate(symbol))
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddDocumentForMember(symbol, true, new[]
                 {
@@ -211,6 +215,7 @@ namespace Wyam.Modules.CodeAnalysis
             List<KeyValuePair<string, object>> metadata = new List<KeyValuePair<string, object>>
             {
                 // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
+                Metadata.Create(MetadataKeys.IsResult, !_finished),
                 Metadata.Create(MetadataKeys.SymbolId, (k, m) => GetId(symbol), true),
                 Metadata.Create(MetadataKeys.Symbol, symbol),
                 Metadata.Create(MetadataKeys.Name, (k, m) => symbol.Name),

@@ -90,10 +90,12 @@ namespace Wyam.Modules.CodeAnalysis
                 || (x.ContainingNamespace != null && namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y))));
         }
 
-        // Limits to public symbols (and N/A like parameters)
+        // Limits to public and protected symbols (and N/A like parameters)
         public AnalyzeCSharp WherePublic()
         {
-            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public || x.DeclaredAccessibility == Accessibility.NotApplicable);
+            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public 
+                || x.DeclaredAccessibility == Accessibility.Protected
+                || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }
 
         // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)
