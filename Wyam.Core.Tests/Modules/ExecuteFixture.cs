@@ -12,7 +12,7 @@ namespace Wyam.Core.Tests.Modules
     public class ExecuteFixture
     {
         [Test]
-        public void ExecuteDoesNotThrowForNullResult()
+        public void ExecuteDoesNotThrowForNullResultWithDocumentConfig()
         {
             // Given
             Engine engine = new Engine();
@@ -25,5 +25,21 @@ namespace Wyam.Core.Tests.Modules
 
             // Then
         }
+
+        [Test]
+        public void ExecuteDoesNotThrowForNullResultWithContextConfig()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Execute execute = new Execute((c) => null);
+            engine.Pipelines.Add(execute);
+
+            // When
+            engine.Execute();
+
+            // Then
+        }
+
     }
 }
