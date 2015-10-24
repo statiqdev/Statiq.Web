@@ -27,7 +27,7 @@ namespace Wyam.Modules.Html.Tests
 
             IExecutionContext context;
             IDocument[] documents;
-            Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out cloneDictionary);
 
             DirectoryMetadata directoryMetadata = new DirectoryMetadata();
@@ -47,7 +47,7 @@ namespace Wyam.Modules.Html.Tests
 
             IExecutionContext context;
             IDocument[] documents;
-            Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out cloneDictionary);
 
             DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
@@ -60,7 +60,34 @@ namespace Wyam.Modules.Html.Tests
         }
 
 
-        private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary)
+        [Test]
+        public void TestIfLocal()
+        {
+            // Given
+
+            IExecutionContext context;
+            IDocument[] documents;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
+            Setup(out context, out documents, out cloneDictionary);
+
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
+
+            // When
+            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(0)), "Data from local not found");
+            Assert.True(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local not found");
+            Assert.True(!cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local one directory obove found.");
+            Assert.AreEqual(6, returnedDocuments.Count);
+        }
+
+
+
+
+        #region TestHelper
+
+        private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary)
         {
             context = GetContext();
             documents = new IDocument[] {
@@ -77,13 +104,22 @@ namespace Wyam.Modules.Html.Tests
                 GetDocumentWithMetadata(@"test\site.md",
                     GenerateMetadata(5,6))
             };
-            var tempDictionary = new Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>>();
+            var tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
             cloneDictionary = tempDictionary;
             foreach (var document in documents)
             {
                 document
                     .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                    .Do(x => tempDictionary[document] = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
+                    .Do(x =>
+                    {
+                        var newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                        var oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
+                        foreach (var m in newMetadata) // overriding the old metadata like Document would do it.
+                        {
+                            oldMetadata[m.Key] = m.Value;
+                        }
+                        tempDictionary[document] = oldMetadata;
+                    });
             }
         }
 
@@ -105,6 +141,10 @@ namespace Wyam.Modules.Html.Tests
             }
         }
 
+        private string ListMetadataWhereSingel(int singel)
+        {
+            return $"m{(int)Math.Pow(2, singel)}";
+        }
         private IEnumerable<KeyValuePair<string, object>> GenerateMetadata(int index, int max)
         {
             int currentPotenz = (int)Math.Pow(2, index);
@@ -167,5 +207,7 @@ namespace Wyam.Modules.Html.Tests
 
             return document;
         }
+
+        #endregion
     }
 }
