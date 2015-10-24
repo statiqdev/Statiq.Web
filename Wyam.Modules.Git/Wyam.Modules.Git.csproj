@@ -52,9 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Autor.cs" />
+    <Compile Include="Author.cs" />
     <Compile Include="CommitInformation.cs" />
-    <Compile Include="GitAutors.cs" />
+    <Compile Include="GitAuthors.cs" />
     <Compile Include="GitBase.cs" />
     <Compile Include="GitContributor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

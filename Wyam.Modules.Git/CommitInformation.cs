@@ -9,16 +9,16 @@ namespace Wyam.Modules.Git
 {
     public class CommitInformation
     {
-        public Autor Autor { get; }
-        public Autor Committer { get; }
+        public Author Author { get; }
+        public Author Committer { get; }
         public string Message { get; }
         public ChangeKind Status { get; }
         public string Path { get; private set; }
 
-        public CommitInformation(ChangeKind status, Autor autor, Autor committer, string message, string path)
+        public CommitInformation(ChangeKind status, Author author, Author committer, string message, string path)
         {
             this.Status = status;
-            this.Autor = autor;
+            this.Author = author;
             this.Committer = committer;
             this.Message = message;
             this.Path = path;
