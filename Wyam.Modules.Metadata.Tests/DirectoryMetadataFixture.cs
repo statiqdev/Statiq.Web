@@ -82,6 +82,28 @@ namespace Wyam.Modules.Html.Tests
             Assert.AreEqual(6, returnedDocuments.Count);
         }
 
+        [Test]
+        public void TestInhired()
+        {
+            // Given
+
+            IExecutionContext context;
+            IDocument[] documents;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
+            Setup(out context, out documents, out cloneDictionary);
+
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
+
+            // When
+            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(1)), "Data from inhired on same level not found");
+            Assert.True(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(3)), "Data from inhired not found on same level");
+            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(3)), "Data from inhired not found from level abouve");
+            Assert.False(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(1)), "Data from inhired on level below found");
+        }
+
 
 
 
