@@ -75,55 +75,69 @@ namespace Wyam.Modules.Metadata
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             //Find MetadataFles
-            var metadataDictinary = inputs.Where(x => _isLocalMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
 
-            var metadataInhiredDictinary = inputs.Where(x => _isInheritMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
+            var metadataDictinary = inputs.Select(x =>
+            {
+                var found = _metadataFile
+                .Select((y, index) => new { Index = index, MetadataFileEntry = y })
+                .FirstOrDefault(y => y.MetadataFileEntry.MetadataFileName.Invoke<bool>(x, context));
+                if (found == null)
+                    return null;
+                return new
+                {
+                    Priority = found.Index,
+                    Path = Path.GetDirectoryName(x.Source),
+                    found.MetadataFileEntry,
+                    x.Metadata
+                };
+            })
+            .Where(x => x != null)
+            .ToLookup(x => x.Path)
+            .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+
             // Apply Metadata
 
             return inputs
-                .Where(x => _preserveMetadataFiles || !(_isLocalMetadata.Invoke<bool>(x, context) || _isInheritMetadata.Invoke<bool>(x, context))) // ignore files that define Metadata if not preserved
+                .Where(x => _preserveMetadataFiles || !(_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(x, context)))) // ignore files that define Metadata if not preserved
                 .Select(x =>
                 {
                     // First add the inhired Metadata to temp dictenary.
                     string dir = Path.GetDirectoryName(x.Source);
-                    List<string> metadataPathes = new List<string>();
+                    List<string> sourcePathes = new List<string>();
                     while (dir.StartsWith(context.InputFolder))
                     {
-                        if (metadataInhiredDictinary.ContainsKey(dir))
-                        {
-                            metadataPathes.Add(dir);
-                        }
+                        sourcePathes.Add(dir);
                         dir = Path.GetDirectoryName(dir);
                     }
-                    metadataPathes.Reverse(); // starting with the top most directory, so subdirectorys overide higher ones.
-                    Dictionary<string, object> newMetadata = new Dictionary<string, object>();
-                    foreach (var metadataFile in metadataPathes)
+
+                    HashSet<string> overriddenKeys = new HashSet<string>(); // we need to know which keys we may override if they are overriden.
+
+                    foreach (var path in sourcePathes)
                     {
-                        foreach (var keyValuePair in metadataInhiredDictinary[metadataFile])
+                        if (!metadataDictinary.ContainsKey(path))
+                            continue;
+
+                        foreach (var metadataEntry in metadataDictinary[path])
                         {
-                            newMetadata[keyValuePair.Key] = keyValuePair.Value;
+                            foreach (var keyValuePair in metadataEntry.Metadata)
+                            {
+                                if (overriddenKeys.Contains(keyValuePair.Key))
+                                    continue; // The value was already written.
+
+                                if (x.Metadata.ContainsKey(keyValuePair.Key)
+                                    && !metadataEntry.MetadataFileEntry.Override)
+                                    continue; // The value alredy exists and this metadatafile has no override
+
+                                // We can add the value.
+                                overriddenKeys.Add(keyValuePair.Key); // no other MetadataFile may overide it.
+
+                                // Could this be a performance problem ??
+                                x = x.Clone(new KeyValuePair<string, object>[] { keyValuePair });
+                            }
                         }
                     }
 
-                    //Seccond Add the nonInhiredMetadata to Dictenary
-                    dir = Path.GetDirectoryName(x.Source);
-                    if (metadataDictinary.ContainsKey(dir))
-                    {
-                        foreach (var keyValuePair in metadataDictinary[dir])
-                        {
-                            newMetadata[keyValuePair.Key] = keyValuePair.Value;
-                        }
-                    }
 
-                    // Check Overide Condition
-                    var metadata = newMetadata as IEnumerable<KeyValuePair<string, object>>;
-                    if (!_override) // Wir löschen alle Einträge welche bereits in der Datei vorhanden sind.
-                    {
-                        metadata = metadata.Where(m => !x.ContainsKey(m.Key));
-                    }
-
-                    if (metadata.Any())
-                        return x.Clone(metadata);
                     return x;
                 });
         }

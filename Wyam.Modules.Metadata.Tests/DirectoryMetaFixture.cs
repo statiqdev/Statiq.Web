@@ -14,7 +14,7 @@ using Wyam.Modules.Metadata;
 namespace Wyam.Modules.Html.Tests
 {
     [TestFixture]
-    public class AutoLinkFixture
+    public class DirectoryMetaFixture
     {
         [Test]
         public void MetadataObjectsAreFilterd()
