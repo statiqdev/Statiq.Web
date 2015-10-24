@@ -212,18 +212,21 @@ namespace Wyam.Modules.Html.Tests
         private const string SITE = @"site.md";
 
 
-        private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary)
+        private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary, params string[] pathArray)
         {
             context = GetContext();
-            string[] pathArray =
+            if (pathArray.Length == 0)
             {
-                SITE,
-                LOCAL,
-                INHIRED,
-                SUB_SITE,
-                SUB_LOCAL,
-                SUB_INHIRED
-            };
+                pathArray = new string[]
+                {
+                    SITE,
+                    LOCAL,
+                    INHIRED,
+                    SUB_SITE,
+                    SUB_LOCAL,
+                    SUB_INHIRED
+               };
+            }
 
             var documentsArray = pathArray.Select((path, index) => new
             {
@@ -255,7 +258,7 @@ namespace Wyam.Modules.Html.Tests
 
         private string ListMetadata(params int[] whereHas)
         {
-            return ListAllMetadata(whereHas.Max()+1, whereHas as IEnumerable<int>).Single();
+            return ListAllMetadata(whereHas.Max() + 1, whereHas as IEnumerable<int>).Single();
         }
 
         private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas, IEnumerable<int> whereDoesnt = null)
