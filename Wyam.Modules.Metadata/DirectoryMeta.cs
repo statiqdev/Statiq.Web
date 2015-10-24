@@ -41,71 +41,23 @@ namespace Wyam.Modules.Metadata
     /// </remarks>
     public class DirectoryMeta : IModule
     {
-        private DocumentConfig _isLocalMetadata;
-        private DocumentConfig _isInheritMetadata;
-        private bool _override;
         private bool _preserveMetadataFiles;
+        private readonly List<MetaFileEntry> _metadataFile = new List<MetaFileEntry>();
 
-
-        public DirectoryMeta()
-        {
-            _isLocalMetadata = (x, y) => Path.GetFileName(x.Source) == "local.metadata";
-            _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == "inherit.metadata";
-        }
-
-        /// <summary>
-        /// This allows directory metadata to override file metadata.
-        /// </summary>
-        /// <returns>The current Object</returns>
-        public DirectoryMeta WithOverride()
-        {
-            _override = true;
-            return this;
-        }
 
         /// <summary>
         /// This preserves the files that hold the directory metadata. Without this option theses files will be consumed by this module and will not be present in the following Modules.
         /// </summary>
         /// <returns>The current Object</returns>
-        public DirectoryMeta WithPreserveMetadataFiles()
+        public DirectoryMeta WithMetadataFile(DocumentConfig metadataFileName, bool inherited = false, bool @override = false)
         {
-            _preserveMetadataFiles = true;
+            _metadataFile.Add(new MetaFileEntry(metadataFileName, inherited, @override));
             return this;
         }
 
-        public DirectoryMeta WithMetadata(DocumentConfig isMetadata)
+        public DirectoryMeta WithMetadataFile(string metadataFileName, bool inherited = false, bool @override = false)
         {
-            _isLocalMetadata = isMetadata;
-            return this;
-        }
-        public DirectoryMeta WithinheritMetadata(DocumentConfig isInhiredMetadata)
-        {
-            _isInheritMetadata = isInhiredMetadata;
-            return this;
-        }
-
-        /// <summary>
-        /// This sets the filename where the metadata is found for a directory.
-        /// The metadata applies only to the current directory.
-        /// </summary>
-        /// <param name="metadataFileName">The filename</param>
-        /// <returns>The current Object</returns>
-        public DirectoryMeta WithMetadata(string metadataFileName)
-        {
-            _isLocalMetadata = (x, y) => Path.GetFileName(x.Source) == metadataFileName;
-            return this;
-        }
-
-        /// <summary>
-        /// This sets the filename where the metadata is found for a directory.
-        /// The metadata applies to the current directory and all sub directorys.
-        /// </summary>
-        /// <param name="metadataFileName">The filename</param>
-        /// <returns>The current Object</returns>
-        public DirectoryMeta WithinheritMetadata(string inhiredMetadataFileName)
-        {
-            _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == inhiredMetadataFileName;
-            return this;
+            return WithMetadataFile((x, y) => Path.GetFileName(x.Source) == metadataFileName, inherited, @override);
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -164,5 +116,18 @@ namespace Wyam.Modules.Metadata
                 });
         }
 
+        private class MetaFileEntry
+        {
+            public bool Inherited { get; }
+            public DocumentConfig MetadataFileName { get; }
+            public bool Override { get; }
+
+            public MetaFileEntry(DocumentConfig metadataFileName, bool inherited, bool @override)
+            {
+                this.MetadataFileName = metadataFileName;
+                this.Inherited = inherited;
+                this.Override= @override;
+            }
+        }
     }
 }
