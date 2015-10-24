@@ -42,7 +42,7 @@ namespace Wyam.Modules.Metadata
     public class DirectoryMetadata : IModule
     {
         private DocumentConfig _isLocalMetadata;
-        private DocumentConfig _isInhiredMetadata;
+        private DocumentConfig _isInheritMetadata;
         private bool _override;
         private bool _preserveMetadataFiles;
 
@@ -50,7 +50,7 @@ namespace Wyam.Modules.Metadata
         public DirectoryMetadata()
         {
             _isLocalMetadata = (x, y) => Path.GetFileName(x.Source) == "local.metadata";
-            _isInhiredMetadata = (x, y) => Path.GetFileName(x.Source) == "inhired.metadata";
+            _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == "inherit.metadata";
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace Wyam.Modules.Metadata
             _isLocalMetadata = isMetadata;
             return this;
         }
-        public DirectoryMetadata WithInhiredMetadata(DocumentConfig isInhiredMetadata)
+        public DirectoryMetadata WithinheritMetadata(DocumentConfig isInhiredMetadata)
         {
-            _isInhiredMetadata = isInhiredMetadata;
+            _isInheritMetadata = isInhiredMetadata;
             return this;
         }
 
@@ -102,9 +102,9 @@ namespace Wyam.Modules.Metadata
         /// </summary>
         /// <param name="metadataFileName">The filename</param>
         /// <returns>The current Object</returns>
-        public DirectoryMetadata WithInhiredMetadata(string inhiredMetadataFileName)
+        public DirectoryMetadata WithinheritMetadata(string inhiredMetadataFileName)
         {
-            _isInhiredMetadata = (x, y) => Path.GetFileName(x.Source) == inhiredMetadataFileName;
+            _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == inhiredMetadataFileName;
             return this;
         }
 
@@ -113,11 +113,11 @@ namespace Wyam.Modules.Metadata
             //Find MetadataFles
             var metadataDictinary = inputs.Where(x => _isLocalMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
 
-            var metadataInhiredDictinary = inputs.Where(x => _isInhiredMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
+            var metadataInhiredDictinary = inputs.Where(x => _isInheritMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
             // Apply Metadata
 
             return inputs
-                .Where(x => _preserveMetadataFiles || !(_isLocalMetadata.Invoke<bool>(x, context) || _isInhiredMetadata.Invoke<bool>(x, context))) // ignore files that define Metadata if not preserved
+                .Where(x => _preserveMetadataFiles || !(_isLocalMetadata.Invoke<bool>(x, context) || _isInheritMetadata.Invoke<bool>(x, context))) // ignore files that define Metadata if not preserved
                 .Select(x =>
                 {
                     // First add the inhired Metadata to temp dictenary.

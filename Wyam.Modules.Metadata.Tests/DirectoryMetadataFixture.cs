@@ -28,13 +28,13 @@ namespace Wyam.Modules.Html.Tests
             IExecutionContext context = GetContext();
 
             IDocument[] documents = {
-                GetDocumentWithMetadata(@"test\1\loca.metadata",
+                GetDocumentWithMetadata(@"test\1\local.metadata",
                     new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\1\inhired.metadata",
+                GetDocumentWithMetadata(@"test\1\inherit.metadata",
                     new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\loca.metadata",
+                GetDocumentWithMetadata(@"test\local.metadata",
                     new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\inhired.metadata",
+                GetDocumentWithMetadata(@"test\inherit.metadata",
                     new KeyValuePair<string, object>("m1",1)),
                 GetDocumentWithMetadata(@"test\1\site.md",
                     new KeyValuePair<string, object>("m1",1)),
