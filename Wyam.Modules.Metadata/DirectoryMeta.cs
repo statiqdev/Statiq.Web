@@ -39,7 +39,7 @@ namespace Wyam.Modules.Metadata
     /// By default files that define metadata will be filterd by this Module
     /// and does not exist in the output. To change this use PreserveMetadataFiles.
     /// </remarks>
-    public class DirectoryMetadata : IModule
+    public class DirectoryMeta : IModule
     {
         private DocumentConfig _isLocalMetadata;
         private DocumentConfig _isInheritMetadata;
@@ -47,7 +47,7 @@ namespace Wyam.Modules.Metadata
         private bool _preserveMetadataFiles;
 
 
-        public DirectoryMetadata()
+        public DirectoryMeta()
         {
             _isLocalMetadata = (x, y) => Path.GetFileName(x.Source) == "local.metadata";
             _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == "inherit.metadata";
@@ -57,7 +57,7 @@ namespace Wyam.Modules.Metadata
         /// This allows directory metadata to override file metadata.
         /// </summary>
         /// <returns>The current Object</returns>
-        public DirectoryMetadata WithOverride()
+        public DirectoryMeta WithOverride()
         {
             _override = true;
             return this;
@@ -67,18 +67,18 @@ namespace Wyam.Modules.Metadata
         /// This preserves the files that hold the directory metadata. Without this option theses files will be consumed by this module and will not be present in the following Modules.
         /// </summary>
         /// <returns>The current Object</returns>
-        public DirectoryMetadata WithPreserveMetadataFiles()
+        public DirectoryMeta WithPreserveMetadataFiles()
         {
             _preserveMetadataFiles = true;
             return this;
         }
 
-        public DirectoryMetadata WithMetadata(DocumentConfig isMetadata)
+        public DirectoryMeta WithMetadata(DocumentConfig isMetadata)
         {
             _isLocalMetadata = isMetadata;
             return this;
         }
-        public DirectoryMetadata WithinheritMetadata(DocumentConfig isInhiredMetadata)
+        public DirectoryMeta WithinheritMetadata(DocumentConfig isInhiredMetadata)
         {
             _isInheritMetadata = isInhiredMetadata;
             return this;
@@ -90,7 +90,7 @@ namespace Wyam.Modules.Metadata
         /// </summary>
         /// <param name="metadataFileName">The filename</param>
         /// <returns>The current Object</returns>
-        public DirectoryMetadata WithMetadata(string metadataFileName)
+        public DirectoryMeta WithMetadata(string metadataFileName)
         {
             _isLocalMetadata = (x, y) => Path.GetFileName(x.Source) == metadataFileName;
             return this;
@@ -102,7 +102,7 @@ namespace Wyam.Modules.Metadata
         /// </summary>
         /// <param name="metadataFileName">The filename</param>
         /// <returns>The current Object</returns>
-        public DirectoryMetadata WithinheritMetadata(string inhiredMetadataFileName)
+        public DirectoryMeta WithinheritMetadata(string inhiredMetadataFileName)
         {
             _isInheritMetadata = (x, y) => Path.GetFileName(x.Source) == inhiredMetadataFileName;
             return this;
