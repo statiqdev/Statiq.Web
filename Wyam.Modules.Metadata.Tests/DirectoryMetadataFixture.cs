@@ -16,14 +16,6 @@ namespace Wyam.Modules.Html.Tests
     [TestFixture]
     public class AutoLinkFixture
     {
-        private const string ROOT = @"c:\wyam\";
-        private const string SUB_LOCAL = @"1\local.metadata";
-        private const string SUB_INHIRED = @"1\inherit.metadata";
-        private const string LOCAL = @"local.metadata";
-        private const string INHIRED = @"inherit.metadata";
-        private const string SUB_SITE = @"1\site.md";
-        private const string SITE = @"site.md";
-
         [Test]
         public void MetadataObjectsAreFilterd()
         {
@@ -44,7 +36,6 @@ namespace Wyam.Modules.Html.Tests
             Assert.AreEqual(2, returnedDocuments.Count);
         }
 
-
         [Test]
         public void MetadataObjectsAreNotFilterdIfPreserved()
         {
@@ -64,7 +55,6 @@ namespace Wyam.Modules.Html.Tests
             // Then
             Assert.AreEqual(6, returnedDocuments.Count);
         }
-
 
         [Test]
         public void TestIfLocal()
@@ -125,7 +115,6 @@ namespace Wyam.Modules.Html.Tests
                 "Data from inhired on level below found");
         }
 
-
         [Test]
         public void TestOverrideBehavior()
         {
@@ -147,8 +136,7 @@ namespace Wyam.Modules.Html.Tests
             // if Metadata is in all take from original file
             Assert.AreEqual(documentsIndex[documents[SUB_SITE]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_SITE]],
+                    [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[SUB_LOCAL]],
                         documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
@@ -157,8 +145,7 @@ namespace Wyam.Modules.Html.Tests
             // if File metadata is Missinge it must be from sub_local
             Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_LOCAL]],
+                    [ListMetadata(documentsIndex[documents[SUB_LOCAL]],
                         documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {SUB_LOCAL}.");
@@ -166,8 +153,7 @@ namespace Wyam.Modules.Html.Tests
             // if sub_local also missing it is from sub_inhired
             Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_INHIRED]],
+                    [ListMetadata(documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {SUB_INHIRED}.");
         }
@@ -193,19 +179,16 @@ namespace Wyam.Modules.Html.Tests
             // if Metadata is in all take from sub_Local
             Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_SITE]],
+                    [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[SUB_LOCAL]],
                         documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {SUB_LOCAL}.");
 
-
             // if sub_local is missing it is from sub_inhired
             Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_SITE]],
+                    [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {SUB_INHIRED}.");
@@ -213,14 +196,21 @@ namespace Wyam.Modules.Html.Tests
             // if sub_inhired is missing it is from inhired
             Assert.AreEqual(documentsIndex[documents[INHIRED]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListAllMetadata(6,
-                        documentsIndex[documents[SUB_SITE]],
+                    [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {INHIRED}.");
         }
 
-
         #region TestHelper
+
+        private const string ROOT = @"c:\wyam\";
+        private const string SUB_LOCAL = @"1\local.metadata";
+        private const string SUB_INHIRED = @"1\inherit.metadata";
+        private const string LOCAL = @"local.metadata";
+        private const string INHIRED = @"inherit.metadata";
+        private const string SUB_SITE = @"1\site.md";
+        private const string SITE = @"site.md";
+
 
         private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary)
         {
@@ -238,10 +228,10 @@ namespace Wyam.Modules.Html.Tests
             var documentsArray = pathArray.Select((path, index) => new
             {
                 Index = index,
-                Document = GetDocumentWithMetadata(path,
-                    GenerateMetadata(index, pathArray.Length)),
+                Document = GetDocumentWithMetadata(path, GenerateMetadata(index, pathArray.Length)),
                 Path = path
             }).ToArray();
+
             documents = documentsArray.ToDictionary(x => x.Path, x => x.Document);
             documentsIndexLookup = documentsArray.ToDictionary(x => x.Document, x => x.Index);
             var tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
@@ -263,11 +253,11 @@ namespace Wyam.Modules.Html.Tests
             }
         }
 
-
-        private string ListAllMetadata(int max, params int[] whereHas)
+        private string ListMetadata(params int[] whereHas)
         {
-            return ListAllMetadata(max, whereHas as IEnumerable<int>).Single();
+            return ListAllMetadata(whereHas.Max()+1, whereHas as IEnumerable<int>).Single();
         }
+
         private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas, IEnumerable<int> whereDoesnt = null)
         {
             whereHas = whereHas ?? Enumerable.Empty<int>();
