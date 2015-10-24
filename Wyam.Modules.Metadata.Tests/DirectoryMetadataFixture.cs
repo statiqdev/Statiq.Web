@@ -78,7 +78,7 @@ namespace Wyam.Modules.Html.Tests
             // Then
             Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(0)), "Data from local not found");
             Assert.True(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local not found");
-            Assert.True(!cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local one directory obove found.");
+            Assert.False(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local one directory obove found.");
             Assert.AreEqual(6, returnedDocuments.Count);
         }
 
