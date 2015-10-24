@@ -40,22 +40,42 @@ namespace Wyam.Modules.Html.Tests
         }
 
 
+        [Test]
+        public void MetadataObjectsAreNotFilterdIfPreserved()
+        {
+            // Given
+
+            IExecutionContext context;
+            IDocument[] documents;
+            Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary;
+            Setup(out context, out documents, out cloneDictionary);
+
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
+
+            // When
+            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual(6, returnedDocuments.Count);
+        }
+
+
         private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary)
         {
             context = GetContext();
             documents = new IDocument[] {
                 GetDocumentWithMetadata(@"test\1\local.metadata",
-                    new KeyValuePair<string, object>("m1", 1)),
+                    GenerateMetadata(0,6)),
                 GetDocumentWithMetadata(@"test\1\inherit.metadata",
-                    new KeyValuePair<string, object>("m1", 2)),
+                    GenerateMetadata(1,6)),
                 GetDocumentWithMetadata(@"test\local.metadata",
-                    new KeyValuePair<string, object>("m1", 3)),
+                    GenerateMetadata(2,6)),
                 GetDocumentWithMetadata(@"test\inherit.metadata",
-                    new KeyValuePair<string, object>("m1", 4)),
+                    GenerateMetadata(3,6)),
                 GetDocumentWithMetadata(@"test\1\site.md",
-                    new KeyValuePair<string, object>("m1", 5)),
+                    GenerateMetadata(4,6)),
                 GetDocumentWithMetadata(@"test\site.md",
-                    new KeyValuePair<string, object>("m1", 6))
+                    GenerateMetadata(5,6))
             };
             var tempDictionary = new Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>>();
             cloneDictionary = tempDictionary;
@@ -64,6 +84,34 @@ namespace Wyam.Modules.Html.Tests
                 document
                     .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => tempDictionary[document] = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
+            }
+        }
+
+
+        private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas = null, IEnumerable<int> whereDoesnt = null)
+        {
+            whereHas = whereHas ?? Enumerable.Empty<int>();
+            whereDoesnt = whereDoesnt ?? Enumerable.Empty<int>();
+            Func<int, int, bool> check = (index, i) =>
+            {
+                int currentPotenz = (int)Math.Pow(2, index);
+                return (i & currentPotenz) == currentPotenz;
+
+            };
+            for (int i = 0; i < Math.Pow(2, max); i++)
+            {
+                if (whereHas.All(index => check(index, i)) && whereDoesnt.All(index => !check(index, i)))
+                    yield return $"m{i}";
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, object>> GenerateMetadata(int index, int max)
+        {
+            int currentPotenz = (int)Math.Pow(2, index);
+            for (int i = 0; i < Math.Pow(2, max) - 1; i++)
+            {
+                if ((i & currentPotenz) == currentPotenz)
+                    yield return new KeyValuePair<string, object>($"m{i}", index);
             }
         }
 
@@ -93,16 +141,20 @@ namespace Wyam.Modules.Html.Tests
             });
         }
 
-        private IDocument GetDocumentWithMetadata(string relativePath, params KeyValuePair<string, object>[] metadata)
+        private IDocument GetDocumentWithMetadata(string relativePath, IEnumerable<KeyValuePair<string, object>> metadata)
         {
             IDocument document = Substitute.For<IDocument>();
             IMetadata metadataObject = Substitute.For<IMetadata>();
 
             metadataObject.GetEnumerator().Returns(metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
+            metadataObject.Keys.Returns(metadata.Select(x => x.Key));
+            metadataObject.Values.Returns(metadata.Select(x => x.Value));
 
             document.Source.Returns(Path.Combine(ROOT, "input", relativePath));
             document.Metadata.Returns(metadataObject);
             document.GetEnumerator().Returns(metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
+            document.Keys.Returns(metadata.Select(x => x.Key));
+            document.Values.Returns(metadata.Select(x => x.Value));
 
             foreach (var m in metadata)
             {
