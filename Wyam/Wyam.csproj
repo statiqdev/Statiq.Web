@@ -169,6 +169,10 @@
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Modules.Markdown</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Metadata\Wyam.Modules.Metadata.csproj">
+      <Project>{4a7709b5-9626-4471-b70c-f070dc2c2b66}</Project>
+      <Name>Wyam.Modules.Metadata</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Modules.Razor</Name>

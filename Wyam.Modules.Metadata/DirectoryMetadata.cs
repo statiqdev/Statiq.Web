@@ -111,12 +111,12 @@ namespace Wyam.Modules.Metadata
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             //Find MetadataFles
-            var metadataDictinary = inputs.AsParallel().Where(x => _isLocalMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
+            var metadataDictinary = inputs.Where(x => _isLocalMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
 
-            var metadataInhiredDictinary = inputs.AsParallel().Where(x => _isInhiredMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
+            var metadataInhiredDictinary = inputs.Where(x => _isInhiredMetadata.Invoke<bool>(x, context)).Select(x => new { Path = Path.GetDirectoryName(x.Source), Metadata = x.Metadata }).ToDictionary(x => x.Path, x => x.Metadata);
             // Apply Metadata
 
-            return inputs.AsParallel()
+            return inputs
                 .Where(x => _preserveMetadataFiles || !(_isLocalMetadata.Invoke<bool>(x, context) || _isInhiredMetadata.Invoke<bool>(x, context))) // ignore files that define Metadata if not preserved
                 .Select(x =>
                 {
