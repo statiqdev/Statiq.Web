@@ -152,7 +152,7 @@ namespace Wyam.Modules.Html.Tests
                         documentsIndex[documents[SUB_LOCAL]],
                         documentsIndex[documents[SUB_INHIRED]],
                         documentsIndex[documents[INHIRED]]
-                    )],$"Metadata should be the one of the {SUB_SITE}.");
+                    )], $"Metadata should be the one of the {SUB_SITE}.");
 
             // if File metadata is Missinge it must be from sub_local
             Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
@@ -171,6 +171,54 @@ namespace Wyam.Modules.Html.Tests
                         documentsIndex[documents[INHIRED]]
                     )], $"Metadata should be the one of the {SUB_INHIRED}.");
         }
+
+        [Test]
+        public void TestOverrideBehaviorWithOverideEnabled()
+        {
+            // Given
+
+            IExecutionContext context;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
+
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithOverride();
+
+            // When
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+
+            // Then
+
+            // if Metadata is in all take from sub_Local
+            Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_SITE]],
+                        documentsIndex[documents[SUB_LOCAL]],
+                        documentsIndex[documents[SUB_INHIRED]],
+                        documentsIndex[documents[INHIRED]]
+                    )], $"Metadata should be the one of the {SUB_LOCAL}.");
+
+
+            // if sub_local is missing it is from sub_inhired
+            Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_SITE]],
+                        documentsIndex[documents[SUB_INHIRED]],
+                        documentsIndex[documents[INHIRED]]
+                    )], $"Metadata should be the one of the {SUB_INHIRED}.");
+
+            // if sub_inhired is missing it is from inhired
+            Assert.AreEqual(documentsIndex[documents[INHIRED]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_SITE]],
+                        documentsIndex[documents[INHIRED]]
+                    )], $"Metadata should be the one of the {INHIRED}.");
+        }
+
 
         #region TestHelper
 
