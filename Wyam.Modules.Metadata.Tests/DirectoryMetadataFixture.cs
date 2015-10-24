@@ -146,13 +146,13 @@ namespace Wyam.Modules.Html.Tests
             IDocument document = Substitute.For<IDocument>();
             IMetadata metadataObject = Substitute.For<IMetadata>();
 
-            metadataObject.GetEnumerator().Returns(metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
+            metadataObject.GetEnumerator().Returns(x => metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
             metadataObject.Keys.Returns(metadata.Select(x => x.Key));
             metadataObject.Values.Returns(metadata.Select(x => x.Value));
 
             document.Source.Returns(Path.Combine(ROOT, "input", relativePath));
             document.Metadata.Returns(metadataObject);
-            document.GetEnumerator().Returns(metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
+            document.GetEnumerator().Returns(x => metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
             document.Keys.Returns(metadata.Select(x => x.Key));
             document.Values.Returns(metadata.Select(x => x.Value));
 
