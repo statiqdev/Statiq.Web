@@ -135,7 +135,9 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL)
+                .WithMetadataFile(INHIRED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -274,6 +276,7 @@ namespace Wyam.Modules.Html.Tests
             cloneDictionary = tempDictionary;
             foreach (var document in documents.Values)
             {
+                //TODO: Change so muliple recursive calls to clone can be tracked.
                 document
                     .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>

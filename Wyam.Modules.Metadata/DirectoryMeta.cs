@@ -111,33 +111,40 @@ namespace Wyam.Modules.Metadata
                     }
 
                     HashSet<string> overriddenKeys = new HashSet<string>(); // we need to know which keys we may override if they are overriden.
+                    List<KeyValuePair<string, object>> newMetadataKey = new List<KeyValuePair<string, object>>();
 
+                    bool firstLevel = true;
                     foreach (var path in sourcePathes)
                     {
-                        if (!metadataDictinary.ContainsKey(path))
-                            continue;
-
-                        foreach (var metadataEntry in metadataDictinary[path])
+                        if (metadataDictinary.ContainsKey(path))
                         {
-                            foreach (var keyValuePair in metadataEntry.Metadata)
+
+                            foreach (var metadataEntry in metadataDictinary[path])
                             {
-                                if (overriddenKeys.Contains(keyValuePair.Key))
-                                    continue; // The value was already written.
+                                if (!firstLevel && !metadataEntry.MetadataFileEntry.Inherited)
+                                    continue; // If we are not in the same directory and inherited isne't activeated 
 
-                                if (x.Metadata.ContainsKey(keyValuePair.Key)
-                                    && !metadataEntry.MetadataFileEntry.Override)
-                                    continue; // The value alredy exists and this metadatafile has no override
+                                foreach (var keyValuePair in metadataEntry.Metadata)
+                                {
+                                    if (overriddenKeys.Contains(keyValuePair.Key))
+                                        continue; // The value was already written.
 
-                                // We can add the value.
-                                overriddenKeys.Add(keyValuePair.Key); // no other MetadataFile may overide it.
+                                    if (x.Metadata.ContainsKey(keyValuePair.Key)
+                                        && !metadataEntry.MetadataFileEntry.Override)
+                                        continue; // The value alredy exists and this metadatafile has no override
 
-                                // Could this be a performance problem ??
-                                x = x.Clone(new KeyValuePair<string, object>[] { keyValuePair });
+                                    // We can add the value.
+                                    overriddenKeys.Add(keyValuePair.Key); // no other MetadataFile may overide it.
+
+                                    newMetadataKey.Add(keyValuePair);
+                                }
                             }
                         }
+                        firstLevel = false;
                     }
 
-
+                    if (newMetadataKey.Any())
+                        return x.Clone(newMetadataKey);
                     return x;
                 });
         }
