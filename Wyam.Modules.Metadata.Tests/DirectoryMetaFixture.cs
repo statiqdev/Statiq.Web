@@ -27,7 +27,9 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL)
+                .WithMetadataFile(INHIRED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -47,7 +49,10 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta().WithPreserveMetadataFiles();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL)
+                .WithMetadataFile(INHIRED, true)
+                .WithPreserveMetadataFiles();
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -67,7 +72,9 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL)
+                .WithMetadataFile(INHIRED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -95,7 +102,9 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL)
+                .WithMetadataFile(INHIRED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -169,7 +178,9 @@ namespace Wyam.Modules.Html.Tests
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMeta directoryMetadata = new DirectoryMeta().WithOverride();
+            DirectoryMeta directoryMetadata = new DirectoryMeta()
+                .WithMetadataFile(LOCAL, @override: true)
+                .WithMetadataFile(INHIRED, true, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
