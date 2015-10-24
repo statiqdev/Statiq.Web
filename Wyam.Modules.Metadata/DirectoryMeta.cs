@@ -45,6 +45,18 @@ namespace Wyam.Modules.Metadata
         private readonly List<MetaFileEntry> _metadataFile = new List<MetaFileEntry>();
 
 
+        /// <summary>  
+        /// This preserves the files that hold the directory metadata. Without this option theses files will be consumed by this module and will not be present in the following Modules.  
+        /// </summary>  
+        /// <returns>The current Object</returns>  
+        public DirectoryMeta WithPreserveMetadataFiles()
+        {
+            _preserveMetadataFiles = true;
+            return this;
+        }
+
+
+
         /// <summary>
         /// This preserves the files that hold the directory metadata. Without this option theses files will be consumed by this module and will not be present in the following Modules.
         /// </summary>
@@ -126,7 +138,7 @@ namespace Wyam.Modules.Metadata
             {
                 this.MetadataFileName = metadataFileName;
                 this.Inherited = inherited;
-                this.Override= @override;
+                this.Override = @override;
             }
         }
     }
