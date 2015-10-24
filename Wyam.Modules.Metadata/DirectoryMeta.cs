@@ -16,25 +16,34 @@ namespace Wyam.Modules.Metadata
     /// </summary>
     /// <remarks>
     /// This Module uses the folder structor of the Source property in the documents to
-    /// determinate which files share there Metadata. There are two ways to define this metadata.
+    /// determinate which files share there Metadata.
     /// 
-    ///  * localy:  by default every metadata defined in a file named "local.metadata"
-    ///             will be added in all files in the same directory.
+    /// This can lead to unexpected behavior if Source is not a path (filesystem).
     /// 
-    ///  * inhired: by default every metadata defined in a file named "inhired.metadata"
-    ///             will be added in all files in the same directory and subdirectorys.
+    /// You can define multiple filenames that will be reagareded as MetadataFiles.
+    /// Use <see cref="WithMetadataFile(string, bool, bool)"/> to define some.
     /// 
-    /// If metadata with the same key but different values is defined on multiple locations.
+    /// This Module ueses whatever Metadata is present in the documents that
+    /// are regareded as MetadataFiles. You can use e.g. Yaml to generate the Metadata.
     /// 
-    /// See following precedence list:
-    ///  * defined in document
-    ///  * defined localy
-    ///  * defined inhired
+    /// The order you register new MetadataFilenames determns the priority which value
+    /// will be used if there is a conflict. Use this list to find out which value will be assigned:
     /// 
-    /// If overide is set this change to following order:
-    ///  * defined localy
-    ///  * defined inhired
-    ///  * defined in document
+    /// * Local value
+    /// * MetadataFiles in the same locataion.
+    ///   - The MetadataFiel that was registered first has the highest priority
+    /// * Metadatafiles in parent firectorys (only if those have the inherited switch set)
+    ///   - The MetadataFile that is less levels abouve has the highest priorety
+    /// 
+    /// For every MetadataFile you define you can pass multiple Options.
+    ///  * **inherited** (default = <c>false</c>)
+    ///                   If this is true metadata will be set on Documents in sub folders.
+    /// 
+    ///  * **override**  (default = <c>false</c>)
+    ///                  Normaly a local value has the highest priorety. With this option set to
+    ///                  true, Metadata in this MetadataFile can override local values in a document.
+    ///                  But it will not override values from other MetadataFiles that have 
+    ///                  a higher priorety
     /// 
     /// By default files that define metadata will be filterd by this Module
     /// and does not exist in the output. To change this use PreserveMetadataFiles.
