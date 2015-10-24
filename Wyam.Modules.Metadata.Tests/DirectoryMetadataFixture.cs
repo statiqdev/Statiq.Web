@@ -74,13 +74,13 @@ namespace Wyam.Modules.Html.Tests
 
             // Then
             Assert.True(cloneDictionary[documents[SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[LOCAL]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[LOCAL]])),
                 "Data from local not found");
             Assert.True(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_LOCAL]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_LOCAL]])),
                 "Data from local not found");
             Assert.False(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[LOCAL]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[LOCAL]])),
                 "Data from local one directory obove found.");
         }
 
@@ -102,16 +102,16 @@ namespace Wyam.Modules.Html.Tests
 
             // Then
             Assert.True(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHIRED]])),
                 "Data from inhired on same level not found");
             Assert.True(cloneDictionary[documents[SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[INHIRED]])),
                 "Data from inhired not found on same level");
             Assert.True(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[INHIRED]])),
                 "Data from inhired not found from level abouve");
             Assert.False(cloneDictionary[documents[SITE]]
-                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHIRED]])),
                 "Data from inhired on level below found");
         }
 
@@ -211,7 +211,29 @@ namespace Wyam.Modules.Html.Tests
         private const string SUB_SITE = @"1\site.md";
         private const string SITE = @"site.md";
 
-
+        /// <summary>
+        /// This Method Helps to Create many Stubs that are used for all tests.
+        /// </summary>
+        /// <param name="context">This is the context that can be used by the test.</param>
+        /// <param name="documents">A dictionary with (relativePath, document)</param>
+        /// <param name="documentsIndexLookup">A directory that has maps an index to every document.</param>
+        /// <param name="cloneDictionary">For every Document that was cloned the new Metadata is stored.</param>
+        /// <param name="pathArray">
+        ///     The Pathes for wich documents will be generated.
+        ///     If empty 6 default documents will be genreated.
+        /// </param>
+        /// <remarks>
+        /// Each document will be generated with metadata.
+        /// 
+        /// The Value of the Metadata is always
+        /// the index that would be returned by the <paramref name="documentsIndexLookup"/>
+        /// for this Document.
+        /// 
+        /// The Key is a string that starts with m and is followed by a number. The total
+        /// number of all different keywords is 2^Number of Documents. And an Document has metadata for all
+        /// Keywords where where the binary representation of the number followed by the m has the nth bit set.
+        /// For every document n is its documentsIndex. 
+        /// </remarks>
         private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary, params string[] pathArray)
         {
             context = GetContext();
@@ -256,36 +278,51 @@ namespace Wyam.Modules.Html.Tests
             }
         }
 
+        /// <summary>
+        /// Returns the Key of the Metadata that is exactly set in all submitted documents.
+        /// </summary>
+        /// <param name="whereHas">The Documents represented by ther index.</param>
+        /// <returns>The keyword that is only available on the reqired documents.</returns>
         private string ListMetadata(params int[] whereHas)
         {
             return ListAllMetadata(whereHas.Max() + 1, whereHas as IEnumerable<int>).Single();
         }
 
-        private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas, IEnumerable<int> whereDoesnt = null)
+        /// <summary>
+        /// Returns all Keywords that are present in <paramref name="whereHas"/> but
+        /// not in <paramref name="whereDoesnt"/>.
+        /// </summary>
+        /// <param name="numberOfDocuments">The total number of documents.</param>
+        /// <param name="whereHas">The Documents that will have the keywords. represented by ther index.</param>
+        /// <param name="whereDoesnt">The Documents that won't have the keywords. represented by ther index.</param>
+        /// <returns>The List of Keywords</returns>
+        private IEnumerable<string> ListAllMetadata(int numberOfDocuments, IEnumerable<int> whereHas, IEnumerable<int> whereDoesnt = null)
         {
             whereHas = whereHas ?? Enumerable.Empty<int>();
-            whereDoesnt = whereDoesnt ?? Enumerable.Range(0, max).Except(whereHas);
+            whereDoesnt = whereDoesnt ?? Enumerable.Range(0, numberOfDocuments).Except(whereHas);
             Func<int, int, bool> check = (index, i) =>
             {
                 int currentPotenz = (int)Math.Pow(2, index);
                 return (i & currentPotenz) == currentPotenz;
 
             };
-            for (int i = 0; i < Math.Pow(2, max); i++)
+            for (int i = 0; i < Math.Pow(2, numberOfDocuments); i++)
             {
                 if (whereHas.All(index => check(index, i)) && whereDoesnt.All(index => !check(index, i)))
                     yield return $"m{i}";
             }
         }
 
-        private string ListMetadataWhereSingel(int singel)
-        {
-            return $"m{(int)Math.Pow(2, singel)}";
-        }
-        private IEnumerable<KeyValuePair<string, object>> GenerateMetadata(int index, int max)
+        /// <summary>
+        /// Generates Metadata for a Document with a Specific index.
+        /// </summary>
+        /// <param name="index">The index of the document.</param>
+        /// <param name="numberOfDocuments">The total amount of Documents.</param>
+        /// <returns></returns>
+        private IEnumerable<KeyValuePair<string, object>> GenerateMetadata(int index, int numberOfDocuments)
         {
             int currentPotenz = (int)Math.Pow(2, index);
-            for (int i = 0; i < Math.Pow(2, max) - 1; i++)
+            for (int i = 0; i < Math.Pow(2, numberOfDocuments) - 1; i++)
             {
                 if ((i & currentPotenz) == currentPotenz)
                     yield return new KeyValuePair<string, object>($"m{i}", index);
@@ -300,6 +337,11 @@ namespace Wyam.Modules.Html.Tests
             return context;
         }
 
+        /// <summary>
+        /// Add's convert functionalaty to the ExecutionContext.
+        /// </summary>
+        /// <typeparam name="T">The Type that should be converted.</typeparam>
+        /// <param name="context">The Context that will convert.</param>
         private static void AddTryConvert<T>(IExecutionContext context)
         {
             T anyBool;
@@ -308,7 +350,6 @@ namespace Wyam.Modules.Html.Tests
                 try
                 {
                     x[1] = (T)x[0];
-
                 }
                 catch (InvalidCastException)
                 {
@@ -318,6 +359,12 @@ namespace Wyam.Modules.Html.Tests
             });
         }
 
+        /// <summary>
+        /// Creates a stub of a Document.
+        /// </summary>
+        /// <param name="relativePath">The Path of the Document.</param>
+        /// <param name="metadata">The Metadata of the Document.</param>
+        /// <returns></returns>
         private IDocument GetDocumentWithMetadata(string relativePath, IEnumerable<KeyValuePair<string, object>> metadata)
         {
             IDocument document = Substitute.For<IDocument>();
