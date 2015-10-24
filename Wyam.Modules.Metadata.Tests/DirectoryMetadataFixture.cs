@@ -126,7 +126,51 @@ namespace Wyam.Modules.Html.Tests
         }
 
 
+        [Test]
+        public void TestOverrideBehavior()
+        {
+            // Given
 
+            IExecutionContext context;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
+            Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
+
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata();
+
+            // When
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+
+            // Then
+
+            // if Metadata is in all take from original file
+            Assert.AreEqual(documentsIndex[documents[SUB_SITE]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_SITE]],
+                        documentsIndex[documents[SUB_LOCAL]],
+                        documentsIndex[documents[SUB_INHIRED]],
+                        documentsIndex[documents[INHIRED]]
+                    )],$"Metadata should be the one of the {SUB_SITE}.");
+
+            // if File metadata is Missinge it must be from sub_local
+            Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_LOCAL]],
+                        documentsIndex[documents[SUB_INHIRED]],
+                        documentsIndex[documents[INHIRED]]
+                    )], $"Metadata should be the one of the {SUB_LOCAL}.");
+
+            // if sub_local also missing it is from sub_inhired
+            Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
+                cloneDictionary[documents[SUB_SITE]]
+                    [ListAllMetadata(6,
+                        documentsIndex[documents[SUB_INHIRED]],
+                        documentsIndex[documents[INHIRED]]
+                    )], $"Metadata should be the one of the {SUB_INHIRED}.");
+        }
 
         #region TestHelper
 
@@ -172,10 +216,14 @@ namespace Wyam.Modules.Html.Tests
         }
 
 
-        private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas = null, IEnumerable<int> whereDoesnt = null)
+        private string ListAllMetadata(int max, params int[] whereHas)
+        {
+            return ListAllMetadata(max, whereHas as IEnumerable<int>).Single();
+        }
+        private IEnumerable<string> ListAllMetadata(int max, IEnumerable<int> whereHas, IEnumerable<int> whereDoesnt = null)
         {
             whereHas = whereHas ?? Enumerable.Empty<int>();
-            whereDoesnt = whereDoesnt ?? Enumerable.Empty<int>();
+            whereDoesnt = whereDoesnt ?? Enumerable.Range(0, max).Except(whereHas);
             Func<int, int, bool> check = (index, i) =>
             {
                 int currentPotenz = (int)Math.Pow(2, index);
