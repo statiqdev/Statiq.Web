@@ -25,29 +25,11 @@ namespace Wyam.Modules.Html.Tests
         {
             // Given
 
-            IExecutionContext context = GetContext();
+            IExecutionContext context;
+            IDocument[] documents;
+            Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary;
+            Setup(out context, out documents, out cloneDictionary);
 
-            IDocument[] documents = {
-                GetDocumentWithMetadata(@"test\1\local.metadata",
-                    new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\1\inherit.metadata",
-                    new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\local.metadata",
-                    new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\inherit.metadata",
-                    new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\1\site.md",
-                    new KeyValuePair<string, object>("m1",1)),
-                GetDocumentWithMetadata(@"test\site.md",
-                    new KeyValuePair<string, object>("m1",1))
-            };
-            var cloneDictionary = new Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>>();
-            foreach (var document in documents)
-            {
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                    .Do(x => cloneDictionary[document] = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-            }
             DirectoryMetadata directoryMetadata = new DirectoryMetadata();
 
             // When
@@ -55,6 +37,34 @@ namespace Wyam.Modules.Html.Tests
 
             // Then
             Assert.AreEqual(2, returnedDocuments.Count);
+        }
+
+
+        private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>> cloneDictionary)
+        {
+            context = GetContext();
+            documents = new IDocument[] {
+                GetDocumentWithMetadata(@"test\1\local.metadata",
+                    new KeyValuePair<string, object>("m1", 1)),
+                GetDocumentWithMetadata(@"test\1\inherit.metadata",
+                    new KeyValuePair<string, object>("m1", 2)),
+                GetDocumentWithMetadata(@"test\local.metadata",
+                    new KeyValuePair<string, object>("m1", 3)),
+                GetDocumentWithMetadata(@"test\inherit.metadata",
+                    new KeyValuePair<string, object>("m1", 4)),
+                GetDocumentWithMetadata(@"test\1\site.md",
+                    new KeyValuePair<string, object>("m1", 5)),
+                GetDocumentWithMetadata(@"test\site.md",
+                    new KeyValuePair<string, object>("m1", 6))
+            };
+            var tempDictionary = new Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>>();
+            cloneDictionary = tempDictionary;
+            foreach (var document in documents)
+            {
+                document
+                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                    .Do(x => tempDictionary[document] = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
+            }
         }
 
         private static IExecutionContext GetContext()
