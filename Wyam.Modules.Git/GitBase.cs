@@ -14,13 +14,16 @@ namespace Wyam.Modules.Git
     {
         protected static IEnumerable<CommitInformation> GetCommitInformation(Repository reposetory)
         {
-            return reposetory.Commits.Select(c => CompareTrees(reposetory, c).Select(x => new { ChangeFile = x, Commit = c })).SelectMany(x => x).Select(x => new CommitInformation(x.ChangeFile.Status, new Autor(x.Commit.Author), new Autor(x.Commit.Committer), x.Commit.Message, x.ChangeFile.Path));
+            return reposetory.Commits
+                .Select(c => CompareTrees(reposetory, c).Select(x => new { ChangeFile = x, Commit = c }))
+                .SelectMany(x => x)
+                .Select(x => new CommitInformation(x.ChangeFile.Status, new Author(x.Commit.Author), new Author(x.Commit.Committer), x.Commit.Message, x.ChangeFile.Path));
         }
 
         protected static IEnumerable<ChangeFile> CompareTrees(Repository repo, Commit toCheck)
         {
             Tree commitTree = toCheck.Tree; // Main Tree
-            var parentCommitTrees = toCheck.Parents.Select(x => x.Tree); // Parent Tree
+            var parentCommitTrees = toCheck.Parents.Select(x => x.Tree).ToList(); // Parent Tree
 
             var patch = parentCommitTrees.Select(x => repo.Diff.Compare<Patch>(x, commitTree)).SelectMany(x => x); // Difference
 
