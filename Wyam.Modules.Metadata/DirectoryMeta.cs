@@ -26,6 +26,9 @@ namespace Wyam.Modules.Metadata
     /// This Module ueses whatever Metadata is present in the documents that
     /// are regareded as MetadataFiles. You can use e.g. Yaml to generate the Metadata.
     /// 
+    /// Only Documents in the pipeline will be searchd for MetadataFiles. So both the
+    /// MetadataFiles and the documents that should get the Metadata should be processed by this Module.
+    /// 
     /// The order you register new MetadataFilenames determns the priority which value
     /// will be used if there is a conflict. Use this list to find out which value will be assigned:
     /// 
