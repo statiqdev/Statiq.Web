@@ -17,8 +17,12 @@ namespace Wyam.Modules.Html.Tests
     public class AutoLinkFixture
     {
         private const string ROOT = @"c:\wyam\";
-
-
+        private const string SUB_LOCAL = @"1\local.metadata";
+        private const string SUB_INHIRED = @"1\inherit.metadata";
+        private const string LOCAL = @"local.metadata";
+        private const string INHIRED = @"inherit.metadata";
+        private const string SUB_SITE = @"1\site.md";
+        private const string SITE = @"site.md";
 
         [Test]
         public void MetadataObjectsAreFilterd()
@@ -26,14 +30,15 @@ namespace Wyam.Modules.Html.Tests
             // Given
 
             IExecutionContext context;
-            IDocument[] documents;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out context, out documents, out cloneDictionary);
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
             DirectoryMetadata directoryMetadata = new DirectoryMetadata();
 
             // When
-            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
             // Then
             Assert.AreEqual(2, returnedDocuments.Count);
@@ -46,14 +51,15 @@ namespace Wyam.Modules.Html.Tests
             // Given
 
             IExecutionContext context;
-            IDocument[] documents;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out context, out documents, out cloneDictionary);
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
             DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
 
             // When
-            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
             // Then
             Assert.AreEqual(6, returnedDocuments.Count);
@@ -66,20 +72,26 @@ namespace Wyam.Modules.Html.Tests
             // Given
 
             IExecutionContext context;
-            IDocument[] documents;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out context, out documents, out cloneDictionary);
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata();
 
             // When
-            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(0)), "Data from local not found");
-            Assert.True(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local not found");
-            Assert.False(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(2)), "Data from local one directory obove found.");
-            Assert.AreEqual(6, returnedDocuments.Count);
+            Assert.True(cloneDictionary[documents[SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[LOCAL]])),
+                "Data from local not found");
+            Assert.True(cloneDictionary[documents[SUB_SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_LOCAL]])),
+                "Data from local not found");
+            Assert.False(cloneDictionary[documents[SUB_SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[LOCAL]])),
+                "Data from local one directory obove found.");
         }
 
         [Test]
@@ -88,20 +100,29 @@ namespace Wyam.Modules.Html.Tests
             // Given
 
             IExecutionContext context;
-            IDocument[] documents;
+            IDictionary<string, IDocument> documents;
+            IDictionary<IDocument, int> documentsIndex;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out context, out documents, out cloneDictionary);
+            Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
-            DirectoryMetadata directoryMetadata = new DirectoryMetadata().WithPreserveMetadataFiles();
+            DirectoryMetadata directoryMetadata = new DirectoryMetadata();
 
             // When
-            var returnedDocuments = directoryMetadata.Execute(documents, context).ToList();  // Make sure to materialize the result list
+            var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(1)), "Data from inhired on same level not found");
-            Assert.True(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(3)), "Data from inhired not found on same level");
-            Assert.True(cloneDictionary[documents[4]].ContainsKey(ListMetadataWhereSingel(3)), "Data from inhired not found from level abouve");
-            Assert.False(cloneDictionary[documents[5]].ContainsKey(ListMetadataWhereSingel(1)), "Data from inhired on level below found");
+            Assert.True(cloneDictionary[documents[SUB_SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_INHIRED]])),
+                "Data from inhired on same level not found");
+            Assert.True(cloneDictionary[documents[SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[INHIRED]])),
+                "Data from inhired not found on same level");
+            Assert.True(cloneDictionary[documents[SUB_SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[INHIRED]])),
+                "Data from inhired not found from level abouve");
+            Assert.False(cloneDictionary[documents[SITE]]
+                .ContainsKey(ListMetadataWhereSingel(documentsIndex[documents[SUB_INHIRED]])),
+                "Data from inhired on level below found");
         }
 
 
@@ -109,26 +130,31 @@ namespace Wyam.Modules.Html.Tests
 
         #region TestHelper
 
-        private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary)
+        private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary)
         {
             context = GetContext();
-            documents = new IDocument[] {
-                GetDocumentWithMetadata(@"test\1\local.metadata",
-                    GenerateMetadata(0,6)),
-                GetDocumentWithMetadata(@"test\1\inherit.metadata",
-                    GenerateMetadata(1,6)),
-                GetDocumentWithMetadata(@"test\local.metadata",
-                    GenerateMetadata(2,6)),
-                GetDocumentWithMetadata(@"test\inherit.metadata",
-                    GenerateMetadata(3,6)),
-                GetDocumentWithMetadata(@"test\1\site.md",
-                    GenerateMetadata(4,6)),
-                GetDocumentWithMetadata(@"test\site.md",
-                    GenerateMetadata(5,6))
+            string[] pathArray =
+            {
+                SITE,
+                LOCAL,
+                INHIRED,
+                SUB_SITE,
+                SUB_LOCAL,
+                SUB_INHIRED
             };
+
+            var documentsArray = pathArray.Select((path, index) => new
+            {
+                Index = index,
+                Document = GetDocumentWithMetadata(path,
+                    GenerateMetadata(index, pathArray.Length)),
+                Path = path
+            }).ToArray();
+            documents = documentsArray.ToDictionary(x => x.Path, x => x.Document);
+            documentsIndexLookup = documentsArray.ToDictionary(x => x.Document, x => x.Index);
             var tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
             cloneDictionary = tempDictionary;
-            foreach (var document in documents)
+            foreach (var document in documents.Values)
             {
                 document
                     .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
