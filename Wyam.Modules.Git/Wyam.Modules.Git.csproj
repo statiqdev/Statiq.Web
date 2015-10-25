@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="Author.cs" />
     <Compile Include="CommitInformation.cs" />
+    <Compile Include="GitCommits.cs" />
+    <Compile Include="GitFileCommits.cs" />
     <Compile Include="GitAuthors.cs" />
     <Compile Include="GitBase.cs" />
     <Compile Include="GitContributor.cs" />

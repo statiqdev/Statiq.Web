@@ -17,7 +17,7 @@ namespace Wyam.Modules.Git
             return reposetory.Commits
                 .Select(c => CompareTrees(reposetory, c).Select(x => new { ChangeFile = x, Commit = c }))
                 .SelectMany(x => x)
-                .Select(x => new CommitInformation(x.ChangeFile.Status, new Author(x.Commit.Author), new Author(x.Commit.Committer), x.Commit.Message, x.ChangeFile.Path));
+                .Select(x => new CommitInformation(x.ChangeFile.Status, new Author(x.Commit.Author), new Author(x.Commit.Committer), x.Commit.Message, x.ChangeFile.Path, x.Commit.Sha, x.Commit.Parents.Select(p=>p.Sha)));
         }
 
         protected static IEnumerable<ChangeFile> CompareTrees(Repository repo, Commit toCheck)

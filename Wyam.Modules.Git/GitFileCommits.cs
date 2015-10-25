@@ -8,19 +8,23 @@ using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using LibGit2Sharp;
 using System.IO;
+using Wyam.Common.Configuration;
 
 namespace Wyam.Modules.Git
 {
-    public class GitContributor : GitBase
+    /// <summary>
+    /// This Module adds an Array with all the CommitInformations that are related with this file to the Metadata.
+    /// </summary>
+    public class GitFileCommits : GitBase
     {
         private readonly string _metadataName;
 
-        public GitContributor(string metadataName)
+        public GitFileCommits(string metadataName)
         {
             _metadataName = metadataName;
         }
 
-        public GitContributor() : this("Contributors")
+        public GitFileCommits() : this("Commits")
         {
 
         }
@@ -42,13 +46,8 @@ namespace Wyam.Modules.Git
                     if (!lookup.Contains(relativePath))
                         return x;
 
-                    var commitsOfFile = lookup[relativePath]
-                        .GroupBy(y => y.Author, new SingelUserDistinction())
-                        .ToDictionary(y => y.Key,
-                                    y => y.OrderByDescending(z => z.Author.DateTime).First())
-                        .Select(y => y.Value)
-                        .ToArray();
-
+                    var commitsOfFile = lookup[relativePath].ToArray();
+     
                     return x.Clone(new[]
                     {
                         new KeyValuePair<string, object>(_metadataName, commitsOfFile)
