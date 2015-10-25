@@ -9,8 +9,8 @@ namespace Wyam.Modules.Git
 {
     public class CommitInformation
     {
-        private string Sha { get; }
-        private IEnumerable<string> Parents { get; }
+        public string Sha { get; }
+        public IEnumerable<string> Parents { get; }
         public Author Author { get; }
         public Author Committer { get; }
         public string Message { get; }
@@ -19,7 +19,7 @@ namespace Wyam.Modules.Git
 
 
 
-        public CommitInformation(ChangeKind status, Author author, Author committer, string message, string path, string sha, IEnumerable<string> parents) 
+        public CommitInformation(ChangeKind status, Author author, Author committer, string message, string path, string sha, IEnumerable<string> parents)
         {
             this.Status = status;
             this.Author = author;
