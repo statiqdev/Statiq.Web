@@ -15,16 +15,16 @@ namespace Wyam.Modules.Git
     /// <summary>
     /// This Module adds an Array with all the CommitInformations that are related with this file to the Metadata.
     /// </summary>
-    public class GitCommits : GitBase
+    public class GitFileCommits : GitBase
     {
         private readonly string _metadataName;
 
-        public GitCommits(string metadataName)
+        public GitFileCommits(string metadataName)
         {
             _metadataName = metadataName;
         }
 
-        public GitCommits() : this("Commits")
+        public GitFileCommits() : this("Commits")
         {
 
         }
