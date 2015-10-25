@@ -103,6 +103,7 @@
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Modules\ForEach.cs" />
+    <Compile Include="Modules\Fork.cs" />
     <Compile Include="Modules\GroupBy.cs" />
     <Compile Include="Modules\UnwrittenFiles.cs" />
     <Compile Include="Modules\Index.cs" />
