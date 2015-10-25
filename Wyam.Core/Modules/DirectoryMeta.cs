@@ -9,7 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
-namespace Wyam.Modules.Metadata
+namespace Wyam.Core.Modules
 {
     /// <summary>
     /// This Module allows to specify metadata for Multiple documents in one file.
@@ -73,15 +73,15 @@ namespace Wyam.Modules.Metadata
         /// This preserves the files that hold the directory metadata. Without this option theses files will be consumed by this module and will not be present in the following Modules.
         /// </summary>
         /// <returns>The current Object</returns>
-        public DirectoryMeta WithMetadataFile(DocumentConfig metadataFileName, bool inherited = false, bool @override = false)
+        public DirectoryMeta WithMetadataFile(DocumentConfig metadataFileName, bool inherited = false, bool replace = false)
         {
-            _metadataFile.Add(new MetaFileEntry(metadataFileName, inherited, @override));
+            _metadataFile.Add(new MetaFileEntry(metadataFileName, inherited, replace));
             return this;
         }
 
-        public DirectoryMeta WithMetadataFile(string metadataFileName, bool inherited = false, bool @override = false)
+        public DirectoryMeta WithMetadataFile(string metadataFileName, bool inherited = false, bool replace = false)
         {
-            return WithMetadataFile((x, y) => Path.GetFileName(x.Source) == metadataFileName, inherited, @override);
+            return WithMetadataFile((x, y) => Path.GetFileName(x.Source) == metadataFileName, inherited, replace);
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -142,7 +142,7 @@ namespace Wyam.Modules.Metadata
                                         continue; // The value was already written.
 
                                     if (x.Metadata.ContainsKey(keyValuePair.Key)
-                                        && !metadataEntry.MetadataFileEntry.Override)
+                                        && !metadataEntry.MetadataFileEntry.Replace)
                                         continue; // The value already exists and this MetadataFile has no override
 
                                     // We can add the value.
@@ -165,13 +165,13 @@ namespace Wyam.Modules.Metadata
         {
             public bool Inherited { get; }
             public DocumentConfig MetadataFileName { get; }
-            public bool Override { get; }
+            public bool Replace { get; }
 
-            public MetaFileEntry(DocumentConfig metadataFileName, bool inherited, bool @override)
+            public MetaFileEntry(DocumentConfig metadataFileName, bool inherited, bool replace)
             {
                 this.MetadataFileName = metadataFileName;
                 this.Inherited = inherited;
-                this.Override = @override;
+                this.Replace = replace;
             }
         }
     }

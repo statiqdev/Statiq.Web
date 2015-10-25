@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
-using Wyam.Modules.Metadata;
+using Wyam.Core.Modules;
 
-namespace Wyam.Modules.Html.Tests
+namespace Wyam.Core.Tests.Modules
 {
     [TestFixture]
     public class DirectoryMetaFixture
@@ -181,7 +178,7 @@ namespace Wyam.Modules.Html.Tests
             Setup(out context, out documents, out documentsIndex, out cloneDictionary);
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
-                .WithMetadataFile(LOCAL, @override: true)
+                .WithMetadataFile(LOCAL, replace: true)
                 .WithMetadataFile(INHIRED, true, true);
 
             // When
