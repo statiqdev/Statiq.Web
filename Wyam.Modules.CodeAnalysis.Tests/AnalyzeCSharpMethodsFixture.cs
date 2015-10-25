@@ -117,7 +117,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEquivalent(new[] { "439037DE\\66F23CDD.html", "Foo\\414E2165\\A94FD382.html" },
+            CollectionAssert.AreEquivalent(new[] { "global\\439037DE\\66F23CDD.html", "Foo\\414E2165\\A94FD382.html" },
                 results.Where(x => x["Kind"].Equals("Method")).Select(x => x["WritePath"]));
             stream.Dispose();
         }
