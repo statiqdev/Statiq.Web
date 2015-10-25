@@ -42,8 +42,14 @@ namespace Wyam.Modules.Git
                     if (!lookup.Contains(relativePath))
                         return x;
 
-                    var commitsOfFile = lookup[relativePath].Distinct(new SingelUserDistinction()).ToArray();
-                    return x.Clone(new []
+                    var commitsOfFile = lookup[relativePath]
+                        .GroupBy(y => y.Author, new SingelUserDistinction())
+                        .ToDictionary(y => y.Key,
+                                    y => y.OrderByDescending(z => z.Author.DateTime).First())
+                        .Select(y => y.Value)
+                        .ToArray();
+
+                    return x.Clone(new[]
                     {
                         new KeyValuePair<string, object>(_metadataName, commitsOfFile)
                     });
@@ -60,16 +66,16 @@ namespace Wyam.Modules.Git
         }
 
 
-        private class SingelUserDistinction : IEqualityComparer<CommitInformation>
+        private class SingelUserDistinction : IEqualityComparer<Author>
         {
-            public bool Equals(CommitInformation x, CommitInformation y)
+            public bool Equals(Author x, Author y)
             {
-                return x.Author.Name == y.Author.Name;
+                return x.Name == y.Name;
             }
 
-            public int GetHashCode(CommitInformation obj)
+            public int GetHashCode(Author obj)
             {
-                return obj.Author.Name.GetHashCode();
+                return obj.Name.GetHashCode();
             }
         }
 
