@@ -153,6 +153,10 @@
       <Project>{5c4855a3-89aa-4310-8de1-6aac415d46d9}</Project>
       <Name>Wyam.Modules.Download</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Git\Wyam.Modules.Git.csproj">
+      <Project>{d339951e-dfac-4766-825b-36e69479044b}</Project>
+      <Name>Wyam.Modules.Git</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Images\Wyam.Modules.Images.csproj">
       <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
       <Name>Wyam.Modules.Images</Name>
@@ -168,6 +172,10 @@
     <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Modules.Markdown</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Metadata\Wyam.Modules.Metadata.csproj">
+      <Project>{4a7709b5-9626-4471-b70c-f070dc2c2b66}</Project>
+      <Name>Wyam.Modules.Metadata</Name>
     </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
