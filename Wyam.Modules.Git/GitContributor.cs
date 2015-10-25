@@ -70,12 +70,12 @@ namespace Wyam.Modules.Git
         {
             public bool Equals(Author x, Author y)
             {
-                return x.Name == y.Name;
+                return x.Email == y.Email;
             }
 
             public int GetHashCode(Author obj)
             {
-                return obj.Name.GetHashCode();
+                return obj.Email.GetHashCode();
             }
         }
 
