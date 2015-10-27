@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
@@ -215,20 +216,14 @@ namespace Wyam.Core.Pipelines
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline
-            foreach (Document document in _clonedDocuments.Where(x => !resultDocuments.Contains(x)))
-            {
-                document.Dispose();
-            }
+            Parallel.ForEach(_clonedDocuments.Where(x => !resultDocuments.Contains(x)), x => x.Dispose());
             _clonedDocuments = new ConcurrentBag<Document>(resultDocuments.OfType<Document>());
 
             // Check the previously processed cache for any previously processed documents that need to be added
             if (_previouslyProcessedCache != null)
             {
                 // Dispose the previously processed documents that we didn't get this time around
-                foreach (Document unhitDocument in _previouslyProcessedCache.ClearUnhitEntries().SelectMany(x => x))
-                {
-                    unhitDocument.Dispose();
-                }
+                Parallel.ForEach(_previouslyProcessedCache.ClearUnhitEntries().SelectMany(x => x), x => x.Dispose());
 
                 // Trace the number of previously processed documents
                 _engine.Trace.Verbose("{0} previously processed document(s) were not reprocessed", _previouslyProcessedCache.GetValues().Sum(x => x.Count));
@@ -269,10 +264,7 @@ namespace Wyam.Core.Pipelines
 
         public void ResetClonedDocuments()
         {
-            foreach (Document document in _clonedDocuments)
-            {
-                document.Dispose();
-            }
+            Parallel.ForEach(_clonedDocuments, x => x.Dispose());
             _clonedDocuments = new ConcurrentBag<Document>();
         }
 
@@ -286,10 +278,7 @@ namespace Wyam.Core.Pipelines
             ResetClonedDocuments();
             if (_previouslyProcessedCache != null)
             {
-                foreach (Document document in _previouslyProcessedCache.GetValues().SelectMany(x => x))
-                {
-                    document.Dispose();
-                }
+                Parallel.ForEach(_previouslyProcessedCache.GetValues().SelectMany(x => x), x => x.Dispose());
             }
         }
     }
