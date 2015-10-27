@@ -238,10 +238,9 @@ namespace Wyam.Core.Documents
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
             CheckDisposed();
-
-            // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
-            _disposeStream = false;
-            return new Document(_pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
+            Document cloned = new Document(_pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
+            _disposeStream = false;  // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
+            return cloned;
         }
 
         // IMetadata

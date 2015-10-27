@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Documents\DocumentFixture.cs" />
     <Compile Include="Modules\BranchConcatFixture.cs" />
     <Compile Include="Configuration\ConfiguratorFixture.cs" />
     <Compile Include="EngineFixture.cs" />
