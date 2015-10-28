@@ -43,9 +43,9 @@ namespace Wyam.Modules.Git
                         return x;
 
                     var commitsOfFile = lookup[relativePath]
-                        .GroupBy(y => y.Author, new SingelUserDistinction())
+                        .GroupBy(y => y.Author)
                         .ToDictionary(y => y.Key,
-                                    y => y.OrderByDescending(z => z.Author.DateTime).First())
+                                    y => y.OrderByDescending(z => z.AuthorDateTime).First())
                         .Select(y => y.Value)
                         .ToArray();
 
@@ -66,18 +66,7 @@ namespace Wyam.Modules.Git
         }
 
 
-        private class SingelUserDistinction : IEqualityComparer<Author>
-        {
-            public bool Equals(Author x, Author y)
-            {
-                return x.Email == y.Email;
-            }
-
-            public int GetHashCode(Author obj)
-            {
-                return obj.Email.GetHashCode();
-            }
-        }
+        
 
     }
 }

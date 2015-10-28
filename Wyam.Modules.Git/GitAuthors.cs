@@ -28,7 +28,7 @@ namespace Wyam.Modules.Git
             {
                 IEnumerable<CommitInformation> data = GetCommitInformation(repository);
 
-                var lookup = data.ToLookup(x => x.Author.Name);
+                var lookup = data.ToLookup(x => x.Author);
 
                 var newDocuments = lookup.Select(x => context.GetNewDocument(new [] {
                     new KeyValuePair<string, object>("Contributor", x.Key),
