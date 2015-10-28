@@ -65,18 +65,7 @@ namespace Wyam.Modules.Git
         }
 
 
-        private class SingelUserDistinction : IEqualityComparer<Author>
-        {
-            public bool Equals(Author x, Author y)
-            {
-                return x.Email == y.Email;
-            }
-
-            public int GetHashCode(Author obj)
-            {
-                return obj.Email.GetHashCode();
-            }
-        }
+        
 
     }
 }
