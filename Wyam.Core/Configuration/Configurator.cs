@@ -23,6 +23,8 @@ namespace Wyam.Core.Configuration
     internal class Configurator : IDisposable
     {
         private readonly Engine _engine;
+        private readonly string _fileName;
+        private readonly bool _outputScripts;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>(); 
@@ -31,9 +33,18 @@ namespace Wyam.Core.Configuration
         private string _configAssemblyFullName;
         private byte[] _rawSetupAssembly;
 
-        public Configurator(Engine engine)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configurator" /> class.
+        /// </summary>
+        /// <param name="engine">The engine.</param>
+        /// <param name="fileName">Name of the input file, used for error reporting.</param>
+        /// <param name="outputScripts">if set to <c>true</c> outputs .cs files for the generated scripts.</param>
+        public Configurator(Engine engine, string fileName, bool outputScripts)
         {
             _engine = engine;
+            _fileName = fileName;
+            _outputScripts = outputScripts;
             _packages = new PackagesCollection(engine);
 
             // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
@@ -255,8 +266,14 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private static byte[] CompileScript(string assemblyName, IEnumerable<Assembly> assemblies, string code, ITrace trace)
+        private byte[] CompileScript(string assemblyName, IEnumerable<Assembly> assemblies, string code, ITrace trace)
         {
+            // Output if requested
+            if (_outputScripts)
+            {
+                File.WriteAllText(Path.Combine(_engine.RootFolder, $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
+            }
+
             // Create the compilation
             var parseOptions = new CSharpParseOptions();
             var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);

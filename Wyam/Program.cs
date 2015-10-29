@@ -47,6 +47,7 @@ namespace Wyam
         private bool _verbose = false;
         private bool _pause = false;
         private bool _updatePackages = false;
+        private bool _outputScripts = false;
         private string _rootFolder = null;
         private string _inputFolder = null;
         private string _outputFolder = null;
@@ -319,6 +320,10 @@ namespace Wyam
                 {
                     _updatePackages = true;
                 }
+                else if (args[c] == "--output-scripts")
+                {
+                    _outputScripts = true;
+                }
                 else if (args[c] == "--verbose")
                 {
                     _verbose = true;
@@ -409,12 +414,12 @@ namespace Wyam
                 if (File.Exists(_configFile))
                 {
                     engine.Trace.Information("Loading configuration from {0}", _configFile);
-                    engine.Configure(File.ReadAllText(_configFile), _updatePackages);
+                    engine.Configure(File.ReadAllText(_configFile), _updatePackages, Path.GetFileName(_configFile), _outputScripts);
                 }
                 else
                 {
                     engine.Trace.Information("Could not find configuration file {0}, using default configuration", _configFile);
-                    engine.Configure(GetDefaultConfigScript(), _updatePackages);
+                    engine.Configure(GetDefaultConfigScript(), _updatePackages, null, _outputScripts);
                 }
             }
             catch (Exception ex)
