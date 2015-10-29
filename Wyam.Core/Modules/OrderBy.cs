@@ -15,6 +15,8 @@ namespace Wyam.Core.Modules
     {
         private readonly DocumentConfig _key;
         private bool _descending;
+        private readonly List<ThenBy> _thenByList = new List<ThenBy>();
+
 
         public OrderBy(DocumentConfig key)
         {
@@ -27,15 +29,32 @@ namespace Wyam.Core.Modules
 
         public OrderBy Descending(bool descending = true)
         {
-            _descending = descending;
+            if (_thenByList.Count == 0)
+                _descending = descending;
+            else
+                _thenByList.Last().Descending = descending;
             return this;
-        } 
+        }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return _descending 
-                ? inputs.OrderByDescending(x => _key(x, context)) 
+            var orderdList = _descending
+                ? inputs.OrderByDescending(x => _key(x, context))
                 : inputs.OrderBy(x => _key(x, context));
+            foreach (var thenBy in _thenByList)
+            {
+                orderdList = thenBy.Descending
+                    ? orderdList.ThenBy(x => thenBy.Key(x, context))
+                    : orderdList.ThenByDescending(x => thenBy.Key(x, context));
+            }
+
+            return orderdList;
+        }
+
+        private class ThenBy
+        {
+            public DocumentConfig Key { get; }
+            public bool Descending { get; set; }
         }
     }
 }
