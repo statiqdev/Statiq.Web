@@ -12,6 +12,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
@@ -132,14 +133,14 @@ namespace Wyam.Core.Modules
                             inputStream.CopyTo(outputStream);
                         }
                         context.Trace.Verbose("Wrote file {0}", path);
-                        return input.Clone(outputStream, new Dictionary<string, object>
+                        return input.Clone(outputStream, new []
                         {
-                            {MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)},
-                            {MetadataKeys.DestinationFileExt, Path.GetExtension(path)},
-                            {MetadataKeys.DestinationFileName, Path.GetFileName(path)},
-                            {MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)},
-                            {MetadataKeys.DestinationFilePath, path},
-                            {MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path)}
+                            Metadata.Create(MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)),
+                            Metadata.Create(MetadataKeys.DestinationFileExt, Path.GetExtension(path)),
+                            Metadata.Create(MetadataKeys.DestinationFileName, Path.GetFileName(path)),
+                            Metadata.Create(MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)),
+                            Metadata.Create(MetadataKeys.DestinationFilePath, path),
+                            Metadata.Create(MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path))
                         });
                     }
                 }

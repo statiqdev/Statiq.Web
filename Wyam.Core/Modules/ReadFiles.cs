@@ -12,6 +12,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
@@ -92,18 +93,18 @@ namespace Wyam.Core.Modules
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);
-                                return input.Clone(file, File.OpenRead(file), new Dictionary<string, object>
+                                return input.Clone(file, File.OpenRead(file), new []
                                 {
-                                    {MetadataKeys.SourceFileRoot, fileRoot},
-                                    {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},
-                                    {MetadataKeys.SourceFileExt, Path.GetExtension(file)},
-                                    {MetadataKeys.SourceFileName, Path.GetFileName(file)},
-                                    {MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)},
-                                    {MetadataKeys.SourceFilePath, file},
-                                    {MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)},
-                                    {MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)},
-                                    {MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))},
-                                    {MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                    Metadata.Create(MetadataKeys.SourceFileRoot, fileRoot),
+                                    Metadata.Create(MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileExt, Path.GetExtension(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileName, Path.GetFileName(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)),
+                                    Metadata.Create(MetadataKeys.SourceFilePath, file),
+                                    Metadata.Create(MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)),
+                                    Metadata.Create(MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)),
+                                    Metadata.Create(MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))),
+                                    Metadata.Create(MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)))
                                 });
                             });
                     }
