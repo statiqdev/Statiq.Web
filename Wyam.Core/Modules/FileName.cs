@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules
 {
     public class FileName : IModule
     {
-	    private readonly IEnumerable<string> _allowedCharacters;
+	    private IEnumerable<string> _allowedCharacters;
 
 	    internal static readonly string[] ReservedChars = new string[]
         {
@@ -85,11 +85,6 @@ namespace Wyam.Core.Modules
             _fileName = (d, c) => d.String(inputKey);
             _outputKey = outputKey;
         }
-
-		public FileName(IEnumerable<string> allowedCharacters) : this()
-		{
-			_allowedCharacters = allowedCharacters;
-		}
 
 	    public FileName(DocumentConfig fileName, string outputKey)
         {
@@ -160,7 +155,12 @@ namespace Wyam.Core.Modules
             });
         }
 
-        private string GetFileName(string fileName)
+		public void WithAllowedCharacters(IEnumerable<string> allowedCharacters)
+		{
+			_allowedCharacters = allowedCharacters;
+		}
+
+		private string GetFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
             {

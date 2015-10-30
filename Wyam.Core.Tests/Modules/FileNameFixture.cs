@@ -45,7 +45,7 @@ namespace Wyam.Core.Tests.Modules
         }
 
 		[Test]
-		public void FileNameDoesNotReplaceGivenCharacters()
+		public void WithAllowedCharactersDoesNotReplaceProvidedCharacters()
 		{
 			// Given
 			string input = "this-is-a-.net-tag";
@@ -59,9 +59,10 @@ namespace Wyam.Core.Tests.Modules
 			{
 				Common.Documents.Metadata.Create("SourceFileName", input)
 			}) };
-			FileName fileName = new FileName(new string[] { "-", "." });
+			FileName fileName = new FileName();
 
 			// When
+			fileName.WithAllowedCharacters(new string[] { "-", "." });
 			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			// Then
