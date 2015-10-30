@@ -17,7 +17,9 @@ namespace Wyam.Core.Modules
 {
     public class FileName : IModule
     {
-        internal static readonly string[] ReservedChars = new string[]
+	    private readonly IEnumerable<string> _allowedCharacters;
+
+	    internal static readonly string[] ReservedChars = new string[]
         {
             "-", ".", "_", "~", ":", "/", "?", "#", "[", "]",
             "@", "!", "$", "&", "'", "(", ")", "*", "+", ",",
@@ -83,8 +85,13 @@ namespace Wyam.Core.Modules
             _fileName = (d, c) => d.String(inputKey);
             _outputKey = outputKey;
         }
-        
-        public FileName(DocumentConfig fileName, string outputKey)
+
+		public FileName(IEnumerable<string> allowedCharacters) : this()
+		{
+			_allowedCharacters = allowedCharacters;
+		}
+
+	    public FileName(DocumentConfig fileName, string outputKey)
         {
             if (fileName == null)
             {
@@ -153,7 +160,7 @@ namespace Wyam.Core.Modules
             });
         }
 
-        private static string GetFileName(string fileName)
+        private string GetFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -164,7 +171,14 @@ namespace Wyam.Core.Modules
             fileName = Regex.Replace(fileName, @"\-{2,}", "");
 
             // Remove reserved chars - doing this as an array reads a lot better than a regex
-            foreach (string token in ReservedChars)
+	        IEnumerable<string> reservedChars = ReservedChars;
+	        if (_allowedCharacters != null)
+	        {
+				// Ignore any characters specified
+		        reservedChars = reservedChars.Except(_allowedCharacters);
+	        }
+
+            foreach (string token in reservedChars)
             {
                 fileName = fileName.Replace(token, "");
             }
