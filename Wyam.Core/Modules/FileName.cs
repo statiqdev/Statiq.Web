@@ -134,6 +134,7 @@ namespace Wyam.Core.Modules
             return inputs.AsParallel().Select(input =>
             {
                 string fileName = _fileName.Invoke<string>(input, context);
+
                 if (!string.IsNullOrWhiteSpace(fileName))
                 {
                     fileName = GetFileName(fileName);
@@ -142,7 +143,7 @@ namespace Wyam.Core.Modules
                         string relativeFileDir = input.String(MetadataKeys.RelativeFileDir);
                         if (!string.IsNullOrWhiteSpace(_pathOutputKey) && !string.IsNullOrWhiteSpace(relativeFileDir))
                         {
-                            return input.Clone(new[]
+							return input.Clone(new[]
                             {
                                 Metadata.Create(_outputKey, fileName),
                                 Metadata.Create(_pathOutputKey, Path.Combine(relativeFileDir, fileName))
@@ -155,9 +156,10 @@ namespace Wyam.Core.Modules
             });
         }
 
-		public void WithAllowedCharacters(IEnumerable<string> allowedCharacters)
+		public FileName WithAllowedCharacters(IEnumerable<string> allowedCharacters)
 		{
 			_allowedCharacters = allowedCharacters;
+			return this;
 		}
 
 		private string GetFileName(string fileName)
@@ -194,6 +196,9 @@ namespace Wyam.Core.Modules
             {
                 fileName = FileNameRegex.Matches(fileName)[0].Value;
             }
+
+			// Urls should not be case-sensitive
+			fileName = fileName.ToLowerInvariant();
 
             return fileName;
         }
