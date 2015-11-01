@@ -19,6 +19,7 @@ namespace Wyam.Core.Modules
     public class WriteFiles : IModule
     {
         private readonly DocumentConfig _path;
+        private bool _useWriteMetadata = true;
         private Func<IDocument, IExecutionContext, bool> _predicate = null; 
 
         // The predicate should return a string
@@ -55,6 +56,15 @@ namespace Wyam.Core.Modules
             _path = (x, y) => x.String(MetadataKeys.RelativeFilePath);
         }
 
+        // By default the metadata values for WritePath, WriteFileName, and WriteExtension are
+        // checked and used first. This can be used to turn off the default behavior and always
+        // rely on the delegate for obtaining the write location.
+        public WriteFiles UseWriteMetadata(bool useWriteMetadata = true)
+        {
+            _useWriteMetadata = useWriteMetadata;
+            return this;
+        }
+
         // The delegate should return a bool
         public WriteFiles Where(DocumentConfig predicate)
         {
@@ -72,27 +82,32 @@ namespace Wyam.Core.Modules
 
         protected string GetPath(IDocument input, IExecutionContext context)
         {
-            // WritePath
-            string path = input.String(MetadataKeys.WritePath);
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                path = PathHelper.NormalizePath(path);
-            }
+            string path = null;
 
-            // WriteFileName
-            if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteFileName)
-                && input.ContainsKey(MetadataKeys.RelativeFileDir))
+            if (_useWriteMetadata)
             {
-                path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
-                    PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
-            }
+                // WritePath
+                path = input.String(MetadataKeys.WritePath);
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    path = PathHelper.NormalizePath(path);
+                }
 
-            // WriteExtension
-            if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteExtension)
-                && input.ContainsKey(MetadataKeys.RelativeFilePath))
-            {
-                path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
-                    input.String(MetadataKeys.WriteExtension));
+                // WriteFileName
+                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteFileName)
+                    && input.ContainsKey(MetadataKeys.RelativeFileDir))
+                {
+                    path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
+                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
+                }
+
+                // WriteExtension
+                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteExtension)
+                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
+                {
+                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
+                        input.String(MetadataKeys.WriteExtension));
+                }
             }
 
             // Func
