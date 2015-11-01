@@ -16,8 +16,8 @@ namespace Wyam.Core.Tests.Modules
     public class FileNameFixture
     {
         [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")]
-        [TestCase("Děku.jemeविकीвики-движка", "Děkujemeविकीвикидвижка")]
+			"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
+        [TestCase("Děku.jemeविकीвики-движка", "děkujemeविकीвикидвижка")]
         [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].", 
             "this-is-my-title-and-some-clever-piece-of-text-here-ok")]
         [TestCase("this is my title?!! /r/science/ and #firstworldproblems :* :sadface=true",
@@ -45,6 +45,30 @@ namespace Wyam.Core.Tests.Modules
         }
 
 		[Test]
+		public void FileNameShouldBeLowercase()
+		{
+			// Given
+			string input = "FileName With MiXeD CapS";
+			string output = "filename-with-mixed-caps";
+
+            Engine engine = new Engine();
+			engine.Trace.AddListener(new TestTraceListener());
+			Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+			IExecutionContext context = new ExecutionContext(engine, pipeline);
+			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
+			{
+				Common.Documents.Metadata.Create("SourceFileName", input)
+			}) };
+			FileName fileName = new FileName();
+
+			// When
+			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+
+			// Then
+			Assert.AreEqual(output, documents.First()["WriteFileName"]);
+		}
+
+		[Test]
 		public void WithAllowedCharactersDoesNotReplaceProvidedCharacters()
 		{
 			// Given
@@ -62,7 +86,7 @@ namespace Wyam.Core.Tests.Modules
 			FileName fileName = new FileName();
 
 			// When
-			fileName.WithAllowedCharacters(new string[] { "-", "." });
+			fileName = fileName.WithAllowedCharacters(new string[] { "-", "." });
 			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			// Then
