@@ -309,5 +309,72 @@ BB
             Assert.AreEqual(@"XX", documents.First().Content);
             Assert.AreEqual(@"YY", documents.Skip(1).First().Content);
         }
+
+        [Test]
+        public void DefaultCtorIgnoresDelimiterOnFirstLine()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            IDocument[] inputs = { new Document(engine, pipeline).Clone(@"---
+FM1
+FM2
+---
+Content1
+Content2") };
+            string frontMatterContent = null;
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
+            {
+                frontMatterContent = x.Content;
+                return new[] { x };
+            }));
+
+            // When
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
+
+            // Then
+            Assert.AreEqual(1, documents.Count());
+            Assert.AreEqual(@"FM1
+FM2
+", frontMatterContent);
+            Assert.AreEqual(@"Content1
+Content2", documents.First().Content);
+        }
+
+        [Test]
+        public void NoIgnoreDelimiterOnFirstLine()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            IDocument[] inputs = { new Document(engine, pipeline).Clone(@"---
+FM1
+FM2
+---
+Content1
+Content2") };
+            string frontMatterContent = null;
+            FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
+            {
+                frontMatterContent = x.Content;
+                return new[] { x };
+            })).IgnoreDelimiterOnFirstLine(false);
+
+            // When
+            IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
+
+            // Then
+            Assert.AreEqual(1, documents.Count());
+            Assert.AreEqual("\n", frontMatterContent);
+            Assert.AreEqual(@"FM1
+FM2
+---
+Content1
+Content2", documents.First().Content);
+        }
     }
 }
