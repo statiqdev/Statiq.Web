@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Pipelines;
 using Metadata = Wyam.Common.Documents.Metadata;
 
@@ -232,6 +234,9 @@ namespace Wyam.Modules.CodeAnalysis
                 metadata.AddRange(new[]
                 {
                     Metadata.Create(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
+                    Metadata.Create(MetadataKeys.RelativeFilePath, (k, m) => m.String(MetadataKeys.WritePath)),
+                    Metadata.Create(MetadataKeys.RelativeFilePathBase, (k, m) => PathHelper.RemoveExtension(m.String(MetadataKeys.WritePath))),
+                    Metadata.Create(MetadataKeys.RelativeFileDir, (k, m) => Path.GetDirectoryName(m.String(MetadataKeys.WritePath))),
                     Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
                 });
 
