@@ -382,7 +382,7 @@ E-
                         }}}}";
 
             // When
-            string actual = configurator.GenerateScript(null, input, moduleTypes, new HashSet<string>());
+            string actual = configurator.GenerateScript(null, input, moduleTypes);
 
             // Then
             Assert.AreEqual(expected, actual);

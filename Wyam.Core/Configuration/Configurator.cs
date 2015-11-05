@@ -28,6 +28,7 @@ namespace Wyam.Core.Configuration
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>(); 
+        private readonly HashSet<string> _namespaces = new HashSet<string>();
         private bool _disposed;
         private Assembly _setupAssembly;
         private string _configAssemblyFullName;
@@ -82,6 +83,8 @@ namespace Wyam.Core.Configuration
         }
 
         public IEnumerable<Assembly> Assemblies => _assemblies.Values;
+
+        public IEnumerable<string> Namespaces => _namespaces; 
 
         public byte[] RawConfigAssembly => _rawSetupAssembly;
 
@@ -214,12 +217,11 @@ namespace Wyam.Core.Configuration
         {
             try
             {
-                HashSet<string> namespaces;
                 HashSet<Type> moduleTypes;
                 using (_engine.Trace.WithIndent().Verbose("Initializing scripting environment"))
                 {
                     // Initial default namespaces
-                    namespaces = new HashSet<string>()
+                    _namespaces.AddRange(new []
                     {
                         "System",
                         "System.Collections.Generic",
@@ -229,10 +231,10 @@ namespace Wyam.Core.Configuration
                         "Wyam.Core",
                         "Wyam.Core.Configuration",
                         "Wyam.Core.Modules"
-                    };
+                    });
 
                     // Also include all Wyam.Common namespaces
-                    namespaces.AddRange(typeof (IModule).Assembly.GetTypes()
+                    _namespaces.AddRange(typeof (IModule).Assembly.GetTypes()
                         .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
                         .Select(x => x.Namespace)
                         .Distinct());
@@ -241,14 +243,14 @@ namespace Wyam.Core.Configuration
                     GetAssemblies();
 
                     // Get modules
-                    moduleTypes = GetModules(namespaces);
+                    moduleTypes = GetModules();
                 }
 
                 using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
                 {
 
                     // Generate the script
-                    code = GenerateScript(declarations, code, moduleTypes, namespaces);
+                    code = GenerateScript(declarations, code, moduleTypes);
 
                     // Load the dynamic assembly and invoke
                     _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
@@ -423,7 +425,7 @@ namespace Wyam.Core.Configuration
             return null;
         }
 
-        private HashSet<Type> GetModules(HashSet<string> namespaces)
+        private HashSet<Type> GetModules()
         {
             HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in _assemblies.Values)
@@ -435,7 +437,7 @@ namespace Wyam.Core.Configuration
                     {
                         _engine.Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
                         moduleTypes.Add(moduleType);
-                        namespaces.Add(moduleType.Namespace);
+                        _namespaces.Add(moduleType.Namespace);
                     }
                 }
             }
@@ -461,11 +463,11 @@ namespace Wyam.Core.Configuration
         }
 
         // This creates a wrapper class for the config script that contains static methods for constructing modules
-        internal string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes, HashSet<string> namespaces)
+        internal string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
-            scriptBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
+            scriptBuilder.AppendLine(string.Join(Environment.NewLine, _namespaces.Select(x => "using " + x + ";")));
             if (declarations != null)
             {
                 scriptBuilder.AppendLine(declarations);

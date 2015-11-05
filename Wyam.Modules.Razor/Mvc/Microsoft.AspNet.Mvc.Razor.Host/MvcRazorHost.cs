@@ -10,6 +10,7 @@ using Microsoft.AspNet.Razor;
 using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Generator.Compiler;
 using Microsoft.AspNet.Razor.Parser;
+using Wyam.Common.Pipelines;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
@@ -20,16 +21,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
         private static readonly string[] _defaultNamespaces = new[]
         {
-            "System",
-            "System.Linq",
-            "System.Collections.Generic",
             "Wyam.Modules.Razor.Microsoft.AspNet.Mvc",
-            "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering",
-            "Wyam.Core"
-            // All Wyam.Common namespaces are added in the constructor
+            "Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering"
         };
 
-        internal MvcRazorHost(Type basePageType)
+        internal MvcRazorHost(IExecutionContext executionContext, Type basePageType)
             : base(new CSharpRazorCodeLanguage())
         {
             DefaultBaseClass = basePageType == null ? DefaultBaseType : basePageType.FullName;
@@ -52,12 +48,8 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             foreach (var ns in _defaultNamespaces)
             {
                 NamespaceImports.Add(ns);
-                NamespaceImports.UnionWith(
-                    typeof(Wyam.Common.Modules.IModule).Assembly.GetTypes()
-                        .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                        .Select(x => x.Namespace)
-                        .Distinct());
             }
+            NamespaceImports.UnionWith(executionContext.Namespaces);
         }
 
         /// <summary>

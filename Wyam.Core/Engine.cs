@@ -50,6 +50,8 @@ namespace Wyam.Core
 
         public IEnumerable<Assembly> Assemblies => _configurator?.Assemblies;
 
+        public IEnumerable<string> Namespaces => _configurator?.Namespaces;
+
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
 
         public bool NoCache
