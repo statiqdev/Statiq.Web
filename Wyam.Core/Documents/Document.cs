@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using Wyam.Common;
@@ -295,6 +296,11 @@ namespace Wyam.Core.Documents
         {
             return _metadata.String(key, defaultValue);
         }
+
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
+        {
+            return _metadata.List<T>(key, defaultValue);
+        } 
 
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {

@@ -24,23 +24,23 @@ namespace Wyam.Modules.CodeAnalysis
         private List<Action> _processActions; 
         private readonly object _processLock = new object();
 
-		public string ExampleHtml { get; private set; } = string.Empty;
-		public string RemarksHtml { get; private set; } = string.Empty;
-		public string SummaryHtml { get; private set; } = string.Empty;
-		public string ReturnsHtml { get; private set; } = string.Empty;
-		public string ValueHtml { get; private set; } = string.Empty;
-		public IReadOnlyList<KeyValuePair<string, string>> ExceptionHtml { get; private set; } 
-			= ImmutableArray<KeyValuePair<string, string>>.Empty;
-		public IReadOnlyList<KeyValuePair<string, string>> PermissionHtml { get; private set; }
-			= ImmutableArray<KeyValuePair<string, string>>.Empty;
-		public IReadOnlyList<KeyValuePair<string, string>> ParamHtml { get; private set; }
-			= ImmutableArray<KeyValuePair<string, string>>.Empty;
-		public IReadOnlyList<KeyValuePair<string, string>> TypeParamHtml { get; private set; }
-			= ImmutableArray<KeyValuePair<string, string>>.Empty;
-		public IReadOnlyList<string> SeeAlsoHtml { get; private set; } 
+		public string Example { get; private set; } = string.Empty;
+		public string Remarks { get; private set; } = string.Empty;
+		public string Summary { get; private set; } = string.Empty;
+		public string Returns { get; private set; } = string.Empty;
+		public string Value { get; private set; } = string.Empty;
+		public IReadOnlyList<ReferenceComment> Exceptions { get; private set; } 
+			= ImmutableArray<ReferenceComment>.Empty;
+		public IReadOnlyList<ReferenceComment> Permissions { get; private set; }
+			= ImmutableArray<ReferenceComment>.Empty;
+		public IReadOnlyList<ReferenceComment> Params { get; private set; }
+			= ImmutableArray<ReferenceComment>.Empty;
+		public IReadOnlyList<ReferenceComment> TypeParams { get; private set; }
+			= ImmutableArray<ReferenceComment>.Empty;
+		public IReadOnlyList<string> SeeAlso { get; private set; } 
 			= ImmutableArray<string>.Empty;
-		public IReadOnlyDictionary<string, IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>> OtherHtml { get; private set; }
-			= ImmutableDictionary<string, IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>.Empty;
+		public IReadOnlyDictionary<string, IReadOnlyList<OtherComment>> OtherComments { get; private set; }
+			= ImmutableDictionary<string, IReadOnlyList<OtherComment>>.Empty;
 
 		public XmlDocumentationParser(
             ISymbol symbol,
@@ -78,7 +78,7 @@ namespace Wyam.Modules.CodeAnalysis
                             }).ToList();
                             if (seeAlsoElements.Count > 0)
                             {
-                                _processActions.Add(() => SeeAlsoHtml = GetSeeAlsoHtml(seeAlsoElements));
+                                _processActions.Add(() => SeeAlso = GetSeeAlsoHtml(seeAlsoElements));
                             }
 
                             // All other top-level elements
@@ -89,31 +89,31 @@ namespace Wyam.Modules.CodeAnalysis
                                 switch (elementName)
                                 {
                                     case "example":
-                                        _processActions.Add(() => ExampleHtml = GetSimpleHtml(group, elementName));
+                                        _processActions.Add(() => Example = GetSimpleComment(group, elementName));
                                         break;
                                     case "remarks":
-                                        _processActions.Add(() => RemarksHtml = GetSimpleHtml(group, elementName));
+                                        _processActions.Add(() => Remarks = GetSimpleComment(group, elementName));
                                         break;
                                     case "summary":
-                                        _processActions.Add(() => SummaryHtml = GetSimpleHtml(group, elementName));
+                                        _processActions.Add(() => Summary = GetSimpleComment(group, elementName));
                                         break;
                                     case "returns":
-                                        _processActions.Add(() => ReturnsHtml = GetSimpleHtml(group, elementName));
+                                        _processActions.Add(() => Returns = GetSimpleComment(group, elementName));
                                         break;
                                     case "value":
-                                        _processActions.Add(() => ValueHtml = GetSimpleHtml(group, elementName));
+                                        _processActions.Add(() => Value = GetSimpleComment(group, elementName));
                                         break;
                                     case "exception":
-                                        _processActions.Add(() => ExceptionHtml = GetKeyedListHtml(group, true, elementName));
+                                        _processActions.Add(() => Exceptions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "permission":
-                                        _processActions.Add(() => PermissionHtml = GetKeyedListHtml(group, true, elementName));
+                                        _processActions.Add(() => Permissions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "param":
-                                        _processActions.Add(() => ParamHtml = GetKeyedListHtml(group, false, elementName));
+                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName));
                                         break;
                                     case "typeparam":
-                                        _processActions.Add(() => TypeParamHtml = GetKeyedListHtml(group, false, elementName));
+                                        _processActions.Add(() => TypeParams = GetReferenceComments(group, false, elementName));
                                         break;
                                     default:
                                         otherElements.Add(group);
@@ -124,7 +124,7 @@ namespace Wyam.Modules.CodeAnalysis
                             // Add and return the custom elements
                             if (otherElements.Count > 0)
                             {
-                                _processActions.Add(() => OtherHtml = otherElements.ToImmutableDictionary(x => x.Key, GetOtherHtml));
+                                _processActions.Add(() => OtherComments = otherElements.ToImmutableDictionary(x => x.Key, GetOtherComments));
                             }
                             return otherElements.Select(x => x.Key);
                         }
@@ -162,8 +162,9 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 return elements.Select(element =>
                 {
-                    bool link;
-                    return GetCrefLinkOrName(element, out link);
+                    string link;
+                    string name = GetCrefNameAndLink(element, out link);
+                    return link ?? name;
                 }).ToImmutableArray();
             }
             catch (Exception ex)
@@ -174,7 +175,7 @@ namespace Wyam.Modules.CodeAnalysis
         }
 
         // <example>, <remarks>, <summary>, <returns>, <value>
-        private string GetSimpleHtml(IEnumerable<XElement> elements, string elementName)
+        private string GetSimpleComment(IEnumerable<XElement> elements, string elementName)
 		{
             try
             {
@@ -195,31 +196,31 @@ namespace Wyam.Modules.CodeAnalysis
 		}
 
         // <exception>, <permission>, <param>, <typeParam>
-        private IReadOnlyList<KeyValuePair<string, string>> GetKeyedListHtml(IEnumerable<XElement> elements, bool keyIsCref, string elementName)
-		{
+        private IReadOnlyList<ReferenceComment> GetReferenceComments(IEnumerable<XElement> elements, bool keyIsCref, string elementName)
+        {
             try
             {
-			    return elements.Select(element =>
-			    {
-				    bool link;
-				    string linkOrName = keyIsCref 
-					    ? GetCrefLinkOrName(element, out link) 
-					    : (element.Attribute("name")?.Value ?? string.Empty);
-				    ProcessChildElements(element);
-				    AddCssClasses(element);
-				    XmlReader reader = element.CreateReader();
-				    reader.MoveToContent();
-				    return new KeyValuePair<string, string>(linkOrName, reader.ReadInnerXml());
-			    }).ToImmutableArray();
+                return elements.Select(element =>
+                {
+                    string link = null;
+                    string name = keyIsCref
+                        ? GetCrefNameAndLink(element, out link)
+                        : (element.Attribute("name")?.Value ?? string.Empty);
+                    ProcessChildElements(element);
+                    AddCssClasses(element);
+                    XmlReader reader = element.CreateReader();
+                    reader.MoveToContent();
+                    return new ReferenceComment(name, link, reader.ReadInnerXml());
+                }).ToImmutableArray();
             }
             catch (Exception ex)
             {
                 _trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
-            return ImmutableArray<KeyValuePair<string, string>>.Empty;
-		}
+            return ImmutableArray<ReferenceComment>.Empty;
+        }
 
-	    private IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>> GetOtherHtml(IEnumerable<XElement> elements)
+        private IReadOnlyList<OtherComment> GetOtherComments(IEnumerable<XElement> elements)
 	    {
 	        try
 	        {
@@ -229,7 +230,7 @@ namespace Wyam.Modules.CodeAnalysis
                     AddCssClasses(element);
                     XmlReader reader = element.CreateReader();
                     reader.MoveToContent();
-                    return new KeyValuePair<IReadOnlyDictionary<string, string>, string>(
+                    return new OtherComment(
                         element.Attributes().Distinct(new XAttributeNameEqualityComparer()).ToImmutableDictionary(x => x.Name.ToString(), x => x.Value),
                         reader.ReadInnerXml());
                 }).ToImmutableArray();
@@ -238,7 +239,7 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 _trace.Warning($"Could not parse other XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
-	        return ImmutableArray<KeyValuePair<IReadOnlyDictionary<string, string>, string>>.Empty;
+	        return ImmutableArray<OtherComment>.Empty;
 	    }
 
 	    private class XAttributeNameEqualityComparer : IEqualityComparer<XAttribute>
@@ -254,16 +255,18 @@ namespace Wyam.Modules.CodeAnalysis
 	        }
 	    }
         
-		private string GetCrefLinkOrName(XElement element, out bool link)
+        // Returns the name and sets link if one could be found (or null if not)
+		private string GetCrefNameAndLink(XElement element, out string link)
 		{
 			XAttribute crefAttribute = element.Attribute("cref");
 			IDocument crefDoc;
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
-				link = true;
-				return $"<a href=\"{crefDoc.Link(MetadataKeys.WritePath)}\">{crefDoc[MetadataKeys.DisplayName]}</a>";
+			    string name = crefDoc.String(MetadataKeys.DisplayName);
+				link = $"<a href=\"{crefDoc.Link(MetadataKeys.WritePath)}\">{name}</a>";
+			    return name;
 			}
-			link = false;
+			link = null;
 			return crefAttribute?.Value.Substring(crefAttribute.Value.IndexOf(':') + 1) ?? string.Empty;
 		}
 
@@ -419,9 +422,9 @@ namespace Wyam.Modules.CodeAnalysis
 		{
 			foreach (XElement seeElement in parentElement.Elements("see"))
 			{
-				bool link;
-				string linkOrName = GetCrefLinkOrName(seeElement, out link);
-				seeElement.ReplaceWith(link ? (object)XElement.Parse(linkOrName) : linkOrName);
+				string link;
+				string name = GetCrefNameAndLink(seeElement, out link);
+				seeElement.ReplaceWith(link != null ? (object)XElement.Parse(link) : name);
 			}
 		}
 	}

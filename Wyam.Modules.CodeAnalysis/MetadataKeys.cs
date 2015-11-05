@@ -20,19 +20,19 @@ namespace Wyam.Modules.CodeAnalysis
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
 
         // Documentation (not present for external symbols)
-        public const string DocumentationCommentXml = "DocumentationCommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string ExampleHtml = "ExampleHtml"; // string, multiple entries are concatenated
-        public const string RemarksHtml = "RemarksHtml"; // string, multiple entries are concatenated
-        public const string SummaryHtml = "SummaryHtml"; // string, multiple entries are concatenated
-        public const string ReturnsHtml = "ReturnsHtml"; // string, multiple entries are concatenated
-        public const string ValueHtml = "ValueHtml"; // string, multiple entries are concatenated
-        public const string ExceptionHtml = "ExceptionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to exception (or name if not found), value = exception HTML
-        public const string PermissionHtml = "PermissionHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = link to permission (or name if not found), value = permission HTML
-        public const string ParamHtml = "ParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
-        public const string TypeParamHtml = "TypeParamHtml"; // IReadOnlyList<KeyValuePair<string, string>>, key = name of param, value = param HTML
-        public const string SeeAlsoHtml = "SeeAlsoHtml"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
+        public const string CommentXml = "CommentXml"; // string, the XML documentation comments (if any) or an empty string
+        public const string Example = "Example"; // string, multiple entries are concatenated
+        public const string Remarks = "Remarks"; // string, multiple entries are concatenated
+        public const string Summary = "Summary"; // string, multiple entries are concatenated
+        public const string Returns = "Returns"; // string, multiple entries are concatenated
+        public const string Value = "Value"; // string, multiple entries are concatenated
+        public const string Exceptions = "Exceptions"; // IReadOnlyList<ReferenceComment>
+        public const string Permissions = "Permissions"; // IReadOnlyList<ReferenceComment>
+        public const string Params = "Params"; // IReadOnlyList<ReferenceComment>
+        public const string TypeParams = "TypeParams"; // IReadOnlyList<ReferenceComment>
+        public const string SeeAlso = "SeeAlso"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
         public const string Syntax = "Syntax"; // string
-        //                  [ElementName]Html // IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>, list of extra documentation elements, key = dictionary of attributes (or empty), value = HTML
+        //                  [ElementName]Comments // IReadOnlyList<OtherComment>, list of extra documentation elements
 
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
@@ -46,14 +46,14 @@ namespace Wyam.Modules.CodeAnalysis
         public const string DerivedTypes = "DerivedTypes"; // IReadOnlyList<IDocument>
         public const string ImplementingTypes = "ImplementingTypes"; // IReadOnlyList<IDocument>
         public const string Constructors = "Constructors"; // IReadOnlyList<IDocument>
-        public const string TypeParams = "TypeParams"; // IReadOnlyList<IDocument>
+        public const string TypeParameters = "TypeParameters"; // IReadOnlyList<IDocument>
         //                  MemberTypes
         
         // Method
         public const string Parameters = "Parameters"; // IDocument
         public const string ReturnType = "ReturnType"; // IDocument, null if returns void
         public const string Overridden = "Overridden"; // IDocument
-        //                  TypeParams
+        //                  TypeParameters
         //                  ContainingType
 
         // Field

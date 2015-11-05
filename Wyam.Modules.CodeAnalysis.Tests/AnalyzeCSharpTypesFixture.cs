@@ -727,8 +727,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEqual(new[] { "T" }, GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParams").Select(x => x["Name"]));
-            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetResult(results, "IBlue").Get<IEnumerable<IDocument>>("TypeParams").Select(x => x["Name"]));
+            CollectionAssert.AreEqual(new[] { "T" }, GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParameters").Select(x => x["Name"]));
+            CollectionAssert.AreEqual(new[] { "TKey", "TValue" }, GetResult(results, "IBlue").Get<IEnumerable<IDocument>>("TypeParameters").Select(x => x["Name"]));
             stream.Dispose();
         }
 
@@ -756,7 +756,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.AreEqual("Red", GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParams").First().Get<IDocument>("DeclaringType")["Name"]);
+            Assert.AreEqual("Red", GetResult(results, "Red").Get<IEnumerable<IDocument>>("TypeParameters").First().Get<IDocument>("DeclaringType")["Name"]);
             stream.Dispose();
         }
 

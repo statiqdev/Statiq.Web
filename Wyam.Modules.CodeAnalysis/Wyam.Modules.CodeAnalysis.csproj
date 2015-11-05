@@ -99,9 +99,11 @@
   <ItemGroup>
     <Compile Include="AnalyzeCSharp.cs" />
     <Compile Include="AnalyzeSymbolVisitor.cs" />
+    <Compile Include="OtherComment.cs" />
     <Compile Include="ReadProject.cs" />
     <Compile Include="ReadSolution.cs" />
     <Compile Include="ReadWorkspace.cs" />
+    <Compile Include="ReferenceComment.cs" />
     <Compile Include="WrappingStringBuilder.cs" />
     <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -36,6 +36,16 @@ namespace Wyam.Core
             IEnumerable enumerable = value is string ? null : value as IEnumerable;
             enumerable = enumerable ?? new[] { value };
 
+            // IReadOnlyList<>
+            if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+            {
+                Type elementType = typeof(T).GetGenericArguments()[0];
+                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
+                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
+                result = (T)converter.ToReadOnlyList(enumerable);
+                return true;
+            }
+
             // IList<>
             if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IList<>))
             {

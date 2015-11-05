@@ -91,7 +91,7 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
                     Metadata.Create(MetadataKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
-                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
+                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters))
                 };
                 if (!_finished)
                 {
@@ -146,7 +146,7 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     Metadata.Create(MetadataKeys.SpecificKind,
                         (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
-                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
+                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType)),
                     Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod))
@@ -275,23 +275,23 @@ namespace Wyam.Modules.CodeAnalysis
             // Add standard HTML elements
             metadata.AddRange(new []
             {
-                Metadata.Create(MetadataKeys.DocumentationCommentXml, documentationCommentXml),
-                Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.Process().ExampleHtml),
-                Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.Process().RemarksHtml),
-                Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.Process().SummaryHtml),
-                Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.Process().ReturnsHtml),
-                Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.Process().ValueHtml),
-                Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.Process().ExceptionHtml),
-                Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.Process().PermissionHtml),
-                Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.Process().ParamHtml),
-                Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.Process().TypeParamHtml),
-                Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.Process().SeeAlsoHtml)
+                Metadata.Create(MetadataKeys.CommentXml, documentationCommentXml),
+                Metadata.Create(MetadataKeys.Example, (k, m) => xmlDocumentationParser.Process().Example),
+                Metadata.Create(MetadataKeys.Remarks, (k, m) => xmlDocumentationParser.Process().Remarks),
+                Metadata.Create(MetadataKeys.Summary, (k, m) => xmlDocumentationParser.Process().Summary),
+                Metadata.Create(MetadataKeys.Returns, (k, m) => xmlDocumentationParser.Process().Returns),
+                Metadata.Create(MetadataKeys.Value, (k, m) => xmlDocumentationParser.Process().Value),
+                Metadata.Create(MetadataKeys.Exceptions, (k, m) => xmlDocumentationParser.Process().Exceptions),
+                Metadata.Create(MetadataKeys.Permissions, (k, m) => xmlDocumentationParser.Process().Permissions),
+                Metadata.Create(MetadataKeys.Params, (k, m) => xmlDocumentationParser.Process().Params),
+                Metadata.Create(MetadataKeys.TypeParams, (k, m) => xmlDocumentationParser.Process().TypeParams),
+                Metadata.Create(MetadataKeys.SeeAlso, (k, m) => xmlDocumentationParser.Process().SeeAlso)
             });
 
             // Add other HTML elements with keys of [ElementName]Html
             metadata.AddRange(otherHtmlElementNames.Select(x => 
-                Metadata.Create(FirstLetterToUpper(x) + "Html",
-                    (k, m) => xmlDocumentationParser.Process().OtherHtml[x])));
+                Metadata.Create(FirstLetterToUpper(x) + "Comments",
+                    (k, m) => xmlDocumentationParser.Process().OtherComments[x])));
         }
 
         public static string FirstLetterToUpper(string str)

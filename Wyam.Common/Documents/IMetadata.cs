@@ -15,6 +15,9 @@ namespace Wyam.Common.Documents
         // This method doesn't throw, equivalent to Get<string>(key, defaultValue)
         string String(string key, string defaultValue = null);
 
+        // This method doesn't throw, equivalent to Get<IReadOnlyList<T>>(key, defaultValue)
+        IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null);
+
         // Another shortcut method that gets strings, but replaces forward-slashes with back-slashes
         // pretty = trailing /index.html will be trimmed
         string Link(string key, string defaultValue = null, bool pretty = true);

@@ -73,6 +73,11 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             return Get<string>(key, defaultValue);
         }
 
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
+        {
+            return Get<IReadOnlyList<T>>(key, defaultValue);
+        }
+
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {
             string value = Get<string>(key, defaultValue);
