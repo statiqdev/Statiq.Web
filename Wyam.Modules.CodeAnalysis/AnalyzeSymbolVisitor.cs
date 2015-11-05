@@ -26,18 +26,21 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly Func<ISymbol, bool> _symbolPredicate;
         private readonly Func<IMetadata, string> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
+        private readonly bool _docsForImplicitSymbols;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
             IExecutionContext context, 
             Func<ISymbol, bool> symbolPredicate, 
             Func<IMetadata, string> writePath, 
-            ConcurrentDictionary<string, string> cssClasses)
+            ConcurrentDictionary<string, string> cssClasses,
+            bool docsForImplicitSymbols)
         {
             _context = context;
             _symbolPredicate = symbolPredicate;
             _writePath = writePath;
             _cssClasses = cssClasses;
+            _docsForImplicitSymbols = docsForImplicitSymbols;
         }
 
         public IEnumerable<IDocument> Finish()
@@ -225,7 +228,8 @@ namespace Wyam.Modules.CodeAnalysis
                 Metadata.Create(MetadataKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
                 Metadata.Create(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
                 Metadata.Create(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace))
+                Metadata.Create(MetadataKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
+                Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
             };
 
             // Add metadata that's specific to initially-processed symbols
@@ -236,15 +240,14 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
                     Metadata.Create(MetadataKeys.RelativeFilePath, (k, m) => m.String(MetadataKeys.WritePath)),
                     Metadata.Create(MetadataKeys.RelativeFilePathBase, (k, m) => PathHelper.RemoveExtension(m.String(MetadataKeys.WritePath))),
-                    Metadata.Create(MetadataKeys.RelativeFileDir, (k, m) => Path.GetDirectoryName(m.String(MetadataKeys.WritePath))),
-                    Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
+                    Metadata.Create(MetadataKeys.RelativeFileDir, (k, m) => Path.GetDirectoryName(m.String(MetadataKeys.WritePath)))
                 });
+            }
 
-                // XML Documentation
-                if (xmlDocumentation)
-                {
-                    AddXmlDocumentation(symbol, metadata);
-                }
+            // XML Documentation
+            if (xmlDocumentation && (!_finished || _docsForImplicitSymbols))
+            {
+                AddXmlDocumentation(symbol, metadata);
             }
 
             // Create the document and add it to the cache

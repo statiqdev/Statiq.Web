@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
@@ -1058,6 +1059,69 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Key["a"]);
             Assert.AreEqual("z",
                 GetResult(results, "Green").Get<IReadOnlyList<KeyValuePair<IReadOnlyDictionary<string, string>, string>>>("BarHtml")[1].Key["b"]);
+            stream.Dispose();
+        }
+
+        [Test]
+        public void NoDocsForImplicitSymbols()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green
+                    {
+                        /// <summary>This is a summary.</summary>
+                        Green() {}
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp()
+                .WhereSymbol(x => x is INamedTypeSymbol);
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.IsFalse(GetResult(results, "Green").Get<IReadOnlyList<IDocument>>("Constructors")[0].ContainsKey("SummaryHtml"));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void WithDocsForImplicitSymbols()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    class Green
+                    {
+                        /// <summary>This is a summary.</summary>
+                        Green() {}
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            IModule module = new AnalyzeCSharp()
+                .WhereSymbol(x => x is INamedTypeSymbol)
+                .WithDocsForImplicitSymbols();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("This is a summary.", GetResult(results, "Green").Get<IReadOnlyList<IDocument>>("Constructors")[0]["SummaryHtml"]);
             stream.Dispose();
         }
     }

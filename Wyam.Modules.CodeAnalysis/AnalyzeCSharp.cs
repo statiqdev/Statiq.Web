@@ -20,6 +20,7 @@ namespace Wyam.Modules.CodeAnalysis
         private Func<ISymbol, bool> _symbolPredicate;
         private Func<IMetadata, string> _writePath;
         private string _writePathPrefix = string.Empty;
+        private bool _docsForImplicitSymbols = false;
 
         // Use an intermediate Dictionary to initialize with defaults
         private readonly ConcurrentDictionary<string, string> _cssClasses 
@@ -48,9 +49,15 @@ namespace Wyam.Modules.CodeAnalysis
 
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, 
-                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses);
+                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses, _docsForImplicitSymbols);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.Finish();
+        }
+
+        public AnalyzeCSharp WithDocsForImplicitSymbols(bool docsForImplicitSymbols = true)
+        {
+            _docsForImplicitSymbols = docsForImplicitSymbols;
+            return this;
         }
 
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)

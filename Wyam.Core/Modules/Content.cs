@@ -11,24 +11,48 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // Overwrites the existing content with the specified content
+    /// <summary>
+    /// Replaces the content of each input document with the string value of the specified content object. In 
+    /// the case where modules are provided, they are executed against an empty initial document and the 
+    /// results are applied to each input document.
+    /// </summary>
     public class Content : ContentModule
     {
+        /// <summary>
+        /// Uses the string value of the specified object as the new content for every input document.
+        /// </summary>
+        /// <param name="content">The new content to use.</param>
         public Content(object content)
             : base(content)
         {
         }
 
+        /// <summary>
+        /// Uses the string value of the returned object as the new content for each document. 
+        /// This allows you to specify different content depending on the execution context.
+        /// </summary>
+        /// <param name="content">A delegate that gets the new content to use.</param>
         public Content(ContextConfig content)
             : base(content)
         {
         }
 
+        /// <summary>
+        /// Uses the string value of the returned object as the new content for each document. This 
+        /// allows you to specify different content for each document depending on the input document.
+        /// </summary>
+        /// <param name="content">A delegate that gets the new content to use.</param>
         public Content(DocumentConfig content) 
             : base(content)
         {
         }
 
+        /// <summary>
+        /// The specified modules are executed against an empty initial document and the results 
+        /// are applied to every input document (possibly creating more than one output 
+        /// document for each input document).
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
         public Content(params IModule[] modules)
             : base(modules)
         {
