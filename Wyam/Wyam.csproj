@@ -177,6 +177,10 @@
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Modules.Razor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Sitemap\Wyam.Modules.Sitemap.csproj">
+      <Project>{58c81bf1-68f4-4593-9e0b-9657148f2683}</Project>
+      <Name>Wyam.Modules.Sitemap</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
       <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
       <Name>Wyam.Modules.TextGeneration</Name>

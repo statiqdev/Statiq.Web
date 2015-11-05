@@ -155,6 +155,7 @@ namespace Wyam.Core.Modules
                             Metadata.Create(MetadataKeys.DestinationFileName, Path.GetFileName(path)),
                             Metadata.Create(MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)),
                             Metadata.Create(MetadataKeys.DestinationFilePath, path),
+                            Metadata.Create(MetadataKeys.RelativeDestinationFilePath, path.Substring(context.OutputFolder.Length)),
                             Metadata.Create(MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path))
                         });
                     }
