@@ -1,0 +1,34 @@
+Pipelines.Add("Posts",
+	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
+	Markdown(),  // Render the markdown content
+	Meta("Post", @doc.Content),  // Move the markdown content to metadata
+	ReadFiles(@"posts\Post.cshtml"),  // Load the Razor post page template
+	Razor(),  // Compile and render the page template
+	Meta("PostFile", string.Format(@"posts/{0}.html", ((string)@doc["Title"]).ToLower().Replace(' ', '-'))),  // Use the post title as the filename and save it in metadata so we can use it in links later
+	WriteFiles((string)@doc["PostFile"]),  // Write the post file 
+	Meta("SitemapItem", new SitemapItem((string)@doc["PostFile"])) // add the relative url of the posts as a sitemap item
+);
+
+Pipelines.Add("Home",
+	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => Path.GetFileName(x)[0] != '_'),
+	Razor(),
+	WriteFiles(".html"),
+	// add all sites to the sitemap, except the about page
+	If((string)@doc["DestinationFileBase"] != "about",
+		Meta("SitemapItem", new SitemapItem((string)@doc["RelativeDestinationFilePath"]){
+			LastModUtc = DateTime.UtcNow,
+			ChangeFrequency = ChangeFrequency.Weekly,
+			Priority = 0.1
+		})
+	)
+);
+
+Pipelines.Add("BuildSitemap",
+	// sitemaps require absolute urls, so we prepend the hostname to all the (relative) urls
+	// you could also add the absolute urls in the first place, then you don't need to prepend the host here
+	Sitemap("sitemap.xml", loc => string.Format("http://www.example.com/{0}", loc.TrimStart('/')))
+);
+
+// the generated sitemap is "minified" for better performance
+// you can "beautify" and also validate the generated sitemap here: http://tools.seochat.com/tools/site-validator/

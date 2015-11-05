@@ -19,6 +19,7 @@
         public const string DestinationFileName = "DestinationFileName";
         public const string DestinationFileDir = "DestinationFileDir";
         public const string DestinationFilePath = "DestinationFilePath";
+        public const string RelativeDestinationFilePath = "RelativeDestinationFilePath";
         public const string DestinationFilePathBase = "DestinationFilePathBase";
         public const string WriteExtension = "WriteExtension";
         public const string WriteFileName = "WriteFileName";
