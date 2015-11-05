@@ -71,11 +71,37 @@ namespace Wyam.Modules.CodeAnalysis
             return this;
         }
 
-        // Limits symbols to the specific namespaces
+        // Limits symbols to the specific namespaces (or all if namespaces in null)
         public AnalyzeCSharp WhereNamespaces(bool includeGlobal, params string[] namespaces)
         {
-            return WhereSymbol(x => (x.Kind == SymbolKind.Namespace && (namespaces.Any(y => x.ToString().StartsWith(y)) || (includeGlobal && ((INamespaceSymbol)x).IsGlobalNamespace)))
-                || (x.ContainingNamespace != null && namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y))));
+            return WhereSymbol(x =>
+            {
+                INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
+                if (namespaceSymbol == null)
+                {
+                    return x.ContainingNamespace != null
+                        && (namespaces.Length == 0 || namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y)));
+                }
+                if (namespaces.Length == 0)
+                {
+                    return includeGlobal || !namespaceSymbol.IsGlobalNamespace;
+                }
+                return (includeGlobal && ((INamespaceSymbol) x).IsGlobalNamespace)
+                    || namespaces.Any(y => x.ToString().StartsWith(y));
+            });
+        }
+
+        public AnalyzeCSharp WhereNamespaces(Func<string, bool> predicate)
+        {
+            return WhereSymbol(x =>
+            {
+                INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
+                if (namespaceSymbol == null)
+                {
+                    return x.ContainingNamespace != null && predicate(x.ContainingNamespace.ToString());
+                }
+                return predicate(namespaceSymbol.ToString());
+            });
         }
 
         // Limits to public and protected symbols (and N/A like parameters)
