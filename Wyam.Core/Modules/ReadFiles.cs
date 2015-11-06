@@ -16,6 +16,32 @@ using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Reads the content of files from the file system into the content of new documents. For each 
+    /// output document, several metadata values are set with information about the file. Note 
+    /// that this module is best at the beginning of a pipeline because it will be executed once 
+    /// for each input document, even if you only specify a search path. If you want to add 
+    /// additional files to a current pipeline, you should enclose your ReadFiles modules with Concat.
+    /// </summary>
+    /// <metadata name="SourceFileRoot">The absolute root search path without any nested directories 
+    /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
+    /// <metadata name="SourceFilePath">The full absolute path of the file (including file name).</metadata>
+    /// <metadata name="SourceFilePathBase">The full absolute path of the file (including file name) 
+    /// without the file extension.</metadata>
+    /// <metadata name="SourceFileBase">The file name without any extension. Equivalent 
+    /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileExt">The extension of the file. Equivalent 
+    /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileName">The full file name. Equivalent 
+    /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileDir">The full absolute directory of the file. 
+    /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
+    /// <metadata name="RelativeFilePath">The relative path to the file (including file name)
+    /// from the Wyam input folder.</metadata>
+    /// <metadata name="RelativeFilePathBase">The relative path to the file (including file name)
+    /// from the Wyam input folder without the file extension.</metadata>
+    /// <metadata name="RelativeFileDir">The relative directory of the file 
+    /// from the Wyam input folder.</metadata>
     public class ReadFiles : IModule
     {
         private readonly DocumentConfig _path;

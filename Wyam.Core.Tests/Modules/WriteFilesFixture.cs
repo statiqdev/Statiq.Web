@@ -124,7 +124,9 @@ namespace Wyam.Core.Tests.Modules
         [TestCase("DestinationFileDir", @"TestFiles\Output\Subfolder")]
         [TestCase("DestinationFilePath", @"TestFiles\Output\Subfolder\write-test.txt")]
         [TestCase("DestinationFilePathBase", @"TestFiles\Output\Subfolder\write-test")]
-        [TestCase("RelativeFilePath", @"Subfolder/write-test.txt")]
+        [TestCase("RelativeFilePath", @"Subfolder\write-test.txt")]
+        [TestCase("RelativeFilePathBase", @"Subfolder\write-test")]
+        [TestCase("RelativeFileDir", @"Subfolder")]
         public void WriteFilesSetsMetadata(string key, string expectedEnding)
         {
             // Given
@@ -147,6 +149,45 @@ namespace Wyam.Core.Tests.Modules
             // Then
             Assert.That(output.Metadata[key], Is.StringEnding(expectedEnding));
             ((IDisposable)output).Dispose();
+        }
+
+        [Test]
+        public void RelativePathsAreConsistentBeforeAndAfterWriteFiles()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.InputFolder = @"TestFiles\Input";
+            engine.OutputFolder = @"TestFiles\Output\";
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(engine, pipeline) };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            ReadFiles readFiles = new ReadFiles(@"test-c.txt");
+            WriteFiles writeFiles = new WriteFiles("txt");
+
+            // When
+            IDocument readFilesDocument = readFiles.Execute(inputs, context).First();
+            object readFilesRelativeFilePath = readFilesDocument.Metadata["RelativeFilePath"];
+            object readFilesRelativeFilePathBase = readFilesDocument.Metadata["RelativeFilePathBase"];
+            object readFilesRelativeFileDir = readFilesDocument.Metadata["RelativeFileDir"];
+            IDocument writeFilesDocument = writeFiles.Execute(new [] { readFilesDocument }, context).First();
+            object writeFilesRelativeFilePath = writeFilesDocument.Metadata["RelativeFilePath"];
+            object writeFilesRelativeFilePathBase = writeFilesDocument.Metadata["RelativeFilePathBase"];
+            object writeFilesRelativeFileDir = writeFilesDocument.Metadata["RelativeFileDir"];
+            foreach (IDocument document in inputs)
+            {
+                ((IDisposable)document).Dispose();
+            }
+
+            // Then
+            Assert.AreEqual(@"Subfolder\test-c.txt", readFilesRelativeFilePath);
+            Assert.AreEqual(@"Subfolder\test-c", readFilesRelativeFilePathBase);
+            Assert.AreEqual(@"Subfolder", readFilesRelativeFileDir);
+            Assert.AreEqual(@"Subfolder\test-c.txt", writeFilesRelativeFilePath);
+            Assert.AreEqual(@"Subfolder\test-c", writeFilesRelativeFilePathBase);
+            Assert.AreEqual(@"Subfolder", writeFilesRelativeFileDir);
+            ((IDisposable)readFilesDocument).Dispose();
+            ((IDisposable)writeFilesDocument).Dispose();
         }
     }
 }
