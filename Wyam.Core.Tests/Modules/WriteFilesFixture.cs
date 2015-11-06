@@ -124,6 +124,7 @@ namespace Wyam.Core.Tests.Modules
         [TestCase("DestinationFileDir", @"TestFiles\Output\Subfolder")]
         [TestCase("DestinationFilePath", @"TestFiles\Output\Subfolder\write-test.txt")]
         [TestCase("DestinationFilePathBase", @"TestFiles\Output\Subfolder\write-test")]
+        [TestCase("RelativeFilePath", @"Subfolder/write-test.txt")]
         public void WriteFilesSetsMetadata(string key, string expectedEnding)
         {
             // Given
