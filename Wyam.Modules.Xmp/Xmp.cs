@@ -69,7 +69,11 @@ namespace Wyam.Modules.Xmp
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     xmpDirectory = ImageMetadataReader.ReadMetadata(x.GetStream()).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
+                     using (var stream = x.GetStream())
+                     {
+
+                         xmpDirectory = ImageMetadataReader.ReadMetadata(stream).OfType<XmpDirectory>().FirstOrDefault();
+                     }
                  }
                  catch (Exception)
                  {
@@ -77,7 +81,7 @@ namespace Wyam.Modules.Xmp
                  }
                  if (xmpDirectory == null) // Try to read sidecarfile
                  {
-                     if(x.ContainsKey("SourceFilePath") &&System.IO.File.Exists(x["SourceFilePath"] + ".xmp"))
+                     if (x.ContainsKey("SourceFilePath") && System.IO.File.Exists(x["SourceFilePath"] + ".xmp"))
                      {
                          string xmpXml = System.IO.File.ReadAllText(x["SourceFilePath"] + ".xmp");
                          xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
@@ -102,7 +106,7 @@ namespace Wyam.Modules.Xmp
                  {
                      try
                      {
-                         
+
                          TreeDirectory metadata = hirachciDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
@@ -266,7 +270,7 @@ namespace Wyam.Modules.Xmp
             {
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
                 List<TreeDirectory> properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
-                    
+
                 foreach (var prop in properties)
                 {
                     obj.Add(prop.ElementName, GetObjectFromMetadata(prop, hirachciDirectory));
@@ -279,7 +283,7 @@ namespace Wyam.Modules.Xmp
 
                 if (metadata.Element.Options.HasLanguage)
                 {
-                    TreeDirectory langMetadata =  metadata.Childrean.Single(x=>x.ElementName=="lang" && x.ElementNameSpace == "http://www.w3.org/XML/1998/namespace");
+                    TreeDirectory langMetadata = metadata.Childrean.Single(x => x.ElementName == "lang" && x.ElementNameSpace == "http://www.w3.org/XML/1998/namespace");
                     System.Globalization.CultureInfo culture;
                     if (langMetadata.ElementValue == "x-default")
                     {
