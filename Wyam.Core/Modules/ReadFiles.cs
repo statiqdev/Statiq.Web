@@ -12,9 +12,36 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Reads the content of files from the file system into the content of new documents. For each 
+    /// output document, several metadata values are set with information about the file. Note 
+    /// that this module is best at the beginning of a pipeline because it will be executed once 
+    /// for each input document, even if you only specify a search path. If you want to add 
+    /// additional files to a current pipeline, you should enclose your ReadFiles modules with Concat.
+    /// </summary>
+    /// <metadata name="SourceFileRoot">The absolute root search path without any nested directories 
+    /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
+    /// <metadata name="SourceFilePath">The full absolute path of the file (including file name).</metadata>
+    /// <metadata name="SourceFilePathBase">The full absolute path of the file (including file name) 
+    /// without the file extension.</metadata>
+    /// <metadata name="SourceFileBase">The file name without any extension. Equivalent 
+    /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileExt">The extension of the file. Equivalent 
+    /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileName">The full file name. Equivalent 
+    /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
+    /// <metadata name="SourceFileDir">The full absolute directory of the file. 
+    /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
+    /// <metadata name="RelativeFilePath">The relative path to the file (including file name)
+    /// from the Wyam input folder.</metadata>
+    /// <metadata name="RelativeFilePathBase">The relative path to the file (including file name)
+    /// from the Wyam input folder without the file extension.</metadata>
+    /// <metadata name="RelativeFileDir">The relative directory of the file 
+    /// from the Wyam input folder.</metadata>
     public class ReadFiles : IModule
     {
         private readonly DocumentConfig _path;
@@ -92,18 +119,18 @@ namespace Wyam.Core.Modules
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);
-                                return input.Clone(file, File.OpenRead(file), new Dictionary<string, object>
+                                return input.Clone(file, File.OpenRead(file), new []
                                 {
-                                    {MetadataKeys.SourceFileRoot, fileRoot},
-                                    {MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)},
-                                    {MetadataKeys.SourceFileExt, Path.GetExtension(file)},
-                                    {MetadataKeys.SourceFileName, Path.GetFileName(file)},
-                                    {MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)},
-                                    {MetadataKeys.SourceFilePath, file},
-                                    {MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)},
-                                    {MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)},
-                                    {MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))},
-                                    {MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file))}
+                                    Metadata.Create(MetadataKeys.SourceFileRoot, fileRoot),
+                                    Metadata.Create(MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileExt, Path.GetExtension(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileName, Path.GetFileName(file)),
+                                    Metadata.Create(MetadataKeys.SourceFileDir, Path.GetDirectoryName(file)),
+                                    Metadata.Create(MetadataKeys.SourceFilePath, file),
+                                    Metadata.Create(MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file)),
+                                    Metadata.Create(MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file)),
+                                    Metadata.Create(MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file))),
+                                    Metadata.Create(MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)))
                                 });
                             });
                     }

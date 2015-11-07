@@ -188,10 +188,15 @@ namespace Wyam.Core.Tests.Modules
             ReadFiles readFiles = new ReadFiles(@"test-c.txt");
 
             // When
-            IDocument document = readFiles.Execute(inputs, context).First();
+            IDocument output = readFiles.Execute(inputs, context).First();
+            foreach (IDocument document in inputs)
+            {
+                ((IDisposable)document).Dispose();
+            }
 
             // Then
-            Assert.That(document.Metadata[key], Is.StringEnding(expectedEnding));
+            Assert.That(output.Metadata[key], Is.StringEnding(expectedEnding));
+            ((IDisposable)output).Dispose();
         }
 
         [Test]

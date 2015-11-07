@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using TB.ComponentModel;
 
@@ -8,6 +9,7 @@ namespace Wyam.Core.Documents
     // These are used by MetadataAs for enumerable conversions, but must be declared outside for easier reflection instantiation
     internal abstract class MetadataTypeConverter
     {
+        public abstract object ToReadOnlyList(IEnumerable enumerable);
         public abstract object ToList(IEnumerable enumerable);
         public abstract object ToArray(IEnumerable enumerable);
         public abstract object ToEnumerable(IEnumerable enumerable);
@@ -15,6 +17,11 @@ namespace Wyam.Core.Documents
 
     internal class MetadataTypeConverter<T> : MetadataTypeConverter
     {
+        public override object ToReadOnlyList(IEnumerable enumerable)
+        {
+            return ConvertEnumerable(enumerable).ToImmutableArray();
+        }
+
         public override object ToList(IEnumerable enumerable)
         {
             return ConvertEnumerable(enumerable).ToList();

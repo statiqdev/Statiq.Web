@@ -217,6 +217,74 @@ namespace Wyam.Core.Tests.Documents
             Assert.AreEqual("a", value);
         }
 
+        [Test]
+        public void ListReturnsCorrectResultForList()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.Metadata["A"] = new List<int> { 1, 2 ,3 };
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            IReadOnlyList<int> result = metadata.List<int>("A");
+
+            // Then
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEqual(result, new [] { 1, 2, 3 });
+        }
+
+        [Test]
+        public void ListReturnsCorrectResultForConvertedStringList()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.Metadata["A"] = new List<string> { "1", "2", "3" };
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            IReadOnlyList<int> result = metadata.List<int>("A");
+
+            // Then
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEqual(result, new[] { 1, 2, 3 });
+        }
+
+        [Test]
+        public void ListReturnsCorrectResultForConvertedIntList()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.Metadata["A"] = new List<int> { 1, 2, 3 };
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            IReadOnlyList<string> result = metadata.List<string>("A");
+
+            // Then
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEqual(result, new[] { "1", "2", "3" });
+        }
+
+        [Test]
+        public void ListReturnsCorrectResultForArray()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.Metadata["A"] = new [] { 1, 2, 3 };
+            Metadata metadata = new Metadata(engine);
+
+            // When
+            IReadOnlyList<int> result = metadata.List<int>("A");
+
+            // Then
+            Assert.IsNotNull(result);
+            CollectionAssert.AreEqual(result, new[] { 1, 2, 3 });
+        }
+
         [TestCase("foo/bar", false, "/foo/bar")]
         [TestCase("foo/bar", true, "/foo/bar")]
         [TestCase("/foo/bar", false, "/foo/bar")]

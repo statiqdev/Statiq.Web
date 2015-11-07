@@ -17,6 +17,7 @@ namespace Wyam.Core.Modules
     public class FrontMatter : IModule
     {
         private readonly string _delimiter;
+        private bool _ignoreDelimiterOnFirstLine = true;
         private readonly bool _repeated;
         private readonly IModule[] _modules;
         
@@ -41,6 +42,12 @@ namespace Wyam.Core.Modules
             _modules = modules;
         }
 
+        public FrontMatter IgnoreDelimiterOnFirstLine(bool ignore = true)
+        {
+            _ignoreDelimiterOnFirstLine = ignore;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             foreach (IDocument input in inputs)
@@ -51,9 +58,19 @@ namespace Wyam.Core.Modules
                     string trimmed = x.TrimEnd();
                     return trimmed.Length > 0 && (_repeated ? trimmed.All(y => y == _delimiter[0]) : trimmed == _delimiter);
                 });
+                int startLine = 0;
+                if (delimiterLine == 0 && _ignoreDelimiterOnFirstLine)
+                {
+                    startLine = 1;
+                    delimiterLine = inputLines.FindIndex(1, x =>
+                    {
+                        string trimmed = x.TrimEnd();
+                        return trimmed.Length > 0 && (_repeated ? trimmed.All(y => y == _delimiter[0]) : trimmed == _delimiter);
+                    });
+                }
                 if (delimiterLine != -1)
                 {
-                    string frontMatter = string.Join("\n", inputLines.Take(delimiterLine)) + "\n";
+                    string frontMatter = string.Join("\n", inputLines.Skip(startLine).Take(delimiterLine - startLine)) + "\n";
                     inputLines.RemoveRange(0, delimiterLine + 1);
                     string content = string.Join("\n", inputLines);
                     foreach (IDocument result in context.Execute(_modules, new[] { input.Clone(frontMatter) }))

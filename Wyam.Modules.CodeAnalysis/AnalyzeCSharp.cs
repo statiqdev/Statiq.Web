@@ -20,6 +20,7 @@ namespace Wyam.Modules.CodeAnalysis
         private Func<ISymbol, bool> _symbolPredicate;
         private Func<IMetadata, string> _writePath;
         private string _writePathPrefix = string.Empty;
+        private bool _docsForImplicitSymbols = false;
 
         // Use an intermediate Dictionary to initialize with defaults
         private readonly ConcurrentDictionary<string, string> _cssClasses 
@@ -48,9 +49,15 @@ namespace Wyam.Modules.CodeAnalysis
 
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, 
-                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses);
+                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses, _docsForImplicitSymbols);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.Finish();
+        }
+
+        public AnalyzeCSharp WithDocsForImplicitSymbols(bool docsForImplicitSymbols = true)
+        {
+            _docsForImplicitSymbols = docsForImplicitSymbols;
+            return this;
         }
 
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
@@ -64,11 +71,37 @@ namespace Wyam.Modules.CodeAnalysis
             return this;
         }
 
-        // Limits symbols to the specific namespaces
+        // Limits symbols to the specific namespaces (or all if namespaces in null)
         public AnalyzeCSharp WhereNamespaces(bool includeGlobal, params string[] namespaces)
         {
-            return WhereSymbol(x => (x.Kind == SymbolKind.Namespace && (namespaces.Any(y => x.ToString().StartsWith(y)) || (includeGlobal && ((INamespaceSymbol)x).IsGlobalNamespace)))
-                || (x.ContainingNamespace != null && namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y))));
+            return WhereSymbol(x =>
+            {
+                INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
+                if (namespaceSymbol == null)
+                {
+                    return x.ContainingNamespace != null
+                        && (namespaces.Length == 0 || namespaces.Any(y => x.ContainingNamespace.ToString().StartsWith(y)));
+                }
+                if (namespaces.Length == 0)
+                {
+                    return includeGlobal || !namespaceSymbol.IsGlobalNamespace;
+                }
+                return (includeGlobal && ((INamespaceSymbol) x).IsGlobalNamespace)
+                    || namespaces.Any(y => x.ToString().StartsWith(y));
+            });
+        }
+
+        public AnalyzeCSharp WhereNamespaces(Func<string, bool> predicate)
+        {
+            return WhereSymbol(x =>
+            {
+                INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
+                if (namespaceSymbol == null)
+                {
+                    return x.ContainingNamespace != null && predicate(x.ContainingNamespace.ToString());
+                }
+                return predicate(namespaceSymbol.ToString());
+            });
         }
 
         // Limits to public and protected symbols (and N/A like parameters)

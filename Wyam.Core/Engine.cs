@@ -50,6 +50,8 @@ namespace Wyam.Core
 
         public IEnumerable<Assembly> Assemblies => _configurator?.Assemblies;
 
+        public IEnumerable<string> Namespaces => _configurator?.Namespaces;
+
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
 
         public bool NoCache
@@ -114,7 +116,7 @@ namespace Wyam.Core
             _pipelines = new PipelineCollection(this);
         }
 
-        public void Configure(string configScript = null, bool updatePackages = false)
+        public void Configure(string configScript = null, bool updatePackages = false, string fileName = null, bool outputScripts = false)
         {
             CheckDisposed();
 
@@ -124,7 +126,7 @@ namespace Wyam.Core
                 {
                     throw new InvalidOperationException("This engine has already been configured.");
                 }
-                _configurator = new Configurator(this);
+                _configurator = new Configurator(this, fileName, outputScripts);
                 _configurator.Configure(configScript, updatePackages);
             }
             catch (Exception ex)

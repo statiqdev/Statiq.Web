@@ -65,6 +65,7 @@
     <Compile Include="Modules\DirectoryMetaFixture.cs" />
     <Compile Include="Modules\DocumentsFixture.cs" />
     <Compile Include="Modules\ExecuteFixture.cs" />
+    <Compile Include="Modules\FileNameFixture.cs" />
     <Compile Include="Modules\FrontMatterFixture.cs" />
     <Compile Include="Modules\GroupByFixture.cs" />
     <Compile Include="Modules\IfFixture.cs" />

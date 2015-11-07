@@ -22,7 +22,7 @@ namespace Wyam.Core.Tests.Configuration
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 ===
@@ -48,7 +48,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 ===  
@@ -74,7 +74,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
   ===
@@ -101,7 +101,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 
@@ -131,7 +131,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 C";
@@ -159,7 +159,7 @@ C", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 ===
@@ -190,7 +190,7 @@ F", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 ===  
@@ -221,7 +221,7 @@ E
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
   ===
@@ -254,7 +254,7 @@ F", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 
@@ -293,7 +293,7 @@ E-
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"A=
 =B
 C
@@ -354,7 +354,7 @@ E-
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             HashSet<Type> moduleTypes = new HashSet<Type> {typeof (Content)};
             string expected = $@"
 
@@ -382,7 +382,7 @@ E-
                         }}}}";
 
             // When
-            string actual = configurator.GenerateScript(null, input, moduleTypes, new HashSet<string>());
+            string actual = configurator.GenerateScript(null, input, moduleTypes);
 
             // Then
             Assert.AreEqual(expected, actual);
@@ -393,7 +393,7 @@ E-
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 foo
@@ -425,7 +425,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -457,7 +457,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -494,7 +494,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 class Y { };
 
@@ -527,7 +527,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -564,7 +564,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -594,7 +594,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -628,7 +628,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -662,7 +662,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -698,7 +698,7 @@ foo bar;
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             Type moduleType = typeof (Content);
             string expected = $@"
                         public static Wyam.Core.Modules.Content Content(object content)
@@ -731,7 +731,7 @@ foo bar;
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine);
+            Configurator configurator = new Configurator(engine, null, false);
             Type moduleType = typeof(GenericModule<>);
             string expected = $@"
                         public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(T input)

@@ -20,6 +20,7 @@ namespace Wyam.Core.Pipelines
 
         public byte[] RawConfigAssembly => _engine.RawConfigAssembly;
         public IEnumerable<Assembly> Assemblies => _engine.Assemblies;
+        public IEnumerable<string> Namespaces => _engine.Namespaces;
         public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);
         public IModule Module { get; }
         public ITrace Trace => _engine.Trace;

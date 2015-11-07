@@ -11,6 +11,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
@@ -114,10 +115,10 @@ namespace Wyam.Core.Modules
                                 }
                                 File.Copy(file, destination, true);
                                 context.Trace.Verbose("Copied file {0} to {1}", file, destination);
-                                return input.Clone(new Dictionary<string, object>
+                                return input.Clone(new []
                                 {
-                                    {MetadataKeys.SourceFilePath, file},
-                                    {MetadataKeys.DestinationFilePath, destination}
+                                    Metadata.Create(MetadataKeys.SourceFilePath, file),
+                                    Metadata.Create(MetadataKeys.DestinationFilePath, destination)
                                 });
                             });
                     }

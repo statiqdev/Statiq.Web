@@ -17,6 +17,10 @@ using IDocument = Wyam.Common.Documents.IDocument;
 
 namespace Wyam.Modules.Html
 {
+    /// <category>Content</category>
+    /// <summary>
+    /// 
+    /// </summary>
     public class AutoLink : IModule
     {
         // Key = text to replace, Value = url

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Pipelines;
 using Metadata = Wyam.Common.Documents.Metadata;
 
@@ -24,18 +26,21 @@ namespace Wyam.Modules.CodeAnalysis
         private readonly Func<ISymbol, bool> _symbolPredicate;
         private readonly Func<IMetadata, string> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
+        private readonly bool _docsForImplicitSymbols;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
             IExecutionContext context, 
             Func<ISymbol, bool> symbolPredicate, 
             Func<IMetadata, string> writePath, 
-            ConcurrentDictionary<string, string> cssClasses)
+            ConcurrentDictionary<string, string> cssClasses,
+            bool docsForImplicitSymbols)
         {
             _context = context;
             _symbolPredicate = symbolPredicate;
             _writePath = writePath;
             _cssClasses = cssClasses;
+            _docsForImplicitSymbols = docsForImplicitSymbols;
         }
 
         public IEnumerable<IDocument> Finish()
@@ -86,7 +91,7 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
                     Metadata.Create(MetadataKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
-                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters))
+                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters))
                 };
                 if (!_finished)
                 {
@@ -141,7 +146,7 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     Metadata.Create(MetadataKeys.SpecificKind,
                         (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
-                    Metadata.Create(MetadataKeys.TypeParams, DocumentsFor(symbol.TypeParameters)),
+                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType)),
                     Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod))
@@ -223,7 +228,8 @@ namespace Wyam.Modules.CodeAnalysis
                 Metadata.Create(MetadataKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
                 Metadata.Create(MetadataKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
                 Metadata.Create(MetadataKeys.Kind, (k, m) => symbol.Kind.ToString()),
-                Metadata.Create(MetadataKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace))
+                Metadata.Create(MetadataKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
+                Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
             };
 
             // Add metadata that's specific to initially-processed symbols
@@ -232,14 +238,16 @@ namespace Wyam.Modules.CodeAnalysis
                 metadata.AddRange(new[]
                 {
                     Metadata.Create(MetadataKeys.WritePath, (k, m) => _writePath(m), true),
-                    Metadata.Create(MetadataKeys.Syntax, (k, m) => GetSyntax(symbol), true)
+                    Metadata.Create(MetadataKeys.RelativeFilePath, (k, m) => m.String(MetadataKeys.WritePath)),
+                    Metadata.Create(MetadataKeys.RelativeFilePathBase, (k, m) => PathHelper.RemoveExtension(m.String(MetadataKeys.WritePath))),
+                    Metadata.Create(MetadataKeys.RelativeFileDir, (k, m) => Path.GetDirectoryName(m.String(MetadataKeys.WritePath)))
                 });
+            }
 
-                // XML Documentation
-                if (xmlDocumentation)
-                {
-                    AddXmlDocumentation(symbol, metadata);
-                }
+            // XML Documentation
+            if (xmlDocumentation && (!_finished || _docsForImplicitSymbols))
+            {
+                AddXmlDocumentation(symbol, metadata);
             }
 
             // Create the document and add it to the cache
@@ -267,23 +275,23 @@ namespace Wyam.Modules.CodeAnalysis
             // Add standard HTML elements
             metadata.AddRange(new []
             {
-                Metadata.Create(MetadataKeys.DocumentationCommentXml, documentationCommentXml),
-                Metadata.Create(MetadataKeys.ExampleHtml, (k, m) => xmlDocumentationParser.Process().ExampleHtml),
-                Metadata.Create(MetadataKeys.RemarksHtml, (k, m) => xmlDocumentationParser.Process().RemarksHtml),
-                Metadata.Create(MetadataKeys.SummaryHtml, (k, m) => xmlDocumentationParser.Process().SummaryHtml),
-                Metadata.Create(MetadataKeys.ReturnsHtml, (k, m) => xmlDocumentationParser.Process().ReturnsHtml),
-                Metadata.Create(MetadataKeys.ValueHtml, (k, m) => xmlDocumentationParser.Process().ValueHtml),
-                Metadata.Create(MetadataKeys.ExceptionHtml, (k, m) => xmlDocumentationParser.Process().ExceptionHtml),
-                Metadata.Create(MetadataKeys.PermissionHtml, (k, m) => xmlDocumentationParser.Process().PermissionHtml),
-                Metadata.Create(MetadataKeys.ParamHtml, (k, m) => xmlDocumentationParser.Process().ParamHtml),
-                Metadata.Create(MetadataKeys.TypeParamHtml, (k, m) => xmlDocumentationParser.Process().TypeParamHtml),
-                Metadata.Create(MetadataKeys.SeeAlsoHtml, (k, m) => xmlDocumentationParser.Process().SeeAlsoHtml)
+                Metadata.Create(MetadataKeys.CommentXml, documentationCommentXml),
+                Metadata.Create(MetadataKeys.Example, (k, m) => xmlDocumentationParser.Process().Example),
+                Metadata.Create(MetadataKeys.Remarks, (k, m) => xmlDocumentationParser.Process().Remarks),
+                Metadata.Create(MetadataKeys.Summary, (k, m) => xmlDocumentationParser.Process().Summary),
+                Metadata.Create(MetadataKeys.Returns, (k, m) => xmlDocumentationParser.Process().Returns),
+                Metadata.Create(MetadataKeys.Value, (k, m) => xmlDocumentationParser.Process().Value),
+                Metadata.Create(MetadataKeys.Exceptions, (k, m) => xmlDocumentationParser.Process().Exceptions),
+                Metadata.Create(MetadataKeys.Permissions, (k, m) => xmlDocumentationParser.Process().Permissions),
+                Metadata.Create(MetadataKeys.Params, (k, m) => xmlDocumentationParser.Process().Params),
+                Metadata.Create(MetadataKeys.TypeParams, (k, m) => xmlDocumentationParser.Process().TypeParams),
+                Metadata.Create(MetadataKeys.SeeAlso, (k, m) => xmlDocumentationParser.Process().SeeAlso)
             });
 
             // Add other HTML elements with keys of [ElementName]Html
             metadata.AddRange(otherHtmlElementNames.Select(x => 
-                Metadata.Create(FirstLetterToUpper(x) + "Html",
-                    (k, m) => xmlDocumentationParser.Process().OtherHtml[x])));
+                Metadata.Create(FirstLetterToUpper(x) + "Comments",
+                    (k, m) => xmlDocumentationParser.Process().OtherComments[x])));
         }
 
         public static string FirstLetterToUpper(string str)

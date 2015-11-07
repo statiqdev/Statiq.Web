@@ -11,7 +11,8 @@ namespace Wyam.Common.Pipelines
     public interface IExecutionContext
     {
         byte[] RawConfigAssembly { get; }
-        IEnumerable<Assembly> Assemblies { get; } 
+        IEnumerable<Assembly> Assemblies { get; }
+        IEnumerable<string> Namespaces { get; }
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }

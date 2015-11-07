@@ -103,6 +103,7 @@
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Modules\DirectoryMeta.cs" />
+    <Compile Include="Modules\FileName.cs" />
     <Compile Include="Modules\ForEach.cs" />
     <Compile Include="Modules\BranchConcat.cs" />
     <Compile Include="Modules\GroupBy.cs" />

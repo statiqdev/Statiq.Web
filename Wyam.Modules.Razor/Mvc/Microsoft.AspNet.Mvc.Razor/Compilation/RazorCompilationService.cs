@@ -41,7 +41,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         public RazorCompilationService(IExecutionContext executionContext, Type basePageType)
         {
             _executionContext = executionContext;
-            _razorHost = new MvcRazorHost(basePageType);
+            _razorHost = new MvcRazorHost(executionContext, basePageType);
         }
 
         /// <inheritdoc />
