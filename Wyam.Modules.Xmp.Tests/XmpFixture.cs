@@ -11,7 +11,7 @@ using Wyam.Modules.Xmp;
 namespace Wyam.Core.Tests.Modules
 {
     [TestFixture]
-    public class DirectoryMetaFixture
+    public class XmpFixture
     {
 
 
