@@ -1,0 +1,20 @@
+<h1>Search</h1>
+<hr/>
+<input type="search" id="search" autofocus="autofocus" placeholder="Search..."/>
+<div id="searchResultPanel"></div>
+
+searchModule = function() {
+	var index = lunr(function () {
+    this.field('title', {boost: 10})
+    this.field('content')
+	this.field('description', {boost: 5})
+	this.field('tags', {boost: 100})
+    this.ref('url')
+  })
+  
+  return {
+	search: function(query) {
+		return index.search(query)
+	}
+  };
+}
