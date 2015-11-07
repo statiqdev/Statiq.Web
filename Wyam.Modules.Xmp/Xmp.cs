@@ -55,24 +55,24 @@ namespace Wyam.Modules.Xmp
         {
             return inputs.Select(x =>
              {
-                 MetadataExtractor.Formats.Xmp.XmpDirectory directories;
+                 MetadataExtractor.Formats.Xmp.XmpDirectory directories2;
                  try
                  {
-                     directories = ImageMetadataReader.ReadMetadata(x.Source).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
+                     directories2 = ImageMetadataReader.ReadMetadata(x.Source).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
                  }
                  catch (Exception)
                  {
-                     directories = null;
+                     directories2 = null;
                  }
-                 if (directories == null) // Try to read sidecarfile
+                 if (directories2 == null) // Try to read sidecarfile
                  {
                      if (System.IO.File.Exists(x.Source + ".xmp"))
                      {
                          var xmpXml = System.IO.File.ReadAllText(x.Source + ".xmp");
-                         directories = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
+                         directories2 = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
                      }
                  }
-                 if (directories == null)
+                 if (directories2 == null)
                  {
                      if (toSearch.Any(y => y.IsMandatory))
                      {
@@ -85,13 +85,14 @@ namespace Wyam.Modules.Xmp
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
 
-                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(directories);
+                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(directories2);
 
                  foreach (var search in toSearch)
                  {
                      try
                      {
-                         var metadata = directories.XmpMeta.Properties.FirstOrDefault(y => search.XmpPath == y.Path);
+                         
+                         var metadata = hirachciDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
                          {
@@ -103,7 +104,7 @@ namespace Wyam.Modules.Xmp
                              }
                              continue;
                          }
-                         object value = GetObjectFromMetadata(metadata, directories);
+                         object value = GetObjectFromMetadata(metadata, hirachciDirectory);
                          if (newValues.ContainsKey(search.MetadataKey) && _errorOnDoubleKeys)
                          {
                              context.Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({x.Source})");
@@ -126,7 +127,6 @@ namespace Wyam.Modules.Xmp
                  return x;
              }).Where(x => x != null);
         }
-
 
 
         [System.Diagnostics.DebuggerDisplay("{ElementName}: {ElementValue} [{ElementArrayIndex}] ({ElementNameSpace})")]
@@ -185,12 +185,12 @@ namespace Wyam.Modules.Xmp
 
             }
 
-            public TreeDirectory(IXmpPropertyInfo x)
+            private TreeDirectory(IXmpPropertyInfo x)
             {
                 this.Element = x;
             }
 
-            internal static object GetHirachicDirectory(XmpDirectory directories)
+            internal static TreeDirectory GetHirachicDirectory(XmpDirectory directories)
             {
                 var root = new TreeDirectory();
 
@@ -225,12 +225,12 @@ namespace Wyam.Modules.Xmp
             }
         }
 
-        private object GetObjectFromMetadata(IXmpPropertyInfo metadata, XmpDirectory directories)
+        private object GetObjectFromMetadata(TreeDirectory metadata, TreeDirectory hirachciDirectory)
         {
-            if (metadata.Options.IsArray)
+            if (metadata.Element.Options.IsArray)
             {
-                var arreyElemnts = directories.XmpMeta.Properties.Where(y => y.Path != null && Regex.IsMatch(y.Path, @"^" + metadata.Path + @"\[\d+\]$")).OrderBy(y => int.Parse(Regex.Replace(y.Path, @"^" + metadata.Path + @"\[(?<index>\d+)\]$", "${index}")));
-                var array = arreyElemnts.Select(y => GetObjectFromMetadata(y, directories)).ToArray();
+                var arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
+                var array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
                 if (array.All(x => x is LocalizedString))
                 {
                     CultureInfo systemCulture = System.Globalization.CultureInfo.CurrentCulture;
@@ -246,60 +246,48 @@ namespace Wyam.Modules.Xmp
 
                     if (matchingString != null)
                         return matchingString.Value;
-
-
                 }
                 if (_flatting && array.Length == 1)
                     return array[0];
                 return array;
             }
-            else if (metadata.Options.IsStruct)
+            else if (metadata.Element.Options.IsStruct)
             {
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
-                var properties = directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
-                    .Select(x => new { XmpPropertyInfo = x, StructPropertyName = x.Path.Substring(metadata.Path.Length + 1) })
-                    .Where(x => !x.StructPropertyName.Contains("/"))
-                    .Select(x =>
-                    {
-                        int indexOfCollon = x.StructPropertyName.IndexOf(':');
-                        if (indexOfCollon != -1)
-                        {
-                            return new { x.XmpPropertyInfo, StructPropertyName = x.StructPropertyName.Substring(indexOfCollon + 1) };
-                        }
-                        return x;
-                    });
+                var properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
+                    
                 foreach (var prop in properties)
                 {
-                    obj.Add(prop.StructPropertyName, GetObjectFromMetadata(prop.XmpPropertyInfo, directories));
+                    obj.Add(prop.ElementName, GetObjectFromMetadata(prop, hirachciDirectory));
                 }
                 return obj;
             }
-            else if (metadata.Options.IsSimple)
+            else if (metadata.Element.Options.IsSimple)
             {
                 //xml:lang, de
 
-                if (metadata.Options.HasLanguage)
+                if (metadata.Element.Options.HasLanguage)
                 {
-                    var langMetadata = directories.XmpMeta.Properties.Single(y => y.Path == metadata.Path + "/xml:lang");
+                    var langMetadata =  metadata.Childrean.Single(x=>x.ElementName=="lang" && x.ElementNameSpace == "http://www.w3.org/XML/1998/namespace");
                     System.Globalization.CultureInfo culture;
-                    if (langMetadata.Value == "x-default")
+                    if (langMetadata.ElementValue == "x-default")
                     {
                         culture = System.Globalization.CultureInfo.InvariantCulture;
                     }
                     else
                     {
-                        culture = System.Globalization.CultureInfo.GetCultureInfo(langMetadata.Value);
+                        culture = System.Globalization.CultureInfo.GetCultureInfo(langMetadata.ElementValue);
                     }
 
-                    return new LocalizedString() { Culture = culture, Value = metadata.Value };
+                    return new LocalizedString() { Culture = culture, Value = metadata.ElementValue };
 
                 }
 
-                return metadata.Value;
+                return metadata.ElementValue;
             }
             else
             {
-                throw new NotSupportedException($"Option {metadata.Options.GetOptionsString()} not supported.");
+                throw new NotSupportedException($"Option {metadata.Element.Options.GetOptionsString()} not supported.");
             }
 
 
@@ -339,9 +327,9 @@ namespace Wyam.Modules.Xmp
 
             public string XmpPath { get; }
 
-            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, @"^(?<ns>[^:+]):(?<name>.+)$", "${name}");
+            public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${name}");
 
-            public string Namespace => _parent.namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:+]):(?<name>.+)$", "${ns}")];
+            public string Namespace => _parent.namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
 
             public string MetadataKey { get; }
             public bool IsMandatory { get; }
