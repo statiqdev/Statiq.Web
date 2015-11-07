@@ -55,24 +55,24 @@ namespace Wyam.Modules.Xmp
         {
             return inputs.Select(x =>
              {
-                 MetadataExtractor.Formats.Xmp.XmpDirectory directories2;
+                 MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     directories2 = ImageMetadataReader.ReadMetadata(x.Source).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
+                     xmpDirectory = ImageMetadataReader.ReadMetadata(x.Source).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
                  }
                  catch (Exception)
                  {
-                     directories2 = null;
+                     xmpDirectory = null;
                  }
-                 if (directories2 == null) // Try to read sidecarfile
+                 if (xmpDirectory == null) // Try to read sidecarfile
                  {
                      if (System.IO.File.Exists(x.Source + ".xmp"))
                      {
                          var xmpXml = System.IO.File.ReadAllText(x.Source + ".xmp");
-                         directories2 = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
+                         xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
                      }
                  }
-                 if (directories2 == null)
+                 if (xmpDirectory == null)
                  {
                      if (toSearch.Any(y => y.IsMandatory))
                      {
@@ -85,7 +85,7 @@ namespace Wyam.Modules.Xmp
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
 
-                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(directories2);
+                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(xmpDirectory);
 
                  foreach (var search in toSearch)
                  {
@@ -231,7 +231,7 @@ namespace Wyam.Modules.Xmp
             {
                 var arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
                 var array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
-                if (array.All(x => x is LocalizedString))
+                if (_delocalizing && array.All(x => x is LocalizedString))
                 {
                     CultureInfo systemCulture = System.Globalization.CultureInfo.CurrentCulture;
                     LocalizedString matchingString = null;
