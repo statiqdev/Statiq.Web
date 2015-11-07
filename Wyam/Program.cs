@@ -158,17 +158,9 @@ namespace Wyam
                 engine.Trace.Information("Hit any key to exit");
                 var thread = new Thread(() =>
                 {
-                    try
-                    {
-                        Console.ReadKey();
-                        _exit.Set();
-                        _messageEvent.Set();
-
-                    }
-                    catch (Exception)
-                    {
-
-                    }
+                    Console.ReadKey();
+                    _exit.Set();
+                    _messageEvent.Set();
                 })
                 {
                     IsBackground = true
