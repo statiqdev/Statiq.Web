@@ -68,7 +68,7 @@ namespace Wyam.Modules.Xmp
                  {
                      if (System.IO.File.Exists(x.Source + ".xmp"))
                      {
-                         var xmpXml = System.IO.File.ReadAllText(x.Source + ".xmp");
+                         string xmpXml = System.IO.File.ReadAllText(x.Source + ".xmp");
                          xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
                      }
                  }
@@ -85,14 +85,14 @@ namespace Wyam.Modules.Xmp
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
 
-                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(xmpDirectory);
+                 TreeDirectory hirachciDirectory = TreeDirectory.GetHirachicDirectory(xmpDirectory);
 
                  foreach (var search in toSearch)
                  {
                      try
                      {
                          
-                         var metadata = hirachciDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
+                         TreeDirectory metadata = hirachciDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
                          {
@@ -192,9 +192,9 @@ namespace Wyam.Modules.Xmp
 
             internal static TreeDirectory GetHirachicDirectory(XmpDirectory directories)
             {
-                var root = new TreeDirectory();
+                TreeDirectory root = new TreeDirectory();
 
-                var treeNodes = directories.XmpMeta.Properties.Where(x => x.Path != null).Select(x => new TreeDirectory(x)).ToArray();
+                TreeDirectory[] treeNodes = directories.XmpMeta.Properties.Where(x => x.Path != null).Select(x => new TreeDirectory(x)).ToArray();
 
                 var possibleChildrean = treeNodes.Select(x => new
                 {
@@ -211,7 +211,7 @@ namespace Wyam.Modules.Xmp
 
                 foreach (var node in possibleChildrean)
                 {
-                    var childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Where(y => node.PossibleChildrean.Contains(y.Element)).Any(y => y.PossibleChildrean.Contains(x))).ToArray();
+                    TreeDirectory[] childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Where(y => node.PossibleChildrean.Contains(y.Element)).Any(y => y.PossibleChildrean.Contains(x))).ToArray();
 
                     node.Element.Childrean.AddRange(childOfNode);
                     foreach (var child in childOfNode)
@@ -230,7 +230,7 @@ namespace Wyam.Modules.Xmp
             if (metadata.Element.Options.IsArray)
             {
                 var arreyElemnts = metadata.Childrean.Where(x => x.IsArrayElement).OrderBy(x => x.ElementArrayIndex);
-                var array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
+                object[] array = arreyElemnts.Select(y => GetObjectFromMetadata(y, hirachciDirectory)).ToArray();
                 if (_delocalizing && array.All(x => x is LocalizedString))
                 {
                     CultureInfo systemCulture = System.Globalization.CultureInfo.CurrentCulture;
@@ -254,7 +254,7 @@ namespace Wyam.Modules.Xmp
             else if (metadata.Element.Options.IsStruct)
             {
                 IDictionary<string, object> obj = new System.Dynamic.ExpandoObject();
-                var properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
+                List<TreeDirectory> properties = metadata.Childrean;// directories.XmpMeta.Properties.Where(x => x.Path != null && x.Path.StartsWith(metadata.Path))
                     
                 foreach (var prop in properties)
                 {
@@ -268,7 +268,7 @@ namespace Wyam.Modules.Xmp
 
                 if (metadata.Element.Options.HasLanguage)
                 {
-                    var langMetadata =  metadata.Childrean.Single(x=>x.ElementName=="lang" && x.ElementNameSpace == "http://www.w3.org/XML/1998/namespace");
+                    TreeDirectory langMetadata =  metadata.Childrean.Single(x=>x.ElementName=="lang" && x.ElementNameSpace == "http://www.w3.org/XML/1998/namespace");
                     System.Globalization.CultureInfo culture;
                     if (langMetadata.ElementValue == "x-default")
                     {
@@ -320,7 +320,7 @@ namespace Wyam.Modules.Xmp
                 this.IsMandatory = isMandatory;
                 this.MetadataKey = targetMetadata;
                 this.XmpPath = xmpPath;
-                var alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
+                string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
                 if (!_parent.namespaceAlias.ContainsKey(alias))
                     throw new ArgumentException($"Namespace alias {alias} unknown.", nameof(xmpPath));
             }
