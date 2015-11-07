@@ -13,10 +13,6 @@ namespace Wyam.Core.Tests.Modules
     [TestFixture]
     public class XmpFixture
     {
-
-
-
-
         [Test]
         public void ReadMetadata()
         {
@@ -51,7 +47,7 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf.png");
+            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf");
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
@@ -73,7 +69,7 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf.png");
+            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf");
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
@@ -100,7 +96,7 @@ namespace Wyam.Core.Tests.Modules
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
             Xmp directoryMetadata = new Xmp()
-                .WithNamespace("http://ns.adobe.com/xap/1.0/rights/","bla")
+                .WithNamespace("http://ns.adobe.com/xap/1.0/rights/", "bla")
                 .WithMetadata("bla:UsageTerms", "Copyright");
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), Substitute.For<IExecutionContext>()).ToList();  // Make sure to materialize the result list
@@ -126,6 +122,8 @@ namespace Wyam.Core.Tests.Modules
             {
                 IDocument document = Substitute.For<IDocument>();
                 document.Source.Returns(x);
+                document.GetStream().Returns(File.OpenRead(x));
+
                 return document;
             }).ToArray();
 
