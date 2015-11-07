@@ -18,6 +18,7 @@ namespace Wyam.Core.Modules
         private string sitemapFilename;
         private Func<string, string> locationFormatter;
         private static readonly string[] ChangeFrequencies = new string[] { "always", "hourly", "daily", "weekly", "monthly", "yearly", "never" };
+        private bool shouldUseInputDocuments;
 
         public Sitemap(string sitemapFilename, Func<string, string> locationFormatter = null)
         {
@@ -25,10 +26,16 @@ namespace Wyam.Core.Modules
             this.locationFormatter = locationFormatter;
         }
 
+        public Sitemap FromInputDocuments()
+        {
+            this.shouldUseInputDocuments = true;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             var outputFilename = Path.Combine(context.OutputFolder, this.sitemapFilename);
-            var docs = context.Documents.Where(f => f.Metadata.ContainsKey(MetadataKeys.SitemapItem)).ToArray();
+            var docs = (this.shouldUseInputDocuments ? inputs.AsEnumerable() : context.Documents).Where(f => f.Metadata.ContainsKey(MetadataKeys.SitemapItem)).ToArray();
 
             if (docs.Length > 0)
             {
@@ -46,14 +53,22 @@ namespace Wyam.Core.Modules
                     if (itm == null)
                         itm = new SitemapItem(smi.ToString());
 
-                    var location = itm.Location;
+                    if (string.IsNullOrWhiteSpace(itm.Location))
+                        continue; // do not include this document for the sitemap
+
+                    var location = PathHelper.ToLink(itm.Location);
 
                     if (this.locationFormatter != null)
+                    {
                         location = this.locationFormatter(location);
+
+                        if (string.IsNullOrWhiteSpace(location))
+                            continue; // location being null signals that this document should not be included in the sitemap
+                    }
                     else
                     {
                         if (hostname != null && !location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
-                            location = $"{hostname}{PathHelper.ToRootLink(location)}";
+                            location = $"{hostname.ToString().TrimEnd('/')}{PathHelper.ToRootLink(location)}";
                     }
 
                     sb.Append("<url>");

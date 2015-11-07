@@ -34,5 +34,15 @@ Pipelines.Add("BuildSitemap",
 	Sitemap("sitemap.xml")
 );
 
+Pipelines.Add("BuildSitemap2",
+	Documents("Posts"), // we only use the documents of the "Posts"-pipeline for sitemap generation
+	Sitemap("sitemap2.xml").FromInputDocuments()
+);
+
+Pipelines.Add("BuildSitemap3",
+	// we format all the added relative urls (when using the formatter, any "Hostname" meta data is ignored)
+	Sitemap("sitemap3.xml", urlLocation => "http://www.example.org/" + urlLocation )
+);
+
 // the generated sitemap is "minified" for better performance
 // you can "beautify" and also validate the generated sitemap here: http://tools.seochat.com/tools/site-validator/
