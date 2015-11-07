@@ -85,6 +85,8 @@ namespace Wyam.Modules.Xmp
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
 
+                 var hirachciDirectory = TreeDirectory.GetHirachicDirectory(directories);
+
                  foreach (var search in toSearch)
                  {
                      try
@@ -123,6 +125,104 @@ namespace Wyam.Modules.Xmp
                      return x.Clone(newValues);
                  return x;
              }).Where(x => x != null);
+        }
+
+
+
+        [System.Diagnostics.DebuggerDisplay("{ElementName}: {ElementValue} [{ElementArrayIndex}] ({ElementNameSpace})")]
+        private class TreeDirectory
+        {
+
+            public string ElementName
+            {
+                get
+                {
+                    string path = Element?.Path;
+                    if (string.IsNullOrWhiteSpace(path))
+                        return null;
+                    string pathWithouParent;
+                    if (!string.IsNullOrWhiteSpace(Parent?.Element?.Path))
+                        pathWithouParent = path.Substring(Parent.Element.Path.Length).TrimStart('/');
+                    else
+                        pathWithouParent = path.TrimStart('/');
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+
+                    if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
+                        return null;
+                    return pathWithoutNamespace;
+                }
+            }
+            public int ElementArrayIndex
+
+            {
+                get
+                {
+                    string path = Element?.Path;
+                    if (string.IsNullOrWhiteSpace(path))
+                        return -1;
+
+                    string pathWithouParent;
+                    if (!string.IsNullOrWhiteSpace(Parent?.Element?.Path))
+                        pathWithouParent = path.Substring(Parent.Element.Path.Length).TrimStart('/');
+                    else
+                        pathWithouParent = path.TrimStart('/');
+                    string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
+
+                    if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
+                        return int.Parse(Regex.Replace(pathWithoutNamespace, @"\[(?<index>\d+)\]", "${index}"));
+                    return -1;
+                }
+            }
+            public bool IsArrayElement => this.ElementArrayIndex != -1;
+            public string ElementNameSpace => Element?.Namespace;
+            public string ElementValue => Element?.Value;
+            public IXmpPropertyInfo Element { get; }
+            public List<TreeDirectory> Childrean { get; } = new List<TreeDirectory>();
+            public TreeDirectory Parent { get; private set; }
+
+            private TreeDirectory()
+            {
+
+            }
+
+            public TreeDirectory(IXmpPropertyInfo x)
+            {
+                this.Element = x;
+            }
+
+            internal static object GetHirachicDirectory(XmpDirectory directories)
+            {
+                var root = new TreeDirectory();
+
+                var treeNodes = directories.XmpMeta.Properties.Where(x => x.Path != null).Select(x => new TreeDirectory(x)).ToArray();
+
+                var possibleChildrean = treeNodes.Select(x => new
+                {
+                    Element = x,
+                    PossibleChildrean = treeNodes.Where(y => y.Element.Path != x.Element.Path && y.Element.Path.StartsWith(x.Element.Path)).ToArray()
+                }).ToArray();
+                var childOfRoot = possibleChildrean.Where(x => !possibleChildrean.Any(y => y.PossibleChildrean.Contains(x.Element))).ToArray();
+
+                root.Childrean.AddRange(childOfRoot.Select(x => x.Element));
+                foreach (var child in childOfRoot)
+                {
+                    child.Element.Parent = root;
+                }
+
+                foreach (var node in possibleChildrean)
+                {
+                    var childOfNode = node.PossibleChildrean.Where(x => !possibleChildrean.Where(y => node.PossibleChildrean.Contains(y.Element)).Any(y => y.PossibleChildrean.Contains(x))).ToArray();
+
+                    node.Element.Childrean.AddRange(childOfNode);
+                    foreach (var child in childOfNode)
+                    {
+                        child.Parent = node.Element;
+                    }
+
+                }
+
+                return root;
+            }
         }
 
         private object GetObjectFromMetadata(IXmpPropertyInfo metadata, XmpDirectory directories)
