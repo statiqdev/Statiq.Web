@@ -14,6 +14,11 @@ using System.Globalization;
 
 namespace Wyam.Modules.Xmp
 {
+
+    /// <summary>
+    /// This Module Reads specified Xmp Metadata from the Inputs
+    /// and writes it in the Metadata of the Document.  
+    /// </summary>
     public class Xmp : IModule
     {
         private readonly bool _skipElementOnMissingData;
@@ -23,7 +28,13 @@ namespace Wyam.Modules.Xmp
         private readonly List<XmpSearchEntry> toSearch = new List<XmpSearchEntry>();
         private readonly Dictionary<string, string> namespaceAlias = new Dictionary<string, string>();
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="skipElementOnMissingMandatoryData">If Mandatory Data is missing this element will not leave this module.</param>
+        /// <param name="errorsOnDoubleKeys">If true, and the Metadata of the input document would written twice by this Module it gives an error. If false the later specified Metadata overrides the first.</param>
+        /// <param name="delocalizing">If multiple elements with diferent laguges are present, the local languge will be used to choose the correct element.</param>
+        /// <param name="flatten">If an array has only one Element it is reduced too this element.</param>
         public Xmp(bool skipElementOnMissingMandatoryData = false, bool errorsOnDoubleKeys = true, bool delocalizing = true, bool flatten = true)
         {
             _skipElementOnMissingData = skipElementOnMissingMandatoryData;
