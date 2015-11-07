@@ -58,7 +58,7 @@ namespace Wyam.Modules.Xmp
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     xmpDirectory = ImageMetadataReader.ReadMetadata(x.Source).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
+                     xmpDirectory = ImageMetadataReader.ReadMetadata(x.GetStream()).OfType<MetadataExtractor.Formats.Xmp.XmpDirectory>().FirstOrDefault();
                  }
                  catch (Exception)
                  {
@@ -66,9 +66,9 @@ namespace Wyam.Modules.Xmp
                  }
                  if (xmpDirectory == null) // Try to read sidecarfile
                  {
-                     if (System.IO.File.Exists(x.Source + ".xmp"))
+                     if(x.ContainsKey("SourceFilePath") &&System.IO.File.Exists(x["SourceFilePath"] + ".xmp"))
                      {
-                         string xmpXml = System.IO.File.ReadAllText(x.Source + ".xmp");
+                         string xmpXml = System.IO.File.ReadAllText(x["SourceFilePath"] + ".xmp");
                          xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
                      }
                  }
