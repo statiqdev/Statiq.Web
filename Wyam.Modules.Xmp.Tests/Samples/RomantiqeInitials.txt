@@ -1,0 +1,12 @@
+RomantiqueInitials
+
+The upper and lower case of each character can be combined to form a two-color character.
+
+The space is exactly one-half the width of any of the initials.
+
+The letterforms themselves were created from scanned images of a graphic alphabet designed by Aridi. The originals, in full color .eps and .bmp, are available from Aridi.
+
+  - Character
+    April, 2007
+
+(http://www.fontspace.com/character/romantique-initials)
