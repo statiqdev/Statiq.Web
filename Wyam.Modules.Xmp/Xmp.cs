@@ -25,9 +25,9 @@ namespace Wyam.Modules.Xmp
         private readonly bool _errorOnDoubleKeys;
         private readonly bool _delocalizing;
         private readonly bool _flatting;
-        private readonly List<XmpSearchEntry> toSearch = new List<XmpSearchEntry>();
-        private readonly Dictionary<string, string> namespaceAlias =
-            new Dictionary<string, string>()
+        private readonly List<XmpSearchEntry> _toSearch = new List<XmpSearchEntry>();
+        private readonly Dictionary<string, string> _namespaceAlias =
+            new Dictionary<string, string>
             {
                 {"dc", "http://purl.org/dc/elements/1.1/" },
                 {"xmpRights", "http://ns.adobe.com/xap/1.0/rights/"},
@@ -35,6 +35,7 @@ namespace Wyam.Modules.Xmp
                 {"xmp", "http://ns.adobe.com/xap/1.0/"},
                 { "xml", "http://www.w3.org/XML/1998/namespace"},
             };
+
         /// <summary>
         /// 
         /// </summary>
@@ -50,16 +51,15 @@ namespace Wyam.Modules.Xmp
             _flatting = flatten;
         }
 
-
         public Xmp WithMetadata(string xmpPath, string targetMetadata, bool isMandatory = false)
         {
-            this.toSearch.Add(new XmpSearchEntry(this, isMandatory, targetMetadata, xmpPath));
+            _toSearch.Add(new XmpSearchEntry(this, isMandatory, targetMetadata, xmpPath));
             return this;
         }
 
         public Xmp WithNamespace(string xmlNamespace, string alias)
         {
-            namespaceAlias[alias] = xmlNamespace;
+            _namespaceAlias[alias] = xmlNamespace;
             return this;
         }
 
@@ -90,7 +90,7 @@ namespace Wyam.Modules.Xmp
                  }
                  if (xmpDirectory == null)
                  {
-                     if (toSearch.Any(y => y.IsMandatory))
+                     if (_toSearch.Any(y => y.IsMandatory))
                      {
                          context.Trace.Warning($"File doe not contain Metadata or sidecar file ({x.Source})");
                          if (_skipElementOnMissingData)
@@ -103,7 +103,7 @@ namespace Wyam.Modules.Xmp
 
                  TreeDirectory hierarchicalDirectory = TreeDirectory.GetHierarchicalDirectory(xmpDirectory);
 
-                 foreach (var search in toSearch)
+                 foreach (var search in _toSearch)
                  {
                      try
                      {
@@ -115,7 +115,9 @@ namespace Wyam.Modules.Xmp
                              {
                                  context.Trace.Error($"Metadata does not Contain {search.XmpPath} ({x.Source})");
                                  if (_skipElementOnMissingData)
+                                 {
                                      return null;
+                                 }
                              }
                              continue;
                          }
@@ -132,14 +134,12 @@ namespace Wyam.Modules.Xmp
                      }
                      catch (Exception e)
                      {
-                         context.Trace.Error($"An Exception Occured: {e} {e.Message}");
+                         context.Trace.Error($"An exception occurred : {e} {e.Message}");
                          if (search.IsMandatory && _skipElementOnMissingData)
                              return null;
                      }
                  }
-                 if (newValues.Any())
-                     return x.Clone(newValues);
-                 return x;
+                 return newValues.Any() ? x.Clone(newValues) : x;
              }).Where(x => x != null);
         }
 
@@ -147,28 +147,24 @@ namespace Wyam.Modules.Xmp
         [System.Diagnostics.DebuggerDisplay("{ElementName}: {ElementValue} [{ElementArrayIndex}] ({ElementNameSpace})")]
         private class TreeDirectory
         {
-
             public string ElementName
             {
                 get
                 {
                     string path = Element?.Path;
                     if (string.IsNullOrWhiteSpace(path))
+                    {
                         return null;
-                    string pathWithouParent;
-                    if (!string.IsNullOrWhiteSpace(Parent?.Element?.Path))
-                        pathWithouParent = path.Substring(Parent.Element.Path.Length).TrimStart('/');
-                    else
-                        pathWithouParent = path.TrimStart('/');
+                    }
+                    string pathWithouParent = !string.IsNullOrWhiteSpace(Parent?.Element?.Path) 
+                        ? path.Substring(Parent.Element.Path.Length).TrimStart('/') 
+                        : path.TrimStart('/');
                     string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
-
-                    if (Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]"))
-                        return null;
-                    return pathWithoutNamespace;
+                    return Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]") ? null : pathWithoutNamespace;
                 }
             }
-            public int ElementArrayIndex
 
+            public int ElementArrayIndex
             {
                 get
                 {
@@ -188,12 +184,14 @@ namespace Wyam.Modules.Xmp
                     return -1;
                 }
             }
+
             public bool IsArrayElement => this.ElementArrayIndex != -1;
             public string ElementNameSpace => Element?.Namespace;
             public string ElementValue => Element?.Value;
             public IXmpPropertyInfo Element { get; }
             public List<TreeDirectory> Childrean { get; } = new List<TreeDirectory>();
-            public TreeDirectory Parent { get; private set; }
+
+            private TreeDirectory Parent { get; set; }
 
             private TreeDirectory()
             {
@@ -304,8 +302,6 @@ namespace Wyam.Modules.Xmp
             {
                 throw new NotSupportedException($"Option {metadata.Element.Options.GetOptionsString()} not supported.");
             }
-
-
         }
 
         private class LocalizedString
@@ -328,7 +324,6 @@ namespace Wyam.Modules.Xmp
         {
             private readonly Xmp _parent;
 
-
             public XmpSearchEntry(Xmp parent, bool isMandatory, string targetMetadata, string xmpPath)
             {
                 _parent = parent;
@@ -336,7 +331,7 @@ namespace Wyam.Modules.Xmp
                 this.MetadataKey = targetMetadata;
                 this.XmpPath = xmpPath;
                 string alias = Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}");
-                if (!_parent.namespaceAlias.ContainsKey(alias))
+                if (!_parent._namespaceAlias.ContainsKey(alias))
                     throw new ArgumentException($"Namespace alias {alias} unknown.", nameof(xmpPath));
             }
 
@@ -344,7 +339,7 @@ namespace Wyam.Modules.Xmp
 
             public string PathWithoutNamespacePrefix => Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${name}");
 
-            public string Namespace => _parent.namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
+            public string Namespace => _parent._namespaceAlias[Regex.Replace(XmpPath, @"^(?<ns>[^:]+):(?<name>.+)$", "${ns}")];
 
             public string MetadataKey { get; }
             public bool IsMandatory { get; }
