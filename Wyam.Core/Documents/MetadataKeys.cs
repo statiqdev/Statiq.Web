@@ -3,6 +3,9 @@
     // Other modules outside Core might refer to these as strings, so make sure to do a text search if renaming
     public static class MetadataKeys
     {
+        // Common
+        public const string Hostname = "Hostname";
+
         // ReadFile/WriteFiles/CopyFiles
         public const string SourceFileRoot = "SourceFileRoot";
         public const string SourceFileBase = "SourceFileBase";
@@ -37,5 +40,8 @@
 
         // Index
         public const string Index = "Index";
+
+        // Sitemap
+        public const string SitemapItem = "SitemapItem";
     }
 }
