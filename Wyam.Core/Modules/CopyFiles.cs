@@ -106,7 +106,7 @@ namespace Wyam.Core.Modules
                             .Select(file =>
                             {
                                 string destination = _destinationPath == null
-                                    ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(Path.GetDirectoryName(context.InputFolder), Path.GetDirectoryName(file)), Path.GetFileName(file)) 
+                                    ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)), Path.GetFileName(file)) 
                                     : _destinationPath(file);
                                 string destinationDirectory = Path.GetDirectoryName(destination);
                                 if (!Directory.Exists(destinationDirectory))
