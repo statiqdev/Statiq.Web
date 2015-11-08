@@ -1,0 +1,35 @@
+int seed = 1000;
+
+string postTemplate = @"[case:sentence]
+[rs:4;\n\n]
+{
+    [rs:14;\s]
+    {
+        <noun> {is|with|without|as|not|has not|can|can not} <verb> <conj> <adj>.
+    }
+}";
+
+Pipelines.Add("Posts",
+	Documents(100),
+	Index(),
+	ForEach(
+		// Do generation in a ForEach module so we generate synchronously and it's repeatable
+		GenerateContent(postTemplate).WithSeed(seed++),
+		GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").WithSeed(seed++),	
+		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").WithSeed(seed++)
+	),
+	Markdown(),
+	Razor(),
+	WriteFiles($"post-{@doc.String("Index")}.html")
+);
+
+Pipelines.Add("Index",
+	ReadFiles("index.cshtml"),
+	FrontMatter(Yaml()),
+	Razor(),
+	WriteFiles(".html")
+);
+
+Pipelines.Add("CopyAssets",
+	CopyFiles( (doc,ctx) => "assets/")
+);

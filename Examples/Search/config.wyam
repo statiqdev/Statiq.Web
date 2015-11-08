@@ -6,7 +6,11 @@ Pipelines.Add("Posts",
 	ReadFiles(@"posts\Post.cshtml"),  // Load the Razor post page template
 	Razor(),  // Compile and render the page template
 	Meta("PostFile", string.Format(@"posts\{0}.html", ((string)@doc["Title"]).ToLower().Replace(' ', '-'))),  // Use the post title as the filename and save it in metadata so we can use it in links later
-	WriteFiles((string)@doc["PostFile"])  // Write the post file 
+	WriteFiles((string)@doc["PostFile"]),  // Write the post file 
+	Meta("SearchIndexItem", new SearchIndexItem(url: (string)@doc["PostFile"],
+												title: (string)@doc["Title"],
+												content: @doc.Content)
+		)
 );
 
 Pipelines.Add("Home",
@@ -15,6 +19,10 @@ Pipelines.Add("Home",
 	WriteFiles(".html")
 );
 
+Pipelines.Add("Copy",
+	CopyFiles(@"*.js")
+);
+
 Pipelines.Add("Search",
-	SearchIndex("js/searchindex.js")
+	SearchIndex("js/searchindex.js", "stopwords.txt")
 );
