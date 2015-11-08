@@ -57,10 +57,10 @@ namespace Wyam
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
         private readonly InterlockedBool _exit = new InterlockedBool(false);
         private readonly InterlockedBool _newEngine = new InterlockedBool(false);
-        
+
         private void Run(string[] args)
         {
-            AssemblyInformationalVersionAttribute versionAttribute 
+            AssemblyInformationalVersionAttribute versionAttribute
                 = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
             Console.WriteLine("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
 
@@ -130,7 +130,7 @@ namespace Wyam
             if (_watch)
             {
                 messagePump = true;
-                
+
                 engine.Trace.Information("Watching folder {0}", engine.InputFolder);
                 inputFolderWatcher = new ActionFileSystemWatcher(engine.InputFolder, true, "*.*", path =>
                 {
@@ -467,7 +467,7 @@ namespace Wyam
         private IDisposable Preview(Engine engine)
         {
             StartOptions options = new StartOptions("http://localhost:" + _previewPort);
-            
+
             // Disable built-in owin tracing by using a null trace output
             // http://stackoverflow.com/questions/17948363/tracelistener-in-owin-self-hosting
             options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
@@ -499,12 +499,12 @@ namespace Wyam
                 {
                     RequestPath = PathString.Empty,
                     FileSystem = outputFolder,
-                    DefaultFileNames = new List<string> {"index.html", "index.htm", "home.html", "home.htm", "default.html", "default.html"}
+                    DefaultFileNames = new List<string> { "index.html", "index.htm", "home.html", "home.htm", "default.html", "default.html" }
                 });
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     RequestPath = PathString.Empty,
-                    FileSystem = outputFolder, 
+                    FileSystem = outputFolder,
                 });
             });
         }
