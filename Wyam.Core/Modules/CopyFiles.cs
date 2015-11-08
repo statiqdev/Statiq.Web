@@ -96,7 +96,14 @@ namespace Wyam.Core.Modules
                 string path = _sourcePath.Invoke<string>(input, context);
                 if (path != null)
                 {
-                    path = Path.Combine(context.InputFolder, path);
+                    bool isPathUnderInputFolder = false;
+
+                    if (!Path.IsPathRooted(path))
+                    {
+                        path = PathHelper.CombineToFullPath(context.InputFolder, path);
+                        isPathUnderInputFolder = path.StartsWith(context.InputFolder);
+                    }
+                    
                     string fileRoot = Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
@@ -105,9 +112,18 @@ namespace Wyam.Core.Modules
                             .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(Path.GetExtension(x))))
                             .Select(file =>
                             {
-                                string destination = _destinationPath == null
-                                    ? Path.Combine(context.OutputFolder, PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)), Path.GetFileName(file)) 
-                                    : _destinationPath(file);
+                                string destination = null;
+
+                                if( _destinationPath == null )
+                                {
+                                    string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)) : "";
+                                    destination = Path.Combine(context.OutputFolder, relativePath, Path.GetFileName(file));
+                                }
+                                else
+                                {
+                                    destination = _destinationPath(file);
+                                }
+
                                 string destinationDirectory = Path.GetDirectoryName(destination);
                                 if (!Directory.Exists(destinationDirectory))
                                 {

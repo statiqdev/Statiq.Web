@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Wyam.Common.IO
 {
     // This contains some additional helpers for the file system
     public class PathHelper
     {
+        private static readonly char[] WildcardCharacters = { '*', '?' };
+
         // Converts slashes to Path.DirectorySeparatorChar
         public static string NormalizePath(string path)
         {
@@ -101,6 +104,21 @@ namespace Wyam.Common.IO
         {
             string extension = Path.GetExtension(path);
             return string.IsNullOrWhiteSpace(extension) ? path : path.Substring(0, path.Length - extension.Length);
+        }
+
+        public static string CombineToFullPath(params string[] paths)
+        {
+            string combinedPath = Path.Combine(paths);
+            int wildCardCharIndex = combinedPath.IndexOfAny(WildcardCharacters);
+
+            if( wildCardCharIndex < 0 )
+            {
+                return Path.GetFullPath(combinedPath);
+            }
+
+            string pathTillFirstWildCard = combinedPath.Substring(0, wildCardCharIndex);
+
+            return Path.GetFullPath(pathTillFirstWildCard) + combinedPath.Substring(wildCardCharIndex);
         }
     }
 }
