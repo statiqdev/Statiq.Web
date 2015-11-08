@@ -39,5 +39,5 @@ Pipelines.Add("CopyAssets",
 Pipelines.Add("SearchIndex",
 	//SearchIndex("assets/js/searchindex.js", stopwordsFilename: "stopwords.txt")
 	SearchIndex(stopwordsFilename: "stopwords.txt"),
-	WriteFiles( (doc,ctx) => string.IsNullOrEmpty(doc.Content) ? null : "searchindex.js" ).UseWriteMetadata(false)
+	WriteFiles( (doc,ctx) => string.IsNullOrEmpty(doc.Content) ? null : "searchindex.js" )
 );
