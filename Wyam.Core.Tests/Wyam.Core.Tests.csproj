@@ -62,6 +62,7 @@
     <Compile Include="Documents\MetadataAsFixture.cs" />
     <Compile Include="Documents\MetadataFixture.cs" />
     <Compile Include="Modules\BranchFixture.cs" />
+    <Compile Include="Modules\CopyFilesFixture.cs" />
     <Compile Include="Modules\DirectoryMetaFixture.cs" />
     <Compile Include="Modules\DocumentsFixture.cs" />
     <Compile Include="Modules\ExecuteFixture.cs" />
@@ -111,6 +112,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\Input\test-b.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\test-above-input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
