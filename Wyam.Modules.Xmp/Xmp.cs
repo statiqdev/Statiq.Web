@@ -26,8 +26,15 @@ namespace Wyam.Modules.Xmp
         private readonly bool _delocalizing;
         private readonly bool _flatting;
         private readonly List<XmpSearchEntry> toSearch = new List<XmpSearchEntry>();
-        private readonly Dictionary<string, string> namespaceAlias = new Dictionary<string, string>();
-
+        private readonly Dictionary<string, string> namespaceAlias =
+            new Dictionary<string, string>()
+            {
+                {"dc", "http://purl.org/dc/elements/1.1/" },
+                {"xmpRights", "http://ns.adobe.com/xap/1.0/rights/"},
+                {"cc", "http://creativecommons.org/ns#"},
+                {"xmp", "http://ns.adobe.com/xap/1.0/"},
+                { "xml", "http://www.w3.org/XML/1998/namespace"},
+            };
         /// <summary>
         /// 
         /// </summary>
@@ -41,12 +48,6 @@ namespace Wyam.Modules.Xmp
             _errorOnDoubleKeys = errorsOnDoubleKeys;
             _delocalizing = delocalizing;
             _flatting = flatten;
-
-            namespaceAlias["dc"] = "http://purl.org/dc/elements/1.1/";
-            namespaceAlias["xmpRights"] = "http://ns.adobe.com/xap/1.0/rights/";
-            namespaceAlias["cc"] = "http://creativecommons.org/ns#";
-            namespaceAlias["xmp"] = "http://ns.adobe.com/xap/1.0/";
-            namespaceAlias["xml"] = "http://www.w3.org/XML/1998/namespace";
         }
 
 
@@ -100,14 +101,13 @@ namespace Wyam.Modules.Xmp
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
 
-                 TreeDirectory hirachciDirectory = TreeDirectory.GetHirachicDirectory(xmpDirectory);
+                 TreeDirectory hierarchicalDirectory = TreeDirectory.GetHierarchicalDirectory(xmpDirectory);
 
                  foreach (var search in toSearch)
                  {
                      try
                      {
-
-                         TreeDirectory metadata = hirachciDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
+                         TreeDirectory metadata = hierarchicalDirectory.Childrean.FirstOrDefault(y => search.PathWithoutNamespacePrefix == y.ElementName && search.Namespace == y.ElementNameSpace);
 
                          if (metadata == null)
                          {
@@ -119,7 +119,7 @@ namespace Wyam.Modules.Xmp
                              }
                              continue;
                          }
-                         object value = GetObjectFromMetadata(metadata, hirachciDirectory);
+                         object value = GetObjectFromMetadata(metadata, hierarchicalDirectory);
                          if (newValues.ContainsKey(search.MetadataKey) && _errorOnDoubleKeys)
                          {
                              context.Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({x.Source})");
@@ -205,7 +205,7 @@ namespace Wyam.Modules.Xmp
                 this.Element = x;
             }
 
-            internal static TreeDirectory GetHirachicDirectory(XmpDirectory directories)
+            internal static TreeDirectory GetHierarchicalDirectory(XmpDirectory directories)
             {
                 TreeDirectory root = new TreeDirectory();
 
