@@ -45,8 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SearchIndex.cs" />
+    <Compile Include="SearchIndexItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">

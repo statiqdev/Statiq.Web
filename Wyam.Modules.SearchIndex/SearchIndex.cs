@@ -18,18 +18,19 @@ namespace Wyam.Modules.SearchIndex
         private string _searchIndexOutputFilename;
         private string _stopwordsFilename;
         private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
-        private bool _disableStemming;
+        private bool _enableStemming;
 
-        public SearchIndex(string outputFilename, string stopwordsFilename = null, bool disableStemming = false)
+        //public SearchIndex(string outputFilename, string stopwordsFilename = null, bool enableStemming = false)
+        public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
         {
-            _searchIndexOutputFilename = outputFilename;
+            //_searchIndexOutputFilename = outputFilename;
             _stopwordsFilename = stopwordsFilename;
-            _disableStemming = disableStemming;
+            _enableStemming = enableStemming;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            SearchIndexItem[] searchIndexItems = context.Documents.Where(f => f.ContainsKey("SearchIndexItem")).Select(f => f["SearchIndexItem"]).OfType<SearchIndexItem>().ToArray();
+            SearchIndexItem[] searchIndexItems = context.Documents.Where(f => f.ContainsKey(MetadataKeys.SearchIndexItem)).Select(f => f[MetadataKeys.SearchIndexItem]).OfType<SearchIndexItem>().ToArray();
 
             if( searchIndexItems.Length == 0 )
             {
@@ -40,9 +41,13 @@ namespace Wyam.Modules.SearchIndex
             string[] stopwords = GetStopwords(context);
             string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords);
 
-            string outputFilename = Path.Combine(context.OutputFolder, _searchIndexOutputFilename);
-            File.WriteAllText(outputFilename, jsFileContent);
-            return inputs;
+            //string outputFilename = Path.Combine(context.OutputFolder, _searchIndexOutputFilename);
+            //File.WriteAllText(outputFilename, jsFileContent);
+
+            IDocument searchIndexDocument = context.GetNewDocument(jsFileContent);
+
+            return inputs.Concat(new []{ searchIndexDocument });
+            //return new[] { searchIndexDocument };
         }
         
         private string BuildSearchIndex(IEnumerable<SearchIndexItem> searchIndexItems, string[] stopwords)
@@ -53,12 +58,12 @@ namespace Wyam.Modules.SearchIndex
             Parallel.ForEach(searchIndexItems, (itm, pls, i) =>
             {
                 bag.Add($@"idx.add({{
-	id: {i},
-    title: {CleanString(itm.Title, stopwords)},
-    content: {CleanString(itm.Content, stopwords)},
-	description: {CleanString(itm.Description, stopwords)},
-    tags: '{itm.Tags}'
-  }});");
+id:{i},
+title:{CleanString(itm.Title, stopwords)},
+content:{CleanString(itm.Content, stopwords)},
+description:{CleanString(itm.Description, stopwords)},
+tags:'{itm.Tags}'
+}});");
             });
 
             foreach (string s in bag)
@@ -68,7 +73,7 @@ namespace Wyam.Modules.SearchIndex
 
             foreach (SearchIndexItem itm in searchIndexItems)
             {
-                sb.AppendLine($@"idMap.push({{url: '{PathHelper.ToLink(itm.Url)}', title: {ToJsonString(itm.Title)}, description: {ToJsonString(itm.Description)}}});");
+                sb.AppendLine($@"idMap.push({{url:'{PathHelper.ToLink(itm.Url)}',title:{ToJsonString(itm.Title)},description:{ToJsonString(itm.Description)}}});");
             }
 
             return CreateJs(sb.ToString());
@@ -85,16 +90,14 @@ this.field('description', { boost: 5})
 this.field('tags', { boost: 50})
 this.ref('id')
 
-this.pipeline.remove(lunr.stopWordFilter);" + (_disableStemming ? "this.pipeline.remove(lunr.stemmer);" : "") + @"
+this.pipeline.remove(lunr.stopWordFilter);" + (_enableStemming ? "this.pipeline.remove(lunr.stemmer);" : "") + @"
 })
 
 " + dynamicJsContent + @"
     
-    return {
-        search: function(query) {
-            return idx.search(query).map(function(itm) { return idMap[itm.ref]; });
-        }
-    };
+return {
+search: function(query) {return idx.search(query).map(function(itm){return idMap[itm.ref];});}
+};
 }();";
         }
 
@@ -134,22 +137,6 @@ this.pipeline.remove(lunr.stopWordFilter);" + (_disableStemming ? "this.pipeline
             }
 
             return stopwords;
-        }
-    }
-
-    public class SearchIndexItem
-    {
-        public string Url { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Content { get; set; }
-        public string Tags { get; set; }
-
-        public SearchIndexItem(string url, string title, string content)
-        {
-            Url = url;
-            Title = title;
-            Content = content;
         }
     }
 }

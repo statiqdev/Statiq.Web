@@ -20,7 +20,7 @@ Title: Index and Archive
 $(document).ready(function(){
 	$("#search").keypress(function (e) {
 	  if (e.which == 13) {
-		alert($("#search").val());
+		location.href = "/search.html?q=" + $("#search").val();
 	  }
 	});
 });

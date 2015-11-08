@@ -10,26 +10,34 @@ string postTemplate = @"[case:sentence]
 }";
 
 Pipelines.Add("Posts",
-	Documents(100),
+	Documents(10),
 	Index(),
 	ForEach(
 		// Do generation in a ForEach module so we generate synchronously and it's repeatable
 		GenerateContent(postTemplate).WithSeed(seed++),
 		GenerateMeta("Title", "[case:title]{<verb.ing> <noun>}").WithSeed(seed++),	
-		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").WithSeed(seed++)
+		GenerateMeta("Date", "[num:1;12]/[num:1;28]/2014").WithSeed(seed++),
+		Meta("Url", $"post-{@doc.String("Index")}.html"),
+		Meta("SearchIndexItem", new SearchIndexItem((string)@doc["Url"], (string)@doc["Title"], @doc.Content))
 	),
 	Markdown(),
 	Razor(),
-	WriteFiles($"post-{@doc.String("Index")}.html")
+	WriteFiles((string)@doc["Url"])
 );
 
 Pipelines.Add("Index",
-	ReadFiles("index.cshtml"),
+	ReadFiles("*.cshtml"),
 	FrontMatter(Yaml()),
 	Razor(),
 	WriteFiles(".html")
 );
 
 Pipelines.Add("CopyAssets",
-	CopyFiles( (doc,ctx) => "assets/")
+	CopyFiles( "assets/*.*")
+);
+
+Pipelines.Add("SearchIndex",
+	//SearchIndex("assets/js/searchindex.js", stopwordsFilename: "stopwords.txt")
+	SearchIndex(stopwordsFilename: "stopwords.txt"),
+	WriteFiles( (doc,ctx) => string.IsNullOrEmpty(doc.Content) ? null : "searchindex.js" ).UseWriteMetadata(false)
 );
