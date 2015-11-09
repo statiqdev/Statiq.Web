@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 namespace Wyam.Modules.CodeAnalysis
 {
     // Note that if we ever introduce code analysis for other formats (such as Java or CSS), the metadata should be kept as similar as possible
@@ -47,27 +49,32 @@ namespace Wyam.Modules.CodeAnalysis
         public const string ImplementingTypes = "ImplementingTypes"; // IReadOnlyList<IDocument>
         public const string Constructors = "Constructors"; // IReadOnlyList<IDocument>
         public const string TypeParameters = "TypeParameters"; // IReadOnlyList<IDocument>
+        public const string Accessibility = "Accessibility"; // string
         //                  MemberTypes
-        
+
         // Method
         public const string Parameters = "Parameters"; // IDocument
         public const string ReturnType = "ReturnType"; // IDocument, null if returns void
         public const string Overridden = "Overridden"; // IDocument
         //                  TypeParameters
         //                  ContainingType
+        //                  Accessibility
 
         // Field
         public const string Type = "Type"; // IDocument
         //                  ContainingType
+        //                  Accessibility
 
         // Event
         //                  Type
         //                  ContainingType
+        //                  Accessibility
 
         // Property
         //                  ContainingType
         //                  Type
         //                  Parameters (I.e., for indexers)
+        //                  Accessibility
 
         // Type Parameter
         public const string DeclaringType = "DeclaringType"; // IDocument

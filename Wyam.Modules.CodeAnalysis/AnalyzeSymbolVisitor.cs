@@ -91,7 +91,8 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate))),
                     Metadata.Create(MetadataKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared))),
-                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters))
+                    Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
+                    Metadata.Create(MetadataKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
                 };
                 if (!_finished)
                 {
@@ -149,7 +150,8 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     Metadata.Create(MetadataKeys.ReturnType, DocumentFor(symbol.ReturnType)),
-                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod))
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenMethod)),
+                    Metadata.Create(MetadataKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -161,7 +163,8 @@ namespace Wyam.Modules.CodeAnalysis
                 AddDocumentForMember(symbol, true, new[]
                 {
                     Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
-                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type))
+                    Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
+                    Metadata.Create(MetadataKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -174,7 +177,8 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                     Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
-                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenEvent))
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenEvent)),
+                    Metadata.Create(MetadataKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -188,7 +192,8 @@ namespace Wyam.Modules.CodeAnalysis
                     Metadata.Create(MetadataKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
                     Metadata.Create(MetadataKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     Metadata.Create(MetadataKeys.Type, DocumentFor(symbol.Type)),
-                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenProperty))
+                    Metadata.Create(MetadataKeys.Overridden, DocumentFor(symbol.OverriddenProperty)),
+                    Metadata.Create(MetadataKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }

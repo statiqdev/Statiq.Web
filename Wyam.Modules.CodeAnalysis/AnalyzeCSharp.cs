@@ -105,10 +105,10 @@ namespace Wyam.Modules.CodeAnalysis
         }
 
         // Limits to public and protected symbols (and N/A like parameters)
-        public AnalyzeCSharp WherePublic()
+        public AnalyzeCSharp WherePublic(bool includeProtected = true)
         {
             return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public 
-                || x.DeclaredAccessibility == Accessibility.Protected
+                || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
                 || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }
 
