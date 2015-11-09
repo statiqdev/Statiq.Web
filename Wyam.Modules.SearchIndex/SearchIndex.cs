@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
@@ -16,30 +17,46 @@ namespace Wyam.Modules.SearchIndex
     public class SearchIndex : IModule
     {
         private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
+        private readonly DocumentConfig _searchIndexItem;
         private readonly string _stopwordsFilename;
         private readonly bool _enableStemming;
 
         public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
+            : this((doc, ctx) => doc.Get<SearchIndexItem>(MetadataKeys.SearchIndexItem), stopwordsFilename, enableStemming)
         {
+        }
+
+        public SearchIndex(string searchIndexItemMetadataKey, string stopwordsFilename = null, bool enableStemming = false)
+            : this((doc, ctx) => doc.Get<SearchIndexItem>(searchIndexItemMetadataKey), stopwordsFilename, enableStemming)
+        {
+        }
+
+        public SearchIndex(DocumentConfig searchIndexItem, string stopwordsFilename = null, bool enableStemming = false)
+        {
+            _searchIndexItem = searchIndexItem;
             _stopwordsFilename = stopwordsFilename;
             _enableStemming = enableStemming;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            SearchIndexItem[] searchIndexItems = context.Documents.Where(f => f.ContainsKey(MetadataKeys.SearchIndexItem)).Select(f => f[MetadataKeys.SearchIndexItem]).OfType<SearchIndexItem>().ToArray();
+            SearchIndexItem[] searchIndexItems = inputs
+                .Select(x => _searchIndexItem.TryInvoke<SearchIndexItem>(x, context))
+                .Where(x => x != null 
+                    && !string.IsNullOrEmpty(x.Url) 
+                    && !string.IsNullOrEmpty(x.Title) 
+                    && !string.IsNullOrEmpty(x.Content))
+                .ToArray();
 
             if( searchIndexItems.Length == 0 )
             {
-                context.Trace.Warning("It's not possible to build the search index, because no documents contain the meta data 'SearchIndexItem'.");
-                return inputs;
+                context.Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
+                return Array.Empty<IDocument>();
             }
             
             string[] stopwords = GetStopwords(context);
             string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords);
-            IDocument searchIndexDocument = context.GetNewDocument(jsFileContent);
-
-            return inputs.Concat(new []{ searchIndexDocument });
+            return new []{ context.GetNewDocument(jsFileContent) };
         }
         
         private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords)
