@@ -18,6 +18,13 @@ namespace Wyam.Common.Configuration
             return result;
         }
 
+        public static T TryInvoke<T>(this ContextConfig config, IExecutionContext context)
+        {
+            object value = config(context);
+            T result;
+            return context.TryConvert(value, out result) ? result : default(T);
+        }
+
         public static T Invoke<T>(this DocumentConfig config, IDocument document, IExecutionContext context)
         {
             object value = config(document, context);
@@ -28,6 +35,13 @@ namespace Wyam.Common.Configuration
                     string.Format("Could not convert from type {0} to type {1}", value?.GetType().Name ?? "null", typeof(T).Name));
             }
             return result;
+        }
+
+        public static T TryInvoke<T>(this DocumentConfig config, IDocument document, IExecutionContext context)
+        {
+            object value = config(document, context);
+            T result;
+            return context.TryConvert(value, out result) ? result : default(T);
         }
     }
 }

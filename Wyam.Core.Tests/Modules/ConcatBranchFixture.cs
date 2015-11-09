@@ -9,10 +9,10 @@ using Wyam.Core.Modules;
 namespace Wyam.Core.Tests.Modules
 {
     [TestFixture]
-    public class BranchConcatFixture
+    public class ConcatBranchFixture
     {
         [Test]
-        public void BranchConcatResultsInCorrectCounts()
+        public void ResultsInCorrectCounts()
         {
             // Given
             Engine engine = new Engine();
@@ -29,7 +29,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Add(a, new BranchConcat(b), c);
+            engine.Pipelines.Add(a, new ConcatBranch(b), c);
 
             // When
             engine.Execute();
@@ -47,7 +47,7 @@ namespace Wyam.Core.Tests.Modules
         }
 
         [Test]
-        public void BranchConcatWithPredicateResultsInCorrectCounts()
+        public void WithPredicateResultsInCorrectCounts()
         {
             // Given
             Engine engine = new Engine();
@@ -64,7 +64,7 @@ namespace Wyam.Core.Tests.Modules
             {
                 AdditionalOutputs = 3
             };
-            engine.Pipelines.Add(a, new BranchConcat(b).Where((x, y) => x.Content == "1"), c);
+            engine.Pipelines.Add(a, new ConcatBranch(b).Where((x, y) => x.Content == "1"), c);
 
             // When
             engine.Execute();

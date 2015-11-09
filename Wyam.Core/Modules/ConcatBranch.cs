@@ -12,18 +12,18 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Core.Modules
 {
     // Executes a sequence of modules against the input and concatenates their results and the original input
-    public class BranchConcat : IModule
+    public class ConcatBranch : IModule
     {
         private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
-        public BranchConcat(params IModule[] modules)
+        public ConcatBranch(params IModule[] modules)
         {
             _modules = modules;
         }
 
         // The delegate should return a bool
-        public BranchConcat Where(DocumentConfig predicate)
+        public ConcatBranch Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null

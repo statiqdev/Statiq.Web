@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Documents\DocumentFixture.cs" />
-    <Compile Include="Modules\BranchConcatFixture.cs" />
+    <Compile Include="Modules\ConcatBranchFixture.cs" />
     <Compile Include="Configuration\ConfiguratorFixture.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="Documents\MetadataAsFixture.cs" />
