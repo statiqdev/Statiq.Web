@@ -54,7 +54,7 @@ namespace Wyam.Core.Modules
                 foreach (IDocument document in documents)
                 {
                     object switchValue = _value.Invoke(document, context);
-                    object caseValue = c.Item1 ?? Enumerable.Empty<object>();
+                    object caseValue = c.Item1 ?? Array.Empty<object>();
                     IEnumerable caseValues = caseValue.GetType().IsArray ? (IEnumerable)caseValue : Enumerable.Repeat(caseValue, 1);
                     bool matches = caseValues.Cast<object>().Any(cv => object.Equals(switchValue, cv));
                     
