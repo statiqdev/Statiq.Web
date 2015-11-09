@@ -189,5 +189,52 @@ namespace Wyam.Core.Tests.Modules
             ((IDisposable)readFilesDocument).Dispose();
             ((IDisposable)writeFilesDocument).Dispose();
         }
+
+
+        [Test]
+        public void IgnoresEmptyDocuments()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.OutputFolder = @"TestFiles\Output\";
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            MemoryStream emptyStream = new MemoryStream(new byte[] { });
+            IDocument[] inputs =
+            {
+                new Document(engine, pipeline).Clone("Test", 
+                    new [] {
+                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/write-test")
+                    }),
+                new Document(engine, pipeline).Clone(string.Empty,
+                    new [] {
+                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/empty-test")
+                    }),
+                new Document(engine, pipeline).Clone(null,
+                    new [] {
+                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/null-test")
+                    }),
+                new Document(engine, pipeline).Clone(emptyStream,
+                    new [] {
+                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/stream-test")
+                    })
+            };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            WriteFiles writeFiles = new WriteFiles();
+
+            // When
+            IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
+            foreach (IDocument document in inputs.Concat(outputs))
+            {
+                ((IDisposable)document).Dispose();
+            }
+
+            // Then
+            Assert.AreEqual(4, outputs.Count());
+            Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test"));
+            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\empty-test"));
+            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\null-test"));
+            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\stream-test"));
+        }
     }
 }

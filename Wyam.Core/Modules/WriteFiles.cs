@@ -20,6 +20,7 @@ namespace Wyam.Core.Modules
     {
         private readonly DocumentConfig _path;
         private bool _useWriteMetadata = true;
+        private bool _ignoreEmptyContent = true;
         private Func<IDocument, IExecutionContext, bool> _predicate = null; 
 
         // The predicate should return a string
@@ -62,6 +63,12 @@ namespace Wyam.Core.Modules
         public WriteFiles UseWriteMetadata(bool useWriteMetadata = true)
         {
             _useWriteMetadata = useWriteMetadata;
+            return this;
+        }
+
+        public WriteFiles IgnoreEmptyContent(bool ignoreEmptyContent = true)
+        {
+            _ignoreEmptyContent = ignoreEmptyContent;
             return this;
         }
 
@@ -142,9 +149,14 @@ namespace Wyam.Core.Modules
                         {
                             Directory.CreateDirectory(pathDirectory);
                         }
-                        FileStream outputStream = File.Open(path, FileMode.Create);
+                        FileStream outputStream;
                         using (Stream inputStream = input.GetStream())
                         {
+                            if (_ignoreEmptyContent && inputStream.Length == 0)
+                            {
+                                return input;
+                            }
+                            outputStream = File.Open(path, FileMode.Create);
                             inputStream.CopyTo(outputStream);
                         }
                         context.Trace.Verbose("Wrote file {0}", path);
@@ -163,7 +175,8 @@ namespace Wyam.Core.Modules
                     }
                 }
                 return input;
-            });
+            })
+            .Where(x => x != null);
         }
     }
 }
