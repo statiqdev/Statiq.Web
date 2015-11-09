@@ -1,0 +1,64 @@
+Title: Search (proof of concept)
+---
+<p>Please enter your search text below: (e.g. 'absolute' or 'construct')</p>
+
+<input type="search" id="search" autofocus="autofocus" placeholder="Search..."/>
+
+<h3>Search results</h3>
+<div id="searchResults"></div>
+
+<script src="/assets/js/lunr.min.js"></script>
+<script src="/assets/js/searchindex.js"></script>
+<script>
+function getQueryParam(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+        return null;
+    }
+    else{
+        return results[1] || 0;
+    }
+}
+
+function runQuery(query){
+	$("#searchResults").empty();
+	
+	if( query.length < 2 ){
+		return;
+	}
+	
+	var results = searchModule.search(query);
+	
+	if(results.length == 0 ){
+		$("#searchResults").append("<p><b>No results found for query '" + query + "'</b></p>")
+	}
+	else{
+		$("#searchResults").append("<p>Number of matching posts: <b>" + results.length + "</b></p>");
+		
+		var listHtml = "<ul>";
+		
+		for(var i = 0; i < results.length; ++i){
+			var res = results[i];
+			listHtml += "<li><a href='" + res.url + "' target='_blank'>" + res.title + "</a></li>";
+		}
+		
+		listHtml += "</ul>"
+		
+		$("#searchResults").append(listHtml);
+	}
+}
+
+$(document).ready(function(){
+	$("#search").on('input propertychange paste', function() {
+		runQuery($("#search").val());
+	});
+	
+	var q = getQueryParam("q");
+    
+    if( q ) {
+        q = decodeURIComponent(q);
+        $("#search").val(q);
+		runQuery(q);
+	}
+});
+</script>
