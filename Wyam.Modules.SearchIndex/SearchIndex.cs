@@ -15,9 +15,9 @@ namespace Wyam.Modules.SearchIndex
 {
     public class SearchIndex : IModule
     {
-        private string _stopwordsFilename;
         private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
-        private bool _enableStemming;
+        private readonly string _stopwordsFilename;
+        private readonly bool _enableStemming;
 
         public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
         {
@@ -42,7 +42,7 @@ namespace Wyam.Modules.SearchIndex
             return inputs.Concat(new []{ searchIndexDocument });
         }
         
-        private string BuildSearchIndex(IEnumerable<SearchIndexItem> searchIndexItems, string[] stopwords)
+        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords)
         {
             StringBuilder sb = new StringBuilder();
 
