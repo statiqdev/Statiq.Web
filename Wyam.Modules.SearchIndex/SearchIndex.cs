@@ -37,7 +37,6 @@ namespace Wyam.Modules.SearchIndex
             
             string[] stopwords = GetStopwords(context);
             string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords);
-
             IDocument searchIndexDocument = context.GetNewDocument(jsFileContent);
 
             return inputs.Concat(new []{ searchIndexDocument });
@@ -46,27 +45,22 @@ namespace Wyam.Modules.SearchIndex
         private string BuildSearchIndex(IEnumerable<SearchIndexItem> searchIndexItems, string[] stopwords)
         {
             StringBuilder sb = new StringBuilder();
-            ConcurrentBag<string> bag = new ConcurrentBag<string>();
 
-            Parallel.ForEach(searchIndexItems, (itm, pls, i) =>
+            for (int i = 0; i < searchIndexItems.Count(); ++i)
             {
-                bag.Add($@"idx.add({{
+                SearchIndexItem itm = searchIndexItems.ElementAt(i);
+                sb.AppendLine($@"a({{
 id:{i},
 title:{CleanString(itm.Title, stopwords)},
 content:{CleanString(itm.Content, stopwords)},
 description:{CleanString(itm.Description, stopwords)},
 tags:'{itm.Tags}'
 }});");
-            });
-
-            foreach (string s in bag)
-            {
-                sb.AppendLine(s);
             }
 
             foreach (SearchIndexItem itm in searchIndexItems)
             {
-                sb.AppendLine($@"idMap.push({{url:'{PathHelper.ToLink(itm.Url)}',title:{ToJsonString(itm.Title)},description:{ToJsonString(itm.Description)}}});");
+                sb.AppendLine($@"y({{url:'{PathHelper.ToLink(itm.Url)}',title:{ToJsonString(itm.Title)},description:{ToJsonString(itm.Description)}}});");
             }
 
             return CreateJs(sb.ToString());
@@ -76,6 +70,7 @@ tags:'{itm.Tags}'
         {
             return @"var searchModule = function() {
 var idMap = [];
+function y(e){idMap.push(e);}
 var idx = lunr(function() {
 this.field('title', { boost: 10})
 this.field('content')
@@ -85,11 +80,11 @@ this.ref('id')
 
 this.pipeline.remove(lunr.stopWordFilter);" + (_enableStemming ? "this.pipeline.remove(lunr.stemmer);" : "") + @"
 })
+function a(e){idx.add(e);}
 
 " + dynamicJsContent + @"
-    
 return {
-search: function(query) {return idx.search(query).map(function(itm){return idMap[itm.ref];});}
+search: function(q) {return idx.search(q).map(function(i){return idMap[i.ref];});}
 };
 }();";
         }
