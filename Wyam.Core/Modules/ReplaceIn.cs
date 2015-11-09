@@ -42,15 +42,19 @@ namespace Wyam.Core.Modules
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            if (content == null)
-            {
-                content = string.Empty;
-            }
             if (string.IsNullOrEmpty(_search))
             {
-                return new[] { input.Clone(content.ToString()) };
+                return new[] { input.Clone(input.Content) };
             }
-            return new[] { input.Clone(content.ToString().Replace(_search, input.Content)) };
+
+            string replacement = content as string;
+
+            if (replacement == null )
+            {
+                replacement = string.Empty;
+            }
+            
+            return new[] { input.Clone(input.Content.Replace(_search, replacement)) };
         }
     }
 }
