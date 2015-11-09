@@ -73,6 +73,7 @@
     <Compile Include="Modules\OrderByFixture.cs" />
     <Compile Include="Modules\PaginateFixture.cs" />
     <Compile Include="Modules\ReadFilesFixture.cs" />
+    <Compile Include="Modules\ReplaceInFixture.cs" />
     <Compile Include="Modules\SitemapFixture.cs" />
     <Compile Include="Modules\TraceFixture.cs" />
     <Compile Include="Modules\WriteFilesFixture.cs" />
