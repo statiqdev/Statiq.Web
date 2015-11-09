@@ -108,6 +108,7 @@
     <Compile Include="Modules\BranchConcat.cs" />
     <Compile Include="Modules\GroupBy.cs" />
     <Compile Include="Modules\Sitemap.cs" />
+    <Compile Include="Modules\Switch.cs" />
     <Compile Include="Modules\UnwrittenFiles.cs" />
     <Compile Include="Modules\Index.cs" />
     <Compile Include="Modules\OrderBy.cs" />
