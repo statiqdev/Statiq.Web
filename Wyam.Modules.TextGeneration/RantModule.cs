@@ -10,6 +10,9 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.TextGeneration
 {
+    /// <summary>
+    /// Base class for Rant-based text generation modules.
+    /// </summary>
     public abstract class RantModule : ContentModule
     {
         private RantEngine _engine;
@@ -46,22 +49,36 @@ namespace Wyam.Modules.TextGeneration
             }
         }
 
-        // Allows you to set a seed for repeatability and testing
+        /// <summary>
+        /// This allows you to set the seed used for text generation which can be handy 
+        /// for ensuring repeatable generations.
+        /// </summary>
+        /// <param name="seed">The seed to use.</param>
+        /// <returns></returns>
         public RantModule WithSeed(long seed)
         {
             _seed = seed;
             _incrementSeed = true;
             return this;
         }
-
-        // This indicates if the seed should be incremented for each document
-        // Setting this to false with always generate the same output for the same pattern
+        
+        /// <summary>
+        /// Specifies whether to increment the seed for each document. If incrementing 
+        /// is not used, every document will get the same content for the same template.
+        /// </summary>
+        /// <param name="increment">If set to <c>true</c> the seed will be incremented for each document.</param>
+        /// <returns></returns>
         public RantModule IncrementSeed(bool increment = true)
         {
             _incrementSeed = increment;
             return this;
         }
 
+        /// <summary>
+        /// Controls whether the dictionary will include NSFW content.
+        /// </summary>
+        /// <param name="includeNsfw">If set to <c>true</c> the dictionary will include NSFW content.</param>
+        /// <returns></returns>
         public RantModule IncludeNsfw(bool includeNsfw = true)
         {
             if (includeNsfw)

@@ -16,6 +16,7 @@ namespace Wyam.Core.Modules
     /// the case where modules are provided, they are executed against an empty initial document and the 
     /// results are applied to each input document.
     /// </summary>
+    /// <category>Content</category>
     public class Content : ContentModule
     {
         /// <summary>

@@ -17,54 +17,96 @@ using IDocument = Wyam.Common.Documents.IDocument;
 
 namespace Wyam.Modules.Html
 {
-    /// <category>Content</category>
     /// <summary>
-    /// 
+    /// Replaces occurrences of specified strings with HTML links. This module is smart enough to only 
+    /// look in specified HTML elements (p by default). You can supply an alternate query selector to 
+    /// narrow the search scope to different container elements or to those elements that contain 
+    /// (or don't contain) a CSS class, etc. It also won't generate an HTML link if the replacement 
+    /// text is already found in another link.
     /// </summary>
+    /// <category>Content</category>
     public class AutoLink : IModule
     {
         // Key = text to replace, Value = url
         private readonly ConfigHelper<IDictionary<string, string>> _links;
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
-        private bool _matchOnlyWholeWord =false;
+        private bool _matchOnlyWholeWord = false;
 
-
+        /// <summary>
+        /// Creates the module without any initial mappings. Use <c>AddLink(...)</c> to add mappings with fluent methods.
+        /// </summary>
         public AutoLink()
         {
             _links = new ConfigHelper<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
+        /// <summary>
+        /// Specifies a dictionary of link mappings. The keys specify strings to search for in the HTML content 
+        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same 
+        /// link mappings for all input documents.
+        /// </summary>
+        /// <param name="links">A dictionary of link mappings.</param>
         public AutoLink(IDictionary<string, string> links)
         {
             _links = new ConfigHelper<IDictionary<string, string>>(links ?? new Dictionary<string, string>());
         }
 
+        /// <summary>
+        /// Specifies a dictionary of link mappings given an <c>IExecutionContext</c>. The return value is expected 
+        /// to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the HTML content 
+        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same 
+        /// link mappings for all input documents.
+        /// </summary>
+        /// <param name="links">A delegate that returns a dictionary of link mappings.</param>
         public AutoLink(ContextConfig links)
         {
             _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
+        /// <summary>
+        /// Specifies a dictionary of link mappings given an <c>IDocument</c> and <c>IExecutionContext</c>. The return 
+        /// value is expected to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the 
+        /// HTML content and the values specify what should be placed in the <c>href</c> attribute. This allows you 
+        /// to specify a different mapping for each input document.
+        /// </summary>
+        /// <param name="links">A delegate that returns a dictionary of link mappings.</param>
         public AutoLink(DocumentConfig links)
         {
             _links = new ConfigHelper<IDictionary<string, string>>(links, new Dictionary<string, string>());
         }
 
+        /// <summary>
+        /// Allows you to specify an alternate query selector.
+        /// </summary>
+        /// <param name="querySelector">The query selector to use.</param>
+        /// <returns>The current instance.</returns>
         public AutoLink WithQuerySelector(string querySelector)
         {
             _querySelector = querySelector ?? "p";
             return this;
         }
 
+        /// <summary>
+        /// Adds an additional link to the mapping. This can be used whether or not you specify a mapping in the constructor.
+        /// </summary>
+        /// <param name="text">The text to search for.</param>
+        /// <param name="link">The link to insert.</param>
+        /// <returns>The current instance.</returns>
         public AutoLink WithLink(string text, string link)
         {
             _extraLinks[text] = link;
             return this;
         }
 
-        public AutoLink WithMatchOnlyWholeWord()
+        /// <summary>
+        /// Forces the string search to only consider whole words (it will not add a link in the middle of a word).
+        /// </summary>
+        /// <param name="matchOnlyWholeWord">If set to <c>true</c> the module will only insert links at work boundaries.</param>
+        /// <returns>The current instance.</returns>
+        public AutoLink WithMatchOnlyWholeWord(bool matchOnlyWholeWord = true)
         {
-            _matchOnlyWholeWord = true;
+            _matchOnlyWholeWord = matchOnlyWholeWord;
             return this;
         }
 
