@@ -13,11 +13,27 @@ using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Splits a sequence of documents into groups based on a specified key function.
+    /// </summary>
+    /// <remarks>.
+    /// This module works similarly to Paginate.
+    /// </remarks>
     public class GroupBy : IModule
     {
         private readonly DocumentConfig _key;
         private readonly IModule[] _modules;
 
+        /// <summary>
+        /// Partitions the result of the specified modules into groups with matching keys 
+        /// based on the key delegate. The input documents to GroupBy are used as 
+        /// the initial input documents to the specified modules.
+        /// </summary>
+        /// <param name="key">A delegate that returns the group key.</param>
+        /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
+        /// <metadata name="GroupDocuments">An IEnumerable&lt;IDocument&gt; containing all the documents for the current group.</metadata>
+        /// <metadata name="GroupKey">The key for the current group.</metadata>
+        /// <category>Control</category>
         public GroupBy(DocumentConfig key, params IModule[] modules)
         {
             if (key == null)

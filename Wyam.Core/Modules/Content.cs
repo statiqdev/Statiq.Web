@@ -12,10 +12,12 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Core.Modules
 {
     /// <summary>
-    /// Replaces the content of each input document with the string value of the specified content object. In 
-    /// the case where modules are provided, they are executed against an empty initial document and the 
-    /// results are applied to each input document.
+    /// Replaces the content of each input document with the string value of the specified content object.
     /// </summary>
+    /// <remarks>
+    /// In the case where modules are provided, they are executed against an 
+    /// empty initial document and the results are applied to each input document.
+    /// </remarks>
     /// <category>Content</category>
     public class Content : ContentModule
     {

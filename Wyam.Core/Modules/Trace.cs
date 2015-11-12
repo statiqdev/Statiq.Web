@@ -12,27 +12,51 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // Outputs the supplied content to the trace without manipulating the inputs
-    // This is useful for debugging or reporting custom status during build
+    /// <summary>
+    /// Outputs trace messages during execution.
+    /// </summary>
+    /// <remarks>
+    /// This module has no effect on documents and the input documents are passed through to output documents.
+    /// </remarks>
+    /// <category>Extensibility</category>
     public class Trace : ContentModule
     {
         private TraceEventType _traceEventType = TraceEventType.Information;
 
+        /// <summary>
+        /// Outputs the string value of the specified object to trace.
+        /// </summary>
+        /// <param name="content">The content to trace.</param>
         public Trace(object content)
             : base(content)
         {
         }
 
+        /// <summary>
+        /// Outputs the string value of the returned object to trace. This allows 
+        /// you to trace different content depending on the execution context.
+        /// </summary>
+        /// <param name="content">A delegate that returns the content to trace.</param>
         public Trace(ContextConfig content)
             : base(content)
         {
         }
 
+        /// <summary>
+        /// Outputs the string value of the returned object to trace. This allows 
+        /// you to trace different content for each document depending on the input document.
+        /// </summary>
+        /// <param name="content">A delegate that returns the content to trace.</param>
         public Trace(DocumentConfig content) 
             : base(content)
         {
         }
 
+        /// <summary>
+        /// The specified modules are executed against an empty initial document and the 
+        /// resulting document content is output to trace.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
         public Trace(params IModule[] modules)
             : base(modules)
         {

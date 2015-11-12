@@ -12,11 +12,54 @@ using Wyam.Core.Documents;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Splits a sequence of documents into multiple pages.
+    /// </summary>
+    /// <remarks>
+    /// Each input document is then cloned for each page and metadata related 
+    /// to the pages, including the sequence of documents for each page, 
+    /// is added to each clone.
+    /// </remarks>
+    /// <example>
+    /// If your input document is a Razor template for a blog archive, you can use 
+    /// Paginate to get pages of 10 blog posts each. If you have 50 blog posts, the 
+    /// result of the Paginate module will be 5 copies of your input archive template, 
+    /// one for each page. Your configuration file might look something like this:
+    /// <code>
+    /// Pipelines.Add("Posts",
+    ///     ReadFiles("*.md"),
+    ///     Markdown(),
+    ///     WriteFiles("html")
+    /// );
+    ///
+    /// Pipelines.Add("Archive",
+    ///     ReadFiles("archive.cshtml"),
+    ///     Paginate(10,
+    ///         Documents("Posts")
+    ///     ),
+    ///     Razor(),
+    ///     WriteFiles(string.Format("archive-{0}.html", @doc["CurrentPage"]))
+    /// );
+    /// </code>
+    /// </example>
+    /// <metadata name="PageDocuments">An IEnumerable&lt;IDocument&gt; containing all the documents for the current page.</metadata>
+    /// <metadata name="CurrentPage">The index of the current page (1 based).</metadata>
+    /// <metadata name="TotalPages">The total number of pages.</metadata>
+    /// <metadata name="HasNextPage">Whether there is another page after this one.</metadata>
+    /// <metadata name="HasPreviousPage">Whether there is another page before this one.</metadata>
+    /// <category>Control</category>
     public class Paginate : IModule
     {
         private readonly int _pageSize;
         private readonly IModule[] _modules;
 
+        /// <summary>
+        /// Partitions the result of the specified modules into the specified number of pages. The 
+        /// input documents to Paginate are used as the initial input documents to the specified modules.
+        /// </summary>
+        /// <param name="pageSize">The number of documents on each page.</param>
+        /// <param name="modules">The modules to execute to get the documents to page.</param>
+        /// <exception cref="System.ArgumentException"></exception>
         public Paginate(int pageSize, params IModule[] modules)
         {
             if (pageSize <= 0)
