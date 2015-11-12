@@ -13,7 +13,14 @@ using Wyam.Common.Configuration;
 namespace Wyam.Modules.Git
 {
     /// <summary>
-    /// This Module Creates a Page for every Author in the Git repository. Adding Metadata with Information about the Author.
+    /// This Module Creates a Document for every Author in the Git repository. Adding Metadata
+    /// with Information about the Author.
+    /// 
+    /// This Module adds the Metadata Contributor which is a <see cref="Author"/> instance and
+    /// Contains the Name and Email address.
+    /// 
+    /// This Module adds the Metadata CommitInformation which is an Array of <see cref="CommitInformation"/>.
+    /// This Arraay contains all Commits that were done by this Author.
     /// </summary>
     public class GitAuthors : GitBase
     {
