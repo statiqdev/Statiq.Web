@@ -23,7 +23,7 @@ namespace Wyam.Core.Modules
     /// For each output document, several metadata values are set with information about the file. Note 
     /// that this module is best at the beginning of a pipeline because it will be executed once 
     /// for each input document, even if you only specify a search path. If you want to add 
-    /// additional files to a current pipeline, you should enclose your ReadFiles modules with Concat.
+    /// additional files to a current pipeline, you should enclose your ReadFiles modules with <see cref="Concat"/>.
     /// </remarks>
     /// <metadata name="SourceFileRoot">The absolute root search path without any nested directories 
     /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>

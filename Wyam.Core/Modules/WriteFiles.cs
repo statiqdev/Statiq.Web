@@ -16,14 +16,51 @@ using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Writes the content of each input document to the file system.
+    /// </summary>
+    /// <remarks>
+    /// If the metadata keys <c>WriteFileName</c> (which requires <c>RelativeFileDir</c> to be 
+    /// set, usually by the ReadFiles module), <c>WriteExtension</c> (which 
+    /// requires <c>RelativeFilePath</c> to be set, usually by the <see cref="ReadFiles"/> module) 
+    /// or <c>WritePath</c> are set on an input document, that value will be used instead 
+    /// of what's specified in the module. For example, if you have a bunch 
+    /// of Razor .cshtml files that need to be rendered to .html files but one of them 
+    /// should be output as a .xml file instead, define the <c>WriteExtension</c> metadata value 
+    /// in the front matter of the page.
+    /// </remarks>
+    /// <metadata name="DestinationFilePath">The full absolute path (including file name) 
+    /// of the destination file.</metadata>
+    /// <metadata name="DestinationFilePathBase">The full absolute path (including file name) 
+    /// of the destination file without the file extension.</metadata>
+    /// <metadata name="DestinationFileBase">The file name without any extension. Equivalent 
+    /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileExt">The extension of the file. Equivalent 
+    /// to <c>Path.GetExtension(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileName">The full file name. Equivalent 
+    /// to <c>Path.GetFileName(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileDir">The full absolute directory of the file. 
+    /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="RelativeFilePath">The relative path to the file (including file name)
+    /// from the Wyam output folder.</metadata>
+    /// <metadata name="RelativeFilePathBase">The relative path to the file (including file name)
+    /// from the Wyam output folder without the file extension.</metadata>
+    /// <metadata name="RelativeFileDir">The relative directory of the file 
+    /// from the Wyam output folder.</metadata>
+    /// <category>Input/Output</category>
     public class WriteFiles : IModule
     {
         private readonly DocumentConfig _path;
         private bool _useWriteMetadata = true;
         private bool _ignoreEmptyContent = true;
-        private Func<IDocument, IExecutionContext, bool> _predicate = null; 
+        private Func<IDocument, IExecutionContext, bool> _predicate = null;
 
-        // The predicate should return a string
+        /// <summary>
+        /// Uses a delegate to describe where to write the content of each document. 
+        /// The output of the function should be either a full path to the disk 
+        /// location (including file name) or a path relative to the output folder.
+        /// </summary>
+        /// <param name="path">A delegate that returns a <c>string</c> with the desired path.</param>
         public WriteFiles(DocumentConfig path)
         {
             if (path == null)
@@ -34,6 +71,12 @@ namespace Wyam.Core.Modules
             _path = path;
         }
 
+        /// <summary>
+        /// Writes the document content to disk with the specified extension with the same 
+        /// base file name and relative path as the input file. This requires metadata 
+        /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFiles"/> module).
+        /// </summary>
+        /// <param name="extension">The extension to use for writing the file.</param>
         public WriteFiles(string extension)
         {
             if (extension == null)
@@ -52,27 +95,42 @@ namespace Wyam.Core.Modules
             };
         }
 
+        /// <summary>
+        /// Writes the document content to disk with the same file name and relative path 
+        /// as the input file. This requires metadata for <c>RelativeFilePath</c> to be set 
+        /// (which is done by default by the <see cref="ReadFiles"/> module).
+        /// </summary>
         public WriteFiles()
         {
             _path = (x, y) => x.String(MetadataKeys.RelativeFilePath);
         }
-
-        // By default the metadata values for WritePath, WriteFileName, and WriteExtension are
-        // checked and used first. This can be used to turn off the default behavior and always
-        // rely on the delegate for obtaining the write location.
+        
+        /// <summary>
+        /// By default the metadata values for <c>WritePath</c>, <c>WriteFileName</c>, and <c>WriteExtension</c> 
+        /// are checked and used first. This can be used to turn off the default behavior and always
+        /// rely on the delegate for obtaining the write location.
+        /// </summary>
+        /// <param name="useWriteMetadata">If set to <c>false</c>, metadata of the input document will not be used.</param>
         public WriteFiles UseWriteMetadata(bool useWriteMetadata = true)
         {
             _useWriteMetadata = useWriteMetadata;
             return this;
         }
 
+        /// <summary>
+        /// Ignores documents with empty content, which is the default behavior.
+        /// </summary>
+        /// <param name="ignoreEmptyContent">If set to <c>true</c>, documents with empty content will be ignored.</param>
         public WriteFiles IgnoreEmptyContent(bool ignoreEmptyContent = true)
         {
             _ignoreEmptyContent = ignoreEmptyContent;
             return this;
         }
 
-        // The delegate should return a bool
+        /// <summary>
+        /// Specifies a predicate that must be satisfied for the file to be written.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns <c>true</c> if the file should be written.</param>
         public WriteFiles Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

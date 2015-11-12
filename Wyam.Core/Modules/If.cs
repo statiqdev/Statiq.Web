@@ -16,7 +16,7 @@ namespace Wyam.Core.Modules
     /// </summary>
     /// <remarks>
     /// Any result documents from the child modules will be returned as the result of the 
-    /// If module. Any input modules that don't match a predicate will be returned as 
+    /// this module. Any input modules that don't match a predicate will be returned as 
     /// outputs without modification.
     /// </remarks>
     /// <category>Control</category>
@@ -26,7 +26,7 @@ namespace Wyam.Core.Modules
             = new List<Tuple<DocumentConfig, IModule[]>>();
         
         /// <summary>
-        /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns true.
+        /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
@@ -37,7 +37,7 @@ namespace Wyam.Core.Modules
 
         /// <summary>
         /// Specifies an alternate condition to be tested on documents that did not satisfy 
-        /// previous conditions. You can chain together as many ElseIf calls as needed.
+        /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>

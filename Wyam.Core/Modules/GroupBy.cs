@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules
     /// Splits a sequence of documents into groups based on a specified key function.
     /// </summary>
     /// <remarks>.
-    /// This module works similarly to Paginate.
+    /// This module works similarly to <see cref="Paginate"/>.
     /// </remarks>
     public class GroupBy : IModule
     {
