@@ -53,7 +53,6 @@ namespace Wyam.Modules.Html
         /// Allows you to specify an alternate metadata key.
         /// </summary>
         /// <param name="metadataKey">The metadata key to store the excerpt in.</param>
-        /// <returns></returns>
         public Excerpt SetMetadataKey(string metadataKey)
         {
             _metadataKey = metadataKey;
@@ -64,7 +63,6 @@ namespace Wyam.Modules.Html
         /// Allows you to specify an alternate query selector.
         /// </summary>
         /// <param name="querySelector">The query selector to use.</param>
-        /// <returns></returns>
         public Excerpt WithQuerySelector(string querySelector)
         {
             _querySelector = querySelector;
@@ -77,7 +75,6 @@ namespace Wyam.Modules.Html
         /// the query selector is added to metadata. The default is to get outer HTML content.
         /// </summary>
         /// <param name="outerHtml">If set to <c>true</c>, outer HTML will be stored.</param>
-        /// <returns></returns>
         public Excerpt GetOuterHtml(bool outerHtml)
         {
             _outerHtml = outerHtml;

@@ -11,6 +11,13 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Markdown
 {
+    /// <summary>
+    /// Parses markdown content and renders it to HTML.
+    /// </summary>
+    /// <remarks>
+    /// Parses markdown content in each input document and outputs documents with rendered HTML content.
+    /// </remarks>
+    /// <category>Templates</category>
     public class Markdown : IModule
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
