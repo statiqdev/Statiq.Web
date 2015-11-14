@@ -10,19 +10,31 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // Executes the specified delegate for each input
+    /// <summary>
+    /// Executes custom code for each input document.
+    /// </summary>
+    /// <remarks>
+    /// This module is very useful for customizing pipeline execution without having to write an entire module.
+    /// </remarks>
+    /// <category>Extensibility</category>
     public class Execute : IModule
     {
         private readonly DocumentConfig _executeDocuments;
         private readonly ContextConfig _executeContext;
 
-        // The delegate should return a IEnumerable<IDocument>
+        /// <summary>
+        /// Specifies a delegate that should be invoked once for each input document.
+        /// </summary>
+        /// <param name="execute">A delegate to invoke that should return a IEnumerable%lt;IDocument&gt;.</param>
         public Execute(DocumentConfig execute)
         {
             _executeDocuments = execute;
         }
 
-        // The delegate should return a IEnumerable<IDocument>
+        /// <summary>
+        /// Specifies a delegate that should be invoked once for all input documents.
+        /// </summary>
+        /// <param name="execute">A delegate to invoke that should return a IEnumerable%lt;IDocument&gt;.</param>
         public Execute(ContextConfig execute)
         {
             _executeContext = execute;

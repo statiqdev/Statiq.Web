@@ -11,12 +11,19 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // This filters the documents
+    /// <summary>
+    /// Filters the current sequence of modules using a predicate.
+    /// </summary>
+    /// <category>Control</category>
     public class Where : IModule
     {
         private readonly DocumentConfig _predicate;
 
-        // The delegate should return a bool
+        /// <summary>
+        /// Specifies the predicate to use for filtering documents. 
+        /// Only input documents for which the predicate returns <c>true</c> will be output.
+        /// </summary>
+        /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         public Where(DocumentConfig predicate)
         {
             _predicate = predicate;

@@ -11,28 +11,47 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // This executes the specified modules if the specified predicate is true
-    // Any results from the specified modules (if run) will be returned as the result of the If module
-    // Like a Branch module, but results replace the input documents at the end (instead of being dropped)
+    /// <summary>
+    /// Evaluates a series of child modules for each input document if a specified condition is met. 
+    /// </summary>
+    /// <remarks>
+    /// Any result documents from the child modules will be returned as the result of the 
+    /// this module. Any input modules that don't match a predicate will be returned as 
+    /// outputs without modification.
+    /// </remarks>
+    /// <category>Control</category>
     public class If : IModule
     {
         private readonly List<Tuple<DocumentConfig, IModule[]>> _conditions 
             = new List<Tuple<DocumentConfig, IModule[]>>();
         
-        // The delegate should return a bool
+        /// <summary>
+        /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
+        /// </summary>
+        /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
+        /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
         public If(DocumentConfig predicate, params IModule[] modules)
         {
             _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
         }
 
-        // The delegate should return a bool
+        /// <summary>
+        /// Specifies an alternate condition to be tested on documents that did not satisfy 
+        /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
+        /// </summary>
+        /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
+        /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
         public If ElseIf(DocumentConfig predicate, params IModule[] modules)
         {
             _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
             return this;
         }
 
-        // Returns IModule instead of If to discourage further conditions
+        /// <summary>
+        /// This should be at the end of your fluent method chain and will evaluate the 
+        /// specified child modules on all documents that did not satisfy previous predicates.
+        /// </summary>
+        /// <param name="modules">The modules to execute on documents where no previous predicate was <c>true</c>.</param>
         public IModule Else(params IModule[] modules)
         {
             _conditions.Add(new Tuple<DocumentConfig, IModule[]>((x, y) => true, modules));

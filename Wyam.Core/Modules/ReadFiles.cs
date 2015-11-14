@@ -17,12 +17,14 @@ using Metadata = Wyam.Common.Documents.Metadata;
 namespace Wyam.Core.Modules
 {
     /// <summary>
-    /// Reads the content of files from the file system into the content of new documents. For each 
-    /// output document, several metadata values are set with information about the file. Note 
+    /// Reads the content of files from the file system into the content of new documents.
+    /// </summary>
+    /// <remarks>
+    /// For each output document, several metadata values are set with information about the file. Note 
     /// that this module is best at the beginning of a pipeline because it will be executed once 
     /// for each input document, even if you only specify a search path. If you want to add 
-    /// additional files to a current pipeline, you should enclose your ReadFiles modules with Concat.
-    /// </summary>
+    /// additional files to a current pipeline, you should enclose your ReadFiles modules with <see cref="Concat"/>.
+    /// </remarks>
     /// <metadata name="SourceFileRoot">The absolute root search path without any nested directories 
     /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
     /// <metadata name="SourceFilePath">The full absolute path of the file (including file name).</metadata>
@@ -42,14 +44,18 @@ namespace Wyam.Core.Modules
     /// from the Wyam input folder without the file extension.</metadata>
     /// <metadata name="RelativeFileDir">The relative directory of the file 
     /// from the Wyam input folder.</metadata>
+    /// <category>Input/Output</category>
     public class ReadFiles : IModule
     {
         private readonly DocumentConfig _path;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _predicate = null;
-        private string[] _extensions; 
+        private string[] _extensions;
 
-        // The delegate should return a string
+        /// <summary>
+        /// Reads all files that match the specified path. This allows you to specify different search paths depending on the input.
+        /// </summary>
+        /// <param name="path">A delegate that returns a <c>string</c> with the desired search path.</param>
         public ReadFiles(DocumentConfig path)
         {
             if (path == null)
@@ -60,6 +66,10 @@ namespace Wyam.Core.Modules
             _path = path;
         }
 
+        /// <summary>
+        /// Reads all files that match the specified search pattern.
+        /// </summary>
+        /// <param name="searchPattern">The search pattern to use.</param>
         public ReadFiles(string searchPattern)
         {
             if (searchPattern == null)
@@ -70,24 +80,39 @@ namespace Wyam.Core.Modules
             _path = (x, y) => searchPattern;
         }
 
+        /// <summary>
+        /// Specifies whether to search all directories or just the top directory.
+        /// </summary>
+        /// <param name="searchOption">The search option to use.</param>
         public ReadFiles WithSearchOption(SearchOption searchOption)
         {
             _searchOption = searchOption;
             return this;
         }
 
+        /// <summary>
+        /// Specifies that all directories should be searched.
+        /// </summary>
         public ReadFiles FromAllDirectories()
         {
             _searchOption = System.IO.SearchOption.AllDirectories;
             return this;
         }
 
+        /// <summary>
+        /// Specifies that only the top-level directory should be searched.
+        /// </summary>
         public ReadFiles FromTopDirectoryOnly()
         {
             _searchOption = System.IO.SearchOption.TopDirectoryOnly;
             return this;
         }
 
+        /// <summary>
+        /// Specifies a predicate that must be satisfied for the file to be 
+        /// copied. The input to the predicate is the full path to the source file.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns <c>true</c> if the file should be copied.</param>
         public ReadFiles Where(Func<string, bool> predicate)
         {
             Func<string, bool> currentPredicate = _predicate;
@@ -95,6 +120,11 @@ namespace Wyam.Core.Modules
             return this;
         }
 
+        /// <summary>
+        /// Specifies that only files with the given extensions should be read.
+        /// </summary>
+        /// <param name="extensions">The extensions to include.</param>
+        /// <returns></returns>
         public ReadFiles WithExtensions(params string[] extensions)
         {
             _extensions = extensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();

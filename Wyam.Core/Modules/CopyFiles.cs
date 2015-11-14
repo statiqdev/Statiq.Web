@@ -15,8 +15,20 @@ using Metadata = Wyam.Common.Documents.Metadata;
 
 namespace Wyam.Core.Modules
 {
-    // Copies files from the input path to the corresponding output path
-    // Sets the same metadata as ReadFiles, but doesn't set any content
+    /// <summary>
+    /// Copies the content of files from the file system from one location on disk to another location.
+    /// </summary>
+    /// <remarks>
+    /// For each output document, several metadata values are set with information about the file. 
+    /// By default, files are copied from the input folder (or a subfolder) to the same relative 
+    /// location in the output folder, but this doesn't have to be the case. Also note that this 
+    /// module is evaluated for each input document, so it's typically used as the first (and 
+    /// often only) module in a pipeline. Otherwise, you would probably copy the same files multiple 
+    /// times (once for each input document).
+    /// </remarks>
+    /// <metadata name="SourceFilePath">The full path (including file name) of the source file.</metadata>
+    /// <metadata name="DestinationFilePath">The full path (including file name) of the destination file.</metadata>
+    /// <category>Input/Output</category>
     public class CopyFiles : IModule
     {
         private readonly DocumentConfig _sourcePath;
@@ -25,7 +37,10 @@ namespace Wyam.Core.Modules
         private Func<string, bool> _predicate = null;
         private string[] _withoutExtensions;
 
-        // The delegate should return a string
+        /// <summary>
+        /// Copies all files that match the specified path. This allows you to specify different search paths depending on the input document.
+        /// </summary>
+        /// <param name="sourcePath">A delegate that returns a <c>string</c> with the desired search path.</param>
         public CopyFiles(DocumentConfig sourcePath)
         {
             if (sourcePath == null)
@@ -36,6 +51,10 @@ namespace Wyam.Core.Modules
             _sourcePath = sourcePath;
         }
 
+        /// <summary>
+        /// Copies all files that match the specified search pattern.
+        /// </summary>
+        /// <param name="searchPattern">The search pattern to use.</param>
         public CopyFiles(string searchPattern)
         {
             if (searchPattern == null)
@@ -46,24 +65,39 @@ namespace Wyam.Core.Modules
             _sourcePath = (x, y) => searchPattern;
         }
 
+        /// <summary>
+        /// Specifies whether to search all directories or just the top directory.
+        /// </summary>
+        /// <param name="searchOption">The search option to use.</param>
         public CopyFiles WithSearchOption(SearchOption searchOption)
         {
             _searchOption = searchOption;
             return this;
         }
 
+        /// <summary>
+        /// Specifies that all directories should be searched.
+        /// </summary>
         public CopyFiles FromAllDirectories()
         {
             _searchOption = System.IO.SearchOption.AllDirectories;
             return this;
         }
 
+        /// <summary>
+        /// Specifies that only the top-level directory should be searched.
+        /// </summary>
         public CopyFiles FromTopDirectoryOnly()
         {
             _searchOption = System.IO.SearchOption.TopDirectoryOnly;
             return this;
         }
 
+        /// <summary>
+        /// Specifies a predicate that must be satisfied for the file to be 
+        /// copied. The input to the predicate is the full path to the source file.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns <c>true</c> if the file should be copied.</param>
         public CopyFiles Where(Func<string, bool> predicate)
         {
             Func<string, bool> currentPredicate = _predicate;
@@ -71,13 +105,28 @@ namespace Wyam.Core.Modules
             return this;
         }
 
+        /// <summary>
+        /// Specifies that files with the given extensions should not be copied. This allows you to exclude certain
+        /// file type from the copy operation.
+        /// </summary>
+        /// <param name="withoutExtensions">The extensions to exclude.</param>
+        /// <returns></returns>
         public CopyFiles WithoutExtensions(params string[] withoutExtensions)
         {
             _withoutExtensions = withoutExtensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();
             return this;
         }
 
-        // Input to function is the full file path (including file name), should return a full file path (including file name)
+        /// <summary>
+        /// Specifies an alternate destination path for each file (by default files are copied to their 
+        /// same relative path in the output directory). The input to the function is the full source 
+        /// file path (including file name) and the output should be the full file path (including 
+        /// file name) of the destination file. If the delegate returns <c>null</c> for a particular
+        /// file, that file will not be copied.
+        /// </summary>
+        /// <param name="destinationPath">A delegate that specifies an alternate destination.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public CopyFiles To(Func<string, string> destinationPath)
         {
             if (destinationPath == null)
@@ -124,19 +173,25 @@ namespace Wyam.Core.Modules
                                     destination = _destinationPath(file);
                                 }
 
-                                string destinationDirectory = Path.GetDirectoryName(destination);
-                                if (!Directory.Exists(destinationDirectory))
+                                if (!string.IsNullOrWhiteSpace(destination))
                                 {
-                                    Directory.CreateDirectory(destinationDirectory);
+                                    string destinationDirectory = Path.GetDirectoryName(destination);
+                                    if (!Directory.Exists(destinationDirectory))
+                                    {
+                                        Directory.CreateDirectory(destinationDirectory);
+                                    }
+                                    File.Copy(file, destination, true);
+                                    context.Trace.Verbose("Copied file {0} to {1}", file, destination);
+                                    return input.Clone(new[]
+                                    {
+                                        Metadata.Create(MetadataKeys.SourceFilePath, file),
+                                        Metadata.Create(MetadataKeys.DestinationFilePath, destination)
+                                    });
                                 }
-                                File.Copy(file, destination, true);
-                                context.Trace.Verbose("Copied file {0} to {1}", file, destination);
-                                return input.Clone(new []
-                                {
-                                    Metadata.Create(MetadataKeys.SourceFilePath, file),
-                                    Metadata.Create(MetadataKeys.DestinationFilePath, destination)
-                                });
-                            });
+
+                                return null;
+                            })
+                            .Where(x => x != null);
                     }
                 }
                 return null;

@@ -11,6 +11,10 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
+    /// <summary>
+    /// Adds the specified metadata to each input document.
+    /// </summary>
+    /// <category>Metadata</category>
     public class Meta : IModule
     {
         private readonly string _key;
@@ -18,6 +22,11 @@ namespace Wyam.Core.Modules
         private readonly IModule[] _modules;
         private bool _forEachDocument;
 
+        /// <summary>
+        /// The specified object is added as metadata for the specified key for every input document.
+        /// </summary>
+        /// <param name="key">The metadata key to set.</param>
+        /// <param name="metadata">The object to add as metadata.</param>
         public Meta(string key, object metadata)
         {
             if (key == null)
@@ -28,6 +37,12 @@ namespace Wyam.Core.Modules
             _metadata = new ConfigHelper<object>(metadata);
         }
 
+        /// <summary>
+        /// Uses a function to determine an object to be added as metadata for each document. 
+        /// This allows you to specify different metadata for each document depending on the context.
+        /// </summary>
+        /// <param name="key">The metadata key to set.</param>
+        /// <param name="metadata">A delegate that returns the object to add as metadata.</param>
         public Meta(string key, ContextConfig metadata)
         {
             if (key == null)
@@ -38,6 +53,12 @@ namespace Wyam.Core.Modules
             _metadata = new ConfigHelper<object>(metadata);
         }
 
+        /// <summary>
+        /// Uses a function to determine an object to be added as metadata for each document. 
+        /// This allows you to specify different metadata for each document depending on the input.
+        /// </summary>
+        /// <param name="key">The metadata key to set.</param>
+        /// <param name="metadata">A delegate that returns the object to add as metadata.</param>
         public Meta(string key, DocumentConfig metadata)
         {
             if (key == null)
@@ -47,17 +68,22 @@ namespace Wyam.Core.Modules
             _key = key;
             _metadata = new ConfigHelper<object>(metadata);
         }
-
-        // For performance reasons, the specified modules will only be run once with a newly initialized, isolated document
-        // Otherwise, we'd need to run the whole set for each input document (I.e., multiple duplicate file reads, transformations, etc. for each input)
-        // The metadata from all outputs will be added to the metadata for each input (possibly overwriting)
+        
+        /// <summary>
+        /// The specified modules are executed against an empty initial document and all metadata that exist in all of the result documents 
+        /// are added as metadata to each input document.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
         public Meta(params IModule[] modules)
         {
             _modules = modules;
         }
-
-        // Setting true for forEachDocument results in the whole sequence of modules being executed for every input document
-        // (as opposed to only being executed once with an empty initial document)
+        
+        /// <summary>
+        /// Specifies that the whole sequence of modules should be executed for every input document
+        /// (as opposed to the default behavior of the sequence of modules only being executed once 
+        /// with an empty initial document). This method has no effect if no modules are specified.
+        /// </summary>
         public Meta ForEachDocument()
         {
             _forEachDocument = true;

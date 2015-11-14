@@ -14,37 +14,62 @@ using IDocument = Wyam.Common.Documents.IDocument;
 
 namespace Wyam.Modules.Html
 {
+    /// <summary>
+    /// Queries HTML content and creates new documents with content and metadata from the results.
+    /// </summary>
+    /// <remarks>
+    /// Once you provide a DOM query selector, the module creates new output documents 
+    /// for each query result and allows you to set the new document content and/or set new 
+    /// metadata based on the query result.
+    /// </remarks>
+    /// <metadata name="OuterHtml">Contains the outer HTML of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata name="InnerHtml">Contains the inner HTML of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata name="TextContent">Contains the text content of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <category>Metadata</category>
     public class HtmlQuery : IModule
     {
-        private string _querySelector;
+        private readonly string _querySelector;
         private bool _first;
         private bool? _outerHtmlContent;
         private readonly List<Action<IElement, Dictionary<string, object>>> _metadataActions 
             = new List<Action<IElement, Dictionary<string, object>>>();
 
+        /// <summary>
+        /// Creates the module with the specified query selector.
+        /// </summary>
+        /// <param name="querySelector">The query selector to use.</param>
         public HtmlQuery(string querySelector)
         {
             _querySelector = querySelector;
         }
 
+        /// <summary>
+        /// Specifies that only the first query result should be processed (the default is <c>false</c>).
+        /// </summary>
+        /// <param name="first">If set to <c>true</c>, only the first result is processed.</param>
         public HtmlQuery First(bool first = true)
         {
             _first = first;
             return this;
         }
 
-        public HtmlQuery WithQuerySelector(string querySelector)
-        {
-            _querySelector = querySelector;
-            return this;
-        }
-
+        /// <summary>
+        /// Sets the content of the result document(s) to the content of the corresponding query result, 
+        /// optionally specifying whether inner or outer HTML content should be used. The default is
+        /// <c>false</c>, which does not add any content to the result documents (only metadata).
+        /// </summary>
+        /// <param name="outerHtml">If set to <c>true</c>, outer HTML content is used.</param>
         public HtmlQuery SetContent(bool outerHtml = true)
         {
             _outerHtmlContent = outerHtml;
             return this;
         }
 
+        /// <summary>
+        /// Gets the outer HTML of each query result and sets it in the metadata of the 
+        /// corresponding result document(s) with the specified key.
+        /// </summary>
+        /// <param name="metadataKey">The metadata key in which to place the outer HTML.</param>
         public HtmlQuery GetOuterHtml(string metadataKey = "OuterHtml")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -54,6 +79,11 @@ namespace Wyam.Modules.Html
             return this;
         }
 
+        /// <summary>
+        /// Gets the inner HTML of each query result and sets it in the metadata of the 
+        /// corresponding result document(s) with the specified key.
+        /// </summary>
+        /// <param name="metadataKey">The metadata key in which to place the inner HTML.</param>
         public HtmlQuery GetInnerHtml(string metadataKey = "InnerHtml")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -63,6 +93,11 @@ namespace Wyam.Modules.Html
             return this;
         }
 
+        /// <summary>
+        /// Gets the text content of each query result and sets it in the metadata of 
+        /// the corresponding result document(s) with the specified key.
+        /// </summary>
+        /// <param name="metadataKey">The metadata key in which to place the text content.</param>
         public HtmlQuery GetTextContent(string metadataKey = "TextContent")
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -72,7 +107,14 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        // If metadataKey is null, attributeName will be used as the metadata key
+        /// <summary>
+        /// Gets the specified attribute value of each query result and sets it in the metadata 
+        /// of the corresponding result document(s). If the attribute is not found for a given 
+        /// query result, no metadata is set. If <c>metadataKey</c> is <c>null</c>, the attribute name will 
+        /// be used as the metadata key, otherwise the specified metadata key will be used.
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute to get.</param>
+        /// <param name="metadataKey">The metadata key in which to place the attribute value.</param>
         public HtmlQuery GetAttributeValue(string attributeName, string metadataKey = null)
         {
             if (string.IsNullOrWhiteSpace(metadataKey))
@@ -89,6 +131,10 @@ namespace Wyam.Modules.Html
             return this;
         }
 
+        /// <summary>
+        /// Gets the values for all attributes of each query result and sets them in the 
+        /// metadata of the corresponding result document(s) with keys names equal to the attribute local name.
+        /// </summary>
         public HtmlQuery GetAttributeValues()
         {
             _metadataActions.Add((e, d) =>
@@ -101,6 +147,11 @@ namespace Wyam.Modules.Html
             return this;
         }
 
+        /// <summary>
+        /// Gets all information for each query result and sets the metadata of the corresponding result 
+        /// document(s). This is equivalent to calling <c>GetOuterHtml()</c>, <c>GetInnerHtml()</c>, 
+        /// <c>GetTextContent()</c>, and <c>GetAttributeValues()</c> with default arguments.
+        /// </summary>
         public HtmlQuery GetAll()
         {
             GetOuterHtml();

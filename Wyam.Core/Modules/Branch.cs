@@ -13,13 +13,15 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Core.Modules
 {
     /// <summary>
-    /// Branch evaluates the specified modules with each input document as the initial 
-    /// document and then outputs the original input documents without modification. This 
-    /// allows a sequence of modules to execute without impacting the "main" module sequence. 
+    /// Evaluates the specified modules with each input document as the initial 
+    /// document and then outputs the original input documents without modification.
+    /// </summary>
+    /// <remarks>
+    /// This allows a sequence of modules to execute without impacting the "main" module sequence. 
     /// In other words, Branch executes it's child modules as if there were no Branch module 
     /// in the sequence, but then when it's child modules are done, the main sequence of 
     /// modules is executed as if there were no Branch.
-    /// </summary>
+    /// </remarks>
     /// <example>
     /// Assume you have a module, AddOne, that just adds 1 to whatever numeric value is in 
     /// the content of the input document(s). The input and output content of the 
@@ -66,7 +68,6 @@ namespace Wyam.Core.Modules
         /// modification regardless of whether they satisfy the predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
-        /// <returns></returns>
         public Branch Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

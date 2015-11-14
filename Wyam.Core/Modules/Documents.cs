@@ -10,27 +10,50 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // This allows you to replace your pipeline with previously processed documents
+    /// <summary>
+    /// Inserts documents into the current pipeline.
+    /// </summary>
+    /// <remarks>
+    /// Documents can be inserted either by replacing pipeline documents with previously 
+    /// processed ones or by creating new ones. If getting previously processed documents from another pipeline, 
+    /// this module copies the documents and places them into the current pipeline. Note that because this module 
+    /// does not remove the documents from their original pipeline it's likely you will end up with documents that 
+    /// have the same content and metadata in two different pipelines. This module does not include the input 
+    /// documents as part of it's output. If you want to concatenate the result of this module with the input 
+    /// documents, wrap it with the <see cref="Concat"/> module.
+    /// </remarks>
+    /// <category>Control</category>
     public class Documents : IModule
     {
         private readonly string _pipeline;
         private readonly ContextConfig _contextDocuments;
         private readonly DocumentConfig _documentDocuments;
         private Func<IDocument, IExecutionContext, bool> _predicate;
-
-        // This will get all previously processed documents from all pipelines
+        
+        /// <summary>
+        /// This outputs all existing documents from all pipelines (except the current one).
+        /// </summary>
         public Documents()
         {
         }
 
-        // This will get documents from other pipelines
+        /// <summary>
+        /// This outputs the documents from the specified pipeline.
+        /// </summary>
+        /// <param name="pipeline">The pipeline to output documents from.</param>
         public Documents(string pipeline)
         {
             _pipeline = pipeline;
         }
 
-        // This will get documents based on the context - the delegate will only be called once, regardless of the number of input documents
-        // The delegate should return a IEnumerable<IDocument>
+        /// <summary>
+        /// This will get documents based on the context so you can perform custom document
+        /// fetching behavior. The delegate will only be called once, 
+        /// regardless of the number of input documents. The return value 
+        /// is expected to be a <c>IEnumerable&lt;IDocument&gt;</c>.
+        /// </summary>
+        /// <param name="documents">A delegate that should return 
+        /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to output.</param>
         public Documents(ContextConfig documents)
         {
             if (documents == null)
@@ -40,8 +63,14 @@ namespace Wyam.Core.Modules
             _contextDocuments = documents;
         }
 
-        // This will get documents based on each input document - the result will be the aggregate of all returned documents for each input document
-        // The delegate should return a IEnumerable<IDocument>
+        /// <summary>
+        /// This will get documents based on each input document. The output will be the 
+        /// aggregate of all returned documents for each input document. The return value 
+        /// is expected to be a <c>IEnumerable&lt;IDocument&gt;</c>.
+        /// </summary>
+        /// <param name="documents">A delegate that should return 
+        /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to 
+        /// output for each input document.</param>
         public Documents(DocumentConfig documents)
         {
             if (documents == null)
@@ -51,7 +80,10 @@ namespace Wyam.Core.Modules
             _documentDocuments = documents;
         }
 
-        // Generates count number of new documents
+        /// <summary>
+        /// Generates a specified number of new empty documents.
+        /// </summary>
+        /// <param name="count">The number of new documents to output.</param>
         public Documents(int count)
         {
             _contextDocuments = ctx =>
@@ -65,25 +97,37 @@ namespace Wyam.Core.Modules
             };
         }
 
-        // Generates new documents with the defined content
+        /// <summary>
+        /// Generates new documents with the specified content.
+        /// </summary>
+        /// <param name="content">The content for each output document.</param>
         public Documents(params string[] content)
         {
             _contextDocuments = ctx => content.Select(x => ctx.GetNewDocument().Clone(x));
         }
-
-        // Generates new documents with the defined metadata
+        
+        /// <summary>
+        /// Generates new documents with the specified metadata.
+        /// </summary>
+        /// <param name="metadata">The metadata for each output document.</param>
         public Documents(params IEnumerable<KeyValuePair<string, object>>[] metadata)
         {
             _contextDocuments = ctx => metadata.Select(ctx.GetNewDocument);
         }
 
-        // Generates new documents with the defined content and metadata
+        /// <summary>
+        /// Generates new documents with the specified content and metadata.
+        /// </summary>
+        /// <param name="contentAndMetadata">The content and metadata for each output document.</param>
         public Documents(params Tuple<string, IEnumerable<KeyValuePair<string, object>>>[] contentAndMetadata)
         {
             _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetNewDocument(x.Item2).Clone(x.Item1));
         }
 
-        // The delegate should return a bool
+        /// <summary>
+        /// Only documents that satisfy the predicate will be output.
+        /// </summary>
+        /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
         public Documents Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

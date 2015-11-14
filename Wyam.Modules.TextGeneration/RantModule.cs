@@ -54,7 +54,6 @@ namespace Wyam.Modules.TextGeneration
         /// for ensuring repeatable generations.
         /// </summary>
         /// <param name="seed">The seed to use.</param>
-        /// <returns></returns>
         public RantModule WithSeed(long seed)
         {
             _seed = seed;
@@ -67,7 +66,6 @@ namespace Wyam.Modules.TextGeneration
         /// is not used, every document will get the same content for the same template.
         /// </summary>
         /// <param name="increment">If set to <c>true</c> the seed will be incremented for each document.</param>
-        /// <returns></returns>
         public RantModule IncrementSeed(bool increment = true)
         {
             _incrementSeed = increment;
@@ -78,7 +76,6 @@ namespace Wyam.Modules.TextGeneration
         /// Controls whether the dictionary will include NSFW content.
         /// </summary>
         /// <param name="includeNsfw">If set to <c>true</c> the dictionary will include NSFW content.</param>
-        /// <returns></returns>
         public RantModule IncludeNsfw(bool includeNsfw = true)
         {
             if (includeNsfw)

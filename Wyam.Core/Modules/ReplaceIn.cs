@@ -13,9 +13,11 @@ namespace Wyam.Core.Modules
 {
     /// <summary>
     /// Replaces a search string in the specified content with the content of input documents.
+    /// </summary>
+    /// <remarks>
     /// This is sort of like the inverse of the Replace module and is very useful for simple 
     /// template substitution.
-    /// </summary>
+    /// </remarks>
     /// <category>Content</category>
     public class ReplaceIn : ContentModule
     {

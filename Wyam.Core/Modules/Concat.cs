@@ -10,11 +10,23 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // Executes a sequence of modules against an empty initial document and concatenates their results and the base results
+    /// <summary>
+    /// Executes modules and concatenates their output with the input documents.
+    /// </summary>
+    /// <remarks>
+    /// The specified modules are executed with an empty initial document and then 
+    /// outputs the original input documents without modification concatenated with the 
+    /// results from the specified module sequence.
+    /// </remarks>
+    /// <category>Control</category>
     public class Concat : IModule
     {
         private readonly IModule[] _modules;
 
+        /// <summary>
+        /// Executes the specified modules with an empty initial input document.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
         public Concat(params IModule[] modules)
         {
             _modules = modules;
