@@ -11,6 +11,12 @@ using System.IO;
 
 namespace Wyam.Modules.Git
 {
+    /// <summary>
+    /// This module adds Metadata to every inputdocument containing every one who made changes to this file.
+    /// The Key of the metadata is "Contributors" by default. But can be changed in the Constructor.
+    /// The value of "Contributors" is an array of <see cref="CommitInformation"/> containeing the last commit of
+    /// every Author.
+    /// </summary>
     public class GitContributor : GitBase
     {
         private readonly string _metadataName;

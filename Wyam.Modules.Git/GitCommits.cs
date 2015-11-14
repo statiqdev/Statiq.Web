@@ -13,7 +13,12 @@ using Wyam.Common.Configuration;
 namespace Wyam.Modules.Git
 {
     /// <summary>
-    /// This Module Creates a Page for every Commit in the Git repository. Adding Metadata with Information about the Commit.
+    /// This Module Creates a Document for every Commit in the Git repository. Adding Metadata with
+    /// Information about the Commit.
+    /// 
+    /// * This Module adds Metadata "Sha" of type <see cref="String"/> which is the hash of the commit.
+    /// * This Module adds Metadata "CommitInformation" that is an Array of <see cref="CommitInformation"/>.
+    ///   The array contains one entry for every File that was changed in this commit.
     /// </summary>
     public class GitCommits : GitBase
     {

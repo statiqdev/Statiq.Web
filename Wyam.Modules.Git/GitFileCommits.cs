@@ -13,7 +13,9 @@ using Wyam.Common.Configuration;
 namespace Wyam.Modules.Git
 {
     /// <summary>
-    /// This Module adds an Array with all the CommitInformations that are related with this file to the Metadata.
+    /// This Module adds an Array with all the <see cref="CommitInformation"/> that are related with
+    /// this file to the Metadata. The Key of the Metadata is normaly "Commits" but can be changed in the
+    /// Constructor.
     /// </summary>
     public class GitFileCommits : GitBase
     {
