@@ -3,6 +3,12 @@ using System;
 
 namespace Wyam.Modules.Git
 {
+    /// <summary>
+    /// Author represents the Author of a commit.
+    /// </summary>
+    /// <remarks>
+    /// The equals and hashcode method only use the <see cref="Email"/>. The name will get ignored for equality.
+    /// </remarks>
     public class Author
     {
         public string Name { get; }

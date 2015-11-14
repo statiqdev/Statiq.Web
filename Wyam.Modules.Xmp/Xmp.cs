@@ -19,6 +19,9 @@ namespace Wyam.Modules.Xmp
     /// This Module Reads specified Xmp Metadata from the Inputs
     /// and writes it in the Metadata of the Document.  
     /// </summary>
+    /// <remarks>
+    /// This module uses the Metadata SourceFilePath to find sidecarfiles.
+    /// </remarks>
     public class Xmp : IModule
     {
         private readonly bool _skipElementOnMissingData;
@@ -33,7 +36,7 @@ namespace Wyam.Modules.Xmp
                 {"xmpRights", "http://ns.adobe.com/xap/1.0/rights/"},
                 {"cc", "http://creativecommons.org/ns#"},
                 {"xmp", "http://ns.adobe.com/xap/1.0/"},
-                { "xml", "http://www.w3.org/XML/1998/namespace"},
+                {"xml", "http://www.w3.org/XML/1998/namespace"},
             };
 
         /// <summary>
@@ -51,12 +54,32 @@ namespace Wyam.Modules.Xmp
             _flatting = flatten;
         }
 
+        /// <summary>
+        /// Adds an Xmp element that will be searchd for.
+        /// </summary>
+        /// <param name="xmpPath">The tag name of the Xmp elemnt. including the namespace Prefix</param>
+        /// <param name="targetMetadata">The metadata key where the value should be added to the document.</param>
+        /// <param name="isMandatory">Specifiys that the input should contain the xmp metadata</param>
         public Xmp WithMetadata(string xmpPath, string targetMetadata, bool isMandatory = false)
         {
             _toSearch.Add(new XmpSearchEntry(this, isMandatory, targetMetadata, xmpPath));
             return this;
         }
 
+        /// <summary>
+        /// Adds or overrids a namspace for resolving namespace prefixes of the xmpPath in
+        /// <see cref="WithMetadata(string, string, bool)"/>.
+        /// </summary>
+        /// <remarks>
+        /// This Module already contains several default namespaces:
+        /// "dc" = "http://purl.org/dc/elements/1.1/" 
+        /// "xmpRights" = "http://ns.adobe.com/xap/1.0/rights/"
+        /// "cc" = "http://creativecommons.org/ns#"
+        /// "xmp" = "http://ns.adobe.com/xap/1.0/"
+        /// "xml" = "http://www.w3.org/XML/1998/namespace"
+        /// </remarks>
+        /// <param name="xmlNamespace">The Namespace.</param>
+        /// <param name="alias">The prefix</param>
         public Xmp WithNamespace(string xmlNamespace, string alias)
         {
             _namespaceAlias[alias] = xmlNamespace;
@@ -156,8 +179,8 @@ namespace Wyam.Modules.Xmp
                     {
                         return null;
                     }
-                    string pathWithouParent = !string.IsNullOrWhiteSpace(Parent?.Element?.Path) 
-                        ? path.Substring(Parent.Element.Path.Length).TrimStart('/') 
+                    string pathWithouParent = !string.IsNullOrWhiteSpace(Parent?.Element?.Path)
+                        ? path.Substring(Parent.Element.Path.Length).TrimStart('/')
                         : path.TrimStart('/');
                     string pathWithoutNamespace = Regex.Replace(pathWithouParent, @"^[^:]+:(?<tag>[^/]+)(/.*)?$", "${tag}");
                     return Regex.IsMatch(pathWithoutNamespace, @"\[\d+\]") ? null : pathWithoutNamespace;
