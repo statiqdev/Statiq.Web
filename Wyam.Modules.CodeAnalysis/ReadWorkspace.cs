@@ -48,8 +48,11 @@ namespace Wyam.Modules.CodeAnalysis
             }
             _path = new ConfigHelper<string>(path);
         }
-
-        // Filters the projects based on name
+        
+        /// <summary>
+        /// Filters the project based on name.
+        /// </summary>
+        /// <param name="predicate">A predicate that should return <c>true</c> if the project should be included.</param>
         public ReadWorkspace WhereProject(Func<string, bool> predicate)
         {
             Func<string, bool> currentPredicate = _whereProject;
@@ -57,18 +60,24 @@ namespace Wyam.Modules.CodeAnalysis
             return this;
         }
 
-        // Filters the files based on path
+        /// <summary>
+        /// Filters the source code file based on path.
+        /// </summary>
+        /// <param name="predicate">A predicate that should return <c>true</c> if the source code file should be included.</param>
         public ReadWorkspace WhereFile(Func<string, bool> predicate)
         {
             Func<string, bool> currentPredicate = _whereFile;
             _whereFile = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
-
-        // Filters the files based on extension
+        
+        /// <summary>
+        /// Filters the source code files based on extension.
+        /// </summary>
+        /// <param name="extensions">The extensions to include (if defined, any extensions not listed will be excluded).</param>
         public ReadWorkspace WithExtensions(params string[] extensions)
         {
-            _extensions = _extensions?.Concat(extensions.Select(x => x.StartsWith(".") ? x : "." + x)).ToArray() 
+            _extensions = _extensions?.Concat(extensions.Select(x => x.StartsWith(".") ? x : "." + x)).ToArray()
                 ?? extensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();
             return this;
         }

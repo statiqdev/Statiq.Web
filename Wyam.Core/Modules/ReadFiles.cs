@@ -55,7 +55,7 @@ namespace Wyam.Core.Modules
         /// <summary>
         /// Reads all files that match the specified path. This allows you to specify different search paths depending on the input.
         /// </summary>
-        /// <param name="path">A delegate that returns a <c>string</c> with the desired search path.</param>
+        /// <param name="path">A delegate that returns a <c>string</c> with the search path.</param>
         public ReadFiles(DocumentConfig path)
         {
             if (path == null)

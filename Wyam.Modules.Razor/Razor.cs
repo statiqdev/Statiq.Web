@@ -44,10 +44,9 @@ namespace Wyam.Modules.Razor
     /// and code intended to extend the capabilities of Razor in ASP.NET MVC probably won't work. 
     /// That said, a lot of functionality does function the same as it does in ASP.NET MVC.
     /// </para>
-    /// <para><a href="http://wyam.io/knowledgebase/razor-templates">See this knowledgebase article</a> for additional 
-    /// details on customizing Razor templates.</para>
     /// </remarks>
     /// <category>Templates</category>
+    /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
         private readonly Type _basePageType;

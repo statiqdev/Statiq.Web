@@ -15,6 +15,23 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.CodeAnalysis
 {
+    /// <summary>
+    /// Performs static code analysis on the input documents, outputting a new document for each symbol.
+    /// </summary>
+    /// <remarks>
+    /// This module acts as the basis for code analysis scenarios such as generating source code documentation.
+    /// All input documents are assumed to contain C# source in their content and are use to create a Roslyn
+    /// compilation. All symbols (namespaces, types, members, etc.) in the compilation are then recursively 
+    /// processed and output from this module as documents, one per symbol. The output documents have empty content
+    /// and all information about the symbol is contained in the metadata. This lets you pass the output documents
+    /// for each symbol on to a template engine like Razor and generate pages for each symbol by having the
+    /// template use the document metadata.
+    /// </remarks>
+    /// <metadata name="IsResult" type="bool">By default only certain symbols are processed as part of the initial 
+    /// result set (such as those that match the specified predicate). If this value is <c>true</c>, then this
+    /// symbol was part of the initial result set. If it is <c>false</c>, the symbol was lazily processed later 
+    /// while fetching related symbols and may not contain the full set of metadata.</metadata>
+    /// <category>Metadata</category>
     public class AnalyzeCSharp : IModule
     {
         private Func<ISymbol, bool> _symbolPredicate;
@@ -23,13 +40,13 @@ namespace Wyam.Modules.CodeAnalysis
         private bool _docsForImplicitSymbols = false;
 
         // Use an intermediate Dictionary to initialize with defaults
-        private readonly ConcurrentDictionary<string, string> _cssClasses 
+        private readonly ConcurrentDictionary<string, string> _cssClasses
             = new ConcurrentDictionary<string, string>(
                 new Dictionary<string, string>
                 {
                     { "table", "table" }
-                }); 
-         
+                });
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Get syntax trees (supply path so that XML doc includes can be resolved)
@@ -48,11 +65,11 @@ namespace Wyam.Modules.CodeAnalysis
             CSharpCompilation compilation = CSharpCompilation
                 .Create("CodeAnalysisModule", syntaxTrees)
                 .WithReferences(mscorlib)
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, 
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                     xmlReferenceResolver: new XmlFileResolver(context.InputFolder)));
 
             // Get and return the document tree
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, 
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate,
                 _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), _cssClasses, _docsForImplicitSymbols);
             visitor.Visit(compilation.Assembly.GlobalNamespace);
             return visitor.Finish();
@@ -90,7 +107,7 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     return includeGlobal || !namespaceSymbol.IsGlobalNamespace;
                 }
-                return (includeGlobal && ((INamespaceSymbol) x).IsGlobalNamespace)
+                return (includeGlobal && ((INamespaceSymbol)x).IsGlobalNamespace)
                     || namespaces.Any(y => x.ToString().StartsWith(y));
             });
         }
@@ -111,7 +128,7 @@ namespace Wyam.Modules.CodeAnalysis
         // Limits to public and protected symbols (and N/A like parameters)
         public AnalyzeCSharp WherePublic(bool includeProtected = true)
         {
-            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public 
+            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public
                 || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
                 || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }

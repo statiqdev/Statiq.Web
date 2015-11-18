@@ -26,8 +26,8 @@ namespace Wyam.Core.Modules
     /// often only) module in a pipeline. Otherwise, you would probably copy the same files multiple 
     /// times (once for each input document).
     /// </remarks>
-    /// <metadata name="SourceFilePath">The full path (including file name) of the source file.</metadata>
-    /// <metadata name="DestinationFilePath">The full path (including file name) of the destination file.</metadata>
+    /// <metadata name="SourceFilePath" type="string">The full path (including file name) of the source file.</metadata>
+    /// <metadata name="DestinationFilePath" type="string">The full path (including file name) of the destination file.</metadata>
     /// <category>Input/Output</category>
     public class CopyFiles : IModule
     {
