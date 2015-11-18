@@ -32,20 +32,24 @@ namespace Wyam.Modules.CodeAnalysis
          
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            // Get syntax trees
+            // Get syntax trees (supply path so that XML doc includes can be resolved)
             ConcurrentBag<SyntaxTree> syntaxTrees = new ConcurrentBag<SyntaxTree>();
             Parallel.ForEach(inputs, input =>
             {
                 using (Stream stream = input.GetStream())
                 {
                     SourceText sourceText = SourceText.From(stream);
-                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(sourceText));
+                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(sourceText, path: input.String("SourceFilePath", string.Empty)));
                 }
             });
 
-            // Create the compilation
+            // Create the compilation (have to supply an XmlReferenceResolver to handle include XML doc comments)
             MetadataReference mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            CSharpCompilation compilation = CSharpCompilation.Create("CodeAnalysisModule", syntaxTrees).WithReferences(mscorlib);
+            CSharpCompilation compilation = CSharpCompilation
+                .Create("CodeAnalysisModule", syntaxTrees)
+                .WithReferences(mscorlib)
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, 
+                    xmlReferenceResolver: new XmlFileResolver(context.InputFolder)));
 
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate, 
