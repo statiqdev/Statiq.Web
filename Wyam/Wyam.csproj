@@ -189,6 +189,10 @@
       <Project>{f17862d9-8b53-44c0-9102-b1b84be72e76}</Project>
       <Name>Wyam.Modules.Xmp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Xslt\Wyam.Modules.Xslt.csproj">
+      <Project>{4aab9d23-588f-4397-bfd0-9cd70f9c32b7}</Project>
+      <Name>Wyam.Modules.Xslt</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Modules.Yaml</Name>
