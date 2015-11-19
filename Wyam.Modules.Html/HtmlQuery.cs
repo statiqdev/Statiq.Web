@@ -22,9 +22,9 @@ namespace Wyam.Modules.Html
     /// for each query result and allows you to set the new document content and/or set new 
     /// metadata based on the query result.
     /// </remarks>
-    /// <metadata name="OuterHtml">Contains the outer HTML of the query result (unless an alternate metadata key is specified).</metadata>
-    /// <metadata name="InnerHtml">Contains the inner HTML of the query result (unless an alternate metadata key is specified).</metadata>
-    /// <metadata name="TextContent">Contains the text content of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata name="OuterHtml" type="string">Contains the outer HTML of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata name="InnerHtml" type="string">Contains the inner HTML of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata name="TextContent" type="string">Contains the text content of the query result (unless an alternate metadata key is specified).</metadata>
     /// <category>Metadata</category>
     public class HtmlQuery : IModule
     {

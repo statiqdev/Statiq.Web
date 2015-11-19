@@ -12,24 +12,24 @@ namespace Wyam.Modules.CodeAnalysis
     /// <remarks>
     /// The output of this module is similar to executing the ReadFiles module on all source files in the project.
     /// </remarks>
-    /// <metadata name="SourceFileRoot">The absolute root search path without any nested directories 
+    /// <metadata name="SourceFileRoot" type="string">The absolute root search path without any nested directories 
     /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
-    /// <metadata name="SourceFilePath">The full absolute path of the file (including file name).</metadata>
-    /// <metadata name="SourceFilePathBase">The full absolute path of the file (including file name) 
+    /// <metadata name="SourceFilePath" type="string">The full absolute path of the file (including file name).</metadata>
+    /// <metadata name="SourceFilePathBase" type="string">The full absolute path of the file (including file name) 
     /// without the file extension.</metadata>
-    /// <metadata name="SourceFileBase">The file name without any extension. Equivalent 
+    /// <metadata name="SourceFileBase" type="string">The file name without any extension. Equivalent 
     /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileExt">The extension of the file. Equivalent 
+    /// <metadata name="SourceFileExt" type="string">The extension of the file. Equivalent 
     /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileName">The full file name. Equivalent 
+    /// <metadata name="SourceFileName" type="string">The full file name. Equivalent 
     /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileDir">The full absolute directory of the file. 
+    /// <metadata name="SourceFileDir" type="string">The full absolute directory of the file. 
     /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
-    /// <metadata name="RelativeFilePath">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePath" type="string">The relative path to the file (including file name)
     /// from the Wyam input folder.</metadata>
-    /// <metadata name="RelativeFilePathBase">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePathBase" type="string">The relative path to the file (including file name)
     /// from the Wyam input folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir">The relative directory of the file 
+    /// <metadata name="RelativeFileDir" type="string">The relative directory of the file 
     /// from the Wyam input folder.</metadata>
     /// <category>Input/Output</category>
     public class ReadProject : ReadWorkspace

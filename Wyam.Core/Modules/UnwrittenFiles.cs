@@ -28,17 +28,23 @@ namespace Wyam.Core.Modules
     /// end of the pipeline and any other modules or pages that rely on them (for example, an 
     /// image directory) will not be correct.
     /// </remarks>
-    /// <metadata name="DestinationFilePath"></metadata>
-    /// <metadata name="DestinationFilePathBase"></metadata>
-    /// <metadata name="DestinationFileBase"></metadata>
-    /// <metadata name="DestinationFileExt"></metadata>
-    /// <metadata name="DestinationFileName"></metadata>
-    /// <metadata name="DestinationFileDir"></metadata>
-    /// <metadata name="RelativeFilePath">The relative path to the file (including file name)
+    /// <metadata name="DestinationFilePath" type="string">The full absolute path (including file name) 
+    /// of the destination file.</metadata>
+    /// <metadata name="DestinationFilePathBase" type="string">The full absolute path (including file name) 
+    /// of the destination file without the file extension.</metadata>
+    /// <metadata name="DestinationFileBase" type="string">The file name without any extension. Equivalent 
+    /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileExt" type="string">The extension of the file. Equivalent 
+    /// to <c>Path.GetExtension(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileName" type="string">The full file name. Equivalent 
+    /// to <c>Path.GetFileName(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="DestinationFileDir" type="string">The full absolute directory of the file. 
+    /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.</metadata>
+    /// <metadata name="RelativeFilePath" type="string">The relative path to the file (including file name)
     /// from the Wyam input folder.</metadata>
-    /// <metadata name="RelativeFilePathBase">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePathBase" type="string">The relative path to the file (including file name)
     /// from the Wyam input folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir">The relative directory of the file 
+    /// <metadata name="RelativeFileDir" type="string">The relative directory of the file 
     /// from the Wyam input folder.</metadata>
     /// <category>Input/Output</category>
     public class UnwrittenFiles : WriteFiles

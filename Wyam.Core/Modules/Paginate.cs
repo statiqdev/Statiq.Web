@@ -42,11 +42,11 @@ namespace Wyam.Core.Modules
     /// );
     /// </code>
     /// </example>
-    /// <metadata name="PageDocuments">An IEnumerable&lt;IDocument&gt; containing all the documents for the current page.</metadata>
-    /// <metadata name="CurrentPage">The index of the current page (1 based).</metadata>
-    /// <metadata name="TotalPages">The total number of pages.</metadata>
-    /// <metadata name="HasNextPage">Whether there is another page after this one.</metadata>
-    /// <metadata name="HasPreviousPage">Whether there is another page before this one.</metadata>
+    /// <metadata name="PageDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current page.</metadata>
+    /// <metadata name="CurrentPage" type="int">The index of the current page (1 based).</metadata>
+    /// <metadata name="TotalPages" type="int">The total number of pages.</metadata>
+    /// <metadata name="HasNextPage" type="bool">Whether there is another page after this one.</metadata>
+    /// <metadata name="HasPreviousPage" type="bool">Whether there is another page before this one.</metadata>
     /// <category>Control</category>
     public class Paginate : IModule
     {

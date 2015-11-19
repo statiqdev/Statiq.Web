@@ -24,7 +24,7 @@ namespace Wyam.Modules.Html
     /// By default, this module looks for the first <c>p</c> (paragraph) element and places it's outer HTML content 
     /// in metadata with a key of <c>Excerpt</c>. The content of the original input document is left unchanged.
     /// </remarks>
-    /// <metadata name="Excerpt">Contains the content of the first result from the query 
+    /// <metadata name="Excerpt" type="string">Contains the content of the first result from the query 
     /// selector (unless an alternate metadata key is specified).</metadata>
     /// <category>Metadata</category>
     public class Excerpt : IModule
