@@ -6,9 +6,9 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
-using Wyam.Modules.Xslt;
 using System.Text;
 using Wyam.Common.Modules;
+using Wyam.Core.Modules;
 
 namespace Wyam.Core.Tests.Modules
 {
@@ -93,7 +93,7 @@ namespace Wyam.Core.Tests.Modules
 
             MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
             xsltDocument.GetStream().Returns(xsltStream);
-            context.Execute(Arg.Any<IEnumerable<IModule>>()).Returns(new IDocument[] {xsltDocument });
+            context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] {xsltDocument });
             Xslt autoLink = new Xslt(module);
 
             // When
@@ -103,9 +103,5 @@ namespace Wyam.Core.Tests.Modules
             document.Received().Clone(output);
             stream.Dispose();
         }
-
-
-
-
     }
 }
