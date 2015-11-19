@@ -27,10 +27,7 @@ namespace Wyam.Modules.CodeAnalysis
     /// for each symbol on to a template engine like Razor and generate pages for each symbol by having the
     /// template use the document metadata.
     /// </remarks>
-    /// <metadata name="IsResult" type="bool">By default only certain symbols are processed as part of the initial 
-    /// result set (such as those that match the specified predicate). If this value is <c>true</c>, then this
-    /// symbol was part of the initial result set. If it is <c>false</c>, the symbol was lazily processed later 
-    /// while fetching related symbols and may not contain the full set of metadata.</metadata>
+    /// <include file="Documentation.xml" path="/Documentation/AnalyzeCSharp/*" />
     /// <category>Metadata</category>
     public class AnalyzeCSharp : IModule
     {
@@ -46,13 +43,7 @@ namespace Wyam.Modules.CodeAnalysis
                 {
                     { "table", "table" }
                 });
-
-        /// <summary>
-        /// Executes the specified inputs.
-        /// </summary>
-        /// <param name="inputs">The inputs.</param>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
+        
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Get syntax trees (supply path so that XML doc includes can be resolved)
@@ -81,12 +72,22 @@ namespace Wyam.Modules.CodeAnalysis
             return visitor.Finish();
         }
 
+        /// <summary>
+        /// By default, XML documentation comments are not parsed and rendered for documents that are not part
+        /// of the initial result set. This can control that behavior and be used to generate documentation
+        /// metadata for all documents, regardless if they were part of the initial result set.
+        /// </summary>
+        /// <param name="docsForImplicitSymbols">If set to <c>true</c>, documentation metadata is generated for XML comments on all symbols.</param>
         public AnalyzeCSharp WithDocsForImplicitSymbols(bool docsForImplicitSymbols = true)
         {
             _docsForImplicitSymbols = docsForImplicitSymbols;
             return this;
         }
 
+        /// <summary>
+        /// Controls which symbols are processed as part of the initial result set.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns <c>true</c> if the symbol should be included in the initial result set.</param>
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
         {
             if (predicate == null)
@@ -97,8 +98,13 @@ namespace Wyam.Modules.CodeAnalysis
             _symbolPredicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
-
-        // Limits symbols to the specific namespaces (or all if namespaces in null)
+        
+        /// <summary>
+        /// Limits symbols in the initial result set to those in the specified namespaces.
+        /// </summary>
+        /// <param name="includeGlobal">If set to <c>true</c>, symbols in the unnamed global namespace are included.</param>
+        /// <param name="namespaces">The namespaces to include symbols from (if <c>namespaces</c> is <c>null</c>, symbols from all
+        /// namespaces are included).</param>
         public AnalyzeCSharp WhereNamespaces(bool includeGlobal, params string[] namespaces)
         {
             return WhereSymbol(x =>
@@ -118,6 +124,10 @@ namespace Wyam.Modules.CodeAnalysis
             });
         }
 
+        /// <summary>
+        /// Limits symbols in the initial result set to those in the namespaces that satisfy the specified predicate.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns true if symbols in the namespace should be included.</param>
         public AnalyzeCSharp WhereNamespaces(Func<string, bool> predicate)
         {
             return WhereSymbol(x =>
@@ -130,17 +140,25 @@ namespace Wyam.Modules.CodeAnalysis
                 return predicate(namespaceSymbol.ToString());
             });
         }
-
-        // Limits to public and protected symbols (and N/A like parameters)
+        
+        /// <summary>
+        /// Limits symbols in the initial result set to those that are public (and optionally protected)
+        /// </summary>
+        /// <param name="includeProtected">If set to <c>true</c>, protected symbols are also included.</param>
         public AnalyzeCSharp WherePublic(bool includeProtected = true)
         {
             return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public
                 || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
                 || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }
-
-        // While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s)
-        // Separate multiple CSS classes with a space (just like you would in HTML)
+        
+        /// <summary>
+        /// While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s).
+        /// This is helpful to style your XML documentation comment rendering to support the stylesheet of your site.
+        /// </summary>
+        /// <param name="tagName">Name of the tag.</param>
+        /// <param name="cssClasses">The CSS classes to set for the specified tag name. Separate multiple CSS classes 
+        /// with a space (just like you would in HTML).</param>
         public AnalyzeCSharp WithCssClasses(string tagName, string cssClasses)
         {
             if (tagName == null)
@@ -157,20 +175,27 @@ namespace Wyam.Modules.CodeAnalysis
             }
             return this;
         }
-
-        // This changes the default behavior for the WritePath metadata value added to every document
-        // Default behavior is to place files in a path with the same name as their containing namespace
-        // Namespace documents will be named "index.html" while other type documents will get a name equal to their SymbolId
-        // Member documents will get the same name as their containing type plus an anchor to their SymbolId
-        // Note that this scheme makes the assumption that members will not have their own files, if that's not the case a new WritePath function will have to be supplied
+        
+        /// <summary>
+        /// This changes the default behavior for the generated <c>WritePath</c> metadata value, which is to place files in a path 
+        /// with the same name as their containing namespace. Namespace documents will be named "index.html" while other type documents 
+        /// will get a name equal to their SymbolId. Member documents will get the same name as their containing type plus an 
+        /// anchor to their SymbolId. Note that the default scheme makes the assumption that members will not have their own files, 
+        /// if that's not the case a new WritePath function will have to be supplied using this method.
+        /// </summary>
+        /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>string</c> to 
+        /// use for the <c>WritePath</c> metadata value.</param>
         public AnalyzeCSharp WithWritePath(Func<IMetadata, string> writePath)
         {
             _writePath = writePath;
             return this;
         }
-
-        // This lets you add a prefix to the default write path behavior
-        // This method has no effect if you've changed the default write path behavior
+        
+        /// <summary>
+        /// This lets you add a prefix to the default <c>WritePath</c> behavior (such as nesting symbol documents inside 
+        /// a folder like "api/"). This method has no effect if you've supplied a custom <c>WritePath</c> behavior.
+        /// </summary>
+        /// <param name="prefix">The prefix to use for each generated <c>WritePath</c>.</param>
         public AnalyzeCSharp WithWritePathPrefix(string prefix)
         {
             if (prefix == null)

@@ -11,18 +11,34 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Modules
 {
-    // Executes a sequence of modules against the input and concatenates their results and the original input
+    /// <summary>
+    /// Executes a sequence of modules against the input documents and concatenates their results and the original input.
+    /// This is similar to <see cref="Branch"/> except that the results of the specified modules are concatenated with the
+    /// original input documents instead of being forgotten.
+    /// </summary>
+    /// <category>Control</category>
     public class ConcatBranch : IModule
     {
         private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
+        /// <summary>
+        /// Evaluates the specified modules with each input document as the initial 
+        /// document and then outputs the original input documents without modification concatenated with the result documents
+        /// from the specified modules.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
         public ConcatBranch(params IModule[] modules)
         {
             _modules = modules;
         }
 
-        // The delegate should return a bool
+        /// <summary>
+        /// Limits the documents passed to the child modules to those that satisfy the 
+        /// supplied predicate. All original input documents are output without 
+        /// modification regardless of whether they satisfy the predicate.
+        /// </summary>
+        /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
         public ConcatBranch Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

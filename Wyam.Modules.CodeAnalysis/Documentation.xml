@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Documentation>
+  <AnalyzeCSharp>
+    <!-- All -->
+    <metadata name="IsResult" type="bool">
+      By default only certain symbols are processed as part of the initial
+      result set (such as those that match the specified predicate). If this value is <c>true</c>, then this
+      symbol was part of the initial result set. If it is <c>false</c>, the symbol was lazily processed later
+      while fetching related symbols and may not contain the full set of metadata.
+    </metadata>
+    <metadata name="WritePath" type="string">
+      A write path is generated for each symbol during code analysis and serves several purposes. First, it's
+      used to automatically create hyperlinks for references in XML documentation comments. It can also be used
+      for generating inbound links from other modules or pipelines to a given symbol. Because the WriteFiles module
+      will check for any WritePath metadata values when outputting documents, this metadata also makes writing
+      symbol documents to disk easier (presumably after they've been sent through a templating module).
+    </metadata>
+    <metadata name="RelativeFilePath" type="string">
+      Same as <c>WritePath</c>. This metadata key is available for compatibility with other modules.
+    </metadata>
+    <metadata name="RelativeFilePathBase" type="string">
+      Same as <c>WritePath</c> without the file extension. This metadata key is available for compatibility with other modules.
+    </metadata>
+    <metadata name="RelativeFileDir" type="string">
+      Same as the directory of <c>WritePath</c>. This metadata key is available for compatibility with other modules.
+    </metadata>
+    <metadata name="SymbolId" type="string">
+      A unique ID that identifies the symbol (can be used for generating folder paths, for example).
+    </metadata>
+    <metadata name="Symbol" type="ISymbol">
+      The Roslyn <c>ISymbol</c> from which this document is derived.
+    </metadata>
+    <metadata name="Name" type="string">
+      The name of the symbol, or an empty string if the symbol has no name (like the global namespace).
+    </metadata>
+    <metadata name="FullName" type="string">
+      The full name of the symbol. For namespaces, this is the name of the namespace. For types, this includes
+      all generic type parameters.
+    </metadata>
+    <metadata name="QualifiedName" type="string">
+      The qualified name of the symbol which includes all containing namespaces.
+    </metadata>
+    <metadata name="DisplayName" type="string">
+      A display name for the symbol. For namespaces, this is the same as <c>QualifiedName</c>. For types, this is
+      the same as <c>FullName</c>.
+    </metadata>
+    <metadata name="Kind" type="string">
+      This is the general kind of symbol. For example, the for a namespace this is "Namespace" and for a type this is "NamedType".
+    </metadata>
+    <metadata name="SpecificKind" type="string">
+      The more specific kind of the symbol ("Class", "Struct", etc.) This is the same as <c>Kind</c> if there is no more specific kind.
+    </metadata>
+    <metadata name="ContainingNamespace" type="IDocument">
+      The document that represents the containing namespace (or null if this symbol is not nested).
+    </metadata>
+    
+    <!-- Symbol specific -->
+    <metadata name="MemberTypes" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for namespace and type symbols and contains a collection of the documents that represent all member types. It only
+      contains direct children (as opposed to all nested types).
+    </metadata>
+    <metadata name="MemberNamespaces" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for namespace symbols and contains a collection of the documents that represent all member namespaces. The
+      collection is empty if there are no member namespaces.
+    </metadata>
+    <metadata name="ContainingType" type="IDocument">
+      This is available for type, method, field, event, property, and parameter symbols and contains a document representing the containing
+      type (or <c>null</c> if no containing type).
+    </metadata>
+    <metadata name="BaseType" type="IDocument">
+      This is available for type symbols and contains a document representing the base type.
+    </metadata>
+    <metadata name="AllInterfaces" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all implemented interfaces. The collection
+      is empty if the type doesn't implement any interfaces.
+    </metadata>
+    <metadata name="Members" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all members of the type. The collection
+      is empty if the type doesn't have any members.
+    </metadata>
+    <metadata name="DerivedTypes" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all types derived from the type. The collection
+      is empty if the type doesn't have any derived types.
+    </metadata>
+    <metadata name="ImplementingTypes" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for interface symbols and contains a collection of the documents that represent all types that implement the interface. The collection
+      is empty if no other types implement the interface.
+    </metadata>
+    <metadata name="Constructors" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all constructors of the type. The collection
+      is empty if the type doesn't have any explicit constructors.
+    </metadata>
+    <metadata name="TypeParameters" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type and method symbols and contains a collection of the documents that represent all generic type parameters of the type or method. The collection
+      is empty if the type or method doesn't have any generic type parameters.
+    </metadata>
+    <metadata name="Accessibility" type="string">
+      This is available for type, method, field, event, and property symbols and contains the declared accessibility of the symbol.
+    </metadata>
+    <metadata name="Parameters" type="IDocument">
+      This is available for method and property (I.e., indexer) symbols and contains a collection of the documents that represent the parameters of the method or property.
+    </metadata>
+    <metadata name="ReturnType" type="IDocument">
+      This is available for method symbols and contains a document that represents the return type of the method (or <c>null</c> if the method returns <c>void</c>).
+    </metadata>
+    <metadata name="OverriddenMethod" type="IDocument">
+      This is available for method symbols and contains a document that represents the method being overridden (or <c>null</c> if no method is overriden by this one).
+    </metadata>
+    <metadata name="Type" type="IDocument">
+      This is available for field, event, property, and parameter symbols and contains the document that represents the type of the symbol.
+    </metadata>
+    <metadata name="DeclaringType" type="IDocument">
+      This is available for type parameter symbols and contains a document that represents the declaring type of the type parameter.
+    </metadata>
+
+    <!-- Documentation (not present for external symbols) -->
+    <metadata name="CommentXml" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the full unprocessed XML documentation comments content for this symbol.
+    </metadata>
+    <metadata name="Example" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the rendered HTML content from all <c>example</c> XML documentation comments for this symbol.
+    </metadata>
+    <metadata name="Remarks" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the rendered HTML content from all <c>remarks</c> XML documentation comments for this symbol.
+    </metadata>
+    <metadata name="Summary" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the rendered HTML content from all <c>summary</c> XML documentation comments for this symbol.
+    </metadata>
+    <metadata name="Returns" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the rendered HTML content from all <c>returns</c> XML documentation comments for this symbol.
+    </metadata>
+    <metadata name="Value" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      the rendered HTML content from all <c>value</c> XML documentation comments for this symbol.
+    </metadata>
+    <metadata name="Exceptions" type="IReadOnlyList&lt;ReferenceComment&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all <c>exception</c> XML documentation comments for this symbol with their name, link, and/or rendered HTML content.
+    </metadata>
+    <metadata name="Permissions" type="IReadOnlyList&lt;ReferenceComment&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all <c>permission</c> XML documentation comments for this symbol with their name, link, and/or rendered HTML content.
+    </metadata>
+    <metadata name="Params" type="IReadOnlyList&lt;ReferenceComment&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all <c>param</c> XML documentation comments for this symbol with their name, link, and/or rendered HTML content.
+    </metadata>
+    <metadata name="TypeParams" type="IReadOnlyList&lt;ReferenceComment&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all <c>typeparam</c> XML documentation comments for this symbol with their name, link, and/or rendered HTML content.
+    </metadata>
+    <metadata name="SeeAlso" type="IReadOnlyList&lt;string&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all <c>seealso</c> XML documentation comments for this symbol with their rendered HTML link (or just name if no link could be generated).
+    </metadata>
+    <metadata name="Syntax" type="string">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a generated syntax example for the symbol.
+    </metadata>
+    <metadata name="[ElementName]Comments" type="IReadOnlyList&lt;OtherComment&gt;">
+      This is available for documents in the initial result set (<c>IsResult</c> is <c>true</c>) and contains
+      a collection of all custom XML documentation comments with a particular <c>[ElementName]</c> for this symbol with their rendered HTML content and any attributes they contain.
+    </metadata>
+  </AnalyzeCSharp>
+</Documentation>

@@ -14,7 +14,7 @@ namespace Wyam.Core.Tests.Modules
     public class DirectoryMetaFixture
     {
         [Test]
-        public void MetadataObjectsAreFilterd()
+        public void MetadataObjectsAreFiltered()
         {
             // Given
 
@@ -26,7 +26,7 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL)
-                .WithMetadataFile(INHIRED, true);
+                .WithMetadataFile(INHERITED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -48,7 +48,7 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL)
-                .WithMetadataFile(INHIRED, true)
+                .WithMetadataFile(INHERITED, true)
                 .WithPreserveMetadataFiles();
 
             // When
@@ -71,7 +71,7 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL)
-                .WithMetadataFile(INHIRED, true);
+                .WithMetadataFile(INHERITED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -101,23 +101,23 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL)
-                .WithMetadataFile(INHIRED, true);
+                .WithMetadataFile(INHERITED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
             // Then
             Assert.True(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHERITED]])),
                 "Data from inhired on same level not found");
             Assert.True(cloneDictionary[documents[SITE]]
-                .ContainsKey(ListMetadata(documentsIndex[documents[INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[INHERITED]])),
                 "Data from inhired not found on same level");
             Assert.True(cloneDictionary[documents[SUB_SITE]]
-                .ContainsKey(ListMetadata(documentsIndex[documents[INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[INHERITED]])),
                 "Data from inhired not found from level abouve");
             Assert.False(cloneDictionary[documents[SITE]]
-                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHIRED]])),
+                .ContainsKey(ListMetadata(documentsIndex[documents[SUB_INHERITED]])),
                 "Data from inhired on level below found");
         }
 
@@ -134,7 +134,7 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL)
-                .WithMetadataFile(INHIRED, true);
+                .WithMetadataFile(INHERITED, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -146,24 +146,24 @@ namespace Wyam.Core.Tests.Modules
                 cloneDictionary[documents[SUB_SITE]]
                     [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[SUB_LOCAL]],
-                        documentsIndex[documents[SUB_INHIRED]],
-                        documentsIndex[documents[INHIRED]]
+                        documentsIndex[documents[SUB_INHERITED]],
+                        documentsIndex[documents[INHERITED]]
                     )], $"Metadata should be the one of the {SUB_SITE}.");
 
             // if File metadata is Missinge it must be from sub_local
             Assert.AreEqual(documentsIndex[documents[SUB_LOCAL]],
                 cloneDictionary[documents[SUB_SITE]]
                     [ListMetadata(documentsIndex[documents[SUB_LOCAL]],
-                        documentsIndex[documents[SUB_INHIRED]],
-                        documentsIndex[documents[INHIRED]]
+                        documentsIndex[documents[SUB_INHERITED]],
+                        documentsIndex[documents[INHERITED]]
                     )], $"Metadata should be the one of the {SUB_LOCAL}.");
 
             // if sub_local also missing it is from sub_inhired
-            Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
+            Assert.AreEqual(documentsIndex[documents[SUB_INHERITED]],
                 cloneDictionary[documents[SUB_SITE]]
-                    [ListMetadata(documentsIndex[documents[SUB_INHIRED]],
-                        documentsIndex[documents[INHIRED]]
-                    )], $"Metadata should be the one of the {SUB_INHIRED}.");
+                    [ListMetadata(documentsIndex[documents[SUB_INHERITED]],
+                        documentsIndex[documents[INHERITED]]
+                    )], $"Metadata should be the one of the {SUB_INHERITED}.");
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace Wyam.Core.Tests.Modules
 
             DirectoryMeta directoryMetadata = new DirectoryMeta()
                 .WithMetadataFile(LOCAL, replace: true)
-                .WithMetadataFile(INHIRED, true, true);
+                .WithMetadataFile(INHERITED, true, true);
 
             // When
             var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
@@ -191,33 +191,33 @@ namespace Wyam.Core.Tests.Modules
                 cloneDictionary[documents[SUB_SITE]]
                     [ListMetadata(documentsIndex[documents[SUB_SITE]],
                         documentsIndex[documents[SUB_LOCAL]],
-                        documentsIndex[documents[SUB_INHIRED]],
-                        documentsIndex[documents[INHIRED]]
+                        documentsIndex[documents[SUB_INHERITED]],
+                        documentsIndex[documents[INHERITED]]
                     )], $"Metadata should be the one of the {SUB_LOCAL}.");
 
             // if sub_local is missing it is from sub_inhired
-            Assert.AreEqual(documentsIndex[documents[SUB_INHIRED]],
+            Assert.AreEqual(documentsIndex[documents[SUB_INHERITED]],
                 cloneDictionary[documents[SUB_SITE]]
                     [ListMetadata(documentsIndex[documents[SUB_SITE]],
-                        documentsIndex[documents[SUB_INHIRED]],
-                        documentsIndex[documents[INHIRED]]
-                    )], $"Metadata should be the one of the {SUB_INHIRED}.");
+                        documentsIndex[documents[SUB_INHERITED]],
+                        documentsIndex[documents[INHERITED]]
+                    )], $"Metadata should be the one of the {SUB_INHERITED}.");
 
             // if sub_inhired is missing it is from inhired
-            Assert.AreEqual(documentsIndex[documents[INHIRED]],
+            Assert.AreEqual(documentsIndex[documents[INHERITED]],
                 cloneDictionary[documents[SUB_SITE]]
                     [ListMetadata(documentsIndex[documents[SUB_SITE]],
-                        documentsIndex[documents[INHIRED]]
-                    )], $"Metadata should be the one of the {INHIRED}.");
+                        documentsIndex[documents[INHERITED]]
+                    )], $"Metadata should be the one of the {INHERITED}.");
         }
 
         #region TestHelper
 
         private const string ROOT = @"c:\wyam\";
         private const string SUB_LOCAL = @"1\local.metadata";
-        private const string SUB_INHIRED = @"1\inherit.metadata";
+        private const string SUB_INHERITED = @"1\inherit.metadata";
         private const string LOCAL = @"local.metadata";
-        private const string INHIRED = @"inherit.metadata";
+        private const string INHERITED = @"inherit.metadata";
         private const string SUB_SITE = @"1\site.md";
         private const string SITE = @"site.md";
 
@@ -253,10 +253,10 @@ namespace Wyam.Core.Tests.Modules
                 {
                     SITE,
                     LOCAL,
-                    INHIRED,
+                    INHERITED,
                     SUB_SITE,
                     SUB_LOCAL,
-                    SUB_INHIRED
+                    SUB_INHERITED
                };
             }
 
@@ -273,7 +273,7 @@ namespace Wyam.Core.Tests.Modules
             cloneDictionary = tempDictionary;
             foreach (var document in documents.Values)
             {
-                //TODO: Change so muliple recursive calls to clone can be tracked.
+                //TODO: Change so multiple recursive calls to clone can be tracked.
                 document
                     .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>

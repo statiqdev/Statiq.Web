@@ -21,21 +21,6 @@ namespace Wyam.Modules.CodeAnalysis
         public const string SpecificKind = "SpecificKind"; // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = "ContainingNamespace"; // IDocument, null if not nested
 
-        // Documentation (not present for external symbols)
-        public const string CommentXml = "CommentXml"; // string, the XML documentation comments (if any) or an empty string
-        public const string Example = "Example"; // string, multiple entries are concatenated
-        public const string Remarks = "Remarks"; // string, multiple entries are concatenated
-        public const string Summary = "Summary"; // string, multiple entries are concatenated
-        public const string Returns = "Returns"; // string, multiple entries are concatenated
-        public const string Value = "Value"; // string, multiple entries are concatenated
-        public const string Exceptions = "Exceptions"; // IReadOnlyList<ReferenceComment>
-        public const string Permissions = "Permissions"; // IReadOnlyList<ReferenceComment>
-        public const string Params = "Params"; // IReadOnlyList<ReferenceComment>
-        public const string TypeParams = "TypeParams"; // IReadOnlyList<ReferenceComment>
-        public const string SeeAlso = "SeeAlso"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
-        public const string Syntax = "Syntax"; // string
-        //                  [ElementName]Comments // IReadOnlyList<OtherComment>, list of extra documentation elements
-
         // Namespace
         public const string MemberTypes = "MemberTypes"; // IReadOnlyList<IDocument>, only contains direct children, not all descendants
         public const string MemberNamespaces = "MemberNamespaces"; // IReadOnlyList<IDocument>, empty if none
@@ -53,9 +38,9 @@ namespace Wyam.Modules.CodeAnalysis
         //                  MemberTypes
 
         // Method
-        public const string Parameters = "Parameters"; // IDocument
+        public const string Parameters = "Parameters"; // IReadOnlyList<IDocument>
         public const string ReturnType = "ReturnType"; // IDocument, null if returns void
-        public const string Overridden = "Overridden"; // IDocument
+        public const string OverriddenMethod = "OverriddenMethod"; // IDocument
         //                  TypeParameters
         //                  ContainingType
         //                  Accessibility
@@ -82,5 +67,20 @@ namespace Wyam.Modules.CodeAnalysis
         // Parameter
         //                  Type
         //                  ContainingType
+
+        // Documentation (not present for external symbols)
+        public const string CommentXml = "CommentXml"; // string, the XML documentation comments (if any) or an empty string
+        public const string Example = "Example"; // string, multiple entries are concatenated
+        public const string Remarks = "Remarks"; // string, multiple entries are concatenated
+        public const string Summary = "Summary"; // string, multiple entries are concatenated
+        public const string Returns = "Returns"; // string, multiple entries are concatenated
+        public const string Value = "Value"; // string, multiple entries are concatenated
+        public const string Exceptions = "Exceptions"; // IReadOnlyList<ReferenceComment>
+        public const string Permissions = "Permissions"; // IReadOnlyList<ReferenceComment>
+        public const string Params = "Params"; // IReadOnlyList<ReferenceComment>
+        public const string TypeParams = "TypeParams"; // IReadOnlyList<ReferenceComment>
+        public const string SeeAlso = "SeeAlso"; // IReadOnlyList<string>, list of <seealso> links (including those in child entities)
+        public const string Syntax = "Syntax"; // string
+        //                  [ElementName]Comments // IReadOnlyList<OtherComment>, list of extra documentation elements
     }
 }
