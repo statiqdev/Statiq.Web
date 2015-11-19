@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Xsl;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -55,11 +56,11 @@ namespace Wyam.Modules.Xslt
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select(X =>
+            return inputs.AsParallel().Select(X =>
             {
                 try
                 {
-                    var xslt = new System.Xml.Xsl.XslCompiledTransform();
+                    XslCompiledTransform xslt = new XslCompiledTransform();
 
                     if (_xsltPath != null)
                     {
@@ -77,7 +78,7 @@ namespace Wyam.Modules.Xslt
                     }
                     using (var stream = X.GetStream())
                     {
-                        var str = new System.IO.StringWriter();
+                        StringWriter str = new System.IO.StringWriter();
                         using (var writer = new System.Xml.XmlTextWriter(str))
                         {
                             xslt.Transform(System.Xml.XmlReader.Create(stream), writer);
