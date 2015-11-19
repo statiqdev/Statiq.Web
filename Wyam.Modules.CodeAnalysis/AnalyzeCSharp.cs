@@ -47,6 +47,12 @@ namespace Wyam.Modules.CodeAnalysis
                     { "table", "table" }
                 });
 
+        /// <summary>
+        /// Executes the specified inputs.
+        /// </summary>
+        /// <param name="inputs">The inputs.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Get syntax trees (supply path so that XML doc includes can be resolved)

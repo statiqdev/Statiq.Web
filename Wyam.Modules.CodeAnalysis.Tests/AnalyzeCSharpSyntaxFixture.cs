@@ -32,6 +32,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -63,6 +64,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -91,6 +93,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -122,6 +125,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -152,6 +156,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -187,6 +192,7 @@ internal class Green", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -227,6 +233,7 @@ private int Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -257,6 +264,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -285,6 +293,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -313,6 +322,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -344,6 +354,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -372,6 +383,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -400,6 +412,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -437,6 +450,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -469,6 +483,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -501,6 +516,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -531,6 +547,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -561,6 +578,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -593,6 +611,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -622,6 +641,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -654,6 +674,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -683,6 +704,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -714,6 +736,7 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             IModule module = new AnalyzeCSharp();
