@@ -11,11 +11,13 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Modules.Tables
 {
     /// <summary>
-    /// Transforms Excel files to csv.
+    /// Transforms Excel content to CSV.
     /// </summary>
     /// <remarks>
-    /// The seperator of the csv is <code>,</code> and every value is enclosed in <code>"</code>.
+    /// This module reads the content of each input document as Excel OOXML and outputs CSV content. 
+    /// The output CSV content uses <c>,</c> as separator and encloses every value in <c>"</c>.
     /// </remarks>
+    /// <category>Content</category>
     public class ExcelToCsv : IModule
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -33,7 +35,7 @@ namespace Wyam.Modules.Tables
                 }
                 catch (Exception e)
                 {
-                    context.Trace.Error($"An {e.ToString()} occured ({x.Source}).\n\t{e.Message}");
+                    context.Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

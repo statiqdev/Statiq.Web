@@ -10,13 +10,14 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Modules.Tables
 {
     /// <summary>
-    /// Converts Csv files to html tables.
+    /// Converts CSV content to HTML tables.
     /// </summary>
     /// <remarks>
-    /// The output document only contains the table tag. No html or body tag.
-    /// 
-    /// The csv files must use <code>,</code> as seperator and encapsule every value in <c>"</c>.
+    /// This module reads the content of each input document as CSV and outputs an HTML <c>&lt;table&gt;</c> tag 
+    /// containing the CSV content. No <c>&lt;html&gt;</c> or <c>&lt;body&gt;</c> tags are output. The input CSV
+    /// content must use <c>,</c> as separator and enclose every value in <c>"</c>.
     /// </remarks>
+    /// <category>Content</category>
     public class CsvToHtml : IModule
     {
         private bool _firstLineHeader = false;
@@ -48,20 +49,23 @@ namespace Wyam.Modules.Tables
                         foreach (var cell in row)
                         {
                             if (_firstLineHeader && firstLine)
+                            {
                                 builder.AppendLine($"<th>{cell.Value}</th>");
+                            }
                             else
+                            {
                                 builder.AppendLine($"<td>{cell.Value}</td>");
+                            }
                         }
                         builder.AppendLine("</tr>");
                         firstLine = false;
                     }
                     builder.Append("</table>");
                     return x.Clone(builder.ToString());
-
                 }
                 catch (Exception e)
                 {
-                    context.Trace.Error($"An {e.ToString()} occured ({x.Source}).\n\t{e.Message}");
+                    context.Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);
