@@ -16,7 +16,7 @@ namespace Wyam.Modules.Tables.Tests
     {
 
         [Test]
-        public void TestXlsx()
+        public void TestWithoutHeadder()
         {
             // Given
             #region input
