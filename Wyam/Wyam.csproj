@@ -181,6 +181,10 @@
       <Project>{957fe3a0-7ce0-48a1-9767-d122b9f43907}</Project>
       <Name>Wyam.Modules.SearchIndex</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Tables\Wyam.Modules.Tables.csproj">
+      <Project>{18e8dfbe-436c-4477-a5a2-61551ce268a2}</Project>
+      <Name>Wyam.Modules.Tables</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
       <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
       <Name>Wyam.Modules.TextGeneration</Name>
