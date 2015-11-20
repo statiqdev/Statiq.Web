@@ -9,10 +9,21 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Tables
 {
+    /// <summary>
+    /// Converts Csv files to html tables.
+    /// </summary>
+    /// <remarks>
+    /// The output document only contains the table tag. No html or body tag.
+    /// 
+    /// The csv files must use <code>,</code> as seperator and encapsule every value in <c>"</c>.
+    /// </remarks>
     public class CsvToHtml : IModule
     {
         private bool _firstLineHeader = false;
 
+        /// <summary>
+        /// Enables the first line as headers of your table.
+        /// </summary>
         public CsvToHtml WithHeader()
         {
             _firstLineHeader = true;
