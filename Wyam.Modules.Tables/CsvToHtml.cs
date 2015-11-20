@@ -55,7 +55,7 @@ namespace Wyam.Modules.Tables
                         builder.AppendLine("</tr>");
                         firstLine = false;
                     }
-                    builder.AppendLine("</table>");
+                    builder.Append("</table>");
                     return x.Clone(builder.ToString());
 
                 }
