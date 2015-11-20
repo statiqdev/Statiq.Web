@@ -10,6 +10,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules;
+using Wyam.Core.Modules.Contents;
 
 namespace Wyam.Core.Tests.Configuration
 {
@@ -364,21 +365,21 @@ E-
                     {{
 {output}
                     }}
-                        public static Wyam.Core.Modules.Content Content(object content)
+                        public static Wyam.Core.Modules.Contents.Content Content(object content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.ContextConfig content)
+                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.ContextConfig content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.DocumentConfig content)
+                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.DocumentConfig content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.Modules.IModule[] modules)
+                        public static Wyam.Core.Modules.Contents.Content Content(params Wyam.Common.Modules.IModule[] modules)
                         {{
-                            return new Wyam.Core.Modules.Content(modules);  
+                            return new Wyam.Core.Modules.Contents.Content(modules);  
                         }}}}";
 
             // When
@@ -701,21 +702,21 @@ foo bar;
             Configurator configurator = new Configurator(engine, null, false);
             Type moduleType = typeof (Content);
             string expected = $@"
-                        public static Wyam.Core.Modules.Content Content(object content)
+                        public static Wyam.Core.Modules.Contents.Content Content(object content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.ContextConfig content)
+                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.ContextConfig content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(Wyam.Common.Configuration.DocumentConfig content)
+                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.DocumentConfig content)
                         {{
-                            return new Wyam.Core.Modules.Content(content);  
+                            return new Wyam.Core.Modules.Contents.Content(content);  
                         }}
-                        public static Wyam.Core.Modules.Content Content(params Wyam.Common.Modules.IModule[] modules)
+                        public static Wyam.Core.Modules.Contents.Content Content(params Wyam.Common.Modules.IModule[] modules)
                         {{
-                            return new Wyam.Core.Modules.Content(modules);  
+                            return new Wyam.Core.Modules.Contents.Content(modules);  
                         }}";
 
             // When

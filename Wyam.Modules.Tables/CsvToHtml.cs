@@ -23,7 +23,7 @@ namespace Wyam.Modules.Tables
         private bool _firstLineHeader = false;
 
         /// <summary>
-        /// Enables the first line as headers of your table.
+        /// Treats the first line of input content as a header and generates <c>&lt;th&gt;</c> tags in the output table.
         /// </summary>
         public CsvToHtml WithHeader()
         {

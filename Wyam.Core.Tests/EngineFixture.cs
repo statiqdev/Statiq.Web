@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core;
 using Wyam.Core.Modules;
+using Wyam.Core.Modules.Extensibility;
+using Wyam.Core.Modules.Metadata;
 using Wyam.Core.Pipelines;
 
 

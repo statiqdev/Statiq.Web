@@ -149,10 +149,6 @@
       <Project>{f4c0c025-5e08-4ed2-a089-67c41702ae7b}</Project>
       <Name>Wyam.Modules.CodeAnalysis</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Download\Wyam.Modules.Download.csproj">
-      <Project>{5c4855a3-89aa-4310-8de1-6aac415d46d9}</Project>
-      <Name>Wyam.Modules.Download</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Git\Wyam.Modules.Git.csproj">
       <Project>{d339951e-dfac-4766-825b-36e69479044b}</Project>
       <Name>Wyam.Modules.Git</Name>

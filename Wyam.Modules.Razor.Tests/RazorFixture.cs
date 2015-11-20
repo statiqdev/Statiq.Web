@@ -12,6 +12,8 @@ using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
 using Wyam.Core;
 using Wyam.Core.Modules;
+using Wyam.Core.Modules.IO;
+using Wyam.Core.Modules.Metadata;
 
 namespace Wyam.Modules.Razor.Tests
 {

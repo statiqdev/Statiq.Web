@@ -43,5 +43,9 @@
 
         // Sitemap
         public const string SitemapItem = "SitemapItem";
+
+        // Download
+        public static string SourceUri = "SourceUri";
+        public static string SourceHeaders = "SourceHeaders";
     }
 }

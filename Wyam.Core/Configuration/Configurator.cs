@@ -229,15 +229,18 @@ namespace Wyam.Core.Configuration
                         "System.IO",
                         "System.Diagnostics",
                         "Wyam.Core",
-                        "Wyam.Core.Configuration",
-                        "Wyam.Core.Modules"
+                        "Wyam.Core.Configuration"
                     });
+
+                    // Add all module namespaces from Wyam.Core
+                    _namespaces.AddRange(typeof (Engine).Assembly.GetTypes()
+                        .Where(x => typeof(IModule).IsAssignableFrom(x))
+                        .Select(x => x.Namespace));
 
                     // Also include all Wyam.Common namespaces
                     _namespaces.AddRange(typeof (IModule).Assembly.GetTypes()
                         .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                        .Select(x => x.Namespace)
-                        .Distinct());
+                        .Select(x => x.Namespace));
 
                     // Add specified assemblies from packages, etc.
                     GetAssemblies();
