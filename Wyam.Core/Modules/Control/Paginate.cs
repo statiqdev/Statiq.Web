@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
@@ -81,11 +82,11 @@ namespace Wyam.Core.Modules.Control
                 return partitions.Select((x, i) => input.Clone(
                     new Dictionary<string, object>
                     {
-                        {MetadataKeys.PageDocuments, partitions[i]},
-                        {MetadataKeys.CurrentPage, i + 1},
-                        {MetadataKeys.TotalPages, partitions.Length},
-                        {MetadataKeys.HasNextPage, partitions.Length > i + 1},
-                        {MetadataKeys.HasPreviousPage, i != 0}
+                        {Keys.PageDocuments, partitions[i]},
+                        {Keys.CurrentPage, i + 1},
+                        {Keys.TotalPages, partitions.Length},
+                        {Keys.HasNextPage, partitions.Length > i + 1},
+                        {Keys.HasPreviousPage, i != 0}
                     })
                 );
             });

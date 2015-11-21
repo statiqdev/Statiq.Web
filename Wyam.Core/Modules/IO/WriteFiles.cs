@@ -83,7 +83,7 @@ namespace Wyam.Core.Modules.IO
 
             _path = (x, y) =>
             {
-                string fileRelative = x.String(MetadataKeys.RelativeFilePath);
+                string fileRelative = x.String(Keys.RelativeFilePath);
                 if (!string.IsNullOrWhiteSpace(fileRelative))
                 {
                     return Path.ChangeExtension(fileRelative, extension);
@@ -99,7 +99,7 @@ namespace Wyam.Core.Modules.IO
         /// </summary>
         public WriteFiles()
         {
-            _path = (x, y) => x.String(MetadataKeys.RelativeFilePath);
+            _path = (x, y) => x.String(Keys.RelativeFilePath);
         }
         
         /// <summary>
@@ -149,26 +149,26 @@ namespace Wyam.Core.Modules.IO
             if (_useWriteMetadata)
             {
                 // WritePath
-                path = input.String(MetadataKeys.WritePath);
+                path = input.String(Keys.WritePath);
                 if (!string.IsNullOrWhiteSpace(path))
                 {
                     path = PathHelper.NormalizePath(path);
                 }
 
                 // WriteFileName
-                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteFileName)
-                    && input.ContainsKey(MetadataKeys.RelativeFileDir))
+                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteFileName)
+                    && input.ContainsKey(Keys.RelativeFileDir))
                 {
-                    path = Path.Combine(input.String(MetadataKeys.RelativeFileDir),
-                        PathHelper.NormalizePath(input.String(MetadataKeys.WriteFileName)));
+                    path = Path.Combine(input.String(Keys.RelativeFileDir),
+                        PathHelper.NormalizePath(input.String(Keys.WriteFileName)));
                 }
 
                 // WriteExtension
-                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(MetadataKeys.WriteExtension)
-                    && input.ContainsKey(MetadataKeys.RelativeFilePath))
+                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteExtension)
+                    && input.ContainsKey(Keys.RelativeFilePath))
                 {
-                    path = Path.ChangeExtension(input.String(MetadataKeys.RelativeFilePath),
-                        input.String(MetadataKeys.WriteExtension));
+                    path = Path.ChangeExtension(input.String(Keys.RelativeFilePath),
+                        input.String(Keys.WriteExtension));
                 }
             }
 
@@ -217,15 +217,15 @@ namespace Wyam.Core.Modules.IO
                         context.Trace.Verbose("Wrote file {0}", path);
                         return input.Clone(outputStream, new MetadataItems
                         {
-                            { MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path) },
-                            { MetadataKeys.DestinationFileExt, Path.GetExtension(path) },
-                            { MetadataKeys.DestinationFileName, Path.GetFileName(path) },
-                            { MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path) },
-                            { MetadataKeys.DestinationFilePath, path },
-                            { MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path) },
-                            { MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path) },
-                            { MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path)) },
-                            { MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
+                            { Keys.DestinationFileBase, Path.GetFileNameWithoutExtension(path) },
+                            { Keys.DestinationFileExt, Path.GetExtension(path) },
+                            { Keys.DestinationFileName, Path.GetFileName(path) },
+                            { Keys.DestinationFileDir, Path.GetDirectoryName(path) },
+                            { Keys.DestinationFilePath, path },
+                            { Keys.DestinationFilePathBase, PathHelper.RemoveExtension(path) },
+                            { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path) },
+                            { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path)) },
+                            { Keys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
                         });
                     }
                 }

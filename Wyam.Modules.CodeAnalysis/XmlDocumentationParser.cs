@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.CodeAnalysis
@@ -262,8 +263,8 @@ namespace Wyam.Modules.CodeAnalysis
 			IDocument crefDoc;
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
-			    string name = crefDoc.String(MetadataKeys.DisplayName);
-				link = $"<a href=\"{crefDoc.Link(MetadataKeys.WritePath)}\">{name}</a>";
+			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
+				link = $"<a href=\"{crefDoc.Link(Keys.WritePath)}\">{name}</a>";
 			    return name;
 			}
 			link = null;

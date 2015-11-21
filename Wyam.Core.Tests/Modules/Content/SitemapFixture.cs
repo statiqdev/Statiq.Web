@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Contents;
@@ -56,14 +57,14 @@ namespace Wyam.Core.Tests.Modules.Content
             engine.OutputFolder = @"TestFiles/output/";
 
             if (!string.IsNullOrWhiteSpace(hostname))
-                engine.Metadata["Hostname"] = hostname;
+                engine.Metadata[Keys.Hostname] = hostname;
 
             Pipeline contentPipeline = new Pipeline("Content", engine, null);
-            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>("RelativeFilePath", "sub/testfile.html") });
+            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);
-            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta("SitemapItem", (d, c) => new SitemapItem(d["RelativeFilePath"].ToString()));
+            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem, (d, c) => new SitemapItem(d[Keys.RelativeFilePath].ToString()));
             var outputs = m.Execute(inputs, context);
 
             Func<string, string> formatter = null;
@@ -97,14 +98,14 @@ namespace Wyam.Core.Tests.Modules.Content
             engine.OutputFolder = @"TestFiles/output/";
 
             if( !string.IsNullOrWhiteSpace(hostname) )
-                engine.Metadata["Hostname"] = hostname;
+                engine.Metadata[Keys.Hostname] = hostname;
 
             Pipeline contentPipeline = new Pipeline("Content", engine, null);
-            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>("RelativeFilePath", "sub/testfile.html") });
+            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);
-            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta("SitemapItem", (d, c) => d["RelativeFilePath"].ToString());
+            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem, (d, c) => d[Keys.RelativeFilePath].ToString());
             var outputs = m.Execute(inputs, context);
 
             Func<string, string> formatter = null;

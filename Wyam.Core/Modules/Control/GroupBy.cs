@@ -56,8 +56,8 @@ namespace Wyam.Core.Modules.Control
                 return groupings.Select(x => input.Clone(
                     new MetadataItems
                     {
-                        {MetadataKeys.GroupDocuments, x.ToImmutableArray()},
-                        {MetadataKeys.GroupKey, x.Key}
+                        {Keys.GroupDocuments, x.ToImmutableArray()},
+                        {Keys.GroupKey, x.Key}
                     })
                 );
             });

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Modules.SearchIndex
 {
-    public static class MetadataKeys
+    public static class SearchIndexKeys
     {
         public const string SearchIndexItem = "SearchIndexItem";
     }

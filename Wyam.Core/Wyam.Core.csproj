@@ -124,7 +124,7 @@
     <Compile Include="Documents\SeekableStream.cs" />
     <Compile Include="Meta\MetadataTypeConverter.cs" />
     <Compile Include="Pipelines\ExecutionContext.cs" />
-    <Compile Include="Meta\MetadataKeys.cs" />
+    <Compile Include="Meta\CoreKeys.cs" />
     <Compile Include="Modules\IO\CopyFiles.cs" />
     <Compile Include="Modules\Control\Documents.cs" />
     <Compile Include="Modules\Control\FrontMatter.cs" />

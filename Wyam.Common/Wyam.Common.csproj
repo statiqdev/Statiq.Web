@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
     <Compile Include="Meta\MetadataItems.cs" />
+    <Compile Include="Meta\Keys.cs" />
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Configuration\ContextConfig.cs" />
     <Compile Include="Configuration\ConfigExtensions.cs" />

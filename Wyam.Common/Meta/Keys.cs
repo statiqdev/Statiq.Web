@@ -1,7 +1,18 @@
-﻿namespace Wyam.Core.Meta
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Wyam.Common.Meta
 {
-    // Other modules outside Core might refer to these as strings, so make sure to do a text search if renaming
-    public static class MetadataKeys
+    /// <summary>
+    /// Common metadata keys for modules in Wyam.Core. The keys available in this class
+    /// might lag behind to full set of available keys since Wyam.Common doesn't update
+    /// as often. This set of keys will be updated whenever a new version of Wyam.Common
+    /// is released for other reasons.
+    /// </summary>
+    public static class Keys
     {
         // Common
         public const string Hostname = "Hostname";

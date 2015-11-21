@@ -22,7 +22,7 @@ namespace Wyam.Modules.SearchIndex
         private readonly bool _enableStemming;
 
         public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
-            : this((doc, ctx) => doc.Get<SearchIndexItem>(MetadataKeys.SearchIndexItem), stopwordsFilename, enableStemming)
+            : this((doc, ctx) => doc.Get<SearchIndexItem>(SearchIndexKeys.SearchIndexItem), stopwordsFilename, enableStemming)
         {
         }
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
@@ -36,7 +37,7 @@ namespace Wyam.Core.Modules.Contents
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             string outputFilename = Path.Combine(context.OutputFolder, _sitemapFilename);
-            IDocument[] docs = (_shouldUseInputDocuments ? inputs.AsEnumerable() : context.Documents).Where(f => f.Metadata.ContainsKey(MetadataKeys.SitemapItem)).ToArray();
+            IDocument[] docs = (_shouldUseInputDocuments ? inputs.AsEnumerable() : context.Documents).Where(f => f.Metadata.ContainsKey(Keys.SitemapItem)).ToArray();
 
             if (docs.Length > 0)
             {
@@ -46,9 +47,9 @@ namespace Wyam.Core.Modules.Contents
                 foreach (IDocument doc in docs)
                 {
                     object hostname;
-                    doc.Metadata.TryGetValue(MetadataKeys.Hostname, out hostname);
+                    doc.Metadata.TryGetValue(Keys.Hostname, out hostname);
 
-                    object sitemapItemMetadata = doc.Metadata.Get(MetadataKeys.SitemapItem);
+                    object sitemapItemMetadata = doc.Metadata.Get(Keys.SitemapItem);
                     SitemapItem sitemapItem = sitemapItemMetadata as SitemapItem 
                         ?? new SitemapItem(sitemapItemMetadata.ToString());
 

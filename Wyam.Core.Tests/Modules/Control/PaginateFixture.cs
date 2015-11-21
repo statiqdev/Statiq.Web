@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
@@ -29,10 +30,10 @@ namespace Wyam.Core.Tests.Modules.Control
             Paginate paginate = new Paginate(3, count);
             Execute gatherData = new Execute((d, c) =>
             {
-                currentPage.Add(d.Get<int>(MetadataKeys.CurrentPage));
-                totalPages.Add(d.Get<int>(MetadataKeys.TotalPages));
-                hasNextPage.Add(d.Get<bool>(MetadataKeys.HasNextPage));
-                hasPreviousPage.Add(d.Get<bool>(MetadataKeys.HasPreviousPage));
+                currentPage.Add(d.Get<int>(Keys.CurrentPage));
+                totalPages.Add(d.Get<int>(Keys.TotalPages));
+                hasNextPage.Add(d.Get<bool>(Keys.HasNextPage));
+                hasPreviousPage.Add(d.Get<bool>(Keys.HasPreviousPage));
                 return null;
             });
             engine.Pipelines.Add(paginate, gatherData);
@@ -61,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.Control
             Paginate paginate = new Paginate(3, count);
             Execute gatherData = new Execute((d, c) =>
             {
-                content.Add(d.Get<IList<IDocument>>(MetadataKeys.PageDocuments).Select(x => x.Content).ToList());
+                content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
                 return null;
             });
             engine.Pipelines.Add(paginate, gatherData);

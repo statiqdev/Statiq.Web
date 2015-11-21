@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                new MetadataItem("SourceFileName", input)
+                new MetadataItem(Keys.SourceFileName, input)
             }) };
             FileName fileName = new FileName();
 
@@ -40,7 +40,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
             // Then
-            Assert.AreEqual(output, documents.First()["WriteFileName"]);
+            Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
         }
 
 		[Test]
@@ -56,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
 			{
-                new MetadataItem("SourceFileName", input)
+                new MetadataItem(Keys.SourceFileName, input)
 			}) };
 			FileName fileName = new FileName();
 
@@ -64,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			// Then
-			Assert.AreEqual(output, documents.First()["WriteFileName"]);
+			Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
 		}
 
 		[Test]
@@ -80,7 +80,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
 			{
-                new MetadataItem("SourceFileName", input)
+                new MetadataItem(Keys.SourceFileName, input)
 			}) };
 			FileName fileName = new FileName();
 
@@ -89,7 +89,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			// Then
-			Assert.AreEqual(output, documents.First()["WriteFileName"]);
+			Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
 		}
 
 		public static string[] ReservedChars => FileName.ReservedChars;
@@ -106,7 +106,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             string manyCharactersWow = new String(character[0], 10);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                new MetadataItem("SourceFileName", 
+                new MetadataItem(Keys.SourceFileName, 
                     string.Format("testing {0} some of {0} these {0}", manyCharactersWow))
             }) };
             FileName fileName = new FileName();
@@ -115,7 +115,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
             // Then
-            Assert.AreEqual("testing-some-of-these-", documents.First()["WriteFileName"]);
+            Assert.AreEqual("testing-some-of-these-", documents.First()[Keys.WriteFileName]);
         }
 
         [TestCase(null)]
@@ -130,7 +130,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                new MetadataItem("SourceFileName", input)
+                new MetadataItem(Keys.SourceFileName, input)
             }) };
             FileName fileName = new FileName();
 
@@ -138,7 +138,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
             // Then
-            Assert.IsFalse(documents.First().ContainsKey("WriteFileName"));
+            Assert.IsFalse(documents.First().ContainsKey(Keys.WriteFileName));
         }
     }
 }

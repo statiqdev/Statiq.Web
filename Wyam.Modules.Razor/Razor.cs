@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
@@ -108,7 +109,9 @@ namespace Wyam.Modules.Razor
         {
             IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context, _basePageType);
             List<IDocument> validInputs = inputs
-                .Where(x => _ignorePrefix == null || !x.ContainsKey("SourceFileName") || !x.String("SourceFileName").StartsWith(_ignorePrefix))
+                .Where(x => _ignorePrefix == null 
+                    || !x.ContainsKey(Keys.SourceFileName) 
+                    || !x.String(Keys.SourceFileName).StartsWith(_ignorePrefix))
                 .ToList();
 
             // Compile the pages in parallel
@@ -158,9 +161,9 @@ namespace Wyam.Modules.Razor
         private string GetRelativePath(IDocument document)
         {
             string relativePath = "/";
-            if (document.ContainsKey("RelativeFilePath"))
+            if (document.ContainsKey(Keys.RelativeFilePath))
             {
-                relativePath += document.String("RelativeFilePath");
+                relativePath += document.String(Keys.RelativeFilePath);
             }
             return relativePath;
         }

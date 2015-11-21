@@ -54,7 +54,8 @@ namespace Wyam.Modules.CodeAnalysis
                 using (Stream stream = input.GetStream())
                 {
                     SourceText sourceText = SourceText.From(stream);
-                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(sourceText, path: input.String("SourceFilePath", string.Empty)));
+                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(sourceText, 
+                        path: input.String(Keys.SourceFilePath, string.Empty)));
                 }
             });
 
@@ -209,28 +210,28 @@ namespace Wyam.Modules.CodeAnalysis
 
         private string DefaultWritePath(IMetadata metadata, string prefix)
         {
-            IDocument namespaceDocument = metadata.Get<IDocument>(MetadataKeys.ContainingNamespace);
+            IDocument namespaceDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingNamespace);
 
             // Namespaces output to the index page in a folder of their full name
-            if (metadata.String(MetadataKeys.Kind) == SymbolKind.Namespace.ToString())
+            if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.Namespace.ToString())
             {
                 // If this namespace does not have a containing namespace, it's the global namespace
-                return Path.Combine(prefix, namespaceDocument == null ? "global\\index.html" : $"{metadata[MetadataKeys.DisplayName]}\\index.html");
+                return Path.Combine(prefix, namespaceDocument == null ? "global\\index.html" : $"{metadata[CodeAnalysisKeys.DisplayName]}\\index.html");
             }
 
             // Types output to the index page in a folder of their SymbolId under the folder for their namespace
-            if (metadata.String(MetadataKeys.Kind) == SymbolKind.NamedType.ToString())
+            if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())
             {
                 // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
-                return Path.Combine(prefix, (namespaceDocument?[MetadataKeys.ContainingNamespace] == null)
-                    ? $"global\\{metadata[MetadataKeys.SymbolId]}\\index.html"
-                    : $"{namespaceDocument[MetadataKeys.DisplayName]}\\{metadata[MetadataKeys.SymbolId]}\\index.html");
+                return Path.Combine(prefix, (namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null)
+                    ? $"global\\{metadata[CodeAnalysisKeys.SymbolId]}\\index.html"
+                    : $"{namespaceDocument[CodeAnalysisKeys.DisplayName]}\\{metadata[CodeAnalysisKeys.SymbolId]}\\index.html");
             }
 
             // Members output to a page equal to their SymbolId under the folder for their type
-            IDocument containingTypeDocument = metadata.Get<IDocument>(MetadataKeys.ContainingType, null);
-            return containingTypeDocument?.String(MetadataKeys.WritePath)
-                .Replace("index.html", metadata.String(MetadataKeys.SymbolId) + ".html");
+            IDocument containingTypeDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingType, null);
+            return containingTypeDocument?.String(Keys.WritePath)
+                .Replace("index.html", metadata.String(CodeAnalysisKeys.SymbolId) + ".html");
         }
     }
 }

@@ -108,8 +108,8 @@ namespace Wyam.Core.Modules.IO
                     string uri = result.Uri.ToString();
                     doc = input.Clone(uri, result.Stream, new MetadataItems
                     {
-                        { MetadataKeys.SourceUri, uri },
-                        { MetadataKeys.SourceHeaders, result.Headers }
+                        { Keys.SourceUri, uri },
+                        { Keys.SourceHeaders, result.Headers }
                     });
 
                     if (_cacheResponse)

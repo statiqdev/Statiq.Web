@@ -49,7 +49,6 @@
     <Compile Include="ImageFilter.cs" />
     <Compile Include="ImageInstruction.cs" />
     <Compile Include="Image.cs" />
-    <Compile Include="MetadataKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

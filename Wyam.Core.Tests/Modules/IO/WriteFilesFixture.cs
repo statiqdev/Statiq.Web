@@ -50,7 +50,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
+            engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -75,7 +75,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
+            engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -100,9 +100,9 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["SourceFileRoot"] = @"TestFiles/Input";
-            engine.Metadata["SourceFileDir"] = @"TestFiles/Input/Subfolder";
-            engine.Metadata["SourceFileBase"] = @"write-test";
+            engine.Metadata[Keys.SourceFileRoot] = @"TestFiles/Input";
+            engine.Metadata[Keys.SourceFileDir] = @"TestFiles/Input/Subfolder";
+            engine.Metadata[Keys.SourceFileBase] = @"write-test";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -116,22 +116,22 @@ namespace Wyam.Core.Tests.Modules.IO
             ((IDisposable)output).Dispose();
         }
 
-        [TestCase("DestinationFileBase", @"write-test")]
-        [TestCase("DestinationFileExt", @".txt")]
-        [TestCase("DestinationFileName", @"write-test.txt")]
-        [TestCase("DestinationFileDir", @"TestFiles\Output\Subfolder")]
-        [TestCase("DestinationFilePath", @"TestFiles\Output\Subfolder\write-test.txt")]
-        [TestCase("DestinationFilePathBase", @"TestFiles\Output\Subfolder\write-test")]
-        [TestCase("RelativeFilePath", @"Subfolder\write-test.txt")]
-        [TestCase("RelativeFilePathBase", @"Subfolder\write-test")]
-        [TestCase("RelativeFileDir", @"Subfolder")]
+        [TestCase(Keys.DestinationFileBase, @"write-test")]
+        [TestCase(Keys.DestinationFileExt, @".txt")]
+        [TestCase(Keys.DestinationFileName, @"write-test.txt")]
+        [TestCase(Keys.DestinationFileDir, @"TestFiles\Output\Subfolder")]
+        [TestCase(Keys.DestinationFilePath, @"TestFiles\Output\Subfolder\write-test.txt")]
+        [TestCase(Keys.DestinationFilePathBase, @"TestFiles\Output\Subfolder\write-test")]
+        [TestCase(Keys.RelativeFilePath, @"Subfolder\write-test.txt")]
+        [TestCase(Keys.RelativeFilePathBase, @"Subfolder\write-test")]
+        [TestCase(Keys.RelativeFileDir, @"Subfolder")]
         public void WriteFilesSetsMetadata(string key, string expectedEnding)
         {
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
-            engine.Metadata["RelativeFilePath"] = @"Subfolder/write-test.abc";
+            engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
@@ -165,13 +165,13 @@ namespace Wyam.Core.Tests.Modules.IO
 
             // When
             IDocument readFilesDocument = readFiles.Execute(inputs, context).First();
-            object readFilesRelativeFilePath = readFilesDocument.Metadata["RelativeFilePath"];
-            object readFilesRelativeFilePathBase = readFilesDocument.Metadata["RelativeFilePathBase"];
-            object readFilesRelativeFileDir = readFilesDocument.Metadata["RelativeFileDir"];
+            object readFilesRelativeFilePath = readFilesDocument.Metadata[Keys.RelativeFilePath];
+            object readFilesRelativeFilePathBase = readFilesDocument.Metadata[Keys.RelativeFilePathBase];
+            object readFilesRelativeFileDir = readFilesDocument.Metadata[Keys.RelativeFileDir];
             IDocument writeFilesDocument = writeFiles.Execute(new [] { readFilesDocument }, context).First();
-            object writeFilesRelativeFilePath = writeFilesDocument.Metadata["RelativeFilePath"];
-            object writeFilesRelativeFilePathBase = writeFilesDocument.Metadata["RelativeFilePathBase"];
-            object writeFilesRelativeFileDir = writeFilesDocument.Metadata["RelativeFileDir"];
+            object writeFilesRelativeFilePath = writeFilesDocument.Metadata[Keys.RelativeFilePath];
+            object writeFilesRelativeFilePathBase = writeFilesDocument.Metadata[Keys.RelativeFilePathBase];
+            object writeFilesRelativeFileDir = writeFilesDocument.Metadata[Keys.RelativeFileDir];
             foreach (IDocument document in inputs)
             {
                 ((IDisposable)document).Dispose();
@@ -202,19 +202,19 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 new Document(engine, pipeline).Clone("Test", 
                     new [] {
-                        new MetadataItem("RelativeFilePath", @"Subfolder/write-test")
+                        new MetadataItem(Keys.RelativeFilePath, @"Subfolder/write-test")
                     }),
                 new Document(engine, pipeline).Clone(string.Empty,
                     new [] {
-                        new MetadataItem("RelativeFilePath", @"Subfolder/empty-test"), 
+                        new MetadataItem(Keys.RelativeFilePath, @"Subfolder/empty-test"), 
                     }),
                 new Document(engine, pipeline).Clone(null,
                     new [] {
-                        new MetadataItem("RelativeFilePath", @"Subfolder/null-test")
+                        new MetadataItem(Keys.RelativeFilePath, @"Subfolder/null-test")
                     }),
                 new Document(engine, pipeline).Clone(emptyStream,
                     new [] {
-                        new MetadataItem("RelativeFilePath", @"Subfolder/stream-test")
+                        new MetadataItem(Keys.RelativeFilePath, @"Subfolder/stream-test")
                     })
             };
             IExecutionContext context = new ExecutionContext(engine, pipeline);

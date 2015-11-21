@@ -9,6 +9,7 @@ using System.Linq;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
@@ -16,16 +17,16 @@ namespace Wyam.Modules.Images
 {
     public class Image : IModule
     {
-        List<ImageInstruction> _instructions;
+        private readonly List<ImageInstruction> _instructions;
 
-        ImageInstruction _currentInstruction;
+        private ImageInstruction _currentInstruction;
 
         public Image()
         {
             _instructions = new List<ImageInstruction>();
         }
 
-        void EnsureCurrentInstruction()
+        private void EnsureCurrentInstruction()
         {
             if (_currentInstruction == null)
             {
@@ -220,7 +221,7 @@ namespace Wyam.Modules.Images
         {
             foreach (IDocument input in inputs)
             {
-                var path = input.Get<string>(MetadataKeys.SourceFilePath);
+                var path = input.Get<string>(Keys.SourceFilePath);
 
                 if (string.IsNullOrWhiteSpace(path))
                     continue;
@@ -257,14 +258,14 @@ namespace Wyam.Modules.Images
                         destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = Path.Combine(destinationDirectory, destinationFile);
-                    context.Trace.Verbose($"WritePath: {destinationPath}");
+                    context.Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
 
                     var output = ProcessImage(input, format, ins);
 
-                    var clone = input.Clone(output, new Dictionary<string, object>
+                    var clone = input.Clone(output, new MetadataItems
                         {
-                            { "WritePath", destinationPath},
-                            { "WriteExtension", extension }
+                            { Keys.WritePath, destinationPath},
+                            { Keys.WriteExtension, extension }
                         });
 
                     yield return clone;

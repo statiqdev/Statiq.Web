@@ -26,9 +26,9 @@ namespace Wyam.Core.Modules.Metadata
 
         private static readonly Regex FileNameRegex = new Regex("^([a-zA-Z0-9])+$");
 
-        private readonly DocumentConfig _fileName = (d, c) => d.String(MetadataKeys.SourceFileName);
-        private readonly string _outputKey = MetadataKeys.WriteFileName;
-        private string _pathOutputKey = MetadataKeys.WritePath;  // null for no output path
+        private readonly DocumentConfig _fileName = (d, c) => d.String(Keys.SourceFileName);
+        private readonly string _outputKey = Keys.WriteFileName;
+        private string _pathOutputKey = Keys.WritePath;  // null for no output path
 
         // Sets metadata key WriteFileName to optimized version of SourceFileName
         // Also sets metadata key WritePath to Path.Combine(RelativeFileDir, WriteFileName)
@@ -138,7 +138,7 @@ namespace Wyam.Core.Modules.Metadata
                     fileName = GetFileName(fileName);
                     if (!string.IsNullOrWhiteSpace(fileName))
                     {
-                        string relativeFileDir = input.String(MetadataKeys.RelativeFileDir);
+                        string relativeFileDir = input.String(Keys.RelativeFileDir);
                         if (!string.IsNullOrWhiteSpace(_pathOutputKey) && !string.IsNullOrWhiteSpace(relativeFileDir))
                         {
 							return input.Clone(new MetadataItems

@@ -70,7 +70,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Assert.IsNotEmpty(source, "Source cannot be empty");
             Console.WriteLine("Source " + source);
 
-            var headers = metadata.FirstOrDefault(x => x.Key == MetadataKeys.SourceHeaders).Value as Dictionary<string, string>;
+            var headers = metadata.FirstOrDefault(x => x.Key == Keys.SourceHeaders).Value as Dictionary<string, string>;
 
             Assert.IsNotNull(headers, "Header cannot be null");
             Assert.IsTrue(headers.Count > 0, "Headers must contain contents");
@@ -114,7 +114,7 @@ namespace Wyam.Core.Tests.Modules.IO
             // Then
             foreach(var o in output)
             {
-                var headers = o.Item2.FirstOrDefault(x => x.Key == MetadataKeys.SourceHeaders).Value as Dictionary<string, string>;
+                var headers = o.Item2.FirstOrDefault(x => x.Key == Keys.SourceHeaders).Value as Dictionary<string, string>;
 
                 Assert.IsNotNull(headers, "Header cannot be null");
                 Assert.IsTrue(headers.Count > 0, "Headers must contain contents");

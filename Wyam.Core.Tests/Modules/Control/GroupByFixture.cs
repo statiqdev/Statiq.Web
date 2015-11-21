@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
@@ -26,7 +27,7 @@ namespace Wyam.Core.Tests.Modules.Control
             GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
             Execute gatherData = new Execute((d, c) =>
             {
-                groupKey.Add(d.Get<int>(MetadataKeys.GroupKey));
+                groupKey.Add(d.Get<int>(Keys.GroupKey));
                 return null;
             });
             engine.Pipelines.Add(groupBy, gatherData);
@@ -50,10 +51,10 @@ namespace Wyam.Core.Tests.Modules.Control
                 AdditionalOutputs = 7
             };
             GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
-            OrderBy orderBy = new OrderBy((d, c) => d.Get<int>(MetadataKeys.GroupKey));
+            OrderBy orderBy = new OrderBy((d, c) => d.Get<int>(Keys.GroupKey));
             Execute gatherData = new Execute((d, c) =>
             {
-                content.Add(d.Get<IList<IDocument>>(MetadataKeys.GroupDocuments).Select(x => x.Content).ToList());
+                content.Add(d.Get<IList<IDocument>>(Keys.GroupDocuments).Select(x => x.Content).ToList());
                 return null;
             });
             engine.Pipelines.Add(groupBy, orderBy, gatherData);

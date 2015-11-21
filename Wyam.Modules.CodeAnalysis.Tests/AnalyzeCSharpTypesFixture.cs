@@ -600,7 +600,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
             // Then
             CollectionAssert.AreEquivalent(new[] { "Foo\\414E2165\\index.html", "Foo.Bar\\92C5B5C5\\index.html", "global\\439037DE\\index.html", "Foo\\53AB53EF\\index.html" },
-                results.Where(x => x["Kind"].Equals("NamedType")).Select(x => x["WritePath"]));
+                results.Where(x => x["Kind"].Equals("NamedType")).Select(x => x[Keys.WritePath]));
             stream.Dispose();
         }
 

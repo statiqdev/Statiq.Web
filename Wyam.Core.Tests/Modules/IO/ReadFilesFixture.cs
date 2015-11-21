@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
@@ -163,16 +164,16 @@ namespace Wyam.Core.Tests.Modules.IO
             Assert.AreEqual("aaa", document.Content);
         }
 
-        [TestCase("SourceFileRoot", @"TestFiles\Input")]
-        [TestCase("SourceFileBase", @"test-c")]
-        [TestCase("SourceFileExt", @".txt")]
-        [TestCase("SourceFileName", @"test-c.txt")]
-        [TestCase("SourceFileDir", @"TestFiles\Input\Subfolder")]
-        [TestCase("SourceFilePath", @"TestFiles\Input\Subfolder\test-c.txt")]
-        [TestCase("SourceFilePathBase", @"TestFiles\Input\Subfolder\test-c")]
-        [TestCase("RelativeFilePath", @"Subfolder\test-c.txt")]
-        [TestCase("RelativeFilePathBase", @"Subfolder\test-c")]
-        [TestCase("RelativeFileDir", @"Subfolder")]
+        [TestCase(Keys.SourceFileRoot, @"TestFiles\Input")]
+        [TestCase(Keys.SourceFileBase, @"test-c")]
+        [TestCase(Keys.SourceFileExt, @".txt")]
+        [TestCase(Keys.SourceFileName, @"test-c.txt")]
+        [TestCase(Keys.SourceFileDir, @"TestFiles\Input\Subfolder")]
+        [TestCase(Keys.SourceFilePath, @"TestFiles\Input\Subfolder\test-c.txt")]
+        [TestCase(Keys.SourceFilePathBase, @"TestFiles\Input\Subfolder\test-c")]
+        [TestCase(Keys.RelativeFilePath, @"Subfolder\test-c.txt")]
+        [TestCase(Keys.RelativeFilePathBase, @"Subfolder\test-c")]
+        [TestCase(Keys.RelativeFileDir, @"Subfolder")]
         public void ReadFilesSetsMetadata(string key, string expectedEnding)
         {
             // Given

@@ -3,14 +3,10 @@ using System.Reflection.Metadata;
 namespace Wyam.Modules.CodeAnalysis
 {
     // Note that if we ever introduce code analysis for other formats (such as Java or CSS), the metadata should be kept as similar as possible
-    internal static class MetadataKeys
+    public static class CodeAnalysisKeys
     {
         // All
         public const string IsResult = "IsResult"; // bool, true = part of the initial result set (I.e., only those that matched the predicate, if any)
-        public const string WritePath = "WritePath"; // string, feeds WriteFiles and tells it where to place the output file (or missing for external symbols)
-        public const string RelativeFilePath = "RelativeFilePath";
-        public const string RelativeFilePathBase = "RelativeFilePathBase";
-        public const string RelativeFileDir = "RelativeFileDir";
         public const string SymbolId = "SymbolId"; // string, a unique ID that identifies this symbol
         public const string Symbol = "Symbol"; // ISymbol
         public const string Name = "Name"; // string, empty string if the symbol has no name (like the top-level namespace)

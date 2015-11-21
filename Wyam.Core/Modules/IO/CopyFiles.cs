@@ -182,8 +182,8 @@ namespace Wyam.Core.Modules.IO
                                     context.Trace.Verbose("Copied file {0} to {1}", file, destination);
                                     return input.Clone(new MetadataItems
                                     {
-                                        { MetadataKeys.SourceFilePath, file },
-                                        { MetadataKeys.DestinationFilePath, destination }
+                                        { Keys.SourceFilePath, file },
+                                        { Keys.DestinationFilePath, destination }
                                     });
                                 }
 

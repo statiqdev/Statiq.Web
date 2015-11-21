@@ -149,16 +149,16 @@ namespace Wyam.Core.Modules.IO
                                 context.Trace.Verbose("Read file {0}", file);
                                 return input.Clone(file, File.OpenRead(file), new MetadataItems
                                 {
-                                    { MetadataKeys.SourceFileRoot, fileRoot },
-                                    { MetadataKeys.SourceFileBase, Path.GetFileNameWithoutExtension(file) },
-                                    { MetadataKeys.SourceFileExt, Path.GetExtension(file) },
-                                    { MetadataKeys.SourceFileName, Path.GetFileName(file) },
-                                    { MetadataKeys.SourceFileDir, Path.GetDirectoryName(file) },
-                                    { MetadataKeys.SourceFilePath, file },
-                                    { MetadataKeys.SourceFilePathBase, PathHelper.RemoveExtension(file) },
-                                    { MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file) },
-                                    { MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file)) },
-                                    { MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
+                                    { Keys.SourceFileRoot, fileRoot },
+                                    { Keys.SourceFileBase, Path.GetFileNameWithoutExtension(file) },
+                                    { Keys.SourceFileExt, Path.GetExtension(file) },
+                                    { Keys.SourceFileName, Path.GetFileName(file) },
+                                    { Keys.SourceFileDir, Path.GetDirectoryName(file) },
+                                    { Keys.SourceFilePath, file },
+                                    { Keys.SourceFilePathBase, PathHelper.RemoveExtension(file) },
+                                    { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file) },
+                                    { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file)) },
+                                    { Keys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
                                 });
                             });
                     }
