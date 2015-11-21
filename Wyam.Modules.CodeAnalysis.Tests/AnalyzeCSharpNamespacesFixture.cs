@@ -10,6 +10,7 @@ using NSubstitute.Core;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
@@ -36,8 +37,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -70,8 +71,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -106,8 +107,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -138,8 +139,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -168,8 +169,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -198,8 +199,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -228,8 +229,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -258,8 +259,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -299,8 +300,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -334,8 +335,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When
@@ -364,8 +365,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.InputFolder.Returns(Environment.CurrentDirectory);
-            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
 
             // When

@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
+using Wyam.Core.Meta;
 using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Documents
@@ -212,10 +215,20 @@ namespace Wyam.Core.Documents
             return new Document(_pipeline, _metadata, source, content, items);
         }
 
+        public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items)
+        {
+            return Clone(source, content, items?.Select(x => x.Pair));
+        }
+
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
             return new Document(_pipeline, _metadata, Source, content, items);
+        }
+
+        public IDocument Clone(string content, IEnumerable<MetadataItem> items)
+        {
+            return Clone(content, items?.Select(x => x.Pair));
         }
 
         // source is ignored if one is already set (use IExecutionContext.GetNewDocument if you want a whole new document)
@@ -230,10 +243,20 @@ namespace Wyam.Core.Documents
             return new Document(_pipeline, _metadata, source, stream, null, items, disposeStream);
         }
 
+        public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            return Clone(source, stream, items?.Select(x => x.Pair), disposeStream);
+        }
+
         public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
             return new Document(_pipeline, _metadata, Source, stream, null, items, disposeStream);
+        }
+
+        public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            return Clone(stream, items?.Select(x => x.Pair), disposeStream);
         }
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
@@ -242,6 +265,11 @@ namespace Wyam.Core.Documents
             Document cloned = new Document(_pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
             _disposeStream = false;  // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
             return cloned;
+        }
+
+        public IDocument Clone(IEnumerable<MetadataItem> items)
+        {
+            return Clone(items?.Select(x => x.Pair));
         }
 
         // IMetadata

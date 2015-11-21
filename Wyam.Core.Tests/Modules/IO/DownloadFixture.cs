@@ -6,9 +6,11 @@ using System.Reflection;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 using Wyam.Core.Modules.IO;
 
 namespace Wyam.Core.Tests.Modules.IO
@@ -46,15 +48,15 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             IDocument document = Substitute.For<IDocument>();
             Stream stream = null;
-            IEnumerable<KeyValuePair<string, object>> metadata = null;
+            IEnumerable<MetadataItem> metadata = null;
             string source = null;
             document
-                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
+                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>(), Arg.Any<bool>()))
                 .Do(x =>
                 {
                     source = x.Arg<string>();
                     stream = x.Arg<Stream>();
-                    metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                    metadata = x.Arg<IEnumerable<MetadataItem>>();
                 });
 
             IModule download = new Download().WithUris("http://www.siwawi.com/");
@@ -138,14 +140,14 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             IDocument document = Substitute.For<IDocument>();
             Stream stream = null;
-            IEnumerable<KeyValuePair<string, object>> metadata = null;
+            IEnumerable<MetadataItem> metadata = null;
 
             document
-                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>()))
                 .Do(x =>
                 {
                     stream = x.Arg<Stream>();
-                    metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                    metadata = x.Arg<IEnumerable<MetadataItem>>();
                 });
 
             IModule download = new Download().WithUris("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg");
@@ -170,14 +172,14 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             IDocument document = Substitute.For<IDocument>();
             Stream stream = null;
-            IEnumerable<KeyValuePair<string, object>> metadata = null;
+            IEnumerable<MetadataItem> metadata = null;
 
             document
-                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>()))
                 .Do(x =>
                 {
                     stream = x.Arg<Stream>();
-                    metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                    metadata = x.Arg<IEnumerable<MetadataItem>>();
                 });
 
             var header = new RequestHeader();

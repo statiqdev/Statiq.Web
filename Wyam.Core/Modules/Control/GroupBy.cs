@@ -4,9 +4,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -52,7 +54,7 @@ namespace Wyam.Core.Modules.Control
             return inputs.SelectMany(input =>
             {
                 return groupings.Select(x => input.Clone(
-                    new Dictionary<string, object>
+                    new MetadataItems
                     {
                         {MetadataKeys.GroupDocuments, x.ToImmutableArray()},
                         {MetadataKeys.GroupKey, x.Key}

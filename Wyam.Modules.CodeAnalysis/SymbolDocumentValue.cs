@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 
 namespace Wyam.Modules.CodeAnalysis
 {

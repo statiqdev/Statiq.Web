@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core
 {

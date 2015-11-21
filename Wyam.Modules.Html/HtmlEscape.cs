@@ -139,8 +139,8 @@ namespace Wyam.Modules.Html
 
         public HtmlEscape WithStandard(params char[] standard)
         {
-            foreach (var c in standard)
-                this._standardCharacters.Add(c);
+            foreach (char c in standard)
+                _standardCharacters.Add(c);
             return this;
         }
 
@@ -152,16 +152,10 @@ namespace Wyam.Modules.Html
 
         public HtmlEscape WithEscapedChar(params char[] toEscape)
         {
-            foreach (var c in toEscape)
+            foreach (char c in toEscape)
             {
-                if (_predefinedEscapeSequences.ContainsKey(c))
-                {
-                    _currentlyEscapedCharacters.Add(c, _predefinedEscapeSequences[c]);
-                }
-                else
-                {
-                    _currentlyEscapedCharacters.Add(c, GenerateEscape(c));
-                }
+                _currentlyEscapedCharacters.Add(c,
+                    _predefinedEscapeSequences.ContainsKey(c) ? _predefinedEscapeSequences[c] : GenerateEscape(c));
             }
             return this;
         }
@@ -177,10 +171,11 @@ namespace Wyam.Modules.Html
             {
                 string oldContent = x.Content;
                 StringWriter outputString = new StringWriter();
+                bool escaped = false;
 
-                foreach (var c in oldContent)
+                foreach (char c in oldContent)
                 {
-                    if (this._escapeAllNonStandardCharacters)
+                    if (_escapeAllNonStandardCharacters)
                     {
                         if (_standardCharacters.Contains(c))
                         {
@@ -189,10 +184,12 @@ namespace Wyam.Modules.Html
                         else if (_predefinedEscapeSequences.ContainsKey(c))
                         {
                             outputString.Write(_predefinedEscapeSequences[c]);
+                            escaped = true;
                         }
                         else
                         {
-                            outputString.Write(this.GenerateEscape(c));
+                            outputString.Write(GenerateEscape(c));
+                            escaped = true;
                         }
                     }
                     else
@@ -200,6 +197,7 @@ namespace Wyam.Modules.Html
                         if (_currentlyEscapedCharacters.ContainsKey(c))
                         {
                             outputString.Write(_currentlyEscapedCharacters[c]);
+                            escaped = true;
                         }
                         else
                         {
@@ -207,7 +205,7 @@ namespace Wyam.Modules.Html
                         }
                     }
                 }
-                return x.Clone(outputString.ToString());
+                return escaped ? x.Clone(outputString.ToString()) : x;
             });
         }
     }

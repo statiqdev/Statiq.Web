@@ -8,9 +8,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
 
 namespace Wyam.Core.Modules.IO
@@ -104,10 +106,10 @@ namespace Wyam.Core.Modules.IO
                     DownloadResult result = t.Result;
 
                     string uri = result.Uri.ToString();
-                    doc = input.Clone(uri, result.Stream, new[]
+                    doc = input.Clone(uri, result.Stream, new MetadataItems
                     {
-                        Common.Documents.Metadata.Create(MetadataKeys.SourceUri, uri),
-                        Common.Documents.Metadata.Create(MetadataKeys.SourceHeaders, result.Headers)
+                        { MetadataKeys.SourceUri, uri },
+                        { MetadataKeys.SourceHeaders, result.Headers }
                     });
 
                     if (_cacheResponse)

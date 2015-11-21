@@ -165,7 +165,7 @@ namespace Wyam.Core.Tests
                 {
                     x.Clone((c++).ToString())
                 }),
-                new Meta("Content", (x, y) => x.Content));
+                new Core.Modules.Metadata.Meta("Content", (x, y) => x.Content));
 
             // When
             engine.Execute();

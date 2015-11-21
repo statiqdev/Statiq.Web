@@ -69,7 +69,7 @@ namespace Wyam.Core.Modules.Control
             var orderdList = _descending
                 ? inputs.OrderByDescending(x => _key(x, context))
                 : inputs.OrderBy(x => _key(x, context));
-            foreach (var thenBy in _thenByList)
+            foreach (ThenByEntry thenBy in _thenByList)
             {
                 orderdList = thenBy.Descending
                     ? orderdList.ThenByDescending(x => thenBy.Key(x, context))

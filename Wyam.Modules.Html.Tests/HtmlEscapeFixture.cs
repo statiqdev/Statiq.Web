@@ -46,7 +46,7 @@ namespace Wyam.Modules.Html.Tests
             htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.DidNotReceiveWithAnyArgs().Clone(null);
+            document.DidNotReceiveWithAnyArgs().Clone((string)null);
             stream.Dispose();
         }
 

@@ -5,10 +5,11 @@ using System.Linq;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
-using Metadata = Wyam.Common.Documents.Metadata;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.IO
 {
@@ -214,17 +215,17 @@ namespace Wyam.Core.Modules.IO
                             inputStream.CopyTo(outputStream);
                         }
                         context.Trace.Verbose("Wrote file {0}", path);
-                        return input.Clone(outputStream, new []
+                        return input.Clone(outputStream, new MetadataItems
                         {
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFileExt, Path.GetExtension(path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFileName, Path.GetFileName(path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFilePath, path),
-                            Common.Documents.Metadata.Create(MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path)),
-                            Common.Documents.Metadata.Create(MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path))),
-                            Common.Documents.Metadata.Create(MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)))
+                            { MetadataKeys.DestinationFileBase, Path.GetFileNameWithoutExtension(path) },
+                            { MetadataKeys.DestinationFileExt, Path.GetExtension(path) },
+                            { MetadataKeys.DestinationFileName, Path.GetFileName(path) },
+                            { MetadataKeys.DestinationFileDir, Path.GetDirectoryName(path) },
+                            { MetadataKeys.DestinationFilePath, path },
+                            { MetadataKeys.DestinationFilePathBase, PathHelper.RemoveExtension(path) },
+                            { MetadataKeys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path) },
+                            { MetadataKeys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path)) },
+                            { MetadataKeys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
                         });
                     }
                 }

@@ -1,4 +1,4 @@
-﻿namespace Wyam.Common.Documents
+﻿namespace Wyam.Common.Meta
 {
     // Implement this interface to provide lazy metadata values or values based on other metadata
     // The Get(...) method will be called for each request of this value and then processed like any other value

@@ -5,6 +5,7 @@ using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Modules.Metadata;
 

@@ -6,6 +6,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Control
 {

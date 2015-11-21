@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 
 namespace Wyam.Modules.CodeAnalysis
 {

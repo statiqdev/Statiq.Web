@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
@@ -201,19 +202,19 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 new Document(engine, pipeline).Clone("Test", 
                     new [] {
-                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/write-test")
+                        new MetadataItem("RelativeFilePath", @"Subfolder/write-test")
                     }),
                 new Document(engine, pipeline).Clone(string.Empty,
                     new [] {
-                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/empty-test")
+                        new MetadataItem("RelativeFilePath", @"Subfolder/empty-test"), 
                     }),
                 new Document(engine, pipeline).Clone(null,
                     new [] {
-                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/null-test")
+                        new MetadataItem("RelativeFilePath", @"Subfolder/null-test")
                     }),
                 new Document(engine, pipeline).Clone(emptyStream,
                     new [] {
-                        Common.Documents.Metadata.Create("RelativeFilePath", @"Subfolder/stream-test")
+                        new MetadataItem("RelativeFilePath", @"Subfolder/stream-test")
                     })
             };
             IExecutionContext context = new ExecutionContext(engine, pipeline);

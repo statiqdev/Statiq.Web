@@ -1,4 +1,4 @@
-﻿namespace Wyam.Core.Documents
+﻿namespace Wyam.Core.Meta
 {
     // Other modules outside Core might refer to these as strings, so make sure to do a text search if renaming
     public static class MetadataKeys

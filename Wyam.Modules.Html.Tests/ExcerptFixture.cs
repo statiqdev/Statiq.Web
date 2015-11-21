@@ -160,7 +160,7 @@ namespace Wyam.Modules.Html.Tests
             excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
 
             // Then
-            document.DidNotReceiveWithAnyArgs().Clone(null);
+            document.DidNotReceiveWithAnyArgs().Clone((string)null);
             stream.Dispose();
         }
     }

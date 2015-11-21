@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Wyam.Common.Documents
+namespace Wyam.Common.Meta
 {
     public interface IMetadata : IReadOnlyDictionary<string, object>
     {

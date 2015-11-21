@@ -5,10 +5,11 @@ using System.Linq;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
-using Metadata = Wyam.Common.Documents.Metadata;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.IO
 {
@@ -179,10 +180,10 @@ namespace Wyam.Core.Modules.IO
                                     }
                                     File.Copy(file, destination, true);
                                     context.Trace.Verbose("Copied file {0} to {1}", file, destination);
-                                    return input.Clone(new[]
+                                    return input.Clone(new MetadataItems
                                     {
-                                        Common.Documents.Metadata.Create(MetadataKeys.SourceFilePath, file),
-                                        Common.Documents.Metadata.Create(MetadataKeys.DestinationFilePath, destination)
+                                        { MetadataKeys.SourceFilePath, file },
+                                        { MetadataKeys.DestinationFilePath, destination }
                                     });
                                 }
 

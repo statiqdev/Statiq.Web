@@ -6,6 +6,7 @@ using System.Reflection;
 using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
@@ -58,9 +59,19 @@ namespace Wyam.Core.Pipelines
             return new Document(_engine, _pipeline, source, null, content, items, true);
         }
 
+        public IDocument GetNewDocument(string source, string content, IEnumerable<MetadataItem> items)
+        {
+            return GetNewDocument(source, content, items?.Select(x => x.Pair));
+        }
+
         public IDocument GetNewDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return new Document(_engine, _pipeline, string.Empty, null, content, items, true);
+        }
+
+        public IDocument GetNewDocument(string content, IEnumerable<MetadataItem> items)
+        {
+            return GetNewDocument(content, items?.Select(x => x.Pair));
         }
 
         public IDocument GetNewDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
@@ -68,14 +79,29 @@ namespace Wyam.Core.Pipelines
             return new Document(_engine, _pipeline, source, stream, null, items, disposeStream);
         }
 
+        public IDocument GetNewDocument(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            return GetNewDocument(source, stream, items?.Select(x => x.Pair), disposeStream);
+        }
+
         public IDocument GetNewDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             return new Document(_engine, _pipeline, string.Empty, stream, null, items, disposeStream);
         }
 
+        public IDocument GetNewDocument(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            return GetNewDocument(stream, items?.Select(x => x.Pair), disposeStream);
+        }
+
         public IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return new Document(_engine, _pipeline, string.Empty, null, null, items, true);
+        }
+
+        public IDocument GetNewDocument(IEnumerable<MetadataItem> items)
+        {
+            return GetNewDocument(items?.Select(x => x.Pair));
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
@@ -87,6 +113,11 @@ namespace Wyam.Core.Pipelines
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return Execute(modules, null, items);
+        }
+
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items)
+        {
+            return Execute(modules, items?.Select(x => x.Pair));
         }
 
         private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)

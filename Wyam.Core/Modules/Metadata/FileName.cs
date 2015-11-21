@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -139,15 +141,15 @@ namespace Wyam.Core.Modules.Metadata
                         string relativeFileDir = input.String(MetadataKeys.RelativeFileDir);
                         if (!string.IsNullOrWhiteSpace(_pathOutputKey) && !string.IsNullOrWhiteSpace(relativeFileDir))
                         {
-							return input.Clone(new[]
+							return input.Clone(new MetadataItems
                             {
-                                Common.Documents.Metadata.Create(_outputKey, fileName),
-                                Common.Documents.Metadata.Create(_pathOutputKey, Path.Combine(relativeFileDir, fileName))
+                                { _outputKey, fileName },
+                                { _pathOutputKey, Path.Combine(relativeFileDir, fileName) }
                             });
                         }
-                        return input.Clone(new[]
+                        return input.Clone(new MetadataItems
                         {
-                            Common.Documents.Metadata.Create(_outputKey, fileName)
+                            { _outputKey, fileName }
                         });
                     }
                 }

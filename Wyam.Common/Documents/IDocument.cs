@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.Common.Documents
 {
@@ -42,12 +43,29 @@ namespace Wyam.Common.Documents
         IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
+        /// Clones the current document with a new source, new content, and additional metadata (all existing metadata is retained).
+        /// </summary>
+        /// <param name="source">The new source.</param>
+        /// <param name="content">The new content.</param>
+        /// <param name="items">Additional metadata items.</param>
+        /// <returns>The newly cloned document.</returns>
+        IDocument Clone(string source, string content, IEnumerable<MetadataItem> items);
+
+        /// <summary>
         /// Clones the current document with new content and additional metadata (all existing metadata is retained).
         /// </summary>
         /// <param name="content">The new content.</param>
         /// <param name="items">Additional metadata items.</param>
         /// <returns>The newly cloned document.</returns>
         IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null);
+
+        /// <summary>
+        /// Clones the current document with new content and additional metadata (all existing metadata is retained).
+        /// </summary>
+        /// <param name="content">The new content.</param>
+        /// <param name="items">Additional metadata items.</param>
+        /// <returns>The newly cloned document.</returns>
+        IDocument Clone(string content, IEnumerable<MetadataItem> items);
 
         /// <summary>
         /// Clones the current document with a new source, new content stream, and additional metadata (all existing 
@@ -63,6 +81,19 @@ namespace Wyam.Common.Documents
         IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
+        /// Clones the current document with a new source, new content stream, and additional metadata (all existing 
+        /// metadata is retained). If <paramref name="disposeStream"/> is true (which it is by default), the provided 
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the cloned 
+        /// document takes ownership of the <see cref="Stream"/>).
+        /// </summary>
+        /// <param name="source">The new source.</param>
+        /// <param name="stream">The new content stream.</param>
+        /// <param name="items">Additional metadata items.</param>
+        /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
+        /// <returns>The newly cloned document.</returns>
+        IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true);
+
+        /// <summary>
         /// Clones the current document with a new content stream, and additional metadata (all existing 
         /// metadata is retained). If <paramref name="disposeStream"/> is true (which it is by default), the provided 
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the cloned 
@@ -75,10 +106,29 @@ namespace Wyam.Common.Documents
         IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
+        /// Clones the current document with a new content stream, and additional metadata (all existing 
+        /// metadata is retained). If <paramref name="disposeStream"/> is true (which it is by default), the provided 
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the cloned 
+        /// document takes ownership of the <see cref="Stream"/>).
+        /// </summary>
+        /// <param name="stream">The new content stream.</param>
+        /// <param name="items">Additional metadata items.</param>
+        /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
+        /// <returns>The newly cloned document.</returns>
+        IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true);
+
+        /// <summary>
         /// Clones the current document with identical content and additional metadata (all existing metadata is retained).
         /// </summary>
         /// <param name="items">Additional metadata items.</param>
         /// <returns>The newly cloned document.</returns>
         IDocument Clone(IEnumerable<KeyValuePair<string, object>> items);
+
+        /// <summary>
+        /// Clones the current document with identical content and additional metadata (all existing metadata is retained).
+        /// </summary>
+        /// <param name="items">Additional metadata items.</param>
+        /// <returns>The newly cloned document.</returns>
+        IDocument Clone(IEnumerable<MetadataItem> items);
     }
 }

@@ -40,18 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Documents\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Meta\MetadataItems.cs" />
     <Compile Include="Modules\ContentModule.cs" />
     <Compile Include="Configuration\ContextConfig.cs" />
     <Compile Include="Configuration\ConfigExtensions.cs" />
     <Compile Include="Caching\Crc32.cs" />
-    <Compile Include="Documents\DelegateMetadataValue.cs" />
+    <Compile Include="Meta\DelegateMetadataValue.cs" />
     <Compile Include="Documents\DocumentCollectionExtensions.cs" />
     <Compile Include="Configuration\DocumentConfig.cs" />
     <Compile Include="Documents\IDocumentCollection.cs" />
     <Compile Include="Tracing\IIndentedTraceEvent.cs" />
-    <Compile Include="Documents\IMetadata.cs" />
-    <Compile Include="Documents\IMetadataValue.cs" />
+    <Compile Include="Meta\IMetadata.cs" />
+    <Compile Include="Meta\IMetadataValue.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Documents\IDocument.cs" />
     <Compile Include="Pipelines\IPipeline.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="Caching\IExecutionCache.cs" />
     <Compile Include="Tracing\ITrace.cs" />
     <Compile Include="Configuration\ConfigHelper.cs" />
-    <Compile Include="Documents\Metadata.cs" />
+    <Compile Include="Meta\MetadataItem.cs" />
     <Compile Include="IO\PathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -63,7 +63,7 @@ namespace Wyam.Core.Tests.Modules.Content
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);
-            Meta m = new Meta("SitemapItem", (d, c) => new SitemapItem(d["RelativeFilePath"].ToString()));
+            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta("SitemapItem", (d, c) => new SitemapItem(d["RelativeFilePath"].ToString()));
             var outputs = m.Execute(inputs, context);
 
             Func<string, string> formatter = null;
@@ -104,7 +104,7 @@ namespace Wyam.Core.Tests.Modules.Content
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);
-            Meta m = new Meta("SitemapItem", (d, c) => d["RelativeFilePath"].ToString());
+            Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta("SitemapItem", (d, c) => d["RelativeFilePath"].ToString());
             var outputs = m.Execute(inputs, context);
 
             Func<string, string> formatter = null;

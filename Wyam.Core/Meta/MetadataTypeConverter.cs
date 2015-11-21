@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using TB.ComponentModel;
 
-namespace Wyam.Core.Documents
+namespace Wyam.Core.Meta
 {
     // These are used by MetadataAs for enumerable conversions, but must be declared outside for easier reflection instantiation
     internal abstract class MetadataTypeConverter

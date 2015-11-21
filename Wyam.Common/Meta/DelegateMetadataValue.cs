@@ -1,6 +1,7 @@
 ﻿using System;
+using Wyam.Common.Documents;
 
-namespace Wyam.Common.Documents
+namespace Wyam.Common.Meta
 {
     // This uses a delegate to get the metadata value
     // Note that the provided delegate should be thread-safe

@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Wyam.Common;
-using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
+using Wyam.Core.Documents;
 
-namespace Wyam.Core.Documents
+namespace Wyam.Core.Meta
 {
     // This class contains a stack of all the metadata generated at a particular pipeline stage
     // Getting a value checks each of the stacks and returns the first hit

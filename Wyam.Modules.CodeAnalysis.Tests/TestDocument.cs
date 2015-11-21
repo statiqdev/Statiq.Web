@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
@@ -16,7 +17,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
     {
         private readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
 
-        public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
+        public TestDocument(IEnumerable<MetadataItem> metadata)
         {
             foreach (KeyValuePair<string, object> item in metadata)
             {
@@ -175,9 +176,19 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             throw new NotSupportedException();
         }
 
+        public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
         {
             throw new NotSupportedException();
+        }
+
+        public IDocument Clone(string content, IEnumerable<MetadataItem> items)
+        {
+            throw new NotImplementedException();
         }
 
         public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
@@ -185,14 +196,29 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             throw new NotSupportedException();
         }
 
+        public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
         {
             throw new NotSupportedException();
         }
 
+        public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
         {
             throw new NotSupportedException();
+        }
+
+        public IDocument Clone(IEnumerable<MetadataItem> items)
+        {
+            throw new NotImplementedException();
         }
     }
 }

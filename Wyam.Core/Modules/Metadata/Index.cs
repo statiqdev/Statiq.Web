@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -16,7 +18,7 @@ namespace Wyam.Core.Modules.Metadata
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select((x, i) => x.Clone(new Dictionary<string, object> {{MetadataKeys.Index, i + 1}}));
+            return inputs.Select((x, i) => x.Clone(new MetadataItems {{MetadataKeys.Index, i + 1}}));
         }
     }
 }

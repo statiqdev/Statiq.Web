@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Metadata;
@@ -31,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                Common.Documents.Metadata.Create("SourceFileName", input)
+                new MetadataItem("SourceFileName", input)
             }) };
             FileName fileName = new FileName();
 
@@ -55,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
 			{
-				Common.Documents.Metadata.Create("SourceFileName", input)
+                new MetadataItem("SourceFileName", input)
 			}) };
 			FileName fileName = new FileName();
 
@@ -79,7 +80,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
 			{
-				Common.Documents.Metadata.Create("SourceFileName", input)
+                new MetadataItem("SourceFileName", input)
 			}) };
 			FileName fileName = new FileName();
 
@@ -105,7 +106,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             string manyCharactersWow = new String(character[0], 10);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                Common.Documents.Metadata.Create("SourceFileName", 
+                new MetadataItem("SourceFileName", 
                     string.Format("testing {0} some of {0} these {0}", manyCharactersWow))
             }) };
             FileName fileName = new FileName();
@@ -129,7 +130,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
             {
-                Common.Documents.Metadata.Create("SourceFileName", input)
+                new MetadataItem("SourceFileName", input)
             }) };
             FileName fileName = new FileName();
 
