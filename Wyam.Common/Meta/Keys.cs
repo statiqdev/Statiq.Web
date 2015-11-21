@@ -18,15 +18,45 @@ namespace Wyam.Common.Meta
         public const string Hostname = "Hostname";
 
         // ReadFile/WriteFiles/CopyFiles
+        /// <summary>
+        /// The absulute Path to the folder of the original file.
+        /// </summary>
         public const string SourceFileRoot = "SourceFileRoot";
+        /// <summary>
+        /// The name of the orignal file without extension.
+        /// </summary>
         public const string SourceFileBase = "SourceFileBase";
+        /// <summary>
+        /// The extension of the original file (including the .).
+        /// </summary>
         public const string SourceFileExt = "SourceFileExt";
+        /// <summary>
+        /// The file name of the original file with extenion.
+        /// </summary>
         public const string SourceFileName = "SourceFileName";
+        /// <summary>
+        /// The absulute Path to the folder of the original file.
+        /// </summary>
         public const string SourceFileDir = "SourceFileDir";
+        /// <summary>
+        /// The absolute path to the original file.
+        /// </summary>
         public const string SourceFilePath = "SourceFilePath";
+        /// <summary>
+        /// The absolute path to the original file without the file extension.
+        /// </summary>
         public const string SourceFilePathBase = "SourceFilePathBase";
+        /// <summary>
+        /// The path to the original file relative to the input folder.
+        /// </summary>
         public const string RelativeFilePath = "RelativeFilePath";
+        /// <summary>
+        /// The path to the original file relative to the input folder without extension.
+        /// </summary>
         public const string RelativeFilePathBase = "RelativeFilePathBase";
+        /// <summary>
+        /// The path to the original files folder relative to the input folder.
+        /// </summary>
         public const string RelativeFileDir = "RelativeFileDir";
         public const string DestinationFileBase = "DestinationFileBase";
         public const string DestinationFileExt = "DestinationFileExt";
