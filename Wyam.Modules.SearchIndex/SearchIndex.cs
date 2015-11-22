@@ -14,6 +14,51 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.SearchIndex
 {
+    /// <summary>
+    /// Generates a JavaScript-based search index from the input documents.
+    /// </summary>
+    /// <remarks>
+    /// This module generates a search index that can be imported into the JavaScript <a href="http://lunrjs.com/">Lunr.js</a> search engine.
+    /// Each input document should either specify the <c>SearchIndexItem</c> metadata key or a delegate that returns a <c>SearchIndexItem</c>
+    /// instance.
+    /// </remarks>
+    /// <example>
+    /// The client-side JavaScript code for importing the search index should look something like this (assuming you have an HTML <c>input</c>
+    /// with an ID of <c>#search</c> and a <c>div</c> with an ID of <c>#search-results</c>):
+    /// <code>
+    /// function runSearch(query) {
+	///     $("#search-results").empty();
+    ///     if (query.length &lt; 2)
+    ///     {
+    ///         return;
+    ///     }
+    ///     var results = searchModule.search(query);
+    ///     var listHtml = "&lt;ul&gt;";
+    ///     listHtml += "&lt;li&gt;&lt;strong&gt;Search Results&lt;/strong&gt;&lt;/li&gt;";
+    ///     if (results.length == 0)
+    ///     {
+    ///         listHtml += "&lt;li&gt;No results found&lt;/li&gt;";
+    ///     }
+    ///     else
+    ///     {
+    ///         for (var i = 0; i &lt; results.length; ++i)
+    ///         {
+    ///             var res = results[i];
+    ///             listHtml += "&lt;li&gt;&lt;a href='" + res.url + "'&gt;" + res.title + "&lt;/a&gt;&lt;/li&gt;";
+    ///         }
+    ///     }
+    ///     listHtml += "&lt;/ul&gt;";				
+    ///     $("#search-results").append(listHtml);
+    /// }
+    /// 
+    /// $(document).ready(function() {
+    ///     $("#search").on('input propertychange paste', function() {
+    ///         runSearch($("#search").val());
+    ///     });
+    /// });
+    /// </code>
+    /// </example>
+    /// <category>Content</category>
     public class SearchIndex : IModule
     {
         private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
@@ -21,16 +66,36 @@ namespace Wyam.Modules.SearchIndex
         private readonly string _stopwordsFilename;
         private readonly bool _enableStemming;
 
+        /// <summary>
+        /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that 
+        /// contains a <c>SearchIndexItem</c> instance.
+        /// </summary>
+        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
         public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
             : this((doc, ctx) => doc.Get<SearchIndexItem>(SearchIndexKeys.SearchIndexItem), stopwordsFilename, enableStemming)
         {
         }
 
+        /// <summary>
+        /// Creates the search index by looking for a specified metadata key in each input document that 
+        /// contains a <c>SearchIndexItem</c> instance.
+        /// </summary>
+        /// <param name="searchIndexItemMetadataKey">The metadata key that contains the <c>SearchIndexItem</c> instance.</param>
+        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
         public SearchIndex(string searchIndexItemMetadataKey, string stopwordsFilename = null, bool enableStemming = false)
             : this((doc, ctx) => doc.Get<SearchIndexItem>(searchIndexItemMetadataKey), stopwordsFilename, enableStemming)
         {
         }
 
+        /// <summary>
+        /// Creates the search index by using a delegate that returns a <c>SearchIndexItem</c> instance for each input document.
+        /// </summary>
+        /// <param name="searchIndexItem">A delegate that should return a <c>SearchIndexItem</c>.</param>
+        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public SearchIndex(DocumentConfig searchIndexItem, string stopwordsFilename = null, bool enableStemming = false)
         {
             if (searchIndexItem == null)

@@ -13,6 +13,19 @@ using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Metadata
 {
+    /// <summary>
+    /// Optimizes a specified metadata key as a filename.
+    /// </summary>
+    /// <remarks>
+    /// This module takes the value of the specified metadata key and optimizes it
+    /// for use as a filename by removing reserved characters, white-listing characters,
+    /// etc.
+    /// </remarks>
+    /// <metadata name="WriteFileName" type="string">Contains the optimized filename (unless
+    /// an alternate metadata key was specified).</metadata>
+    /// <metadata name="WritePath" type="string">Contains the full path with the optimized filename (unless
+    /// an alternate metadata key was specified).</metadata>
+    /// <category>Metadata</category>
     public class FileName : IModule
     {
 	    private IEnumerable<string> _allowedCharacters;
@@ -29,15 +42,20 @@ namespace Wyam.Core.Modules.Metadata
         private readonly DocumentConfig _fileName = (d, c) => d.String(Keys.SourceFileName);
         private readonly string _outputKey = Keys.WriteFileName;
         private string _pathOutputKey = Keys.WritePath;  // null for no output path
-
-        // Sets metadata key WriteFileName to optimized version of SourceFileName
-        // Also sets metadata key WritePath to Path.Combine(RelativeFileDir, WriteFileName)
+        
+        /// <summary>
+        /// Sets the metadata key <c>WriteFileName</c> to an optimized version of <c>SourceFileName</c>.
+        /// Also sets the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
+        /// </summary>
         public FileName()
         {
         }
-
-        // Sets metadata key WriteFileName to optimized version of specified inputKey
-        // Also sets metadata key WritePath to Path.Combine(RelativeFileDir, WriteFileName)
+        
+        /// <summary>
+        /// Sets the metadata key <c>WriteFileName</c> to an optimized version of the specified input metadata key.
+        /// Also sets the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
+        /// </summary>
+        /// <param name="inputKey">The metadata key to use for the input filename.</param>
         public FileName(string inputKey)
         {
             if (inputKey == null)
@@ -51,6 +69,11 @@ namespace Wyam.Core.Modules.Metadata
             _fileName = (d, c) => d.String(inputKey);
         }
 
+        /// <summary>
+        /// Sets the metadata key <c>WriteFileName</c> to an optimized version of the return value of the delegate.
+        /// Also sets the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
+        /// </summary>
+        /// <param name="fileName">A delegate that should return a <c>string</c> with the filename to optimize.</param>
         public FileName(DocumentConfig fileName)
         {
             if (fileName == null)
@@ -60,8 +83,12 @@ namespace Wyam.Core.Modules.Metadata
             _fileName = fileName;
         }
 
-        // Sets metadata for the specified outputKey to optimized version of specified inputKey
-        // Does not automatically set WritePath
+        /// <summary>
+        /// Sets the specified metadata key to an optimized version of the specified input metadata key.
+        /// Does not automatically set the <c>WritePath</c> metadata key.
+        /// </summary>
+        /// <param name="inputKey">The metadata key to use for the input filename.</param>
+        /// <param name="outputKey">The metadata key to use for the optimized filename.</param>
         public FileName(string inputKey, string outputKey)
         {
             if (inputKey == null)
@@ -84,7 +111,13 @@ namespace Wyam.Core.Modules.Metadata
             _outputKey = outputKey;
         }
 
-	    public FileName(DocumentConfig fileName, string outputKey)
+        /// <summary>
+        /// Sets the specified metadata key to an optimized version of the return value of the delegate.
+        /// Does not automatically set the <c>WritePath</c> metadata key.
+        /// </summary>
+        /// <param name="fileName">A delegate that should return a <c>string</c> with the filename to optimize.</param>
+        /// <param name="outputKey">The metadata key to use for the optimized filename.</param>
+        public FileName(DocumentConfig fileName, string outputKey)
         {
             if (fileName == null)
             {
@@ -102,7 +135,11 @@ namespace Wyam.Core.Modules.Metadata
             _outputKey = outputKey;
         }
 
-        // Sets metadata key WritePath to Path.Combine(RelativeFileDir, WriteFileName)
+        /// <summary>
+        /// Indicates whether to set the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
+        /// </summary>
+        /// <param name="preservePath">If set to <c>true</c>, the <c>WritePath</c> metadata key is set.</param>
+        /// <returns></returns>
         public FileName PreservePath(bool preservePath)
         {
             if (!preservePath)
@@ -111,8 +148,11 @@ namespace Wyam.Core.Modules.Metadata
             }
             return this;
         }
-
-        // Sets metadata for the specified outputKey to Path.Combine(RelativeFileDir, WriteFileName)
+        
+        /// <summary>
+        /// Indicates whether to set the specified metadata key to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
+        /// </summary>
+        /// <param name="outputKey">The metadata key to set.</param>
         public FileName PreservePath(string outputKey)
         {
             if (outputKey == null)
@@ -124,6 +164,17 @@ namespace Wyam.Core.Modules.Metadata
                 throw new ArgumentException(nameof(outputKey));
             }
             _pathOutputKey = outputKey;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies the characters to allow in the filename.
+        /// </summary>
+        /// <param name="allowedCharacters">The allowed characters.</param>
+        /// <returns></returns>
+        public FileName WithAllowedCharacters(IEnumerable<string> allowedCharacters)
+        {
+            _allowedCharacters = allowedCharacters;
             return this;
         }
 
@@ -156,12 +207,6 @@ namespace Wyam.Core.Modules.Metadata
                 return input;
             });
         }
-
-		public FileName WithAllowedCharacters(IEnumerable<string> allowedCharacters)
-		{
-			_allowedCharacters = allowedCharacters;
-			return this;
-		}
 
 		private string GetFileName(string fileName)
         {
