@@ -33,6 +33,10 @@ namespace Wyam.Modules.SearchIndex
 
         public SearchIndex(DocumentConfig searchIndexItem, string stopwordsFilename = null, bool enableStemming = false)
         {
+            if (searchIndexItem == null)
+            {
+                throw new ArgumentNullException(nameof(searchIndexItem));
+            }
             _searchIndexItem = searchIndexItem;
             _stopwordsFilename = stopwordsFilename;
             _enableStemming = enableStemming;

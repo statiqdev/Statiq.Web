@@ -54,7 +54,6 @@ namespace Wyam.Core.Tests.Modules.Content
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            engine.OutputFolder = @"TestFiles/output/";
 
             if (!string.IsNullOrWhiteSpace(hostname))
                 engine.Metadata[Keys.Hostname] = hostname;
@@ -73,8 +72,8 @@ namespace Wyam.Core.Tests.Modules.Content
                 formatter = f => string.Format(formatterString, f);
 
             // When
-            Sitemap sitemap = new Sitemap("sitemap.xml", formatter).FromInputDocuments();
-            sitemap.Execute(outputs.ToList(), context);
+            Sitemap sitemap = new Sitemap(formatter);
+            List<IDocument> results = sitemap.Execute(outputs.ToList(), context).ToList();
 
             foreach (IDocument document in inputs.Concat(outputs.ToList()))
             {
@@ -82,9 +81,8 @@ namespace Wyam.Core.Tests.Modules.Content
             }
 
             // Then
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\sitemap.xml"));
-            var sitemapContent = File.ReadAllText(@"TestFiles\Output\sitemap.xml");
-            Assert.That(sitemapContent, Is.StringContaining($"<loc>{expected}</loc>"));
+            Assert.AreEqual(1, results.Count);
+            Assert.That(results[0].Content, Is.StringContaining($"<loc>{expected}</loc>"));
         }
 
         [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile.html")]
@@ -95,7 +93,6 @@ namespace Wyam.Core.Tests.Modules.Content
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            engine.OutputFolder = @"TestFiles/output/";
 
             if( !string.IsNullOrWhiteSpace(hostname) )
                 engine.Metadata[Keys.Hostname] = hostname;
@@ -114,8 +111,8 @@ namespace Wyam.Core.Tests.Modules.Content
                 formatter = f => string.Format(formatterString, f);
 
             // When
-            Sitemap sitemap = new Sitemap("sitemap.xml", formatter).FromInputDocuments();
-            sitemap.Execute(outputs.ToList(), context);
+            Sitemap sitemap = new Sitemap(formatter);
+            List<IDocument> results = sitemap.Execute(outputs.ToList(), context).ToList();
 
             foreach (IDocument document in inputs.Concat(outputs.ToList()))
             {
@@ -123,9 +120,8 @@ namespace Wyam.Core.Tests.Modules.Content
             }
 
             // Then
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\sitemap.xml"));
-            var sitemapContent = File.ReadAllText(@"TestFiles\Output\sitemap.xml");
-            Assert.That(sitemapContent, Is.StringContaining($"<loc>{expected}</loc>"));
+            Assert.AreEqual(1, results.Count);
+            Assert.That(results[0].Content, Is.StringContaining($"<loc>{expected}</loc>"));
         }
     }
 }
