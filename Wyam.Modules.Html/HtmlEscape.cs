@@ -11,6 +11,10 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Html
 {
+    /// <summary>
+    /// Automatically escapes HTML content.
+    /// </summary>
+    /// <category>Content</category>
     public class HtmlEscape : IModule
     {
         private readonly Dictionary<char, string> _predefinedEscapeSequences;
@@ -18,6 +22,9 @@ namespace Wyam.Modules.Html
         private readonly HashSet<char> _standardCharacters = new HashSet<char>();
         private bool _escapeAllNonStandardCharacters;
 
+        /// <summary>
+        /// Escapes HTML content with predefined escape sequences.
+        /// </summary>
         public HtmlEscape()
         {
             _predefinedEscapeSequences = new Dictionary<char, string>();
@@ -123,6 +130,10 @@ namespace Wyam.Modules.Html
             _predefinedEscapeSequences.Add('þ', "&thorn;");
         }
 
+        /// <summary>
+        /// Defines a standard set of characters as 0-9, a-z, A-Z, newlines, and space. Use with
+        /// the <c>EscapeAllNonstandard()</c> method to whitelist this default set of characters.
+        /// </summary>
         public HtmlEscape WithDefaultStandard()
         {
             for (char c = '0'; c <= '9'; c++)
@@ -137,6 +148,10 @@ namespace Wyam.Modules.Html
             return this;
         }
 
+        /// <summary>
+        /// Defines a custom set of standard characters to use with the <c>EscapeAllNonstandard()</c> method.
+        /// </summary>
+        /// <param name="standard">The standard set of characters to use.</param>
         public HtmlEscape WithStandard(params char[] standard)
         {
             foreach (char c in standard)
@@ -144,12 +159,20 @@ namespace Wyam.Modules.Html
             return this;
         }
 
-        public HtmlEscape WithEscapeAllNonstandard()
+        /// <summary>
+        /// Escapes all nonstandard characters (standard characters are defined with the <c>WithDefaultStandard()</c>
+        /// or <c>WithStandard()</c> methods).
+        /// </summary>
+        public HtmlEscape EscapeAllNonstandard()
         {
             _escapeAllNonStandardCharacters = true;
             return this;
         }
 
+        /// <summary>
+        /// Defines additional characters to escape.
+        /// </summary>
+        /// <param name="toEscape">The additional characters to escape.</param>
         public HtmlEscape WithEscapedChar(params char[] toEscape)
         {
             foreach (char c in toEscape)

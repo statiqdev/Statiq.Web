@@ -31,16 +31,18 @@ Pipelines.Add("BuildSitemap",
 	// in the above case, we are using relative urls, but you can also add absolute locations for SitemapItems
 	// it will be checked whether an location is absolute or not
 	// if it is relative, the above specified "Hostname" metadata is used to generate absolute urls
+	Documents(@ctx.Documents),
 	Sitemap("sitemap.xml")
 );
 
 Pipelines.Add("BuildSitemap2",
 	Documents("Posts"), // we only use the documents of the "Posts"-pipeline for sitemap generation
-	Sitemap("sitemap2.xml").FromInputDocuments()
+	Sitemap("sitemap2.xml")
 );
 
 Pipelines.Add("BuildSitemap3",
 	// we format all the added relative urls (when using the formatter, any "Hostname" meta data is ignored)
+	Documents(@ctx.Documents),
 	Sitemap("sitemap3.xml", urlLocation => "http://www.example.org/" + urlLocation )
 );
 

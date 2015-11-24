@@ -17,18 +17,19 @@ namespace Wyam.Modules.Xmp
 {
 
     /// <summary>
-    /// This Module Reads specified Xmp Metadata from the Inputs
-    /// and writes it in the Metadata of the Document.  
+    /// Reads XMP data from the input documents and adds it to the document metadata.  
     /// </summary>
     /// <remarks>
-    /// This module uses the Metadata SourceFilePath to find sidecarfiles.
+    /// The <c>SourceFilePath</c> metadata key of each input document will be used to 
+    /// locate any sidecar files.
     /// </remarks>
+    /// <category>Metadata</category>
     public class Xmp : IModule
     {
         private readonly bool _skipElementOnMissingData;
-        private readonly bool _errorOnDoubleKeys;
-        private readonly bool _delocalizing;
-        private readonly bool _flatting;
+        private readonly bool _errorOnDoubleKeys = true;
+        private readonly bool _delocalizing = true;
+        private readonly bool _flatten = true;
         private readonly List<XmpSearchEntry> _toSearch = new List<XmpSearchEntry>();
         private readonly Dictionary<string, string> _namespaceAlias =
             new Dictionary<string, string>
@@ -41,26 +42,27 @@ namespace Wyam.Modules.Xmp
             };
 
         /// <summary>
-        /// 
+        /// Reads XMP data from the input documents and adds it to the document metadata with the specified options.
         /// </summary>
-        /// <param name="skipElementOnMissingMandatoryData">If Mandatory Data is missing this element will not leave this module.</param>
-        /// <param name="errorsOnDoubleKeys">If true, and the Metadata of the input document would written twice by this Module it gives an error. If false the later specified Metadata overrides the first.</param>
-        /// <param name="delocalizing">If multiple elements with diferent laguges are present, the local languge will be used to choose the correct element.</param>
-        /// <param name="flatten">If an array has only one Element it is reduced too this element.</param>
+        /// <param name="skipElementOnMissingMandatoryData">If mandatory data is missing, the element will be skipped.</param>
+        /// <param name="errorsOnDoubleKeys">If <c>true</c> (the default), an error will be produced if the XML metadata would overwrite existing 
+        /// document metadata. If <c>false</c>, the XMP metadata overrides the existing metadata.</param>
+        /// <param name="delocalizing">If <c>true</c> (the default), when multiple elements with different languages are present, the local language will be used to choose the correct element.</param>
+        /// <param name="flatten">If <c>true</c> (the default), when an array has only one element the output metadata is reduced to the single element.</param>
         public Xmp(bool skipElementOnMissingMandatoryData = false, bool errorsOnDoubleKeys = true, bool delocalizing = true, bool flatten = true)
         {
             _skipElementOnMissingData = skipElementOnMissingMandatoryData;
             _errorOnDoubleKeys = errorsOnDoubleKeys;
             _delocalizing = delocalizing;
-            _flatting = flatten;
+            _flatten = flatten;
         }
 
         /// <summary>
-        /// Adds an Xmp element that will be searchd for.
+        /// Specifies an XML element to find in the XMP data along with the metadata key that will be used to set it in the document.
         /// </summary>
-        /// <param name="xmpPath">The tag name of the Xmp elemnt. including the namespace Prefix</param>
+        /// <param name="xmpPath">The tag name of the XMP element including the namespace prefix.</param>
         /// <param name="targetMetadata">The metadata key where the value should be added to the document.</param>
-        /// <param name="isMandatory">Specifiys that the input should contain the xmp metadata</param>
+        /// <param name="isMandatory">Specifies that the input should contain the XMP metadata.</param>
         public Xmp WithMetadata(string xmpPath, string targetMetadata, bool isMandatory = false)
         {
             _toSearch.Add(new XmpSearchEntry(this, isMandatory, targetMetadata, xmpPath));
@@ -68,19 +70,33 @@ namespace Wyam.Modules.Xmp
         }
 
         /// <summary>
-        /// Adds or overrids a namspace for resolving namespace prefixes of the xmpPath in
-        /// <see cref="WithMetadata(string, string, bool)"/>.
+        /// Adds or overrides a namespace for resolving namespace prefixes of the <c>xmpPath</c>
+        /// specified in <see cref="WithMetadata(string, string, bool)"/>. Several default namespaces are predefined:
+        /// <list>
+        /// <item>
+        /// <term>dc - </term>
+        /// <description>http://purl.org/dc/elements/1.1/</description>
+        /// </item>
+        /// <item>
+        /// <term>xmpRights - </term>
+        /// <description>http://ns.adobe.com/xap/1.0/rights/</description>
+        /// </item>
+        /// <item>
+        /// <term>cc - </term>
+        /// <description>http://creativecommons.org/ns#</description>
+        /// </item>
+        /// <item>
+        /// <term>xmp - </term>
+        /// <description>http://ns.adobe.com/xap/1.0/</description>
+        /// </item>
+        /// <item>
+        /// <term>xml - </term>
+        /// <description>http://www.w3.org/XML/1998/namespace</description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <remarks>
-        /// This Module already contains several default namespaces:
-        /// "dc" = "http://purl.org/dc/elements/1.1/" 
-        /// "xmpRights" = "http://ns.adobe.com/xap/1.0/rights/"
-        /// "cc" = "http://creativecommons.org/ns#"
-        /// "xmp" = "http://ns.adobe.com/xap/1.0/"
-        /// "xml" = "http://www.w3.org/XML/1998/namespace"
-        /// </remarks>
-        /// <param name="xmlNamespace">The Namespace.</param>
-        /// <param name="alias">The prefix</param>
+        /// <param name="xmlNamespace">The namespace to define.</param>
+        /// <param name="alias">The namespace alias.</param>
         public Xmp WithNamespace(string xmlNamespace, string alias)
         {
             _namespaceAlias[alias] = xmlNamespace;
@@ -284,7 +300,7 @@ namespace Wyam.Modules.Xmp
                     if (matchingString != null)
                         return matchingString.Value;
                 }
-                if (_flatting && array.Length == 1)
+                if (_flatten && array.Length == 1)
                     return array[0];
                 return array;
             }

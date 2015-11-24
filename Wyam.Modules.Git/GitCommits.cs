@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,39 +10,106 @@ using Wyam.Common.Pipelines;
 using LibGit2Sharp;
 using System.IO;
 using Wyam.Common.Configuration;
+using Wyam.Common.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.Modules.Git
 {
     /// <summary>
-    /// This Module Creates a Document for every Commit in the Git repository. Adding Metadata with
-    /// Information about the Commit.
-    /// 
-    /// * This Module adds Metadata "Sha" of type <see cref="String"/> which is the hash of the commit.
-    /// * This Module adds Metadata "CommitInformation" that is an Array of <see cref="CommitInformation"/>.
-    ///   The array contains one entry for every File that was changed in this commit.
+    /// Outputs documents and metadata for commits in a Git repository.
     /// </summary>
-    public class GitCommits : GitBase
+    /// <remarks>
+    /// <para>
+    /// This module works in one of two ways. By default, a new document is output for each commit in the
+    /// repository. These output documents have the metadata documented below to describe each commit. In
+    /// this mode, all input documents are forgotten and only documents for each commit are output.
+    /// </para>
+    /// <para>
+    /// Alternatively, by calling <c>ForEachInputDocument()</c>, commit data is added to every input document
+    /// for which the repository contains an entry. The data is added as an <c>IDocument</c> sequence to the 
+    /// specified metadata key in the input document and each document in the sequence contains the same
+    /// metadata that would have been added in the default mode. All input documents are output from this module 
+    /// (including those that didn't have commit information).
+    /// </para>
+    /// </remarks>
+    /// <metadata name="Sha" type="string">The SHA of the commit.</metadata>
+    /// <metadata name="Parents" type="IReadOnlyList&lt;string&gt;">The SHA of every parent commit.</metadata>
+    /// <metadata name="AuthorName" type="string">The name of the author.</metadata>
+    /// <metadata name="AuthorEmail" type="string">The email of the author.</metadata>
+    /// <metadata name="AuthorWhen" type="DateTimeOffset">The date of the author signature.</metadata>
+    /// <metadata name="CommitterName" type="string">The name of the committer.</metadata>
+    /// <metadata name="CommitterEmail" type="string">The email of the committer.</metadata>
+    /// <metadata name="CommitterWhen" type="DateTimeOffset">The date of the committer signature.</metadata>
+    /// <metadata name="Message" type="string">The commit message.</metadata>
+    /// <metadata name="Entries" type="IReadOnlyDictionary&lt;string, string&gt;">
+    /// All commit entries. The key is the path of the file and the value is the status of the file within the commit.
+    /// </metadata>
+    /// <metadata name="Commits" type="IReadOnlyList&lt;IDocument&gt;">
+    /// The sequence of commits for the input document if <c>ForEachInputDocument()</c> was called (and an alternate
+    /// metadata key was not provided).
+    /// </metadata>
+    /// <category>Metadata</category>
+    public class GitCommits : GitModule
     {
+        private string _commitsMetadataKey;
+
+        /// <summary>
+        /// Gets commits from the repository the <c>InputFolder</c> is a part of.
+        /// </summary>
+        public GitCommits()
+        {
+        }
+
+        /// <summary>
+        /// Gets commits from the repository the specified path is a part of.
+        /// </summary>
+        /// <param name="repositoryLocation">The repository location.</param>
+        public GitCommits(string repositoryLocation)
+            : base(repositoryLocation)
+        {
+        }
+
+        /// <summary>
+        /// Specifies that commit information should be added to each input document.
+        /// </summary>
+        /// <param name="commitsMetadataKey">The metadata key to set for commit information.</param>
+        public GitCommits ForEachInputDocument(string commitsMetadataKey = GitKeys.Commits)
+        {
+            _commitsMetadataKey = commitsMetadataKey;
+            return this;
+        }
 
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            var repositoryLocation = Repository.Discover(context.InputFolder);
-            if (repositoryLocation == null)
-                throw new ArgumentException("No git repository found");
+            ImmutableArray<IDocument> commitDocuments = GetCommitDocuments(inputs, context);
 
-            using (Repository repository = new Repository(repositoryLocation))
+            // Outputting commits as new documents
+            if (string.IsNullOrEmpty(_commitsMetadataKey))
             {
-                IEnumerable<CommitInformation> data = GetCommitInformation(repository);
-
-                var lookup = data.ToLookup(x => x.Sha);
-
-                var newDocuments = lookup.Select(x => context.GetNewDocument(new [] {
-                    new KeyValuePair<string, object>("Sha", x.Key),
-                    new KeyValuePair<string, object>("CommitInformation", x.ToArray())
-                })).ToArray();  // Don't do it lazy or Commit is disposed.
-                return newDocuments;
+                return commitDocuments;
             }
-        }
 
+            // Outputting commit information for each document
+            string repositoryLocation = GetRepositoryLocation(context);
+            return inputs.AsParallel().Select(input =>
+            {
+                if (string.IsNullOrEmpty(input.Source))
+                {
+                    return input;
+                }
+                string relativePath = PathHelper.GetRelativePath(repositoryLocation, input.Source);
+                if (string.IsNullOrEmpty(relativePath))
+                {
+                    return input;
+                }
+                ImmutableArray<IDocument> inputCommitDocuments = commitDocuments
+                    .Where(x => x.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries).ContainsKey(relativePath))
+                    .ToImmutableArray();
+                return input.Clone(new[]
+                {
+                    new MetadataItem(_commitsMetadataKey, inputCommitDocuments)
+                });
+            });
+        }
     }
 }
