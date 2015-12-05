@@ -61,6 +61,7 @@ namespace Wyam.Core.Configuration
 
             // Manually resolve included assemblies
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+            AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
         }
 
         public void Dispose()
@@ -335,13 +336,21 @@ namespace Wyam.Core.Configuration
                 .Select(x => new Tuple<string, string>(x, Path.Combine(_engine.RootFolder, x)))
                 .Select(x => File.Exists(x.Item2) ? x.Item2 : x.Item1));
 
+            // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
+            AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
+                string.Join(";", new[] {AppDomain.CurrentDomain.SetupInformation.PrivateBinPath}
+                    .Concat(assemblyPaths.Select(x => Path.GetDirectoryName(x).Distinct())));
+            
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
+            // If this approach causes problems, could also try loading assemblies in custom app domain:
+            // http://stackoverflow.com/questions/6626647/custom-appdomain-and-privatebinpath
             foreach (string assemblyPath in assemblyPaths.Distinct())
             {
                 try
                 {
                     _engine.Trace.Verbose("Loading assembly file {0}", assemblyPath);
-                    Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                    AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+                    Assembly assembly = Assembly.Load(assemblyName);
                     if (!AddAssembly(assembly))
                     {
                         _engine.Trace.Verbose("Skipping assembly file {0} because it was already added", assemblyPath);

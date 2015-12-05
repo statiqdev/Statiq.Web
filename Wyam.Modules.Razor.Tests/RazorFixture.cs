@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.IO;
@@ -45,6 +46,35 @@ namespace Wyam.Modules.Razor.Tests
             // Then
             document.Received(1).Clone(Arg.Any<string>());
             document.Received().Clone(" <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ");
+        }
+
+        [Test]
+        public void Tracing()
+        {
+            // Given
+            string inputFolder = Path.Combine(Environment.CurrentDirectory, @".\Input");
+            if (!Directory.Exists(inputFolder))
+            {
+                Directory.CreateDirectory(inputFolder);
+            }
+            ITrace trace = Substitute.For<ITrace>();
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.RootFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(inputFolder);
+            context.Trace.Returns(trace);
+            Engine engine = new Engine();
+            engine.Configure();
+            context.Assemblies.Returns(engine.Assemblies);
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ ExecutionContext.Trace.Information(""Test""); }")));
+            Razor razor = new Razor();
+
+            // When
+            razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            ITrace receivedTrace = context.Received().Trace; // Need to assign to dummy var to keep compiler happy
+            trace.Received().Information("Test");
         }
 
         [Test]
