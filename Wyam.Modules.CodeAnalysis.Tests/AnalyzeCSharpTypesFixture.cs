@@ -822,5 +822,77 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             CollectionAssert.AreEquivalent(new[] { "Blue", "Green", "Red" }, results.Select(x => x["Name"]));
             stream.Dispose();
         }
+
+        [Test]
+        public void RestrictedToNamedTypes()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Blue
+                    {
+                        public void Foo()
+                        {
+                        }
+                    }
+
+                    public interface Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+            IModule module = new AnalyzeCSharp().WithNamedTypes();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "Blue", "Red" }, results.Select(x => x["Name"]));
+            stream.Dispose();
+        }
+
+        [Test]
+        public void RestrictedToNamedTypesWithPredicate()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    public class Blue
+                    {
+                        public void Foo()
+                        {
+                        }
+                    }
+
+                    public interface Red
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+            IModule module = new AnalyzeCSharp().WithNamedTypes(x => x.TypeKind == TypeKind.Class);
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            CollectionAssert.AreEquivalent(new[] { "Blue" }, results.Select(x => x["Name"]));
+            stream.Dispose();
+        }
     }
 }

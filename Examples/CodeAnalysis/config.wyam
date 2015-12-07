@@ -1,0 +1,18 @@
+// This pipeline generates a document for each symbol, uses Razor to generate a file for each one, and then outputs it to disk
+Pipelines.Add("Code",
+	ReadFiles(@"..\Code\*.cs"),
+	AnalyzeCSharp()
+		.WhereNamespaces(false)  // Ignore the global namespace
+		.WithNamedTypes()  // Restrict output to only named types (I.e., classes)
+		.WithDocsForImplicitSymbols(),  // But we do want to parse XML doc comments for members, even if they're not initially output
+	Razor()
+		.WithViewStart(@"_SymbolViewStart.cshtml"),
+	WriteFiles(".html")
+);
+
+// The index Razor file will read the code documents and output a listing of symbols
+Pipelines.Add("Index",
+	ReadFiles("index.cshtml"),
+	Razor(),
+	WriteFiles(".html")
+);

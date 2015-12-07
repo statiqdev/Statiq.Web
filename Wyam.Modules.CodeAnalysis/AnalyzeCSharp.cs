@@ -100,7 +100,25 @@ namespace Wyam.Modules.CodeAnalysis
             _symbolPredicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
-        
+
+        /// <summary>
+        /// Restricts the initial result set to named type symbols (I.e., classes, interfaces, etc.). Also allows supplying
+        /// an additional predicate on the named type.
+        /// </summary>
+        /// <param name="predicate">A predicate that returns <c>true</c> if the symbol should be included in the initial result set.</param>
+        public AnalyzeCSharp WithNamedTypes(Func<INamedTypeSymbol, bool> predicate = null)
+        {
+            Func<ISymbol, bool> newPredicate = x =>
+            {
+                INamedTypeSymbol namedTypeSymbol = x as INamedTypeSymbol;
+                return namedTypeSymbol != null &&
+                       (predicate?.Invoke(namedTypeSymbol) ?? true);
+            };
+            Func<ISymbol, bool> currentPredicate = _symbolPredicate;
+            _symbolPredicate = currentPredicate == null ? newPredicate : x => currentPredicate(x) && newPredicate(x);
+            return this;
+        }
+
         /// <summary>
         /// Limits symbols in the initial result set to those in the specified namespaces.
         /// </summary>
