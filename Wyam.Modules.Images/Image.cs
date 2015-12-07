@@ -15,12 +15,47 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.Images
 {
+    /// <summary>
+    /// This module manipulates images by applying a variety of operations.
+    /// </summary>
+    /// <remarks>
+    /// <para>This module manipulates images by applying operations such as resizing, darken/lighten, etc. This image module 
+    /// does not modify your original images in anyway.It will create a copy of your images and produce images in the 
+    /// same image format as the original. It relies on other modules such as <c>ReadFiles</c> to read the actual images as 
+    /// input and <c>WriteFiles</c> to write images to disk.</para>
+    /// <code>
+    /// Pipelines.Add("Images",
+    ///   ReadFiles("*").Where(x =&gt; x.Contains("images\\") &amp;&amp; new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(Path.GetExtension(x))),
+    /// Image()
+    ///   .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb"),
+    ///   WriteFiles("*")
+    /// );
+    /// </code>
+    /// <para>It will produce image with similar file name as the original image with addition of suffix indicating operations 
+    /// that have performed, e.g. "hello-world.jpg" can result in "hello-world-w100.jpg". The module allows you to perform more 
+    /// than one set of processing instructions by using the fluent property <c>And</c>.</para>
+    /// <code>
+    /// Pipelines.Add("Images",
+    /// ReadFiles("*").Where(x =&gt; x.Contains("images\\") &amp;&amp; new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(Path.GetExtension(x))),
+    /// Image()
+    ///   .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb")
+    ///   .And
+    ///   .SetJpegQuality(70).Resize(400*2, 209*2).SetSuffix("-medium"),
+    /// WriteFiles("*")
+    /// );
+    /// </code>
+    /// <para>The above configuration produces two set of new images, one with a "-thumb" suffix and the other with a "-medium" suffix.</para>
+    /// </remarks>
+    /// <category>Content</category>
     public class Image : IModule
     {
         private readonly List<ImageInstruction> _instructions;
 
         private ImageInstruction _currentInstruction;
 
+        /// <summary>
+        /// Creates the module without any instructions.
+        /// </summary>
         public Image()
         {
             _instructions = new List<ImageInstruction>();
@@ -35,6 +70,26 @@ namespace Wyam.Modules.Images
             }
         }
 
+        /// <summary>
+        /// Resizes the image to a certain width and height. It will crop the image whenever necessary. The module will not perform 
+        /// any image resizing if both width and height are set to <c>null</c>. If the source image is smaller than the specified 
+        /// width and height, the image will be enlarged.
+        /// </summary>
+        /// <param name="width">The desired width. If set to <c>null</c> or <c>0</c>, the image will be resized to its height.</param>
+        /// <param name="height">The desired height. If set to <c>null</c> or <c>0</c>, the image will be resized to its width.</param>
+        /// <param name="anchor">The anchor position to use for cropping (if necessary). The available values are:
+        /// <list type="bullet"> 
+        /// <item><description>AnchorPosition.Center</description></item>
+        /// <item><description>AnchorPosition.Top</description></item>
+        /// <item><description>AnchorPosition.Bottom</description></item>
+        /// <item><description>AnchorPosition.Left</description></item>
+        /// <item><description>AnchorPosition.Right</description></item>
+        /// <item><description>AnchorPosition.TopLeft</description></item>
+        /// <item><description>AnchorPosition.TopRight</description></item>
+        /// <item><description>AnchorPosition.BottomLeft</description></item>
+        /// <item><description>AnchorPosition.BottomRight</description></item>
+        /// </list>
+        /// </param>
         public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
         {
             EnsureCurrentInstruction();
@@ -46,6 +101,12 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Constrains the image to a specified size. If the image is larger than the specified <c>width</c> and <c>height</c>, it will 
+        /// be resized down. If the image is smaller than the specified <c>width</c> and <c>height</c>, it will not be resized.
+        /// </summary>
+        /// <param name="width">The maximum desired width.</param>
+        /// <param name="height">The maximum desired height.</param>
         public Image Constrain(int width, int height)
         {
             EnsureCurrentInstruction();
@@ -55,6 +116,25 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Applies the the specified image filters. The available filters are:
+        /// <list type="bullet">
+        /// <item><description>ImageFilter.BlackAndWhite</description></item>
+        /// <item><description>ImageFilter.Comic</description></item>
+        /// <item><description>ImageFilter.Gotham</description></item>
+        /// <item><description>ImageFilter.GreyScale</description></item>
+        /// <item><description>ImageFilter.HiSatch</description></item>
+        /// <item><description>ImageFilter.Invert</description></item>
+        /// <item><description>ImageFilter.Lomograph</description></item>
+        /// <item><description>ImageFilter.LoSatch</description></item>
+        /// <item><description>ImageFilter.Polaroid</description></item>
+        /// <item><description>ImageFilter.Sepia</description></item>
+        /// </list>
+        /// These filter values map directly to filters provided by ImageProcessor library. 
+        /// <a href="http://imageprocessor.org/imageprocessor/imagefactory/filter/">You can see the effects of 
+        /// these filters here</a>.
+        /// </summary>
+        /// <param name="filters">The filters to apply.</param>
         public Image ApplyFilters(params ImageFilter[] filters)
         {
             EnsureCurrentInstruction();
@@ -64,6 +144,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Brightens the image by the specified percentage.
+        /// </summary>
+        /// <param name="percentage">The percentage to brighten the image by (<c>0</c> to <c>100</c>).</param>
         public Image Brighten(short percentage)
         {
             if (percentage < 0 && percentage > 100)
@@ -76,6 +160,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Darkens the image by the specified percentage.
+        /// </summary>
+        /// <param name="percentage">The percentage to darken the image by (<c>0</c> to <c>100</c>).</param>
         public Image Darken(short percentage)
         {
             if (percentage < 0 && percentage > 100)
@@ -88,6 +176,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Sets the opacity of the image.
+        /// </summary>
+        /// <param name="percentage">The opacity percentage (<c>0</c> to <c>100</c>).</param>
         public Image SetOpacity(short percentage)
         {
             if (percentage < 0 && percentage > 100)
@@ -100,6 +192,11 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Sets the hue of the image using <c>0</c> to <c>360</c> degree values.
+        /// </summary>
+        /// <param name="degrees">The degrees to set.</param>
+        /// <param name="rotate">If set to <c>true</c>, rotates the hue.</param>
         public Image SetHue(short degrees, bool rotate = false)
         {
             if (degrees < 0 && degrees > 360)
@@ -116,6 +213,12 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Tints the image to the specified color, e.g. <c>Color.Aqua</c>. 
+        /// <a href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Please 
+        /// check here for more color values</a>.
+        /// </summary>
+        /// <param name="color">The color to tint the image to.</param>
         public Image Tint (Color color)
         {
             EnsureCurrentInstruction();
@@ -124,6 +227,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Apply vignette processing to the image with specific color, e.g. <c>Vignette(Color.AliceBlue)</c>.
+        /// </summary>
+        /// <param name="color">The color to use for the vignette.</param>
         public Image Vignette(Color color)
         {
             EnsureCurrentInstruction();
@@ -132,6 +239,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Saturates the image.
+        /// </summary>
+        /// <param name="percentage">The saturation percentage (<c>0</c> to <c>100</c>).</param>
         public Image Saturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
@@ -142,6 +253,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Desaturates the image.
+        /// </summary>
+        /// <param name="percentage">The desaturation percentage (<c>0</c> to <c>100</c>).</param>
         public Image Desaturate(short percentage)
         {
             if (percentage < 0 && percentage > 100)
@@ -153,6 +268,10 @@ namespace Wyam.Modules.Images
         }
 
 
+        /// <summary>
+        /// This setting only applies to JPEG images. It sets the quality of the JPEG output. The possible values are from <c>0</c> to <c>100</c>.
+        /// </summary>
+        /// <param name="quality">The desired JPEG quality (<c>0</c> to <c>100</c>).</param>
         public Image SetJpegQuality(short quality)
         {
             if (quality < 0 && quality > 100)
@@ -163,6 +282,10 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Adjusts the contrast of the image.
+        /// </summary>
+        /// <param name="percentage">Set the contrast value of the image from the value of <c>-100</c> to <c>100</c>.</param>
         public Image SetContrast(short percentage)
         {
             if (percentage < -100 && percentage > 100)
@@ -173,6 +296,11 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Set the suffix of the generated image, e.g. <c>SetSuffix("-medium")</c> will transform original 
+        /// filename "hello-world.jpg" to "hello-world-medium.jpg".
+        /// </summary>
+        /// <param name="suffix">The suffix to use.</param>
         public Image SetSuffix(string suffix)
         {
             if (string.IsNullOrWhiteSpace(suffix))
@@ -183,6 +311,11 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Set the prefix of the generated image, e.g. <c>SetPrefix("medium-")</c> will transform original 
+        /// filename "hello-world.jpg" to "medium-hello-world.jpg".
+        /// </summary>
+        /// <param name="prefix">The prefix to use.</param>
         public Image SetPrefix(string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
@@ -193,6 +326,9 @@ namespace Wyam.Modules.Images
             return this;
         }
 
+        /// <summary>
+        /// Mark the beginning of another set of processing instructions to be applied to the images.
+        /// </summary>
         public Image And
         {
             get
@@ -202,7 +338,7 @@ namespace Wyam.Modules.Images
             }
         }
 
-        ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
+        private ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
         {
             ISupportedImageFormat format = null;
             
@@ -273,7 +409,7 @@ namespace Wyam.Modules.Images
             }
         }
 
-        Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)
+        private Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)
         {
             using (var imageFactory = new img.ImageFactory(preserveExifData: true))
             {
