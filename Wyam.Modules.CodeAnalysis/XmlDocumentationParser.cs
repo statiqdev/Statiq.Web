@@ -274,7 +274,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// Adds/updates CSS classes for all nested elements
 		private void AddCssClasses(XElement parentElement)
 		{
-			foreach (XElement element in parentElement.Descendants())
+			foreach (XElement element in parentElement.Descendants().ToList())
 			{
 				string cssClasses;
 				if (_cssClasses.TryGetValue(element.Name.ToString(), out cssClasses) && !string.IsNullOrWhiteSpace(cssClasses))
@@ -312,7 +312,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <code>
 		private void ProcessChildCodeElements(XElement parentElement)
 		{
-			foreach (XElement codeElement in parentElement.Elements("code"))
+			foreach (XElement codeElement in parentElement.Elements("code").ToList())
 			{
 				codeElement.ReplaceWith(new XElement("pre", codeElement));
 			}
@@ -321,7 +321,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <c>
 		private void ProcessChildCElements(XElement parentElement)
 		{
-			foreach (XElement cElement in parentElement.Elements("c"))
+			foreach (XElement cElement in parentElement.Elements("c").ToList())
 			{
 				cElement.Name = "code";
 			}
@@ -330,7 +330,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <list>
 		private void ProcessChildListElements(XElement parentElement)
 		{
-			foreach (XElement listElement in parentElement.Elements("list"))
+			foreach (XElement listElement in parentElement.Elements("list").ToList())
 			{
 				XAttribute typeAttribute = listElement.Attribute("type");
 				if (typeAttribute != null && typeAttribute.Value == "table")
@@ -361,13 +361,13 @@ namespace Wyam.Modules.CodeAnalysis
 			foreach(XElement itemElement in listElement.Elements("listheader")
 				.Concat(listElement.Elements("item")).ToList())
 			{
-				foreach (XElement termElement in itemElement.Elements("term"))
+				foreach (XElement termElement in itemElement.Elements("term").ToList())
 				{
 					termElement.Name = "span";
 					AddCssClasses(termElement, "term");
 					ProcessChildElements(termElement);
 				}
-				foreach (XElement descriptionElement in itemElement.Elements("description"))
+				foreach (XElement descriptionElement in itemElement.Elements("description").ToList())
 				{
 					descriptionElement.Name = "span";
 					AddCssClasses(descriptionElement, "description");
@@ -399,7 +399,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <para>
 		private void ProcessChildParaElements(XElement parentElement)
 		{
-			foreach (XElement paraElement in parentElement.Elements("para"))
+			foreach (XElement paraElement in parentElement.Elements("para").ToList())
 			{
 				paraElement.Name = "p";
 				ProcessChildElements(paraElement);
@@ -409,7 +409,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <paramref>, <typeparamref>
 		private void ProcessChildParamrefAndTypeparamrefElements(XElement parentElement, string elementName)
 		{
-			foreach (XElement paramrefElement in parentElement.Elements(elementName))
+			foreach (XElement paramrefElement in parentElement.Elements(elementName).ToList())
 			{
 				XAttribute nameAttribute = paramrefElement.Attribute("name");
 				paramrefElement.Value = nameAttribute?.Value ?? string.Empty;
@@ -421,7 +421,7 @@ namespace Wyam.Modules.CodeAnalysis
 		// <see>
 		private void ProcessChildSeeElements(XElement parentElement)
 		{
-			foreach (XElement seeElement in parentElement.Elements("see"))
+			foreach (XElement seeElement in parentElement.Elements("see").ToList())
 			{
 				string link;
 				string name = GetCrefNameAndLink(seeElement, out link);

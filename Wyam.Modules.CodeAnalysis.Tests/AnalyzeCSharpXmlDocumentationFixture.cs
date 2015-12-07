@@ -387,7 +387,46 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 GetResult(results, "Green")["Summary"]);
             stream.Dispose();
         }
-        
+
+        [Test]
+        public void SummaryWithMultipleCodeElements()
+        {
+            // Given
+            string code = @"
+                namespace Foo
+                {
+                    /// <summary>
+                    /// This is
+                    /// <code>
+                    /// with some code
+                    /// </code>
+                    /// a summary
+                    /// <code>
+                    /// more code
+                    /// </code>
+                    /// </summary>
+                    class Green
+                    {
+                    }
+                }
+            ";
+            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            IDocument document = Substitute.For<IDocument>();
+            document.GetStream().Returns(stream);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
+                .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+            IModule module = new AnalyzeCSharp();
+
+            // When
+            List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            Assert.AreEqual("\n    This is\n    <pre><code>\n    with some code\n    </code></pre>\n    a summary\n    <pre><code>\n    more code\n    </code></pre>\n    ", GetResult(results, "Green")["Summary"]);
+            stream.Dispose();
+        }
+
         [Test]
         public void MethodWithExceptionElement()
         {
