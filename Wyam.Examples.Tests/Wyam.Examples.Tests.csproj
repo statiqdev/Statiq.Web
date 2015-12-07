@@ -60,6 +60,10 @@
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.CodeAnalysis\Wyam.Modules.CodeAnalysis.csproj">
+      <Project>{f4c0c025-5e08-4ed2-a089-67c41702ae7b}</Project>
+      <Name>Wyam.Modules.CodeAnalysis</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Html\Wyam.Modules.Html.csproj">
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
       <Name>Wyam.Modules.Html</Name>
