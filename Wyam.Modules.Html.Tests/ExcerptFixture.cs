@@ -12,6 +12,7 @@ using Wyam.Common.Documents;
 namespace Wyam.Modules.Html.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ExcerptFixture
     {
         [Test]

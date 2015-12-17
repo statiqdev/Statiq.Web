@@ -50,6 +50,7 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder= @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
 
@@ -66,11 +67,11 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-a.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-b.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\test-c.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\markdown-x.md"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\markdown-y.md"));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-a.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-b.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\markdown-x.md")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\markdown-y.md")));
         }
 
         [Test]
@@ -79,8 +80,10 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
+            engine.CleanOutputFolder();
 
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
@@ -95,9 +98,9 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-a.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-b.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\test-c.txt"));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-a.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-b.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
         }
 
         [Test]
@@ -106,8 +109,10 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
+            engine.CleanOutputFolder();
 
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
@@ -122,9 +127,9 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\test-a.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\test-b.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\test-c.txt"));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-a.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-b.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
         }
 
         [Test]
@@ -133,8 +138,10 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
+            engine.CleanOutputFolder();
 
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
@@ -149,10 +156,10 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\test-a.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\test-b.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\test-c.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-above-input.txt"));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-a.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-b.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-above-input.txt")));
         }
 
         [Test]
@@ -161,8 +168,10 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
+            engine.CleanOutputFolder();
 
             string absoluteInputPath = Path.GetFullPath(engine.InputFolder);
 
@@ -179,10 +188,10 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-a.txt"));
-            Assert.IsTrue(File.Exists(@"TestFiles\Output\test-b.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\test-c.txt"));
-            Assert.IsFalse(File.Exists(@"TestFiles\Output\test-above-input.txt"));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-a.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-b.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-above-input.txt")));
         }
     }
 }

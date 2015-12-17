@@ -16,6 +16,7 @@ using Wyam.Core.Modules.IO;
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DownloadFixture
     {
         public static string AssemblyDirectory

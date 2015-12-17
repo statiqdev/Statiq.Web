@@ -396,6 +396,10 @@ namespace Wyam
             {
                 engine.OutputFolder = _outputFolder;
             }
+            if (_noClean)
+            {
+                engine.CleanOutputFolderOnExecute = false;
+            }
 
             // Set up the log file         
             if (_logFile != null)
@@ -433,24 +437,6 @@ namespace Wyam
 
         private bool Execute(Engine engine)
         {
-            if (!_noClean)
-            {
-                try
-                {
-                    engine.Trace.Information("Cleaning output directory {0}", engine.OutputFolder);
-                    if (Directory.Exists(engine.OutputFolder))
-                    {
-                        Directory.Delete(engine.OutputFolder, true);
-                    }
-                    engine.Trace.Information("Cleaned output directory.");
-                }
-                catch (Exception ex)
-                {
-                    engine.Trace.Critical("Error while cleaning output directory: {0}", ex.Message);
-                    return false;
-                }
-            }
-
             try
             {
                 engine.Execute();

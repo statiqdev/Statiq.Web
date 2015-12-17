@@ -13,6 +13,7 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DocumentFixture
     {
         [Test]

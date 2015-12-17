@@ -4,6 +4,7 @@ using Wyam.Core.Modules.Control;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ConcatBranchFixture
     {
         [Test]
@@ -11,6 +12,7 @@ namespace Wyam.Core.Tests.Modules.Control
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
@@ -46,6 +48,7 @@ namespace Wyam.Core.Tests.Modules.Control
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {

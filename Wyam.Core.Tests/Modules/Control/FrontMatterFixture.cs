@@ -11,6 +11,7 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class FrontMatterFixture
     {
         [Test]

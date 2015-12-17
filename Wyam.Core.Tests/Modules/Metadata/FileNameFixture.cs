@@ -12,6 +12,7 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class FileNameFixture
     {
         [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",

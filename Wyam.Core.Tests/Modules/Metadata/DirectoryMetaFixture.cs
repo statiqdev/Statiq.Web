@@ -12,6 +12,7 @@ using Wyam.Core.Modules.Metadata;
 namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DirectoryMetaFixture
     {
         [Test]

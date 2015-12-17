@@ -49,7 +49,7 @@ namespace Wyam.Modules.Tables.Tests
  + "\"26\",\"26\",\"52\",\"78\",\"104\",\"130\",\"156\",\"182\"\r\n";
             IDocument document = Substitute.For<IDocument>();
 
-            MemoryStream stream = new MemoryStream(System.IO.File.ReadAllBytes("test.xlsx"));
+            MemoryStream stream = new MemoryStream(File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.xlsx")));
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
             bool convertedLinks;

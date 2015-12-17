@@ -11,6 +11,7 @@ using Wyam.Common.IO;
 namespace Wyam.Common.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class PathHelperFixture
     {
         [TestCase(@"C:\A\B\", @"C:\A\B\", @"")]

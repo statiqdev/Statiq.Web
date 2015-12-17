@@ -36,7 +36,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -70,7 +70,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -106,7 +106,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -138,7 +138,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -168,7 +168,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -198,7 +198,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -228,7 +228,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -258,7 +258,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -299,7 +299,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -334,7 +334,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();
@@ -364,7 +364,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             IDocument document = Substitute.For<IDocument>();
             document.GetStream().Returns(stream);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Environment.CurrentDirectory);
+            context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.GetNewDocument(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<IEnumerable<MetadataItem>>())
                 .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
             IModule module = new AnalyzeCSharp();

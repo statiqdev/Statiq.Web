@@ -12,6 +12,7 @@ using Wyam.Core.Modules.Templates;
 namespace Wyam.Core.Tests.Modules.Templates
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class XsltFixture
     {
         [Test]

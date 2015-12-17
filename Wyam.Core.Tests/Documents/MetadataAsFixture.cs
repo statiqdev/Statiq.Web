@@ -14,6 +14,7 @@ using Wyam.Core.Meta;
 namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class MetadataAsFixture
     {
         [Test]

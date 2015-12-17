@@ -11,6 +11,7 @@ using Wyam.Core.Modules.Extensibility;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class GroupByFixture
     {
         [Test]
@@ -19,6 +20,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             List<int> groupKey = new List<int>();
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
@@ -45,6 +47,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             List<IList<string>> content = new List<IList<string>>();
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {

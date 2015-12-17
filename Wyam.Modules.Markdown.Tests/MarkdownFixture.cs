@@ -12,6 +12,7 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Modules.Markdown.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class MarkdownFixture
     {
         [Test]

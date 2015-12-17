@@ -15,6 +15,7 @@ using YamlDotNet.Dynamic;
 namespace Wyam.Modules.Yaml.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class YamlFixture
     {
         [Test]

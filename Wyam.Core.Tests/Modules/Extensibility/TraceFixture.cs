@@ -6,6 +6,7 @@ using Trace = Wyam.Core.Modules.Extensibility.Trace;
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class TraceFixture
     {
         [TestCase(TraceEventType.Critical)]
@@ -15,6 +16,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             engine.Pipelines.Add(new Trace(traceEventType.ToString()).EventType(traceEventType));
 

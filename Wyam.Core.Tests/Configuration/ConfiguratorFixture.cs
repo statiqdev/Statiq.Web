@@ -15,6 +15,7 @@ using Wyam.Core.Modules.Contents;
 namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ConfiguratorFixture
     {
         [Test]

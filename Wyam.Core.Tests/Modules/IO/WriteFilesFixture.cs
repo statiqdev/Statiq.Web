@@ -145,7 +145,7 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             // Then
-            Assert.That(output.Metadata[key], Is.StringEnding(expectedEnding));
+            Assert.That(output.Metadata[key], Does.EndWith(expectedEnding));
             ((IDisposable)output).Dispose();
         }
 
@@ -155,6 +155,7 @@ namespace Wyam.Core.Tests.Modules.IO
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input";
             engine.OutputFolder = @"TestFiles\Output\";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);

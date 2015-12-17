@@ -111,6 +111,8 @@ namespace Wyam.Core
             }
         }
 
+        public bool CleanOutputFolderOnExecute { get; set; } = true;
+
         public Engine()
         {
             _pipelines = new PipelineCollection(this);
@@ -136,6 +138,23 @@ namespace Wyam.Core
             }
         }
 
+        public void CleanOutputFolder()
+        {
+            try
+            {
+                Trace.Information("Cleaning output directory {0}", OutputFolder);
+                if (Directory.Exists(OutputFolder))
+                {
+                    Directory.Delete(OutputFolder, true);
+                }
+                Trace.Information("Cleaned output directory.");
+            }
+            catch (Exception ex)
+            {
+                Trace.Warning("Error while cleaning output directory: {0} - {1}", ex.GetType(), ex.Message);
+            }
+        }
+
         public void Execute()
         {
             CheckDisposed();
@@ -144,6 +163,12 @@ namespace Wyam.Core
             if (_configurator == null)
             {
                 Configure();
+            }
+
+            // Clean the output folder if requested
+            if (CleanOutputFolderOnExecute)
+            {
+                CleanOutputFolder();
             }
 
             // Create the input and output folders if they don't already exist

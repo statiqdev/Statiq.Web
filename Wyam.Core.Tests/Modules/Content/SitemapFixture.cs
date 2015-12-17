@@ -16,6 +16,7 @@ using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
 namespace Wyam.Core.Tests.Modules.Content
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class SitemapFixture
     {
         [SetUp]
@@ -82,7 +83,7 @@ namespace Wyam.Core.Tests.Modules.Content
 
             // Then
             Assert.AreEqual(1, results.Count);
-            Assert.That(results[0].Content, Is.StringContaining($"<loc>{expected}</loc>"));
+            Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
         }
 
         [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile.html")]
@@ -121,7 +122,7 @@ namespace Wyam.Core.Tests.Modules.Content
 
             // Then
             Assert.AreEqual(1, results.Count);
-            Assert.That(results[0].Content, Is.StringContaining($"<loc>{expected}</loc>"));
+            Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Wyam.Modules.Git.Tests
         {
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Environment.CurrentDirectory)))); // Ascend from \bin\Debug
+            context.InputFolder.Returns(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory)))); // Ascend from \bin\Debug
             context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
             {
                 IDocument newDocument = Substitute.For<IDocument>();
@@ -45,7 +45,7 @@ namespace Wyam.Modules.Git.Tests
         {
             // Given
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.InputFolder.Returns(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Environment.CurrentDirectory)))); // Ascend from \bin\Debug
+            context.InputFolder.Returns(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory)))); // Ascend from \bin\Debug
             context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
             {
                 IDocument newDocument = Substitute.For<IDocument>();
@@ -58,7 +58,7 @@ namespace Wyam.Modules.Git.Tests
             IDocument document = Substitute.For<IDocument>();
             document.Source.Returns(
                 Path.Combine(
-                    Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Environment.CurrentDirectory))),
+                    Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory))),
                     "Wyam.Core\\IModule.cs"));  // Use file that no longer exists so commit count is stable
             document.Clone(Arg.Any<IEnumerable<MetadataItem>>()).Returns(x =>
             {

@@ -7,6 +7,7 @@ using Wyam.Core.Modules.Extensibility;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DocumentsFixture
     {
         [Test]
@@ -14,6 +15,7 @@ namespace Wyam.Core.Tests.Modules.Control
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents(5);
             engine.Pipelines.Add(documents);
@@ -31,6 +33,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             List<string> content = new List<string>();
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents("A", "B", "C", "D");
             Execute gatherData = new Execute((d, c) =>
@@ -54,6 +57,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             List<object> values = new List<object>();
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents(
                 new Dictionary<string, object> { { "Foo", "a" } },
@@ -81,6 +85,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             List<object> values = new List<object>();
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             engine.Trace.AddListener(new TestTraceListener());
             Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents(
                 Tuple.Create("A", new Dictionary<string, object> { { "Foo", "a" } }.AsEnumerable()),

@@ -20,7 +20,7 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png");
+            Setup(out documents, out cloneDictionary, Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"));
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
@@ -47,7 +47,9 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf");
+            Setup(out documents, out cloneDictionary, 
+                Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"), 
+                Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
@@ -69,7 +71,9 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png", @"Samples\RomantiqueInitials.ttf");
+            Setup(out documents, out cloneDictionary, 
+                Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"), 
+                Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 
@@ -91,7 +95,7 @@ namespace Wyam.Core.Tests.Modules
 
             IDocument[] documents;
             Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-            Setup(out documents, out cloneDictionary, @"Samples\Flamme.png");
+            Setup(out documents, out cloneDictionary, Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"));
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
 

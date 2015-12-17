@@ -31,8 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dotless.ClientOnly, Version=1.5.1.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotlessClientOnly.1.5.1\lib\dotless.ClientOnly.dll</HintPath>
+    <Reference Include="dotless.ClientOnly, Version=1.5.2.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotlessClientOnly.1.5.2\lib\dotless.ClientOnly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

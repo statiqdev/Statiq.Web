@@ -15,6 +15,7 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class EngineFixture
     {
         [Test]
@@ -82,6 +83,7 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 1
@@ -116,6 +118,7 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             int c = 0;
             engine.Pipelines.Add("Pipeline",
                 new Execute((x, ctx) => new[]
@@ -154,6 +157,7 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
+            engine.CleanOutputFolderOnExecute = false;
             int c = 0;
             engine.Pipelines.Add(
                 new Execute((x, ctx) => new[]
