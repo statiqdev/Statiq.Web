@@ -98,6 +98,7 @@ namespace Wyam.Core.Configuration
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
+                Config(null,null);
                 return;
             }
 
@@ -214,6 +215,17 @@ namespace Wyam.Core.Configuration
             }
         }
 
+        private static readonly string[] _defaultNamespaces = new[]
+        {
+            "System",
+            "System.Collections.Generic",
+            "System.Linq",
+            "System.IO",
+            "System.Diagnostics",
+            "Wyam.Core",
+            "Wyam.Core.Configuration"
+        };
+
         private void Config(string declarations, string code)
         {
             try
@@ -222,16 +234,7 @@ namespace Wyam.Core.Configuration
                 using (_engine.Trace.WithIndent().Verbose("Initializing scripting environment"))
                 {
                     // Initial default namespaces
-                    _namespaces.AddRange(new []
-                    {
-                        "System",
-                        "System.Collections.Generic",
-                        "System.Linq",
-                        "System.IO",
-                        "System.Diagnostics",
-                        "Wyam.Core",
-                        "Wyam.Core.Configuration"
-                    });
+                    _namespaces.AddRange(_defaultNamespaces);
 
                     // Add all module namespaces from Wyam.Core
                     _namespaces.AddRange(typeof (Engine).Assembly.GetTypes()
@@ -250,19 +253,23 @@ namespace Wyam.Core.Configuration
                     moduleTypes = GetModules();
                 }
 
-                using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
+                if (!string.IsNullOrWhiteSpace(declarations)
+                    && !string.IsNullOrWhiteSpace(code))
                 {
+                    using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
+                    {
 
-                    // Generate the script
-                    code = GenerateScript(declarations, code, moduleTypes);
+                        // Generate the script
+                        code = GenerateScript(declarations, code, moduleTypes);
 
-                    // Load the dynamic assembly and invoke
-                    _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
-                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                    _configAssemblyFullName = _setupAssembly.FullName;
-                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
-                    MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                    runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                        // Load the dynamic assembly and invoke
+                        _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
+                        _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                        _configAssemblyFullName = _setupAssembly.FullName;
+                        var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                        MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                        runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                    }
                 }
             }
             catch (Exception ex)
