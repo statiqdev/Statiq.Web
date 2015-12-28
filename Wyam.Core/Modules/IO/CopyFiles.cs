@@ -19,10 +19,9 @@ namespace Wyam.Core.Modules.IO
     /// <remarks>
     /// For each output document, several metadata values are set with information about the file. 
     /// By default, files are copied from the input folder (or a subfolder) to the same relative 
-    /// location in the output folder, but this doesn't have to be the case. Also note that this 
-    /// module is evaluated for each input document, so it's typically used as the first (and 
-    /// often only) module in a pipeline. Otherwise, you would probably copy the same files multiple 
-    /// times (once for each input document).
+    /// location in the output folder, but this doesn't have to be the case. The output of this module are documents
+    /// with metadata representing the files copied by the module. Note that the input documents are not output by this
+    /// module.
     /// </remarks>
     /// <metadata name="SourceFilePath" type="string">The full path (including file name) of the source file.</metadata>
     /// <metadata name="DestinationFilePath" type="string">The full path (including file name) of the destination file.</metadata>
@@ -30,6 +29,7 @@ namespace Wyam.Core.Modules.IO
     public class CopyFiles : IModule
     {
         private readonly DocumentConfig _sourcePath;
+        private readonly string _searchPattern;
         private Func<string, string> _destinationPath;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _predicate = null;
@@ -37,6 +37,9 @@ namespace Wyam.Core.Modules.IO
 
         /// <summary>
         /// Copies all files that match the specified path. This allows you to specify different search paths depending on the input document.
+        /// When this constructor is used, the module is evaluated once for every input document, which may result in copying the same file
+        /// more than once (and may also result in IO conflicts since copying is typically done in parallel). It is recommended you only
+        /// specify a function-based source path if there will be no overlap between the path returned from each input document.
         /// </summary>
         /// <param name="sourcePath">A delegate that returns a <c>string</c> with the desired search path.</param>
         public CopyFiles(DocumentConfig sourcePath)
@@ -50,7 +53,10 @@ namespace Wyam.Core.Modules.IO
         }
 
         /// <summary>
-        /// Copies all files that match the specified search pattern.
+        /// Copies all files that match the specified search pattern. When this constructor is used, the module is evaluated only once against
+        /// an empty input document. This makes it possible to string multiple CopyFiles modules together in one pipeline. Keep in mind that the
+        /// result of the pipeline in this case will be documents representing the files copied only by the last CopyFiles module in the pipeline
+        /// (since the output documents of the previous CopyFiles modules will have been consumed by the last one).
         /// </summary>
         /// <param name="searchPattern">The search pattern to use.</param>
         public CopyFiles(string searchPattern)
@@ -60,7 +66,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(searchPattern));
             }
 
-            _sourcePath = (x, y) => searchPattern;
+            _searchPattern = searchPattern;
         }
 
         /// <summary>
@@ -138,9 +144,15 @@ namespace Wyam.Core.Modules.IO
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            // If we're using a pattern, just use an empty document
+            if (_searchPattern != null)
+            {
+                inputs = new[] { context.GetNewDocument((string)null) };
+            }
+
             return inputs.AsParallel().SelectMany(input =>
             {
-                string path = _sourcePath.Invoke<string>(input, context);
+                string path = _searchPattern ?? _sourcePath.Invoke<string>(input, context);
                 if (path != null)
                 {
                     bool isPathUnderInputFolder = false;
