@@ -10,9 +10,10 @@ namespace Wyam
     public class ActionFileSystemWatcher : IDisposable
     {
         private readonly FileSystemWatcher _watcher;
+        private readonly string _outputPath;
         private readonly Action<string> _callback;
 
-        public ActionFileSystemWatcher(string path, bool includeSubdirectories, string filter, Action<string> callback)
+        public ActionFileSystemWatcher(string outputPath, string path, bool includeSubdirectories, string filter, Action<string> callback)
         {
             _watcher = new FileSystemWatcher
             {
@@ -23,6 +24,7 @@ namespace Wyam
             };
             _watcher.Changed += OnChanged;
             _watcher.Created += OnChanged;
+            _outputPath = outputPath;
             _callback = callback;
         }
 
@@ -35,7 +37,10 @@ namespace Wyam
 
         private void OnChanged(object sender, FileSystemEventArgs args)
         {
-            _callback(args.FullPath);
+            if (!args.FullPath.StartsWith(_outputPath, StringComparison.OrdinalIgnoreCase))
+            {
+                _callback(args.FullPath);
+            }
         }
     }
 }

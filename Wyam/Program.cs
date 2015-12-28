@@ -132,7 +132,7 @@ namespace Wyam
                 messagePump = true;
 
                 engine.Trace.Information("Watching folder {0}", engine.InputFolder);
-                inputFolderWatcher = new ActionFileSystemWatcher(engine.InputFolder, true, "*.*", path =>
+                inputFolderWatcher = new ActionFileSystemWatcher(engine.OutputFolder, engine.InputFolder, true, "*.*", path =>
                 {
                     _changedFiles.Enqueue(path);
                     _messageEvent.Set();
@@ -141,7 +141,7 @@ namespace Wyam
                 if (_configFile != null)
                 {
                     engine.Trace.Information("Watching configuration file {0}", _configFile);
-                    configFileWatcher = new ActionFileSystemWatcher(Path.GetDirectoryName(_configFile), false, Path.GetFileName(_configFile), path =>
+                    configFileWatcher = new ActionFileSystemWatcher(engine.OutputFolder, Path.GetDirectoryName(_configFile), false, Path.GetFileName(_configFile), path =>
                     {
                         if (path == _configFile)
                         {
