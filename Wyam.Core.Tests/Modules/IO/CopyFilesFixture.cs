@@ -193,5 +193,32 @@ namespace Wyam.Core.Tests.Modules.IO
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\test-c.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\test-above-input.txt")));
         }
+
+        [Test]
+        public void CopyNonExistentFolder()
+        {
+            // Given
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            engine.RootFolder = TestContext.CurrentContext.TestDirectory;
+            engine.InputFolder = @"TestFiles\Input\";
+            engine.OutputFolder = @"TestFiles\Output\";
+            engine.CleanOutputFolder();
+
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            CopyFiles copyFiles = new CopyFiles("NonExistent\\*.txt");
+
+            // When
+            IEnumerable<IDocument> outputs = copyFiles.Execute(inputs, context).ToList();
+            foreach (IDocument document in inputs.Concat(outputs))
+            {
+                ((IDisposable)document).Dispose();
+            }
+
+            // Then
+            // No exception should be thrown
+        }
     }
 }

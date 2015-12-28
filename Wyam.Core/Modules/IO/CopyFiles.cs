@@ -192,7 +192,7 @@ namespace Wyam.Core.Modules.IO
                             .Where(x => x != null);
                     }
                 }
-                return null;
+                return (IEnumerable<IDocument>)Array.Empty<IDocument>();
             });
         }
     }
