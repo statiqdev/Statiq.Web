@@ -27,7 +27,7 @@ namespace Wyam.Core.Configuration
         private readonly bool _outputScripts;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
-        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>(); 
+        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
         private readonly HashSet<string> _namespaces = new HashSet<string>();
         private bool _disposed;
         private Assembly _setupAssembly;
@@ -49,14 +49,14 @@ namespace Wyam.Core.Configuration
             _packages = new PackagesCollection(engine);
 
             // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
-            AddAssembly(Assembly.GetAssembly(typeof (object))); // System
-            AddAssembly(Assembly.GetAssembly(typeof (System.Collections.Generic.List<>))); // System.Collections.Generic 
-            AddAssembly(Assembly.GetAssembly(typeof (System.Linq.ImmutableArrayExtensions))); // System.Linq
-            AddAssembly(Assembly.GetAssembly(typeof (System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
-            AddAssembly(Assembly.GetAssembly(typeof (Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)
-            AddAssembly(Assembly.GetAssembly(typeof (System.IO.Stream))); // System.IO
-            AddAssembly(Assembly.GetAssembly(typeof (System.Diagnostics.TraceSource))); // System.Diagnostics
-            AddAssembly(Assembly.GetAssembly(typeof (Wyam.Core.Engine))); // Wyam.Core
+            AddAssembly(Assembly.GetAssembly(typeof(object))); // System
+            AddAssembly(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>))); // System.Collections.Generic 
+            AddAssembly(Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions))); // System.Linq
+            AddAssembly(Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
+            AddAssembly(Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)
+            AddAssembly(Assembly.GetAssembly(typeof(System.IO.Stream))); // System.IO
+            AddAssembly(Assembly.GetAssembly(typeof(System.Diagnostics.TraceSource))); // System.Diagnostics
+            AddAssembly(Assembly.GetAssembly(typeof(Wyam.Core.Engine))); // Wyam.Core
             AddAssembly(Assembly.GetAssembly(typeof(IModule))); // Wyam.Common
 
             // Manually resolve included assemblies
@@ -85,7 +85,7 @@ namespace Wyam.Core.Configuration
 
         public IEnumerable<Assembly> Assemblies => _assemblies.Values;
 
-        public IEnumerable<string> Namespaces => _namespaces; 
+        public IEnumerable<string> Namespaces => _namespaces;
 
         public byte[] RawConfigAssembly => _rawSetupAssembly;
 
@@ -98,7 +98,7 @@ namespace Wyam.Core.Configuration
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                Config(null,null);
+                Config(null, null);
                 return;
             }
 
@@ -171,7 +171,7 @@ namespace Wyam.Core.Configuration
                         using Wyam.Core.Configuration;
                         using Wyam.Core.NuGet;");
                     codeBuilder.AppendLine();
-                    codeBuilder.AppendLine(string.Join(Environment.NewLine, 
+                    codeBuilder.AppendLine(string.Join(Environment.NewLine,
                         typeof(IModule).Assembly.GetTypes()
                             .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
                             .Select(x => "using " + x.Namespace + ";")
@@ -237,12 +237,12 @@ namespace Wyam.Core.Configuration
                     _namespaces.AddRange(_defaultNamespaces);
 
                     // Add all module namespaces from Wyam.Core
-                    _namespaces.AddRange(typeof (Engine).Assembly.GetTypes()
+                    _namespaces.AddRange(typeof(Engine).Assembly.GetTypes()
                         .Where(x => typeof(IModule).IsAssignableFrom(x))
                         .Select(x => x.Namespace));
 
                     // Also include all Wyam.Common namespaces
-                    _namespaces.AddRange(typeof (IModule).Assembly.GetTypes()
+                    _namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
                         .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
                         .Select(x => x.Namespace));
 
@@ -252,24 +252,19 @@ namespace Wyam.Core.Configuration
                     // Get modules
                     moduleTypes = GetModules();
                 }
-
-                if (!string.IsNullOrWhiteSpace(declarations)
-                    && !string.IsNullOrWhiteSpace(code))
+                
+                using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
                 {
-                    using (_engine.Trace.WithIndent().Verbose("Evaluating configuration script"))
-                    {
+                    // Generate the script
+                    code = GenerateScript(declarations, code, moduleTypes);
 
-                        // Generate the script
-                        code = GenerateScript(declarations, code, moduleTypes);
-
-                        // Load the dynamic assembly and invoke
-                        _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
-                        _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                        _configAssemblyFullName = _setupAssembly.FullName;
-                        var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
-                        MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                        runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
-                    }
+                    // Load the dynamic assembly and invoke
+                    _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code, _engine.Trace);
+                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
+                    _configAssemblyFullName = _setupAssembly.FullName;
+                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                    MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
+                    runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
                 }
             }
             catch (Exception ex)
@@ -295,8 +290,8 @@ namespace Wyam.Core.Configuration
             var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
                 assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
                 .AddReferences(
-                // For some reason, Roslyn really wants these added by filename
-                // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                    // For some reason, Roslyn really wants these added by filename
+                    // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
                     MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
@@ -327,7 +322,7 @@ namespace Wyam.Core.Configuration
             string line = diagnostic.Location.IsInSource ? "Line " + (diagnostic.Location.GetMappedLineSpan().Span.Start.Line + 1) : "Metadata";
             return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
-        
+
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
         private void GetAssemblies()
         {
@@ -345,9 +340,9 @@ namespace Wyam.Core.Configuration
 
             // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
-                string.Join(";", new[] {AppDomain.CurrentDomain.SetupInformation.PrivateBinPath}
+                string.Join(";", new[] { AppDomain.CurrentDomain.SetupInformation.PrivateBinPath }
                     .Concat(assemblyPaths.Select(x => Path.GetDirectoryName(x).Distinct())));
-            
+
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
             // If this approach causes problems, could also try loading assemblies in custom app domain:
             // http://stackoverflow.com/questions/6626647/custom-appdomain-and-privatebinpath
@@ -411,7 +406,7 @@ namespace Wyam.Core.Configuration
                 {
                     _engine.Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
-                
+
             }
         }
 
