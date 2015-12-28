@@ -17,7 +17,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
     {
         [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
 			"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
-        [TestCase("Děku.jemeविकीвики-движка", "děkujemeविकीвикидвижка")]
+        [TestCase("Děku.jemeविकीвики-движка", "děku.jemeविकीвикидвижка")]
         [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].", 
             "this-is-my-title-and-some-clever-piece-of-text-here-ok")]
         [TestCase("this is my title?!! /r/science/ and #firstworldproblems :* :sadface=true",
@@ -86,14 +86,39 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			FileName fileName = new FileName();
 
 			// When
-			fileName = fileName.WithAllowedCharacters(new string[] { "-", "." });
+			fileName = fileName.WithAllowedCharacters(new string[] { "-" });
 			IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			// Then
 			Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
-		}
+        }
 
-		public static string[] ReservedChars => FileName.ReservedChars;
+        [Test]
+        public void WithAllowedCharactersDoesNotReplaceDotAtEnd()
+        {
+            // Given
+            string input = "this-is-a-.";
+            string output = "thisisa.";
+
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
+            {
+                new MetadataItem(Keys.SourceFileName, input)
+            }) };
+            FileName fileName = new FileName();
+
+            // When
+            fileName = fileName.WithAllowedCharacters(new string[] { "." });
+            IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+
+            // Then
+            Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+        }
+
+        public static string[] ReservedChars => FileName.ReservedChars;
 
         [Test]
         [TestCaseSource(nameof(ReservedChars))]
@@ -140,6 +165,60 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
             // Then
             Assert.IsFalse(documents.First().ContainsKey(Keys.WriteFileName));
+        }
+
+        [Test]
+        public void PreservesExtension()
+        {
+            // Given
+            string input = "myfile.html";
+            string output = "myfile.html";
+
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            IDocument[] inputs = 
+            {
+                new Document(engine, pipeline).Clone(new []
+                {
+                    new MetadataItem("MyKey", input)
+                })
+            };
+            FileName fileName = new FileName("MyKey");
+
+            // When
+            IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+
+            // Then
+            Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+        }
+
+        [Test]
+        public void TrimWhitespace()
+        {
+            // Given
+            string input = "   myfile.html   ";
+            string output = "myfile.html";
+
+            Engine engine = new Engine();
+            engine.Trace.AddListener(new TestTraceListener());
+            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
+            IExecutionContext context = new ExecutionContext(engine, pipeline);
+            IDocument[] inputs =
+            {
+                new Document(engine, pipeline).Clone(new []
+                {
+                    new MetadataItem("MyKey", input)
+                })
+            };
+            FileName fileName = new FileName("MyKey");
+
+            // When
+            IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+
+            // Then
+            Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
         }
     }
 }

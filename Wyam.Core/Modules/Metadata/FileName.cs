@@ -28,11 +28,11 @@ namespace Wyam.Core.Modules.Metadata
     /// <category>Metadata</category>
     public class FileName : IModule
     {
-	    private IEnumerable<string> _allowedCharacters;
+	    private List<string> _allowedCharacters = new List<string>();
 
 	    internal static readonly string[] ReservedChars = new string[]
         {
-            "-", ".", "_", "~", ":", "/", "?", "#", "[", "]",
+            "-", "_", "~", ":", "/", "?", "#", "[", "]",
             "@", "!", "$", "&", "'", "(", ")", "*", "+", ",",
             ";", "=", "}", ";"
         };
@@ -174,7 +174,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <returns></returns>
         public FileName WithAllowedCharacters(IEnumerable<string> allowedCharacters)
         {
-            _allowedCharacters = allowedCharacters;
+            _allowedCharacters.AddRange(allowedCharacters);
             return this;
         }
 
@@ -215,21 +215,23 @@ namespace Wyam.Core.Modules.Metadata
                 return string.Empty;
             }
 
+            // Trim whitespace
+		    fileName = fileName.Trim();
+
             // Remove multiple dashes
             fileName = Regex.Replace(fileName, @"\-{2,}", "");
 
             // Remove reserved chars - doing this as an array reads a lot better than a regex
-	        IEnumerable<string> reservedChars = ReservedChars;
-	        if (_allowedCharacters != null)
-	        {
-				// Ignore any characters specified
-		        reservedChars = reservedChars.Except(_allowedCharacters);
-	        }
-
-            foreach (string token in reservedChars)
+            foreach (string token in ReservedChars.Except(_allowedCharacters))
             {
                 fileName = fileName.Replace(token, "");
             }
+
+            // Trim dot (special case, only reserved if at beginning or end)
+		    if (!_allowedCharacters.Contains("."))
+		    {
+		        fileName = fileName.Trim('.');
+		    }
 
             // Remove multiple spaces
             fileName = Regex.Replace(fileName, @"\s+", " ");

@@ -48,6 +48,7 @@ namespace Wyam.Core.Modules.IO
     public class WriteFiles : IModule
     {
         private readonly DocumentConfig _path;
+        private bool _warnOnWriteMetadata;
         private bool _useWriteMetadata = true;
         private bool _ignoreEmptyContent = true;
         private Func<IDocument, IExecutionContext, bool> _predicate = null;
@@ -66,6 +67,7 @@ namespace Wyam.Core.Modules.IO
             }
 
             _path = path;
+            _warnOnWriteMetadata = true;
         }
 
         /// <summary>
@@ -90,6 +92,7 @@ namespace Wyam.Core.Modules.IO
                 }
                 return null;
             };
+            _warnOnWriteMetadata = true;
         }
 
         /// <summary>
@@ -148,10 +151,13 @@ namespace Wyam.Core.Modules.IO
 
             if (_useWriteMetadata)
             {
+                string metadataKey = null;
+
                 // WritePath
                 path = input.String(Keys.WritePath);
                 if (!string.IsNullOrWhiteSpace(path))
                 {
+                    metadataKey = Keys.WritePath;
                     path = PathHelper.NormalizePath(path);
                 }
 
@@ -159,6 +165,7 @@ namespace Wyam.Core.Modules.IO
                 if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteFileName)
                     && input.ContainsKey(Keys.RelativeFileDir))
                 {
+                    metadataKey = Keys.WriteFileName;
                     path = Path.Combine(input.String(Keys.RelativeFileDir),
                         PathHelper.NormalizePath(input.String(Keys.WriteFileName)));
                 }
@@ -167,8 +174,17 @@ namespace Wyam.Core.Modules.IO
                 if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteExtension)
                     && input.ContainsKey(Keys.RelativeFilePath))
                 {
+                    metadataKey = Keys.WriteExtension;
                     path = Path.ChangeExtension(input.String(Keys.RelativeFilePath),
                         input.String(Keys.WriteExtension));
+                }
+
+                // Warn if needed
+                if (metadataKey != null && _warnOnWriteMetadata)
+                {
+                    context.Trace.Warning("An extension or delegate was specified for the WriteFiles module, but the metadata key {0} took precedence for the document with source {1}."
+                        + " Call UseWriteMetadata(false) to prevent the special write metadata keys from overriding WriteFiles constructor values.",
+                        metadataKey, input.Source);
                 }
             }
 
