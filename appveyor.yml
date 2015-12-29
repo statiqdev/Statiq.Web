@@ -1,6 +1,7 @@
 branches:
   only:
     - master
+    - develop
 
 configuration: Release
 
@@ -30,6 +31,8 @@ deploy:
   api_key:
     secure: amWULnZVsv5qbKalO9tM+5OvexyHcd36bp/t9D79yjaA/A5LVx+Uho7MG90d3/Bf
   artifact: /.*\.nupkg/
+  on:
+    branch: master
   
 on_failure:
   - ps: Update-AppveyorBuild -Version "$($env:appveyor_build_version)-$(Get-Date -format HHmmss)-failed"
