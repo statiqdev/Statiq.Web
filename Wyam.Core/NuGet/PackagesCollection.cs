@@ -75,6 +75,7 @@ namespace Wyam.Core.NuGet
             foreach (IPackage package in packageManager.LocalRepository.GetPackages())
             {
                 List<KeyValuePair<IPackageFile, NuGetFramework>> filesAndFrameworks = package.GetLibFiles()
+                    .Where(x => x.TargetFramework != null)
                     .Select(x => new KeyValuePair<IPackageFile, NuGetFramework>(x, 
                         new NuGetFramework(x.TargetFramework.Identifier, x.TargetFramework.Version, x.TargetFramework.Profile)))
                     .ToList();

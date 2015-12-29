@@ -7,7 +7,7 @@ Pipelines.Add("Code",
 		.WithDocsForImplicitSymbols(),  // But we do want to parse XML doc comments for members, even if they're not initially output
 	Razor()
 		.WithViewStart(@"_SymbolViewStart.cshtml"),
-	WriteFiles(".html")
+	WriteFiles()
 );
 
 // The index Razor file will read the code documents and output a listing of symbols
