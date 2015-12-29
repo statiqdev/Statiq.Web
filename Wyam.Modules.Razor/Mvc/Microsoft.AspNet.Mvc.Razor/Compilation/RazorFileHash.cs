@@ -18,7 +18,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         {
             try
             {
-                using (var stream = file.CreateReadStream())
+                using (var stream = file.CreateReadStreamWithRetry())
                 {
                     return Crc32.Calculate(stream).ToString(CultureInfo.InvariantCulture);
                 }

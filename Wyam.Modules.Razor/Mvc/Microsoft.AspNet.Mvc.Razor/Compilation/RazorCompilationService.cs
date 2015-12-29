@@ -48,7 +48,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
         public Type Compile([NotNull] RelativeFileInfo file)
         {
             GeneratorResults results;
-            using (var inputStream = file.FileInfo.CreateReadStream())
+            using (var inputStream = file.FileInfo.CreateReadStreamWithRetry())
             {
                 results = GenerateCode(file.RelativePath, inputStream);
             }

@@ -75,6 +75,7 @@
     <Compile Include="BaseRazorPage.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
     <Compile Include="DocumentFileProvider.cs" />
+    <Compile Include="FileInfoExtensions.cs" />
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="HttpAbstractions\Microsoft.AspNet.Html.Abstractions\IHtmlContent.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\BufferedHtmlContent.cs" />

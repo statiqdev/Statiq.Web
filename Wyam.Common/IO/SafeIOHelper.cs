@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,8 +13,8 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Max SafeOpenRead() attempts
         /// </summary>
-        /// <see cref="SafeOpenRead(string)"/>
-        private const int _maxAttempts = 3;
+        /// <see cref="OpenRead"/>
+        private const int MaxAttempts = 3;
 
         /// <summary>
         /// Trying to open file via File.OpenRead() several times if first time was not successful, waiting 100 ms between each attempt.
@@ -21,36 +22,64 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">Path to the file</param>
         /// <returns>FileStream, null or base exception</returns>
-        public static FileStream SafeOpenRead(string path)
+        public static FileStream OpenRead(string path)
         {
             if (string.IsNullOrEmpty(path))
+            {
                 throw new ArgumentException("path");
+            }
 
             int attempts = 0;
-            FileStream file = null;
-
-            while (attempts < _maxAttempts)
+            while (true)
             {
                 try
                 {
                     attempts++;
-                    file = File.OpenRead(path);
-                    return file;
+                    return File.OpenRead(path);
                 }
                 catch (Exception e)
                 {
-                    if (file != null) file.Dispose();
-
-                    // e is DirectoryNotFoundException || e is FileNotFoundException || 
-                    if (e is IOException || e is UnauthorizedAccessException)
+                    if (attempts < MaxAttempts && (e is IOException || e is UnauthorizedAccessException))
+                    {
                         System.Threading.Thread.Sleep(100);
+                    }
                     else
-                        throw e;
+                    {
+                        throw;
+                    }
                 }
             }
+        }
 
-            // must be unreachable
-            return null;
+        /// <summary>
+        /// Copies the specified file with retry logic.
+        /// </summary>
+        /// <param name="sourceFileName">Path of the source file.</param>
+        /// <param name="destFileName">Path of the destination file.</param>
+        /// <param name="overwrite">If set to <c>true</c>, overwrites an existing file.</param>
+        public static void Copy(string sourceFileName, string destFileName, bool overwrite)
+        {
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    File.Copy(sourceFileName, destFileName, overwrite);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    if (attempts < MaxAttempts && (e is IOException || e is UnauthorizedAccessException))
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
         }
     }
 }

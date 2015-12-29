@@ -173,10 +173,13 @@ namespace Wyam.Core.Modules.IO
                             {
                                 string destination = null;
 
-                                if( _destinationPath == null )
+                                if(_destinationPath == null)
                                 {
-                                    string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)) : "";
-                                    destination = Path.Combine(context.OutputFolder, relativePath, Path.GetFileName(file));
+                                    if(file != null)
+                                    {
+                                        string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)) : "";
+                                        destination = Path.Combine(context.OutputFolder, relativePath, Path.GetFileName(file));
+                                    }
                                 }
                                 else
                                 {
@@ -186,11 +189,11 @@ namespace Wyam.Core.Modules.IO
                                 if (!string.IsNullOrWhiteSpace(destination))
                                 {
                                     string destinationDirectory = Path.GetDirectoryName(destination);
-                                    if (!Directory.Exists(destinationDirectory))
+                                    if (destinationDirectory != null && !Directory.Exists(destinationDirectory))
                                     {
                                         Directory.CreateDirectory(destinationDirectory);
                                     }
-                                    File.Copy(file, destination, true);
+                                    SafeIOHelper.Copy(file, destination, true);
                                     context.Trace.Verbose("Copied file {0} to {1}", file, destination);
                                     return input.Clone(new MetadataItems
                                     {
