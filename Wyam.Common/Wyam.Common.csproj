@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\SafeIOHelper.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
     <Compile Include="Meta\MetadataItems.cs" />
     <Compile Include="Meta\Keys.cs" />

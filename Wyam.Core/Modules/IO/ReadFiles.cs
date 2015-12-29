@@ -147,7 +147,7 @@ namespace Wyam.Core.Modules.IO
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);
-                                return input.Clone(file, File.OpenRead(file), new MetadataItems
+                                return input.Clone(file, SafeIOHelper.SafeOpenRead(file), new MetadataItems
                                 {
                                     { Keys.SourceFileRoot, fileRoot },
                                     { Keys.SourceFileBase, Path.GetFileNameWithoutExtension(file) },
