@@ -418,7 +418,7 @@ namespace Wyam
                 if (File.Exists(_configFile))
                 {
                     engine.Trace.Information("Loading configuration from {0}", _configFile);
-                    engine.Configure(File.ReadAllText(_configFile), _updatePackages, Path.GetFileName(_configFile), _outputScripts);
+                    engine.Configure(Wyam.Common.IO.SafeIOHelper.ReadAllText(_configFile), _updatePackages, Path.GetFileName(_configFile), _outputScripts);
                 }
                 else
                 {

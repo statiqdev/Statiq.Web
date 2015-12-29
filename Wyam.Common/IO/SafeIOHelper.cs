@@ -52,6 +52,39 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
+        /// Reads the specified file with retry logic.
+        /// </summary>
+        /// <param name="path">Path to the file to read.</param>
+        public static string ReadAllText(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("path");
+            }
+
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    attempts++;
+                    return File.ReadAllText(path);
+                }
+                catch (Exception e)
+                {
+                    if (attempts < MaxAttempts && (e is IOException || e is UnauthorizedAccessException))
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Copies the specified file with retry logic.
         /// </summary>
         /// <param name="sourceFileName">Path of the source file.</param>
