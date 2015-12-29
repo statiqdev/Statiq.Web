@@ -38,10 +38,10 @@ namespace Wyam.Modules.Git.Tests
 
             // Then
             Assert.That(results.Count, Is.GreaterThan(4));
-            Dictionary<string, object> firstResultMetadata = results[0].ToDictionary(x => x.Key, x => x.Value);
-            Assert.AreEqual("dave@daveaglick.com", firstResultMetadata[GitKeys.ContributorEmail]);
-            Assert.AreEqual("Dave Glick", firstResultMetadata[GitKeys.ContributorName]);
-            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)firstResultMetadata[GitKeys.Commits])
+            Dictionary<string, object> result = results
+                .Single(x => x.String(GitKeys.ContributorEmail) == "dave@daveaglick.com" && x.String(GitKeys.ContributorName) == "Dave Glick")
+                .ToDictionary(x => x.Key, x => x.Value);
+            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)result[GitKeys.Commits])
                 .Select(x => x.ToDictionary(y => y.Key, y => y.Value)).ToList();
             Assert.That(commits.Count(), Is.GreaterThan(200));
             Assert.IsTrue(commits.All(x => (string)x[GitKeys.CommitterEmail] == "dave@daveaglick.com" || (string)x[GitKeys.AuthorEmail] == "dave@daveaglick.com"));
@@ -70,10 +70,10 @@ namespace Wyam.Modules.Git.Tests
 
             // Then
             Assert.That(results.Count, Is.GreaterThan(4));
-            Dictionary<string, object> firstResultMetadata = results[0].ToDictionary(x => x.Key, x => x.Value);
-            Assert.AreEqual("dave@daveaglick.com", firstResultMetadata[GitKeys.ContributorEmail]);
-            Assert.AreEqual("Dave Glick", firstResultMetadata[GitKeys.ContributorName]);
-            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)firstResultMetadata[GitKeys.Commits])
+            Dictionary<string, object> result = results
+                .Single(x => x.String(GitKeys.ContributorEmail) == "dave@daveaglick.com" && x.String(GitKeys.ContributorName) == "Dave Glick")
+                .ToDictionary(x => x.Key, x => x.Value);
+            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)result[GitKeys.Commits])
                 .Select(x => x.ToDictionary(y => y.Key, y => y.Value)).ToList();
             Assert.That(commits.Count, Is.GreaterThan(200));
             Assert.IsTrue(commits.All(x => (string)x[GitKeys.CommitterEmail] == "dave@daveaglick.com"));
@@ -102,10 +102,10 @@ namespace Wyam.Modules.Git.Tests
 
             // Then
             Assert.That(results.Count, Is.GreaterThan(4));
-            Dictionary<string, object> firstResultMetadata = results[0].ToDictionary(x => x.Key, x => x.Value);
-            Assert.AreEqual("dave@daveaglick.com", firstResultMetadata[GitKeys.ContributorEmail]);
-            Assert.AreEqual("Dave Glick", firstResultMetadata[GitKeys.ContributorName]);
-            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)firstResultMetadata[GitKeys.Commits])
+            Dictionary<string, object> result = results
+                .Single(x => x.String(GitKeys.ContributorEmail) == "dave@daveaglick.com" && x.String(GitKeys.ContributorName) == "Dave Glick")
+                .ToDictionary(x => x.Key, x => x.Value);
+            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)result[GitKeys.Commits])
                 .Select(x => x.ToDictionary(y => y.Key, y => y.Value)).ToList();
             Assert.That(commits.Count, Is.GreaterThan(200));
             Assert.IsTrue(commits.All(x => (string)x[GitKeys.AuthorEmail] == "dave@daveaglick.com"));
@@ -152,10 +152,10 @@ namespace Wyam.Modules.Git.Tests
             Assert.AreEqual(1, results.Count);
             List<IDocument> contributors =
                 ((IEnumerable<IDocument>)results[0].First(x => x.Key == GitKeys.Contributors).Value).ToList();
-            Dictionary<string, object> firstContributorMetadata = contributors[0].ToDictionary(x => x.Key, x => x.Value);
-            Assert.AreEqual("dave@daveaglick.com", firstContributorMetadata[GitKeys.ContributorEmail]);
-            Assert.AreEqual("Dave Glick", firstContributorMetadata[GitKeys.ContributorName]);
-            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)firstContributorMetadata[GitKeys.Commits])
+            Dictionary<string, object> contributor = contributors
+                .Single(x => x.String(GitKeys.ContributorEmail) == "dave@daveaglick.com" && x.String(GitKeys.ContributorName) == "Dave Glick")
+                .ToDictionary(x => x.Key, x => x.Value);
+            List<Dictionary<string, object>> commits = ((IEnumerable<IDocument>)contributor[GitKeys.Commits])
                 .Select(x => x.ToDictionary(y => y.Key, y => y.Value)).ToList();
             Assert.That(commits.Count, Is.LessThan(10));
             Assert.IsTrue(commits.All(x => (string)x[GitKeys.CommitterEmail] == "dave@daveaglick.com" || (string)x[GitKeys.AuthorEmail] == "dave@daveaglick.com"));
