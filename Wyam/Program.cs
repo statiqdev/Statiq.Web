@@ -3,14 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
@@ -245,119 +239,34 @@ namespace Wyam
                 previewServer?.Dispose();
             }
         }
-
-        // Very simple command line parsing
+        
         private bool ParseArgs(string[] args)
         {
-            for (int c = 0; c < args.Length; c++)
+            System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
             {
-                if (args[c] == "--watch")
+                syntax.DefineOption("w|watch", ref _watch, "Watches the input folder for any changes.");
+                _preview = syntax.DefineOption("p|preview", ref _previewPort, false, "Start the preview web server on the specified port (default is " + _previewPort + ").").IsSpecified;
+                if(syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
                 {
-                    _watch = true;
+                    syntax.ReportError("force-ext can only be specified if the preview server is running."); 
                 }
-                else if (args[c] == "--noclean")
+                syntax.DefineOption("i|input", ref _inputFolder, "The path of input files, can be absolute or relative to the current folder.");
+                syntax.DefineOption("o|output", ref _outputFolder, "The path to output files, can be absolute or relative to the current folder.");
+                syntax.DefineOption("c|config", ref _configFile, "Configuration file (by default, config.wyam is used).");
+                syntax.DefineOption("u|update-packages", ref _updatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
+                syntax.DefineOption("output-scripts", ref _outputScripts, "Outputs the config scripts after they've been processed for further debugging.");
+                syntax.DefineOption("noclean", ref _noClean, "Prevents cleaning of the output path on each execution.");
+                syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
+                syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
+                syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
+                _logFile = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
+                if(!syntax.DefineOption("l|log", ref _logFile, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
-                    _noClean = true;
+                    _logFile = null;
                 }
-                else if (args[c] == "--nocache")
-                {
-                    _noCache = true;
-                }
-                else if (args[c] == "--preview")
-                {
-                    _preview = true;
-                    while (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
-                    {
-                        if (args[c + 1] == "force-ext")
-                        {
-                            _previewForceExtension = true;
-                            c++;
-                        }
-                        else if (!int.TryParse(args[c++], out _previewPort))
-                        {
-                            // Invalid port number
-                            Help(true);
-                            return false;
-                        }
-                    }
-                }
-                else if (args[c] == "--log")
-                {
-                    _logFile = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
-                    if (c + 1 < args.Length && !args[c + 1].StartsWith("--"))
-                    {
-                        _logFile = args[++c];
-                    }
-                }
-                else if (args[c] == "--input")
-                {
-                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
-                    {
-                        Help(true);
-                        return false;
-                    }
-                    _inputFolder = args[++c];
-                }
-                else if (args[c] == "--output")
-                {
-                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
-                    {
-                        Help(true);
-                        return false;
-                    }
-                    _outputFolder = args[++c];
-                }
-                else if (args[c] == "--config")
-                {
-                    if (c + 1 >= args.Length || args[c + 1].StartsWith("--"))
-                    {
-                        Help(true);
-                        return false;
-                    }
-                    _configFile = args[++c];
-                }
-                else if (args[c] == "--update-packages")
-                {
-                    _updatePackages = true;
-                }
-                else if (args[c] == "--output-scripts")
-                {
-                    _outputScripts = true;
-                }
-                else if (args[c] == "--verbose")
-                {
-                    _verbose = true;
-                }
-                else if (args[c] == "--pause")
-                {
-                    _pause = true;
-                }
-                else if (args[c] == "--help")
-                {
-                    Help(false);
-                    return false;
-                }
-                else if (c == 0 && !args[c].StartsWith("--"))
-                {
-                    _rootFolder = args[c];
-                }
-                else
-                {
-                    // Invalid argument
-                    Help(true);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private void Help(bool invalid)
-        {
-            if (invalid)
-            {
-                Console.WriteLine("Invalid arguments");
-            }
-            Console.WriteLine("Usage: wyam.exe [path] [--input path] [--output path] [--config file] [--noclean] [--nocache] [--update-packages] [--watch] [--preview [force-ext] [port]] [--log [log file]] [--verbose] [--pause] [--help]");
+                syntax.DefineParameter("root", ref _rootFolder, "The folder to use.");
+            });
+            return !(parsed.IsHelpRequested() || parsed.HasErrors);
         }
 
         private Engine GetEngine()
