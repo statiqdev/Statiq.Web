@@ -173,6 +173,10 @@
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Modules.Razor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Rss\Wyam.Modules.Rss.csproj">
+      <Project>{023a7863-9b12-4610-9d33-a618f7c2c763}</Project>
+      <Name>Wyam.Modules.Rss</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.SearchIndex\Wyam.Modules.SearchIndex.csproj">
       <Project>{957fe3a0-7ce0-48a1-9767-d122b9f43907}</Project>
       <Name>Wyam.Modules.SearchIndex</Name>
