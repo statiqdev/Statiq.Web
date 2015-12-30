@@ -274,7 +274,7 @@ namespace Wyam.Modules.Rss
                 var item = new XElement("item");
 
                 object title;
-                bool hasTitle = input.TryGetValue("RssTitle", out title);
+                bool hasTitle = input.TryGetValue(_titleMetaKey, out title);
                 item.Add(new XElement("title", hasTitle ? title : "Untitled"));
 
                 string link = null;
