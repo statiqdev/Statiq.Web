@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -11,8 +12,100 @@ using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Common.IO;
 
-namespace Wyam.Modules.Rss
+namespace Wyam.Core.Modules.Contents
 {
+    /// <summary>
+    /// Creates RSS feed from input documents.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Implements RSS and Atom feeds. All input documents should have <c>RssTitle</c> and <c>RssDescription</c> metadata
+    /// because they are required by RSS. You can override these metadata keys via <c>WithTitleMetaKey(string key)</c>
+    /// and <c>WithDescriptionMetaKey(string key)</c>.
+    /// </para>
+    /// <para>
+    /// This module outputs input files without changes and one another file: the RSS feed.
+    /// The RSS feed contains <c>RelativeFilePath</c> and <c>IsRssFeed: true</c> metadata keys.
+    /// Use <c>WriteFiles</c> module inside <c>Branch</c> module without parameters to place file 
+    /// in appropriate file system location. See example.
+    /// </para>
+    /// <para>
+    /// Options:
+    /// <list type="bullet">
+    /// <item><description>Use <c>WithoutGuid()</c> to disable generation of unique identifier for each input document. Guid
+    /// is generated using input document's source location. You may want to disable it if your data is generated
+    /// on fly.</description></item>
+    /// <item><description>Optional <c>RssPubDate</c> metadata will be used to specify document's publication date.
+    /// You can override this metadata key with <c>WithPublicationDateMetaKey(string key)</c>.</description></item>
+    /// <item><description>Language can be set for feed using <c>WithLanguage(string lang)</c>. Language string must
+    /// follow these conventions: http://www.rssboard.org/rss-language-codes</description></item>
+    /// <item><description>Use <c>WithLinkCustomizer</c> to create pretty urls.</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Some things to know:
+    /// <list type="bullet">
+    /// <item><description>If publication date for each document is not set, most RSS reader programs will assume
+    /// that most recent publication is the top most in the output RSS file (that is first input document).</description></item>
+    /// <item><description>Use <c>OrderBy</c> module to order your documents in right order.</description></item>
+    /// <item><description>Use a feed validator when generating RSS for first time: https://validator.w3.org/feed/</description></item>
+    /// <item><description>Only basic tags are defined in this module at this moment, eg. you cannot attach author tag to
+    /// specify RSS item's author.</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// Input/posts/hello.md:
+    /// <code>
+    /// ---
+    /// RssTitle: Hello, world!
+    /// RssDescription: My first blog post
+    /// RssPubDate: 10/11/12
+    /// ---
+    /// 
+    /// Hello, RSS world!
+    /// </code>
+    /// 
+    /// config.wyam:
+    /// <code>
+    /// Pipelines.Add("Blog posts",
+    ///     ReadFiles("posts/*.md"),
+    ///     FrontMatter(Yaml()),
+    ///     Markdown(),
+    ///     WriteFiles(".html"),
+    ///     Rss(siteRoot: "http://example.org",
+    ///         outputRssFilePath: "posts/feed.rss"
+    ///         feedTitle: "My awesome blog",
+    ///         feedDescription: "Blog about something"
+    ///     ),
+    ///     WriteFiles()
+    /// );
+    /// </code>
+    /// 
+    /// Output/posts/feed.rss:
+    /// <code>
+    /// &lt;![CDATA[&lt;?xml version = &quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+    /// &lt;rss version = &quot;2.0&quot; xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+    ///   &lt;channel&gt;
+    ///     &lt;title&gt;My awesome blog&lt;/title&gt;
+    ///     &lt;description&gt;Blog about something&lt;/description&gt;
+    ///     &lt;link&gt;http://example.org&lt;/link&gt;
+    ///     &lt;atom:link href = &quot; http://example.org/posts/feed.rss&quot; rel=&quot;self&quot; /&gt;
+    ///     &lt;lastBuildDate&gt;Wed, 30 Dec 2015 13:39:16 +0300&lt;/lastBuildDate&gt;
+    ///     &lt;item&gt;
+    ///       &lt;title&gt;Hello, world!&lt;/title&gt;
+    ///       &lt;link&gt;http://example.org/posts/hello.html&lt;/link&gt;
+    ///       &lt;description&gt;My first blog post&lt;/description&gt;
+    ///       &lt;pubDate&gt;Sat, 10 Nov 2012 00:00:00 +0400&lt;/pubDate&gt;
+    ///       &lt;guid isPermaLink = &quot;false&quot;&gt; 81a26807-355a-dbf9-7729-c6601f1d8a2b&lt;/guid&gt;
+    ///     &lt;/item&gt;
+    ///   &lt;/channel&gt;
+    /// &lt;/rss&gt;
+    /// </code>
+    /// </example>
+    /// <metadata name="RssPath" type="string">Absolute path to output RSS file on server.</metadata>
+    /// <metadata name="WritePath" type="string">Path where RSS file will be written via WriteFiles module.</metadata>
+    /// <category>Content</category>
     public class Rss : IModule
     {
         /// <summary>
@@ -50,99 +143,10 @@ namespace Wyam.Modules.Rss
         /// <summary>
         /// Creates RSS feed from input documents.
         /// </summary>
-        /// <param name="siteRoot">Site root URL (example: "http://mysite.com")</param>
+        /// <param name="siteRoot">Site root URL (example: "http://mysite.com").</param>
         /// <param name="feedTitle">Title of the RSS feed.</param>
         /// <param name="feedDescription">Description of the RSS feed.</param>
-        /// <param name="outputRssFilePath">Relative output location where generated RSS feed will be placed on server. (example: "blog/feed.rss")</param>
-        /// <remarks>
-        /// <para>
-        /// Implements RSS and Atom feeds. All input documents should have <c>RssTitle</c> and <c>RssDescription</c> metadata
-        /// because they are required by RSS. You can override these metadata keys via <c>WithTitleMetaKey(string key)</c>
-        /// and <c>WithDescriptionMetaKey(string key)</c>.
-        /// </para>
-        /// <para>
-        /// This module outputs input files without changes and one another file: the rss feed.
-        /// The RSS feed contains <c>RelativeFilePath</c> and <c>IsRssFeed: true</c> metadata keys.
-        /// Use <c>WriteFiles</c> module inside <c>Branch</c> module without parameters to place file 
-        /// in apporiate file system location. See example.
-        /// </para>
-        /// <para>
-        /// Options:
-        /// * Use <c>WithoutGuid()</c> to disable generation of unique identifier for each input document. Guid
-        /// is generated using input document's source location. You may want to disable it if your data is generated
-        /// on fly.
-        /// * Optional <c>RssPubDate</c> metadata will be used to specify document's publication date.
-        /// You can override this metadata key with <c>WithPublicationDateMetaKey(string key)</c>.
-        /// * Language can be set for feed using <c>WithLanguage(string lang)</c>. Language string must
-        /// follow these conventions: http://www.rssboard.org/rss-language-codes
-        ///  * Use <c>WithLinkCustomizer</c> to create pretty urls.
-        /// </para>
-        /// <para>
-        /// Some things to know:
-        /// * If publication date for each document is not set, most RSS reader programs will assume
-        /// that most recent publication is most toppest in the output RSS file (that is first input document).
-        /// Use <c>OrderBy</c> module to order your documents in right order.
-        /// * Use feed validator when generating RSS for first time: https://validator.w3.org/feed/
-        /// * Only basic tags are defined in Rss module at this moment, eg. you cannot attach author tag to
-        /// specify RSS item's author.
-        /// </para>
-        /// </remarks>
-        /// <example>
-        /// // Input/posts/hello.md
-        /// <code>
-        /// ---
-        /// RssTitle: Hello, world!
-        /// RssDescription: My first blog post
-        /// RssPubDate: 10/11/12
-        /// ---
-        /// 
-        /// Hello, RSS world!
-        /// </code>
-        /// 
-        /// // config.wyam
-        /// <code>
-        /// ===
-        /// ---
-        /// Pipelines.Add("Blog posts",
-        ///     ReadFiles("posts/*.md"),
-        ///     FrontMatter(Yaml()),
-        ///     Markdown(),
-        ///     WriteFiles(".html"),
-        ///     Rss(siteRoot: "http://example.org",
-        ///         outputRssFilePath: "posts/feed.rss"
-        ///         feedTitle: "My awesome blog",
-        ///         feedDescription: "Blog about something"
-        ///     ),
-        ///     WriteFiles()
-        /// );
-        /// </code>
-        /// 
-        /// // Output/posts/feed.rss
-        /// <![CDATA[<?xml version = "1.0" encoding="utf-8"?>
-        /// <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-        ///   <channel>
-        ///     <title>My awesome blog</title>
-        ///     <description>Blog about something</description>
-        ///     <link>http://example.org</link>
-        ///     <atom:link href="http://example.org/posts/feed.rss" rel="self" />
-        ///     <lastBuildDate>Wed, 30 Dec 2015 13:39:16 +0300</lastBuildDate>
-        ///     <item>
-        ///       <title>Hello, world!</title>
-        ///       <link>http://example.org/posts/hello.html</link>
-        ///       <description>My first blog post</description>
-        ///       <pubDate>Sat, 10 Nov 2012 00:00:00 +0400</pubDate>
-        ///       <guid isPermaLink="false"> 81a26807-355a-dbf9-7729-c6601f1d8a2b</guid>
-        ///     </item>
-        ///   </channel>
-        /// </rss>]]>
-        /// </example>
-        /// <seealso cref="WithTitleMetaKey(string)"/>
-        /// <seealso cref="WithPublicationDateMetaKey(string)"/>
-        /// <seealso cref="WithoutGuid()"/>
-        /// <seealso cref="WithLanguage(string)"/>
-        /// <metadata name="RssPath" type="string">Absolute path to output RSS file on server.</metadata>
-        /// <metadata name="WritePath" type="string">Path where RSS file will be written via WriteFiles module.</metadata>
-        /// <caterogy>Metadata</caterogy>
+        /// <param name="outputRssFilePath">Relative output location where generated RSS feed will be placed on server. (example: "blog/feed.rss").</param>
         public Rss(string siteRoot, string outputRssFilePath, string feedTitle, string feedDescription)
         {
             if (string.IsNullOrEmpty(siteRoot))
@@ -216,8 +220,6 @@ namespace Wyam.Modules.Rss
             _assumePermalinks = true;
             return this;
         }
-
-       
         
         /// <summary>
         /// Allows to customize output links.
@@ -261,7 +263,7 @@ namespace Wyam.Modules.Rss
                     new XAttribute("href", rssAbsolutePath),
                     new XAttribute("rel", "self")
                 ),
-                new XElement("lastBuildDate", DateTime.Now.ToRssDate())
+                new XElement("lastBuildDate", DateTimeHelper.ToRssDate(DateTime.Now))
             );
 
             if (_language != null)
@@ -315,7 +317,7 @@ namespace Wyam.Modules.Rss
                 object pubDate = null;
                 if (input.TryGetValue(_pubDateMetaKey, out pubDate))
                 {
-                    item.Add(new XElement("pubDate", DateTime.Parse((string)pubDate).ToRssDate()));
+                    item.Add(new XElement("pubDate", DateTimeHelper.ToRssDate(DateTime.Parse((string)pubDate))));
                 }
 
                 if (_appendGuid)
@@ -377,6 +379,18 @@ namespace Wyam.Modules.Rss
             : base(builder)
         {
 
+        }
+    }
+
+    internal class DateTimeHelper
+    {
+        private static CultureInfo rssDateCulture = new CultureInfo("en");
+
+        public static string ToRssDate(DateTime date)
+        {
+            var value = date.ToString("ddd',' d MMM yyyy HH':'mm':'ss", rssDateCulture)
+                + " " + date.ToString("zzzz", rssDateCulture).Replace(":", "");
+            return value;
         }
     }
 }

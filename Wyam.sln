@@ -60,8 +60,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Git.Tests", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Markdown.Tests", "Wyam.Modules.Markdown.Tests\Wyam.Modules.Markdown.Tests.csproj", "{2392BE38-2D56-4F72-8659-A3435FB1EC86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Rss", "Wyam.Modules.Rss\Wyam.Modules.Rss.csproj", "{023A7863-9B12-4610-9D33-A618F7C2C763}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -176,10 +174,6 @@ Global
 		{2392BE38-2D56-4F72-8659-A3435FB1EC86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2392BE38-2D56-4F72-8659-A3435FB1EC86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2392BE38-2D56-4F72-8659-A3435FB1EC86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{023A7863-9B12-4610-9D33-A618F7C2C763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{023A7863-9B12-4610-9D33-A618F7C2C763}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{023A7863-9B12-4610-9D33-A618F7C2C763}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{023A7863-9B12-4610-9D33-A618F7C2C763}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
