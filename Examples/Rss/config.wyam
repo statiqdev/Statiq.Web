@@ -1,0 +1,22 @@
+===
+---
+Pipelines.Add("Blog posts",
+	ReadFiles("posts/*.md"),
+	FrontMatter(Yaml()),
+	Markdown(),
+	WriteFiles(string.Format("{0}/index.html", (string)@doc["RelativeFilePathBase"])),
+	Branch(
+		Rss(siteRoot: "http://example.org",
+			outputRssFilePath: "posts/feed.rss",
+			feedTitle: "My awesome blog",
+			feedDescription: "Blog about something")
+				.WithTitleMetaKey("Title")
+				.WithDescriptionMetaKey("Description")
+				.WithLinkCustomizer((link) => link.EndsWith("/index.html") ? link.Substring(0, "/index.html".Length) : link),
+
+		WriteFiles()
+	)
+	// Use Branch so RSS feed document doesn't get outputted
+	// useful when other pipelines relies on this pipeline
+	// documents
+);
