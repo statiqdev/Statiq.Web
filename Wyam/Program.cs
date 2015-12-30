@@ -400,6 +400,7 @@ namespace Wyam
                 {
                     RequestPath = PathString.Empty,
                     FileSystem = outputFolder,
+                    ServeUnknownFileTypes = true
                 });
             });
         }
