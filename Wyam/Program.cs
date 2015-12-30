@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
@@ -18,17 +19,17 @@ namespace Wyam
 {
     public class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
             Program program = new Program();
-            program.Run(args);
+            return program.Run(args);
         }
 
         static void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
         {
             // Exit with a error exit code
-            Environment.Exit(1);
+            Environment.Exit((int)ExitCode.UnhandledError);
         }
 
         private bool _watch = false;
@@ -52,16 +53,17 @@ namespace Wyam
         private readonly InterlockedBool _exit = new InterlockedBool(false);
         private readonly InterlockedBool _newEngine = new InterlockedBool(false);
 
-        private void Run(string[] args)
+        private int Run(string[] args)
         {
             AssemblyInformationalVersionAttribute versionAttribute
                 = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
             Console.WriteLine("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
 
             // Parse the command line
-            if (!ParseArgs(args))
+            bool hasParseArgsErrors;
+            if (!ParseArgs(args, out hasParseArgsErrors))
             {
-                return;
+                return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
             }
 
             // It's not a serious console app unless there's some ASCII art
@@ -77,7 +79,7 @@ namespace Wyam
             Engine engine = GetEngine();
             if (engine == null)
             {
-                return;
+                return (int)ExitCode.CommandLineError;
             }
 
             // Pause
@@ -90,14 +92,14 @@ namespace Wyam
             // Configure and execute
             if (!Configure(engine))
             {
-                return;
+                return (int)ExitCode.ConfigurationError;
             }
             Console.WriteLine("Root folder: {0}", engine.RootFolder);
             Console.WriteLine("Input folder: {0}", engine.InputFolder);
             Console.WriteLine("Output folder: {0}", engine.OutputFolder);
             if (!Execute(engine))
             {
-                return;
+                return (int)ExitCode.ExecutionError;
             }
 
             bool messagePump = false;
@@ -147,6 +149,7 @@ namespace Wyam
             }
 
             // Start the message pump if an async process is running
+            ExitCode exitCode = ExitCode.Normal;
             if (messagePump)
             {
                 // Start the key listening thread
@@ -182,6 +185,7 @@ namespace Wyam
                         // Configure and execute
                         if (!Configure(engine))
                         {
+                            exitCode = ExitCode.ConfigurationError;
                             break;
                         }
                         Console.WriteLine("Root folder: {0}", engine.RootFolder);
@@ -189,6 +193,7 @@ namespace Wyam
                         Console.WriteLine("Output folder: {0}", engine.OutputFolder);
                         if (!Execute(engine))
                         {
+                            exitCode = ExitCode.ExecutionError;
                             break;
                         }
 
@@ -217,6 +222,7 @@ namespace Wyam
                             engine.Trace.Information("{0} files have changed, re-executing", changedFiles.Count);
                             if (!Execute(engine))
                             {
+                                exitCode = ExitCode.ExecutionError;
                                 break;
                             }
                         }
@@ -238,9 +244,10 @@ namespace Wyam
                 configFileWatcher?.Dispose();
                 previewServer?.Dispose();
             }
+            return (int)exitCode;
         }
         
-        private bool ParseArgs(string[] args)
+        private bool ParseArgs(string[] args, out bool hasErrors)
         {
             System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
             {
@@ -266,7 +273,8 @@ namespace Wyam
                 }
                 syntax.DefineParameter("root", ref _rootFolder, "The folder to use.");
             });
-            return !(parsed.IsHelpRequested() || parsed.HasErrors);
+            hasErrors = parsed.HasErrors;
+            return !(parsed.IsHelpRequested() || hasErrors);
         }
 
         private Engine GetEngine()
