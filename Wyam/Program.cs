@@ -271,7 +271,22 @@ namespace Wyam
                 {
                     _logFile = null;
                 }
-                syntax.DefineParameter("root", ref _rootFolder, "The folder to use.");
+                if(syntax.DefineParameter("root", ref _rootFolder, "The folder (or config file) to use.").IsSpecified
+                    && File.Exists(Path.Combine(Environment.CurrentDirectory, _rootFolder)))
+                {
+                    // If a root folder was defined, but it actually points to a file, set the root folder to the directory
+                    // and use the specified file as the config file (if a config file was already specified, it's an error)
+                    if (_configFile != null)
+                    {
+                        syntax.ReportError("A config file was both explicitly specified and specified in the root folder.");
+                    }
+                    else
+                    {
+                        string path = Path.Combine(Environment.CurrentDirectory, _rootFolder);
+                        _configFile = Path.GetFileName(path);
+                        _rootFolder = Path.GetDirectoryName(path);
+                    }
+                }
             });
             hasErrors = parsed.HasErrors;
             return !(parsed.IsHelpRequested() || hasErrors);
