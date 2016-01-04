@@ -13,18 +13,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using NuGet;
+using Wyam.Common.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Common.Modules;
+using Wyam.Common.NuGet;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Configuration
 {
     // This just encapsulates configuration logic
-    internal class Configurator : IDisposable
+    internal class Config : IConfig, IDisposable
     {
         private readonly Engine _engine;
-        private readonly string _fileName;
-        private readonly bool _outputScripts;
         private readonly PackagesCollection _packages;
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
@@ -34,18 +34,18 @@ namespace Wyam.Core.Configuration
         private string _configAssemblyFullName;
         private byte[] _rawSetupAssembly;
 
+        private bool _configured;
+        private string _fileName;
+        private bool _outputScripts;
+
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Configurator" /> class.
+        /// Initializes a new instance of the <see cref="Config" /> class.
         /// </summary>
         /// <param name="engine">The engine.</param>
-        /// <param name="fileName">Name of the input file, used for error reporting.</param>
-        /// <param name="outputScripts">if set to <c>true</c> outputs .cs files for the generated scripts.</param>
-        public Configurator(Engine engine, string fileName, bool outputScripts)
+        public Config(Engine engine)
         {
             _engine = engine;
-            _fileName = fileName;
-            _outputScripts = outputScripts;
             _packages = new PackagesCollection(engine);
 
             // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
@@ -79,9 +79,13 @@ namespace Wyam.Core.Configuration
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Configurator));
+                throw new ObjectDisposedException(nameof(Config));
             }
         }
+
+        IAssemblyCollection IConfig.Assemblies => _assemblyCollection;
+
+        IPackagesCollection IConfig.Packages => _packages;
 
         public IEnumerable<Assembly> Assemblies => _assemblies.Values;
 
@@ -91,14 +95,21 @@ namespace Wyam.Core.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script, bool updatePackages)
+        public void Configure(string script, bool updatePackages, string fileName, bool outputScripts)
         {
             CheckDisposed();
+            if (_configured)
+            {
+                throw new InvalidOperationException("This engine has already been configured.");
+            }
+            _configured = true;
+            _fileName = fileName;
+            _outputScripts = outputScripts;
 
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                Config(null, null);
+                Configure(null, null);
                 return;
             }
 
@@ -111,7 +122,7 @@ namespace Wyam.Core.Configuration
             }
 
             // Configuration
-            Config(configParts.Item2, configParts.Item3);
+            Configure(configParts.Item2, configParts.Item3);
         }
 
         // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
@@ -167,9 +178,8 @@ namespace Wyam.Core.Configuration
                     // Create the setup script
                     StringBuilder codeBuilder = new StringBuilder(@"
                         using System;
-                        using Wyam.Core;
-                        using Wyam.Core.Configuration;
-                        using Wyam.Core.NuGet;");
+                        using Wyam.Common.Configuration;
+                        using Wyam.Common.NuGet;");
                     codeBuilder.AppendLine();
                     codeBuilder.AppendLine(string.Join(Environment.NewLine,
                         typeof(IModule).Assembly.GetTypes()
@@ -226,7 +236,7 @@ namespace Wyam.Core.Configuration
             "Wyam.Core.Configuration"
         };
 
-        private void Config(string declarations, string code)
+        private void Configure(string declarations, string code)
         {
             try
             {
@@ -329,7 +339,7 @@ namespace Wyam.Core.Configuration
             // Get path to all assemblies (except those specified by name)
             List<string> assemblyPaths = new List<string>();
             assemblyPaths.AddRange(_packages.GetCompatibleAssemblyPaths());
-            assemblyPaths.AddRange(Directory.GetFiles(Path.GetDirectoryName(typeof(Configurator).Assembly.Location), "*.dll", SearchOption.AllDirectories));
+            assemblyPaths.AddRange(Directory.GetFiles(Path.GetDirectoryName(typeof(Config).Assembly.Location), "*.dll", SearchOption.AllDirectories));
             assemblyPaths.AddRange(_assemblyCollection.Directories
                 .Select(x => new Tuple<string, SearchOption>(Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))

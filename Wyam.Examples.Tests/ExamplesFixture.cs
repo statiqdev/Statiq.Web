@@ -24,7 +24,7 @@ namespace Wyam.Examples.Tests
                 {
                     if (_paths == null)
                     {
-                        string rootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Examples");
+                        string rootPath = Path.Combine(typeof(ExamplesFixture).Assembly.Location, "Examples");
                         while (!Directory.Exists(rootPath))
                         {
                             rootPath = Directory.GetParent(rootPath).Parent.FullName;
@@ -42,11 +42,10 @@ namespace Wyam.Examples.Tests
             [TestCaseSource(typeof(ExamplesFixture), nameof(Paths))]
             public void ExecuteAllExamples(string example)
             {
-                Engine engine = new Engine
-                {
-                    RootFolder = example
-                };
+                Engine engine = new Engine();
                 engine.Trace.AddListener(new TestTraceListener());
+                engine.RootFolder = example;
+                engine.Config.Assemblies.LoadDirectory(TestContext.CurrentContext.TestDirectory);
                 string config = Path.Combine(example, "config.wyam");
                 if (File.Exists(config))
                 {

@@ -2,6 +2,7 @@
 using System.IO;
 using NuGet;
 using NuGet.Frameworks;
+using Wyam.Common.NuGet;
 
 namespace Wyam.Core.NuGet
 {

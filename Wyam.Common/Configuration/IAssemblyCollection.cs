@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Common.Configuration
 {
     public interface IAssemblyCollection
     {

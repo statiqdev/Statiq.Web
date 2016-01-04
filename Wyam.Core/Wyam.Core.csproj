@@ -99,8 +99,7 @@
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Configuration\ConfigRewriter.cs" />
-    <Compile Include="Configuration\Configurator.cs" />
-    <Compile Include="Configuration\IAssemblyCollection.cs" />
+    <Compile Include="Configuration\Config.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
@@ -134,8 +133,6 @@
     <Compile Include="Modules\Extensibility\Trace.cs" />
     <Compile Include="Modules\Control\Concat.cs" />
     <Compile Include="Modules\Control\Where.cs" />
-    <Compile Include="NuGet\IPackagesCollection.cs" />
-    <Compile Include="NuGet\IRepository.cs" />
     <Compile Include="Modules\Contents\Append.cs" />
     <Compile Include="Modules\Control\Branch.cs" />
     <Compile Include="Modules\Contents\Content.cs" />

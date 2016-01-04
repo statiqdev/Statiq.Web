@@ -24,7 +24,7 @@ namespace Wyam.Core.Tests.Configuration
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 ===
@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Configuration
 D";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -50,7 +50,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 ===  
@@ -58,7 +58,7 @@ D", configParts.Item3);
 D";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -76,7 +76,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
   ===
@@ -84,7 +84,7 @@ D", configParts.Item3);
 D";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.IsNull(configParts.Item1);
@@ -103,7 +103,7 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 
@@ -113,7 +113,7 @@ D", configParts.Item3);
 D";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -133,13 +133,13 @@ D", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 C";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.IsNull(configParts.Item1);
@@ -161,7 +161,7 @@ C", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 ===
@@ -172,7 +172,7 @@ D
 F";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -192,7 +192,7 @@ F", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 ===  
@@ -203,7 +203,7 @@ E
 =F";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -223,7 +223,7 @@ E
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
   ===
@@ -234,7 +234,7 @@ D
 F";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.IsNull(configParts.Item1);
@@ -256,7 +256,7 @@ F", configParts.Item3);
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 
@@ -271,7 +271,7 @@ E-
 -F";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.AreEqual(@"#line 1
@@ -295,7 +295,7 @@ E-
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"A=
 =B
 C
@@ -304,7 +304,7 @@ E-
 -F";
 
             // When
-            Tuple<string, string, string> configParts = configurator.GetConfigParts(configScript);
+            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
 
             // Then
             Assert.IsNull(configParts.Item1);
@@ -356,7 +356,7 @@ E-
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             HashSet<Type> moduleTypes = new HashSet<Type> {typeof (Content)};
             string expected = $@"
 
@@ -384,7 +384,7 @@ E-
                         }}}}";
 
             // When
-            string actual = configurator.GenerateScript(null, input, moduleTypes);
+            string actual = config.GenerateScript(null, input, moduleTypes);
 
             // Then
             Assert.AreEqual(expected, actual);
@@ -395,7 +395,7 @@ E-
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 foo
@@ -409,7 +409,7 @@ int z = 0;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -427,7 +427,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -441,7 +441,7 @@ int z = 0;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -459,7 +459,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -478,7 +478,7 @@ int z = 0;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -496,7 +496,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 class Y { };
 
@@ -511,7 +511,7 @@ int z = 0;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -529,7 +529,7 @@ int z = 0;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -549,7 +549,7 @@ foo bar;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -566,7 +566,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -579,7 +579,7 @@ foo bar;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -596,7 +596,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -613,7 +613,7 @@ foo bar;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -630,7 +630,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -647,7 +647,7 @@ foo bar;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -664,7 +664,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -682,7 +682,7 @@ foo bar;
             AggregateException exception = null;
             try
             {
-                configurator.Configure(configScript, false);
+                config.Configure(configScript, false, null, false);
             }
             catch (AggregateException ex)
             {
@@ -700,7 +700,7 @@ foo bar;
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             Type moduleType = typeof (Content);
             string expected = $@"
                         public static Wyam.Core.Modules.Contents.Content Content(object content)
@@ -721,7 +721,7 @@ foo bar;
                         }}";
 
             // When
-            string generated = configurator.GenerateModuleConstructorMethods(moduleType);
+            string generated = config.GenerateModuleConstructorMethods(moduleType);
 
             // Then
             Assert.AreEqual(expected, generated);
@@ -733,7 +733,7 @@ foo bar;
             // Given
             Engine engine = new Engine();
             engine.Trace.AddListener(new TestTraceListener());
-            Configurator configurator = new Configurator(engine, null, false);
+            Config config = new Config(engine);
             Type moduleType = typeof(GenericModule<>);
             string expected = $@"
                         public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(T input)
@@ -746,7 +746,7 @@ foo bar;
                         }}";
 
             // When
-            string generated = configurator.GenerateModuleConstructorMethods(moduleType);
+            string generated = config.GenerateModuleConstructorMethods(moduleType);
 
             // Then
             Assert.AreEqual(expected, generated);

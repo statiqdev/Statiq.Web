@@ -13,6 +13,7 @@ using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Common;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Pipelines;
@@ -26,8 +27,11 @@ namespace Wyam.Core
 {
     public class Engine : IDisposable
     {
-        private Configurator _configurator = null;
         private bool _disposed;
+
+        private readonly Config _config;
+
+        public IConfig Config => _config;
 
         private readonly Dictionary<string, object> _metadata = new Dictionary<string, object>();
 
@@ -46,11 +50,11 @@ namespace Wyam.Core
 
         public ITrace Trace => _trace;
 
-        public byte[] RawConfigAssembly => _configurator?.RawConfigAssembly;
+        public byte[] RawConfigAssembly => _config?.RawConfigAssembly;
 
-        public IEnumerable<Assembly> Assemblies => _configurator?.Assemblies;
+        public IEnumerable<Assembly> Assemblies => _config?.Assemblies;
 
-        public IEnumerable<string> Namespaces => _configurator?.Namespaces;
+        public IEnumerable<string> Namespaces => _config?.Namespaces;
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
 
@@ -115,6 +119,7 @@ namespace Wyam.Core
 
         public Engine()
         {
+            _config = new Config(this);
             _pipelines = new PipelineCollection(this);
         }
 
@@ -124,12 +129,7 @@ namespace Wyam.Core
 
             try
             {
-                if(_configurator != null)
-                {
-                    throw new InvalidOperationException("This engine has already been configured.");
-                }
-                _configurator = new Configurator(this, fileName, outputScripts);
-                _configurator.Configure(configScript, updatePackages);
+                _config.Configure(configScript, updatePackages, fileName, outputScripts);
             }
             catch (Exception ex)
             {
@@ -160,7 +160,7 @@ namespace Wyam.Core
             CheckDisposed();
 
             // Configure with defaults if not already configured
-            if (_configurator == null)
+            if (_config == null)
             {
                 Configure();
             }
@@ -240,7 +240,7 @@ namespace Wyam.Core
                 pipeline.Dispose();
             }
             _trace.Dispose();
-            _configurator?.Dispose();
+            _config?.Dispose();
             _disposed = true;
         }
 

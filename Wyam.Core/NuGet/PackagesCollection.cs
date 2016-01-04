@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NuGet;
 using NuGet.Frameworks;
+using Wyam.Common.NuGet;
 
 namespace Wyam.Core.NuGet
 {
