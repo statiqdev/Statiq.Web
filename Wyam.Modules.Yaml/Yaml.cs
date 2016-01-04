@@ -53,42 +53,52 @@ namespace Wyam.Modules.Yaml
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select(x =>
-            {
-                Dictionary<string, object> items = new Dictionary<string, object>();
-                using (TextReader contentReader = new StringReader(x.Content))
+            return inputs
+                .Select(x =>
                 {
-                    YamlStream yamlStream = new YamlStream();
-                    yamlStream.Load(contentReader);
-                    if (yamlStream.Documents.Count > 0)
+                    try
                     {
-                        if (!string.IsNullOrEmpty(_key))
+                        Dictionary<string, object> items = new Dictionary<string, object>();
+                        using (TextReader contentReader = new StringReader(x.Content))
                         {
-                            items[_key] = new DynamicYaml(yamlStream.Documents[0].RootNode);
-                        }
-                        if (_flatten)
-                        {
-                            foreach (YamlDocument document in yamlStream.Documents)
+                            YamlStream yamlStream = new YamlStream();
+                            yamlStream.Load(contentReader);
+                            if (yamlStream.Documents.Count > 0)
                             {
-                                // Map scalar-to-scalar children
-                                foreach (KeyValuePair<YamlNode, YamlNode> child in 
-                                    ((YamlMappingNode)document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
+                                if (!string.IsNullOrEmpty(_key))
                                 {
-                                    items[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;
+                                    items[_key] = new DynamicYaml(yamlStream.Documents[0].RootNode);
                                 }
-
-                                // Map simple sequences
-                                foreach (KeyValuePair<YamlNode, YamlNode> child in
-                                    ((YamlMappingNode) document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlScalarNode)))
+                                if (_flatten)
                                 {
-                                    items[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
+                                    foreach (YamlDocument document in yamlStream.Documents)
+                                    {
+                                        // Map scalar-to-scalar children
+                                        foreach (KeyValuePair<YamlNode, YamlNode> child in 
+                                            ((YamlMappingNode)document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
+                                        {
+                                            items[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;
+                                        }
+
+                                        // Map simple sequences
+                                        foreach (KeyValuePair<YamlNode, YamlNode> child in
+                                            ((YamlMappingNode) document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlScalarNode)))
+                                        {
+                                            items[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
+                                        }
+                                    }
                                 }
                             }
                         }
+                        return x.Clone(items);
                     }
-                }
-                return x.Clone(items);
-            });
+                    catch (Exception ex)
+                    {
+                        context.Trace.Error("Error processing YAML for {0}: {1}", x.Source, ex.Message);
+                    }
+                    return null;
+                })
+                .Where(x => x != null);
         }
     }
 }
