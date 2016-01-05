@@ -12,7 +12,7 @@ Pipelines.Add("Blog posts",
 			feedDescription: "Blog about something")
 				.WithTitleMetaKey("Title")
 				.WithDescriptionMetaKey("Description")
-				.WithLinkCustomizer((link) => link.EndsWith("/index.html") ? link.Substring(0, "/index.html".Length) : link),
+				.WithLinkCustomizer((link) => link.EndsWith("/index.html") ? link.Substring(0, link.IndexOf("/index.html")) : link),
 
 		WriteFiles()
 	)
