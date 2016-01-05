@@ -54,6 +54,7 @@ namespace Wyam.Modules.Yaml
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs
+                .AsParallel()
                 .Select(x =>
                 {
                     try
