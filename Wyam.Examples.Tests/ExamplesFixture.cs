@@ -13,6 +13,7 @@ namespace Wyam.Examples.Tests
 {
     namespace Wyam.Examples.Tests
     {
+
         [TestFixture(Category = "ExcludeFromAppVeyor")]
         public class ExamplesFixture
         {
@@ -24,7 +25,7 @@ namespace Wyam.Examples.Tests
                 {
                     if (_paths == null)
                     {
-                        string rootPath = Path.Combine(typeof(ExamplesFixture).Assembly.Location, "Examples");
+                        string rootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Examples");
                         while (!Directory.Exists(rootPath))
                         {
                             rootPath = Directory.GetParent(rootPath).Parent.FullName;
