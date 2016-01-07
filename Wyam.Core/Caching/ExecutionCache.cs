@@ -34,6 +34,16 @@ namespace Wyam.Core.Caching
             return TryGetValue<TValue>(GetDocumentKey(document), out value);
         }
 
+        public bool TryGetValue<TValue>(IDocument document, string key, out TValue value)
+        {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return TryGetValue<TValue>(GetDocumentKey(document, key), out value);
+        }
+
         public bool TryGetValue<TValue>(string key, out TValue value)
         {
             object rawValue;

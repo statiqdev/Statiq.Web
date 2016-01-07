@@ -24,6 +24,14 @@ namespace Wyam.Core.Caching
             }
         }
 
+        // The string key component is ignored if null or empty
+        protected static string GetDocumentKey(IDocument document, string key)
+        {
+            return string.IsNullOrEmpty(key)
+                ? GetDocumentKey(document)
+                : GetDocumentKey(document) + ":" + key;
+        }
+
         public bool ContainsKey(IDocument document)
         {
             if (document == null)
@@ -32,6 +40,16 @@ namespace Wyam.Core.Caching
             }
 
             return ContainsKey(GetDocumentKey(document));
+        }
+
+        public bool ContainsKey(IDocument document, string key)
+        {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return ContainsKey(GetDocumentKey(document, key));
         }
 
         public bool ContainsKey(string key)
@@ -52,6 +70,16 @@ namespace Wyam.Core.Caching
             }
 
             return TryGetValue(GetDocumentKey(document), out value);
+        }
+
+        public bool TryGetValue(IDocument document, string key, out TValue value)
+        {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            return TryGetValue(GetDocumentKey(document, key), out value);
         }
 
         public virtual bool TryGetValue(string key, out TValue value)
@@ -80,6 +108,16 @@ namespace Wyam.Core.Caching
             }
 
             Set(GetDocumentKey(document), value);
+        }
+
+        public void Set(IDocument document, string key, TValue value)
+        {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            Set(GetDocumentKey(document, key), value);
         }
 
         public virtual void Set(string key, TValue value)
