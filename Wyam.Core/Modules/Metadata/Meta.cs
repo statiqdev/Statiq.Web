@@ -18,6 +18,7 @@ namespace Wyam.Core.Modules.Metadata
         private readonly ConfigHelper<object> _metadata; 
         private readonly IModule[] _modules;
         private bool _forEachDocument;
+        private bool _ignoreNull;
 
         /// <summary>
         /// The specified object is added as metadata for the specified key for every input document.
@@ -84,6 +85,15 @@ namespace Wyam.Core.Modules.Metadata
         public Meta ForEachDocument()
         {
             _forEachDocument = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Ignores null values and does not add a metadata item for them.
+        /// </summary>
+        public Meta IgnoreNull()
+        {
+            _ignoreNull = true;
             return this;
         }
 
