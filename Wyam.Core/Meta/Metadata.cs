@@ -128,6 +128,11 @@ namespace Wyam.Core.Meta
             return value;
         }
 
+        public dynamic Dynamic(string key, object defaultValue = null)
+        {
+            return Get(key, defaultValue) ?? defaultValue;
+        }
+
         public object this[string key]
         {
             get

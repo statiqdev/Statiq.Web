@@ -2,29 +2,87 @@
 
 namespace Wyam.Common.Meta
 {
+    /// <summary>
+    /// Contains a set of metadata with flexible runtime conversion methods.
+    /// </summary>
     public interface IMetadata : IReadOnlyDictionary<string, object>
     {
-        // Returns a strongly-typed metadata that returns values converted to T
+        /// <summary>
+        /// Presents metadata values as a specific type (see <see cref="IMetadata"/>).
+        /// </summary>
+        /// <typeparam name="T">The type metadata values should be converted to.</typeparam>
+        /// <returns>A strongly-typed <see cref="IMetadata"/> object that returns values converted to type T.</returns>
         IMetadata<T> MetadataAs<T>();
         
-        // These methods never throw, they return the specified default value or default(T) if the key is not found
+        /// <summary>
+        /// Gets the value for the specified key. This method never throws an exception. It will return the specified 
+        /// default value or null if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found.</param>
+        /// <returns>The value for the specified key or the specified default value.</returns>
         object Get(string key, object defaultValue = null);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to the specified type. 
+        /// This method never throws an exception. It will return default(T) if the key is not found
+        /// or the value cannot be converted to T.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The value for the specified key converted to type T or default(T) if the key is not found or cannot be converted to type T.</returns>
         T Get<T>(string key);
+
+        /// <summary>
+        /// Gets the value for the specified key. This method never throws an exception. It will return the specified 
+        /// default value if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to type T.</param>
+        /// <returns>The value for the specified key converted to type T or the specified default value.</returns>
         T Get<T>(string key, T defaultValue);
 
-        // This method doesn't throw, equivalent to Get<string>(key, defaultValue)
+        /// <summary>
+        /// Gets the value for the specified key converted to a string. This method never throws an exception. It will return the specified 
+        /// default value if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a string.</param>
+        /// <returns>The value for the specified key converted to a string or the specified default value.</returns>
         string String(string key, string defaultValue = null);
 
-        // This method doesn't throw, equivalent to Get<IReadOnlyList<T>>(key, defaultValue)
+        /// <summary>
+        /// Gets the value for the specified key converted to a IReadOnlyList of type T. This method never throws an exception. It will return the specified 
+        /// default value if the key is not found. Note that if the value is atomic, the conversion operation will succeed and return a list with one item.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a list.</param>
+        /// <returns>The value for the specified key converted to a list or the specified default value.</returns>
         IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null);
 
-        // Another shortcut method that gets strings, but replaces forward-slashes with back-slashes
-        // pretty = trailing /index.html will be trimmed
+        /// <summary>
+        /// Gets the value for the specified key converted to a link. This method never throws an exception. It will return the specified
+        /// default value if the key is not found. The difference between this and getting a plain string is that forward-slashes are
+        /// replaced with back-slashes to create valid links from file system paths and other strings.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a string.</param>
+        /// <param name="pretty">If set to <c>true</c>, trailing "/index.html" and "/index.htm" are trimmed.</param>
+        /// <returns>The value for the specified key converted to a link or the specified default value.</returns>
         string Link(string key, string defaultValue = null, bool pretty = true);
+
+        /// <summary>
+        /// Gets the value associated with the specified key as a dynamic object. This is equivalent
+        /// to calling <c>as dynamic</c> to cast the value.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if either the key is not found or the
+        /// underlying value is null (since the dynamic runtime binder can't bind null values).</param>
+        /// <returns>A dynamic value for the specific key or default value.</returns>
+        dynamic Dynamic(string key, object defaultValue = null);
     }
 
     /// <summary>
-    /// Contains the set of metadata converted to type <typeparamref name="T"/>.
+    /// Contains a set of metadata converted to type <typeparamref name="T"/>.
     /// The conversion is designed to be flexible and several different methods of type
     /// conversion are tried. Only those values that can be converted to type <typeparamref name="T"/>
     /// are actually included in the dictionary.

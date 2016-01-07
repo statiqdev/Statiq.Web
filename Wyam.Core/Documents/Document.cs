@@ -335,6 +335,11 @@ namespace Wyam.Core.Documents
             return _metadata.Link(key, defaultValue, pretty);
         }
 
+        public dynamic Dynamic(string key, object defaultValue = null)
+        {
+            return _metadata.Dynamic(key, defaultValue);
+        }
+
         public int Count => _metadata.Count;
     }
 }
