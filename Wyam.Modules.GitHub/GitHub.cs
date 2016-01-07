@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,34 +11,144 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.GitHub
 {
+    /// <summary>
+    /// Outputs metadata for information from GitHub.
+    /// </summary>
+    /// <remarks>
+    /// This modules uses the Octokit library and associated types to submit requests to GitHub. Because of the
+    /// large number of different kinds of requests, this module does not attempt to provide a fully abstract wrapper
+    /// around the Octokit library. Instead, it simplifies the housekeeping involved in setting up an Octokit client
+    /// and requires you to provide functions that fetch whatever data you need. Each request will be sent for each input
+    /// document.
+    /// </remarks>
+    /// <category>Metadata</category>
     public class GitHub : IModule
     {
         private readonly Credentials _credentials;
-        private Uri _enterpriseUri;
+        private Uri _url;
+        private readonly Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>> _requests 
+            = new Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>>();
 
+        /// <summary>
+        /// Creates a connection to the GitHub API with basic authenticated access.
+        /// </summary>
+        /// <param name="username">The username to use.</param>
+        /// <param name="password">The password to use.</param>
         public GitHub(string username, string password)
         {
             _credentials = new Credentials(username, password);
         }
 
+        /// <summary>
+        /// Creates a connection to the GitHub API with OAuth authentication.
+        /// </summary>
+        /// <param name="token">The token to use.</param>
         public GitHub(string token)
         {
             _credentials = new Credentials(token);
         }
 
-        public GitHub ConnectToEnterprise(string enterpriseUrl)
+        /// <summary>
+        /// Creates an unauthenticated connection to the GitHub API.
+        /// </summary>
+        public GitHub()
         {
-            _enterpriseUri = new Uri(enterpriseUrl);
+        }
+
+        /// <summary>
+        /// Specifies and alternate API URL (such as to an Enterprise GitHub endpoint).
+        /// </summary>
+        /// <param name="url">The URL to use.</param>
+        public GitHub WithUrl(string url)
+        {
+            _url = new Uri(url);
+            return this;
+        }
+
+        /// <summary>
+        /// Submits a request to the GitHub client.
+        /// </summary>
+        /// <param name="key">The metadata key in which to store the return value of the request function.</param>
+        /// <param name="request">A function with the request to make.</param>
+        public GitHub WithRequest(string key, Func<GitHubClient, object> request)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Argument is null or empty", nameof(key));
+            }
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            _requests[key] = (doc, ctx, github) => request(github);
+            return this;
+        }
+
+        /// <summary>
+        /// Submits a request to the GitHub client. This allows you to incorporate data from the execution context in your request.
+        /// </summary>
+        /// <param name="key">The metadata key in which to store the return value of the request function.</param>
+        /// <param name="request">A function with the request to make.</param>
+        public GitHub WithRequest(string key, Func<IExecutionContext, GitHubClient, object> request)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Argument is null or empty", nameof(key));
+            }
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            _requests[key] = (doc, ctx, github) => request(ctx, github);
+            return this;
+        }
+
+        /// <summary>
+        /// Submits a request to the GitHub client. This allows you to incorporate data from the execution context and current document in your request.
+        /// </summary>
+        /// <param name="key">The metadata key in which to store the return value of the request function.</param>
+        /// <param name="request">A function with the request to make.</param>
+        public GitHub WithRequest(string key, Func<IDocument, IExecutionContext, GitHubClient, object> request)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Argument is null or empty", nameof(key));
+            }
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            _requests[key] = request;
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            GitHubClient github = new GitHubClient(new ProductHeaderValue("Wyam"), _enterpriseUri ?? GitHubClient.GitHubApiUrl)
+            GitHubClient github = new GitHubClient(new ProductHeaderValue("Wyam"), _url ?? GitHubClient.GitHubApiUrl);
+            if (_credentials != null)
             {
-                Credentials = _credentials
-            };
-            return inputs;
+                github.Credentials = _credentials;
+            }
+            return inputs.AsParallel().Select(doc =>
+            {
+                ConcurrentDictionary<string, object> results = new ConcurrentDictionary<string, object>();
+                foreach (KeyValuePair<string, Func<IDocument, IExecutionContext, GitHubClient, object>> request in _requests.AsParallel())
+                {
+                    context.Trace.Verbose("Submitting {0} GitHub request for {1}", request.Key, doc.Source);
+                    try
+                    {
+                        results[request.Key] = request.Value(doc, context, github);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Trace.Warning("Exception while submitting {0} GitHub request for {1}: {2}", request.Key, doc.Source, ex.ToString());
+                    }
+                }
+                return doc.Clone(results);
+            });
         }
     }
 }
