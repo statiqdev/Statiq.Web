@@ -112,7 +112,10 @@ namespace Wyam.Core.Modules.Metadata
                         {
                             foreach (KeyValuePair<string, object> kvp in result)
                             {
-                                metadata[kvp.Key] = kvp.Value;
+                                if (kvp.Value != null || !_ignoreNull)
+                                {
+                                    metadata[kvp.Key] = kvp.Value;
+                                }
                             }
                         }
                         return input.Clone(metadata);
