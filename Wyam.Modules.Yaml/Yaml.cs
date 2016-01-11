@@ -17,7 +17,7 @@ namespace Wyam.Modules.Yaml
     /// Parses YAML content for each input document and stores the result in it's metadata.
     /// </summary>
     /// <remarks>
-    /// This module parses the content for each input document and then stores a dynamic object 
+    /// Parses the content for each input document and then stores a dynamic object 
     /// representing the first YAML document in metadata with the specified key. If no key is specified, 
     /// then the dynamic object is not added. You can also flatten the YAML to add top-level pairs directly
     /// to the document metadata.

@@ -16,7 +16,7 @@ namespace Wyam.Modules.Json
     /// Parses JSON content for each input document and stores the result in it's metadata.
     /// </summary>
     /// <remarks>
-    /// This module parses the content for each input document and then stores a dynamic object 
+    /// Parses the content for each input document and then stores a dynamic object 
     /// representing the JSON in metadata with the specified key. If no key is specified, 
     /// then the dynamic object is not added. You can also flatten the JSON to add top-level items directly
     /// to the document metadata.
@@ -53,38 +53,41 @@ namespace Wyam.Modules.Json
         {
             return inputs
                 .AsParallel()
-                .Select(x =>
+                .Select(doc =>
                 {
                     try
                     {
                         JsonSerializer serializer = new JsonSerializer();
                         Dictionary<string, object> items = new Dictionary<string, object>();
                         ExpandoObject json;
-                        using (TextReader contentReader = new StringReader(x.Content))
+                        using (TextReader contentReader = new StringReader(doc.Content))
                         {
                             using (JsonReader jsonReader = new JsonTextReader(contentReader))
                             {
                                 json = serializer.Deserialize<ExpandoObject>(jsonReader);
                             }
                         }
-                        if (!string.IsNullOrEmpty(_key))
+                        if (json != null)
                         {
-                            items[_key] = json;
-                        }
-                        if (_flatten)
-                        {
-                            foreach (KeyValuePair<string, object> item in json)
+                            if (!string.IsNullOrEmpty(_key))
                             {
-                                items[item.Key] = item.Value;
+                                items[_key] = json;
                             }
+                            if (_flatten)
+                            {
+                                foreach (KeyValuePair<string, object> item in json)
+                                {
+                                    items[item.Key] = item.Value;
+                                }
+                            }
+                            return doc.Clone(items);
                         }
-                        return x.Clone(items);
                     }
                     catch (Exception ex)
                     {
-                        context.Trace.Error("Error processing JSON for {0}: {1}", x.Source, ex.ToString());
+                        context.Trace.Error("Error processing JSON for {0}: {1}", doc.Source, ex.ToString());
                     }
-                    return null;
+                    return doc;
                 })
                 .Where(x => x != null);
         }

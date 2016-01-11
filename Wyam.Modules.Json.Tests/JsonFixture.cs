@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Json.Tests
 {
@@ -89,5 +91,25 @@ namespace Wyam.Modules.Json.Tests
             CollectionAssert.AreEqual(new[] { "User", "Admin" }, (IEnumerable)items.First(x => x.Key == "Roles").Value);
         }
 
+        [Test]
+        public void ReturnsDocumentOnError()
+        {
+            // Given
+            IDocument document = Substitute.For<IDocument>();
+            document.Content.Returns("asdf");
+            document.Source.Returns(string.Empty);
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            ITrace trace = Substitute.For<ITrace>();
+            context.Trace.Returns(trace);
+            Json json = new Json("MyJson");
+
+            // When
+            List<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+            // Then
+            trace.Received(1).Error(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+            document.Received(0).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+            Assert.IsTrue(results.Single().Equals(document));
+        }
     }
 }
