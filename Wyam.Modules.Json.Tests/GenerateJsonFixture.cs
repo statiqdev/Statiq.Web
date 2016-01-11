@@ -43,7 +43,7 @@ namespace Wyam.Modules.Json.Tests
     ""User"",
     ""Admin""
   ]
-}".Replace("\n", "\r\n");
+}";
 
         [Test]
         public void GetsObjectFromMetadata()

@@ -69,7 +69,6 @@ namespace Wyam.Core.Tests.Modules.IO
             // Then
 
             Assert.IsNotEmpty(source, "Source cannot be empty");
-            Console.WriteLine("Source " + source);
 
             var headers = metadata.FirstOrDefault(x => x.Key == Keys.SourceHeaders).Value as Dictionary<string, string>;
 
@@ -80,7 +79,6 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 Assert.IsNotEmpty(h.Key, "Header key cannot be empty");
                 Assert.IsNotEmpty(h.Value, "Header value cannot be empty");
-                Console.WriteLine($"{h.Key} - {h.Value}");
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -88,7 +86,6 @@ namespace Wyam.Core.Tests.Modules.IO
             stream.Dispose();
 
             Assert.IsNotEmpty(content, "Download cannot be empty");
-            Console.WriteLine("Content " + content);
         }
 
         [Test]
@@ -110,8 +107,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
             // When
             download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
-
-            Console.WriteLine("Length " + output.Count);
+            
             // Then
             foreach(var o in output)
             {
@@ -124,7 +120,6 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Assert.IsNotEmpty(h.Key, "Header key cannot be empty");
                     Assert.IsNotEmpty(h.Value, "Header value cannot be empty");
-                    Console.WriteLine($"{h.Key} - {h.Value}");
                 }
 
                 o.Item1.Seek(0, SeekOrigin.Begin);
