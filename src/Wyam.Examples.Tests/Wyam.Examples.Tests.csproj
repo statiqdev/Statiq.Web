@@ -46,6 +46,9 @@
   <ItemGroup>
     <Compile Include="ExamplesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="TestTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -147,6 +147,9 @@
     <Compile Include="Pipelines\PipelineCollection.cs" />
     <Compile Include="Documents\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
     <Compile Include="Pipelines\ReadOnlyPipeline.cs" />

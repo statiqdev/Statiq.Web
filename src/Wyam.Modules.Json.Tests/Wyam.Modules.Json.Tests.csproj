@@ -52,6 +52,9 @@
     <Compile Include="GenerateJsonFixture.cs" />
     <Compile Include="JsonFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

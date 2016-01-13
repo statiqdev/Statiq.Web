@@ -112,6 +112,9 @@
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\ViewStartProvider.cs" />
     <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\VirtualPathRazorPageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Razor.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -54,6 +54,9 @@
     <Compile Include="ExcerptFixture.cs" />
     <Compile Include="HtmlQueryFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
