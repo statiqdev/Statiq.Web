@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Configuration;
@@ -16,7 +18,7 @@ namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ConfiguratorFixture
+    public class ConfigFixture
     {
         [Test]
         public void GetConfigPartsReturnsBothPartsWithDelimiter()
@@ -750,6 +752,58 @@ foo bar;
 
             // Then
             Assert.AreEqual(expected, generated);
+        }
+
+        [Test]
+        public void SetupMaintainsFolders()
+        {
+            // Given
+            Engine engine = new Engine
+            {
+                RootFolder = @"C:\A",
+                InputFolder = "B",
+                OutputFolder = "C"
+            };
+            Config config = new Config(engine);
+            string configScript = @"
+Assemblies.Load("""");
+===
+";
+
+            // When
+            config.Configure(configScript, false, null, false);
+
+            // Then
+            Assert.AreEqual(PathHelper.NormalizePath(@"C:\A"), engine.RootFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\A", "B")), engine.InputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\A", "C")), engine.OutputFolder);
+        }
+
+        [Test]
+        public void SetupModifiesFolders()
+        {
+            // Given
+            Engine engine = new Engine
+            {
+                RootFolder = @"C:\A",
+                InputFolder = "B",
+                OutputFolder = "C"
+            };
+            Config config = new Config(engine);
+            string configScript = @"
+RootFolder = @""C:\X"";
+InputFolder = ""Y"";
+OutputFolder = ""Z"";
+===
+";
+
+            // When
+            config.Configure(configScript, false, null, false);
+
+            // Then
+            Assert.AreEqual(PathHelper.NormalizePath(@"C:\X"), engine.RootFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\X", "Y")), engine.InputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\X", "Z")), engine.OutputFolder);
         }
     }
 

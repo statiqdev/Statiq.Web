@@ -189,7 +189,7 @@ namespace Wyam.Core.Configuration
                     codeBuilder.AppendLine(@"
                         public static class SetupScript
                         {
-                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, string RootFolder, string InputFolder, string OutputFolder)
+                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, ref string RootFolder, ref string InputFolder, ref string OutputFolder)
                             {");
                     codeBuilder.Append(code);
                     codeBuilder.AppendLine(@"
@@ -209,7 +209,15 @@ namespace Wyam.Core.Configuration
                     _setupAssembly = Assembly.Load(_rawSetupAssembly);
                     var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
                     MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                    runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                    string rootFolder = _engine.RootFolder;
+                    string inputFolder = _engine.InputFolder;
+                    string outputFolder = _engine.OutputFolder;
+                    object[] args = { _packages, _assemblyCollection, rootFolder, inputFolder, outputFolder };
+                    runMethod.Invoke(null, args);
+                    _engine.RootFolder = args[2] as string;
+                    _engine.InputFolder = args[3] as string;
+                    _engine.OutputFolder = args[4] as string;
+
                 }
 
                 // Install packages
