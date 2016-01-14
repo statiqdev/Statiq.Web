@@ -8,6 +8,7 @@
 // - Push to develop and fast-forward merge to master
 // - Switch to master
 // - Run a Publish build with Cake (".\build.ps1 --target Publish")
+// - Switch back to develop branch
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
@@ -201,7 +202,8 @@ Task("Publish-Release")
         var release = github.Release.Create("Wyamio", "Wyam", new NewRelease("v" + semVersion) 
         {
             Name = semVersion,
-            Body = string.Join(Environment.NewLine, releaseNotes.Notes),
+            Body = string.Join(Environment.NewLine, releaseNotes.Notes) + Environment.NewLine + Environment.NewLine
+                + @"### Note that you may need to right-click the zip file after download and select ""Unblock"" in the Security section of the properties dialog, otherwise you could get strange errors when using the application.",
             Prerelease = true,
             TargetCommitish = "master"
         }).Result; 
