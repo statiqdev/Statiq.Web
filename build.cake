@@ -239,6 +239,7 @@ Task("Publish")
     .IsDependentOn("Publish-Release");
     
 Task("AppVeyor")
+    .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Update-AppVeyor-Build-Number")
     .IsDependentOn("Upload-AppVeyor-Artifacts");
 
