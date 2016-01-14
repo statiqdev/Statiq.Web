@@ -187,7 +187,7 @@ Task("Publish-Release")
         
         var github = new GitHubClient(new ProductHeaderValue("Wyam Cake Build"))
         {
-            Credentials = new Credentials("46353799916dbc5e3ab31a6bd596ea59ba2cd99f")
+            Credentials = new Credentials(githubToken)
         }
         var release = github.Release.Create("Wyamio", "Wyam", new NewRelease("v" + semVersion) 
         {
