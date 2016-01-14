@@ -3,6 +3,8 @@
 // WYAM_GITHUB_TOKEN
 
 #addin "Cake.FileHelpers"
+#addin "Octokit"
+using Octokit;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -197,9 +199,9 @@ Task("Publish-Release")
             TargetCommitish = "master"
         }).Result; 
         var zipPath = buildResultDir + File(zipFile);
-        using(var zipStream = zipPath.OpenRead())
+        using(var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
         {
-            github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
+            var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
         }
     });
     
@@ -232,6 +234,7 @@ Task("Default")
     .IsDependentOn("Package");    
 
 Task("Publish")
+    .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Publish-NuGet")
     .IsDependentOn("Publish-Release");
     
