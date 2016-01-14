@@ -88,6 +88,7 @@ namespace Wyam.Modules.Git
             {
                 return commitDocuments;
             }
+            var test = commitDocuments.Select(x => x.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries));
 
             // Outputting commit information for each document
             string repositoryLocation = GetRepositoryLocation(context);

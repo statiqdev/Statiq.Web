@@ -29,9 +29,17 @@ namespace Wyam.Modules.Git
 
         protected string GetRepositoryLocation(IExecutionContext context)
         {
-            return string.IsNullOrEmpty(_repositoryLocation)
+            string originalLocation = string.IsNullOrEmpty(_repositoryLocation)
                 ? context.InputFolder
                 : _repositoryLocation;
+            string location = originalLocation;
+            while (!Repository.IsValid(location) && !string.IsNullOrEmpty(location))
+            {
+                location = Path.GetDirectoryName(location);
+            }
+
+            // If we couldn't find one, return the original for meaningful error messages
+            return string.IsNullOrWhiteSpace(location) ? originalLocation : location;
         }
 
         protected ImmutableArray<IDocument> GetCommitDocuments(IReadOnlyList<IDocument> inputs, IExecutionContext context)
