@@ -2,6 +2,13 @@
 // NUGET_API_KEY
 // WYAM_GITHUB_TOKEN
 
+// Publishing workflow:
+// - Update ReleaseNotes.md and RELEASE in develop branch
+// - Run a normal build with Cake set SolutionInfo.cs in the repo and run through unit tests
+// - Push to develop and fast-forward merge to master
+// - Switch to master
+// - Run a Publish build with Cake (".\build.ps1 --target Publish")
+
 #addin "Cake.FileHelpers"
 #addin "Octokit"
 using Octokit;
@@ -187,7 +194,7 @@ Task("Publish-Release")
             throw new InvalidOperationException("Could not resolve Wyam GitHub token.");
         }
         
-        var github = new GitHubClient(new ProductHeaderValue("Wyam Cake Build"))
+        var github = new GitHubClient(new ProductHeaderValue("WyamCakeBuild"))
         {
             Credentials = new Credentials(githubToken)
         };
@@ -234,7 +241,6 @@ Task("Default")
     .IsDependentOn("Package");    
 
 Task("Publish")
-    .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Publish-NuGet")
     .IsDependentOn("Publish-Release");
     
