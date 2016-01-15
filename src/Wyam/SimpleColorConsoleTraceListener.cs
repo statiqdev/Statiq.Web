@@ -11,16 +11,17 @@ namespace Wyam
     // This was helpful: http://blog.flimflan.com/ASimpleColorConsoleTraceListener.html
     internal class SimpleColorConsoleTraceListener : ConsoleTraceListener
     {
-        private readonly Dictionary<TraceEventType, ConsoleColor> _eventColor = new Dictionary<TraceEventType, ConsoleColor>()
-        {
-            { TraceEventType.Verbose, ConsoleColor.DarkGray },
-            { TraceEventType.Information, ConsoleColor.Gray },
-            { TraceEventType.Warning, ConsoleColor.Yellow },
-            { TraceEventType.Error, ConsoleColor.DarkRed },
-            { TraceEventType.Critical, ConsoleColor.Red },
-            { TraceEventType.Start, ConsoleColor.DarkCyan },
-            { TraceEventType.Stop, ConsoleColor.DarkCyan }
-        };
+        private readonly Dictionary<TraceEventType, Tuple<ConsoleColor, ConsoleColor?>> _eventColors
+            = new Dictionary<TraceEventType, Tuple<ConsoleColor, ConsoleColor?>>
+            {
+                { TraceEventType.Verbose, Tuple.Create(ConsoleColor.DarkGray, (ConsoleColor?)null) },
+                { TraceEventType.Information, Tuple.Create(ConsoleColor.Gray, (ConsoleColor?)null) },
+                { TraceEventType.Warning, Tuple.Create(ConsoleColor.Yellow, (ConsoleColor?)null) },
+                { TraceEventType.Error, Tuple.Create(ConsoleColor.Red, (ConsoleColor?)null) },
+                { TraceEventType.Critical, Tuple.Create(ConsoleColor.White, (ConsoleColor?)ConsoleColor.Red) },
+                { TraceEventType.Start, Tuple.Create(ConsoleColor.DarkCyan, (ConsoleColor?)null) },
+                { TraceEventType.Stop, Tuple.Create(ConsoleColor.DarkCyan, (ConsoleColor?)null) }
+            };
  
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
@@ -29,19 +30,26 @@ namespace Wyam
  
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            ConsoleColor originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = GetEventColor(eventType, originalColor);
-            base.WriteLine(string.Format(format, args));
-            Console.ForegroundColor = originalColor;
-        }
- 
-        private ConsoleColor GetEventColor(TraceEventType eventType, ConsoleColor defaultColor)
-        {
-            if (!_eventColor.ContainsKey(eventType))
+            Tuple<ConsoleColor, ConsoleColor?> colors;
+            if (!_eventColors.TryGetValue(eventType, out colors))
             {
-                return defaultColor;
+                base.WriteLine(string.Format(format, args));
+                return;
             }
-            return _eventColor[eventType];
+
+            ConsoleColor originalForegroundColor = Console.ForegroundColor;
+            ConsoleColor originalBackgroundColor = Console.BackgroundColor;
+            Console.ForegroundColor = colors.Item1;
+            if (colors.Item2.HasValue)
+            {
+                Console.BackgroundColor = colors.Item2.Value;
+            }
+            base.WriteLine(string.Format(format, args));
+            Console.ForegroundColor = originalForegroundColor;
+            if (colors.Item2.HasValue)
+            {
+                Console.BackgroundColor = originalBackgroundColor;
+            }
         }
     }
 }
