@@ -159,6 +159,7 @@ Task("Create-NuGet-Packages")
                     .AppendQuoted(nuspec.ChangeExtension(".csproj").FullPath)
                     .AppendSwitch("-Version", semVersion)
                     .AppendSwitch("-OutputDirectory", nugetRoot.Path.FullPath)
+                    .AppendSwitch("-Prop", "Configuration=" + configuration)
                 )
             );
         
