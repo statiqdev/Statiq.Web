@@ -144,7 +144,7 @@ Task("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault();
+        var nugetExe = GetFiles("./**/nuget.exe").FirstOrDefault();
         if(nugetExe == null)
         {            
             throw new InvalidOperationException("Could not find nuget.exe.");
@@ -280,7 +280,7 @@ Task("Publish")
     .IsDependentOn("Publish-Release");
     
 Task("AppVeyor")
-    .IsDependentOn("Run-Unit-Tests")
+    //.IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Publish-MyGet")
     .IsDependentOn("Update-AppVeyor-Build-Number")
     .IsDependentOn("Upload-AppVeyor-Artifacts");
