@@ -144,9 +144,15 @@ Task("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {
+        var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault();
+        if(nugetExe == null)
+        {            
+            throw new InvalidOperationException("Could not find nuget.exe.");
+        }
+        
         foreach(var nuspec in GetFiles("./src/**/*.nuspec"))
         {
-            StartProcess("./tools/nuget.exe", new ProcessSettings()
+            StartProcess(nugetExe, new ProcessSettings()
                 .WithArguments(x => x
                     .Append("pack")
                     .AppendQuoted(nuspec.ChangeExtension(".csproj").FullPath)
@@ -175,7 +181,8 @@ Task("Publish-MyGet")
     {
         // Resolve the API key.
         var apiKey = EnvironmentVariable("MYGET_API_KEY");
-        if(string.IsNullOrEmpty(apiKey)) {
+        if(string.IsNullOrEmpty(apiKey))
+        {
             throw new InvalidOperationException("Could not resolve MyGet API key.");
         }
 
@@ -196,7 +203,8 @@ Task("Publish-NuGet")
     .Does(() =>
     {
         var apiKey = EnvironmentVariable("NUGET_API_KEY");
-        if(string.IsNullOrEmpty(apiKey)) {
+        if(string.IsNullOrEmpty(apiKey))
+        {
             throw new InvalidOperationException("Could not resolve NuGet API key.");
         }
 
