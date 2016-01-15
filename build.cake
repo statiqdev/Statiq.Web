@@ -23,7 +23,6 @@ using Octokit;
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var scriptRoot = Argument("script-root", ".");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -145,8 +144,8 @@ Task("Create-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        var nugetExe = GetFiles("./**/nuget.exe").FirstOrDefault()
-            ?? GetFiles(scriptRoot + "/**/nuget.exe").FirstOrDefault();
+        var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault()
+            ?? (isRunningOnAppVeyor ? GetFiles("C:\Tools\NuGet3\nuget.exe").FirstOrDefault() : null);
         if(nugetExe == null)
         {            
             throw new InvalidOperationException("Could not find nuget.exe.");
