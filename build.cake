@@ -2,6 +2,9 @@
 // NUGET_API_KEY
 // WYAM_GITHUB_TOKEN
 
+// The following environment variables need to be set for Publish-MyGet target:
+// MYGET_API_KEY
+
 // Publishing workflow:
 // - Update ReleaseNotes.md and RELEASE in develop branch
 // - Run a normal build with Cake set SolutionInfo.cs in the repo and run through unit tests
@@ -164,6 +167,28 @@ Task("Create-NuGet-Packages")
         }
     });
     
+Task("Publish-MyGet")
+    .IsDependentOn("Create-NuGet-Packages")
+    .WithCriteria(() => !local)
+    .WithCriteria(() => !isPullRequest)
+    .Does(() =>
+    {
+        // Resolve the API key.
+        var apiKey = EnvironmentVariable("MYGET_API_KEY");
+        if(string.IsNullOrEmpty(apiKey)) {
+            throw new InvalidOperationException("Could not resolve MyGet API key.");
+        }
+
+        foreach(var nupkg in GetFiles(nugetRoot.Path.FullPath + "/*.nupkg"))
+        {
+            NuGetPush(nupkg, new NuGetPushSettings 
+            {
+                Source = "https://www.myget.org/F/wyam/api/v2/package",
+                ApiKey = apiKey
+            });
+        }
+    });
+    
 Task("Publish-NuGet")
     .IsDependentOn("Create-NuGet-Packages")
     .WithCriteria(() => isLocal)
@@ -248,6 +273,7 @@ Task("Publish")
     
 Task("AppVeyor")
     .IsDependentOn("Run-Unit-Tests")
+    .IsDependentOn("Publish-MyGet")
     .IsDependentOn("Update-AppVeyor-Build-Number")
     .IsDependentOn("Upload-AppVeyor-Artifacts");
 

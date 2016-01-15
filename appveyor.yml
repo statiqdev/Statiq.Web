@@ -11,10 +11,6 @@ build_script:
    
 test: off
 
-build:
-  project: src\Wyam.sln
-  publish_nuget: true
-
 cache:
 - src\packages -> src\**\packages.config
 - tools -> tools\packages.config
