@@ -169,7 +169,7 @@ Task("Create-NuGet-Packages")
     
 Task("Publish-MyGet")
     .IsDependentOn("Create-NuGet-Packages")
-    .WithCriteria(() => !local)
+    .WithCriteria(() => !isLocal)
     .WithCriteria(() => !isPullRequest)
     .Does(() =>
     {
