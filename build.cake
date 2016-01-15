@@ -145,7 +145,7 @@ Task("Create-NuGet-Packages")
     .Does(() =>
     {
         var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault()
-            ?? (isRunningOnAppVeyor ? GetFiles("C:\Tools\NuGet3\nuget.exe").FirstOrDefault() : null);
+            ?? (isRunningOnAppVeyor ? GetFiles("C:\\Tools\\NuGet3\\nuget.exe").FirstOrDefault() : null);
         if(nugetExe == null)
         {            
             throw new InvalidOperationException("Could not find nuget.exe.");
