@@ -123,7 +123,7 @@ namespace Wyam.Modules.Razor
                 IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<string>(x, context));
                 IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                 IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
-                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x.Metadata, context, viewEngine);
+                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x, context, viewEngine);
                 ViewEngineResult viewEngineResult;
                 using (Stream stream = x.GetStream())
                 {

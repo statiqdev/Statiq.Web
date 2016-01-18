@@ -58,7 +58,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         /// <remarks>This value is used as the generic type argument for the base type </remarks>
         public virtual string DefaultModel
         {
-            get { return "IMetadata"; }
+            get { return "IDocument"; }
         }
 
         /// <inheritdoc />

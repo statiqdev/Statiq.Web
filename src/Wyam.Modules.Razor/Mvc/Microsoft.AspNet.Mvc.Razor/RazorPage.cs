@@ -44,13 +44,18 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
 
         public IMetadata Metadata
         {
-            get { return ViewContext.Metadata; }
+            get { return ViewContext.Document; }
+        }
+
+        public IDocument Document
+        {
+            get { return ViewContext.Document; }
         }
 
         // Expose a Model property to better match existing conventions
-        public IMetadata Model
+        public IDocument Model
         {
-            get { return Metadata; }
+            get { return ViewContext.Document; }
         }
 
         // In ASP.NET MVC these kinds of properties are injected with InjectChunk in MvcRazorHost, but this is easier

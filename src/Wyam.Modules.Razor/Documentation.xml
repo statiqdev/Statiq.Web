@@ -9,7 +9,7 @@
       
       <h2>View Model</h2>
       <para>
-        The view model for each page is set to the <c>IMetadata</c> of the input document. This allows you to write statements like <c>@Model.Get&lt;string&gt;("MyMetadataKey")</c>.
+        The view model for each page is the <c>IDocument</c> of the input document. This allows you to write statements like <c>@Model.Get&lt;string&gt;("MyMetadataKey")</c>.
       </para>
 
       <h2>View Properties</h2>
@@ -48,7 +48,7 @@
       <h2>Partials</h2>
       <para>
         Partials also work as they do in ASP.NET MVC. Just use <c>@Html.Partial("_PartialName")</c> or <c>@Html.RenderPartial("_PartialName")</c>. Note that you can't pass a model to the 
-        partial view (since the model is always set to the current <c>IMetadata</c>). To pass data to a partial view, use the <c>ViewData</c> collection, setting a value just before rendering the 
+        partial view (since the model is always set to the current <c>IDocument</c>). To pass data to a partial view, use the <c>ViewData</c> collection, setting a value just before rendering the 
         partial and then getting it within the partial.
       </para>
 

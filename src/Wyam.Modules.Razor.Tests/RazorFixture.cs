@@ -93,7 +93,7 @@ namespace Wyam.Modules.Razor.Tests
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.Metadata["MyKey"].Returns("MyValue");
+            document["MyKey"].Returns("MyValue");
             document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
             Razor razor = new Razor();
 
@@ -103,6 +103,62 @@ namespace Wyam.Modules.Razor.Tests
             // Then
             document.Received(1).Clone(Arg.Any<string>());
             document.Received().Clone("<p>MyValue</p>");
+        }
+
+        [Test]
+        public void Document()
+        {
+            // Given
+            string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
+            if (!Directory.Exists(inputFolder))
+            {
+                Directory.CreateDirectory(inputFolder);
+            }
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
+            context.InputFolder.Returns(inputFolder);
+            Engine engine = new Engine();
+            engine.Configure();
+            context.Assemblies.Returns(engine.Assemblies);
+            IDocument document = Substitute.For<IDocument>();
+            document.Source.Returns(@"C:\Temp\temp.txt");
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Document.Source</p>")));
+            Razor razor = new Razor();
+
+            // When
+            razor.Execute(new[] { document }, context).ToList();
+
+            // Then
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(@"<p>C:\Temp\temp.txt</p>");
+        }
+
+        [Test]
+        public void DocumentAsModel()
+        {
+            // Given
+            string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
+            if (!Directory.Exists(inputFolder))
+            {
+                Directory.CreateDirectory(inputFolder);
+            }
+            IExecutionContext context = Substitute.For<IExecutionContext>();
+            context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
+            context.InputFolder.Returns(inputFolder);
+            Engine engine = new Engine();
+            engine.Configure();
+            context.Assemblies.Returns(engine.Assemblies);
+            IDocument document = Substitute.For<IDocument>();
+            document.Source.Returns(@"C:\Temp\temp.txt");
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Model.Source</p>")));
+            Razor razor = new Razor();
+
+            // When
+            razor.Execute(new[] { document }, context).ToList();
+
+            // Then
+            document.Received(1).Clone(Arg.Any<string>());
+            document.Received().Clone(@"<p>C:\Temp\temp.txt</p>");
         }
 
         [Test]

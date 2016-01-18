@@ -28,14 +28,14 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
             [NotNull] IView view,
             [NotNull] ViewDataDictionary viewData,
             [NotNull] TextWriter writer,
-            IMetadata metadata,
+            IDocument document,
             IExecutionContext executionContext,
             IViewEngine viewEngine)
         {
             View = view;
             ViewData = viewData;
             Writer = writer;
-            Metadata = metadata;
+            Document = document;
             ExecutionContext = executionContext;
             ViewEngine = viewEngine;
         }
@@ -53,8 +53,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
             [NotNull] ViewDataDictionary viewData,
             [NotNull] TextWriter writer)
         {
-
-            Metadata = viewContext.Metadata;
+            Document = viewContext.Document;
             ExecutionContext = viewContext.ExecutionContext;
             ViewEngine = viewContext.ViewEngine;
             View = view;
@@ -104,7 +103,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc
 
         internal IViewEngine ViewEngine { get; set; }
 
-        public IMetadata Metadata { get; set; }
+        public IDocument Document { get; set; }
 
         public IExecutionContext ExecutionContext { get; set; }
     }
