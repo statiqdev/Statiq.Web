@@ -184,12 +184,12 @@ namespace Wyam.Core.Pipelines
                         _engine.Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
                             moduleName, stopwatch.ElapsedMilliseconds, documents.Length);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        _engine.Trace.Error("Error while executing module {0}: {1}", moduleName, ex.ToString());
+                        _engine.Trace.Error("Error while executing module {0}", moduleName);
                         documents = ImmutableArray<IDocument>.Empty;
                         _engine.DocumentCollection.Set(Name, documents);
-                        break;
+                        throw;
                     }
                 }
             }

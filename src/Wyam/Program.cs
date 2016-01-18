@@ -375,7 +375,6 @@ namespace Wyam
             }
             catch (Exception ex)
             {
-                engine.Trace.Critical("Error while executing: {0}", ex.Message);
                 return false;
             }
 

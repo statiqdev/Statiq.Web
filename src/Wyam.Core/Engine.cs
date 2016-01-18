@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -194,14 +195,23 @@ namespace Wyam.Core
                     int c = 1;
                     foreach(Pipeline pipeline in _pipelines.Pipelines)
                     {
+                        string pipelineName = pipeline.Name;
                         Stopwatch pipelineStopwatch = Stopwatch.StartNew();
-                        using (Trace.WithIndent().Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)", pipeline.Name, c, _pipelines.Count, pipeline.Count))
+                        using (Trace.WithIndent().Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)", pipelineName, c, _pipelines.Count, pipeline.Count))
                         {
-                            pipeline.Execute();
-                            pipelineStopwatch.Stop();
-                            Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
-                                pipeline.Name, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
-                                DocumentCollection.FromPipeline(pipeline.Name).Count());
+                            try
+                            {
+                                pipeline.Execute();
+                                pipelineStopwatch.Stop();
+                                Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
+                                    pipelineName, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
+                                    DocumentCollection.FromPipeline(pipelineName).Count());
+                            }
+                            catch (Exception)
+                            {
+                                Trace.Error("Error while executing pipeline {0}", pipelineName);
+                                throw;
+                            }
                         }
                     }
 
@@ -216,14 +226,14 @@ namespace Wyam.Core
                     }
 
                     engineStopwatch.Stop();
-                    Trace.Information("Executed {0} pipelines in {1} ms",
-                        _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
+                    Trace.Information("Executed {0}/{1} pipelines in {2} ms",
+                        c, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
                 }
 
             }
             catch (Exception ex)
             {
-                Trace.Verbose("Exception while executing pipelines: {0}", ex);
+                Trace.Critical("Exception during execution: {0}", ex.ToString());
                 throw;
             }
         }
