@@ -21,6 +21,7 @@ using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
+using Wyam.Core.IO;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
@@ -180,9 +181,9 @@ namespace Wyam.Core
             try
             {
                 Trace.Information("Cleaning output directory {0}", OutputFolder);
-                if (Directory.Exists(OutputFolder))
+                if (System.IO.Directory.Exists(OutputFolder))
                 {
-                    Directory.Delete(OutputFolder, true);
+                    System.IO.Directory.Delete(OutputFolder, true);
                 }
                 Trace.Information("Cleaned output directory.");
             }
@@ -209,13 +210,13 @@ namespace Wyam.Core
             }
 
             // Create the input and output folders if they don't already exist
-            if (!Directory.Exists(InputFolder))
+            if (!System.IO.Directory.Exists(InputFolder))
             {
-                Directory.CreateDirectory(InputFolder);
+                System.IO.Directory.CreateDirectory(InputFolder);
             }
-            if (!Directory.Exists(OutputFolder))
+            if (!System.IO.Directory.Exists(OutputFolder))
             {
-                Directory.CreateDirectory(OutputFolder);
+                System.IO.Directory.CreateDirectory(OutputFolder);
             }
             
             try

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wyam.Common.IO;
 
-namespace Wyam.Common.IO
+namespace Wyam.Core.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     internal sealed class Directory : IDirectory
@@ -15,7 +13,7 @@ namespace Wyam.Common.IO
 
         public DirectoryPath Path => _path;
 
-        Path IFileSystemInfo.Path => _path;
+        Wyam.Common.IO.Path IFileSystemInfo.Path => _path;
 
         public bool Exists => _directory.Exists;
 
@@ -27,14 +25,14 @@ namespace Wyam.Common.IO
             _directory = new DirectoryInfo(_path.FullPath);
         }
 
-        public void Create() => FileSystemRetry.Retry(() => _directory.Create());
+        public void Create() => FileSystem.Retry(() => _directory.Create());
 
-        public void Delete(bool recursive) => FileSystemRetry.Retry(() => _directory.Delete(recursive));
+        public void Delete(bool recursive) => FileSystem.Retry(() => _directory.Delete(recursive));
 
         public IEnumerable<IDirectory> GetDirectories(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly) => 
-            FileSystemRetry.Retry(() => _directory.GetDirectories(filter, searchOption).Select(directory => new Directory(directory.FullName)));
+            FileSystem.Retry(() => _directory.GetDirectories(filter, searchOption).Select(directory => new Directory(directory.FullName)));
 
         public IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            FileSystemRetry.Retry(() => _directory.GetFiles(filter, searchOption).Select(file => new File(file.FullName)));
+            FileSystem.Retry(() => _directory.GetFiles(filter, searchOption).Select(file => new File(file.FullName)));
     }
 }

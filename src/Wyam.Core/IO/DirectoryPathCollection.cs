@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.Modules.IO
+namespace Wyam.Core.IO
 {
     public class DirectoryPathCollection : IDirectoryPathCollection
     {

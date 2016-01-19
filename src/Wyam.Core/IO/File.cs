@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
 
-namespace Wyam.Common.IO
+namespace Wyam.Core.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     internal sealed class File : IFile
@@ -15,7 +16,7 @@ namespace Wyam.Common.IO
 
         public FilePath Path => _path;
 
-        Path IFileSystemInfo.Path => _path;
+        Wyam.Common.IO.Path IFileSystemInfo.Path => _path;
 
         public bool Exists => _file.Exists;
 
@@ -35,7 +36,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(destination));
             }
-            FileSystemRetry.Retry(() => _file.CopyTo(destination.FullPath, overwrite));
+            FileSystem.Retry(() => _file.CopyTo(destination.FullPath, overwrite));
         }
 
         public void Move(FilePath destination)
@@ -44,12 +45,12 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(destination));
             }
-            FileSystemRetry.Retry(() => _file.MoveTo(destination.FullPath));
+            FileSystem.Retry(() => _file.MoveTo(destination.FullPath));
         }
 
-        public void Delete() => FileSystemRetry.Retry(() => _file.Delete());
+        public void Delete() => FileSystem.Retry(() => _file.Delete());
 
         public Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare) => 
-            FileSystemRetry.Retry(() => _file.Open(fileMode, fileAccess, fileShare));
+            FileSystem.Retry(() => _file.Open(fileMode, fileAccess, fileShare));
     }
 }
