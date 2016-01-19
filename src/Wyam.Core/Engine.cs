@@ -30,8 +30,10 @@ namespace Wyam.Core
     public class Engine : IDisposable
     {
         private bool _disposed;
-
         private readonly Config _config;
+        private readonly PipelineCollection _pipelines;
+        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
+        private DirectoryPath _outputPath = "Output";
 
         public IConfig Config => _config;
 
@@ -44,21 +46,21 @@ namespace Wyam.Core
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
-        private readonly PipelineCollection _pipelines;
-
         public IPipelineCollection Pipelines => _pipelines;
 
         private readonly Tracing.Trace _trace = new Tracing.Trace();
 
         public ITrace Trace => _trace;
 
-        public byte[] RawConfigAssembly => _config?.RawConfigAssembly;
+        public byte[] RawConfigAssembly => _config.RawConfigAssembly;
 
-        public IEnumerable<Assembly> Assemblies => _config?.Assemblies;
+        public IEnumerable<Assembly> Assemblies => _config.Assemblies;
 
-        public IEnumerable<string> Namespaces => _config?.Namespaces;
+        public IEnumerable<string> Namespaces => _config.Namespaces;
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
+
+        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
 
         public bool NoCache
         {
@@ -120,9 +122,6 @@ namespace Wyam.Core
             }
         }
 
-        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
-        private DirectoryPath _outputPath = "Output";
-
         public DirectoryPath RootPath
         {
             get { return _rootPath; }
@@ -139,9 +138,7 @@ namespace Wyam.Core
                 _rootPath = value;
             }
         }
-
-        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
-
+        
         public DirectoryPath OutputPath
         {
             get { return _outputPath; }
@@ -200,7 +197,7 @@ namespace Wyam.Core
             CheckDisposed();
 
             // Configure with defaults if not already configured
-            if (_config == null)
+            if (!_config.Configured)
             {
                 Configure();
             }
@@ -289,7 +286,7 @@ namespace Wyam.Core
                 pipeline.Dispose();
             }
             _trace.Dispose();
-            _config?.Dispose();
+            _config.Dispose();
             _disposed = true;
         }
 

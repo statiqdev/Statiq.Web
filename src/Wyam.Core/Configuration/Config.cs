@@ -33,11 +33,10 @@ namespace Wyam.Core.Configuration
         private Assembly _setupAssembly;
         private string _configAssemblyFullName;
         private byte[] _rawSetupAssembly;
-
-        private bool _configured;
         private string _fileName;
         private bool _outputScripts;
 
+        public bool Configured { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Config" /> class.
@@ -98,11 +97,11 @@ namespace Wyam.Core.Configuration
         public void Configure(string script, bool updatePackages, string fileName, bool outputScripts)
         {
             CheckDisposed();
-            if (_configured)
+            if (Configured)
             {
                 throw new InvalidOperationException("This engine has already been configured.");
             }
-            _configured = true;
+            Configured = true;
             _fileName = fileName;
             _outputScripts = outputScripts;
 
