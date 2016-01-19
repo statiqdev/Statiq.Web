@@ -7,7 +7,7 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on DirectoryPath in Cake.Core.IO (http://cakebuild.net/)
+    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a directory path.
     /// </summary>
@@ -54,17 +54,13 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A combination of the current path and the provided <see cref="FilePath"/>.</returns>
-        public FilePath CombineWithFilePath(FilePath path)
+        public FilePath Combine(FilePath path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            if (!path.IsRelative)
-            {
-                throw new InvalidOperationException("Cannot combine a directory path with an absolute file path");
-            }
-            return new FilePath(System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new FilePath(System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
@@ -79,11 +75,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            if (!path.IsRelative)
-            {
-                throw new InvalidOperationException("Cannot combine a directory path with an absolute directory path");
-            }
-            return new DirectoryPath(System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new DirectoryPath(System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
@@ -101,9 +93,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentException("The provided path cannot be relative");
             }
-            return IsRelative
-                ? path.Combine(this).Collapse()
-                : new DirectoryPath(FullPath);
+            return IsRelative ? path.Combine(this).Collapse() : Collapse();
         }
 
         /// <summary>
@@ -117,9 +107,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(context));
             }
-            return IsRelative
-                ? context.RootPath.Combine(this).Collapse()
-                : new DirectoryPath(FullPath);
+            return IsRelative ? context.RootPath.Combine(this).Collapse() : Collapse();
         }
 
         /// <summary>

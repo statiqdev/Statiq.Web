@@ -7,7 +7,7 @@ using Wyam.Common.Pipelines;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on FilePath in Cake.Core.IO (http://cakebuild.net/)
+    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a file path.
     /// </summary>
@@ -104,9 +104,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(context));
             }
-            return IsRelative
-                ? context.RootPath.CombineWithFilePath(this).Collapse()
-                : new FilePath(FullPath);
+            return IsRelative ? context.RootPath.Combine(this).Collapse() : Collapse();
         }
 
         /// <summary>
@@ -125,9 +123,7 @@ namespace Wyam.Common.IO
                 throw new InvalidOperationException("Cannot make a file path absolute with a relative directory path");
             }
 
-            return IsRelative
-                ? path.CombineWithFilePath(this).Collapse()
-                : new FilePath(FullPath);
+            return IsRelative ? path.Combine(this).Collapse() : Collapse();
         }
 
         /// <summary>

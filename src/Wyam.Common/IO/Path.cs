@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on Path in Cake.Core.IO (http://cakebuild.net/)
+    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Provides properties and instance methods for working with paths.
     /// </summary>

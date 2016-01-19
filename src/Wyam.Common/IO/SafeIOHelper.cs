@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
+    [Obsolete]
     public static class SafeIOHelper
     {
         /// <summary>
@@ -22,6 +23,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">Path to the file</param>
         /// <returns>FileStream, null or base exception</returns>
+        [Obsolete]
         public static FileStream OpenRead(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -35,7 +37,7 @@ namespace Wyam.Common.IO
                 try
                 {
                     attempts++;
-                    return File.OpenRead(path);
+                    return System.IO.File.OpenRead(path);
                 }
                 catch (Exception e)
                 {
@@ -55,6 +57,7 @@ namespace Wyam.Common.IO
         /// Reads the specified file with retry logic.
         /// </summary>
         /// <param name="path">Path to the file to read.</param>
+        [Obsolete]
         public static string ReadAllText(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -68,7 +71,7 @@ namespace Wyam.Common.IO
                 try
                 {
                     attempts++;
-                    return File.ReadAllText(path);
+                    return System.IO.File.ReadAllText(path);
                 }
                 catch (Exception e)
                 {
@@ -90,6 +93,7 @@ namespace Wyam.Common.IO
         /// <param name="sourceFileName">Path of the source file.</param>
         /// <param name="destFileName">Path of the destination file.</param>
         /// <param name="overwrite">If set to <c>true</c>, overwrites an existing file.</param>
+        [Obsolete]
         public static void Copy(string sourceFileName, string destFileName, bool overwrite)
         {
             int attempts = 0;
@@ -98,7 +102,7 @@ namespace Wyam.Common.IO
                 try
                 {
                     attempts++;
-                    File.Copy(sourceFileName, destFileName, overwrite);
+                    System.IO.File.Copy(sourceFileName, destFileName, overwrite);
                     return;
                 }
                 catch (Exception e)
