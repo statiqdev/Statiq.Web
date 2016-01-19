@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -17,9 +19,15 @@ namespace Wyam.Common.Pipelines
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }
+        [Obsolete]
         string RootFolder { get; }
+        [Obsolete]
         string InputFolder { get; }
+        [Obsolete]
         string OutputFolder { get; }
+        DirectoryPath RootPath { get; }
+        IReadOnlyList<DirectoryPath> InputPaths { get; }
+        DirectoryPath OutputPath { get; }
         ITrace Trace { get; }
         IDocumentCollection Documents { get; }
 

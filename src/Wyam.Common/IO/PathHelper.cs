@@ -14,8 +14,8 @@ namespace Wyam.Common.IO
         public static string NormalizePath(string path)
         {
             return path
-                .Replace('\\', Path.DirectorySeparatorChar)
-                .Replace('/', Path.DirectorySeparatorChar);
+                .Replace('\\', System.IO.Path.DirectorySeparatorChar)
+                .Replace('/', System.IO.Path.DirectorySeparatorChar);
         }
 
         public static string ToLink(string path)
@@ -42,19 +42,19 @@ namespace Wyam.Common.IO
             }
             
             // Check if both paths are rooted
-            if (Path.IsPathRooted(fromPath) && Path.IsPathRooted(toPath))
+            if (System.IO.Path.IsPathRooted(fromPath) && System.IO.Path.IsPathRooted(toPath))
             {
                 // Check if it's a different root
-                if (String.Compare(Path.GetPathRoot(fromPath), Path.GetPathRoot(toPath), StringComparison.Ordinal) != 0)
+                if (String.Compare(System.IO.Path.GetPathRoot(fromPath), System.IO.Path.GetPathRoot(toPath), StringComparison.Ordinal) != 0)
                 {
                     return toPath;
                 }
             }
 
             List<string> relativePath = new List<string>();
-            string[] fromDirectories = fromPath.Split(Path.DirectorySeparatorChar);
+            string[] fromDirectories = fromPath.Split(System.IO.Path.DirectorySeparatorChar);
 
-            string[] toDirectories = toPath.Split(Path.DirectorySeparatorChar);
+            string[] toDirectories = toPath.Split(System.IO.Path.DirectorySeparatorChar);
 
             int length = Math.Min(fromDirectories.Length, toDirectories.Length);
 
@@ -95,30 +95,30 @@ namespace Wyam.Common.IO
             string[] relativeParts = new string[relativePath.Count];
             relativePath.CopyTo(relativeParts, 0);
 
-            string newPath = string.Join(Path.DirectorySeparatorChar.ToString(), relativeParts);
+            string newPath = string.Join(System.IO.Path.DirectorySeparatorChar.ToString(), relativeParts);
 
             return newPath;
         }
 
         public static string RemoveExtension(string path)
         {
-            string extension = Path.GetExtension(path);
+            string extension = System.IO.Path.GetExtension(path);
             return string.IsNullOrWhiteSpace(extension) ? path : path.Substring(0, path.Length - extension.Length);
         }
 
         public static string CombineToFullPath(params string[] paths)
         {
-            string combinedPath = Path.Combine(paths);
+            string combinedPath = System.IO.Path.Combine(paths);
             int wildCardCharIndex = combinedPath.IndexOfAny(WildcardCharacters);
 
             if( wildCardCharIndex < 0 )
             {
-                return Path.GetFullPath(combinedPath);
+                return System.IO.Path.GetFullPath(combinedPath);
             }
 
             string pathTillFirstWildCard = combinedPath.Substring(0, wildCardCharIndex);
 
-            return Path.GetFullPath(pathTillFirstWildCard) + combinedPath.Substring(wildCardCharIndex);
+            return System.IO.Path.GetFullPath(pathTillFirstWildCard) + combinedPath.Substring(wildCardCharIndex);
         }
     }
 }

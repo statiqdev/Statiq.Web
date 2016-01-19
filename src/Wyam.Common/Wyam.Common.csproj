@@ -42,6 +42,13 @@
   <ItemGroup>
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\IConfig.cs" />
+    <Compile Include="IO\DirectoryPath.cs" />
+    <Compile Include="IO\FilePath.cs" />
+    <Compile Include="IO\IDirectory.cs" />
+    <Compile Include="IO\IDirectoryPathCollection.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
+    <Compile Include="IO\Path.cs" />
     <Compile Include="IO\SafeIOHelper.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
     <Compile Include="Meta\MetadataItems.cs" />

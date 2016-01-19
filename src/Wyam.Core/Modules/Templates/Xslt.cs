@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules.Templates
                     if (_xsltPath != null)
                     {
                         string path = _xsltPath.Invoke<string>(x, context);
-                        path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                        path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
                         xslt.Load(path);
                     }
                     else if (_xsltGeneration != null)

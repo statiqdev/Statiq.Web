@@ -362,16 +362,16 @@ namespace Wyam.Modules.Images
                 if (string.IsNullOrWhiteSpace(path))
                     continue;
 
-                var relativePath = Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, path));
-                string destination = Path.Combine(context.OutputFolder, relativePath, Path.GetFileName(path));
+                var relativePath = System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, path));
+                string destination = System.IO.Path.Combine(context.OutputFolder, relativePath, System.IO.Path.GetFileName(path));
 
-                string destinationDirectory = Path.GetDirectoryName(destination);
+                string destinationDirectory = System.IO.Path.GetDirectoryName(destination);
                 if (!Directory.Exists(destinationDirectory))
                 {
                     Directory.CreateDirectory(destinationDirectory);
                 }
 
-                var extension = Path.GetExtension(path);
+                var extension = System.IO.Path.GetExtension(path);
 
                 
                 foreach (var ins in _instructions)
@@ -380,7 +380,7 @@ namespace Wyam.Modules.Images
                     if (format == null)
                         continue;
                     
-                    string destinationFile = Path.GetFileNameWithoutExtension(path);
+                    string destinationFile = System.IO.Path.GetFileNameWithoutExtension(path);
 
                     if (ins.IsFileNameCustomized)
                     {
@@ -393,7 +393,7 @@ namespace Wyam.Modules.Images
                     else
                         destinationFile += ins.GetSuffix() + extension;
 
-                    var destinationPath = Path.Combine(destinationDirectory, destinationFile);
+                    var destinationPath = System.IO.Path.Combine(destinationDirectory, destinationFile);
                     context.Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
 
                     var output = ProcessImage(input, format, ins);

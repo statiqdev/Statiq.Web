@@ -21,6 +21,7 @@ using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
+using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
 
@@ -69,6 +70,7 @@ namespace Wyam.Core
         private string _inputFolder = "Input";
         private string _outputFolder = "Output";
 
+        [Obsolete]
         public string RootFolder
         {
             get { return _rootFolder; }
@@ -78,16 +80,17 @@ namespace Wyam.Core
                 {
                     throw new ArgumentException(nameof(value));
                 }
-                _rootFolder = Path.GetFullPath(PathHelper.NormalizePath(value));
+                _rootFolder = System.IO.Path.GetFullPath(PathHelper.NormalizePath(value));
             }
         }
 
+        [Obsolete]
         public string InputFolder
         {
             get
             {
                 // Calculate this each time in case the root folder changes after setting it
-                return Path.GetFullPath(Path.Combine(RootFolder, PathHelper.NormalizePath(_inputFolder)));
+                return System.IO.Path.GetFullPath(System.IO.Path.Combine(RootFolder, PathHelper.NormalizePath(_inputFolder)));
             }
             set
             {
@@ -99,12 +102,13 @@ namespace Wyam.Core
             }
         }
 
+        [Obsolete]
         public string OutputFolder
         {
             get
             {
                 // Calculate this each time in case the root folder changes after setting it
-                return Path.GetFullPath(Path.Combine(RootFolder, PathHelper.NormalizePath(_outputFolder)));
+                return System.IO.Path.GetFullPath(System.IO.Path.Combine(RootFolder, PathHelper.NormalizePath(_outputFolder)));
             }
             set
             {
@@ -113,6 +117,41 @@ namespace Wyam.Core
                     throw new ArgumentException("OutputFolder");
                 }
                 _outputFolder = PathHelper.NormalizePath(value);
+            }
+        }
+
+        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
+        private DirectoryPath _outputPath = "Output";
+
+        public DirectoryPath RootPath
+        {
+            get { return _rootPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(RootPath));
+                }
+                if (value.IsRelative)
+                {
+                    throw new ArgumentException("The root path must not be relative");
+                }
+                _rootPath = value;
+            }
+        }
+
+        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
+
+        public DirectoryPath OutputPath
+        {
+            get { return _outputPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(OutputPath));
+                }
+                _outputPath = value;
             }
         }
 

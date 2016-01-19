@@ -136,29 +136,29 @@ namespace Wyam.Core.Modules.IO
                 string path = _path.Invoke<string>(input, context);
                 if (path != null)
                 {
-                    path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                    path = Path.Combine(Path.GetFullPath(Path.GetDirectoryName(path)), Path.GetFileName(path));
-                    string fileRoot = Path.GetDirectoryName(path);
+                    path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                    path = System.IO.Path.Combine(System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName(path)), System.IO.Path.GetFileName(path));
+                    string fileRoot = System.IO.Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
+                        return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(Path.GetExtension(x))))
+                            .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 context.Trace.Verbose("Read file {0}", file);
                                 return input.Clone(file, SafeIOHelper.OpenRead(file), new MetadataItems
                                 {
                                     { Keys.SourceFileRoot, fileRoot },
-                                    { Keys.SourceFileBase, Path.GetFileNameWithoutExtension(file) },
-                                    { Keys.SourceFileExt, Path.GetExtension(file) },
-                                    { Keys.SourceFileName, Path.GetFileName(file) },
-                                    { Keys.SourceFileDir, Path.GetDirectoryName(file) },
+                                    { Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(file) },
+                                    { Keys.SourceFileExt, System.IO.Path.GetExtension(file) },
+                                    { Keys.SourceFileName, System.IO.Path.GetFileName(file) },
+                                    { Keys.SourceFileDir, System.IO.Path.GetDirectoryName(file) },
                                     { Keys.SourceFilePath, file },
                                     { Keys.SourceFilePathBase, PathHelper.RemoveExtension(file) },
                                     { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file) },
                                     { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file)) },
-                                    { Keys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
+                                    { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
                                 });
                             });
                     }

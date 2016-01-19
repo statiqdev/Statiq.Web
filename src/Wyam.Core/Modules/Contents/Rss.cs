@@ -248,7 +248,7 @@ namespace Wyam.Core.Modules.Contents
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             XDocument rss = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-            var rssAbsolutePath = PathHelper.ToLink(Path.Combine(_siteRoot, _outputRssFilePath));
+            var rssAbsolutePath = PathHelper.ToLink(System.IO.Path.Combine(_siteRoot, _outputRssFilePath));
 
             var rssRoot = new XElement("rss",
                 new XAttribute("version", "2.0"),

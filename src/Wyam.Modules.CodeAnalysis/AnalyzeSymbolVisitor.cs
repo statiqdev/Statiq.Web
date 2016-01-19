@@ -249,7 +249,7 @@ namespace Wyam.Modules.CodeAnalysis
                     new MetadataItem(Keys.RelativeFilePathBase, 
                         (k, m) => PathHelper.RemoveExtension(m.String(Keys.WritePath))),
                     new MetadataItem(Keys.RelativeFileDir, 
-                        (k, m) => Path.GetDirectoryName(m.String(Keys.WritePath)))
+                        (k, m) => System.IO.Path.GetDirectoryName(m.String(Keys.WritePath)))
                 });
             }
 

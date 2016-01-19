@@ -202,7 +202,7 @@ search: function(q) {return idx.search(q).map(function(i){return idMap[i.ref];})
 
             if (!string.IsNullOrWhiteSpace(_stopwordsFilename))
             {
-                string fullStopwordsFilename = Path.Combine(context.InputFolder, _stopwordsFilename);
+                string fullStopwordsFilename = System.IO.Path.Combine(context.InputFolder, _stopwordsFilename);
 
                 if (File.Exists(fullStopwordsFilename))
                 {

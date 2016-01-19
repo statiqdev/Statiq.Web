@@ -88,7 +88,7 @@ namespace Wyam.Core.Modules.IO
                 string fileRelative = x.String(Keys.RelativeFilePath);
                 if (!string.IsNullOrWhiteSpace(fileRelative))
                 {
-                    return Path.ChangeExtension(fileRelative, extension);
+                    return System.IO.Path.ChangeExtension(fileRelative, extension);
                 }
                 return null;
             };
@@ -166,7 +166,7 @@ namespace Wyam.Core.Modules.IO
                     && input.ContainsKey(Keys.RelativeFileDir))
                 {
                     metadataKey = Keys.WriteFileName;
-                    path = Path.Combine(input.String(Keys.RelativeFileDir),
+                    path = System.IO.Path.Combine(input.String(Keys.RelativeFileDir),
                         PathHelper.NormalizePath(input.String(Keys.WriteFileName)));
                 }
 
@@ -175,7 +175,7 @@ namespace Wyam.Core.Modules.IO
                     && input.ContainsKey(Keys.RelativeFilePath))
                 {
                     metadataKey = Keys.WriteExtension;
-                    path = Path.ChangeExtension(input.String(Keys.RelativeFilePath),
+                    path = System.IO.Path.ChangeExtension(input.String(Keys.RelativeFilePath),
                         input.String(Keys.WriteExtension));
                 }
 
@@ -196,7 +196,7 @@ namespace Wyam.Core.Modules.IO
 
             if (!string.IsNullOrWhiteSpace(path))
             {
-                path = Path.GetFullPath(Path.Combine(context.OutputFolder, path));
+                path = System.IO.Path.GetFullPath(System.IO.Path.Combine(context.OutputFolder, path));
                 if (!string.IsNullOrWhiteSpace(path))
                 {
                     return path;
@@ -215,7 +215,7 @@ namespace Wyam.Core.Modules.IO
                     string path = GetPath(input, context);
                     if (path != null)
                     {
-                        string pathDirectory = Path.GetDirectoryName(path);
+                        string pathDirectory = System.IO.Path.GetDirectoryName(path);
                         if (pathDirectory != null && !Directory.Exists(pathDirectory))
                         {
                             Directory.CreateDirectory(pathDirectory);
@@ -233,15 +233,15 @@ namespace Wyam.Core.Modules.IO
                         context.Trace.Verbose("Wrote file {0}", path);
                         return input.Clone(outputStream, new MetadataItems
                         {
-                            { Keys.DestinationFileBase, Path.GetFileNameWithoutExtension(path) },
-                            { Keys.DestinationFileExt, Path.GetExtension(path) },
-                            { Keys.DestinationFileName, Path.GetFileName(path) },
-                            { Keys.DestinationFileDir, Path.GetDirectoryName(path) },
+                            { Keys.DestinationFileBase, System.IO.Path.GetFileNameWithoutExtension(path) },
+                            { Keys.DestinationFileExt, System.IO.Path.GetExtension(path) },
+                            { Keys.DestinationFileName, System.IO.Path.GetFileName(path) },
+                            { Keys.DestinationFileDir, System.IO.Path.GetDirectoryName(path) },
                             { Keys.DestinationFilePath, path },
                             { Keys.DestinationFilePathBase, PathHelper.RemoveExtension(path) },
                             { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path) },
                             { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path)) },
-                            { Keys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
+                            { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
                         });
                     }
                 }

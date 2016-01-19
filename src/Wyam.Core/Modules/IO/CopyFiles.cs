@@ -157,18 +157,18 @@ namespace Wyam.Core.Modules.IO
                 {
                     bool isPathUnderInputFolder = false;
 
-                    if (!Path.IsPathRooted(path))
+                    if (!System.IO.Path.IsPathRooted(path))
                     {
                         path = PathHelper.CombineToFullPath(context.InputFolder, path);
                         isPathUnderInputFolder = path.StartsWith(context.InputFolder);
                     }
                     
-                    string fileRoot = Path.GetDirectoryName(path);
+                    string fileRoot = System.IO.Path.GetDirectoryName(path);
                     if (fileRoot != null && Directory.Exists(fileRoot))
                     {
-                        return Directory.EnumerateFiles(fileRoot, Path.GetFileName(path), _searchOption)
+                        return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
                             .AsParallel()
-                            .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(Path.GetExtension(x))))
+                            .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(System.IO.Path.GetExtension(x))))
                             .Select(file =>
                             {
                                 string destination = null;
@@ -177,8 +177,8 @@ namespace Wyam.Core.Modules.IO
                                 {
                                     if(file != null)
                                     {
-                                        string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, Path.GetDirectoryName(file)) : "";
-                                        destination = Path.Combine(context.OutputFolder, relativePath, Path.GetFileName(file));
+                                        string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, System.IO.Path.GetDirectoryName(file)) : "";
+                                        destination = System.IO.Path.Combine(context.OutputFolder, relativePath, System.IO.Path.GetFileName(file));
                                     }
                                 }
                                 else
@@ -188,7 +188,7 @@ namespace Wyam.Core.Modules.IO
 
                                 if (!string.IsNullOrWhiteSpace(destination))
                                 {
-                                    string destinationDirectory = Path.GetDirectoryName(destination);
+                                    string destinationDirectory = System.IO.Path.GetDirectoryName(destination);
                                     if (destinationDirectory != null && !Directory.Exists(destinationDirectory))
                                     {
                                         Directory.CreateDirectory(destinationDirectory);

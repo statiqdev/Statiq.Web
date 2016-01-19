@@ -92,7 +92,7 @@ namespace Wyam.Modules.CodeAnalysis
                 string path = _path.GetValue(input, context);
                 if (path != null)
                 {
-                    path = Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                    path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
                     return GetProjects(path)
                         .AsParallel()
                         .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
@@ -102,21 +102,21 @@ namespace Wyam.Modules.CodeAnalysis
                             return project.Documents
                                 .AsParallel()
                                 .Where(x => !string.IsNullOrWhiteSpace(x.FilePath) && File.Exists(x.FilePath)
-                                    && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(Path.GetExtension(x.FilePath))))
+                                    && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
                                 .Select(document => {
                                     context.Trace.Verbose("Read file {0}", document.FilePath);
                                     return context.GetNewDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
                                     {
-                                        {Keys.SourceFileRoot, Path.GetDirectoryName(document.FilePath)},
-                                        {Keys.SourceFileBase, Path.GetFileNameWithoutExtension(document.FilePath)},
-                                        {Keys.SourceFileExt, Path.GetExtension(document.FilePath)},
-                                        {Keys.SourceFileName, Path.GetFileName(document.FilePath)},
-                                        {Keys.SourceFileDir, Path.GetDirectoryName(document.FilePath)},
+                                        {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
+                                        {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},
+                                        {Keys.SourceFileExt, System.IO.Path.GetExtension(document.FilePath)},
+                                        {Keys.SourceFileName, System.IO.Path.GetFileName(document.FilePath)},
+                                        {Keys.SourceFileDir, System.IO.Path.GetDirectoryName(document.FilePath)},
                                         {Keys.SourceFilePath, document.FilePath},
                                         {Keys.SourceFilePathBase, PathHelper.RemoveExtension(document.FilePath)},
                                         {Keys.RelativeFilePath, PathHelper.GetRelativePath(path, document.FilePath)},
                                         {Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(path, document.FilePath))},
-                                        {Keys.RelativeFileDir, Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
+                                        {Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
                                     });
                                 });
                         });

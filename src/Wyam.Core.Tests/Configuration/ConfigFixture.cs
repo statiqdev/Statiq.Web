@@ -775,8 +775,8 @@ Assemblies.Load("""");
 
             // Then
             Assert.AreEqual(PathHelper.NormalizePath(@"C:\A"), engine.RootFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\A", "B")), engine.InputFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\A", "C")), engine.OutputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\A", "B")), engine.InputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\A", "C")), engine.OutputFolder);
         }
 
         [Test]
@@ -802,8 +802,8 @@ OutputFolder = ""Z"";
 
             // Then
             Assert.AreEqual(PathHelper.NormalizePath(@"C:\X"), engine.RootFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\X", "Y")), engine.InputFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(Path.Combine(@"C:\X", "Z")), engine.OutputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\X", "Y")), engine.InputFolder);
+            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\X", "Z")), engine.OutputFolder);
         }
     }
 

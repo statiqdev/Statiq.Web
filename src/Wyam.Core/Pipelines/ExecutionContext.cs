@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Reflection;
 using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
@@ -20,27 +22,48 @@ namespace Wyam.Core.Pipelines
         private readonly Pipeline _pipeline;
 
         public byte[] RawConfigAssembly => _engine.RawConfigAssembly;
+
         public IEnumerable<Assembly> Assemblies => _engine.Assemblies;
+
         public IEnumerable<string> Namespaces => _engine.Namespaces;
+
         public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);
+
         public IModule Module { get; }
+
         public ITrace Trace => _engine.Trace;
+
         public IDocumentCollection Documents => _engine.Documents;
+
+        [Obsolete]
         public string RootFolder => _engine.RootFolder;
+
+        [Obsolete]
         public string InputFolder => _engine.InputFolder;
+
+        [Obsolete]
         public string OutputFolder => _engine.OutputFolder;
+
+        public DirectoryPath RootPath => _engine.RootPath;
+
+        public IReadOnlyList<DirectoryPath> InputPaths { get; }
+
+        public DirectoryPath OutputPath => _engine.OutputPath;
+
         public IExecutionCache ExecutionCache => _engine.ExecutionCacheManager.Get(Module, _engine);
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
             _engine = engine;
             _pipeline = pipeline;
+            InputPaths = engine.InputPaths.ToImmutableArray();
         }
 
         private ExecutionContext(ExecutionContext original, IModule module)
         {
             _engine = original._engine;
             _pipeline = original._pipeline;
+            InputPaths = original.InputPaths;
             Module = module;
         }
 
