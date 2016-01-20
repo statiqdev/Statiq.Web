@@ -50,10 +50,10 @@ namespace Wyam.Core.IO
         }
 
         public IFile GetInput(FilePath path) =>
-            path.IsRelative ? GetInput(inputPath => new File(RootPath.Combine(inputPath).Combine(path))) : new File(path);
+            path.IsRelative ? GetInput(inputPath => new File(RootPath.Combine(inputPath).Combine(path).Collapse())) : new File(path);
 
         public IDirectory GetInput(DirectoryPath path) =>
-            path.IsRelative ? GetInput(inputPath => new Directory(RootPath.Combine(inputPath).Combine(path))) : new Directory(path);
+            path.IsRelative ? GetInput(inputPath => new Directory(RootPath.Combine(inputPath).Combine(path).Collapse())) : new Directory(path);
 
         private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemInfo
         {
@@ -78,16 +78,16 @@ namespace Wyam.Core.IO
         }
 
         public IFile GetOutput(FilePath path) =>
-            new File(RootPath.Combine(OutputPath).Combine(path));
+            new File(RootPath.Combine(OutputPath).Combine(path).Collapse());
 
         public IDirectory GetOutput(DirectoryPath path) =>
-            new Directory(RootPath.Combine(OutputPath).Combine(path));
+            new Directory(RootPath.Combine(OutputPath).Combine(path).Collapse());
 
         public IFile GetRoot(FilePath path) =>
-            new File(RootPath.Combine(path));
+            new File(RootPath.Combine(path).Collapse());
 
         public IDirectory GetRoot(DirectoryPath path) =>
-            new Directory(RootPath.Combine(path));
+            new Directory(RootPath.Combine(path).Collapse());
         
 
         // *** Retry logic (used by File and Directory)

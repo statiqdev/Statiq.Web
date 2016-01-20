@@ -79,24 +79,6 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Makes the path absolute to another (absolute) path.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>An absolute path.</returns>
-        public DirectoryPath MakeAbsolute(DirectoryPath path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            if (path.IsRelative)
-            {
-                throw new ArgumentException("The provided path cannot be relative");
-            }
-            return IsRelative ? path.Combine(this).Collapse() : Collapse();
-        }
-
-        /// <summary>
         /// Makes the path absolute (if relative) using the root path of the given execution context.
         /// </summary>
         /// <param name="context">The execution context.</param>
