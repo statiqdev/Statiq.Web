@@ -104,7 +104,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(context));
             }
-            return IsRelative ? context.RootPath.Combine(this).Collapse() : Collapse();
+            return IsRelative ? context.FileSystem.RootPath.Combine(this).Collapse() : Collapse();
         }
 
         /// <summary>

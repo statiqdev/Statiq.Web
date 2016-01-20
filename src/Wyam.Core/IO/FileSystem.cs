@@ -10,23 +10,91 @@ using Wyam.Common.IO;
 namespace Wyam.Core.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
-    // TODO: Figure out the best way to specify that this is an input file/directory and find the appropriate root - this is where the merge should happen
-    internal sealed class FileSystem : IFileSystem
+    internal sealed class FileSystem : IConfigurableFileSystem
     {
-        public IFile GetFile(FilePath path)
-        {
-            return new File(path);
-        }
+        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
+        private DirectoryPath _outputPath = "Output";
         
-        public IDirectory GetDirectory(DirectoryPath path)
+        public DirectoryPath RootPath
         {
-            return new Directory(path);
+            get { return _rootPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(RootPath));
+                }
+                if (value.IsRelative)
+                {
+                    throw new ArgumentException("The root path must not be relative");
+                }
+                _rootPath = value;
+            }
         }
 
-        // *** Retry logic
+        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
+
+        IReadOnlyList<DirectoryPath> IFileSystem.InputPaths => InputPaths;
+
+        public DirectoryPath OutputPath
+        {
+            get { return _outputPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(OutputPath));
+                }
+                _outputPath = value;
+            }
+        }
+
+        public IFile GetInput(FilePath path) =>
+            path.IsRelative ? GetInput(inputPath => new File(RootPath.Combine(inputPath).Combine(path))) : new File(path);
+
+        public IDirectory GetInput(DirectoryPath path) =>
+            path.IsRelative ? GetInput(inputPath => new Directory(RootPath.Combine(inputPath).Combine(path))) : new Directory(path);
+
+        private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemInfo
+        {
+            T notFound = default(T);
+            foreach (DirectoryPath inputPath in InputPaths.Reverse())
+            {
+                T info = factory(inputPath);
+                if (notFound == null)
+                {
+                    notFound = info;
+                }
+                if (info.Exists)
+                {
+                    return info;
+                }
+            }
+            if (notFound == null)
+            {
+                throw new InvalidOperationException("The input paths collection must have at least one path");
+            }
+            return notFound;
+        }
+
+        public IFile GetOutput(FilePath path) =>
+            new File(RootPath.Combine(OutputPath).Combine(path));
+
+        public IDirectory GetOutput(DirectoryPath path) =>
+            new Directory(RootPath.Combine(OutputPath).Combine(path));
+
+        public IFile GetRoot(FilePath path) =>
+            new File(RootPath.Combine(path));
+
+        public IDirectory GetRoot(DirectoryPath path) =>
+            new Directory(RootPath.Combine(path));
+        
+
+        // *** Retry logic (used by File and Directory)
 
         private static readonly TimeSpan InitialInterval = TimeSpan.FromMilliseconds(200);
         private static readonly TimeSpan IntervalDelta = TimeSpan.FromMilliseconds(200);
+        
         private const int RetryCount = 3;
 
         public static T Retry<T>(Func<T> func)

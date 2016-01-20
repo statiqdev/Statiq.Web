@@ -44,11 +44,7 @@ namespace Wyam.Core.Pipelines
         [Obsolete]
         public string OutputFolder => _engine.OutputFolder;
 
-        public DirectoryPath RootPath => _engine.RootPath;
-
-        public IReadOnlyList<DirectoryPath> InputPaths { get; }
-
-        public DirectoryPath OutputPath => _engine.OutputPath;
+        public IFileSystem FileSystem => _engine.FileSystem;
 
         public IExecutionCache ExecutionCache => _engine.ExecutionCacheManager.Get(Module, _engine);
 
@@ -56,14 +52,12 @@ namespace Wyam.Core.Pipelines
         {
             _engine = engine;
             _pipeline = pipeline;
-            InputPaths = engine.InputPaths.ToImmutableArray();
         }
 
         private ExecutionContext(ExecutionContext original, IModule module)
         {
             _engine = original._engine;
             _pipeline = original._pipeline;
-            InputPaths = original.InputPaths;
             Module = module;
         }
 

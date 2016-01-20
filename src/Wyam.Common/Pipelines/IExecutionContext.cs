@@ -25,9 +25,7 @@ namespace Wyam.Common.Pipelines
         string InputFolder { get; }
         [Obsolete]
         string OutputFolder { get; }
-        DirectoryPath RootPath { get; }
-        IReadOnlyList<DirectoryPath> InputPaths { get; }
-        DirectoryPath OutputPath { get; }
+        IFileSystem FileSystem { get; }
         ITrace Trace { get; }
         IDocumentCollection Documents { get; }
 

@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using NuGet;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
 using Wyam.Common;
@@ -31,12 +30,15 @@ namespace Wyam.Core
     public class Engine : IDisposable
     {
         private bool _disposed;
+        private readonly FileSystem _fileSystem = new FileSystem();
         private readonly Config _config;
         private readonly PipelineCollection _pipelines;
-        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
-        private DirectoryPath _outputPath = "Output";
+
+        public IConfigurableFileSystem FileSystem => _fileSystem;
 
         public IConfig Config => _config;
+
+        public IPipelineCollection Pipelines => _pipelines;
 
         private readonly Dictionary<string, object> _metadata = new Dictionary<string, object>();
 
@@ -47,7 +49,6 @@ namespace Wyam.Core
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
-        public IPipelineCollection Pipelines => _pipelines;
 
         private readonly Tracing.Trace _trace = new Tracing.Trace();
 
@@ -60,9 +61,7 @@ namespace Wyam.Core
         public IEnumerable<string> Namespaces => _config.Namespaces;
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
-
-        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
-
+        
         public bool NoCache
         {
             get { return ExecutionCacheManager.NoCache; }
@@ -120,36 +119,6 @@ namespace Wyam.Core
                     throw new ArgumentException("OutputFolder");
                 }
                 _outputFolder = PathHelper.NormalizePath(value);
-            }
-        }
-
-        public DirectoryPath RootPath
-        {
-            get { return _rootPath; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(RootPath));
-                }
-                if (value.IsRelative)
-                {
-                    throw new ArgumentException("The root path must not be relative");
-                }
-                _rootPath = value;
-            }
-        }
-        
-        public DirectoryPath OutputPath
-        {
-            get { return _outputPath; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(OutputPath));
-                }
-                _outputPath = value;
             }
         }
 
