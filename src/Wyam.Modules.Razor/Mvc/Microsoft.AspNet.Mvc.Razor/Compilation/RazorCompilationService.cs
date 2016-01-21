@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Common;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
@@ -55,7 +56,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
 
             if (!results.Success)
             {
-                _executionContext.Trace.Error("{0} errors parsing {1}:{2}{3}", results.ParserErrors.Count(), file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, results.ParserErrors));
+                Trace.Error("{0} errors parsing {1}:{2}{3}", results.ParserErrors.Count(), file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, results.ParserErrors));
                 throw new AggregateException(results.ParserErrors.Select(x => new Exception(x.Message)));
             }
 
@@ -122,7 +123,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
 
                 if (!result.Success)
                 {
-                    _executionContext.Trace.Error("{0} errors compiling {1}:{2}{3}", result.Diagnostics.Length, file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
+                    Trace.Error("{0} errors compiling {1}:{2}{3}", result.Diagnostics.Length, file.RelativePath, Environment.NewLine, string.Join(Environment.NewLine, result.Diagnostics));
                     throw new AggregateException(result.Diagnostics.Select(x => new Exception(x.ToString())));
                 }
 

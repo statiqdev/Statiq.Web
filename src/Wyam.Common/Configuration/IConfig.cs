@@ -15,8 +15,5 @@ namespace Wyam.Common.Configuration
     {
         IAssemblyCollection Assemblies { get; }
         IPackagesCollection Packages { get; }
-        IConfigurableFileSystem FileSystem { get; }
-        IInitialMetadata InitialMetadata { get; }
-        IPipelineCollection Pipelines { get; }
     }
 }

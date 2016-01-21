@@ -206,7 +206,7 @@ namespace Wyam.Core.Pipelines
 
             // Execute all modules in the pipeline
             ExecutionContext context = new ExecutionContext(engine, this);
-            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(engine.Metadata, this) }.ToImmutableArray();
+            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(engine.InitialMetadata, this) }.ToImmutableArray();
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline

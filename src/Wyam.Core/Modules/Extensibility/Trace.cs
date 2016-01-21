@@ -65,7 +65,7 @@ namespace Wyam.Core.Modules.Extensibility
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            context.Trace.TraceEvent(_traceEventType, content.ToString());
+            Wyam.Common.Tracing.Trace.TraceEvent(_traceEventType, content.ToString());
             return new [] { input };
         }
     }

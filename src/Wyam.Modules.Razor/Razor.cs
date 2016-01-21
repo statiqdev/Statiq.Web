@@ -12,6 +12,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
@@ -119,7 +120,7 @@ namespace Wyam.Modules.Razor
                 = new ConcurrentDictionary<IDocument, Tuple<ViewContext, ViewEngineResult>>();
             Parallel.ForEach(validInputs, x =>
             {
-                context.Trace.Verbose("Compiling Razor for {0}", x.Source);
+                Trace.Verbose("Compiling Razor for {0}", x.Source);
                 IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<string>(x, context));
                 IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                 IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
@@ -138,7 +139,7 @@ namespace Wyam.Modules.Razor
             return validInputs
                 .Select(x =>
                 {
-                    using (context.Trace.WithIndent().Verbose("Processing Razor for {0}", x.Source))
+                    using (Trace.WithIndent().Verbose("Processing Razor for {0}", x.Source))
                     {
                         Tuple<ViewContext, ViewEngineResult> compilationResult;
                         if (compilationResults.TryGetValue(x, out compilationResult))
@@ -152,7 +153,7 @@ namespace Wyam.Modules.Razor
                                 return x.Clone(writer.ToString());
                             }
                         }
-                        context.Trace.Warning("Could not find compilation result for {0}", x.Source);
+                        Trace.Warning("Could not find compilation result for {0}", x.Source);
                         return null;
                     }
                 });

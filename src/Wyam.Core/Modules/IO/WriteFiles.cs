@@ -8,6 +8,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -182,7 +183,7 @@ namespace Wyam.Core.Modules.IO
                 // Warn if needed
                 if (metadataKey != null && _warnOnWriteMetadata)
                 {
-                    context.Trace.Warning("An extension or delegate was specified for the WriteFiles module, but the metadata key {0} took precedence for the document with source {1}."
+                    Trace.Warning("An extension or delegate was specified for the WriteFiles module, but the metadata key {0} took precedence for the document with source {1}."
                         + " Call UseWriteMetadata(false) to prevent the special write metadata keys from overriding WriteFiles constructor values.",
                         metadataKey, input.Source);
                 }
@@ -230,7 +231,7 @@ namespace Wyam.Core.Modules.IO
                             outputStream = File.Open(path, FileMode.Create);
                             inputStream.CopyTo(outputStream);
                         }
-                        context.Trace.Verbose("Wrote file {0}", path);
+                        Trace.Verbose("Wrote file {0}", path);
                         return input.Clone(outputStream, new MetadataItems
                         {
                             { Keys.DestinationFileBase, System.IO.Path.GetFileNameWithoutExtension(path) },

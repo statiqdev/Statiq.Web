@@ -12,6 +12,7 @@ using MetadataExtractor.Formats.Xmp;
 using XmpCore;
 using System.Globalization;
 using Wyam.Common.Meta;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Xmp
 {
@@ -132,7 +133,7 @@ namespace Wyam.Modules.Xmp
                  {
                      if (_toSearch.Any(y => y.IsMandatory))
                      {
-                         context.Trace.Warning($"File doe not contain Metadata or sidecar file ({x.Source})");
+                         Trace.Warning($"File doe not contain Metadata or sidecar file ({x.Source})");
                          if (_skipElementOnMissingData)
                              return null;
                      }
@@ -153,7 +154,7 @@ namespace Wyam.Modules.Xmp
                          {
                              if (search.IsMandatory)
                              {
-                                 context.Trace.Error($"Metadata does not Contain {search.XmpPath} ({x.Source})");
+                                 Trace.Error($"Metadata does not Contain {search.XmpPath} ({x.Source})");
                                  if (_skipElementOnMissingData)
                                  {
                                      return null;
@@ -164,7 +165,7 @@ namespace Wyam.Modules.Xmp
                          object value = GetObjectFromMetadata(metadata, hierarchicalDirectory);
                          if (newValues.ContainsKey(search.MetadataKey) && _errorOnDoubleKeys)
                          {
-                             context.Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({x.Source})");
+                             Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({x.Source})");
                          }
                          else
                          {
@@ -174,7 +175,7 @@ namespace Wyam.Modules.Xmp
                      }
                      catch (Exception e)
                      {
-                         context.Trace.Error($"An exception occurred : {e} {e.Message}");
+                         Trace.Error($"An exception occurred : {e} {e.Message}");
                          if (search.IsMandatory && _skipElementOnMissingData)
                              return null;
                      }

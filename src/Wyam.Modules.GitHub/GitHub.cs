@@ -8,6 +8,7 @@ using Octokit;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.GitHub
 {
@@ -137,14 +138,14 @@ namespace Wyam.Modules.GitHub
                 ConcurrentDictionary<string, object> results = new ConcurrentDictionary<string, object>();
                 foreach (KeyValuePair<string, Func<IDocument, IExecutionContext, GitHubClient, object>> request in _requests.AsParallel())
                 {
-                    context.Trace.Verbose("Submitting {0} GitHub request for {1}", request.Key, doc.Source);
+                    Trace.Verbose("Submitting {0} GitHub request for {1}", request.Key, doc.Source);
                     try
                     {
                         results[request.Key] = request.Value(doc, context, github);
                     }
                     catch (Exception ex)
                     {
-                        context.Trace.Warning("Exception while submitting {0} GitHub request for {1}: {2}", request.Key, doc.Source, ex.ToString());
+                        Trace.Warning("Exception while submitting {0} GitHub request for {1}: {2}", request.Key, doc.Source, ex.ToString());
                     }
                 }
                 return doc.Clone(results);

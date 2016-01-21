@@ -18,6 +18,8 @@ namespace Wyam.Core.IO
 
         Wyam.Common.IO.Path IFileSystemInfo.Path => _path;
 
+        public IDirectory Directory => new Directory(_path.GetDirectory());
+
         public bool Exists => _file.Exists;
 
         public bool Hidden => (_file.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden;
@@ -49,6 +51,9 @@ namespace Wyam.Core.IO
         }
 
         public void Delete() => FileSystem.Retry(() => _file.Delete());
+
+        public Stream Open(FileMode fileMode) =>
+            FileSystem.Retry(() => _file.Open(fileMode));
 
         public Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare) => 
             FileSystem.Retry(() => _file.Open(fileMode, fileAccess, fileShare));

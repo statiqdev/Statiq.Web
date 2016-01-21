@@ -8,6 +8,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
@@ -146,7 +147,7 @@ namespace Wyam.Core.Modules.IO
                             .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x))))
                             .Select(file =>
                             {
-                                context.Trace.Verbose("Read file {0}", file);
+                                Trace.Verbose("Read file {0}", file);
                                 return input.Clone(file, SafeIOHelper.OpenRead(file), new MetadataItems
                                 {
                                     { Keys.SourceFileRoot, fileRoot },

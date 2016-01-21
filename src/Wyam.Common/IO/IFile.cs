@@ -20,6 +20,14 @@ namespace Wyam.Common.IO
         new FilePath Path { get; }
 
         /// <summary>
+        /// Gets the directory of the file.
+        /// </summary>
+        /// <value>
+        /// The directory of the file.
+        /// </value>
+        IDirectory Directory { get; }
+
+        /// <summary>
         /// Gets the length of the file.
         /// </summary>
         /// <value>The length of the file.</value>
@@ -42,6 +50,13 @@ namespace Wyam.Common.IO
         /// Deletes the file.
         /// </summary>
         void Delete();
+
+        /// <summary>
+        /// Opens the file using the specified options.
+        /// </summary>
+        /// <param name="fileMode">The file mode.</param>
+        /// <returns>A <see cref="Stream"/> to the file.</returns>
+        Stream Open(FileMode fileMode);
 
         /// <summary>
         /// Opens the file using the specified options.

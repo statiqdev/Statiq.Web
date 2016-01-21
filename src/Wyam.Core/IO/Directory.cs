@@ -34,5 +34,10 @@ namespace Wyam.Core.IO
 
         public IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
             FileSystem.Retry(() => _directory.GetFiles(filter, searchOption).Select(file => new File(file.FullName)));
+
+        public IFile GetFile(FilePath path)
+        {
+            return new File(_path.Combine(path).Collapse());
+        }
     }
 }

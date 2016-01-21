@@ -13,7 +13,7 @@ namespace Wyam.Core.IO
     internal sealed class FileSystem : IConfigurableFileSystem
     {
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
-        private DirectoryPath _outputPath = "Output";
+        private DirectoryPath _outputPath = "output";
         
         public DirectoryPath RootPath
         {
@@ -32,7 +32,7 @@ namespace Wyam.Core.IO
             }
         }
 
-        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "Input" };
+        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "input" };
 
         IReadOnlyList<DirectoryPath> IFileSystem.InputPaths => InputPaths;
 
@@ -88,7 +88,24 @@ namespace Wyam.Core.IO
 
         public IDirectory GetRoot(DirectoryPath path) =>
             new Directory(RootPath.Combine(path).Collapse());
-        
+
+        public IFile Get(FilePath path)
+        {
+            if (path.IsRelative)
+            {
+                throw new ArgumentException("The path must be absolute");
+            }
+            return new File(path.Collapse());
+        }
+
+        public IDirectory Get(DirectoryPath path)
+        {
+            if (path.IsRelative)
+            {
+                throw new ArgumentException("The path must be absolute");
+            }
+            return new Directory(path.Collapse());
+        }
 
         // *** Retry logic (used by File and Directory)
 

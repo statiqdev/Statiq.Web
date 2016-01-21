@@ -12,6 +12,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Images
 {
@@ -394,7 +395,7 @@ namespace Wyam.Modules.Images
                         destinationFile += ins.GetSuffix() + extension;
 
                     var destinationPath = System.IO.Path.Combine(destinationDirectory, destinationFile);
-                    context.Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
+                    Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
 
                     var output = ProcessImage(input, format, ins);
 

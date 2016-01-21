@@ -2,7 +2,9 @@
 using System.IO;
 using NuGet;
 using NuGet.Frameworks;
+using Wyam.Common.IO;
 using Wyam.Common.NuGet;
+using Path = System.IO.Path;
 
 namespace Wyam.Core.NuGet
 {
@@ -28,43 +30,48 @@ namespace Wyam.Core.NuGet
             _packages.Add(package);
             return this;
         }
-
-        // TODO: Figure out where to copy content packages to (should use a special input folder for this, but how to define?)
-        public void InstallPackages(string path, bool updatePackages)
+        
+        public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, IConfigurableFileSystem fileSystem, bool updatePackages)
         {
-            PackageManager packageManager = new PackageManager(_packageRepository, path);
+            PackageManager packageManager = new PackageManager(_packageRepository, absolutePackagesPath);
+
+            // On package install...
             packageManager.PackageInstalled += (sender, args) =>
             {
-                // Copy all content files on install
+                IDirectory packageContentDirectory = fileSystem.GetRoot(contentPath.CombineDirectory(args.Package.Id));
+
+                // Copy all content files on install and add to input paths
+                bool firstFile = true;
                 foreach (IPackageFile packageFile in args.Package.GetContentFiles())
                 {
-                    string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
-                    string filePathDirectory = Path.GetDirectoryName(filePath);
-                    if (!Directory.Exists(filePathDirectory))
+                    if (firstFile)
                     {
-                        Directory.CreateDirectory(filePathDirectory);
+                        // This package does have content files, so create the directory and add an input path
+                        packageContentDirectory.Create();
+                        fileSystem.InputPaths.Insert(0, packageContentDirectory.Path);
+                        firstFile = false;
                     }
-                    using (var fileStream = File.Create(filePath))
+
+                    IFile file = packageContentDirectory.GetFile(packageFile.EffectivePath);
+                    file.Directory.Create();
+                    using (var fileStream = file.Open(FileMode.Create))
                     {
                         packageFile.GetStream().CopyTo(fileStream);
                     }
                 }
             };
+
+            // On package uninstall...
             packageManager.PackageUninstalling += (sender, args) =>
             {
-                // Remove all content files on uninstall
-                foreach (IPackageFile packageFile in args.Package.GetContentFiles())
-                {
-                    string filePath = Path.Combine(engine.InputFolder, packageFile.EffectivePath);
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                    }
-                }
+                IDirectory packageContentDirectory = fileSystem.GetRoot(contentPath.CombineDirectory(args.Package.Id));
+                packageContentDirectory.Delete(true);
             };
+
+            // Install the packages
             foreach (Package package in _packages)
             {
-                package.InstallPackage(packageManager, engine, updatePackages);
+                package.InstallPackage(packageManager, updatePackages);
             }
         }
     }

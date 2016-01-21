@@ -8,6 +8,7 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;
 
@@ -95,7 +96,7 @@ namespace Wyam.Modules.Yaml
                     }
                     catch (Exception ex)
                     {
-                        context.Trace.Error("Error processing YAML for {0}: {1}", x.Source, ex.ToString());
+                        Trace.Error("Error processing YAML for {0}: {1}", x.Source, ex.ToString());
                     }
                     return null;
                 })

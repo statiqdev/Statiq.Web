@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Markdown
 {
@@ -61,7 +62,7 @@ namespace Wyam.Modules.Markdown
         {
             return inputs.AsParallel().Select(x =>
             {
-                context.Trace.Verbose("Processing Markdown {0}for {1}", 
+                Trace.Verbose("Processing Markdown {0}for {1}", 
                     string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), x.Source);
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;

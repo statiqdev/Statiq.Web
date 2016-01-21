@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.CodeAnalysis
 {
@@ -98,13 +98,13 @@ namespace Wyam.Modules.CodeAnalysis
                         .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
                         .SelectMany(project =>
                         {
-                            context.Trace.Verbose("Read project {0}", project.Name);
+                            Trace.Verbose("Read project {0}", project.Name);
                             return project.Documents
                                 .AsParallel()
                                 .Where(x => !string.IsNullOrWhiteSpace(x.FilePath) && File.Exists(x.FilePath)
                                     && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
                                 .Select(document => {
-                                    context.Trace.Verbose("Read file {0}", document.FilePath);
+                                    Trace.Verbose("Read file {0}", document.FilePath);
                                     return context.GetNewDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
                                     {
                                         {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},

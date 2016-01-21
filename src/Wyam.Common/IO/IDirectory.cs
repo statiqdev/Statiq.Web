@@ -51,5 +51,12 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>Files matching the specified filter and scope.</returns>
         IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly);
+
+        /// <summary>
+        /// Gets a file by combining it's path with the current directory's path.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <returns>The file.</returns>
+        IFile GetFile(FilePath path);
     }
 }

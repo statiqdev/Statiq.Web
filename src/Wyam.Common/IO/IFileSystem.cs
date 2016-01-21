@@ -55,7 +55,7 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then operations will search all
         /// current input paths.
         /// </param>
-        /// <returns>A path to an input file.</returns>
+        /// <returns>An input file.</returns>
         IFile GetInput(FilePath path);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then operations will search all
         /// current input paths.
         /// </param>
-        /// <returns>A path to an input directory.</returns>
+        /// <returns>An input directory.</returns>
         IDirectory GetInput(DirectoryPath path);
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then it will be combined with the
         /// current output path.
         /// </param>
-        /// <returns>A path to an output file.</returns>
+        /// <returns>An output file.</returns>
         IFile GetOutput(FilePath path);
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then it will be combined with the
         /// current output path.
         /// </param>
-        /// <returns>A path to an output directory.</returns>
+        /// <returns>An output directory.</returns>
         IDirectory GetOutput(DirectoryPath path);
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then it will be combined with the
         /// current root path.
         /// </param>
-        /// <returns>A path to an root file.</returns>
+        /// <returns>A root file.</returns>
         IFile GetRoot(FilePath path);
 
         /// <summary>
@@ -115,7 +115,25 @@ namespace Wyam.Common.IO
         /// If it's a relative path, then it will be combined with the
         /// current root path.
         /// </param>
-        /// <returns>A path to an root directory.</returns>
+        /// <returns>A root directory.</returns>
         IDirectory GetRoot(DirectoryPath path);
+
+        /// <summary>
+        /// Gets an absolute file.
+        /// </summary>
+        /// <param name="path">
+        /// The absolute path of the file.
+        /// </param>
+        /// <returns>A file.</returns>
+        IFile Get(FilePath path);
+
+        /// <summary>
+        /// Gets an absolute directory.
+        /// </summary>
+        /// <param name="path">
+        /// The absolute path of the directory.
+        /// </param>
+        /// <returns>A directory.</returns>
+        IDirectory Get(DirectoryPath path);
     }
 }

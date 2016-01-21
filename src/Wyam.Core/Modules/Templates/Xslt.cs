@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Modules.Templates
 {
@@ -92,7 +93,7 @@ namespace Wyam.Core.Modules.Templates
                 }
                 catch (Exception e)
                 {
-                    context.Trace.Error($"An {e.GetType().Name} occurred: {e.Message}");
+                    Trace.Error($"An {e.GetType().Name} occurred: {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

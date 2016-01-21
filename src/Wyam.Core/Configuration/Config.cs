@@ -1,6 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,18 +6,17 @@ using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
-using NuGet;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Core.NuGet;
 using Wyam.Common.Modules;
 using Wyam.Common.NuGet;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
+using Wyam.Core.Util;
+using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration
 {
@@ -29,7 +26,10 @@ namespace Wyam.Core.Configuration
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
         private readonly HashSet<string> _namespaces = new HashSet<string>();
-        
+
+        private readonly IConfigurableFileSystem _fileSystem;
+        private readonly IInitialMetadata _initialMetadata;
+        private readonly IPipelineCollection _pipelines;
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
@@ -38,18 +38,14 @@ namespace Wyam.Core.Configuration
         private byte[] _rawSetupAssembly;
         private string _fileName;
         private bool _outputScripts;
-
-        public IConfigurableFileSystem FileSystem { get; }
-        public IInitialMetadata InitialMetadata { get; }
-        public IPipelineCollection Pipelines { get; }
-
+        
         public bool Configured { get; private set; }
 
         public Config(IConfigurableFileSystem fileSystem, IInitialMetadata initialMetadata, IPipelineCollection pipelines)
         {
-            FileSystem = fileSystem;
-            InitialMetadata = initialMetadata;
-            Pipelines = pipelines;
+            _fileSystem = fileSystem;
+            _initialMetadata = initialMetadata;
+            _pipelines = pipelines;
             _packages = new PackagesCollection(fileSystem);
 
             // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
@@ -183,6 +179,7 @@ namespace Wyam.Core.Configuration
                     StringBuilder codeBuilder = new StringBuilder(@"
                         using System;
                         using Wyam.Common.Configuration;
+                        using Wyam.Common.IO;
                         using Wyam.Common.NuGet;");
                     codeBuilder.AppendLine();
                     codeBuilder.AppendLine(string.Join(Environment.NewLine,
@@ -193,7 +190,7 @@ namespace Wyam.Core.Configuration
                     codeBuilder.AppendLine(@"
                         public static class SetupScript
                         {
-                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, ref string RootFolder, ref string InputFolder, ref string OutputFolder)
+                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
                             {");
                     codeBuilder.Append(code);
                     codeBuilder.AppendLine(@"
@@ -201,10 +198,10 @@ namespace Wyam.Core.Configuration
                         }");
 
                     // Assemblies
-                    Assembly[] setupAssemblies = new[]
+                    Assembly[] setupAssemblies =
                     {
                         Assembly.GetAssembly(typeof (object)), // System
-                        Assembly.GetAssembly(typeof (Wyam.Core.Engine)), //Wyam.Core
+                        Assembly.GetAssembly(typeof (Engine)), //Wyam.Core
                         Assembly.GetAssembly(typeof (IModule)) // Wyam.Common
                     };
 
@@ -213,15 +210,7 @@ namespace Wyam.Core.Configuration
                     _setupAssembly = Assembly.Load(_rawSetupAssembly);
                     var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
                     MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                    string rootFolder = _engine.RootFolder;
-                    string inputFolder = _engine.InputFolder;
-                    string outputFolder = _engine.OutputFolder;
-                    object[] args = { _packages, _assemblyCollection, rootFolder, inputFolder, outputFolder };
-                    runMethod.Invoke(null, args);
-                    _engine.RootFolder = args[2] as string;
-                    _engine.InputFolder = args[3] as string;
-                    _engine.OutputFolder = args[4] as string;
-
+                    runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _fileSystem });
                 }
 
                 // Install packages
@@ -237,7 +226,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private static readonly string[] _defaultNamespaces = new[]
+        private static readonly string[] DefaultNamespaces =
         {
             "System",
             "System.Collections.Generic",
@@ -252,11 +241,11 @@ namespace Wyam.Core.Configuration
         {
             try
             {
-                HashSet<Type> moduleTypes;
+                HashSet<Type> moduleTypes = new HashSet<Type>();
                 using (Trace.WithIndent().Verbose("Initializing scripting environment"))
                 {
                     // Initial default namespaces
-                    _namespaces.AddRange(_defaultNamespaces);
+                    _namespaces.AddRange(DefaultNamespaces);
 
                     // Add all module namespaces from Wyam.Core
                     _namespaces.AddRange(typeof(Engine).Assembly.GetTypes()
@@ -271,8 +260,8 @@ namespace Wyam.Core.Configuration
                     // Add specified assemblies from packages, etc.
                     GetAssemblies();
 
-                    // Get modules
-                    moduleTypes = GetModules();
+                    // Scan assemblies
+                    ScanAssemblies(moduleTypes);
                 }
                 
                 using (Trace.WithIndent().Verbose("Evaluating configuration script"))
@@ -286,7 +275,7 @@ namespace Wyam.Core.Configuration
                     _configAssemblyFullName = _setupAssembly.FullName;
                     var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
                     MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                    runMethod.Invoke(null, new object[] { _engine.Metadata, _engine.Pipelines, _engine.RootFolder, _engine.InputFolder, _engine.OutputFolder });
+                    runMethod.Invoke(null, new object[] { _initialMetadata, _pipelines, _fileSystem });
                 }
             }
             catch (Exception ex)
@@ -301,7 +290,7 @@ namespace Wyam.Core.Configuration
             // Output if requested
             if (_outputScripts)
             {
-                File.WriteAllText(System.IO.Path.Combine(_engine.RootFolder, $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
+                File.WriteAllText(System.IO.Path.Combine(_fileSystem.RootPath.FullPath, $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
             }
 
             // Create the compilation
@@ -353,11 +342,11 @@ namespace Wyam.Core.Configuration
             assemblyPaths.AddRange(_packages.GetCompatibleAssemblyPaths());
             assemblyPaths.AddRange(Directory.GetFiles(System.IO.Path.GetDirectoryName(typeof(Config).Assembly.Location), "*.dll", SearchOption.AllDirectories));
             assemblyPaths.AddRange(_assemblyCollection.Directories
-                .Select(x => new Tuple<string, SearchOption>(System.IO.Path.Combine(_engine.RootFolder, x.Item1), x.Item2))
+                .Select(x => new Tuple<string, SearchOption>(System.IO.Path.Combine(_fileSystem.RootPath.FullPath, x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1))
                 .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
             assemblyPaths.AddRange(_assemblyCollection.ByFile
-                .Select(x => new Tuple<string, string>(x, System.IO.Path.Combine(_engine.RootFolder, x)))
+                .Select(x => new Tuple<string, string>(x, System.IO.Path.Combine(_fileSystem.RootPath.FullPath, x)))
                 .Select(x => File.Exists(x.Item2) ? x.Item2 : x.Item1));
 
             // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
@@ -461,26 +450,19 @@ namespace Wyam.Core.Configuration
             return null;
         }
 
-        private HashSet<Type> GetModules()
+        private void ScanAssemblies(HashSet<Type> moduleTypes)
         {
-            HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in _assemblies.Values)
             {
-                using (Trace.WithIndent().Verbose("Searching for modules in assembly {0}", assembly.FullName))
+                using (Trace.WithIndent().Verbose("Scanning assembly {0}", assembly.FullName))
                 {
-                    foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
-                        && x.IsPublic && !x.IsAbstract && x.IsClass))
-                    {
-                        Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
-                        moduleTypes.Add(moduleType);
-                        _namespaces.Add(moduleType.Namespace);
-                    }
+                    Type[] loadableTypes = GetLoadableTypes(assembly);
+                    GetModuleTypes(assembly, loadableTypes, moduleTypes);
                 }
             }
-            return moduleTypes;
         }
 
-        public IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+        private Type[] GetLoadableTypes(Assembly assembly)
         {
             CheckDisposed();
 
@@ -494,7 +476,18 @@ namespace Wyam.Core.Configuration
                 {
                     Trace.Verbose("Loader Exception: {0}", loaderException.Message);
                 }
-                return ex.Types.Where(t => t != null);
+                return ex.Types.Where(t => t != null).ToArray();
+            }
+        }
+
+        private void GetModuleTypes(Assembly assembly, IEnumerable<Type> loadableTypes, HashSet<Type> types)
+        {
+            foreach (Type type in loadableTypes.Where(x => typeof(IModule).IsAssignableFrom(x) 
+                && x.IsPublic && !x.IsAbstract && x.IsClass))
+            {
+                Trace.Verbose("Found module {0} in assembly {1}", type.Name, assembly.FullName);
+                types.Add(type);
+                _namespaces.Add(type.Namespace);
             }
         }
 
@@ -511,15 +504,15 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {
-                    public static void Run(IInitialMetadata Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
+                    public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
                     {" + Environment.NewLine + script + @"
                     }");
-
+            
             // Add static methods to construct each module
-            // Use Roslyn to get a display string for each constructor
+            Dictionary<string, string> moduleNames = new Dictionary<string, string>();
             foreach (Type moduleType in moduleTypes)
             {
-                scriptBuilder.Append(GenerateModuleConstructorMethods(moduleType));
+                scriptBuilder.Append(GenerateModuleConstructorMethods(moduleType, moduleNames));
             }
 
             scriptBuilder.Append("}");
@@ -531,7 +524,7 @@ namespace Wyam.Core.Configuration
             return script;
         }
 
-        public string GenerateModuleConstructorMethods(Type moduleType)
+        private string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)
         {
             StringBuilder stringBuilder = new StringBuilder();
             CSharpCompilation compilation = CSharpCompilation
@@ -556,6 +549,15 @@ namespace Wyam.Core.Configuration
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
             string moduleName = moduleSymbol.ToDisplayString(new SymbolDisplayFormat(
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters));
+
+            // Check to make sure we haven't already added a module with the same name
+            string existingMemberName;
+            if (memberNames.TryGetValue(moduleName, out existingMemberName))
+            {
+                throw new Exception($"Could not add module {moduleFullName} because it was already defined in {existingMemberName}.");
+            }
+            memberNames.Add(moduleName, moduleFullName);
+
             foreach (IMethodSymbol ctorSymbol in moduleSymbol.InstanceConstructors
                 .Where(x => x.DeclaredAccessibility == Accessibility.Public))
             {

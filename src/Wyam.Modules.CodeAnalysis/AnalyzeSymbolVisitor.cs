@@ -278,7 +278,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             string documentationCommentXml = symbol.GetDocumentationCommentXml(expandIncludes: true);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses, _context.Trace);
+                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements

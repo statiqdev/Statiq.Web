@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\IConfig.cs" />
-    <Compile Include="Configuration\IConfigMembers.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
     <Compile Include="IO\FilePath.cs" />
     <Compile Include="IO\IConfigurableFileSystem.cs" />

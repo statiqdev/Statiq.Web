@@ -11,6 +11,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Common.IO;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -111,16 +112,16 @@ namespace Wyam.Core.Modules.Contents
         /// <summary>
         /// RSS feed title. Required.
         /// </summary>
-        private string _feedTitle = string.Empty;
+        private readonly string _feedTitle = string.Empty;
 
         /// <summary>
         /// RSS feed description. Required.
         /// </summary>
-        private string _feedDescription = string.Empty;
+        private readonly string _feedDescription = string.Empty;
 
-        private string _siteRoot = null;
+        private readonly string _siteRoot = null;
 
-        private string _outputRssFilePath = null;
+        private readonly string _outputRssFilePath = null;
 
         // Default meta keys
         private string _pubDateMetaKey = "RssPubDate";
@@ -138,7 +139,7 @@ namespace Wyam.Core.Modules.Contents
 
         private Func<string, string> _linkCustomizerDelegate = null;
 
-        private readonly static XNamespace atomNamespace = XNamespace.Get(@"http://www.w3.org/2005/Atom");
+        private static readonly XNamespace AtomNamespace = XNamespace.Get(@"http://www.w3.org/2005/Atom");
 
         /// <summary>
         /// Creates RSS feed from input documents.
@@ -150,15 +151,23 @@ namespace Wyam.Core.Modules.Contents
         public Rss(string siteRoot, string outputRssFilePath, string feedTitle, string feedDescription)
         {
             if (string.IsNullOrEmpty(siteRoot))
-                throw new ArgumentException("siteRoot");
+            {
+                throw new ArgumentException(nameof(siteRoot));
+            }
             if (string.IsNullOrEmpty(outputRssFilePath))
-                throw new ArgumentException("outputRssFilePath");
+            {
+                throw new ArgumentException(nameof(outputRssFilePath));
+            }
             if (string.IsNullOrEmpty(feedTitle))
-                throw new ArgumentException("feedTitle");
+            {
+                throw new ArgumentException(nameof(feedTitle));
+            }
             if (string.IsNullOrEmpty(feedDescription))
-                throw new ArgumentException("feedDescription");
+            {
+                throw new ArgumentException(nameof(feedDescription));
+            }
 
-            _siteRoot = PathHelper.ToLink(siteRoot.TrimEnd(new char[] { '/', '\\' }));
+            _siteRoot = PathHelper.ToLink(siteRoot.TrimEnd('/', '\\'));
             _outputRssFilePath = outputRssFilePath;
             _feedDescription = feedDescription;
             _feedTitle = feedTitle;
@@ -170,7 +179,9 @@ namespace Wyam.Core.Modules.Contents
         public Rss WithPublicationDateMetaKey(string key)
         {
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentException("key");
+            {
+                throw new ArgumentException(nameof(key));
+            }
 
             _pubDateMetaKey = key;
             return this;
@@ -182,7 +193,9 @@ namespace Wyam.Core.Modules.Contents
         public Rss WithTitleMetaKey(string key)
         {
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentException("key");
+            {
+                throw new ArgumentException(nameof(key));
+            }
 
             _titleMetaKey = key;
             return this;
@@ -191,7 +204,9 @@ namespace Wyam.Core.Modules.Contents
         public Rss WithDescriptionMetaKey(string key)
         {
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentException("key");
+            {
+                throw new ArgumentException(nameof(key));
+            }
 
             _descriptionMetaKey = key;
             return this;
@@ -205,7 +220,9 @@ namespace Wyam.Core.Modules.Contents
         public Rss WithLanguage(string lang)
         {
             if (string.IsNullOrEmpty(lang))
-                throw new ArgumentException("lang");
+            {
+                throw new ArgumentException(nameof(lang));
+            }
 
             _language = lang;
             return this;
@@ -228,9 +245,12 @@ namespace Wyam.Core.Modules.Contents
         /// </summary>
         /// <param name="customizer"></param>
         /// <returns></returns>
-        public Rss WithLinkCustomizer(Func<string, string> customizer) {
+        public Rss WithLinkCustomizer(Func<string, string> customizer)
+        {
             if (customizer == null)
-                throw new ArgumentNullException("customizer");
+            {
+                throw new ArgumentNullException(nameof(customizer));
+            }
 
             _linkCustomizerDelegate = customizer;
             return this;
@@ -252,14 +272,14 @@ namespace Wyam.Core.Modules.Contents
 
             var rssRoot = new XElement("rss",
                 new XAttribute("version", "2.0"),
-                new XAttribute(XNamespace.Xmlns + "atom", atomNamespace)
+                new XAttribute(XNamespace.Xmlns + "atom", AtomNamespace)
             );
 
             var channel = new XElement("channel",
                 new XElement("title", _feedTitle),
                 new XElement("description", _feedDescription),
                 new XElement("link", _siteRoot),
-                new XElement(atomNamespace + "link",
+                new XElement(AtomNamespace + "link",
                     new XAttribute("href", rssAbsolutePath),
                     new XAttribute("rel", "self")
                 ),
@@ -328,7 +348,7 @@ namespace Wyam.Core.Modules.Contents
                     }
                     else if (string.IsNullOrWhiteSpace(input.Source))
                     {
-                        context.Trace.Warning("Cannot generate RSS item guid for document " + input.Source + " because document Source is not valid.");
+                        Trace.Warning("Cannot generate RSS item guid for document " + input.Source + " because document Source is not valid.");
                     }
                     else
                     {

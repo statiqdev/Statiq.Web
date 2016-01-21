@@ -45,7 +45,7 @@ namespace Wyam.Core.Pipelines
 
         public IFileSystem FileSystem => Engine.FileSystem;
 
-        public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module, Engine);
+        public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
@@ -72,7 +72,7 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetNewDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(Engine.Metadata, _pipeline, source, null, content, items, true);
+            return new Document(Engine.InitialMetadata, _pipeline, source, null, content, items, true);
         }
 
         public IDocument GetNewDocument(string source, string content, IEnumerable<MetadataItem> items)
@@ -82,7 +82,7 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetNewDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(Engine.Metadata, _pipeline, string.Empty, null, content, items, true);
+            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, null, content, items, true);
         }
 
         public IDocument GetNewDocument(string content, IEnumerable<MetadataItem> items)
@@ -92,7 +92,7 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetNewDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return new Document(Engine.Metadata, _pipeline, source, stream, null, items, disposeStream);
+            return new Document(Engine.InitialMetadata, _pipeline, source, stream, null, items, disposeStream);
         }
 
         public IDocument GetNewDocument(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
@@ -102,7 +102,7 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetNewDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return new Document(Engine.Metadata, _pipeline, string.Empty, stream, null, items, disposeStream);
+            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, stream, null, items, disposeStream);
         }
 
         public IDocument GetNewDocument(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
@@ -112,7 +112,7 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(Engine.Metadata, _pipeline, string.Empty, null, null, items, true);
+            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, null, null, items, true);
         }
 
         public IDocument GetNewDocument(IEnumerable<MetadataItem> items)

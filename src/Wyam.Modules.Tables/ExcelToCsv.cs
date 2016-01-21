@@ -7,6 +7,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Tables
 {
@@ -35,7 +36,7 @@ namespace Wyam.Modules.Tables
                 }
                 catch (Exception e)
                 {
-                    context.Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
+                    Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

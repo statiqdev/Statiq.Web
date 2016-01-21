@@ -219,7 +219,7 @@ namespace Wyam.Core
                     // Note that disposing the documents immediately after engine execution will ensure write streams get flushed and released
                     // but will also mean that callers (and tests) can't access documents and document content after the engine finishes
                     // Easiest way to access content after engine execution is to add a final Meta module and copy content to metadata
-                    ExecutionCacheManager.ClearUnhitEntries(this);
+                    ExecutionCacheManager.ClearUnhitEntries();
                     foreach (Pipeline pipeline in _pipelines.Pipelines)
                     {
                         pipeline.ResetClonedDocuments();

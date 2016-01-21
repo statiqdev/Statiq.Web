@@ -10,6 +10,7 @@ using AngleSharp.Parser.Html;
 using Wyam.Common;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using IDocument = Wyam.Common.Documents.IDocument;
 
 namespace Wyam.Modules.Html
@@ -177,7 +178,7 @@ namespace Wyam.Modules.Html
                 }
                 catch (Exception ex)
                 {
-                    context.Trace.Warning("Exception while parsing HTML for {0}: {1}", x.Source, ex.Message);
+                    Trace.Warning("Exception while parsing HTML for {0}: {1}", x.Source, ex.Message);
                     return new [] { x };
                 }
 
@@ -213,7 +214,7 @@ namespace Wyam.Modules.Html
                 }
                 catch (Exception ex)
                 {
-                    context.Trace.Warning("Exception while processing HTML for {0}: {1}", x.Source, ex.Message);
+                    Trace.Warning("Exception while processing HTML for {0}: {1}", x.Source, ex.Message);
                     return new[] { x };
                 }
             });

@@ -11,6 +11,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.SearchIndex
 {
@@ -119,7 +120,7 @@ namespace Wyam.Modules.SearchIndex
 
             if( searchIndexItems.Length == 0 )
             {
-                context.Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
+                Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
                 return Array.Empty<IDocument>();
             }
             

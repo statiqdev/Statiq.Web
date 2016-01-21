@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Modules;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Caching
 {
@@ -27,11 +28,11 @@ namespace Wyam.Core.Caching
         }
 
         // Creates one if it doesn't exist
-        public IExecutionCache Get(IModule module, Engine engine)
+        public IExecutionCache Get(IModule module)
         {
             return _noCache
                 ? (IExecutionCache) new NoCache()
-                : _executionCaches.GetOrAdd(module, new ExecutionCache(engine));
+                : _executionCaches.GetOrAdd(module, new ExecutionCache());
         }
 
         public void ResetEntryHits()
@@ -42,12 +43,12 @@ namespace Wyam.Core.Caching
             }
         }
 
-        public void ClearUnhitEntries(Engine engine)
+        public void ClearUnhitEntries()
         {
             foreach (KeyValuePair<IModule, ExecutionCache> item in _executionCaches)
             {
                 int count = item.Value.ClearUnhitEntries().Count;
-                engine.Trace.Verbose("Removed {0} stale cache entries for module {1}", count, item.Key.GetType().Name);
+                Trace.Verbose("Removed {0} stale cache entries for module {1}", count, item.Key.GetType().Name);
             }
         }
     }

@@ -15,6 +15,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Less
 {
@@ -46,7 +47,7 @@ namespace Wyam.Modules.Less
             
             return inputs.AsParallel().Select(x =>
             {
-                context.Trace.Verbose("Processing Less for {0}", x.Source);
+                Trace.Verbose("Processing Less for {0}", x.Source);
                 ILessEngine engine = engineFactory.GetEngine();
                 
                 // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
