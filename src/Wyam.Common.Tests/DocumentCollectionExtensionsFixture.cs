@@ -8,6 +8,7 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Core;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 using Wyam.Core.Pipelines;
 
 namespace Wyam.Common.Tests
@@ -20,15 +21,15 @@ namespace Wyam.Common.Tests
         public void ToLookupOfIntReturnsCorrectLookup()
         {
             // Given
-            Engine engine = new Engine();
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument a = new Document(engine, pipeline)
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument a = new Document(initialMetadata, pipeline)
                 .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new [] { 1, 2, 3 }) });
-            IDocument b = new Document(engine, pipeline)
+            IDocument b = new Document(initialMetadata, pipeline)
                 .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new [] { 2, 3, 4 }) });
-            IDocument c = new Document(engine, pipeline)
+            IDocument c = new Document(initialMetadata, pipeline)
                 .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
-            IDocument d = new Document(engine, pipeline)
+            IDocument d = new Document(initialMetadata, pipeline)
                 .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
             List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
@@ -47,15 +48,15 @@ namespace Wyam.Common.Tests
         public void ToLookupOfStringReturnsCorrectLookup()
         {
             // Given
-            Engine engine = new Engine();
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument a = new Document(engine, pipeline)
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument a = new Document(initialMetadata, pipeline)
                 .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }) });
-            IDocument b = new Document(engine, pipeline)
+            IDocument b = new Document(initialMetadata, pipeline)
                 .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }) });
-            IDocument c = new Document(engine, pipeline)
+            IDocument c = new Document(initialMetadata, pipeline)
                 .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
-            IDocument d = new Document(engine, pipeline)
+            IDocument d = new Document(initialMetadata, pipeline)
                 .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
             List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
@@ -74,27 +75,27 @@ namespace Wyam.Common.Tests
         public void ToLookupWithValuesReturnsCorrectLookup()
         {
             // Given
-            Engine engine = new Engine();
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument a = new Document(engine, pipeline)
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument a = new Document(initialMetadata, pipeline)
                 .Clone("a", new[]
                 {
                     new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }),
                     new KeyValuePair<string, object>("Colors", "Red") 
                 });
-            IDocument b = new Document(engine, pipeline)
+            IDocument b = new Document(initialMetadata, pipeline)
                 .Clone("b", new[]
                 {
                     new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }),
                     new KeyValuePair<string, object>("Colors", new [] { "Red", "Blue" })
                 });
-            IDocument c = new Document(engine, pipeline)
+            IDocument c = new Document(initialMetadata, pipeline)
                 .Clone("c", new[]
                 {
                     new KeyValuePair<string, object>("Numbers", 3),
                     new KeyValuePair<string, object>("Colors", "Green")
                 });
-            IDocument d = new Document(engine, pipeline)
+            IDocument d = new Document(initialMetadata, pipeline)
                 .Clone("d", new[]
                 {
                     new KeyValuePair<string, object>("Numbers", "4"),

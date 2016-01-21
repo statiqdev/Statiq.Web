@@ -24,7 +24,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -39,7 +39,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -57,7 +57,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Metadata metadata = new Metadata(engine);
 
             // When
@@ -75,7 +75,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -91,7 +91,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -107,7 +107,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -125,7 +125,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -143,7 +143,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -159,7 +159,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -175,7 +175,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -191,7 +191,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = "a";
             Metadata metadata = new Metadata(engine);
 
@@ -208,7 +208,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
             Metadata metadata = new Metadata(engine);
 
@@ -224,7 +224,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new List<int> { 1, 2 ,3 };
             Metadata metadata = new Metadata(engine);
 
@@ -241,7 +241,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new List<string> { "1", "2", "3" };
             Metadata metadata = new Metadata(engine);
 
@@ -258,7 +258,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new List<int> { 1, 2, 3 };
             Metadata metadata = new Metadata(engine);
 
@@ -275,7 +275,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new [] { 1, 2, 3 };
             Metadata metadata = new Metadata(engine);
 
@@ -315,7 +315,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new SimpleMetadataValue { Value = value };
             Metadata metadata = new Metadata(engine);
 
@@ -331,7 +331,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
             Metadata metadata = new Metadata(engine);
 
@@ -347,7 +347,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
             Metadata metadata = new Metadata(engine);
 
@@ -365,7 +365,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["X"] = "x";
             engine.Metadata["A"] = new DerivedMetadataValue { Key = "X" };
             Metadata metadata = new Metadata(engine);
@@ -382,7 +382,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             SimpleMetadataValue metadataValue = new SimpleMetadataValue { Value = "a" };
             engine.Metadata["A"] = metadataValue;
             Metadata metadata = new Metadata(engine);
@@ -402,7 +402,7 @@ namespace Wyam.Core.Tests.Documents
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
             engine.Metadata["B"] = new SimpleMetadataValue { Value = "b" };
             engine.Metadata["C"] = new SimpleMetadataValue { Value = "c" };

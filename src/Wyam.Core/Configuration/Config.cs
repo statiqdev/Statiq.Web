@@ -33,9 +33,8 @@ namespace Wyam.Core.Configuration
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
-        private Assembly _setupAssembly;
+        private ConfigScript _configScript;
         private string _configAssemblyFullName;
-        private byte[] _rawSetupAssembly;
         private string _fileName;
         private bool _outputScripts;
         
@@ -90,8 +89,8 @@ namespace Wyam.Core.Configuration
         public IEnumerable<Assembly> Assemblies => _assemblies.Values;
 
         public IEnumerable<string> Namespaces => _namespaces;
-
-        public byte[] RawConfigAssembly => _rawSetupAssembly;
+        
+        public byte[] RawConfigAssembly => _configScript?.RawAssembly;
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
@@ -109,108 +108,33 @@ namespace Wyam.Core.Configuration
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                Configure(null, null);
+                Configure(new ConfigParts());
                 return;
             }
 
-            Tuple<string, string, string> configParts = GetConfigParts(script);
+            ConfigParts configParts = ConfigSplitter.Split(script);
 
             // Setup (install packages, specify additional assemblies, etc.)
-            if (!string.IsNullOrWhiteSpace(configParts.Item1))
+            if (configParts.HasSetup)
             {
-                Setup(configParts.Item1, updatePackages);
+                Setup(configParts.Setup, updatePackages);
             }
 
             // Configuration
-            Configure(configParts.Item2, configParts.Item3);
-        }
-
-        // Item1 = setup (possibly null), Item2 = declarations (possibly null), Item2 = config
-        public Tuple<string, string, string> GetConfigParts(string code)
-        {
-            CheckDisposed();
-
-            List<string> configLines = code.Replace("\r", "").Split(new[] { '\n' }, StringSplitOptions.None).ToList();
-
-            // Get setup
-            int startLine = 1;
-            string setup = null;
-            int setupLine = configLines.FindIndex(x =>
-            {
-                string trimmed = x.TrimEnd();
-                return trimmed.Length > 0 && trimmed.All(y => y == '=');
-            });
-            if (setupLine != -1)
-            {
-                List<string> setupLines = configLines.Take(setupLine).ToList();
-                setup = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, setupLines)}";
-                startLine = setupLines.Count + 2;
-                configLines.RemoveRange(0, setupLine + 1);
-            }
-
-            // Get declarations
-            string declarations = null;
-            int declarationLine = configLines.FindIndex(x =>
-            {
-                string trimmed = x.TrimEnd();
-                return trimmed.Length > 0 && trimmed.All(y => y == '-');
-            });
-            if (declarationLine != -1)
-            {
-                List<string> declarationLines = configLines.Take(declarationLine).ToList();
-                declarations = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, declarationLines)}";
-                startLine += declarationLines.Count + 1;
-                configLines.RemoveRange(0, declarationLine + 1);
-            }
-
-            // Get config
-            string config = $"#line {startLine}{Environment.NewLine}{string.Join(Environment.NewLine, configLines)}";
-
-            return new Tuple<string, string, string>(setup, declarations, config);
+            Configure(configParts);
         }
 
         private void Setup(string code, bool updatePackages)
         {
             try
             {
+                // Compile and evaluate the script
                 using (Trace.WithIndent().Verbose("Evaluating setup script"))
                 {
-                    // Create the setup script
-                    StringBuilder codeBuilder = new StringBuilder(@"
-                        using System;
-                        using Wyam.Common.Configuration;
-                        using Wyam.Common.IO;
-                        using Wyam.Common.NuGet;");
-                    codeBuilder.AppendLine();
-                    codeBuilder.AppendLine(string.Join(Environment.NewLine,
-                        typeof(IModule).Assembly.GetTypes()
-                            .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                            .Select(x => "using " + x.Namespace + ";")
-                            .Distinct()));
-                    codeBuilder.AppendLine(@"
-                        public static class SetupScript
-                        {
-                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
-                            {");
-                    codeBuilder.Append(code);
-                    codeBuilder.AppendLine(@"
-                            }
-                        }");
-
-                    // Assemblies
-                    Assembly[] setupAssemblies =
-                    {
-                        Assembly.GetAssembly(typeof (object)), // System
-                        Assembly.GetAssembly(typeof (Engine)), //Wyam.Core
-                        Assembly.GetAssembly(typeof (IModule)) // Wyam.Common
-                    };
-
-                    // Load the dynamic assembly and invoke
-                    _rawSetupAssembly = CompileScript("WyamSetup", setupAssemblies, codeBuilder.ToString());
-                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "SetupScript");
-                    MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-                    runMethod.Invoke(null, new object[] { _packages, _assemblyCollection, _fileSystem });
+                    SetupScript setupScript = new SetupScript(code);
+                    OutputScript(SetupScript.AssemblyName, setupScript.Code);
+                    setupScript.Compile();
+                    setupScript.Invoke(_packages, _assemblyCollection, _fileSystem);
                 }
 
                 // Install packages
@@ -237,7 +161,7 @@ namespace Wyam.Core.Configuration
             "Wyam.Core.Configuration"
         };
 
-        private void Configure(string declarations, string code)
+        private void Configure(ConfigParts configParts)
         {
             try
             {
@@ -267,13 +191,13 @@ namespace Wyam.Core.Configuration
                 using (Trace.WithIndent().Verbose("Evaluating configuration script"))
                 {
                     // Generate the script
-                    code = GenerateScript(declarations, code, moduleTypes);
+                    string script = GenerateScript(configParts, moduleTypes);
 
                     // Load the dynamic assembly and invoke
-                    _rawSetupAssembly = CompileScript("WyamConfig", _assemblies.Values, code);
-                    _setupAssembly = Assembly.Load(_rawSetupAssembly);
-                    _configAssemblyFullName = _setupAssembly.FullName;
-                    var configScriptType = _setupAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+                    _rawConfigAssembly = CompileScript("WyamConfig", _assemblies.Values, script);
+                    _configAssembly = Assembly.Load(_rawConfigAssembly);
+                    _configAssemblyFullName = _configAssembly.FullName;
+                    var configScriptType = _configAssembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
                     MethodInfo runMethod = configScriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
                     runMethod.Invoke(null, new object[] { _initialMetadata, _pipelines, _fileSystem });
                 }
@@ -285,53 +209,13 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        private byte[] CompileScript(string assemblyName, IEnumerable<Assembly> assemblies, string code)
+        private void OutputScript(string assemblyName, string code)
         {
-            // Output if requested
+            // Output only if requested
             if (_outputScripts)
             {
                 File.WriteAllText(System.IO.Path.Combine(_fileSystem.RootPath.FullPath, $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
             }
-
-            // Create the compilation
-            var parseOptions = new CSharpParseOptions();
-            var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(code, Encoding.UTF8), parseOptions, assemblyName);
-            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
-                assemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
-                .AddReferences(
-                    // For some reason, Roslyn really wants these added by filename
-                    // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
-            );
-
-            // Emit the assembly
-            using (var ms = new MemoryStream())
-            {
-                EmitResult result = compilation.Emit(ms);
-                if (!result.Success)
-                {
-                    List<string> diagnosticMessages = result.Diagnostics
-                        .Where(x => x.Severity == DiagnosticSeverity.Error)
-                        .Select(GetCompilationErrorMessage)
-                        .ToList();
-                    Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine,
-                        string.Join(Environment.NewLine, diagnosticMessages));
-                    throw new AggregateException(diagnosticMessages.Select(x => new Exception(x)));
-                }
-                ms.Seek(0, SeekOrigin.Begin);
-                return ms.ToArray();
-            }
-        }
-
-        private static string GetCompilationErrorMessage(Diagnostic diagnostic)
-        {
-            string line = diagnostic.Location.IsInSource ? "Line " + (diagnostic.Location.GetMappedLineSpan().Span.Start.Line + 1) : "Metadata";
-            return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
@@ -434,11 +318,11 @@ namespace Wyam.Core.Configuration
         private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {
             // Only start resolving after we've generated the config assembly
-            if (_setupAssembly != null)
+            if (_configAssembly != null)
             {
                 if (args.Name == _configAssemblyFullName)
                 {
-                    return _setupAssembly;
+                    return _configAssembly;
                 }
 
                 Assembly assembly;
@@ -492,20 +376,20 @@ namespace Wyam.Core.Configuration
         }
 
         // This creates a wrapper class for the config script that contains static methods for constructing modules
-        internal string GenerateScript(string declarations, string script, HashSet<Type> moduleTypes)
+        internal string GenerateScript(ConfigParts configParts, HashSet<Type> moduleTypes)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
             scriptBuilder.AppendLine(string.Join(Environment.NewLine, _namespaces.Select(x => "using " + x + ";")));
-            if (declarations != null)
+            if (configParts.HasDeclarations)
             {
-                scriptBuilder.AppendLine(declarations);
+                scriptBuilder.AppendLine(configParts.Declarations);
             }
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {
                     public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
-                    {" + Environment.NewLine + script + @"
+                    {" + Environment.NewLine + configParts.Config + @"
                     }");
             
             // Add static methods to construct each module
@@ -520,8 +404,7 @@ namespace Wyam.Core.Configuration
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
             SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString());
             ConfigRewriter configRewriter = new ConfigRewriter(moduleTypes);
-            script = configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
-            return script;
+            return configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 
         private string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)

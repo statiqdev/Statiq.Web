@@ -54,7 +54,7 @@ namespace Wyam.Core.Tests.Modules.Content
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
 
             if (!string.IsNullOrWhiteSpace(hostname))
                 engine.Metadata[Keys.Hostname] = hostname;
@@ -93,7 +93,7 @@ namespace Wyam.Core.Tests.Modules.Content
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
 
             if( !string.IsNullOrWhiteSpace(hostname) )
                 engine.Metadata[Keys.Hostname] = hostname;

@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigSplitterFixture.cs" />
     <Compile Include="Documents\DocumentFixture.cs" />
     <Compile Include="Modules\Control\ConcatBranchFixture.cs" />
     <Compile Include="Configuration\ConfigFixture.cs" />

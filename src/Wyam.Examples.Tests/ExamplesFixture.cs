@@ -43,7 +43,7 @@ namespace Wyam.Examples.Tests
             public void ExecuteAllExamples(string example)
             {
                 Engine engine = new Engine();
-                engine.Trace.AddListener(new TestTraceListener());
+                Trace.AddListener(new TestTraceListener());
                 engine.RootFolder = example;
                 engine.Config.Assemblies.LoadDirectory(TestContext.CurrentContext.TestDirectory);
                 string config = Path.Combine(example, "config.wyam");

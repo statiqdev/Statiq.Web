@@ -13,7 +13,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
             CountModule b = new CountModule("B");
             CountModule c = new CountModule("C");
@@ -37,7 +37,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
             CountModule b = new CountModule("B");
             CountModule c = new CountModule("C");
@@ -61,7 +61,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
             CountModule b = new CountModule("B");
             CountModule c = new CountModule("C");
@@ -85,7 +85,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
             CountModule b = new CountModule("B");
             CountModule c = new CountModule("C");
@@ -109,7 +109,7 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
             CountModule b = new CountModule("B");
 

@@ -49,7 +49,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder= @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -108,7 +108,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -137,7 +137,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -167,7 +167,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -199,7 +199,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";

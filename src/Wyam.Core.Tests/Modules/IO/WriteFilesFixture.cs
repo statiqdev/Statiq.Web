@@ -48,7 +48,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -73,7 +73,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -98,7 +98,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata[Keys.SourceFileRoot] = @"TestFiles/Input";
             engine.Metadata[Keys.SourceFileDir] = @"TestFiles/Input/Subfolder";
@@ -129,7 +129,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             engine.Metadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
@@ -154,7 +154,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -195,7 +195,7 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             engine.OutputFolder = @"TestFiles\Output\";
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             MemoryStream emptyStream = new MemoryStream(new byte[] { });

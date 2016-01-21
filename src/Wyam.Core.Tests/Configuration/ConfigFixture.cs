@@ -10,6 +10,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.Contents;
@@ -20,306 +21,6 @@ namespace Wyam.Core.Tests.Configuration
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ConfigFixture
     {
-        [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiter()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-===
-=C
-D";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B", configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 4
-=C
-D", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiterWithTrailingSpaces()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-===  
-=C
-D";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B", configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 4
-=C
-D", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsConfigWithDelimiterWithLeadingSpaces()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-  ===
-=C
-D";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.IsNull(configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 1
-A=
-=B
-  ===
-=C
-D", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiterWithExtraLines()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-
-===
-
-=C
-D";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B
-", configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 5
-
-=C
-D", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsConfigWithoutDelimiter()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-C";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.IsNull(configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 1
-A=
-=B
-C", configParts.Item3);
-            
-        }
-
-
-
-
-
-        [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiter()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-===
-=C
-D
----
--E
-F";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B", configParts.Item1);
-            Assert.AreEqual(@"#line 4
-=C
-D", configParts.Item2);
-            Assert.AreEqual(@"#line 7
--E
-F", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithTrailingSpaces()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-===  
-=C
-D
----   
-E
-=F";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B", configParts.Item1);
-            Assert.AreEqual(@"#line 4
-=C
-D", configParts.Item2);
-            Assert.AreEqual(@"#line 7
-E
-=F", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithLeadingSpaces()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-  ===
-=C
-D
-  ---
--E
-F";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.IsNull(configParts.Item1);
-            Assert.IsNull(configParts.Item2);
-            Assert.AreEqual(@"#line 1
-A=
-=B
-  ===
-=C
-D
-  ---
--E
-F", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithExtraLines()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-
-===
-
-=C
-D
-
----
-
-E-
--F";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.AreEqual(@"#line 1
-A=
-=B
-", configParts.Item1);
-            Assert.AreEqual(@"#line 5
-
-=C
-D
-", configParts.Item2);
-            Assert.AreEqual(@"#line 10
-
-E-
--F", configParts.Item3);
-        }
-
-        [Test]
-        public void GetConfigPartsReturnDeclarationsWithoutSetup()
-        {
-            // Given
-            Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            string configScript = @"A=
-=B
-C
----
-E-
--F";
-
-            // When
-            Tuple<string, string, string> configParts = config.GetConfigParts(configScript);
-
-            // Then
-            Assert.IsNull(configParts.Item1);
-            Assert.AreEqual(@"#line 1
-A=
-=B
-C", configParts.Item2);
-            Assert.AreEqual(@"#line 5
-E-
--F", configParts.Item3);
-
-        }
-        
         [TestCase(@"Pipelines.Add(Content())", @"Pipelines.Add(ConfigScript.Content())")]
         [TestCase(@"Pipelines.Add(Content(Content()))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content()))")]
         [TestCase(@"Pipelines.Add(Content(@doc => @doc.Foo()))", @"Pipelines.Add(ConfigScript.Content(@doc => @doc.Foo()))")]
@@ -357,7 +58,7 @@ E-
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Config config = new Config(engine);
             HashSet<Type> moduleTypes = new HashSet<Type> {typeof (Content)};
             string expected = $@"
@@ -701,7 +402,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Config config = new Config(engine);
             Type moduleType = typeof (Content);
             string expected = $@"
@@ -734,7 +435,7 @@ foo bar;
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Config config = new Config(engine);
             Type moduleType = typeof(GenericModule<>);
             string expected = $@"

@@ -98,9 +98,13 @@
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
     <Compile Include="Configuration\AssemblyCollection.cs" />
+    <Compile Include="Configuration\ConfigCompiler.cs" />
+    <Compile Include="Configuration\ConfigParts.cs" />
     <Compile Include="Configuration\ConfigRewriter.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
+    <Compile Include="Configuration\ConfigSplitter.cs" />
+    <Compile Include="Configuration\SetupScript.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />

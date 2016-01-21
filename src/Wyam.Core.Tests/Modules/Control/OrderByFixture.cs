@@ -16,7 +16,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4
@@ -49,7 +49,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4
@@ -83,7 +83,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4
@@ -116,7 +116,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4
@@ -150,7 +150,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4
@@ -185,7 +185,7 @@ namespace Wyam.Core.Tests.Modules.Control
             List<string> content = new List<string>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 4

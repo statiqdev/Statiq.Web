@@ -28,7 +28,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
@@ -52,7 +52,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			string output = "filename-with-mixed-caps";
 
             Engine engine = new Engine();
-			engine.Trace.AddListener(new TestTraceListener());
+			Trace.AddListener(new TestTraceListener());
 			Pipeline pipeline = new Pipeline("Pipeline", engine, null);
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
@@ -76,7 +76,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			string output = "this-is-a-.net-tag";
 
 			Engine engine = new Engine();
-			engine.Trace.AddListener(new TestTraceListener());
+			Trace.AddListener(new TestTraceListener());
 			Pipeline pipeline = new Pipeline("Pipeline", engine, null);
 			IExecutionContext context = new ExecutionContext(engine, pipeline);
 			IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
@@ -101,7 +101,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             string output = "thisisa.";
 
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
@@ -126,7 +126,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             string manyCharactersWow = new String(character[0], 10);
@@ -151,7 +151,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         {
             // Given
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = { new Document(engine, pipeline).Clone(new []
@@ -175,7 +175,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             string output = "myfile.html";
 
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs = 
@@ -202,7 +202,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             string output = "myfile.html";
 
             Engine engine = new Engine();
-            engine.Trace.AddListener(new TestTraceListener());
+            Trace.AddListener(new TestTraceListener());
             Pipeline pipeline = new Pipeline("Pipeline", engine, null);
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             IDocument[] inputs =
