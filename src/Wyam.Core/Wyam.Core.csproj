@@ -105,7 +105,8 @@
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />
     <Compile Include="IO\FileSystem.cs" />
-    <Compile Include="IO\IConfigurableFileSystem.cs" />
+    <Compile Include="IO\FileSystemConfigMembers.cs" />
+    <Compile Include="Meta\InitialMetadata.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
@@ -158,8 +159,6 @@
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
     <Compile Include="Pipelines\ReadOnlyPipeline.cs" />
-    <Compile Include="Tracing\IndentedTraceEvent.cs" />
-    <Compile Include="Tracing\Trace.cs" />
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />

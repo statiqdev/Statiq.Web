@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -16,11 +15,13 @@ using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
+using Wyam.Core.Meta;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
@@ -29,10 +30,11 @@ namespace Wyam.Core
 {
     public class Engine : IDisposable
     {
-        private bool _disposed;
         private readonly FileSystem _fileSystem = new FileSystem();
+        private readonly PipelineCollection _pipelines = new PipelineCollection();
+        private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
         private readonly Config _config;
-        private readonly PipelineCollection _pipelines;
+        private bool _disposed;
 
         public IConfigurableFileSystem FileSystem => _fileSystem;
 
@@ -40,19 +42,11 @@ namespace Wyam.Core
 
         public IPipelineCollection Pipelines => _pipelines;
 
-        private readonly Dictionary<string, object> _metadata = new Dictionary<string, object>();
-
-        // This is used as the initial set of metadata for each run
-        public IDictionary<string, object> Metadata => _metadata;
+        public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
 
         public IDocumentCollection Documents => DocumentCollection;
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
-
-
-        private readonly Tracing.Trace _trace = new Tracing.Trace();
-
-        public ITrace Trace => _trace;
 
         public byte[] RawConfigAssembly => _config.RawConfigAssembly;
 
@@ -126,8 +120,8 @@ namespace Wyam.Core
 
         public Engine()
         {
-            _config = new Config(this);
-            _pipelines = new PipelineCollection(this);
+            System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
+            _config = new Config(FileSystem, InitialMetadata, Pipelines);
         }
 
         public void Configure(string configScript = null, bool updatePackages = false, string fileName = null, bool outputScripts = false)
@@ -190,7 +184,7 @@ namespace Wyam.Core
             
             try
             {
-                Stopwatch engineStopwatch = Stopwatch.StartNew();
+                System.Diagnostics.Stopwatch engineStopwatch = System.Diagnostics.Stopwatch.StartNew();
                 using (Trace.WithIndent().Information("Executing {0} pipelines", _pipelines.Count))
                 {
                     // Setup (clear the document collection and reset cache counters)
@@ -202,12 +196,12 @@ namespace Wyam.Core
                     foreach(Pipeline pipeline in _pipelines.Pipelines)
                     {
                         string pipelineName = pipeline.Name;
-                        Stopwatch pipelineStopwatch = Stopwatch.StartNew();
+                        System.Diagnostics.Stopwatch pipelineStopwatch = System.Diagnostics.Stopwatch.StartNew();
                         using (Trace.WithIndent().Information("Executing pipeline \"{0}\" ({1}/{2}) with {3} child module(s)", pipelineName, c, _pipelines.Count, pipeline.Count))
                         {
                             try
                             {
-                                pipeline.Execute();
+                                pipeline.Execute(this);
                                 pipelineStopwatch.Stop();
                                 Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
                                     pipelineName, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
@@ -255,8 +249,8 @@ namespace Wyam.Core
             {
                 pipeline.Dispose();
             }
-            _trace.Dispose();
             _config.Dispose();
+            System.Diagnostics.Trace.Listeners.Remove(_diagnosticsTraceListener);
             _disposed = true;
         }
 

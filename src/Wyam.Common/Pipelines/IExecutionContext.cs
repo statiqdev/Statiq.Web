@@ -26,7 +26,6 @@ namespace Wyam.Common.Pipelines
         [Obsolete]
         string OutputFolder { get; }
         IFileSystem FileSystem { get; }
-        ITrace Trace { get; }
         IDocumentCollection Documents { get; }
 
         // This provides access to the same enhanced type conversion used to convert metadata types

@@ -42,8 +42,10 @@
   <ItemGroup>
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\IConfig.cs" />
+    <Compile Include="Configuration\IConfigMembers.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
     <Compile Include="IO\FilePath.cs" />
+    <Compile Include="IO\IConfigurableFileSystem.cs" />
     <Compile Include="IO\IDirectory.cs" />
     <Compile Include="IO\IDirectoryPathCollection.cs" />
     <Compile Include="IO\IFile.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="IO\Path.cs" />
     <Compile Include="IO\SafeIOHelper.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Meta\IInitialMetadata.cs" />
     <Compile Include="Meta\MetadataItems.cs" />
     <Compile Include="Meta\Keys.cs" />
     <Compile Include="Modules\ContentModule.cs" />
@@ -74,7 +77,6 @@
     <Compile Include="Pipelines\IExecutionContext.cs" />
     <Compile Include="Pipelines\IReadOnlyPipeline.cs" />
     <Compile Include="Caching\IExecutionCache.cs" />
-    <Compile Include="Tracing\ITrace.cs" />
     <Compile Include="Configuration\ConfigHelper.cs" />
     <Compile Include="Meta\MetadataItem.cs" />
     <Compile Include="IO\PathHelper.cs" />
@@ -82,6 +84,8 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Tracing\IndentedTraceEvent.cs" />
+    <Compile Include="Tracing\Trace.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.NuGet;
+using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Common.Configuration
 {
@@ -11,5 +15,8 @@ namespace Wyam.Common.Configuration
     {
         IAssemblyCollection Assemblies { get; }
         IPackagesCollection Packages { get; }
+        IConfigurableFileSystem FileSystem { get; }
+        IInitialMetadata InitialMetadata { get; }
+        IPipelineCollection Pipelines { get; }
     }
 }

@@ -13,15 +13,13 @@ namespace Wyam.Core.Meta
     // This class is immutable, use IDocument.Clone() to get a new one with additional values
     internal class Metadata : IMetadata
     {
-        private readonly Engine _engine;
         private readonly Stack<IDictionary<string, object>> _metadataStack;
         
-        internal Metadata(Engine engine, IEnumerable<KeyValuePair<string, object>> items = null)
+        internal Metadata(IInitialMetadata initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            _engine = engine;
             _metadataStack = new Stack<IDictionary<string, object>>();
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> item in engine.Metadata)
+            foreach (KeyValuePair<string, object> item in initialMetadata)
             {
                 dictionary[item.Key] = item.Value;
             }
@@ -37,7 +35,6 @@ namespace Wyam.Core.Meta
 
         private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> items)
         {
-            _engine = original._engine;
             _metadataStack = new Stack<IDictionary<string, object>>(original._metadataStack.Reverse());
             _metadataStack.Push(new Dictionary<string, object>());
 

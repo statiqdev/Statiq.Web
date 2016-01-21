@@ -29,7 +29,8 @@ namespace Wyam.Core.NuGet
             return this;
         }
 
-        public void InstallPackages(string path, Engine engine, bool updatePackages)
+        // TODO: Figure out where to copy content packages to (should use a special input folder for this, but how to define?)
+        public void InstallPackages(string path, bool updatePackages)
         {
             PackageManager packageManager = new PackageManager(_packageRepository, path);
             packageManager.PackageInstalled += (sender, args) =>

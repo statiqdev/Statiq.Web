@@ -10,13 +10,7 @@ namespace Wyam.Core.Pipelines
 {
     internal class PipelineCollection : IPipelineCollection
     {
-        private readonly Engine _engine;
         private readonly Dictionary<string, Pipeline> _pipelines = new Dictionary<string, Pipeline>();
-
-        public PipelineCollection(Engine engine)
-        {
-            _engine = engine;
-        }
 
         public IPipeline Add(params IModule[] modules)
         {
@@ -43,17 +37,14 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ArgumentException("Pipelines must have a unique name.");
             }
-            Pipeline pipeline = new Pipeline(name, processDocumentsOnce, _engine, modules);
+            Pipeline pipeline = new Pipeline(name, processDocumentsOnce, modules);
             _pipelines.Add(name, pipeline);
             return pipeline;
         }
 
         public IEnumerable<Pipeline> Pipelines => _pipelines.Values;
 
-        public int Count
-        {
-            get { return _pipelines.Count; }
-        }
+        public int Count => _pipelines.Count;
 
         public bool ContainsKey(string key)
         {
@@ -72,20 +63,11 @@ namespace Wyam.Core.Pipelines
             return false;
         }
 
-        public IPipeline this[string key]
-        {
-            get { return _pipelines[key]; }
-        }
+        public IPipeline this[string key] => _pipelines[key];
 
-        public IEnumerable<string> Keys
-        {
-            get { return _pipelines.Keys; }
-        }
+        public IEnumerable<string> Keys => _pipelines.Keys;
 
-        public IEnumerable<IPipeline> Values
-        {
-            get { return _pipelines.Values; }
-        }
+        public IEnumerable<IPipeline> Values => _pipelines.Values;
 
         public IEnumerator<KeyValuePair<string, IPipeline>> GetEnumerator()
         {

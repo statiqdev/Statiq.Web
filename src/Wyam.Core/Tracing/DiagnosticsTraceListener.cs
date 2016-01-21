@@ -7,31 +7,24 @@ namespace Wyam.Core.Tracing
     // This routes trace and debug messages from the Trace/Debug classes to the Wyam Trace TraceSource
     internal class DiagnosticsTraceListener : TraceListener
     {
-        private readonly Tracing.Trace _trace;
-
-        public DiagnosticsTraceListener(Tracing.Trace trace)
-        {
-            _trace = trace;
-        }
-        
         public override void Write(string message)
         {
-            _trace.Verbose(message);
+            Wyam.Common.Tracing.Trace.Verbose(message);
         }
 
         public override void WriteLine(string message)
         {
-            _trace.Verbose(message);
+            Wyam.Common.Tracing.Trace.Verbose(message);
         }
 
         public override void Fail(string message)
         {
-            _trace.Error(message);
+            Wyam.Common.Tracing.Trace.Error(message);
         }
 
         public override void Fail(string message, string detailMessage)
         {
-            _trace.Error(message + " " + detailMessage);
+            Wyam.Common.Tracing.Trace.Error(message + " " + detailMessage);
         }
         
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
@@ -54,27 +47,27 @@ namespace Wyam.Core.Tracing
                 sb.Append("}");
             }
 
-            _trace.Verbose(sb.ToString());
+            Wyam.Common.Tracing.Trace.Verbose(sb.ToString());
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
         {
-            _trace.TraceEvent(eventType, id.ToString());
+            Wyam.Common.Tracing.Trace.TraceEvent(eventType, id.ToString());
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            _trace.TraceEvent(eventType, format, args);
+            Wyam.Common.Tracing.Trace.TraceEvent(eventType, format, args);
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
-            _trace.TraceEvent(eventType, message);
+            Wyam.Common.Tracing.Trace.TraceEvent(eventType, message);
         }
 
         public override void TraceTransfer(TraceEventCache eventCache, string source, int id, string message, Guid relatedActivityId)
         {
-            _trace.Verbose(message);
+            Wyam.Common.Tracing.Trace.Verbose(message);
         }
     }
 }

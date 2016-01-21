@@ -4,9 +4,8 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Common.IO;
 
-namespace Wyam.Core.IO
+namespace Wyam.Common.IO
 {
     public interface IConfigurableFileSystem : IFileSystem
     {

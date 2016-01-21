@@ -7,64 +7,58 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Core.Tracing
+namespace Wyam.Common.Tracing
 {
     internal class IndentedTraceEvent : IIndentedTraceEvent, IDisposable
     {
-        private readonly ITrace _trace;
         private int? _indentLevel = null;
         private bool _disposed = false;
-
-        public IndentedTraceEvent(ITrace trace)
-        {
-            _trace = trace;
-        }
 
         public IDisposable Critical(string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.Critical(messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.Critical(messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
         public IDisposable Error(string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.Error(messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.Error(messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
         public IDisposable Warning(string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.Warning(messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.Warning(messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
         public IDisposable Information(string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.Information(messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.Information(messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
         public IDisposable Verbose(string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.Verbose(messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.Verbose(messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
         public IDisposable TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
         {
             CheckDisposed();
-            _trace.TraceEvent(eventType, messageOrFormat, args);
-            _indentLevel = _trace.Indent();
+            Trace.TraceEvent(eventType, messageOrFormat, args);
+            _indentLevel = Trace.Indent();
             return this;
         }
 
@@ -77,7 +71,7 @@ namespace Wyam.Core.Tracing
 
             if (_indentLevel.HasValue)
             {
-                _trace.IndentLevel = _indentLevel.Value;
+                Trace.IndentLevel = _indentLevel.Value;
             }
             _disposed = true;
         }

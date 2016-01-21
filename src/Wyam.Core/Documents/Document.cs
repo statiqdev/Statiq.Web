@@ -26,14 +26,14 @@ namespace Wyam.Core.Documents
         private bool _disposeStream;
         private bool _disposed;
 
-        internal Document(Engine engine, Pipeline pipeline)
-            : this(engine, pipeline, string.Empty, null, null, null, true)
+        internal Document(IInitialMetadata initialMetadata, Pipeline pipeline)
+            : this(initialMetadata, pipeline, string.Empty, null, null, null, true)
         {
             
         }
 
-        internal Document(Engine engine, Pipeline pipeline, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(pipeline, new Metadata(engine), source, stream, null, content, items, disposeStream)
+        internal Document(IInitialMetadata initialMetadata, Pipeline pipeline, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(pipeline, new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
         

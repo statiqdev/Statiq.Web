@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using NuGet;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.NuGet
 {
@@ -38,9 +39,9 @@ namespace Wyam.Core.NuGet
             _allowUnlisted = allowUnlisted;
         }
 
-        public void InstallPackage(PackageManager packageManager, Engine engine, bool updatePackages)
+        public void InstallPackage(PackageManager packageManager, bool updatePackages)
         {
-            using (engine.Trace.WithIndent().Verbose("Installing package {0}{1} from {2}",
+            using (Trace.WithIndent().Verbose("Installing package {0}{1} from {2}",
                 _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source))
             {
                 // Find the local package
@@ -49,7 +50,7 @@ namespace Wyam.Core.NuGet
                 // Check if we're up to date
                 if (localPackage != null && _versionSpec.Satisfies(localPackage.Version) && !updatePackages)
                 {
-                    engine.Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping",
+                    Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
                     return;
                 }
@@ -59,7 +60,7 @@ namespace Wyam.Core.NuGet
                     .FindPackage(_packageId, _versionSpec, _allowPrereleaseVersions, _allowUnlisted);
                 if (sourcePackage == null)
                 {
-                    engine.Trace.Warning("Package {0} {1} could not be found at {2}",
+                    Trace.Warning("Package {0} {1} could not be found at {2}",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
                     return;
                 }
@@ -67,7 +68,7 @@ namespace Wyam.Core.NuGet
                 // Check if we're up to date
                 if (localPackage != null && localPackage.Version >= sourcePackage.Version)
                 {
-                    engine.Trace.Verbose("Package {0}{1} is up to date with version {2}, skipping",
+                    Trace.Verbose("Package {0}{1} is up to date with version {2}, skipping",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
                     return;
                 }
@@ -76,12 +77,12 @@ namespace Wyam.Core.NuGet
                 if (localPackage != null)
                 {
                     packageManager.UninstallPackage(localPackage, true);
-                    engine.Trace.Verbose("Uninstalled package {0} {1}", localPackage.Id, localPackage.Version);
+                    Trace.Verbose("Uninstalled package {0} {1}", localPackage.Id, localPackage.Version);
                 }
             
                 // Install it
                 packageManager.InstallPackage(sourcePackage, false, _allowPrereleaseVersions);
-                engine.Trace.Verbose("Installed package {0} {1}", sourcePackage.Id, sourcePackage.Version);
+                Trace.Verbose("Installed package {0} {1}", sourcePackage.Id, sourcePackage.Version);
             }
         }
     }

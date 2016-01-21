@@ -6,17 +6,18 @@ using System.Linq;
 using NuGet;
 using NuGet.Frameworks;
 using Wyam.Common.NuGet;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.NuGet
 {
     internal class PackagesCollection : IPackagesCollection
     {
-        private readonly Engine _engine;
+        private readonly Wyam.Common.IO.IFileSystem _fileSystem;
         private string _path = "packages";
 
-        public PackagesCollection(Engine engine)
+        public PackagesCollection(Wyam.Common.IO.IFileSystem fileSystem)
         {
-            _engine = engine;
+            _fileSystem = fileSystem;
         }
 
         // The first repository is the default NuGet feed
@@ -25,9 +26,10 @@ namespace Wyam.Core.NuGet
             new Repository(null)
         };
         
+        // TODO: Make this a DirectoryPath and don't use System.IO
         public string Path
         {
-            get { return System.IO.Path.Combine(_engine.RootFolder, _path); }
+            get { return System.IO.Path.Combine(_engine.RootPath, _path); }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
@@ -90,7 +92,7 @@ namespace Wyam.Core.NuGet
                         .ToList();
                     foreach (string packageAssemblyPath in packageAssemblyPaths)
                     {
-                        _engine.Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath, package.Id, package.Version);
+                        Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath, package.Id, package.Version);
                     }
                     assemblyPaths.AddRange(filesAndFrameworks
                         .Where(x => frameworkComparer.Equals(targetPackageFramework, x.Value))
@@ -99,7 +101,7 @@ namespace Wyam.Core.NuGet
                 }
                 else
                 {
-                    _engine.Trace.Verbose("Could not find compatible framework for package {0}.{1} (this is normal for content-only packages)", package.Id, package.Version);
+                    Trace.Verbose("Could not find compatible framework for package {0}.{1} (this is normal for content-only packages)", package.Id, package.Version);
                 }
             }
             return assemblyPaths;

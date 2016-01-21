@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 
@@ -18,7 +18,6 @@ namespace Wyam.Core.Pipelines
     internal class Pipeline : IPipeline, IDisposable
     {
         private ConcurrentBag<Document> _clonedDocuments = new ConcurrentBag<Document>();
-        private readonly Engine _engine;
         private readonly List<IModule> _modules = new List<IModule>();
         private readonly HashSet<string> _documentSources = new HashSet<string>(); 
         private readonly Cache<List<Document>>  _previouslyProcessedCache;
@@ -28,20 +27,16 @@ namespace Wyam.Core.Pipelines
         public string Name { get; }
         public bool ProcessDocumentsOnce => _previouslyProcessedCache != null;
 
-        public Pipeline(string name, Engine engine, IModule[] modules)
-            : this(name, false, engine, modules)
+        public Pipeline(string name, IModule[] modules)
+            : this(name, false, modules)
         {
         }
 
-        public Pipeline(string name, bool processDocumentsOnce, Engine engine, IModule[] modules)
+        public Pipeline(string name, bool processDocumentsOnce, IModule[] modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException(nameof(name));
-            }
-            if (engine == null)
-            {
-                throw new ArgumentNullException(nameof(engine));
             }
             Name = name;
             if (processDocumentsOnce)
@@ -49,7 +44,6 @@ namespace Wyam.Core.Pipelines
                 _previouslyProcessedCache = new Cache<List<Document>>();
                 _processedSources = new Dictionary<string, List<Document>>();
             }
-            _engine = engine;
             if (modules != null)
             {
                 _modules.AddRange(modules);
@@ -137,8 +131,8 @@ namespace Wyam.Core.Pipelines
             foreach (IModule module in modules.Where(x => x != null))
             {
                 string moduleName = module.GetType().Name;
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                using(_engine.Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Length))
+                System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                using(Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Length))
                 {
                     try
                     {
@@ -173,22 +167,22 @@ namespace Wyam.Core.Pipelines
                             }
                             if (newDocuments.Count != documents.Length)
                             {
-                                _engine.Trace.Verbose("Removed {0} previously processed document(s)", documents.Length - newDocuments.Count);
+                                Trace.Verbose("Removed {0} previously processed document(s)", documents.Length - newDocuments.Count);
                             }
                             documents = newDocuments.ToImmutable();
                         }
 
                         // Set results in engine and trace
-                        _engine.DocumentCollection.Set(Name, documents);
+                        context.Engine.DocumentCollection.Set(Name, documents);
                         stopwatch.Stop();
-                        _engine.Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
+                        Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)", 
                             moduleName, stopwatch.ElapsedMilliseconds, documents.Length);
                     }
                     catch (Exception)
                     {
-                        _engine.Trace.Error("Error while executing module {0}", moduleName);
+                        Trace.Error("Error while executing module {0}", moduleName);
                         documents = ImmutableArray<IDocument>.Empty;
-                        _engine.DocumentCollection.Set(Name, documents);
+                        context.Engine.DocumentCollection.Set(Name, documents);
                         throw;
                     }
                 }
@@ -197,7 +191,7 @@ namespace Wyam.Core.Pipelines
         }
 
         // This is the main execute method called by the engine
-        public void Execute()
+        public void Execute(Engine engine)
         {
             if (_disposed)
             {
@@ -211,8 +205,8 @@ namespace Wyam.Core.Pipelines
             _processedSources?.Clear();
 
             // Execute all modules in the pipeline
-            ExecutionContext context = new ExecutionContext(_engine, this);
-            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(_engine, this) }.ToImmutableArray();
+            ExecutionContext context = new ExecutionContext(engine, this);
+            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(engine.Metadata, this) }.ToImmutableArray();
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline
@@ -226,7 +220,7 @@ namespace Wyam.Core.Pipelines
                 Parallel.ForEach(_previouslyProcessedCache.ClearUnhitEntries().SelectMany(x => x), x => x.Dispose());
 
                 // Trace the number of previously processed documents
-                _engine.Trace.Verbose("{0} previously processed document(s) were not reprocessed", _previouslyProcessedCache.GetValues().Sum(x => x.Count));
+                Trace.Verbose("{0} previously processed document(s) were not reprocessed", _previouslyProcessedCache.GetValues().Sum(x => x.Count));
 
                 // Add new result documents to the cache
                 foreach (Document resultDocument in _clonedDocuments)
@@ -238,13 +232,13 @@ namespace Wyam.Core.Pipelines
                     }
                     else
                     {
-                        _engine.Trace.Warning("Could not find processed document cache for source {0}, please report this warning to the developers", resultDocument.Source);
+                        Trace.Warning("Could not find processed document cache for source {0}, please report this warning to the developers", resultDocument.Source);
                     }
                 }
 
                 // Reset cloned documents (since we're tracking them in the previously processed cache now) and set new aggregate results
                 _clonedDocuments = new ConcurrentBag<Document>();
-                _engine.DocumentCollection.Set(Name, _previouslyProcessedCache.GetValues().SelectMany(x => x).Cast<IDocument>().ToList().AsReadOnly());
+                engine.DocumentCollection.Set(Name, _previouslyProcessedCache.GetValues().SelectMany(x => x).Cast<IDocument>().ToList().AsReadOnly());
             }
         }
 
