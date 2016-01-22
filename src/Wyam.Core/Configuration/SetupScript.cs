@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
@@ -21,12 +19,12 @@ namespace Wyam.Core.Configuration
 
         public Assembly Assembly { get; private set; }
 
-        public SetupScript(string code)
+        public SetupScript(ConfigParts configParts)
         {
-            Code = Generate(code);
+            Code = Generate(configParts);
         }
 
-        private static string Generate(string code)
+        private static string Generate(ConfigParts configParts)
         {
             StringBuilder builder = new StringBuilder(@"
                         using System;
@@ -44,7 +42,7 @@ namespace Wyam.Core.Configuration
                         {
                             public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
                             {");
-            builder.Append(code);
+            builder.Append(configParts.Setup);
             builder.AppendLine(@"
                             }
                         }");
