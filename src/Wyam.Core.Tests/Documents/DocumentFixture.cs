@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
+using Wyam.Core.Meta;
 using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Tests.Documents
@@ -20,10 +22,10 @@ namespace Wyam.Core.Tests.Documents
         public void StreamIsDisposedCorrectlyAfterClone()
         {
             // Given
-            Engine engine = new Engine();
-            Pipeline pipeline = new Pipeline("Test", engine, Array.Empty<IModule>());
+            Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
+            InitialMetadata initialMetadata = new InitialMetadata();
             DisposeCheckStream stream = new DisposeCheckStream();
-            Document originalDoc = new Document(engine, pipeline, "Test", stream, null, Array.Empty<KeyValuePair<string, object>>(), true);
+            Document originalDoc = new Document(initialMetadata, pipeline, "Test", stream, null, Array.Empty<KeyValuePair<string, object>>(), true);
             Document clonedDoc = (Document)originalDoc.Clone(Array.Empty<KeyValuePair<string, object>>());
 
             // When

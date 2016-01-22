@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Tests.Pipelines
 {
@@ -18,7 +19,6 @@ namespace Wyam.Core.Tests.Pipelines
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,
@@ -59,7 +59,6 @@ namespace Wyam.Core.Tests.Pipelines
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,
@@ -99,7 +98,6 @@ namespace Wyam.Core.Tests.Pipelines
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 CloneSource = true,

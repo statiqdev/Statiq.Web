@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Wyam.Common.Tracing;
 using Wyam.Core.Modules.Control;
 
 namespace Wyam.Core.Tests.Modules.Control
@@ -13,7 +14,6 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 1
@@ -49,7 +49,6 @@ namespace Wyam.Core.Tests.Modules.Control
             // Given
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 1

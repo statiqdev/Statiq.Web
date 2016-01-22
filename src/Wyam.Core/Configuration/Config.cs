@@ -95,14 +95,14 @@ namespace Wyam.Core.Configuration
             // If no script, nothing else to do
             if (string.IsNullOrWhiteSpace(script))
             {
-                Configure(new ConfigParts());
+                Configure(new ConfigParts(null, null, null));
                 return;
             }
 
             ConfigParts configParts = ConfigSplitter.Split(script);
 
             // Setup (install packages, specify additional assemblies, etc.)
-            if (configParts.HasSetup)
+            if (!string.IsNullOrWhiteSpace(configParts.Setup))
             {
                 Setup(configParts, updatePackages);
             }
@@ -118,7 +118,7 @@ namespace Wyam.Core.Configuration
                 // Compile and evaluate the script
                 using (Trace.WithIndent().Verbose("Evaluating setup script"))
                 {
-                    SetupScript setupScript = new SetupScript(configParts);
+                    SetupScript setupScript = new SetupScript(configParts.Setup);
                     OutputScript(SetupScript.AssemblyName, setupScript.Code);
                     setupScript.Compile();
                     setupScript.Invoke(_packages, _assemblyCollection, _fileSystem);
@@ -150,7 +150,7 @@ namespace Wyam.Core.Configuration
                 
                 using (Trace.WithIndent().Verbose("Evaluating configuration script"))
                 {
-                    _configScript = new ConfigScript(configParts, moduleTypes, _assemblyManager.Namespaces);
+                    _configScript = new ConfigScript(configParts.Declarations, configParts.Config, moduleTypes, _assemblyManager.Namespaces);
                     OutputScript(ConfigScript.AssemblyName, _configScript.Code);
                     _configScript.Compile(_assemblyManager.Assemblies);
                     _configScript.Invoke(_initialMetadata, _pipelines, _fileSystem);

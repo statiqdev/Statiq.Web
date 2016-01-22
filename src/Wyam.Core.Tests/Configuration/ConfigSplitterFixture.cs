@@ -14,10 +14,9 @@ namespace Wyam.Core.Tests.Configuration
     public class ConfigSplitterFixture
     {
         [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiter()
+        public void SplitReturnsBothPartsWithDelimiter()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 ===
@@ -38,10 +37,9 @@ D", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiterWithTrailingSpaces()
+        public void SplitReturnsBothPartsWithDelimiterWithTrailingSpaces()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 ===  
@@ -62,10 +60,9 @@ D", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsConfigWithDelimiterWithLeadingSpaces()
+        public void SplitReturnsConfigWithDelimiterWithLeadingSpaces()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
   ===
@@ -87,10 +84,9 @@ D", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsBothPartsWithDelimiterWithExtraLines()
+        public void SplitReturnsBothPartsWithDelimiterWithExtraLines()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 
@@ -115,10 +111,9 @@ D", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsConfigWithoutDelimiter()
+        public void SplitReturnsConfigWithoutDelimiter()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 C";
@@ -141,10 +136,9 @@ C", configParts.Config);
 
 
         [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiter()
+        public void SplitReturnsDeclarationsWithDelimiter()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 ===
@@ -170,10 +164,9 @@ F", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithTrailingSpaces()
+        public void SplitReturnsDeclarationsWithDelimiterWithTrailingSpaces()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 ===  
@@ -199,10 +192,9 @@ E
         }
 
         [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithLeadingSpaces()
+        public void SplitReturnsDeclarationsWithDelimiterWithLeadingSpaces()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
   ===
@@ -230,10 +222,9 @@ F", configParts.Config);
         }
 
         [Test]
-        public void GetConfigPartsReturnsDeclarationsWithDelimiterWithExtraLines()
+        public void SplitReturnsDeclarationsWithDelimiterWithExtraLines()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 
@@ -267,10 +258,9 @@ E-
         }
 
         [Test]
-        public void GetConfigPartsReturnDeclarationsWithoutSetup()
+        public void SplitReturnDeclarationsWithoutSetup()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             string configScript = @"A=
 =B
 C

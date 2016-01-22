@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Common.Tracing;
 using Wyam.Core;
 
 namespace Wyam.Examples.Tests
@@ -42,8 +42,8 @@ namespace Wyam.Examples.Tests
             [TestCaseSource(typeof(ExamplesFixture), nameof(Paths))]
             public void ExecuteAllExamples(string example)
             {
-                Engine engine = new Engine();
                 Trace.AddListener(new TestTraceListener());
+                Engine engine = new Engine();
                 engine.RootFolder = example;
                 engine.Config.Assemblies.LoadDirectory(TestContext.CurrentContext.TestDirectory);
                 string config = Path.Combine(example, "config.wyam");

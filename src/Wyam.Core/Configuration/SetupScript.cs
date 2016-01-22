@@ -19,12 +19,12 @@ namespace Wyam.Core.Configuration
 
         public Assembly Assembly { get; private set; }
 
-        public SetupScript(ConfigParts configParts)
+        public SetupScript(string setup)
         {
-            Code = Generate(configParts);
+            Code = Generate(setup);
         }
 
-        private static string Generate(ConfigParts configParts)
+        public static string Generate(string setup)
         {
             StringBuilder builder = new StringBuilder(@"
                         using System;
@@ -42,7 +42,7 @@ namespace Wyam.Core.Configuration
                         {
                             public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
                             {");
-            builder.Append(configParts.Setup);
+            builder.Append(setup);
             builder.AppendLine(@"
                             }
                         }");

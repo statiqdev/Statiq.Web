@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
+using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
@@ -23,9 +24,8 @@ namespace Wyam.Core.Tests.Documents
         public void CanCloneWithNewValues()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new [] { new KeyValuePair<string, object>("A", "a") });
@@ -38,9 +38,8 @@ namespace Wyam.Core.Tests.Documents
         public void IndexerMissingKeyThrowsKeyNotFoundException()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             TestDelegate test = () =>
@@ -56,9 +55,8 @@ namespace Wyam.Core.Tests.Documents
         public void IndexerNullKeyThrowsKeyNotFoundException()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             TestDelegate test = () =>
@@ -74,10 +72,8 @@ namespace Wyam.Core.Tests.Documents
         public void ContainsKeyReturnsTrueForValidValue()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             bool contains = metadata.ContainsKey("A");
@@ -90,10 +86,8 @@ namespace Wyam.Core.Tests.Documents
         public void ContainsReturnsFalseForInvalidValue()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             bool contains = metadata.ContainsKey("B");
@@ -106,10 +100,8 @@ namespace Wyam.Core.Tests.Documents
         public void TryGetValueReturnsTrueForValidValue()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value;
@@ -124,10 +116,8 @@ namespace Wyam.Core.Tests.Documents
         public void TryGetValueReturnsFalseForInvalidValue()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value;
@@ -142,10 +132,8 @@ namespace Wyam.Core.Tests.Documents
         public void CloneContainsPreviousValues()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             Metadata clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
@@ -158,10 +146,8 @@ namespace Wyam.Core.Tests.Documents
         public void ClonedMetadataDoesNotContainNewValues()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             Metadata clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
@@ -174,10 +160,8 @@ namespace Wyam.Core.Tests.Documents
         public void CloneContainsNewValues()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             Metadata clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
@@ -190,10 +174,8 @@ namespace Wyam.Core.Tests.Documents
         public void CloneReplacesValue()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = "a";
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             Metadata clone = metadata.Clone(new Dictionary<string, object> { { "A", "b" } });
@@ -207,10 +189,8 @@ namespace Wyam.Core.Tests.Documents
         public void GetWithMetadataValueReturnsCorrectResult()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value = metadata.Get("A");
@@ -223,10 +203,8 @@ namespace Wyam.Core.Tests.Documents
         public void ListReturnsCorrectResultForList()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new List<int> { 1, 2 ,3 };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<int> { 1, 2 ,3 } };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             IReadOnlyList<int> result = metadata.List<int>("A");
@@ -240,10 +218,8 @@ namespace Wyam.Core.Tests.Documents
         public void ListReturnsCorrectResultForConvertedStringList()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new List<string> { "1", "2", "3" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<string> { "1", "2", "3" } };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             IReadOnlyList<int> result = metadata.List<int>("A");
@@ -257,10 +233,8 @@ namespace Wyam.Core.Tests.Documents
         public void ListReturnsCorrectResultForConvertedIntList()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new List<int> { 1, 2, 3 };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<int> { 1, 2, 3 } };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             IReadOnlyList<string> result = metadata.List<string>("A");
@@ -274,10 +248,8 @@ namespace Wyam.Core.Tests.Documents
         public void ListReturnsCorrectResultForArray()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new [] { 1, 2, 3 };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new [] { 1, 2, 3 } };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             IReadOnlyList<int> result = metadata.List<int>("A");
@@ -314,10 +286,11 @@ namespace Wyam.Core.Tests.Documents
         public void LinkReturnsCorrectResult(string value, bool pretty, string link)
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new SimpleMetadataValue { Value = value };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata
+            {
+                ["A"] = new SimpleMetadataValue { Value = value }
+            };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object result = metadata.Link("A", pretty: pretty);
@@ -330,10 +303,11 @@ namespace Wyam.Core.Tests.Documents
         public void IndexerWithMetadataValueReturnsCorrectResult()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata
+            {
+                ["A"] = new SimpleMetadataValue { Value = "a" }
+            };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value = metadata["A"];
@@ -346,10 +320,11 @@ namespace Wyam.Core.Tests.Documents
         public void TryGetValueWithMetadataValueReturnsCorrectResult()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata
+            {
+                ["A"] = new SimpleMetadataValue { Value = "a" }
+            };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value;
@@ -364,11 +339,12 @@ namespace Wyam.Core.Tests.Documents
         public void GetWithDerivedMetadataValueReturnsCorrectResult()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["X"] = "x";
-            engine.Metadata["A"] = new DerivedMetadataValue { Key = "X" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata
+            {
+                ["A"] = new DerivedMetadataValue { Key = "X" },
+                ["X"] = "x"
+            };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value = metadata.Get("A");
@@ -381,11 +357,9 @@ namespace Wyam.Core.Tests.Documents
         public void GetWithMetadataValueCalledForEachRequest()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             SimpleMetadataValue metadataValue = new SimpleMetadataValue { Value = "a" };
-            engine.Metadata["A"] = metadataValue;
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata { ["A"] = metadataValue };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object value = metadata.Get("A");
@@ -401,12 +375,13 @@ namespace Wyam.Core.Tests.Documents
         public void EnumeratingMetadataValuesReturnsCorrectResults()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            engine.Metadata["A"] = new SimpleMetadataValue { Value = "a" };
-            engine.Metadata["B"] = new SimpleMetadataValue { Value = "b" };
-            engine.Metadata["C"] = new SimpleMetadataValue { Value = "c" };
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata
+            {
+                ["A"] = new SimpleMetadataValue { Value = "a" },
+                ["B"] = new SimpleMetadataValue { Value = "b" },
+                ["C"] = new SimpleMetadataValue { Value = "c" }
+            };
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             object[] values = metadata.Select(x => x.Value).ToArray();

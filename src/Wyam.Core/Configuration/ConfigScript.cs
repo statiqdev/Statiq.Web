@@ -23,25 +23,25 @@ namespace Wyam.Core.Configuration
 
         public string AssemblyFullName { get; private set; }
 
-        public ConfigScript(ConfigParts configParts, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
+        public ConfigScript(string declarations, string config, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
         {
-            Code = Generate(configParts, moduleTypes, namespaces);
+            Code = Generate(declarations, config, moduleTypes, namespaces);
         }
 
-        private static string Generate(ConfigParts configParts, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
+        public static string Generate(string declarations, string config, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
             scriptBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
-            if (configParts.HasDeclarations)
+            if (!string.IsNullOrWhiteSpace(declarations))
             {
-                scriptBuilder.AppendLine(configParts.Declarations);
+                scriptBuilder.AppendLine(declarations);
             }
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {
                     public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
-                    {" + Environment.NewLine + configParts.Config + @"
+                    {" + Environment.NewLine + config + @"
                     }");
 
             // Add static methods to construct each module
@@ -59,7 +59,7 @@ namespace Wyam.Core.Configuration
             return configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 
-        private static string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)
+        public static string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)
         {
             StringBuilder stringBuilder = new StringBuilder();
             CSharpCompilation compilation = CSharpCompilation

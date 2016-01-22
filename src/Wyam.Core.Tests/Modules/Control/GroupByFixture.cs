@@ -21,7 +21,6 @@ namespace Wyam.Core.Tests.Modules.Control
             List<int> groupKey = new List<int>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 7
@@ -48,7 +47,6 @@ namespace Wyam.Core.Tests.Modules.Control
             List<IList<string>> content = new List<IList<string>>();
             Engine engine = new Engine();
             engine.CleanOutputFolderOnExecute = false;
-            Trace.AddListener(new TestTraceListener());
             CountModule count = new CountModule("A")
             {
                 AdditionalOutputs = 7

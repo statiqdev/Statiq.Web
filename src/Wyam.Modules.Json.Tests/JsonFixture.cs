@@ -99,17 +99,42 @@ namespace Wyam.Modules.Json.Tests
             document.Content.Returns("asdf");
             document.Source.Returns(string.Empty);
             IExecutionContext context = Substitute.For<IExecutionContext>();
-            ITrace trace = Substitute.For<ITrace>();
-            context.Trace.Returns(trace);
+            TraceListener traceListener = new TraceListener();
+            Trace.AddListener(traceListener);
             Json json = new Json("MyJson");
 
             // When
             List<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            trace.Received(1).Error(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+            Assert.IsTrue(traceListener.Messages.Count > 0);
             document.Received(0).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
             Assert.IsTrue(results.Single().Equals(document));
+        }
+
+        public class TraceListener : System.Diagnostics.ConsoleTraceListener
+        {
+            public List<string> Messages { get; set; } 
+
+            public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string message)
+            {
+                ThrowOnErrorOrWarning(eventType, message);
+            }
+
+            public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string format, params object[] args)
+            {
+                ThrowOnErrorOrWarning(eventType, string.Format(format, args));
+            }
+
+            private void ThrowOnErrorOrWarning(System.Diagnostics.TraceEventType eventType, string message)
+            {
+                if (eventType == System.Diagnostics.TraceEventType.Critical
+                    || eventType == System.Diagnostics.TraceEventType.Error
+                    || eventType == System.Diagnostics.TraceEventType.Warning)
+                {
+                    throw new Exception(message);
+                }
+            }
         }
     }
 }

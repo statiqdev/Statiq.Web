@@ -57,24 +57,48 @@ namespace Wyam.Modules.Razor.Tests
             {
                 Directory.CreateDirectory(inputFolder);
             }
-            ITrace trace = Substitute.For<ITrace>();
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
             context.InputFolder.Returns(inputFolder);
-            context.Trace.Returns(trace);
             Engine engine = new Engine();
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
             IDocument document = Substitute.For<IDocument>();
-            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ ExecutionContext.Trace.Information(""Test""); }")));
+            TraceListener traceListener = new TraceListener();
+            Trace.AddListener(traceListener);
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ Trace.Error(""Test""); }")));
             Razor razor = new Razor();
 
             // When
             razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            ITrace receivedTrace = context.Received().Trace; // Need to assign to dummy var to keep compiler happy
-            trace.Received().Information("Test");
+            CollectionAssert.Contains(traceListener.Messages, "Test");
+        }
+
+        public class TraceListener : System.Diagnostics.ConsoleTraceListener
+        {
+            public List<string> Messages { get; set; }
+
+            public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string message)
+            {
+                ThrowOnErrorOrWarning(eventType, message);
+            }
+
+            public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string format, params object[] args)
+            {
+                ThrowOnErrorOrWarning(eventType, string.Format(format, args));
+            }
+
+            private void ThrowOnErrorOrWarning(System.Diagnostics.TraceEventType eventType, string message)
+            {
+                if (eventType == System.Diagnostics.TraceEventType.Critical
+                    || eventType == System.Diagnostics.TraceEventType.Error
+                    || eventType == System.Diagnostics.TraceEventType.Warning)
+                {
+                    throw new Exception(message);
+                }
+            }
         }
 
         [Test]

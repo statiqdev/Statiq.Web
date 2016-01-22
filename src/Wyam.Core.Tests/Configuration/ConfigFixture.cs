@@ -12,8 +12,11 @@ using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Configuration;
+using Wyam.Core.IO;
+using Wyam.Core.Meta;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.Contents;
+using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Tests.Configuration
 {
@@ -21,84 +24,14 @@ namespace Wyam.Core.Tests.Configuration
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ConfigFixture
     {
-        [TestCase(@"Pipelines.Add(Content())", @"Pipelines.Add(ConfigScript.Content())")]
-        [TestCase(@"Pipelines.Add(Content(Content()))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc => @doc.Foo()))", @"Pipelines.Add(ConfigScript.Content(@doc => @doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(), Foobar())", @"Pipelines.Add(ConfigScript.Content(), Foobar())")]
-        [TestCase(@"Pipelines.Add(Content(""foobar""))", @"Pipelines.Add(ConfigScript.Content(""foobar""))")]
-        [TestCase(@"Pipelines.Add(Content((x) => x.Foo()))", @"Pipelines.Add(ConfigScript.Content((x) => x.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc2.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc2,_)=>@doc2.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content((int)@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>(int)@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@ctx.Foo()))", @"Pipelines.Add(ConfigScript.Content(@ctx=>@ctx.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content())))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo(ConfigScript.Content())))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content(@doc.Foo()))))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo(ConfigScript.Content(@doc.Foo()))))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo(Content(@doc2.Foo()))))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo(ConfigScript.Content((@doc2,_)=>@doc2.Foo()))))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo(@ctx.Bar)))", @"Pipelines.Add(ConfigScript.Content((@doc,@ctx)=>@doc.Foo(@ctx.Bar)))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo(@ctx2.Bar)))", @"Pipelines.Add(ConfigScript.Content((@doc,@ctx2)=>@doc.Foo(@ctx2.Bar)))")]
-        [TestCase(@"Pipelines.Add(Content(@doc[""foo""]))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc[""foo""]))")]
-        [TestCase(@"Pipelines.Add(Content(@ctx[""foo""]))", @"Pipelines.Add(ConfigScript.Content(@ctx=>@ctx[""foo""]))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo))")]
-        [TestCase(@"Pipelines.Add(Content().Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content().Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content().Where().Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content().Where().Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content().Where(5).Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content().Where(5).Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content().Where(@doc[""foo""]))", @"Pipelines.Add(ConfigScript.Content().Where((@doc,_)=>@doc[""foo""]))")]
-        [TestCase(@"Pipelines.Add(Content().Where(@doc.Foo))", @"Pipelines.Add(ConfigScript.Content().Where((@doc,_)=>@doc.Foo))")]
-        [TestCase(@"Pipelines.Add(Content(""foobar"").Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content(""foobar"").Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.Foo()).Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.Foo()).Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc[""foo""]).Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc[""foo""]).Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(@doc.@Foo).Where(@doc.Foo()))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>@doc.@Foo).Where((@doc,_)=>@doc.Foo()))")]
-        [TestCase(@"Pipelines.Add(Content(Bar(@doc.Foo())))", @"Pipelines.Add(ConfigScript.Content((@doc,_)=>Bar(@doc.Foo())))")]
-        [TestCase(@"Pipelines.Add(Content(Bar(@ctx.Foo())))", @"Pipelines.Add(ConfigScript.Content(@ctx=>Bar(@ctx.Foo())))")]
-        [TestCase(@"Pipelines.Add(Content(Bar(@ctx2.Foo())))", @"Pipelines.Add(ConfigScript.Content(@ctx2=>Bar(@ctx2.Foo())))")]
-        [TestCase(@"Pipelines.Add(Content().Where(Bar(@doc.Foo())))", @"Pipelines.Add(ConfigScript.Content().Where((@doc,_)=>Bar(@doc.Foo())))")]
-        [TestCase(@"Pipelines.Add(Content().Where(Bar(@ctx.Foo())))", @"Pipelines.Add(ConfigScript.Content().Where(@ctx=>Bar(@ctx.Foo())))")]
-        [TestCase(@"Pipelines.Add(Content(Content(""*.md"").Where(@doc.Foo())))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content(""*.md"").Where((@doc,_)=>@doc.Foo())))")]
-        public void GenerateScriptGeneratesCorrectScript(string input, string output)
-        {
-            // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            HashSet<Type> moduleTypes = new HashSet<Type> {typeof (Content)};
-            string expected = $@"
-
-                public static class ConfigScript
-                {{
-                    public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
-                    {{
-{output}
-                    }}
-                        public static Wyam.Core.Modules.Contents.Content Content(object content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.ContextConfig content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.DocumentConfig content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(params Wyam.Common.Modules.IModule[] modules)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(modules);  
-                        }}}}";
-
-            // When
-            string actual = config.GenerateScript(null, input, moduleTypes);
-
-            // Then
-            Assert.AreEqual(expected, actual);
-        }
-
         [Test]
         public void ErrorInSetupContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 foo
@@ -129,8 +62,10 @@ int z = 0;
         public void ErrorInDeclarationsContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -161,8 +96,10 @@ int z = 0;
         public void ErrorInDeclarationsWithEmptyLinesContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -198,8 +135,10 @@ int z = 0;
         public void ErrorInDeclarationsWithoutSetupContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 class Y { };
 
@@ -231,8 +170,10 @@ int z = 0;
         public void ErrorInConfigContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 
@@ -268,8 +209,10 @@ foo bar;
         public void ErrorInConfigWithoutDeclarationsContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -298,8 +241,10 @@ foo bar;
         public void ErrorInConfigAfterLambdaExpansionContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -332,8 +277,10 @@ foo bar;
         public void ErrorInConfigAfterLambdaExpansionOnNewLineContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -366,8 +313,10 @@ foo bar;
         public void ErrorInConfigAfterLambdaExpansionWithArgumentSeparatorNewLinesContainsCorrectLineNumbers()
         {
             // Given
-            Engine engine = new Engine();
-            Config config = new Config(engine);
+            FileSystem fileSystem = new FileSystem();
+            InitialMetadata initialMetadata = new InitialMetadata();
+            PipelineCollection pipelines = new PipelineCollection();
+            Config config = new Config(fileSystem, initialMetadata, pipelines);
             string configScript = @"
 Assemblies.Load("""");
 ===
@@ -395,134 +344,6 @@ foo bar;
             // Then
             Assert.AreEqual(1, exception.InnerExceptions.Count);
             StringAssert.StartsWith("Line 11", exception.InnerExceptions[0].Message);
-        }
-
-        [Test]
-        public void GenerateModuleConstructorMethodsGeneratesOverloadedConstructors()
-        {
-            // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            Type moduleType = typeof (Content);
-            string expected = $@"
-                        public static Wyam.Core.Modules.Contents.Content Content(object content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.ContextConfig content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(Wyam.Common.Configuration.DocumentConfig content)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(content);  
-                        }}
-                        public static Wyam.Core.Modules.Contents.Content Content(params Wyam.Common.Modules.IModule[] modules)
-                        {{
-                            return new Wyam.Core.Modules.Contents.Content(modules);  
-                        }}";
-
-            // When
-            string generated = config.GenerateModuleConstructorMethods(moduleType);
-
-            // Then
-            Assert.AreEqual(expected, generated);
-        }
-
-        [Test]
-        public void GenerateModuleConstructorMethodsGeneratesGenericConstructors()
-        {
-            // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Config config = new Config(engine);
-            Type moduleType = typeof(GenericModule<>);
-            string expected = $@"
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(T input)
-                        {{
-                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
-                        }}
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(System.Action<T> input)
-                        {{
-                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
-                        }}";
-
-            // When
-            string generated = config.GenerateModuleConstructorMethods(moduleType);
-
-            // Then
-            Assert.AreEqual(expected, generated);
-        }
-
-        [Test]
-        public void SetupMaintainsFolders()
-        {
-            // Given
-            Engine engine = new Engine
-            {
-                RootFolder = @"C:\A",
-                InputFolder = "B",
-                OutputFolder = "C"
-            };
-            Config config = new Config(engine);
-            string configScript = @"
-Assemblies.Load("""");
-===
-";
-
-            // When
-            config.Configure(configScript, false, null, false);
-
-            // Then
-            Assert.AreEqual(PathHelper.NormalizePath(@"C:\A"), engine.RootFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\A", "B")), engine.InputFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\A", "C")), engine.OutputFolder);
-        }
-
-        [Test]
-        public void SetupModifiesFolders()
-        {
-            // Given
-            Engine engine = new Engine
-            {
-                RootFolder = @"C:\A",
-                InputFolder = "B",
-                OutputFolder = "C"
-            };
-            Config config = new Config(engine);
-            string configScript = @"
-RootFolder = @""C:\X"";
-InputFolder = ""Y"";
-OutputFolder = ""Z"";
-===
-";
-
-            // When
-            config.Configure(configScript, false, null, false);
-
-            // Then
-            Assert.AreEqual(PathHelper.NormalizePath(@"C:\X"), engine.RootFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\X", "Y")), engine.InputFolder);
-            Assert.AreEqual(PathHelper.NormalizePath(System.IO.Path.Combine(@"C:\X", "Z")), engine.OutputFolder);
-        }
-    }
-
-    public class GenericModule<T> : IModule
-    {
-        public GenericModule(T input)
-        {
-
-        }
-
-        public GenericModule(Action<T> input)
-        {
-
-        }
-
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 }

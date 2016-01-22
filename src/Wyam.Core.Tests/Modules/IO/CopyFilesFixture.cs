@@ -49,13 +49,12 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder= @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles("*.txt");
 
@@ -79,14 +78,13 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
             engine.CleanOutputFolder();
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles("*.txt").FromTopDirectoryOnly();
 
@@ -108,14 +106,13 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
             engine.CleanOutputFolder();
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles("Subfolder\\*.txt").FromTopDirectoryOnly();
 
@@ -137,14 +134,13 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
             engine.CleanOutputFolder();
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles("../*.txt").FromTopDirectoryOnly();
 
@@ -167,7 +163,6 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
@@ -175,8 +170,8 @@ namespace Wyam.Core.Tests.Modules.IO
 
             string absoluteInputPath = Path.GetFullPath(engine.InputFolder);
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles(Path.Combine(absoluteInputPath, "*.txt")).FromTopDirectoryOnly();
 
@@ -199,14 +194,13 @@ namespace Wyam.Core.Tests.Modules.IO
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
             engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             engine.InputFolder = @"TestFiles\Input\";
             engine.OutputFolder = @"TestFiles\Output\";
             engine.CleanOutputFolder();
 
-            Pipeline pipeline = new Pipeline("Pipeline", engine, null);
-            IDocument[] inputs = { new Document(engine, pipeline).Clone("Test") };
+            Pipeline pipeline = new Pipeline("Pipeline", null);
+            IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).Clone("Test") };
             IExecutionContext context = new ExecutionContext(engine, pipeline);
             CopyFiles copyFiles = new CopyFiles("NonExistent\\*.txt");
 

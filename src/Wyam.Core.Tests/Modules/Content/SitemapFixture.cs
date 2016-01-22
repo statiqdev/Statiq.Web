@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Metadata;
@@ -54,13 +55,12 @@ namespace Wyam.Core.Tests.Modules.Content
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
 
             if (!string.IsNullOrWhiteSpace(hostname))
-                engine.Metadata[Keys.Hostname] = hostname;
+                engine.InitialMetadata[Keys.Hostname] = hostname;
 
-            Pipeline contentPipeline = new Pipeline("Content", engine, null);
-            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
+            Pipeline contentPipeline = new Pipeline("Content", null);
+            var doc = new Document(engine.InitialMetadata, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);
@@ -93,13 +93,12 @@ namespace Wyam.Core.Tests.Modules.Content
         {
             // Given
             Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
 
             if( !string.IsNullOrWhiteSpace(hostname) )
-                engine.Metadata[Keys.Hostname] = hostname;
+                engine.InitialMetadata[Keys.Hostname] = hostname;
 
-            Pipeline contentPipeline = new Pipeline("Content", engine, null);
-            var doc = new Document(engine, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
+            Pipeline contentPipeline = new Pipeline("Content", null);
+            var doc = new Document(engine.InitialMetadata, contentPipeline).Clone("Test", new[] { new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html") });
             IDocument[] inputs = { doc };
 
             IExecutionContext context = new ExecutionContext(engine, contentPipeline);

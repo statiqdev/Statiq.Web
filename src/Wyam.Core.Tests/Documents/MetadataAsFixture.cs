@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -21,9 +22,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertIntToString()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", 1) });
@@ -38,9 +38,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertStringToInt()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", "1") });
@@ -55,9 +54,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertIntArrayToStringArray()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new int[] { 1, 2, 3 }) });
@@ -72,9 +70,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertStringArrayToIntArray()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new string[] { "1", "2", "3" }) });
@@ -89,9 +86,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertIntArrayToStringEnumerable()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new int[] { 1, 2, 3 }) });
@@ -106,9 +102,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertStringEnumerableToIntArray()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new List<string> { "1", "2", "3" }) });
@@ -123,9 +118,8 @@ namespace Wyam.Core.Tests.Documents
         public void ConvertStringToIntArray()
         {
             // Given
-            Engine engine = new Engine();
-            Trace.AddListener(new TestTraceListener());
-            Metadata metadata = new Metadata(engine);
+            InitialMetadata initialMetadata = new InitialMetadata();
+            Metadata metadata = new Metadata(initialMetadata);
 
             // When
             metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", "1") });

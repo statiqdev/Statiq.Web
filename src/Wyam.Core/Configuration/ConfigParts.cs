@@ -12,13 +12,6 @@ namespace Wyam.Core.Configuration
         public string Declarations { get; }
         public string Config { get; }
 
-        public bool HasSetup => !string.IsNullOrWhiteSpace(Setup);
-        public bool HasDeclarations => !string.IsNullOrWhiteSpace(Declarations);
-
-        public ConfigParts()
-        {
-        }
-
         public ConfigParts(string setup, string declarations, string config)
         {
             Setup = setup;

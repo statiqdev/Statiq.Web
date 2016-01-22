@@ -24,20 +24,20 @@ namespace Wyam.Core.Tests
             // Given
             Engine engine = new Engine();
             string configScript = @"
-                Metadata[""TestString""] = ""teststring"";
-                Metadata[""TestInt""] = 1234;
-                Metadata[""TestFloat""] = 1234.567;
-                Metadata[""TestBool""] = true;
+                InitialMetadata[""TestString""] = ""teststring"";
+                InitialMetadata[""TestInt""] = 1234;
+                InitialMetadata[""TestFloat""] = 1234.567;
+                InitialMetadata[""TestBool""] = true;
             ";
 
             // When
             engine.Configure(configScript);
 
             // Then
-            Assert.AreEqual("teststring", engine.Metadata["TestString"]);
-            Assert.AreEqual(1234, engine.Metadata["TestInt"]);
-            Assert.AreEqual(1234.567, engine.Metadata["TestFloat"]);
-            Assert.AreEqual(true, engine.Metadata["TestBool"]);
+            Assert.AreEqual("teststring", engine.InitialMetadata["TestString"]);
+            Assert.AreEqual(1234, engine.InitialMetadata["TestInt"]);
+            Assert.AreEqual(1234.567, engine.InitialMetadata["TestFloat"]);
+            Assert.AreEqual(true, engine.InitialMetadata["TestBool"]);
         }
 
         [Test]
