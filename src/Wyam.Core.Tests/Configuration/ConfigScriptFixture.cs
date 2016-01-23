@@ -59,7 +59,7 @@ namespace Wyam.Core.Tests.Configuration
 
                 public static class ConfigScript
                 {{
-                    public static void Run(IDictionary<string, object> Metadata, IPipelineCollection Pipelines, string RootFolder, string InputFolder, string OutputFolder)
+                    public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
                     {{
 {output}
                     }}
@@ -123,13 +123,13 @@ namespace Wyam.Core.Tests.Configuration
             // Given
             Dictionary<string, string> memberNames = new Dictionary<string, string>();
             string expected = $@"
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(T input)
+                        public static Wyam.Core.Tests.Configuration.ConfigScriptFixture.GenericModule<T> GenericModule<T>(T input)
                         {{
-                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
+                            return new Wyam.Core.Tests.Configuration.ConfigScriptFixture.GenericModule<T>(input);  
                         }}
-                        public static Wyam.Core.Tests.Configuration.GenericModule<T> GenericModule<T>(System.Action<T> input)
+                        public static Wyam.Core.Tests.Configuration.ConfigScriptFixture.GenericModule<T> GenericModule<T>(System.Action<T> input)
                         {{
-                            return new Wyam.Core.Tests.Configuration.GenericModule<T>(input);  
+                            return new Wyam.Core.Tests.Configuration.ConfigScriptFixture.GenericModule<T>(input);  
                         }}";
 
             // When

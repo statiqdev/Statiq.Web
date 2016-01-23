@@ -21,9 +21,26 @@ using Wyam.Core.Pipelines;
 namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ConfigFixture
+    [Parallelizable(ParallelScope.None)]
+    public class ConfigErrorsFixture
     {
+        [SetUp]
+        public void SetUp()
+        {
+            System.Diagnostics.TraceListener testRaceListener =
+                Trace.GetListeners().OfType<TestTraceListener>().FirstOrDefault();
+            if (testRaceListener != null)
+            {
+                Trace.RemoveListener(testRaceListener);
+            }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Trace.AddListener(new TestTraceListener());
+        }
+
         [Test]
         public void ErrorInSetupContainsCorrectLineNumbers()
         {

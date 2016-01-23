@@ -23,7 +23,7 @@ namespace Wyam.Core.Tests.Configuration
             Trace.AddListener(new TestTraceListener());
             FileSystem fileSystem = new FileSystem
             {
-                RootPath = @"C:\A",
+                RootPath = @"C:/A",
                 OutputPath = "C"
             };
             fileSystem.InputPaths.Add("B");
@@ -39,9 +39,9 @@ Assemblies.Load("""");
             setupScript.Invoke(packages, assemblies, fileSystem);
 
             // Then
-            Assert.AreEqual(@"C:\A", fileSystem.RootPath.FullPath);
+            Assert.AreEqual(@"C:/A", fileSystem.RootPath.FullPath);
             Assert.AreEqual(@"C", fileSystem.OutputPath.FullPath);
-            CollectionAssert.AreEquivalent(new [] { "B" }, fileSystem.InputPaths.Select(x => x.FullPath));
+            CollectionAssert.AreEquivalent(new [] { "input", "B" }, fileSystem.InputPaths.Select(x => x.FullPath));
         }
 
         [Test]
@@ -51,7 +51,7 @@ Assemblies.Load("""");
             Trace.AddListener(new TestTraceListener());
             FileSystem fileSystem = new FileSystem
             {
-                RootPath = @"C:\A",
+                RootPath = @"C:/A",
                 OutputPath = "C"
             };
             fileSystem.InputPaths.Add("B");
@@ -61,7 +61,6 @@ Assemblies.Load("""");
 FileSystem.RootPath = @""C:\X"";
 FileSystem.InputPaths.Add(""Y"");
 FileSystem.OutputPath = ""Z"";
-===
 ";
             SetupScript setupScript = new SetupScript(setup);
             setupScript.Compile();
@@ -70,9 +69,9 @@ FileSystem.OutputPath = ""Z"";
             setupScript.Invoke(packages, assemblies, fileSystem);
 
             // Then
-            Assert.AreEqual(@"C:\X", fileSystem.RootPath.FullPath);
+            Assert.AreEqual(@"C:/X", fileSystem.RootPath.FullPath);
             Assert.AreEqual(@"Z", fileSystem.OutputPath.FullPath);
-            CollectionAssert.AreEquivalent(new[] { "B", "Y" }, fileSystem.InputPaths.Select(x => x.FullPath));
+            CollectionAssert.AreEquivalent(new[] { "input", "B", "Y" }, fileSystem.InputPaths.Select(x => x.FullPath));
         }
     }
 }

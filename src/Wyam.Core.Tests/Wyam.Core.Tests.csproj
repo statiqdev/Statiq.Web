@@ -64,7 +64,7 @@
     <Compile Include="Configuration\SetupScriptFixture.cs" />
     <Compile Include="Documents\DocumentFixture.cs" />
     <Compile Include="Modules\Control\ConcatBranchFixture.cs" />
-    <Compile Include="Configuration\ConfigFixture.cs" />
+    <Compile Include="Configuration\ConfigErrorsFixture.cs" />
     <Compile Include="EngineFixture.cs" />
     <Compile Include="Documents\MetadataAsFixture.cs" />
     <Compile Include="Documents\MetadataFixture.cs" />
