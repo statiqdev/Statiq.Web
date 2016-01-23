@@ -49,6 +49,7 @@ namespace Wyam.Modules.Razor.Tests
         }
 
         [Test]
+        [Parallelizable(ParallelScope.None)]
         public void Tracing()
         {
             // Given
@@ -63,41 +64,38 @@ namespace Wyam.Modules.Razor.Tests
             Engine engine = new Engine();
             engine.Configure();
             context.Assemblies.Returns(engine.Assemblies);
+            context.Namespaces.Returns(engine.Namespaces);
             IDocument document = Substitute.For<IDocument>();
             TraceListener traceListener = new TraceListener();
             Trace.AddListener(traceListener);
-            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ Trace.Error(""Test""); }")));
+            document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ Trace.Information(""Test""); }")));
             Razor razor = new Razor();
 
             // When
             razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
+            Trace.RemoveListener(traceListener);
             CollectionAssert.Contains(traceListener.Messages, "Test");
         }
 
         public class TraceListener : System.Diagnostics.ConsoleTraceListener
         {
-            public List<string> Messages { get; set; }
+            public List<string> Messages { get; set; } = new List<string>();
 
             public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string message)
             {
-                ThrowOnErrorOrWarning(eventType, message);
+                LogMessage(eventType, message);
             }
 
             public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string format, params object[] args)
             {
-                ThrowOnErrorOrWarning(eventType, string.Format(format, args));
+                LogMessage(eventType, string.Format(format, args));
             }
 
-            private void ThrowOnErrorOrWarning(System.Diagnostics.TraceEventType eventType, string message)
+            private void LogMessage(System.Diagnostics.TraceEventType eventType, string message)
             {
-                if (eventType == System.Diagnostics.TraceEventType.Critical
-                    || eventType == System.Diagnostics.TraceEventType.Error
-                    || eventType == System.Diagnostics.TraceEventType.Warning)
-                {
-                    throw new Exception(message);
-                }
+                Messages.Add(message);
             }
         }
 

@@ -92,6 +92,7 @@ namespace Wyam.Modules.Json.Tests
         }
 
         [Test]
+        [Parallelizable(ParallelScope.None)]
         public void ReturnsDocumentOnError()
         {
             // Given
@@ -107,6 +108,7 @@ namespace Wyam.Modules.Json.Tests
             List<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
+            Trace.RemoveListener(traceListener);
             Assert.IsTrue(traceListener.Messages.Count > 0);
             document.Received(0).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
             Assert.IsTrue(results.Single().Equals(document));
@@ -114,25 +116,24 @@ namespace Wyam.Modules.Json.Tests
 
         public class TraceListener : System.Diagnostics.ConsoleTraceListener
         {
-            public List<string> Messages { get; set; } 
+            public List<string> Messages { get; set; } = new List<string>();
 
             public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string message)
             {
-                ThrowOnErrorOrWarning(eventType, message);
+                LogMessage(eventType, message);
             }
 
             public override void TraceEvent(System.Diagnostics.TraceEventCache eventCache, string source, System.Diagnostics.TraceEventType eventType, int id, string format, params object[] args)
             {
-                ThrowOnErrorOrWarning(eventType, string.Format(format, args));
+                LogMessage(eventType, string.Format(format, args));
             }
 
-            private void ThrowOnErrorOrWarning(System.Diagnostics.TraceEventType eventType, string message)
+            private void LogMessage(System.Diagnostics.TraceEventType eventType, string message)
             {
                 if (eventType == System.Diagnostics.TraceEventType.Critical
-                    || eventType == System.Diagnostics.TraceEventType.Error
-                    || eventType == System.Diagnostics.TraceEventType.Warning)
+                    || eventType == System.Diagnostics.TraceEventType.Error)
                 {
-                    throw new Exception(message);
+                    Messages.Add(message);
                 }
             }
         }

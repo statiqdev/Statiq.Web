@@ -84,6 +84,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Tracing\IndentedTraceEvent.cs" />
+    <Compile Include="Tracing\ITrace.cs" />
     <Compile Include="Tracing\Trace.cs" />
   </ItemGroup>
   <ItemGroup />

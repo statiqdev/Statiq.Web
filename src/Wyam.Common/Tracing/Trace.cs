@@ -14,15 +14,23 @@ namespace Wyam.Common.Tracing
     /// <summary>
     /// Provides access to tracing functionality. This class is thread safe.
     /// </summary>
-    public class Trace
+    public class Trace : ITrace
     {
-        public static Trace Current { get; } = new Trace();
-
         private static readonly TraceSource TraceSource = new TraceSource("Wyam", SourceLevels.Information);
         private static int _indent = 0;
 
-        public static void SetLevel(SourceLevels level) => TraceSource.Switch.Level = level;
+        public static ITrace Current { get; } = new Trace();
 
+        private Trace()
+        {
+        }
+
+        public static SourceLevels Level
+        {
+            get { return TraceSource.Switch.Level; }
+            set { TraceSource.Switch.Level = value; }
+        }
+        
         public static void AddListener(TraceListener listener)
         {
             TraceSource.Listeners.Add(listener);
@@ -95,5 +103,72 @@ namespace Wyam.Common.Tracing
         }
 
         public static IIndentedTraceEvent WithIndent() => new IndentedTraceEvent();
+
+        SourceLevels ITrace.Level
+        {
+            get { return Level; }
+            set { Level = value; }
+        }
+
+        void ITrace.AddListener(TraceListener listener)
+        {
+            AddListener(listener);
+        }
+
+        void ITrace.RemoveListener(TraceListener listener)
+        {
+            RemoveListener(listener);
+        }
+
+        IEnumerable<TraceListener> ITrace.GetListeners()
+        {
+            return GetListeners();
+        }
+
+        void ITrace.Critical(string messageOrFormat, params object[] args)
+        {
+            Critical(messageOrFormat, args);
+        }
+
+        void ITrace.Error(string messageOrFormat, params object[] args)
+        {
+            Error(messageOrFormat, args);
+        }
+
+        void ITrace.Warning(string messageOrFormat, params object[] args)
+        {
+            Warning(messageOrFormat, args);
+        }
+
+        void ITrace.Information(string messageOrFormat, params object[] args)
+        {
+            Information(messageOrFormat, args);
+        }
+
+        void ITrace.Verbose(string messageOrFormat, params object[] args)
+        {
+            Verbose(messageOrFormat, args);
+        }
+
+        void ITrace.TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
+        {
+            TraceEvent(eventType, messageOrFormat, args);
+        }
+
+        int ITrace.Indent()
+        {
+            return Indent();
+        }
+
+        int ITrace.IndentLevel
+        {
+            get { return IndentLevel; }
+            set { IndentLevel = value; }
+        }
+
+        IIndentedTraceEvent ITrace.WithIndent()
+        {
+            return WithIndent();
+        }
     }
 }

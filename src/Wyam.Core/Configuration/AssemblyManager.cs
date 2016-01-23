@@ -19,7 +19,6 @@ namespace Wyam.Core.Configuration
             "System.Collections.Generic",
             "System.Linq",
             "System.IO",
-            "System.Diagnostics",
             "Wyam.Core",
             "Wyam.Core.Configuration"
         };

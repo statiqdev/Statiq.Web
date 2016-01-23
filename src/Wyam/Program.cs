@@ -302,7 +302,7 @@ namespace Wyam
             // Set verbose tracing
             if (_verbose)
             {
-                Trace.SetLevel(System.Diagnostics.SourceLevels.Verbose);
+                Trace.Level = System.Diagnostics.SourceLevels.Verbose;
             }
 
             // Set no cache if requested

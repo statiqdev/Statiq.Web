@@ -15,6 +15,7 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Common.Tracing;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 using HtmlString = Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering.HtmlString;
 
@@ -72,6 +73,12 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         public IDocumentCollection Documents
         {
             get { return ExecutionContext.Documents; }
+        }
+
+        // Define Trace as a property so it's not ambiguous with System.Diagnostics.Trace
+        public ITrace Trace
+        {
+            get { return Wyam.Common.Tracing.Trace.Current; }
         }
 
         /// <summary>
