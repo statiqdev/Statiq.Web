@@ -11,12 +11,13 @@ using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class MetadataAsFixture
+    public class MetadataAsFixture : TraceListenerFixture
     {
         [Test]
         public void ConvertIntToString()

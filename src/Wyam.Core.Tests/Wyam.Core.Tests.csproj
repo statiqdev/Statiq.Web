@@ -91,9 +91,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="CountModule.cs" />
-    <Compile Include="SetupFixture.cs" />
-    <Compile Include="TestTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -113,6 +110,10 @@
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

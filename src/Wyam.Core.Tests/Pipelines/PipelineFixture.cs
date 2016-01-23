@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Tracing;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Pipelines
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class PipelineFixture
+    public class PipelineFixture : TraceListenerFixture
     {
         [Test]
         public void ReprocessesPreviousDocumentsWithDistinctSources()

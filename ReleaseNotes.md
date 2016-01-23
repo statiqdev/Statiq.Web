@@ -1,5 +1,6 @@
 # 0.11.1
 
+- Refactoring - Changed the name of the release file from **wyam.zip** to **wyam-[verson].zip** - *note that this is a breaking change if you download the release zip from a continuous integration script*
 - Fix - Namespaces are now added for `Engine.Configure()` calls without a script (#147 and #148, thanks @heavenwing)
 - Fix - CopyFiles was no returning a sequence for invalid folders (#166)
 - Fix - Better documentation and small bug fixes for CopyFiles (#158)

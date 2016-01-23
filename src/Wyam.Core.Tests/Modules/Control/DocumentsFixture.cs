@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Core.Modules.Extensibility;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class DocumentsFixture
+    public class DocumentsFixture : TraceListenerFixture
     {
         [Test]
         public void CountReturnsCorrectDocuments()

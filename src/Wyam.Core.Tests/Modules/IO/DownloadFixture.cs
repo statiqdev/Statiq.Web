@@ -12,12 +12,13 @@ using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.IO;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class DownloadFixture
+    public class DownloadFixture : TraceListenerFixture
     {
         public static string AssemblyDirectory
         {

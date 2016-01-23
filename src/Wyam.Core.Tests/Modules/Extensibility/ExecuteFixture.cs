@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 using Wyam.Core.Modules.Extensibility;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ExecuteFixture
+    public class ExecuteFixture : TraceListenerFixture
     {
         [Test]
         public void ExecuteDoesNotThrowForNullResultWithDocumentConfig()

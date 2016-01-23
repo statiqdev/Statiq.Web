@@ -77,6 +77,10 @@
       <Project>{18e8dfbe-436c-4477-a5a2-61551ce268a2}</Project>
       <Name>Wyam.Modules.Tables</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

@@ -71,6 +71,10 @@
       <Project>{f17862d9-8b53-44c0-9102-b1b84be72e76}</Project>
       <Name>Wyam.Modules.Xmp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Samples\Flamme.png">

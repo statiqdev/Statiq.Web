@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 using Wyam.Core.Modules.Control;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class SwitchFixture
+    public class SwitchFixture : TraceListenerFixture
     {
         [Test]
         public void SwitchResultsInCorrectCounts()

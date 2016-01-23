@@ -9,7 +9,7 @@ namespace Wyam.Common.Tracing
 
         void AddListener(TraceListener listener);
         void RemoveListener(TraceListener listener);
-        IEnumerable<TraceListener> GetListeners();
+        IEnumerable<TraceListener> Listeners { get; }
 
         void Critical(string messageOrFormat, params object[] args);
         void Error(string messageOrFormat, params object[] args);

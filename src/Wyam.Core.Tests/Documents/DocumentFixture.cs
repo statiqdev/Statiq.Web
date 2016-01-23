@@ -11,12 +11,13 @@ using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class DocumentFixture
+    public class DocumentFixture : TraceListenerFixture
     {
         [Test]
         public void StreamIsDisposedCorrectlyAfterClone()

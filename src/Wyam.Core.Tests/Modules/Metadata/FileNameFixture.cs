@@ -8,12 +8,13 @@ using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class FileNameFixture
+    public class FileNameFixture : TraceListenerFixture
     {
         [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
 			"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]

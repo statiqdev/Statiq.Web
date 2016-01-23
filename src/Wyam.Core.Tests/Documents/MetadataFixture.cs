@@ -13,12 +13,13 @@ using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Documents
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class MetadataFixture
+    public class MetadataFixture : TraceListenerFixture
     {
         [Test]
         public void CanCloneWithNewValues()

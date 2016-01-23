@@ -68,6 +68,10 @@
       <Project>{f55fb154-8722-450c-b641-6de331ed94a0}</Project>
       <Name>Wyam.Modules.Json</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

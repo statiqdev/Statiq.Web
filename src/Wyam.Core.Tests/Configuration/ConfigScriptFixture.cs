@@ -10,12 +10,13 @@ using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules.Contents;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ConfigScriptFixture
+    public class ConfigScriptFixture : TraceListenerFixture
     {
         [TestCase(@"Pipelines.Add(Content())", @"Pipelines.Add(ConfigScript.Content())")]
         [TestCase(@"Pipelines.Add(Content(Content()))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content()))")]

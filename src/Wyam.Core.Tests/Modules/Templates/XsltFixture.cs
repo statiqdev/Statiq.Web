@@ -8,12 +8,13 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Modules.Templates;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Templates
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class XsltFixture
+    public class XsltFixture : TraceListenerFixture
     {
         [Test]
         public void TestTransform()

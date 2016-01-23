@@ -9,18 +9,18 @@ using Wyam.Common.Tracing;
 using Wyam.Core.Configuration;
 using Wyam.Core.IO;
 using Wyam.Core.NuGet;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class SetupScriptFixture
+    public class SetupScriptFixture : TraceListenerFixture
     {
         [Test]
         public void SetupMaintainsFolders()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             FileSystem fileSystem = new FileSystem
             {
                 RootPath = @"C:/A",
@@ -48,7 +48,6 @@ Assemblies.Load("""");
         public void SetupModifiesFolders()
         {
             // Given
-            Trace.AddListener(new TestTraceListener());
             FileSystem fileSystem = new FileSystem
             {
                 RootPath = @"C:/A",

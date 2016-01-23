@@ -17,6 +17,7 @@ using Wyam.Core.Meta;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration
 {
@@ -24,23 +25,6 @@ namespace Wyam.Core.Tests.Configuration
     [Parallelizable(ParallelScope.None)]
     public class ConfigErrorsFixture
     {
-        [SetUp]
-        public void SetUp()
-        {
-            System.Diagnostics.TraceListener testRaceListener =
-                Trace.GetListeners().OfType<TestTraceListener>().FirstOrDefault();
-            if (testRaceListener != null)
-            {
-                Trace.RemoveListener(testRaceListener);
-            }
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Trace.AddListener(new TestTraceListener());
-        }
-
         [Test]
         public void ErrorInSetupContainsCorrectLineNumbers()
         {

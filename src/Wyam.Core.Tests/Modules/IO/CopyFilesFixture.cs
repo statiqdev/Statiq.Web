@@ -9,12 +9,13 @@ using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
-    public class CopyFilesFixture
+    public class CopyFilesFixture : TraceListenerFixture
     {
         [SetUp]
         public void SetUp()

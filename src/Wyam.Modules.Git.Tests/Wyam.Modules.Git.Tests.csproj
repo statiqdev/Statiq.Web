@@ -65,6 +65,10 @@
       <Project>{d339951e-dfac-4766-825b-36e69479044b}</Project>
       <Name>Wyam.Modules.Git</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

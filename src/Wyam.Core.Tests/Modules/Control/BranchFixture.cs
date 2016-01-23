@@ -1,12 +1,13 @@
 ﻿using NUnit.Framework;
 using Wyam.Common.Tracing;
 using Wyam.Core.Modules.Control;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class BranchFixture
+    public class BranchFixture : TraceListenerFixture
     {
         [Test]
         public void BranchResultsInCorrectCounts()

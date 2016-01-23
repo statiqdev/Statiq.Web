@@ -10,13 +10,14 @@ using Wyam.Core.Modules;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 
 namespace Wyam.Core.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class EngineFixture
+    public class EngineFixture : TraceListenerFixture
     {
         [Test]
         public void ConfigureSetsPrimitiveMetadata()

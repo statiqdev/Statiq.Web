@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common;
+using NUnit.Framework;
 
-namespace Wyam.Core.Tests
+namespace Wyam.Testing
 {
-    // Throws exceptions on error or warning traces
-    public class TestTraceListener : ConsoleTraceListener
+    // Throws exceptions on error or warning traces, but only for the current thread
+    internal class TestTraceListener : ConsoleTraceListener
     {
+        public string TestId { get; private set; }
+
+        public TestTraceListener(string testId)
+        {
+            TestId = testId;
+        }
+
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
             ThrowOnErrorOrWarning(eventType, message);
@@ -23,9 +26,10 @@ namespace Wyam.Core.Tests
 
         private void ThrowOnErrorOrWarning(TraceEventType eventType, string message)
         {
-            if (eventType == TraceEventType.Critical
+            if (TestContext.CurrentContext.Test.ID == TestId
+                && (eventType == TraceEventType.Critical
                 || eventType == TraceEventType.Error
-                || eventType == TraceEventType.Warning)
+                || eventType == TraceEventType.Warning))
             {
                 throw new Exception(message);
             }

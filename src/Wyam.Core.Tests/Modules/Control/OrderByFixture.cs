@@ -2,12 +2,13 @@
 using NUnit.Framework;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class OrderByFixture
+    public class OrderByFixture : TraceListenerFixture
     {
         [Test]
         public void OrderByOrdersInAscendingOrder()

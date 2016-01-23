@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Tracing;
 using Wyam.Core.Configuration;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ConfigSplitterFixture
+    public class ConfigSplitterFixture : TraceListenerFixture
     {
         [Test]
         public void SplitReturnsBothPartsWithDelimiter()

@@ -43,7 +43,7 @@ namespace Wyam.Common.Tracing
             TraceSource.Listeners.Remove(listener);
         }
 
-        public static IEnumerable<TraceListener> GetListeners() => 
+        public static IEnumerable<TraceListener> Listeners => 
             TraceSource.Listeners.OfType<TraceListener>();
 
         // Stops the application
@@ -110,55 +110,31 @@ namespace Wyam.Common.Tracing
             set { Level = value; }
         }
 
-        void ITrace.AddListener(TraceListener listener)
-        {
-            AddListener(listener);
-        }
+        void ITrace.AddListener(TraceListener listener) => AddListener(listener);
 
-        void ITrace.RemoveListener(TraceListener listener)
-        {
-            RemoveListener(listener);
-        }
+        void ITrace.RemoveListener(TraceListener listener) => RemoveListener(listener);
 
-        IEnumerable<TraceListener> ITrace.GetListeners()
-        {
-            return GetListeners();
-        }
+        IEnumerable<TraceListener> ITrace.Listeners => Listeners;
 
-        void ITrace.Critical(string messageOrFormat, params object[] args)
-        {
+        void ITrace.Critical(string messageOrFormat, params object[] args) => 
             Critical(messageOrFormat, args);
-        }
 
-        void ITrace.Error(string messageOrFormat, params object[] args)
-        {
+        void ITrace.Error(string messageOrFormat, params object[] args) => 
             Error(messageOrFormat, args);
-        }
 
-        void ITrace.Warning(string messageOrFormat, params object[] args)
-        {
+        void ITrace.Warning(string messageOrFormat, params object[] args) => 
             Warning(messageOrFormat, args);
-        }
 
-        void ITrace.Information(string messageOrFormat, params object[] args)
-        {
+        void ITrace.Information(string messageOrFormat, params object[] args) => 
             Information(messageOrFormat, args);
-        }
 
-        void ITrace.Verbose(string messageOrFormat, params object[] args)
-        {
+        void ITrace.Verbose(string messageOrFormat, params object[] args) => 
             Verbose(messageOrFormat, args);
-        }
 
-        void ITrace.TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
-        {
+        void ITrace.TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args) => 
             TraceEvent(eventType, messageOrFormat, args);
-        }
 
-        int ITrace.Indent()
-        {
-            return Indent();
-        }
+        int ITrace.Indent() => Indent();
 
         int ITrace.IndentLevel
         {
@@ -166,9 +142,6 @@ namespace Wyam.Common.Tracing
             set { IndentLevel = value; }
         }
 
-        IIndentedTraceEvent ITrace.WithIndent()
-        {
-            return WithIndent();
-        }
+        IIndentedTraceEvent ITrace.WithIndent() => WithIndent();
     }
 }

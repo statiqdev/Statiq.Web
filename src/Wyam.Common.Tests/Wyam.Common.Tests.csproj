@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="DocumentCollectionExtensionsFixture.cs" />
     <Compile Include="PathHelperFixture.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />    
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
@@ -60,6 +60,10 @@
     <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

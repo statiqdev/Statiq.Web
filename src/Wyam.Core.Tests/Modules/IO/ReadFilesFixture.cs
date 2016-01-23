@@ -10,11 +10,12 @@ using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
-    public class ReadFilesFixture
+    public class ReadFilesFixture : TraceListenerFixture
     {        
         [Test]
         public void ThrowsOnNullPathFunction()

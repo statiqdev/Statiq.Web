@@ -7,12 +7,13 @@ using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class GroupByFixture
+    public class GroupByFixture : TraceListenerFixture
     {
         [Test]
         public void GroupBySetsCorrectMetadata()

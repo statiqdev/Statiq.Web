@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
+using Wyam.Testing;
 using Trace = Wyam.Core.Modules.Extensibility.Trace;
 
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class TraceFixture
+    public class TraceFixture : TraceListenerFixture
     {
         [TestCase(TraceEventType.Critical)]
         [TestCase(TraceEventType.Error)]

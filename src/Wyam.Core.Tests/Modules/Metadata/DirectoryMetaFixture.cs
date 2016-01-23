@@ -8,12 +8,13 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Modules.Metadata;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class DirectoryMetaFixture
+    public class DirectoryMetaFixture : TraceListenerFixture
     {
         [Test]
         public void MetadataObjectsAreFiltered()

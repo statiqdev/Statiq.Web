@@ -7,12 +7,13 @@ using Wyam.Core.Documents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class FrontMatterFixture
+    public class FrontMatterFixture : TraceListenerFixture
     {
         [Test]
         public void DefaultCtorSplitsAtDashes()
