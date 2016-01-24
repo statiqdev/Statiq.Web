@@ -52,6 +52,12 @@ namespace Wyam.Common.IO
         void Delete();
 
         /// <summary>
+        /// Reads all text from the file.
+        /// </summary>
+        /// <returns></returns>
+        string ReadAllText();
+
+        /// <summary>
         /// Opens the file using the specified options.
         /// </summary>
         /// <param name="fileMode">The file mode.</param>

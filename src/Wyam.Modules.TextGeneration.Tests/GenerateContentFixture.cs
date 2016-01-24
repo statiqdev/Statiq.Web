@@ -10,11 +10,12 @@ using NSubstitute;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.TextGeneration.Tests
 {
     [TestFixture]
-    public class GenerateContentFixture
+    public class GenerateContentFixture : TraceListenerFixture
     {
         [Test]
         public void GeneratingContentFromStringTemplateSetsContent()

@@ -9,11 +9,12 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Git.Tests
 {
     [TestFixture]
-    public class GitContributorsFixture
+    public class GitContributorsFixture : TraceListenerFixture
     {
         [Test]
         public void GetAllContributorsFromInputPath()

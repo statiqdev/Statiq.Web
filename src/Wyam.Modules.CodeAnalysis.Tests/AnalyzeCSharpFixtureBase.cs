@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Testing;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
-    public abstract class AnalyzeCSharpFixtureBase
+    public abstract class AnalyzeCSharpFixtureBase : TraceListenerFixture
     {
         protected IDocument GetResult(List<IDocument> results, string name)
         {

@@ -1,4 +1,4 @@
-Metadata["Hostname"] = "http://www.example.com";
+InitialMetadata["Hostname"] = "http://www.example.com";
 
 Pipelines.Add("Posts",
 	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
@@ -13,7 +13,7 @@ Pipelines.Add("Posts",
 );
 
 Pipelines.Add("Home",
-	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => Path.GetFileName(x)[0] != '_'),
+	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
 	Razor(),
 	WriteFiles(".html"),
 	// add all sites to the sitemap, except the about page

@@ -10,11 +10,12 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Git.Tests
 {
     [TestFixture]
-    public class GitCommitsFixture
+    public class GitCommitsFixture : TraceListenerFixture
     {
         [Test]
         public void GetAllCommitsFromInputPath()

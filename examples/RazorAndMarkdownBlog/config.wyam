@@ -10,7 +10,7 @@ Pipelines.Add("Posts",
 );
 
 Pipelines.Add("Home",
-	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => Path.GetFileName(x)[0] != '_'),
+	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
 	Razor(),
 	WriteFiles(".html")
 );

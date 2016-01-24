@@ -8,12 +8,13 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Json.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class GenerateJsonFixture
+    public class GenerateJsonFixture : TraceListenerFixture
     {
         private class Account
         {

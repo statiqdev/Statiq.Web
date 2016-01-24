@@ -10,12 +10,13 @@ using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Common.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class DocumentCollectionExtensionsFixture
+    public class DocumentCollectionExtensionsFixture : TraceListenerFixture
     {
         [Test]
         public void ToLookupOfIntReturnsCorrectLookup()

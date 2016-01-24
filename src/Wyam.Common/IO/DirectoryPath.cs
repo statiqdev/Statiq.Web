@@ -54,17 +54,6 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A combination of the current path and the provided <see cref="FilePath"/>.</returns>
-        public FilePath Combine(FilePath path)
-        {
-            return CombineFile(path);
-        }
-
-        /// <summary>
-        /// Combines the current path with a <see cref="FilePath"/>.
-        /// The provided <see cref="FilePath"/> must be relative.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>A combination of the current path and the provided <see cref="FilePath"/>.</returns>
         public FilePath CombineFile(FilePath path)
         {
             if (path == null)
@@ -72,17 +61,6 @@ namespace Wyam.Common.IO
                 throw new ArgumentNullException(nameof(path));
             }
             return !path.IsRelative ? path : new FilePath(System.IO.Path.Combine(FullPath, path.FullPath));
-        }
-
-        /// <summary>
-        /// Combines the current path with another <see cref="DirectoryPath"/>.
-        /// The provided <see cref="DirectoryPath"/> must be relative.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>A combination of the current path and the provided <see cref="DirectoryPath"/>.</returns>
-        public DirectoryPath Combine(DirectoryPath path)
-        {
-            return CombineDirectory(path);
         }
 
         /// <summary>

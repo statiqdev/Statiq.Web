@@ -52,6 +52,9 @@ namespace Wyam.Core.IO
 
         public void Delete() => FileSystem.Retry(() => _file.Delete());
 
+        public string ReadAllText() =>
+            FileSystem.Retry(() => System.IO.File.ReadAllText(_file.FullName));
+
         public Stream Open(FileMode fileMode) =>
             FileSystem.Retry(() => _file.Open(fileMode));
 

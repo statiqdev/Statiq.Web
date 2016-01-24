@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Tracing;
 using Wyam.Core;
+using Wyam.Testing;
 
 namespace Wyam.Examples.Tests
 {
     namespace Wyam.Examples.Tests
     {
         [TestFixture(Category = "ExcludeFromAppVeyor")]
-        public class ExamplesFixture
+        public class ExamplesFixture : TraceListenerFixture
         {
             private static IEnumerable<string> _paths;
 
@@ -42,9 +43,8 @@ namespace Wyam.Examples.Tests
             [TestCaseSource(typeof(ExamplesFixture), nameof(Paths))]
             public void ExecuteAllExamples(string example)
             {
-                Trace.AddListener(new TestTraceListener());
                 Engine engine = new Engine();
-                engine.RootFolder = example;
+                engine.FileSystem.RootPath = example;
                 engine.Config.Assemblies.LoadDirectory(TestContext.CurrentContext.TestDirectory);
                 string config = Path.Combine(example, "config.wyam");
                 if (File.Exists(config))

@@ -8,11 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Tables.Tests
 {
     [TestFixture]
-    public class ExcelToCsvFixture
+    public class ExcelToCsvFixture : TraceListenerFixture
     {
 
         [Test]

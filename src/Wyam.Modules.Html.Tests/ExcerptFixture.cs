@@ -8,12 +8,13 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Html.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ExcerptFixture
+    public class ExcerptFixture : TraceListenerFixture
     {
         [Test]
         public void ExcerptFirstParagraph()

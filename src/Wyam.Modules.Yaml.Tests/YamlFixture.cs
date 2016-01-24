@@ -10,13 +10,14 @@ using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Testing;
 using YamlDotNet.Dynamic;
 
 namespace Wyam.Modules.Yaml.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class YamlFixture
+    public class YamlFixture : TraceListenerFixture
     {
         [Test]
         public void SetsMetadataKey()

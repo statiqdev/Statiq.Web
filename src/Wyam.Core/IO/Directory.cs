@@ -37,7 +37,7 @@ namespace Wyam.Core.IO
 
         public IFile GetFile(FilePath path)
         {
-            return new File(_path.Combine(path).Collapse());
+            return new File(_path.CombineFile(path).Collapse());
         }
     }
 }

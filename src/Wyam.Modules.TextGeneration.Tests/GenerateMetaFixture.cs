@@ -10,11 +10,12 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.TextGeneration.Tests
 {
     [TestFixture]
-    public class GenerateMetaFixture
+    public class GenerateMetaFixture : TraceListenerFixture
     {
         [Test]
         public void GeneratingMetadataFromStringTemplateSetsContent()

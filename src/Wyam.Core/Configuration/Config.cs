@@ -147,18 +147,24 @@ namespace Wyam.Core.Configuration
                     _assemblyManager.Initialize(_assemblyCollection, _packages, _fileSystem);
                     moduleTypes = _assemblyManager.GetModuleTypes();
                 }
-                
+
                 using (Trace.WithIndent().Verbose("Evaluating configuration script"))
                 {
-                    _configScript = new ConfigScript(configParts.Declarations, configParts.Config, moduleTypes, _assemblyManager.Namespaces);
+                    _configScript = new ConfigScript(configParts.Declarations, configParts.Config, moduleTypes,
+                        _assemblyManager.Namespaces);
                     OutputScript(ConfigScript.AssemblyName, _configScript.Code);
                     _configScript.Compile(_assemblyManager.Assemblies);
                     _configScript.Invoke(_initialMetadata, _pipelines, _fileSystem);
                 }
             }
+            catch (TargetInvocationException ex)
+            {
+                Trace.Error("Error during configuration evaluation: {0}", ex.InnerException.Message);
+                throw;
+            }
             catch (Exception ex)
             {
-                Trace.Error("Unexpected error during configuration evaluation: {0}", ex.Message);
+                Trace.Error("Error during configuration evaluation: {0}", ex.Message);
                 throw;
             }
         }

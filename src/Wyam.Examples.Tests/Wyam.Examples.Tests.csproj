@@ -49,7 +49,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="TestTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
@@ -95,6 +94,10 @@
     <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Modules.Yaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -10,12 +10,13 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Json.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class JsonFixture
+    public class JsonFixture : TraceListenerFixture
     {
         private static string JsonContent = @"{
   ""Email"": ""james@example.com"",

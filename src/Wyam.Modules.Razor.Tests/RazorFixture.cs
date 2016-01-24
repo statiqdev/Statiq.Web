@@ -15,11 +15,12 @@ using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Razor.Tests
 {
     [TestFixture]
-    public class RazorFixture
+    public class RazorFixture : TraceListenerFixture
     {
         [Test]
         public void SimpleTemplate()

@@ -56,7 +56,7 @@ namespace Wyam.Common.IO
         /// current input paths.
         /// </param>
         /// <returns>An input file.</returns>
-        IFile GetInput(FilePath path);
+        IFile GetInputFile(FilePath path);
 
         /// <summary>
         /// Gets a directory representing an input.
@@ -68,7 +68,7 @@ namespace Wyam.Common.IO
         /// current input paths.
         /// </param>
         /// <returns>An input directory.</returns>
-        IDirectory GetInput(DirectoryPath path);
+        IDirectory GetInputDirectory(DirectoryPath path);
 
         /// <summary>
         /// Gets a file representing an output.
@@ -80,7 +80,7 @@ namespace Wyam.Common.IO
         /// current output path.
         /// </param>
         /// <returns>An output file.</returns>
-        IFile GetOutput(FilePath path);
+        IFile GetOutputFile(FilePath path);
 
         /// <summary>
         /// Gets a directory representing an output.
@@ -92,7 +92,7 @@ namespace Wyam.Common.IO
         /// current output path.
         /// </param>
         /// <returns>An output directory.</returns>
-        IDirectory GetOutput(DirectoryPath path);
+        IDirectory GetOutputDirectory(DirectoryPath path);
 
         /// <summary>
         /// Gets a file representing a root file.
@@ -104,7 +104,7 @@ namespace Wyam.Common.IO
         /// current root path.
         /// </param>
         /// <returns>A root file.</returns>
-        IFile GetRoot(FilePath path);
+        IFile GetRootFile(FilePath path);
 
         /// <summary>
         /// Gets a directory representing a root directory.
@@ -116,7 +116,7 @@ namespace Wyam.Common.IO
         /// current root path.
         /// </param>
         /// <returns>A root directory.</returns>
-        IDirectory GetRoot(DirectoryPath path);
+        IDirectory GetRootDirectory(DirectoryPath path);
 
         /// <summary>
         /// Gets an absolute file.
@@ -125,7 +125,7 @@ namespace Wyam.Common.IO
         /// The absolute path of the file.
         /// </param>
         /// <returns>A file.</returns>
-        IFile Get(FilePath path);
+        IFile GetFile(FilePath path);
 
         /// <summary>
         /// Gets an absolute directory.
@@ -134,6 +134,6 @@ namespace Wyam.Common.IO
         /// The absolute path of the directory.
         /// </param>
         /// <returns>A directory.</returns>
-        IDirectory Get(DirectoryPath path);
+        IDirectory GetDirectory(DirectoryPath path);
     }
 }

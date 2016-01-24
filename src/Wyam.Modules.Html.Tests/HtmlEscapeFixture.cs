@@ -9,12 +9,13 @@ using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Html.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class HtmlEscapeFixture
+    public class HtmlEscapeFixture : TraceListenerFixture
     {
         [Test]
         public void NoReplacementReturnsSameDocument()

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Testing;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
-    public class WrappingStringBuilderFixture
+    public class WrappingStringBuilderFixture : TraceListenerFixture
     {
         [Test]
         public void DoesNotWrapIfNoBreakpoints()

@@ -38,7 +38,7 @@ namespace Wyam.Core.NuGet
             // On package install...
             packageManager.PackageInstalled += (sender, args) =>
             {
-                IDirectory packageContentDirectory = fileSystem.GetRoot(contentPath.CombineDirectory(args.Package.Id));
+                IDirectory packageContentDirectory = fileSystem.GetRootDirectory(contentPath.CombineDirectory(args.Package.Id));
 
                 // Copy all content files on install and add to input paths
                 bool firstFile = true;
@@ -64,7 +64,7 @@ namespace Wyam.Core.NuGet
             // On package uninstall...
             packageManager.PackageUninstalling += (sender, args) =>
             {
-                IDirectory packageContentDirectory = fileSystem.GetRoot(contentPath.CombineDirectory(args.Package.Id));
+                IDirectory packageContentDirectory = fileSystem.GetRootDirectory(contentPath.CombineDirectory(args.Package.Id));
                 packageContentDirectory.Delete(true);
             };
 

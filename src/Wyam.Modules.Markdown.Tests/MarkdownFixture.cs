@@ -9,12 +9,13 @@ using System.IO;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Testing;
 
 namespace Wyam.Modules.Markdown.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class MarkdownFixture
+    public class MarkdownFixture : TraceListenerFixture
     {
         [Test]
         public void RendersMarkdown()

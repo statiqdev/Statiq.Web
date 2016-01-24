@@ -7,11 +7,12 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
 using Wyam.Modules.Xmp;
+using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules
 {
     [TestFixture]
-    public class XmpFixture
+    public class XmpFixture : TraceListenerFixture
     {
         [Test]
         public void ReadMetadata()
