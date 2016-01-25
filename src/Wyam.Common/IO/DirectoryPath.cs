@@ -69,7 +69,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A combination of the current path and the provided <see cref="DirectoryPath"/>.</returns>
-        public DirectoryPath CombineDirectory(DirectoryPath path)
+        public DirectoryPath Combine(DirectoryPath path)
         {
             if (path == null)
             {

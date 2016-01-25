@@ -41,7 +41,7 @@ namespace Wyam.Core.NuGet
             }
         }
 
-        private string AbsolutePackagesPath => _fileSystem.RootPath.CombineDirectory(PackagesPath).Collapse().FullPath;
+        private string AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse().FullPath;
 
         public DirectoryPath ContentPath
         {

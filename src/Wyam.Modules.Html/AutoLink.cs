@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common;
 using Wyam.Common.Configuration;

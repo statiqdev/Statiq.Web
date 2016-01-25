@@ -9,9 +9,12 @@ namespace Wyam.Testing
     {
         public string TestId { get; private set; }
 
+        public TraceEventType ThrowTraceEventType { get; set; }
+
         public TestTraceListener(string testId)
         {
             TestId = testId;
+            ThrowTraceEventType = TraceEventType.Warning;
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
@@ -26,10 +29,7 @@ namespace Wyam.Testing
 
         private void ThrowOnErrorOrWarning(TraceEventType eventType, string message)
         {
-            if (TestContext.CurrentContext.Test.ID == TestId
-                && (eventType == TraceEventType.Critical
-                || eventType == TraceEventType.Error
-                || eventType == TraceEventType.Warning))
+            if (TestContext.CurrentContext.Test.ID == TestId && eventType <= ThrowTraceEventType)
             {
                 throw new Exception(message);
             }

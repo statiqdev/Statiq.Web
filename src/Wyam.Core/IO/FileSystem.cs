@@ -51,11 +51,11 @@ namespace Wyam.Core.IO
 
         public IFile GetInputFile(FilePath path) =>
             path.IsRelative ? GetInput(inputPath => 
-                new File(RootPath.CombineDirectory(inputPath).CombineFile(path).Collapse())) : new File(path);
+                new File(RootPath.Combine(inputPath).CombineFile(path).Collapse())) : new File(path);
 
         public IDirectory GetInputDirectory(DirectoryPath path) =>
             path.IsRelative ? GetInput(inputPath => 
-                new Directory(RootPath.CombineDirectory(inputPath).CombineDirectory(path).Collapse())) : new Directory(path);
+                new Directory(RootPath.Combine(inputPath).Combine(path).Collapse())) : new Directory(path);
 
         private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemInfo
         {
@@ -80,16 +80,16 @@ namespace Wyam.Core.IO
         }
 
         public IFile GetOutputFile(FilePath path) =>
-            new File(RootPath.CombineDirectory(OutputPath).CombineFile(path).Collapse());
+            new File(RootPath.Combine(OutputPath).CombineFile(path).Collapse());
 
         public IDirectory GetOutputDirectory(DirectoryPath path) =>
-            new Directory(RootPath.CombineDirectory(OutputPath).CombineDirectory(path).Collapse());
+            new Directory(RootPath.Combine(OutputPath).Combine(path).Collapse());
 
         public IFile GetRootFile(FilePath path) =>
             new File(RootPath.CombineFile(path).Collapse());
 
         public IDirectory GetRootDirectory(DirectoryPath path) =>
-            new Directory(RootPath.CombineDirectory(path).Collapse());
+            new Directory(RootPath.Combine(path).Collapse());
 
         public IFile GetFile(FilePath path)
         {

@@ -1,6 +1,20 @@
+# 0.11.2
+
+- Feature - **Breaking change**: Implemented new IO framework and replaced all uses of strings for passing path information with new IO classes, `Engine.RootFolder`, `Engine.InputFolder`, and `Engine.OutputFolder` are now replaced by `IFileSystem.RootPath`, `IFileSystem.InputPaths`, `IFileSystem.OutputPath` (#123)
+- Refactoring - **Breaking change**: Changed `Trace` to a static class to better support forthcoming parallel pipeline processing
+- Refactoring - **Breaking change**: `Metadata` property in config file renamed to `InitialMetadata` to distinguish from run-time metadata
+- Refactoring - Removed the need to pass `Engine` to many core classes since it was just needed for the `Trace` instance (which is now static)
+- Refactoring - Split internal configuration classes for better separation of concerns and testability
+- Refactoring - Added Wyam.Testing library with common testing classes
+- Refactoring - Reorganized tests to better follow a specific convention
+- Refactoring - Changed color of critical errors in the console to white on a red background for better readability (#182)
+- Refactoring - Changed model type of Razor pages to `IDocument` instead of `IMetadata` (#188)
+- Refactoring - Uncaught exceptions now cancel the build (#187)
+
+
 # 0.11.1
 
-- Refactoring - Changed the name of the release file from **wyam.zip** to **wyam-[verson].zip** - *note that this is a breaking change if you download the release zip from a continuous integration script*
+- Refactoring - **Breaking change**: Changed the name of the release file from **wyam.zip** to **wyam-[verson].zip**
 - Fix - Namespaces are now added for `Engine.Configure()` calls without a script (#147 and #148, thanks @heavenwing)
 - Fix - CopyFiles was no returning a sequence for invalid folders (#166)
 - Fix - Better documentation and small bug fixes for CopyFiles (#158)

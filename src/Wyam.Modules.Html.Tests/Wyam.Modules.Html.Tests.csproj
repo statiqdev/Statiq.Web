@@ -49,10 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlEscapeFixture.cs" />
-    <Compile Include="AutoLinkFixture.cs" />
-    <Compile Include="ExcerptFixture.cs" />
-    <Compile Include="HtmlQueryFixture.cs" />
+    <Compile Include="HtmlEscapeClassTests.cs" />
+    <Compile Include="AutoLinkClassTests.cs" />
+    <Compile Include="ExcerptClassTests.cs" />
+    <Compile Include="HtmlQueryClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>

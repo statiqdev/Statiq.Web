@@ -55,7 +55,7 @@
     <Compile Include="CountModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestTraceListener.cs" />
-    <Compile Include="TraceListenerFixture.cs" />
+    <Compile Include="BaseFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

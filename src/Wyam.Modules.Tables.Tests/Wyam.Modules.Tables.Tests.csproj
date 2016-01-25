@@ -48,8 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CsvToHtmlFixture.cs" />
-    <Compile Include="ExcelToCsvFixture.cs" />
+    <Compile Include="CsvToHtmlClassTests.cs" />
+    <Compile Include="ExcelToCsvClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>

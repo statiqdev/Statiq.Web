@@ -49,8 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenerateContentFixture.cs" />
-    <Compile Include="GenerateMetaFixture.cs" />
+    <Compile Include="GenerateContentClassTests.cs" />
+    <Compile Include="GenerateMetaClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
