@@ -82,7 +82,7 @@ namespace Wyam.Common.IO
         /// Collapses a <see cref="DirectoryPath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="DirectoryPath"/>.</returns>
-        public DirectoryPath Collapse() => new DirectoryPath(CollapsePath());
+        public DirectoryPath Collapse() => new DirectoryPath(Collapse(this));
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.

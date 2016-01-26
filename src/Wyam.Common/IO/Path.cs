@@ -105,18 +105,15 @@ namespace Wyam.Common.IO
         /// </returns>
         public override string ToString() => FullPath;
 
-        public override bool Equals(object obj)
+        internal static string Collapse(Path path)
         {
-            Path other = obj as Path;
-            return other != null && GetType() == other.GetType() && other.FullPath == FullPath;
-        }
-
-        public override int GetHashCode() => (GetType() + FullPath).GetHashCode();
-
-        protected string CollapsePath()
-        {
-            var stack = new Stack<string>();
-            foreach (var segment in Segments)
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            Stack<string> stack = new Stack<string>();
+            string[] segments = path.FullPath.Split('/', '\\');
+            foreach (string segment in segments)
             {
                 if (segment == "..")
                 {

@@ -115,7 +115,6 @@
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
-    <Compile Include="IO\DirectoryPathCollection.cs" />
     <Compile Include="Modules\IO\Download.cs" />
     <Compile Include="Modules\Metadata\DirectoryMeta.cs" />
     <Compile Include="Modules\IO\RequestHeader.cs" />

@@ -12,6 +12,8 @@ namespace Wyam.Core.IO
     // Initially based on code from Cake (http://cakebuild.net/)
     internal sealed class FileSystem : IConfigurableFileSystem
     {
+        public bool IsCaseSensitive { get; set; }
+
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
         private DirectoryPath _outputPath = "output";
         
@@ -32,7 +34,7 @@ namespace Wyam.Core.IO
             }
         }
 
-        public IDirectoryPathCollection InputPaths { get; } = new DirectoryPathCollection { "input" };
+        public PathCollection<DirectoryPath> InputPaths { get; private set; }
 
         IReadOnlyList<DirectoryPath> IFileSystem.InputPaths => InputPaths;
 
@@ -107,6 +109,15 @@ namespace Wyam.Core.IO
                 throw new ArgumentException("The path must be absolute");
             }
             return new Directory(path.Collapse());
+        }
+
+        public FileSystem()
+        {
+            InputPaths = new PathCollection<DirectoryPath>(
+                new[]
+                {
+                    DirectoryPath.FromString("input")
+                }, new PathComparer(this));
         }
 
         // *** Retry logic (used by File and Directory)

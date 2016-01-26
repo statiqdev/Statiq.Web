@@ -15,6 +15,14 @@ namespace Wyam.Common.IO
     public interface IFileSystem
     {
         /// <summary>
+        /// Gets a value indicating whether the file system is case sensitive.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the file system is case sensitive; otherwise, <c>false</c>.
+        /// </value>
+        bool IsCaseSensitive { get; }
+
+        /// <summary>
         /// Gets the root path.
         /// </summary>
         /// <value>

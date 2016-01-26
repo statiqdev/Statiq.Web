@@ -9,7 +9,6 @@ using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Testing
 {
-    [TestFixture]
     public abstract class BaseFixture
     {
         [SetUp]

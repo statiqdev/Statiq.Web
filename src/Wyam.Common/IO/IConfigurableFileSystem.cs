@@ -9,8 +9,9 @@ namespace Wyam.Common.IO
 {
     public interface IConfigurableFileSystem : IFileSystem
     {
+        new bool IsCaseSensitive { get; set; }
         new DirectoryPath RootPath { get; set; }
-        new IDirectoryPathCollection InputPaths { get; }
+        new PathCollection<DirectoryPath> InputPaths { get; }
         new DirectoryPath OutputPath { get; set; }
     }
 }
