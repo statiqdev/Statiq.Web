@@ -122,8 +122,8 @@ namespace Wyam.Core.IO
 
         // *** Retry logic (used by File and Directory)
 
-        private static readonly TimeSpan InitialInterval = TimeSpan.FromMilliseconds(200);
-        private static readonly TimeSpan IntervalDelta = TimeSpan.FromMilliseconds(200);
+        private static readonly TimeSpan InitialInterval = TimeSpan.FromMilliseconds(100);
+        private static readonly TimeSpan IntervalDelta = TimeSpan.FromMilliseconds(100);
         
         private const int RetryCount = 3;
 

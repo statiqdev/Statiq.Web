@@ -105,18 +105,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnalyzeCSharpClassBaseFixture.cs" />
-    <Compile Include="AnalyzeCSharpClassMethodsTests.cs" />
-    <Compile Include="AnalyzeCSharpClassNamespacesTests.cs" />
-    <Compile Include="AnalyzeCSharpClassSyntaxTests.cs" />
-    <Compile Include="AnalyzeCSharpClassTypesTests.cs" />
-    <Compile Include="AnalyzeCSharpClassXmlDocumentationTests.cs" />
+    <Compile Include="AnalyzeCSharpBaseFixture.cs" />
+    <Compile Include="AnalyzeCSharpMethodsTests.cs" />
+    <Compile Include="AnalyzeCSharpNamespacesTests.cs" />
+    <Compile Include="AnalyzeCSharpSyntaxTests.cs" />
+    <Compile Include="AnalyzeCSharpTypesTests.cs" />
+    <Compile Include="AnalyzeCSharpXmlDocumentationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="TestDocument.cs" />
-    <Compile Include="WrappingStringBuilderClassTests.cs" />
+    <Compile Include="WrappingStringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">

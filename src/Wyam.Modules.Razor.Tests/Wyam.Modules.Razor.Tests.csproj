@@ -55,7 +55,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="RazorClassTests.cs" />
+    <Compile Include="RazorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

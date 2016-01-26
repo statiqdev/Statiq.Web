@@ -59,7 +59,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="YamlClassTests.cs" />
+    <Compile Include="YamlTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

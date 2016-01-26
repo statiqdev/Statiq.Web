@@ -45,12 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocumentCollectionExtensionsClassTests.cs" />
-    <Compile Include="IO\DirectoryPathClassTests.cs" />
-    <Compile Include="IO\FilePathClassTests.cs" />
-    <Compile Include="IO\PathClassTests.cs" />
-    <Compile Include="IO\PathCollectionClassTests.cs" />
-    <Compile Include="IO\PathComparerClassTests.cs" />
+    <Compile Include="DocumentCollectionExtensionsTests.cs" />
+    <Compile Include="IO\DirectoryPathTests.cs" />
+    <Compile Include="IO\FilePathTests.cs" />
+    <Compile Include="IO\PathTests.cs" />
+    <Compile Include="IO\PathCollectionTests.cs" />
+    <Compile Include="IO\PathComparerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
