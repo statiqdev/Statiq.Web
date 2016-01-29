@@ -19,7 +19,8 @@ namespace Wyam.Core.Pipelines
     {
         private ConcurrentBag<Document> _clonedDocuments = new ConcurrentBag<Document>();
         private readonly List<IModule> _modules = new List<IModule>();
-        private readonly HashSet<string> _documentSources = new HashSet<string>(); 
+        private readonly ConcurrentDictionary<string, byte> _documentSources 
+            = new ConcurrentDictionary<string, byte>();                             // Hacky workaround for the lack of a ConcurrentHashSet<T>
         private readonly Cache<List<Document>>  _previouslyProcessedCache;
         private readonly Dictionary<string, List<Document>> _processedSources; 
         private bool _disposed;
@@ -250,7 +251,7 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ArgumentException(nameof(source));
             }
-            if (!_documentSources.Add(source))
+            if (!_documentSources.TryAdd(source, default(byte)))
             {
                 throw new ArgumentException("Document source must be unique within the pipeline: " + source);
             }
