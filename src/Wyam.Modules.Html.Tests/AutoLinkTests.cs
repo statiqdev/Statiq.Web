@@ -98,7 +98,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -146,7 +146,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -192,7 +192,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -238,7 +238,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -284,7 +284,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -331,7 +331,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -380,7 +380,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -427,7 +427,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -474,7 +474,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -521,7 +521,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -567,7 +567,7 @@ namespace Wyam.Modules.Html.Tests
 
                 // Then
                 document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                document.Received().Clone(output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
         }
