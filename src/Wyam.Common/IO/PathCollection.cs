@@ -68,7 +68,11 @@ namespace Wyam.Common.IO
         /// </value>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public TPath this[int index] => _paths[index];
+        public TPath this[int index]
+        {
+            get { return _paths[index]; }
+            set { _paths[index] = value; }
+        }
 
         /// <summary>
         /// Adds the specified path to the collection.

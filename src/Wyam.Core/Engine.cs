@@ -66,53 +66,45 @@ namespace Wyam.Core
         private string _inputFolder = "Input";
         private string _outputFolder = "Output";
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string RootFolder
         {
-            get { return _rootFolder; }
+            get { return PathHelper.NormalizePath(FileSystem.GetRootDirectory().Path.FullPath); }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException(nameof(value));
+                    throw new ArgumentException("RootFolder");
                 }
-                _rootFolder = System.IO.Path.GetFullPath(PathHelper.NormalizePath(value));
+                FileSystem.RootPath = value;
             }
         }
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string InputFolder
         {
-            get
-            {
-                // Calculate this each time in case the root folder changes after setting it
-                return System.IO.Path.GetFullPath(System.IO.Path.Combine(RootFolder, PathHelper.NormalizePath(_inputFolder)));
-            }
+            get { return PathHelper.NormalizePath(FileSystem.GetInputDirectories().First().Path.FullPath); }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException(nameof(value));
+                    throw new ArgumentException("InputFolder");
                 }
-                _inputFolder = PathHelper.NormalizePath(value);;
+                FileSystem.InputPaths[0] = value;
             }
         }
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string OutputFolder
         {
-            get
-            {
-                // Calculate this each time in case the root folder changes after setting it
-                return System.IO.Path.GetFullPath(System.IO.Path.Combine(RootFolder, PathHelper.NormalizePath(_outputFolder)));
-            }
+            get { return PathHelper.NormalizePath(FileSystem.GetOutputDirectory().Path.FullPath); }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentException("OutputFolder");
                 }
-                _outputFolder = PathHelper.NormalizePath(value);
+                FileSystem.OutputPath = value;
             }
         }
 

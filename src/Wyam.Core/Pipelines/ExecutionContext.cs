@@ -34,13 +34,13 @@ namespace Wyam.Core.Pipelines
 
         public IDocumentCollection Documents => Engine.Documents;
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string RootFolder => Engine.RootFolder;
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string InputFolder => Engine.InputFolder;
 
-        [Obsolete]
+        [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string OutputFolder => Engine.OutputFolder;
 
         public IFileSystem FileSystem => Engine.FileSystem;
