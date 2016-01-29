@@ -11,11 +11,11 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Provides properties and instance methods for working with paths.
     /// </summary>
-    public abstract class Path
+    public abstract class NormalizedPath
     {
         private static readonly char[] InvalidPathCharacters;
 
-        static Path()
+        static NormalizedPath()
         {
             InvalidPathCharacters = System.IO.Path.GetInvalidPathChars().Concat(new[] { '*', '?' }).ToArray();
         }
@@ -43,10 +43,10 @@ namespace Wyam.Common.IO
         public string[] Segments { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Path"/> class.
+        /// Initializes a new instance of the <see cref="NormalizedPath"/> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        protected Path(string path)
+        protected NormalizedPath(string path)
         {
             if (path == null)
             {
@@ -105,7 +105,7 @@ namespace Wyam.Common.IO
         /// </returns>
         public override string ToString() => FullPath;
 
-        internal static string Collapse(Path path)
+        internal static string Collapse(NormalizedPath path)
         {
             if (path == null)
             {

@@ -23,6 +23,14 @@ namespace Wyam.Common.IO
         bool IsCaseSensitive { get; }
 
         /// <summary>
+        /// Gets the default path comparer for this file system.
+        /// </summary>
+        /// <value>
+        /// The default path comparer for this file system.
+        /// </value>
+        PathComparer PathComparer { get; }
+
+        /// <summary>
         /// Gets the root path.
         /// </summary>
         /// <value>
@@ -79,6 +87,12 @@ namespace Wyam.Common.IO
         IDirectory GetInputDirectory(DirectoryPath path);
 
         /// <summary>
+        /// Gets all absolute input directories.
+        /// </summary>
+        /// <returns>The absolute input directories.</returns>
+        IReadOnlyList<IDirectory> GetInputDirectories();
+
+        /// <summary>
         /// Gets a file representing an output.
         /// </summary>
         /// <param name="path">
@@ -103,6 +117,12 @@ namespace Wyam.Common.IO
         IDirectory GetOutputDirectory(DirectoryPath path);
 
         /// <summary>
+        /// Gets the absolute output directory.
+        /// </summary>
+        /// <returns>The absolute output directory.</returns>
+        IDirectory GetOutputDirectory();
+
+        /// <summary>
         /// Gets a file representing a root file.
         /// </summary>
         /// <param name="path">
@@ -125,6 +145,12 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>A root directory.</returns>
         IDirectory GetRootDirectory(DirectoryPath path);
+
+        /// <summary>
+        /// Gets the absolute directory.
+        /// </summary>
+        /// <returns>The absolute root directory.</returns>
+        IDirectory GetRootDirectory();
 
         /// <summary>
         /// Gets an absolute file.

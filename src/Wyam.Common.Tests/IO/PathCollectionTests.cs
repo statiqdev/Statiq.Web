@@ -14,34 +14,34 @@ namespace Wyam.Common.Tests.IO
     //[TestFixture(typeof(DirectoryPath))]
     //[TestFixture(typeof(FilePath))]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class PathCollectionTests<TPath> : BaseFixture where TPath : Path
+    public class PathCollectionTests<TPath> : BaseFixture where TPath : NormalizedPath
     {
-        private readonly TPath upperCaseA;
-        private readonly TPath lowerCaseA;
-        private readonly TPath upperCaseB;
-        private readonly TPath lowerCaseB;
-        private readonly TPath upperCaseC;
-        private readonly TPath lowerCaseC;
+        private readonly TPath _upperCaseA;
+        private readonly TPath _lowerCaseA;
+        private readonly TPath _upperCaseB;
+        private readonly TPath _lowerCaseB;
+        private readonly TPath _upperCaseC;
+        private readonly TPath _lowerCaseC;
 
         public PathCollectionTests()
         {
             if (typeof(TPath) == typeof(DirectoryPath))
             {
-                upperCaseA = (TPath)(Path)new DirectoryPath("A");
-                lowerCaseA = (TPath)(Path)new DirectoryPath("a");
-                upperCaseB = (TPath)(Path)new DirectoryPath("B");
-                lowerCaseB = (TPath)(Path)new DirectoryPath("b");
-                upperCaseC = (TPath)(Path)new DirectoryPath("C");
-                lowerCaseC = (TPath)(Path)new DirectoryPath("c");
+                _upperCaseA = (TPath)(NormalizedPath)new DirectoryPath("A");
+                _lowerCaseA = (TPath)(NormalizedPath)new DirectoryPath("a");
+                _upperCaseB = (TPath)(NormalizedPath)new DirectoryPath("B");
+                _lowerCaseB = (TPath)(NormalizedPath)new DirectoryPath("b");
+                _upperCaseC = (TPath)(NormalizedPath)new DirectoryPath("C");
+                _lowerCaseC = (TPath)(NormalizedPath)new DirectoryPath("c");
             }
             else if (typeof(TPath) == typeof(FilePath))
             {
-                upperCaseA = (TPath)(Path)new FilePath("A.txt");
-                lowerCaseA = (TPath)(Path)new FilePath("a.txt");
-                upperCaseB = (TPath)(Path)new FilePath("B.txt");
-                lowerCaseB = (TPath)(Path)new FilePath("b.txt");
-                upperCaseC = (TPath)(Path)new FilePath("C.txt");
-                lowerCaseC = (TPath)(Path)new FilePath("c.txt");
+                _upperCaseA = (TPath)(NormalizedPath)new FilePath("A.txt");
+                _lowerCaseA = (TPath)(NormalizedPath)new FilePath("a.txt");
+                _upperCaseB = (TPath)(NormalizedPath)new FilePath("B.txt");
+                _lowerCaseB = (TPath)(NormalizedPath)new FilePath("b.txt");
+                _upperCaseC = (TPath)(NormalizedPath)new FilePath("C.txt");
+                _lowerCaseC = (TPath)(NormalizedPath)new FilePath("c.txt");
             }
             else
             {
@@ -69,7 +69,7 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { upperCaseA, upperCaseB },
+                    new [] { _upperCaseA, _upperCaseB },
                     new PathComparer(false));
 
                 // When, Then
@@ -84,10 +84,10 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(false));
-                collection.Add(upperCaseB);
+                collection.Add(_upperCaseB);
 
                 // When
-                collection.Add(upperCaseA);
+                collection.Add(_upperCaseA);
 
                 // Then
                 Assert.AreEqual(2, collection.Count);
@@ -100,10 +100,10 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(caseSensitive));
-                collection.Add(upperCaseA);
+                collection.Add(_upperCaseA);
 
                 // When
-                collection.Add(lowerCaseA);
+                collection.Add(_lowerCaseA);
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);
@@ -117,11 +117,11 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new[] { upperCaseA, upperCaseB }, 
+                    new[] { _upperCaseA, _upperCaseB }, 
                     new PathComparer(false));
 
                 // When
-                collection.AddRange(new[] { upperCaseA, upperCaseB, upperCaseC });
+                collection.AddRange(new[] { _upperCaseA, _upperCaseB, _upperCaseC });
 
                 // Then
                 Assert.AreEqual(3, collection.Count);
@@ -134,11 +134,11 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { upperCaseA, upperCaseB }, 
+                    new [] { _upperCaseA, _upperCaseB }, 
                     new PathComparer(caseSensitive));
 
                 // When
-                collection.AddRange(new [] { lowerCaseA, lowerCaseB, lowerCaseC });
+                collection.AddRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);
@@ -154,10 +154,10 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(caseSensitive));
-                collection.Add(upperCaseA);
+                collection.Add(_upperCaseA);
 
                 // When
-                collection.Remove(lowerCaseA);
+                collection.Remove(_lowerCaseA);
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);
@@ -173,11 +173,11 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { upperCaseA, upperCaseB }, 
+                    new [] { _upperCaseA, _upperCaseB }, 
                     new PathComparer(caseSensitive));
 
                 // When
-                collection.RemoveRange(new [] { lowerCaseA, lowerCaseB, lowerCaseC });
+                collection.RemoveRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);

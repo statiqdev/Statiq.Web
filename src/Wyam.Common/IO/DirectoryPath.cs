@@ -11,7 +11,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Represents a directory path.
     /// </summary>
-    public sealed class DirectoryPath : Path
+    public sealed class DirectoryPath : NormalizedPath
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath"/> class.

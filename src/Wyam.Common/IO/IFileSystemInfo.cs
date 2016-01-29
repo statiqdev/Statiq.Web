@@ -16,7 +16,7 @@ namespace Wyam.Common.IO
         /// Gets the path to the entry.
         /// </summary>
         /// <value>The path.</value>
-        Path Path { get; }
+        NormalizedPath Path { get; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="IFileSystemInfo"/> exists.

@@ -116,7 +116,7 @@ namespace Wyam.Core
             }
         }
 
-        public bool CleanOutputFolderOnExecute { get; set; } = true;
+        public bool CleanOutputPathOnExecute { get; set; } = true;
 
         public Engine()
         {
@@ -124,9 +124,25 @@ namespace Wyam.Core
             _config = new Config(FileSystem, InitialMetadata, Pipelines);
         }
 
-        public void Configure(string configScript = null, bool updatePackages = false, string fileName = null, bool outputScripts = false)
+        public void Configure(IFile configFile, bool updatePackages = false, bool outputScripts = false)
+        {
+            Configure(configFile.ReadAllText(), updatePackages, configFile.Path.GetFilename().FullPath, outputScripts);
+        }
+
+        public void Configure(string configScript = null, bool updatePackages = false)
+        {
+            Configure(configScript, updatePackages, null, false);
+        }
+
+        private void Configure(string configScript, bool updatePackages, string fileName, bool outputScripts)
         {
             CheckDisposed();
+
+            // Make sure the root path exists
+            if (!FileSystem.GetRootDirectory().Exists)
+            {
+                throw new InvalidOperationException($"The root path {FileSystem.RootPath.FullPath} does not exist.");
+            }
 
             try
             {
@@ -139,20 +155,21 @@ namespace Wyam.Core
             }
         }
 
-        public void CleanOutputFolder()
+        public void CleanOutputPath()
         {
             try
             {
-                Trace.Information("Cleaning output directory {0}", OutputFolder);
-                if (System.IO.Directory.Exists(OutputFolder))
+                Trace.Information("Cleaning output path {0}", FileSystem.OutputPath);
+                IDirectory outputDirectory = FileSystem.GetOutputDirectory();
+                if (outputDirectory.Exists)
                 {
-                    System.IO.Directory.Delete(OutputFolder, true);
+                    outputDirectory.Delete(true);
                 }
                 Trace.Information("Cleaned output directory.");
             }
             catch (Exception ex)
             {
-                Trace.Warning("Error while cleaning output directory: {0} - {1}", ex.GetType(), ex.Message);
+                Trace.Warning("Error while cleaning output path {0}: {1} - {2}", FileSystem.OutputPath, ex.GetType(), ex.Message);
             }
         }
 
@@ -167,9 +184,9 @@ namespace Wyam.Core
             }
 
             // Clean the output folder if requested
-            if (CleanOutputFolderOnExecute)
+            if (CleanOutputPathOnExecute)
             {
-                CleanOutputFolder();
+                CleanOutputPath();
             }
 
             // Create the input and output folders if they don't already exist

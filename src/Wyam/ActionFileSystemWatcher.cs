@@ -4,35 +4,43 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
 
 namespace Wyam
 {
     public class ActionFileSystemWatcher : IDisposable
     {
-        private readonly FileSystemWatcher _watcher;
+        private readonly List<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
         private readonly string _outputPath;
         private readonly Action<string> _callback;
 
-        public ActionFileSystemWatcher(string outputPath, string path, bool includeSubdirectories, string filter, Action<string> callback)
+        public ActionFileSystemWatcher(DirectoryPath outputDirectory, IEnumerable<DirectoryPath> inputDirectories, bool includeSubdirectories, string filter, Action<string> callback)
         {
-            _watcher = new FileSystemWatcher
+            foreach (DirectoryPath inputDirectory in inputDirectories)
             {
-                Path = path,
-                IncludeSubdirectories = includeSubdirectories,
-                Filter = filter,
-                EnableRaisingEvents = true
-            };
-            _watcher.Changed += OnChanged;
-            _watcher.Created += OnChanged;
-            _outputPath = outputPath;
+                FileSystemWatcher watcher = new FileSystemWatcher
+                {
+                    Path = inputDirectory.FullPath,
+                    IncludeSubdirectories = includeSubdirectories,
+                    Filter = filter,
+                    EnableRaisingEvents = true
+                };
+                watcher.Changed += OnChanged;
+                watcher.Created += OnChanged;
+                _watchers.Add(watcher);
+            }
+            _outputPath = outputDirectory.FullPath;
             _callback = callback;
         }
 
         public void Dispose()
         {
-            _watcher.EnableRaisingEvents = false;
-            _watcher.Changed -= OnChanged;
-            _watcher.Created -= OnChanged;
+            foreach (FileSystemWatcher watcher in _watchers)
+            {
+                watcher.EnableRaisingEvents = false;
+                watcher.Changed -= OnChanged;
+                watcher.Created -= OnChanged;
+            }
         }
 
         private void OnChanged(object sender, FileSystemEventArgs args)

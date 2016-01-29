@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace Wyam.Core.IO
     internal sealed class FileSystem : IConfigurableFileSystem
     {
         public bool IsCaseSensitive { get; set; }
+
+        public PathComparer PathComparer { get; private set; }
 
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
         private DirectoryPath _outputPath = "output";
@@ -59,6 +62,9 @@ namespace Wyam.Core.IO
             path.IsRelative ? GetInput(inputPath => 
                 new Directory(RootPath.Combine(inputPath).Combine(path).Collapse())) : new Directory(path);
 
+        public IReadOnlyList<IDirectory> GetInputDirectories() =>
+            InputPaths.Select(GetRootDirectory).ToImmutableArray();
+
         private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemInfo
         {
             T notFound = default(T);
@@ -87,11 +93,17 @@ namespace Wyam.Core.IO
         public IDirectory GetOutputDirectory(DirectoryPath path) =>
             new Directory(RootPath.Combine(OutputPath).Combine(path).Collapse());
 
+        public IDirectory GetOutputDirectory() =>
+            GetRootDirectory(OutputPath);
+
         public IFile GetRootFile(FilePath path) =>
             new File(RootPath.CombineFile(path).Collapse());
 
         public IDirectory GetRootDirectory(DirectoryPath path) =>
             new Directory(RootPath.Combine(path).Collapse());
+
+        public IDirectory GetRootDirectory() =>
+            new Directory(RootPath.Collapse());
 
         public IFile GetFile(FilePath path)
         {
@@ -113,11 +125,12 @@ namespace Wyam.Core.IO
 
         public FileSystem()
         {
+            PathComparer = new PathComparer(this);
             InputPaths = new PathCollection<DirectoryPath>(
                 new[]
                 {
                     DirectoryPath.FromString("input")
-                }, new PathComparer(this));
+                }, PathComparer);
         }
 
         // *** Retry logic (used by File and Directory)

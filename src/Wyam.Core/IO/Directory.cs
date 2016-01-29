@@ -13,7 +13,7 @@ namespace Wyam.Core.IO
 
         public DirectoryPath Path => _path;
 
-        Wyam.Common.IO.Path IFileSystemInfo.Path => _path;
+        Wyam.Common.IO.NormalizedPath IFileSystemInfo.Path => _path;
 
         public bool Exists => _directory.Exists;
 

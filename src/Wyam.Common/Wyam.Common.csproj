@@ -50,7 +50,7 @@
     <Compile Include="IO\IFile.cs" />
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\IFileSystemInfo.cs" />
-    <Compile Include="IO\Path.cs" />
+    <Compile Include="IO\NormalizedPath.cs" />
     <Compile Include="IO\PathComparer.cs" />
     <Compile Include="IO\SafeIOHelper.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />

@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Pipelines
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,
@@ -61,7 +61,7 @@ namespace Wyam.Core.Tests.Pipelines
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,
@@ -100,7 +100,7 @@ namespace Wyam.Core.Tests.Pipelines
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,

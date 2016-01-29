@@ -92,7 +92,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 engine.OutputFolder = @"TestFiles\Output\";
-                engine.CleanOutputFolder();
+                engine.CleanOutputPath();
 
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone("Test")};
@@ -124,7 +124,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 engine.OutputFolder = @"TestFiles\Output\";
-                engine.CleanOutputFolder();
+                engine.CleanOutputPath();
 
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone("Test")};
@@ -156,7 +156,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 engine.OutputFolder = @"TestFiles\Output\";
-                engine.CleanOutputFolder();
+                engine.CleanOutputPath();
 
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone("Test")};
@@ -191,7 +191,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 engine.OutputFolder = @"TestFiles\Output\";
-                engine.CleanOutputFolder();
+                engine.CleanOutputPath();
 
                 string absoluteInputPath = Path.GetFullPath(engine.InputFolder);
 
@@ -228,7 +228,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 engine.OutputFolder = @"TestFiles\Output\";
-                engine.CleanOutputFolder();
+                engine.CleanOutputPath();
 
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone("Test")};

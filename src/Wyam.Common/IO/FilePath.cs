@@ -11,7 +11,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Represents a file path.
     /// </summary>
-    public sealed class FilePath : Path
+    public sealed class FilePath : NormalizedPath
     {
         /// <summary>
         /// Gets a value indicating whether this path has a file extension.

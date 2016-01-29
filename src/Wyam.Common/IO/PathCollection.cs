@@ -8,7 +8,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// An ordered collection of unique <see cref="DirectoryPath"/>.
     /// </summary>
-    public class PathCollection<TPath> : IReadOnlyList<TPath> where TPath : Path
+    public class PathCollection<TPath> : IReadOnlyList<TPath> where TPath : NormalizedPath
     {
         private readonly PathComparer _comparer;
         private readonly List<TPath> _paths;

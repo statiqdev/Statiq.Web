@@ -15,7 +15,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute((d, c) => null);
                 engine.Pipelines.Add(execute);
 
@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute((c) => null);
                 engine.Pipelines.Add(execute);
 

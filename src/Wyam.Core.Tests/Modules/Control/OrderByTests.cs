@@ -18,7 +18,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4
@@ -50,7 +50,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4
@@ -83,7 +83,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4
@@ -115,7 +115,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4
@@ -148,7 +148,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4
@@ -182,7 +182,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
-                engine.CleanOutputFolderOnExecute = false;
+                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 4

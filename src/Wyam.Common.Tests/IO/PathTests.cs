@@ -19,7 +19,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldThrowIfPathIsNull()
             {
                 // Given, When
-                TestDelegate test = () => Path.Collapse(null);
+                TestDelegate test = () => NormalizedPath.Collapse(null);
 
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
@@ -40,7 +40,7 @@ namespace Wyam.Common.Tests.IO
                 DirectoryPath directoryPath = new DirectoryPath(fullPath);
 
                 // When
-                string path = Path.Collapse(directoryPath);
+                string path = NormalizedPath.Collapse(directoryPath);
 
                 // Then
                 Assert.AreEqual(expected, path);
