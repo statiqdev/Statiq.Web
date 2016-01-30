@@ -33,51 +33,49 @@ namespace Wyam.Core
                 return true;
             }
 
-            // Check for enumerable conversions (but don't treat string as an enumerable)
-            IEnumerable enumerable = value is string ? null : value as IEnumerable;
-            enumerable = enumerable ?? new[] { value };
-
             // IReadOnlyList<>
             if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
             {
-                Type elementType = typeof(T).GetGenericArguments()[0];
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToReadOnlyList(enumerable);
-                return true;
+                return TryConvertEnumerable(value, x => x.GetGenericArguments()[0], (x, y) => x.ToReadOnlyList(y), out result);
             }
 
             // IList<>
-            if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IList<>))
+            if (typeof(T).IsConstructedGenericType 
+                && (typeof(T).GetGenericTypeDefinition() == typeof(IList<>)
+                    || typeof(T).GetGenericTypeDefinition() == typeof(List<>)))
             {
-                Type elementType = typeof(T).GetGenericArguments()[0];
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToList(enumerable);
-                return true;
+                return TryConvertEnumerable(value, x => x.GetGenericArguments()[0], (x, y) => x.ToList(y), out result);
             }
 
             // Array
-            if (typeof(T).IsArray && typeof(T).GetArrayRank() == 1)
+            if (typeof(Array).IsAssignableFrom(typeof(T)) 
+                || (typeof(T).IsArray && typeof(T).GetArrayRank() == 1))
             {
-                Type elementType = typeof(T).GetElementType();
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToArray(enumerable);
-                return true;
+                return TryConvertEnumerable(value, x => x.GetElementType() ?? typeof(object), (x, y) => x.ToArray(y), out result);
             }
 
             // IEnumerable<>
             if (typeof(T).IsConstructedGenericType && typeof(T).GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                Type elementType = typeof(T).GetGenericArguments()[0];
-                Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
-                MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
-                result = (T)converter.ToEnumerable(enumerable);
-                return true;
+                return TryConvertEnumerable(value, x => x.GetGenericArguments()[0], (x, y) => x.ToEnumerable(y), out result);
             }
 
             return false;
+        }
+
+        private static bool TryConvertEnumerable<T>(object value, Func<Type, Type> elementTypeFunc,
+            Func<MetadataTypeConverter, IEnumerable, object> conversionFunc, out T result)
+        {
+            Type elementType = elementTypeFunc(typeof (T));
+            IEnumerable enumerable = value is string ? null : value as IEnumerable;
+            if (enumerable == null || elementType.IsInstanceOfType(value))
+            {
+                enumerable = new[] { value };
+            }
+            Type adapterType = typeof(MetadataTypeConverter<>).MakeGenericType(elementType);
+            MetadataTypeConverter converter = (MetadataTypeConverter)Activator.CreateInstance(adapterType);
+            result = (T)conversionFunc(converter, enumerable);
+            return true;
         }
     }
 }
