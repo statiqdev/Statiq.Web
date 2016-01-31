@@ -21,6 +21,10 @@ namespace Wyam.Common.Documents
         /// <value>The source of the document.</value>
         string Source { get; }
 
+        /// <summary>An identifier that is generated when the document is created and stays the same after cloning.</summary>
+        /// <value>The identifier.</value>
+        string Id { get; }
+
         /// <summary>Gets the metadata associated with this document.</summary>
         /// <value>The metadata associated with this document.</value>
         IMetadata Metadata { get; }

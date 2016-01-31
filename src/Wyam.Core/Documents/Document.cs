@@ -29,31 +29,35 @@ namespace Wyam.Core.Documents
         internal Document(IInitialMetadata initialMetadata, Pipeline pipeline)
             : this(initialMetadata, pipeline, string.Empty, null, null, null, true)
         {
-            
         }
 
         internal Document(IInitialMetadata initialMetadata, Pipeline pipeline, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(pipeline, new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
+            : this(Guid.NewGuid().ToString(), pipeline, new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
         
-        private Document(Pipeline pipeline, Metadata metadata, string source, string content, IEnumerable<KeyValuePair<string, object>> items)
-            : this(pipeline, metadata, source, null, null, content, items, true)
+        private Document(string id, Pipeline pipeline, Metadata metadata, string source, string content, IEnumerable<KeyValuePair<string, object>> items)
+            : this(id, pipeline, metadata, source, null, null, content, items, true)
         {
         }
 
-        private Document(Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(pipeline, metadata, source, stream, streamLock, null, items, disposeStream)
+        private Document(string id, Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(id, pipeline, metadata, source, stream, streamLock, null, items, disposeStream)
         {
         }
 
-        private Document(Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string id, Pipeline pipeline, Metadata metadata, string source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
+            Id = id;
             Source = source;
             _metadata = items == null ? metadata : metadata.Clone(items);
             _content = content;
@@ -83,6 +87,8 @@ namespace Wyam.Core.Documents
         }
 
         public string Source { get; }
+
+        public string Id { get; }
 
         public IMetadata Metadata => _metadata;
 
@@ -212,7 +218,7 @@ namespace Wyam.Core.Documents
             }
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(_pipeline, _metadata, source, content, items);
+            return new Document(Id, _pipeline, _metadata, source, content, items);
         }
 
         public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items)
@@ -223,7 +229,7 @@ namespace Wyam.Core.Documents
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
-            return new Document(_pipeline, _metadata, Source, content, items);
+            return new Document(Id, _pipeline, _metadata, Source, content, items);
         }
 
         public IDocument Clone(string content, IEnumerable<MetadataItem> items)
@@ -240,7 +246,7 @@ namespace Wyam.Core.Documents
             }
             CheckDisposed();
             _pipeline.AddDocumentSource(source);
-            return new Document(_pipeline, _metadata, source, stream, null, items, disposeStream);
+            return new Document(Id, _pipeline, _metadata, source, stream, null, items, disposeStream);
         }
 
         public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
@@ -251,7 +257,7 @@ namespace Wyam.Core.Documents
         public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CheckDisposed();
-            return new Document(_pipeline, _metadata, Source, stream, null, items, disposeStream);
+            return new Document(Id, _pipeline, _metadata, Source, stream, null, items, disposeStream);
         }
 
         public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
@@ -262,7 +268,7 @@ namespace Wyam.Core.Documents
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
             CheckDisposed();
-            Document cloned = new Document(_pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
+            Document cloned = new Document(Id, _pipeline, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
             _disposeStream = false;  // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
             return cloned;
         }

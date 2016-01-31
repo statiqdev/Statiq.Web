@@ -156,6 +156,11 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(item.Key, this)) : item;
         }
 
+        public string Id
+        {
+            get { throw new NotSupportedException(); }
+        }
+
         public string Source
         {
             get { throw new NotSupportedException(); }

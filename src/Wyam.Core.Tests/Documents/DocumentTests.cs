@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
@@ -19,6 +20,42 @@ namespace Wyam.Core.Tests.Documents
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DocumentTests : BaseFixture
     {
+        public class ConstructorTests : DocumentTests
+        {
+            [Test]
+            public void IdIsNotTheSameForDifferentDocuments()
+            {
+                // Given
+                InitialMetadata initialMetadata = new InitialMetadata();
+                Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
+
+                // When
+                Document a = new Document(initialMetadata, pipeline);
+                Document b = new Document(initialMetadata, pipeline);
+
+                // Then
+                Assert.AreNotEqual(a.Id, b.Id);
+            }
+        }
+
+        public class CloneMethodTests : DocumentTests
+        {
+            [Test]
+            public void IdIsTheSameAfterClone()
+            {
+                // Given
+                InitialMetadata initialMetadata = new InitialMetadata();
+                Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
+                Document document = new Document(initialMetadata, pipeline);
+
+                // When
+                IDocument cloned = document.Clone(new MetadataItems());
+
+                // Then
+                Assert.AreEqual(document.Id, cloned.Id);
+            }
+        }
+
         public class DisposeMethodTests : DocumentTests
         {
             [Test]
