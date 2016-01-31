@@ -68,6 +68,7 @@
     <Compile Include="EngineTests.cs" />
     <Compile Include="Documents\MetadataTests.cs" />
     <Compile Include="Modules\Control\BranchTests.cs" />
+    <Compile Include="Modules\Control\ModulesTests.cs" />
     <Compile Include="Modules\IO\CopyFilesTests.cs" />
     <Compile Include="Modules\IO\DownloadTests.cs" />
     <Compile Include="Modules\Metadata\DirectoryMetaTests.cs" />

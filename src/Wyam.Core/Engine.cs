@@ -157,7 +157,7 @@ namespace Wyam.Core
                 {
                     outputDirectory.Delete(true);
                 }
-                Trace.Information("Cleaned output directory.");
+                Trace.Information("Cleaned output directory");
             }
             catch (Exception ex)
             {

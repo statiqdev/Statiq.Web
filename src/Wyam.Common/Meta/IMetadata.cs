@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Wyam.Common.Documents;
 
 namespace Wyam.Common.Meta
 {
@@ -58,6 +59,14 @@ namespace Wyam.Common.Meta
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a list.</param>
         /// <returns>The value for the specified key converted to a list or the specified default value.</returns>
         IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to a <see cref="IDocument"/>. This method never throws an exception. 
+        /// It will return null if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the document to get.</param>
+        /// <returns>The value for the specified key converted to a string or null.</returns>
+        IDocument Document(string key);
 
         /// <summary>
         /// Gets the value for the specified key converted to a link. This method never throws an exception. It will return the specified

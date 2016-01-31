@@ -151,10 +151,7 @@ namespace Wyam.Core.Documents
             return new BlockingStream(_stream, this);
         }
 
-        internal void ReleaseStream()
-        {
-            Monitor.Exit(_streamLock);
-        }
+        internal void ReleaseStream() => Monitor.Exit(_streamLock);
 
         public override string ToString()
         {
@@ -221,10 +218,8 @@ namespace Wyam.Core.Documents
             return new Document(Id, _pipeline, _metadata, source, content, items);
         }
 
-        public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items)
-        {
-            return Clone(source, content, items?.Select(x => x.Pair));
-        }
+        public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items) => 
+            Clone(source, content, items?.Select(x => x.Pair));
 
         public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
@@ -232,10 +227,8 @@ namespace Wyam.Core.Documents
             return new Document(Id, _pipeline, _metadata, Source, content, items);
         }
 
-        public IDocument Clone(string content, IEnumerable<MetadataItem> items)
-        {
-            return Clone(content, items?.Select(x => x.Pair));
-        }
+        public IDocument Clone(string content, IEnumerable<MetadataItem> items) => 
+            Clone(content, items?.Select(x => x.Pair));
 
         // source is ignored if one is already set (use IExecutionContext.GetNewDocument if you want a whole new document)
         public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
@@ -249,10 +242,8 @@ namespace Wyam.Core.Documents
             return new Document(Id, _pipeline, _metadata, source, stream, null, items, disposeStream);
         }
 
-        public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
-        {
-            return Clone(source, stream, items?.Select(x => x.Pair), disposeStream);
-        }
+        public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true) => 
+            Clone(source, stream, items?.Select(x => x.Pair), disposeStream);
 
         public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
@@ -260,10 +251,8 @@ namespace Wyam.Core.Documents
             return new Document(Id, _pipeline, _metadata, Source, stream, null, items, disposeStream);
         }
 
-        public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
-        {
-            return Clone(stream, items?.Select(x => x.Pair), disposeStream);
-        }
+        public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true) => 
+            Clone(stream, items?.Select(x => x.Pair), disposeStream);
 
         public IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
         {
@@ -273,32 +262,17 @@ namespace Wyam.Core.Documents
             return cloned;
         }
 
-        public IDocument Clone(IEnumerable<MetadataItem> items)
-        {
-            return Clone(items?.Select(x => x.Pair));
-        }
+        public IDocument Clone(IEnumerable<MetadataItem> items) => Clone(items?.Select(x => x.Pair));
 
         // IMetadata
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _metadata.GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _metadata.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public bool ContainsKey(string key)
-        {
-            return _metadata.ContainsKey(key);
-        }
+        public bool ContainsKey(string key) => _metadata.ContainsKey(key);
 
-        public bool TryGetValue(string key, out object value)
-        {
-            return _metadata.TryGetValue(key, out value);
-        }
+        public bool TryGetValue(string key, out object value) => _metadata.TryGetValue(key, out value);
 
         public object this[string key] => _metadata[key];
 
@@ -306,45 +280,23 @@ namespace Wyam.Core.Documents
 
         public IEnumerable<object> Values => _metadata.Values;
 
-        public IMetadata<T> MetadataAs<T>()
-        {
-            return _metadata.MetadataAs<T>();
-        }
+        public IMetadata<T> MetadataAs<T>() => _metadata.MetadataAs<T>();
 
-        public object Get(string key, object defaultValue)
-        {
-            return _metadata.Get(key, defaultValue);
-        }
+        public object Get(string key, object defaultValue) => _metadata.Get(key, defaultValue);
 
-        public T Get<T>(string key)
-        {
-            return _metadata.Get<T>(key);
-        }
+        public T Get<T>(string key) => _metadata.Get<T>(key);
 
-        public T Get<T>(string key, T defaultValue)
-        {
-            return _metadata.Get<T>(key, defaultValue);
-        }
+        public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
-        public string String(string key, string defaultValue = null)
-        {
-            return _metadata.String(key, defaultValue);
-        }
+        public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
 
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
-        {
-            return _metadata.List<T>(key, defaultValue);
-        } 
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _metadata.List<T>(key, defaultValue);
 
-        public string Link(string key, string defaultValue = null, bool pretty = true)
-        {
-            return _metadata.Link(key, defaultValue, pretty);
-        }
+        IDocument IMetadata.Document(string key) => _metadata.Document(key);
 
-        public dynamic Dynamic(string key, object defaultValue = null)
-        {
-            return _metadata.Dynamic(key, defaultValue);
-        }
+        public string Link(string key, string defaultValue = null, bool pretty = true) => _metadata.Link(key, defaultValue, pretty);
+
+        public dynamic Dynamic(string key, object defaultValue = null) => _metadata.Dynamic(key, defaultValue);
 
         public int Count => _metadata.Count;
     }

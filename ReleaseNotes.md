@@ -1,5 +1,9 @@
 # 0.11.2
 
+- Feature - New **Modules** module to wrap a sequence of child modules for reuse (#197)
+- Feature - Added `IMetadata.Document()` to return an `IDocument` from metadata
+- Fix - Type conversions now properly take compatibility with enumerated item type into account (#198)
+- Fix - Fixed possible race condition when cloning documents with different sources (#196)
 - Feature - **Breaking change**: Implemented new IO framework and replaced all uses of strings for passing path information with new IO classes, `Engine.RootFolder`, `Engine.InputFolder`, and `Engine.OutputFolder` are now replaced by `IFileSystem.RootPath`, `IFileSystem.InputPaths`, `IFileSystem.OutputPath` (#123)
 - Refactoring - **Breaking change**: Changed `Trace` to a static class to better support forthcoming parallel pipeline processing
 - Refactoring - **Breaking change**: `Metadata` property in config file renamed to `InitialMetadata` to distinguish from run-time metadata
@@ -10,7 +14,6 @@
 - Refactoring - Changed color of critical errors in the console to white on a red background for better readability (#182)
 - Refactoring - Changed model type of Razor pages to `IDocument` instead of `IMetadata` (#188)
 - Refactoring - Uncaught exceptions now cancel the build (#187)
-
 
 # 0.11.1
 

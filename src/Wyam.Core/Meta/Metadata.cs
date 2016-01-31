@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Core.Documents;
@@ -48,10 +49,7 @@ namespace Wyam.Core.Meta
             }
         }
 
-        public IMetadata<T> MetadataAs<T>()
-        {
-            return new MetadataAs<T>(this);
-        }
+        public IMetadata<T> MetadataAs<T>() => new MetadataAs<T>(this);
 
         // This clones the stack and pushes a new dictionary on to the cloned stack
         internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
@@ -90,25 +88,15 @@ namespace Wyam.Core.Meta
             return TryGetValue(key, out value) ? value : defaultValue;
         }
 
-        public T Get<T>(string key)
-        {
-            return MetadataAs<T>().Get(key);
-        }
+        public T Get<T>(string key) => MetadataAs<T>().Get(key);
 
-        public T Get<T>(string key, T defaultValue)
-        {
-            return MetadataAs<T>().Get(key, defaultValue);
-        }
+        public T Get<T>(string key, T defaultValue) => MetadataAs<T>().Get(key, defaultValue);
 
-        public string String(string key, string defaultValue = null)
-        {
-            return Get<string>(key, defaultValue);
-        }
+        public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
 
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
-        {
-            return Get<IReadOnlyList<T>>(key, defaultValue);
-        } 
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Get<IReadOnlyList<T>>(key, defaultValue);
+
+        public IDocument Document(string key) => Get<IDocument>(key);
 
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {
@@ -125,10 +113,7 @@ namespace Wyam.Core.Meta
             return value;
         }
 
-        public dynamic Dynamic(string key, object defaultValue = null)
-        {
-            return Get(key, defaultValue) ?? defaultValue;
-        }
+        public dynamic Dynamic(string key, object defaultValue = null) => Get(key, defaultValue) ?? defaultValue;
 
         public object this[string key]
         {
@@ -147,30 +132,16 @@ namespace Wyam.Core.Meta
             }
         }
 
-        public IEnumerable<string> Keys
-        {
-            get { return _metadataStack.SelectMany(x => x.Keys); }
-        }
+        public IEnumerable<string> Keys => _metadataStack.SelectMany(x => x.Keys);
 
-        public IEnumerable<object> Values
-        {
-            get { return _metadataStack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value))); }
-        }
+        public IEnumerable<object> Values => _metadataStack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value)));
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _metadataStack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => 
+            _metadataStack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public int Count
-        {
-            get { return _metadataStack.Sum(x => x.Count); }
-        }
+        public int Count => _metadataStack.Sum(x => x.Count);
 
         // This resolves the metadata value by expanding IMetadataValue
         private object GetValue(string key, object value)

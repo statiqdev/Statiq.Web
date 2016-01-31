@@ -76,12 +76,7 @@ namespace Wyam.Common.Tracing
             }
         }
 
-        public static int Indent()
-        {
-            int indenet = _indent;
-            Interlocked.Increment(ref _indent);
-            return indenet;
-        }
+        public static int Indent() => IndentLevel++;
 
         public static int IndentLevel
         {
