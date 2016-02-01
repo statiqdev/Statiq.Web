@@ -36,7 +36,7 @@ namespace Wyam.Core.Modules.Control
     /// </code>
     /// </example>
     /// <category>Control</category>
-    public class Modules : IModule
+    public class ModuleCollection : IModule
     {
         private readonly IModule[] _modules;
 
@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.Control
         /// Creates the Modules module with the specified child modules.
         /// </summary>
         /// <param name="modules">The child modules.</param>
-        public Modules(params IModule[] modules)
+        public ModuleCollection(params IModule[] modules)
         {
             _modules = modules;
         }

@@ -1,6 +1,6 @@
 # 0.11.2
 
-- Feature - New **Modules** module to wrap a sequence of child modules for reuse (#197)
+- Feature - New **ModuleCollection** module to wrap a sequence of child modules for reuse (#197)
 - Feature - Added `IMetadata.Document()` to return an `IDocument` from metadata
 - Fix - Type conversions now properly take compatibility with enumerated item type into account (#198)
 - Fix - Fixed possible race condition when cloning documents with different sources (#196)

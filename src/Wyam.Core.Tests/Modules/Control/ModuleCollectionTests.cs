@@ -10,9 +10,9 @@ namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ModulesTests : BaseFixture
+    public class ModuleCollectionTests : BaseFixture
     {
-        public class ExecuteMethodTests : ModulesTests
+        public class ExecuteMethodTests : ModuleCollectionTests
         {
             [Test]
             public void ChildModulesAreExecuted()
@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 3
                 };
-                engine.Pipelines.Add(a, new Core.Modules.Control.Modules(b, c));
+                engine.Pipelines.Add(a, new Core.Modules.Control.ModuleCollection(b, c));
 
                 // When
                 engine.Execute();
