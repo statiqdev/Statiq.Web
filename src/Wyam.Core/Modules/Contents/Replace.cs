@@ -3,6 +3,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
+using System.Text.RegularExpressions;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -13,6 +14,8 @@ namespace Wyam.Core.Modules.Contents
     public class Replace : ContentModule
     {
         private readonly string _search;
+        private bool _isRegex;
+        private RegexOptions _regexOptions = RegexOptions.None;
 
         /// <summary>
         /// Replaces all occurrences of the search string in every input document 
@@ -52,6 +55,14 @@ namespace Wyam.Core.Modules.Contents
             _search = search;
         }
 
+
+        public Replace IsRegex(RegexOptions regexOptions = RegexOptions.None)
+        {
+            _isRegex = true;
+            _regexOptions = regexOptions;
+            return this;
+        }
+
         /// <summary>
         /// The specified modules are executed against an empty initial document and the results 
         /// replace all occurrences of the search string in every input document (possibly 
@@ -75,7 +86,13 @@ namespace Wyam.Core.Modules.Contents
             {
                 content = string.Empty;
             }
-            return new[] { input.Clone(input.Content.Replace(_search, content.ToString())) };
+            return new[] {
+                input.Clone(
+                    _isRegex ?
+                        Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
+                        input.Content.Replace(_search, content.ToString())
+                    )
+            };
         }
     }
 }
