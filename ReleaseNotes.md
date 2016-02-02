@@ -1,5 +1,6 @@
 # 0.11.2
 
+- Feature - Added void delegates to Execute module so you no longer have to return a value (#194)
 - Feature - Added `.IsRegex()` to Replace module (#201 and #203, thanks @deanebarker)
 - Feature - New **ModuleCollection** module to wrap a sequence of child modules for reuse (#197)
 - Feature - Added `IMetadata.Documents()` to return an `IReadOnlyList<IDocument>` from metadata (#200)

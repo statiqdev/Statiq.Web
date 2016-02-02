@@ -43,6 +43,38 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             }
 
             [Test]
+            public void ExecuteDoesNotRequireReturnValueForDocumentConfig()
+            {
+                // Given
+                int a = 0;
+                Engine engine = new Engine();
+                engine.CleanOutputPathOnExecute = false;
+                Execute execute = new Execute((d, c) => { a = a + 1; });
+                engine.Pipelines.Add(execute);
+
+                // When
+                engine.Execute();
+
+                // Then
+            }
+
+            [Test]
+            public void ExecuteDoesNotRequireReturnValueForContextConfig()
+            {
+                // Given
+                int a = 0;
+                Engine engine = new Engine();
+                engine.CleanOutputPathOnExecute = false;
+                Execute execute = new Execute(c => { a = a + 1; });
+                engine.Pipelines.Add(execute);
+
+                // When
+                engine.Execute();
+
+                // Then
+            }
+
+            [Test]
             public void ExecuteReturnsDocumentForSingleResultDocumentFromContextConfig()
             {
                 // Given

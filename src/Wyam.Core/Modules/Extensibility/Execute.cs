@@ -38,12 +38,39 @@ namespace Wyam.Core.Modules.Extensibility
             _executeContext = execute;
         }
 
+        /// <summary>
+        /// Specifies an action that should be invoked once for each input document.
+        /// </summary>
+        /// <param name="execute">An action to invoke.</param>
+        public Execute(Action<IDocument, IExecutionContext> execute)
+        {
+            _executeDocuments = (doc, ctx) =>
+            {
+                execute(doc, ctx);
+                return null;
+            };
+        }
+
+        /// <summary>
+        /// Specifies an action that should be invoked once for all input documents.
+        /// </summary>
+        /// <param name="execute">An action to invoke.</param>
+        public Execute(Action<IExecutionContext> execute)
+        {
+            _executeContext = ctx =>
+            {
+                execute(ctx);
+                return null;
+            };
+        }
+
         IEnumerable<IDocument> IModule.Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (_executeDocuments != null)
+            {
                 return inputs.SelectMany(x => _executeDocuments.Invoke<IEnumerable<IDocument>>(x, context) ?? Array.Empty<IDocument>());
-            else
-                return _executeContext.Invoke<IEnumerable<IDocument>>(context) ?? Array.Empty<IDocument>();
+            }
+            return _executeContext.Invoke<IEnumerable<IDocument>>(context) ?? Array.Empty<IDocument>();
         }
     }
 }
