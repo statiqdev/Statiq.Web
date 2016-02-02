@@ -3,11 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute;
+using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Core.Meta;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Documents
+namespace Wyam.Core.Tests.Meta
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
@@ -339,6 +341,87 @@ namespace Wyam.Core.Tests.Documents
                 // Then
                 Assert.IsNotNull(result);
                 CollectionAssert.AreEqual(result, new[] {1, 2, 3});
+            }
+        }
+
+        public class DocumentsMethodTests : MetadataTests
+        {
+            [Test]
+            public void ReturnsNullWhenKeyNotFound()
+            {
+                // Given
+                InitialMetadata initialMetadata = new InitialMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                IReadOnlyList<IDocument> result = metadata.Documents("A");
+
+                // Then
+                Assert.IsNull(result);
+            }
+
+            [Test]
+            public void ReturnsEmptyListForListOfInt()
+            {
+                // Given
+                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<int> { 1, 2, 3 } };
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                IReadOnlyList<IDocument> result = metadata.Documents("A");
+
+                // Then
+                Assert.IsNotNull(result);
+                CollectionAssert.IsEmpty(result);
+            }
+
+            [Test]
+            public void ReturnsEmptyListForSingleInt()
+            {
+                // Given
+                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = 1 };
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                IReadOnlyList<IDocument> result = metadata.Documents("A");
+
+                // Then
+                Assert.IsNotNull(result);
+                CollectionAssert.IsEmpty(result);
+            }
+
+            [Test]
+            public void ReturnsListForList()
+            {
+                // Given
+                IDocument a = Substitute.For<IDocument>();
+                IDocument b = Substitute.For<IDocument>();
+                IDocument c = Substitute.For<IDocument>();
+                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<IDocument> { a, b, c } };
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                IReadOnlyList<IDocument> result = metadata.Documents("A");
+
+                // Then
+                Assert.IsNotNull(result);
+                CollectionAssert.AreEqual(new [] { a, b, c }, result);
+            }
+
+            [Test]
+            public void ReturnsListForSingleDocument()
+            {
+                // Given
+                IDocument a = Substitute.For<IDocument>();
+                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = a };
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                IReadOnlyList<IDocument> result = metadata.Documents("A");
+
+                // Then
+                Assert.IsNotNull(result);
+                CollectionAssert.AreEqual(new[] { a }, result);
             }
         }
 

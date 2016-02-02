@@ -52,7 +52,7 @@ namespace Wyam.Common.Meta
         string String(string key, string defaultValue = null);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a IReadOnlyList of type T. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{T}"/>. This method never throws an exception. It will return the specified 
         /// default value if the key is not found. Note that if the value is atomic, the conversion operation will succeed and return a list with one item.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -67,6 +67,14 @@ namespace Wyam.Common.Meta
         /// <param name="key">The key of the document to get.</param>
         /// <returns>The value for the specified key converted to a string or null.</returns>
         IDocument Document(string key);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{IDocument}"/>. This method never throws an exception. 
+        /// It will return null if the key is not found and an empty list if the key is found but contains no items that can be converted to <see cref="IDocument"/>.
+        /// </summary>
+        /// <param name="key">The key of the documents to get.</param>
+        /// <returns>The value for the specified key converted to a list or null.</returns>
+        IReadOnlyList<IDocument> Documents(string key);
 
         /// <summary>
         /// Gets the value for the specified key converted to a link. This method never throws an exception. It will return the specified

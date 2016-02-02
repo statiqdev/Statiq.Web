@@ -98,6 +98,8 @@ namespace Wyam.Core.Meta
 
         public IDocument Document(string key) => Get<IDocument>(key);
 
+        public IReadOnlyList<IDocument> Documents(string key) => Get<IReadOnlyList<IDocument>>(key);
+
         public string Link(string key, string defaultValue = null, bool pretty = true)
         {
             string value = Get<string>(key, defaultValue);

@@ -66,7 +66,7 @@
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
     <Compile Include="Configuration\ConfigTests.cs" />
     <Compile Include="EngineTests.cs" />
-    <Compile Include="Documents\MetadataTests.cs" />
+    <Compile Include="Meta\MetadataTests.cs" />
     <Compile Include="Modules\Control\BranchTests.cs" />
     <Compile Include="Modules\Control\ModuleCollectionTests.cs" />
     <Compile Include="Modules\IO\CopyFilesTests.cs" />
