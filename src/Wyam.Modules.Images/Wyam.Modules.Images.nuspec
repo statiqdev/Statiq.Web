@@ -7,11 +7,11 @@
     <authors>Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
-    <iconUrl>http://wyam.io/Content/Images/logo-square-32.png</iconUrl>
+    <iconUrl>http://wyam.io/Content/images/logo-square-32.png</iconUrl>
     <projectUrl>http://wyam.io</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for manipulating images.</description>
-    <copyright>Copyright 2015</copyright>
+    <copyright>Copyright 2016</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine Images ImageProcessor</tags>
   </metadata>
   <files></files>

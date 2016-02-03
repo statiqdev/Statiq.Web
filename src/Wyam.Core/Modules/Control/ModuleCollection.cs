@@ -15,7 +15,8 @@ namespace Wyam.Core.Modules.Control
     /// <remarks>
     /// All child modules will be executed as if they were inline. This enables you to specify
     /// a sequence of modules outside of a pipeline and then reuse that sequence of modules
-    /// in multiple pipelines.
+    /// in multiple pipelines. Note that this module is also handly for wrapping a single module
+    /// that has a complex configuration if you expect to use it in multiple places.
     /// </remarks>
     /// <example>
     /// <code>

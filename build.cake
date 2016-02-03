@@ -140,7 +140,7 @@ Task("Zip-Files")
         Zip(binDir, zipPath, files);
     });
 
-Task("Create-NuGet-Packages")
+Task("Create-Library-NuGet-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {
@@ -151,7 +151,9 @@ Task("Create-NuGet-Packages")
             throw new InvalidOperationException("Could not find nuget.exe.");
         }
         
-        foreach(var nuspec in GetFiles("./src/**/*.nuspec"))
+        // Exclude packages folders and CLI "Wyam" folder
+        foreach(var nuspec in GetFiles("./src/**/*.nuspec")
+            .Where(x => x.GetDirectory().GetDirectoryName().StartsWith("Wyam.")))
         {
             StartProcess(nugetExe, new ProcessSettings()
                 .WithArguments(x => x
@@ -173,6 +175,32 @@ Task("Create-NuGet-Packages")
             });
             */
         }
+    });
+    
+Task("Create-Tools-NuGet-Package")
+    .IsDependentOn("Build")
+    .Does(() =>
+    {        
+        var nuspec = GetFiles("./src/Wyam/*.nuspec").FirstOrDefault();
+        if(nuspec == null)
+        {            
+            throw new InvalidOperationException("Could not find tools nuspec.");
+        }            
+        NuGetPack(nuspec, new NuGetPackSettings
+        {
+            Version = semVersion,
+            BasePath = nuspec.GetDirectory(),
+            OutputDirectory = nugetRoot,
+            Symbols = false,
+            Files = new [] 
+            { 
+                new NuSpecContent 
+                { 
+                    Source = @"bin\" + configuration + @"\**\*",
+                    Target = "tools"
+                } 
+            }
+        });
     });
     
 Task("Publish-MyGet")
@@ -269,6 +297,10 @@ Task("Upload-AppVeyor-Artifacts")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
+Task("Create-NuGet-Packages")
+    .IsDependentOn("Create-Library-NuGet-Packages")    
+    .IsDependentOn("Create-Tools-NuGet-Package");
+    
 Task("Package")
     .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Zip-Files")

@@ -89,19 +89,19 @@ if (!(Test-Path $PACKAGES_CONFIG)) {
 }
 
 # Try find NuGet.exe in path if not exists
-if (!(Test-Path $NUGET_EXE)) {
-    Write-Verbose -Message "Trying to find nuget.exe in path..."
-    ($NUGET_EXE_IN_PATH = &where.exe nuget.exe) | out-null
-    if ($NUGET_EXE_IN_PATH -ne $null -and (Test-Path $NUGET_EXE_IN_PATH)) {
-        "Found $($NUGET_EXE_IN_PATH)."
-        $NUGET_EXE = $NUGET_EXE_IN_PATH
-    }
-}
+#if (!(Test-Path $NUGET_EXE)) {
+#    Write-Verbose -Message "Trying to find nuget.exe in path..."
+#    ($NUGET_EXE_IN_PATH = &where.exe nuget.exe) | out-null
+#    if ($NUGET_EXE_IN_PATH -ne $null -and (Test-Path $NUGET_EXE_IN_PATH)) {
+#        "Found $($NUGET_EXE_IN_PATH)."
+#        $NUGET_EXE = $NUGET_EXE_IN_PATH
+#    }
+#}
 
 # Try download NuGet.exe if not exists
 if (!(Test-Path $NUGET_EXE)) {
     Write-Verbose -Message "Downloading NuGet.exe..."
-    try { Invoke-WebRequest -Uri http://nuget.org/nuget.exe -OutFile $NUGET_EXE } catch {
+    try { Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $NUGET_EXE } catch {
         Throw "Could not download NuGet.exe."
     }
 }
