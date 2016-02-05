@@ -128,6 +128,8 @@ namespace Wyam.Core.Modules.Contents
 
         private string _titleMetaKey = "RssTitle";
 
+        private string _guidMetaKey = "RssGuid";
+
         private string _descriptionMetaKey = "RssDescription";
 
         // Options
@@ -198,6 +200,20 @@ namespace Wyam.Core.Modules.Contents
             }
 
             _titleMetaKey = key;
+            return this;
+        }
+
+        /// <summary>
+        /// Set metadata key to lookup in documents for RSS item Guid.
+        /// </summary>
+        public Rss WithGuidMetaKey(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            _guidMetaKey = key;
             return this;
         }
 
@@ -342,17 +358,28 @@ namespace Wyam.Core.Modules.Contents
 
                 if (_appendGuid)
                 {
-                    if (_assumePermalinks)
+                   
+                    object guid;
+                    bool hasGuid = input.TryGetValue(_guidMetaKey, out guid);
+                       
+                    if (hasGuid)
                     {
-                        item.Add(new XElement("guid", link));
-                    }
-                    else if (string.IsNullOrWhiteSpace(input.Source))
-                    {
-                        Trace.Warning("Cannot generate RSS item guid for document " + input.Source + " because document Source is not valid.");
+                        item.Add(new XElement("guid", guid, new XAttribute("isPermaLink", false)));
                     }
                     else
                     {
-                        item.Add(new XElement("guid", GuidHelper.ToGuid(input.Source).ToString(), new XAttribute("isPermaLink", false)));
+                        if (_assumePermalinks)
+                        {
+                            item.Add(new XElement("guid", link));
+                        }
+                        else if (string.IsNullOrWhiteSpace(input.Source))
+                        {
+                            Trace.Warning("Cannot generate RSS item guid for document " + input.Source + " because document Source is not valid.");
+                        }
+                        else
+                        {
+                            item.Add(new XElement("guid", GuidHelper.ToGuid(input.Source).ToString(), new XAttribute("isPermaLink", false)));
+                        }
                     }
                 }
 
