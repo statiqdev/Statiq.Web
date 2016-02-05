@@ -1,5 +1,7 @@
 # 0.11.2
 
+- Feature - New **CopyMeta** module to allow copying metadata from one key to another with optional string formatting (#209 and #207, thanks @deanebarker)
+- Feature - Added `.WithGuidMetaKey()` to the Rss module to specify a metadata item that has the GUID (#206, thanks @deanebarker)
 - Feature - A tools NuGet package is now published that includes the CLI (#204)
 - Feature - Added void delegates to Execute module so you no longer have to return a value (#194)
 - Feature - Added `.IsRegex()` to Replace module (#201 and #203, thanks @deanebarker)
