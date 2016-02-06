@@ -27,13 +27,13 @@ namespace Wyam.Common.Tests
                 InitialMetadata initialMetadata = new InitialMetadata();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument a = new Document(initialMetadata, pipeline)
-                    .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new [] { 1, 2, 3 }) });
+                    .DontClone("a", new[] { new KeyValuePair<string, object>("Numbers", new [] { 1, 2, 3 }) });
                 IDocument b = new Document(initialMetadata, pipeline)
-                    .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new [] { 2, 3, 4 }) });
+                    .DontClone("b", new[] { new KeyValuePair<string, object>("Numbers", new [] { 2, 3, 4 }) });
                 IDocument c = new Document(initialMetadata, pipeline)
-                    .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
+                    .DontClone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
                 IDocument d = new Document(initialMetadata, pipeline)
-                    .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
+                    .DontClone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -54,13 +54,13 @@ namespace Wyam.Common.Tests
                 InitialMetadata initialMetadata = new InitialMetadata();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument a = new Document(initialMetadata, pipeline)
-                    .Clone("a", new[] { new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }) });
+                    .DontClone("a", new[] { new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }) });
                 IDocument b = new Document(initialMetadata, pipeline)
-                    .Clone("b", new[] { new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }) });
+                    .DontClone("b", new[] { new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }) });
                 IDocument c = new Document(initialMetadata, pipeline)
-                    .Clone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
+                    .DontClone("c", new[] { new KeyValuePair<string, object>("Numbers", 3) });
                 IDocument d = new Document(initialMetadata, pipeline)
-                    .Clone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
+                    .DontClone("d", new[] { new KeyValuePair<string, object>("Numbers", "4") });
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -81,25 +81,25 @@ namespace Wyam.Common.Tests
                 InitialMetadata initialMetadata = new InitialMetadata();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IDocument a = new Document(initialMetadata, pipeline)
-                    .Clone("a", new[]
+                    .DontClone("a", new[]
                     {
                         new KeyValuePair<string, object>("Numbers", new[] { 1, 2, 3 }),
                         new KeyValuePair<string, object>("Colors", "Red") 
                     });
                 IDocument b = new Document(initialMetadata, pipeline)
-                    .Clone("b", new[]
+                    .DontClone("b", new[]
                     {
                         new KeyValuePair<string, object>("Numbers", new[] { 2, 3, 4 }),
                         new KeyValuePair<string, object>("Colors", new [] { "Red", "Blue" })
                     });
                 IDocument c = new Document(initialMetadata, pipeline)
-                    .Clone("c", new[]
+                    .DontClone("c", new[]
                     {
                         new KeyValuePair<string, object>("Numbers", 3),
                         new KeyValuePair<string, object>("Colors", "Green")
                     });
                 IDocument d = new Document(initialMetadata, pipeline)
-                    .Clone("d", new[]
+                    .DontClone("d", new[]
                     {
                         new KeyValuePair<string, object>("Numbers", "4"),
                         new KeyValuePair<string, object>("Colors", new [] { "Green", "Blue" })

@@ -396,7 +396,7 @@ namespace Wyam.Core.Modules.Contents
                 rss.Save(stream);
             }
 
-            return new IDocument[] { context.GetNewDocument(outText.ToString(), new KeyValuePair<string, object>[] {
+            return new IDocument[] { context.GetDocument(outText.ToString(), new KeyValuePair<string, object>[] {
                 new KeyValuePair<string, object>("IsRssFeed", true),
                 new KeyValuePair<string, object>("RelativeFilePath", _outputRssFilePath),
                 new KeyValuePair<string, object>("WritePath", _outputRssFilePath)

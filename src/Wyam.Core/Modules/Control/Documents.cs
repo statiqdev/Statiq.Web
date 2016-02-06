@@ -89,7 +89,7 @@ namespace Wyam.Core.Modules.Control
                 List<IDocument> documents = new List<IDocument>();
                 for (int c = 0; c < count; c++)
                 {
-                    documents.Add(ctx.GetNewDocument());
+                    documents.Add(ctx.GetDocument());
                 }
                 return documents;
             };
@@ -101,7 +101,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="content">The content for each output document.</param>
         public Documents(params string[] content)
         {
-            _contextDocuments = ctx => content.Select(x => ctx.GetNewDocument().Clone(x));
+            _contextDocuments = ctx => content.Select(x => ctx.GetDocument().Clone(x));
         }
         
         /// <summary>
@@ -110,7 +110,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="metadata">The metadata for each output document.</param>
         public Documents(params IEnumerable<KeyValuePair<string, object>>[] metadata)
         {
-            _contextDocuments = ctx => metadata.Select(ctx.GetNewDocument);
+            _contextDocuments = ctx => metadata.Select(ctx.GetDocument);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="contentAndMetadata">The content and metadata for each output document.</param>
         public Documents(params Tuple<string, IEnumerable<KeyValuePair<string, object>>>[] contentAndMetadata)
         {
-            _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetNewDocument(x.Item2).Clone(x.Item1));
+            _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetDocument(x.Item2).Clone(x.Item1));
         }
 
         /// <summary>

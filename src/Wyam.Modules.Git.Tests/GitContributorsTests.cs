@@ -24,7 +24,7 @@ namespace Wyam.Modules.Git.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
@@ -56,7 +56,7 @@ namespace Wyam.Modules.Git.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
@@ -88,7 +88,7 @@ namespace Wyam.Modules.Git.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
@@ -128,7 +128,7 @@ namespace Wyam.Modules.Git.Tests
                     );
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(inputFolder);
-                context.GetNewDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()

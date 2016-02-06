@@ -24,7 +24,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 ---
 Content1
@@ -55,7 +55,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 ---
 Content1
@@ -87,7 +87,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 ABC
 Content1
@@ -118,7 +118,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 !!!!
 Content1
@@ -149,7 +149,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 !!!!  
 Content1
@@ -180,7 +180,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
   !!!!
 Content1
@@ -212,7 +212,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 
 !!!!
@@ -247,7 +247,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"FM1
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
 FM2
 !
 Content1
@@ -278,9 +278,9 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"AA
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"AA
 -
-XX"), new Document(engine.InitialMetadata, pipeline).Clone(@"BB
+XX"), new Document(engine.InitialMetadata, pipeline).DontClone(@"BB
 -
 YY")};
                 string frontMatterContent = string.Empty;
@@ -309,7 +309,7 @@ BB
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"---
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"---
 FM1
 FM2
 ---
@@ -341,7 +341,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).Clone(@"---
+                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"---
 FM1
 FM2
 ---

@@ -64,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.Content
                     engine.InitialMetadata[Keys.Hostname] = hostname;
 
                 Pipeline contentPipeline = new Pipeline("Content", null);
-                var doc = new Document(engine.InitialMetadata, contentPipeline).Clone("Test",
+                var doc = new Document(engine.InitialMetadata, contentPipeline).DontClone("Test",
                     new[] {new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")});
                 IDocument[] inputs = {doc};
 
@@ -105,7 +105,7 @@ namespace Wyam.Core.Tests.Modules.Content
                     engine.InitialMetadata[Keys.Hostname] = hostname;
 
                 Pipeline contentPipeline = new Pipeline("Content", null);
-                var doc = new Document(engine.InitialMetadata, contentPipeline).Clone("Test",
+                var doc = new Document(engine.InitialMetadata, contentPipeline).DontClone("Test",
                     new[] {new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")});
                 IDocument[] inputs = {doc};
 

@@ -17,12 +17,12 @@ namespace Wyam.Core.Pipelines
 {
     internal class Pipeline : IPipeline, IDisposable
     {
-        private ConcurrentBag<Document> _clonedDocuments = new ConcurrentBag<Document>();
+        private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
         private readonly List<IModule> _modules = new List<IModule>();
         private readonly ConcurrentDictionary<string, byte> _documentSources 
             = new ConcurrentDictionary<string, byte>();                             // Hacky workaround for the lack of a ConcurrentHashSet<T>
-        private readonly Cache<List<Document>>  _previouslyProcessedCache;
-        private readonly Dictionary<string, List<Document>> _processedSources; 
+        private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
+        private readonly Dictionary<string, List<IDocument>> _processedSources; 
         private bool _disposed;
 
         public string Name { get; }
@@ -42,8 +42,8 @@ namespace Wyam.Core.Pipelines
             Name = name;
             if (processDocumentsOnce)
             {
-                _previouslyProcessedCache = new Cache<List<Document>>();
-                _processedSources = new Dictionary<string, List<Document>>();
+                _previouslyProcessedCache = new Cache<List<IDocument>>();
+                _processedSources = new Dictionary<string, List<IDocument>>();
             }
             if (modules != null)
             {
@@ -154,12 +154,12 @@ namespace Wyam.Core.Pipelines
                                 }
                                 else
                                 {
-                                    List<Document> processedDocuments;
+                                    List<IDocument> processedDocuments;
                                     if (!_previouslyProcessedCache.TryGetValue(document, out processedDocuments))
                                     {
                                         // This document was not previously processed, so add it to the current result and set up a list to track final results
                                         newDocuments.Add(document);
-                                        processedDocuments = new List<Document>();
+                                        processedDocuments = new List<IDocument>();
                                         _previouslyProcessedCache.Set(document, processedDocuments);
                                         _processedSources.Add(document.Source, processedDocuments);
                                     }
@@ -207,12 +207,12 @@ namespace Wyam.Core.Pipelines
 
             // Execute all modules in the pipeline
             ExecutionContext context = new ExecutionContext(engine, this);
-            ImmutableArray<IDocument> inputs = new IDocument[] { new Document(engine.InitialMetadata, this) }.ToImmutableArray();
+            ImmutableArray<IDocument> inputs = new [] { engine.DocumentFactory.GetDocument() }.ToImmutableArray();
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline
             Parallel.ForEach(_clonedDocuments.Where(x => !resultDocuments.Contains(x)), x => x.Dispose());
-            _clonedDocuments = new ConcurrentBag<Document>(resultDocuments.OfType<Document>());
+            _clonedDocuments = new ConcurrentBag<IDocument>(resultDocuments);
 
             // Check the previously processed cache for any previously processed documents that need to be added
             if (_previouslyProcessedCache != null)
@@ -224,9 +224,9 @@ namespace Wyam.Core.Pipelines
                 Trace.Verbose("{0} previously processed document(s) were not reprocessed", _previouslyProcessedCache.GetValues().Sum(x => x.Count));
 
                 // Add new result documents to the cache
-                foreach (Document resultDocument in _clonedDocuments)
+                foreach (IDocument resultDocument in _clonedDocuments)
                 {
-                    List<Document> processedResultDocuments;
+                    List<IDocument> processedResultDocuments;
                     if (_processedSources.TryGetValue(resultDocument.Source, out processedResultDocuments))
                     {
                         processedResultDocuments.Add(resultDocument);
@@ -238,12 +238,12 @@ namespace Wyam.Core.Pipelines
                 }
 
                 // Reset cloned documents (since we're tracking them in the previously processed cache now) and set new aggregate results
-                _clonedDocuments = new ConcurrentBag<Document>();
-                engine.DocumentCollection.Set(Name, _previouslyProcessedCache.GetValues().SelectMany(x => x).Cast<IDocument>().ToList().AsReadOnly());
+                _clonedDocuments = new ConcurrentBag<IDocument>();
+                engine.DocumentCollection.Set(Name, _previouslyProcessedCache.GetValues().SelectMany(x => x).ToList().AsReadOnly());
             }
         }
 
-        public void AddClonedDocument(Document document) => _clonedDocuments.Add(document);
+        public void AddClonedDocument(IDocument document) => _clonedDocuments.Add(document);
 
         public void AddDocumentSource(string source)
         {
@@ -260,7 +260,7 @@ namespace Wyam.Core.Pipelines
         public void ResetClonedDocuments()
         {
             Parallel.ForEach(_clonedDocuments, x => x.Dispose());
-            _clonedDocuments = new ConcurrentBag<Document>();
+            _clonedDocuments = new ConcurrentBag<IDocument>();
         }
 
         public void Dispose()

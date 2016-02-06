@@ -260,7 +260,7 @@ namespace Wyam.Modules.CodeAnalysis
             }
 
             // Create the document and add it to the cache
-            IDocument document = _context.GetNewDocument(symbol.ToDisplayString(), null, items);
+            IDocument document = _context.GetDocument(symbol.ToDisplayString(), null, items);
             _symbolToDocument.GetOrAdd(symbol, _ => document);
 
             // Map the comment ID to the document

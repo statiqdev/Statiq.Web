@@ -49,7 +49,7 @@ namespace Wyam.Core.Tests.Documents
                 Document document = new Document(initialMetadata, pipeline);
 
                 // When
-                IDocument cloned = document.Clone(new MetadataItems());
+                IDocument cloned = document.DontClone(new MetadataItems());
 
                 // Then
                 Assert.AreEqual(document.Id, cloned.Id);
@@ -67,7 +67,7 @@ namespace Wyam.Core.Tests.Documents
                 DisposeCheckStream stream = new DisposeCheckStream();
                 Document originalDoc = new Document(initialMetadata, pipeline, "Test", stream, null,
                     Array.Empty<KeyValuePair<string, object>>(), true);
-                Document clonedDoc = (Document) originalDoc.Clone(Array.Empty<KeyValuePair<string, object>>());
+                Document clonedDoc = (Document) originalDoc.DontClone(Array.Empty<KeyValuePair<string, object>>());
 
                 // When
                 originalDoc.Dispose();

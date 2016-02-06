@@ -45,7 +45,7 @@ namespace Wyam.Core
         public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
 
         public IDocumentCollection Documents => DocumentCollection;
-
+        
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
         public byte[] RawConfigAssembly => _config.RawConfigAssembly;
@@ -108,12 +108,28 @@ namespace Wyam.Core
             }
         }
 
+        private IDocumentFactory _documentFactory;
+
+        public IDocumentFactory DocumentFactory
+        {
+            get { return _documentFactory; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(DocumentFactory));
+                }
+                _documentFactory = value;
+            }
+        }
+
         public bool CleanOutputPathOnExecute { get; set; } = true;
 
         public Engine()
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
             _config = new Config(FileSystem, InitialMetadata, Pipelines);
+            _documentFactory = new DocumentFactory(InitialMetadata);
         }
 
         public void Configure(IFile configFile, bool updatePackages = false, bool outputScripts = false)

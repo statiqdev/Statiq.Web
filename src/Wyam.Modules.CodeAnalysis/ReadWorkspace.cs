@@ -105,7 +105,7 @@ namespace Wyam.Modules.CodeAnalysis
                                     && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
                                 .Select(document => {
                                     Trace.Verbose("Read file {0}", document.FilePath);
-                                    return context.GetNewDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
+                                    return context.GetDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
                                     {
                                         {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
                                         {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},

@@ -126,7 +126,7 @@ namespace Wyam.Modules.SearchIndex
             
             string[] stopwords = GetStopwords(context);
             string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords);
-            return new []{ context.GetNewDocument(jsFileContent) };
+            return new []{ context.GetDocument(jsFileContent) };
         }
         
         private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords)

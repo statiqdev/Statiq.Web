@@ -108,6 +108,7 @@
     <Compile Include="Configuration\ConfigSplitter.cs" />
     <Compile Include="Configuration\SetupScript.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
+    <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />
     <Compile Include="IO\FileSystem.cs" />

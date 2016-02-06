@@ -148,7 +148,7 @@ namespace Wyam.Core.Modules.IO
             // If we're using a pattern, just use an empty document
             if (_searchPattern != null)
             {
-                inputs = new[] { context.GetNewDocument((string)null) };
+                inputs = new[] { context.GetDocument((string)null) };
             }
 
             return inputs.AsParallel().SelectMany(input =>
