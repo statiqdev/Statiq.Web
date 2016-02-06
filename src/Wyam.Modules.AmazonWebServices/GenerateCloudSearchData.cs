@@ -20,7 +20,7 @@ namespace Wyam.Modules.AmazonWebServices
     /// Note that this just creates the document. Once that document is written to the file system, you will still need to upload the document
     /// to a correctly configured CloudSearch instance using the API or Amazon CLI.
     /// </remarks>
-    /// <category>Amazon Web Services</category>
+    /// <category>Content</category>
     public class GenerateCloudSearchData : IModule
     {
         private readonly string _idMetaKey;
@@ -32,7 +32,7 @@ namespace Wyam.Modules.AmazonWebServices
         /// <summary>
         /// Generates Amazon CloudSearch JSON data.
         /// </summary>
-        /// <param name="idMetaKey">The meta key represeting the unique ID for this document.  If NULL, the Document.Id will be used.</param>
+        /// <param name="idMetaKey">The meta key representing the unique ID for this document.  If NULL, the Document.Id will be used.</param>
         /// <param name="bodyField">The field name for the document contents.  If NULL, the document contents will not be written to the data.</param>
         public GenerateCloudSearchData(string idMetaKey, string bodyField)
         {
@@ -42,7 +42,7 @@ namespace Wyam.Modules.AmazonWebServices
         }
 
         /// <summary>
-        /// Adds a mapping from meta key to CloudSearch field. When provided, the contents of the meta key will be written to the profided field name.
+        /// Adds a mapping from meta key to CloudSearch field. When provided, the contents of the meta key will be written to the provided field name.
         /// </summary>
         /// <param name="fieldName">The CloudSearch field name.</param>
         /// <param name="metaKey">The meta key.</param>

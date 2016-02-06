@@ -265,7 +265,10 @@ namespace Wyam
                 {
                     syntax.ReportError("force-ext can only be specified if the preview server is running."); 
                 }
-                syntax.DefineOption("r|root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.");
+                if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
+                {
+                    syntax.ReportError("preview-root can only be specified if the preview server is running.");
+                }
                 syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
