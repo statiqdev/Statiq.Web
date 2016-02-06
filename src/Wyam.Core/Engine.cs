@@ -42,7 +42,7 @@ namespace Wyam.Core
 
         public IPipelineCollection Pipelines => _pipelines;
 
-        public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
+        public IDictionary<string, object> InitialMetadata { get; } = new Dictionary<string, object>();
 
         public IDocumentCollection Documents => DocumentCollection;
         

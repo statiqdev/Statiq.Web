@@ -112,7 +112,6 @@
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />
     <Compile Include="IO\FileSystem.cs" />
-    <Compile Include="Meta\InitialMetadata.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />

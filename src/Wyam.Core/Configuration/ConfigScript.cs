@@ -40,7 +40,7 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append(@"
                 public static class ConfigScript
                 {
-                    public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
+                    public static void Run(IDictionary<string, object> InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
                     {" + Environment.NewLine + config + @"
                     }");
 
@@ -144,7 +144,7 @@ namespace Wyam.Core.Configuration
             AssemblyFullName = Assembly.FullName;
         }
 
-        public void Invoke(IInitialMetadata initialMetadata, IPipelineCollection pipelines, IConfigurableFileSystem fileSystem)
+        public void Invoke(IDictionary<string, object> initialMetadata, IPipelineCollection pipelines, IConfigurableFileSystem fileSystem)
         {
             var scriptType = Assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
             MethodInfo runMethod = scriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);

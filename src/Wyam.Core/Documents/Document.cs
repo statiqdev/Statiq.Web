@@ -2,21 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Core.Meta;
-using Wyam.Core.Pipelines;
 
 namespace Wyam.Core.Documents
 {
     // Because it's immutable, document metadata can still be accessed after disposal
     // Document source must be unique within the pipeline
-    internal class Document : IDocument, IDisposable
+    internal class Document : IDocument
     {
         private readonly Metadata _metadata;
         private string _content;
@@ -25,12 +21,14 @@ namespace Wyam.Core.Documents
         private bool _disposeStream;
         private bool _disposed;
 
-        internal Document(IInitialMetadata initialMetadata)
-            : this(initialMetadata, string.Empty, null, null, null, true)
+        // Normal constructors
+
+        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, string content = null)
+            : this(initialMetadata, string.Empty, null, content, null, true)
         {
         }
 
-        internal Document(IInitialMetadata initialMetadata, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
             : this(Guid.NewGuid().ToString(), new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
@@ -80,6 +78,50 @@ namespace Wyam.Core.Documents
                 }
             }
             _streamLock = stream != null && streamLock != null ? streamLock : new object();
+        }
+
+        // Cloning constructors
+
+        internal Document(Document sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+            : this(sourceDocument.Id, sourceDocument._metadata, source, content, items)
+        {
+            sourceDocument.CheckDisposed();
+            if (sourceDocument.Source != string.Empty)
+            {
+                throw new ArgumentException($"Cannot change document source during clone (from {sourceDocument.Source} to {source})", nameof(source));
+            }
+        }
+
+        internal Document(Document sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source, content, items)
+        {
+            sourceDocument.CheckDisposed();
+        }
+
+        internal Document(Document sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+            : this(sourceDocument.Id, sourceDocument._metadata, source, stream, null, items, disposeStream)
+        {
+            sourceDocument.CheckDisposed();
+            if (sourceDocument.Source != string.Empty)
+            {
+                throw new ArgumentException($"Cannot change document source during clone (from {sourceDocument.Source} to {source})", nameof(source));
+            }
+        }
+
+        internal Document(Document sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source, stream, null, items, disposeStream)
+        {
+            sourceDocument.CheckDisposed();
+        }
+
+        internal Document(Document sourceDocument, IEnumerable<KeyValuePair<string, object>> items)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source, sourceDocument._stream,
+                sourceDocument._streamLock, sourceDocument._content, items, sourceDocument._disposeStream)
+        {
+            sourceDocument.CheckDisposed();
+
+            // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
+            sourceDocument._disposeStream = false;
         }
 
         public string Source { get; }
@@ -200,48 +242,6 @@ namespace Wyam.Core.Documents
             {
                 throw new ObjectDisposedException(nameof(Document));
             }
-        }
-
-        // source is ignored if one is already set
-        internal IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            if (Source != string.Empty)
-            {
-                return Clone(content, items);
-            }
-            CheckDisposed();
-            return new Document(Id, _metadata, source, content, items);
-        }
-
-        internal IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            CheckDisposed();
-            return new Document(Id, _metadata, Source, content, items);
-        }
-
-        // source is ignored if one is already set
-        internal IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-        {
-            if (Source != string.Empty)
-            {
-                return Clone(stream, items, disposeStream);
-            }
-            CheckDisposed();
-            return new Document(Id, _metadata, source, stream, null, items, disposeStream);
-        }
-        
-        internal IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-        {
-            CheckDisposed();
-            return new Document(Id, _metadata, Source, stream, null, items, disposeStream);
-        }
-
-        internal IDocument Clone(IEnumerable<KeyValuePair<string, object>> items)
-        {
-            CheckDisposed();
-            Document cloned = new Document(Id, _metadata, Source, _stream, _streamLock, _content, items, _disposeStream);
-            _disposeStream = false;  // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
-            return cloned;
         }
 
         // IMetadata

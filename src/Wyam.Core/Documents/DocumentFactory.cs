@@ -14,9 +14,9 @@ namespace Wyam.Core.Documents
 {
     internal class DocumentFactory : IDocumentFactory
     {
-        private readonly IInitialMetadata _initialMetadata;
+        private readonly IDictionary<string, object> _initialMetadata;
 
-        public DocumentFactory(IInitialMetadata initialMetadata)
+        public DocumentFactory(IDictionary<string, object> initialMetadata)
         {
             _initialMetadata = initialMetadata;
         }
@@ -32,7 +32,7 @@ namespace Wyam.Core.Documents
             {
                 return new Document(_initialMetadata, source, null, content, items, true);
             }
-            return ((Document) sourceDocument).Clone(source, content, items);
+            return new Document((Document)sourceDocument, source, content, items);
         }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
@@ -41,7 +41,7 @@ namespace Wyam.Core.Documents
             {
                 return new Document(_initialMetadata, string.Empty, null, content, items, true);
             }
-            return ((Document)sourceDocument).Clone(content, items);
+            return new Document((Document)sourceDocument, content, items);
         }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
@@ -50,7 +50,7 @@ namespace Wyam.Core.Documents
             {
                 return new Document(_initialMetadata, source, stream, null, items, disposeStream);
             }
-            return ((Document)sourceDocument).Clone(source, stream, items, disposeStream);
+            return new Document((Document)sourceDocument, source, stream, items, disposeStream);
         }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
@@ -59,7 +59,7 @@ namespace Wyam.Core.Documents
             {
                 return new Document(_initialMetadata, string.Empty, stream, null, items, disposeStream);
             }
-            return ((Document)sourceDocument).Clone(stream, items, disposeStream);
+            return new Document((Document)sourceDocument, stream, items, disposeStream);
         }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items)
@@ -68,7 +68,7 @@ namespace Wyam.Core.Documents
             {
                 return new Document(_initialMetadata, string.Empty, null, null, items, true);
             }
-            return ((Document)sourceDocument).Clone(items);
+            return new Document((Document)sourceDocument, items);
         }
     }
 }

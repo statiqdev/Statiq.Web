@@ -5,9 +5,11 @@ using System.Linq;
 
 namespace Wyam.Common.Meta
 {
-    public class MetadataItems : IList<MetadataItem>
+    public class MetadataItems : IList<MetadataItem>, IList<KeyValuePair<string, object>>
     {
         private readonly List<MetadataItem> _items = new List<MetadataItem>();
+
+        // IList<MetadataItem>
 
         public IEnumerator<MetadataItem> GetEnumerator()
         {
@@ -84,6 +86,44 @@ namespace Wyam.Common.Meta
         }
 
         public MetadataItem this[int index]
+        {
+            get { return _items[index]; }
+            set { _items[index] = value; }
+        }
+
+        // IList<KeyValuePair<string, object>>
+
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        {
+            return _items.Select(x => x.Pair).GetEnumerator();
+        }
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            return _items.Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            _items.Select(x => x.Pair).ToList().CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            return _items.Remove(item);
+        }
+
+        public int IndexOf(KeyValuePair<string, object> item)
+        {
+            return _items.IndexOf(item);
+        }
+
+        public void Insert(int index, KeyValuePair<string, object> item)
+        {
+            _items.Insert(index, item);
+        }
+
+        KeyValuePair<string, object> IList<KeyValuePair<string, object>>.this[int index]
         {
             get { return _items[index]; }
             set { _items[index] = value; }
