@@ -53,7 +53,7 @@ namespace Wyam.Core.Modules.Control
             }
             return inputs.SelectMany(input =>
             {
-                return groupings.Select(x => input.Clone(
+                return groupings.Select(x => context.GetDocument(input,
                     new MetadataItems
                     {
                         {Keys.GroupDocuments, x.ToImmutableArray()},

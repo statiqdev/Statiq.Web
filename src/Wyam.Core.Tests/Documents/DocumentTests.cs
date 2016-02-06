@@ -27,11 +27,10 @@ namespace Wyam.Core.Tests.Documents
             {
                 // Given
                 InitialMetadata initialMetadata = new InitialMetadata();
-                Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
 
                 // When
-                Document a = new Document(initialMetadata, pipeline);
-                Document b = new Document(initialMetadata, pipeline);
+                Document a = new Document(initialMetadata);
+                Document b = new Document(initialMetadata);
 
                 // Then
                 Assert.AreNotEqual(a.Id, b.Id);
@@ -45,11 +44,10 @@ namespace Wyam.Core.Tests.Documents
             {
                 // Given
                 InitialMetadata initialMetadata = new InitialMetadata();
-                Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
-                Document document = new Document(initialMetadata, pipeline);
+                Document document = new Document(initialMetadata);
 
                 // When
-                IDocument cloned = document.DontClone(new MetadataItems());
+                IDocument cloned = new Document(document, new MetadataItems());
 
                 // Then
                 Assert.AreEqual(document.Id, cloned.Id);
@@ -62,12 +60,11 @@ namespace Wyam.Core.Tests.Documents
             public void StreamIsDisposedCorrectlyAfterClone()
             {
                 // Given
-                Pipeline pipeline = new Pipeline("Test", Array.Empty<IModule>());
                 InitialMetadata initialMetadata = new InitialMetadata();
                 DisposeCheckStream stream = new DisposeCheckStream();
-                Document originalDoc = new Document(initialMetadata, pipeline, "Test", stream, null,
+                Document originalDoc = new Document(initialMetadata, "Test", stream, null,
                     Array.Empty<KeyValuePair<string, object>>(), true);
-                Document clonedDoc = (Document) originalDoc.DontClone(Array.Empty<KeyValuePair<string, object>>());
+                Document clonedDoc = new Document(originalDoc, Array.Empty<KeyValuePair<string, object>>());
 
                 // When
                 originalDoc.Dispose();

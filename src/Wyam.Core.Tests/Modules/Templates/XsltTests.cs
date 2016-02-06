@@ -103,7 +103,7 @@ namespace Wyam.Core.Tests.Modules.Templates
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received().Clone(output);
+                context.Received().GetDocument(output);
                 stream.Dispose();
             }
         }

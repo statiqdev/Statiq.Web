@@ -18,7 +18,7 @@ namespace Wyam.Core.Modules.Metadata
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select((x, i) => x.Clone(new MetadataItems {{Keys.Index, i + 1}}));
+            return inputs.Select((x, i) => context.GetDocument(x, new MetadataItems {{Keys.Index, i + 1}}));
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Wyam.Core.Modules.Contents
                 content = string.Empty;
             }
             return new[] {
-                input.Clone(
+                context.GetDocument(input,
                     _isRegex ?
                         Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
                         input.Content.Replace(_search, content.ToString())

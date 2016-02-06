@@ -55,6 +55,7 @@
     <Compile Include="IO\PathComparer.cs" />
     <Compile Include="IO\SafeIOHelper.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Meta\IInitialMetadata.cs" />
     <Compile Include="Meta\MetadataItems.cs" />
     <Compile Include="Meta\Keys.cs" />
     <Compile Include="Modules\ContentModule.cs" />

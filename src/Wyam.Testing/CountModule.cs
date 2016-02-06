@@ -33,12 +33,12 @@ namespace Wyam.Testing
                     Value++;
                     if(CloneSource)
                     {
-                        yield return input.Clone(ValueKey + sourceCount++, input.Content == null ? Value.ToString() : input.Content + Value, 
+                        yield return context.GetDocument(input, ValueKey + sourceCount++, input.Content == null ? Value.ToString() : input.Content + Value, 
                             new Dictionary<string, object> { { ValueKey, Value } });
                     }
                     else
                     {
-                        yield return input.Clone(input.Content == null ? Value.ToString() : input.Content + Value,
+                        yield return context.GetDocument(input, input.Content == null ? Value.ToString() : input.Content + Value,
                             new Dictionary<string, object> { { ValueKey, Value } });
                     }
                 }

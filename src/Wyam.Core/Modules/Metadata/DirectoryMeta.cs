@@ -110,11 +110,11 @@ namespace Wyam.Core.Modules.Metadata
             // Apply Metadata
 
             return inputs
-                .Where(x => _preserveMetadataFiles || !(_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(x, context)))) // ignore files that define Metadata if not preserved
-                .Select(x =>
+                .Where(input => _preserveMetadataFiles || !(_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(input, context)))) // ignore files that define Metadata if not preserved
+                .Select(input =>
                 {
                     // First add the inhered Metadata to temp dictionary.
-                    string dir = Path.GetDirectoryName(x.Source);
+                    string dir = Path.GetDirectoryName(input.Source);
                     List<string> sourcePathes = new List<string>();
                     while (dir.StartsWith(context.InputFolder))
                     {
@@ -123,7 +123,7 @@ namespace Wyam.Core.Modules.Metadata
                     }
 
                     HashSet<string> overriddenKeys = new HashSet<string>(); // we need to know which keys we may override if they are overridden.
-                    List<KeyValuePair<string, object>> newMetadataKey = new List<KeyValuePair<string, object>>();
+                    List<KeyValuePair<string, object>> newMetadata = new List<KeyValuePair<string, object>>();
 
                     bool firstLevel = true;
                     foreach (var path in sourcePathes)
@@ -141,23 +141,21 @@ namespace Wyam.Core.Modules.Metadata
                                     if (overriddenKeys.Contains(keyValuePair.Key))
                                         continue; // The value was already written.
 
-                                    if (x.Metadata.ContainsKey(keyValuePair.Key)
+                                    if (input.Metadata.ContainsKey(keyValuePair.Key)
                                         && !metadataEntry.MetadataFileEntry.Replace)
                                         continue; // The value already exists and this MetadataFile has no override
 
                                     // We can add the value.
                                     overriddenKeys.Add(keyValuePair.Key); // no other MetadataFile may override it.
 
-                                    newMetadataKey.Add(keyValuePair);
+                                    newMetadata.Add(keyValuePair);
                                 }
                             }
                         }
                         firstLevel = false;
                     }
 
-                    if (newMetadataKey.Any())
-                        return x.Clone(newMetadataKey);
-                    return x;
+                    return newMetadata.Any() ? context.GetDocument(input, newMetadata) : input;
                 });
         }
 

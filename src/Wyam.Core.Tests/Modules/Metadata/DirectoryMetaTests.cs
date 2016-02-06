@@ -280,8 +280,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
             foreach (var document in documents.Values)
             {
                 //TODO: Change so multiple recursive calls to clone can be tracked.
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                context
+                    .When(x => x.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
                         var newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();

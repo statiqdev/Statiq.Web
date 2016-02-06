@@ -80,9 +80,9 @@ namespace Wyam.Core.Modules.Contents
             }
             if (string.IsNullOrEmpty(_search))
             {
-                return new[] { input.Clone(content.ToString()) };
+                return new[] { context.GetDocument(input, content.ToString()) };
             }
-            return new[] { input.Clone(content.ToString().Replace(_search, input.Content)) };
+            return new[] { context.GetDocument(input, content.ToString().Replace(_search, input.Content)) };
         }
     }
 }

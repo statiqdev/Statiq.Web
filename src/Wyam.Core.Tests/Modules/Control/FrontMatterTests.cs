@@ -24,11 +24,14 @@ namespace Wyam.Core.Tests.Modules.Control
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 ---
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
@@ -55,11 +58,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 ---
 Content1
-Content2")};
+Content2")
+                };
                 bool executed = false;
                 FrontMatter frontMatter = new FrontMatter("-", new Execute((x, ctx) =>
                 {
@@ -87,11 +93,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 ABC
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter("ABC", new Execute((x, ctx) =>
                 {
@@ -118,11 +127,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 !!!!
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
@@ -149,11 +161,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 !!!!  
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
@@ -180,11 +195,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
   !!!!
 Content1
-Content2")};
+Content2")
+                };
                 bool executed = false;
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
@@ -212,13 +230,16 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                     context.GetDocument(@"FM1
 FM2
 
 !!!!
 
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
@@ -247,11 +268,14 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"FM1
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"FM1
 FM2
 !
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
@@ -278,11 +302,15 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"AA
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"AA
 -
-XX"), new Document(engine.InitialMetadata, pipeline).DontClone(@"BB
+XX"),
+                    context.GetDocument(@"BB
 -
-YY")};
+YY")
+                };
                 string frontMatterContent = string.Empty;
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
@@ -309,12 +337,15 @@ BB
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"---
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"---
 FM1
 FM2
 ---
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
@@ -341,12 +372,15 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline).DontClone(@"---
+                IDocument[] inputs = 
+                {
+                    context.GetDocument(@"---
 FM1
 FM2
 ---
 Content1
-Content2")};
+Content2")
+                };
                 string frontMatterContent = null;
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {

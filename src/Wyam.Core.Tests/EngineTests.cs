@@ -127,12 +127,12 @@ namespace Wyam.Core.Tests
             engine.Pipelines.Add("Pipeline",
                 new Execute((x, ctx) => new[]
                 {
-                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } }), 
-                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } }),
+                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }),
                 new Execute((x, ctx) => new[]
                 {
-                    x.Clone((string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
                 }));
 
             // When
@@ -166,12 +166,12 @@ namespace Wyam.Core.Tests
             engine.Pipelines.Add(
                 new Execute((x, ctx) => new[]
                 {
-                    x.Clone((c++).ToString()), 
-                    x.Clone((c++).ToString())
+                    ctx.GetDocument(x, (c++).ToString()),
+                    ctx.GetDocument(x, (c++).ToString())
                 }),
                 new Execute((x, ctx) => new[]
                 {
-                    x.Clone((c++).ToString())
+                    ctx.GetDocument(x, (c++).ToString())
                 }),
                 new Core.Modules.Metadata.Meta("Content", (x, y) => x.Content));
 

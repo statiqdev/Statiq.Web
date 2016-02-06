@@ -52,19 +52,18 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 IDocument document = Substitute.For<IDocument>();
                 Stream stream = null;
-                IEnumerable<MetadataItem> metadata = null;
+                IEnumerable<KeyValuePair<string, object>> metadata = null;
                 string source = null;
-                document
-                    .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>(), Arg.Any<bool>()))
+                IModule download = new Download().WithUris("http://www.siwawi.com/");
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
                     .Do(x =>
                     {
                         source = x.Arg<string>();
                         stream = x.Arg<Stream>();
-                        metadata = x.Arg<IEnumerable<MetadataItem>>();
+                        metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
-
-                IModule download = new Download().WithUris("http://www.siwawi.com/");
-                IExecutionContext context = Substitute.For<IExecutionContext>();
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -98,15 +97,15 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 var output = new List<Tuple<Stream, IEnumerable<KeyValuePair<string, object>>>>();
 
-                document
-                    .When(x => x.Clone(Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
                     .Do(x =>
                     {
                         output.Add(Tuple.Create(x.Arg<Stream>(), x.Arg<IEnumerable<KeyValuePair<string, object>>>()));
                     });
 
                 IModule download = new Download().WithUris("http://www.siwawi.com/", "http://stackoverflow.com/questions/221925/creating-a-byte-array-from-a-stream");
-                IExecutionContext context = Substitute.For<IExecutionContext>();
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -138,18 +137,18 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 IDocument document = Substitute.For<IDocument>();
                 Stream stream = null;
-                IEnumerable<MetadataItem> metadata = null;
+                IEnumerable<KeyValuePair<string, object>> metadata = null;
 
-                document
-                    .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>()))
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
                         stream = x.Arg<Stream>();
-                        metadata = x.Arg<IEnumerable<MetadataItem>>();
+                        metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
 
                 IModule download = new Download().WithUris("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg");
-                IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.OutputFolder.Returns(x => AssemblyDirectory);
 
                 // When
@@ -170,21 +169,21 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 IDocument document = Substitute.For<IDocument>();
                 Stream stream = null;
-                IEnumerable<MetadataItem> metadata = null;
+                IEnumerable<KeyValuePair<string, object>> metadata = null;
 
-                document
-                    .When(x => x.Clone(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<MetadataItem>>()))
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
                         stream = x.Arg<Stream>();
-                        metadata = x.Arg<IEnumerable<MetadataItem>>();
+                        metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
 
                 var header = new RequestHeader();
                 header.Accept.Add("image/jpeg");
 
                 IModule download = new Download().WithUri("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg", header);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.OutputFolder.Returns(x => AssemblyDirectory);
 
                 // When

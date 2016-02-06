@@ -60,8 +60,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input\";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(searchPattern).WithSearchOption(searchOption);
 
                 // When
@@ -80,8 +80,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.txt");
 
                 // When
@@ -100,8 +100,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.txt");
 
                 // When
@@ -120,8 +120,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(@"Subfolder\*.txt");
 
                 // When
@@ -140,8 +140,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
                 // When
@@ -160,8 +160,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(@"test-a.txt");
 
                 // When
@@ -188,8 +188,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(@"test-c.txt");
 
                 // When
@@ -212,8 +212,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.*").WithExtensions(".txt");
 
                 // When
@@ -232,8 +232,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.*").WithExtensions("txt", "md");
 
                 // When
@@ -252,8 +252,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("test"));
 
                 // When
@@ -272,8 +272,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.InputFolder = @"TestFiles\Input";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = {new Document(engine.InitialMetadata, pipeline)};
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("-c")).WithExtensions("txt");
 
                 // When

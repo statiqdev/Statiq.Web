@@ -27,7 +27,7 @@ namespace Wyam.Core.Configuration
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly AssemblyManager _assemblyManager = new AssemblyManager();
         private readonly IConfigurableFileSystem _fileSystem;
-        private readonly IDictionary<string, object> _initialMetadata;
+        private readonly IInitialMetadata _initialMetadata;
         private readonly IPipelineCollection _pipelines;
         private readonly PackagesCollection _packages;
 
@@ -48,7 +48,7 @@ namespace Wyam.Core.Configuration
 
         public byte[] RawConfigAssembly => _configScript?.RawAssembly;
 
-        public Config(IConfigurableFileSystem fileSystem, IDictionary<string, object> initialMetadata, IPipelineCollection pipelines)
+        public Config(IConfigurableFileSystem fileSystem, IInitialMetadata initialMetadata, IPipelineCollection pipelines)
         {
             _fileSystem = fileSystem;
             _initialMetadata = initialMetadata;

@@ -11,7 +11,7 @@ namespace Wyam.Core.Meta
 {
     // This class contains a stack of all the metadata generated at a particular pipeline stage
     // Getting a value checks each of the stacks and returns the first hit
-    // This class is immutable, use IDocument.Clone() to get a new one with additional values
+    // This class is immutable, create a new document to get a new one with additional values
     internal class Metadata : IMetadata
     {
         private readonly Stack<IDictionary<string, object>> _metadataStack;

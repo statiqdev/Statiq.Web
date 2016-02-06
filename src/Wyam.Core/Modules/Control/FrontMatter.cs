@@ -98,9 +98,9 @@ namespace Wyam.Core.Modules.Control
                     string frontMatter = string.Join("\n", inputLines.Skip(startLine).Take(delimiterLine - startLine)) + "\n";
                     inputLines.RemoveRange(0, delimiterLine + 1);
                     string content = string.Join("\n", inputLines);
-                    foreach (IDocument result in context.Execute(_modules, new[] { input.Clone(frontMatter) }))
+                    foreach (IDocument result in context.Execute(_modules, new[] { context.GetDocument(input, frontMatter) }))
                     {
-                        yield return result.Clone(content);
+                        yield return context.GetDocument(result, content);
                     }
                 }
                 else

@@ -29,7 +29,7 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class CopyFiles : IModule
     {
-        private readonly DocumentConfig _sourcePath;
+        private readonly DocumentConfig _sourcePathDelegate;
         private readonly string _searchPattern;
         private Func<string, string> _destinationPath;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
@@ -50,7 +50,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(sourcePath));
             }
 
-            _sourcePath = sourcePath;
+            _sourcePathDelegate = sourcePath;
         }
 
         /// <summary>
@@ -145,71 +145,69 @@ namespace Wyam.Core.Modules.IO
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            // If we're using a pattern, just use an empty document
-            if (_searchPattern != null)
-            {
-                inputs = new[] { context.GetDocument((string)null) };
-            }
+            return _searchPattern != null
+                ? Execute(null, _searchPattern, context)
+                : inputs.AsParallel().SelectMany(input => 
+                    Execute(input, _sourcePathDelegate.Invoke<string>(input, context), context));
+        }
 
-            return inputs.AsParallel().SelectMany(input =>
+        private IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        {
+            if (path != null)
             {
-                string path = _searchPattern ?? _sourcePath.Invoke<string>(input, context);
-                if (path != null)
+                bool isPathUnderInputFolder = false;
+
+                if (!System.IO.Path.IsPathRooted(path))
                 {
-                    bool isPathUnderInputFolder = false;
+                    path = PathHelper.CombineToFullPath(context.InputFolder, path);
+                    isPathUnderInputFolder = path.StartsWith(context.InputFolder);
+                }
 
-                    if (!System.IO.Path.IsPathRooted(path))
-                    {
-                        path = PathHelper.CombineToFullPath(context.InputFolder, path);
-                        isPathUnderInputFolder = path.StartsWith(context.InputFolder);
-                    }
-                    
-                    string fileRoot = System.IO.Path.GetDirectoryName(path);
-                    if (fileRoot != null && Directory.Exists(fileRoot))
-                    {
-                        return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
-                            .AsParallel()
-                            .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(System.IO.Path.GetExtension(x))))
-                            .Select(file =>
+                string fileRoot = System.IO.Path.GetDirectoryName(path);
+                if (fileRoot != null && Directory.Exists(fileRoot))
+                {
+                    return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
+                        .AsParallel()
+                        .Where(x => (_predicate == null || _predicate(x)) && (_withoutExtensions == null || !_withoutExtensions.Contains(System.IO.Path.GetExtension(x))))
+                        .Select(file =>
+                        {
+                            string destination = null;
+
+                            if (_destinationPath == null)
                             {
-                                string destination = null;
-
-                                if(_destinationPath == null)
+                                if (file != null)
                                 {
-                                    if(file != null)
-                                    {
-                                        string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, System.IO.Path.GetDirectoryName(file)) : "";
-                                        destination = System.IO.Path.Combine(context.OutputFolder, relativePath, System.IO.Path.GetFileName(file));
-                                    }
+                                    string relativePath = isPathUnderInputFolder ? PathHelper.GetRelativePath(context.InputFolder, System.IO.Path.GetDirectoryName(file)) : "";
+                                    destination = System.IO.Path.Combine(context.OutputFolder, relativePath, System.IO.Path.GetFileName(file));
                                 }
-                                else
-                                {
-                                    destination = _destinationPath(file);
-                                }
+                            }
+                            else
+                            {
+                                destination = _destinationPath(file);
+                            }
 
-                                if (!string.IsNullOrWhiteSpace(destination))
+                            if (!string.IsNullOrWhiteSpace(destination))
+                            {
+                                string destinationDirectory = System.IO.Path.GetDirectoryName(destination);
+                                if (destinationDirectory != null && !Directory.Exists(destinationDirectory))
                                 {
-                                    string destinationDirectory = System.IO.Path.GetDirectoryName(destination);
-                                    if (destinationDirectory != null && !Directory.Exists(destinationDirectory))
-                                    {
-                                        Directory.CreateDirectory(destinationDirectory);
-                                    }
-                                    SafeIOHelper.Copy(file, destination, true);
-                                    Trace.Verbose("Copied file {0} to {1}", file, destination);
-                                    return input.Clone(new MetadataItems
-                                    {
+                                    Directory.CreateDirectory(destinationDirectory);
+                                }
+                                SafeIOHelper.Copy(file, destination, true);
+                                Trace.Verbose("Copied file {0} to {1}", file, destination);
+                                return context.GetDocument(input, new MetadataItems
+                                {
                                         { Keys.SourceFilePath, file },
                                         { Keys.DestinationFilePath, destination }
-                                    });
-                                }
+                                });
+                            }
 
-                                return null;
-                            })
-                            .Where(x => x != null);
-                    }
+                            return null;
+                        })
+                        .Where(x => x != null);
                 }
-                return (IEnumerable<IDocument>)Array.Empty<IDocument>();
-            });
-        }
+            }
+            return Array.Empty<IDocument>();
+        } 
     }
 }

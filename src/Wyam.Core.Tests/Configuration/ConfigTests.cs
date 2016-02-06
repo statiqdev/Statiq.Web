@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Wyam.Core.Configuration;
 using Wyam.Core.IO;

@@ -19,9 +19,10 @@ namespace Wyam.Core.Modules.IO
     /// Reads the content of files from the file system into the content of new documents.
     /// </summary>
     /// <remarks>
-    /// For each output document, several metadata values are set with information about the file. Note 
-    /// that this module is best at the beginning of a pipeline because it will be executed once 
-    /// for each input document, even if you only specify a search path. If you want to add 
+    /// For each output document, several metadata values are set with information about the file. This module will
+    /// be executed once and input documents will be ignored if a search path is specified. Otherwise, if a delegate
+    /// is specified the module will be executed once per input document and the resulting output documents will be
+    /// aggregated. In either case, the input documents will not be returned as output of this module. If you want to add 
     /// additional files to a current pipeline, you should enclose your ReadFiles modules with <see cref="Concat"/>.
     /// </remarks>
     /// <metadata name="SourceFileRoot" type="string">The absolute root search path without any nested directories 
@@ -46,7 +47,8 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class ReadFiles : IModule
     {
-        private readonly DocumentConfig _path;
+        private readonly string _searchPattern;
+        private readonly DocumentConfig _pathDelegate;
         private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
         private Func<string, bool> _predicate = null;
         private string[] _extensions;
@@ -62,7 +64,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(path));
             }
 
-            _path = path;
+            _pathDelegate = path;
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(searchPattern));
             }
 
-            _path = (x, y) => searchPattern;
+            _searchPattern = searchPattern;
         }
 
         /// <summary>
@@ -132,24 +134,29 @@ namespace Wyam.Core.Modules.IO
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().SelectMany(input =>
+            return _searchPattern != null
+                ? Execute(null, _searchPattern, context)
+                : inputs.AsParallel().SelectMany(input =>
+                    Execute(input, _pathDelegate.Invoke<string>(input, context), context));
+        }
+
+        public IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        {
+            if (path != null)
             {
-                string path = _path.Invoke<string>(input, context);
-                if (path != null)
+                path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                path = System.IO.Path.Combine(System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName(path)), System.IO.Path.GetFileName(path));
+                string fileRoot = System.IO.Path.GetDirectoryName(path);
+                if (fileRoot != null && Directory.Exists(fileRoot))
                 {
-                    path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                    path = System.IO.Path.Combine(System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName(path)), System.IO.Path.GetFileName(path));
-                    string fileRoot = System.IO.Path.GetDirectoryName(path);
-                    if (fileRoot != null && Directory.Exists(fileRoot))
-                    {
-                        return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
-                            .AsParallel()
-                            .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x))))
-                            .Select(file =>
+                    return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
+                        .AsParallel()
+                        .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x))))
+                        .Select(file =>
+                        {
+                            Trace.Verbose("Read file {0}", file);
+                            return context.GetDocument(input, file, SafeIOHelper.OpenRead(file), new MetadataItems
                             {
-                                Trace.Verbose("Read file {0}", file);
-                                return input.Clone(file, SafeIOHelper.OpenRead(file), new MetadataItems
-                                {
                                     { Keys.SourceFileRoot, fileRoot },
                                     { Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(file) },
                                     { Keys.SourceFileExt, System.IO.Path.GetExtension(file) },
@@ -160,12 +167,11 @@ namespace Wyam.Core.Modules.IO
                                     { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file) },
                                     { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file)) },
                                     { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
-                                });
                             });
-                    }
+                        });
                 }
-                return (IEnumerable<IDocument>) Array.Empty<IDocument>();
-            });
-        }
+            }
+            return Array.Empty<IDocument>();
+        } 
     }
 }

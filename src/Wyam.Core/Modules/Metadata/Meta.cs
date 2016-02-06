@@ -118,7 +118,7 @@ namespace Wyam.Core.Modules.Metadata
                                 }
                             }
                         }
-                        return input.Clone(metadata);
+                        return context.GetDocument(input, metadata);
                     });
                 }
 
@@ -130,10 +130,10 @@ namespace Wyam.Core.Modules.Metadata
                         metadata[kvp.Key] = kvp.Value;
                     }
                 }
-                return inputs.Select(input => input.Clone(metadata));
+                return inputs.Select(input => context.GetDocument(input, metadata));
             }
 
-            return inputs.Select(x => x.Clone(new [] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
+            return inputs.Select(x => context.GetDocument(x, new[] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
         }
     }
 }

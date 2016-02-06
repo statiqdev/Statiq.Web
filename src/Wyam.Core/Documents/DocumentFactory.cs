@@ -14,9 +14,9 @@ namespace Wyam.Core.Documents
 {
     internal class DocumentFactory : IDocumentFactory
     {
-        private readonly IDictionary<string, object> _initialMetadata;
+        private readonly IInitialMetadata _initialMetadata;
 
-        public DocumentFactory(IDictionary<string, object> initialMetadata)
+        public DocumentFactory(IInitialMetadata initialMetadata)
         {
             _initialMetadata = initialMetadata;
         }

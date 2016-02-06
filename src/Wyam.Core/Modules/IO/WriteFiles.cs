@@ -232,7 +232,7 @@ namespace Wyam.Core.Modules.IO
                             inputStream.CopyTo(outputStream);
                         }
                         Trace.Verbose("Wrote file {0}", path);
-                        return input.Clone(outputStream, new MetadataItems
+                        return context.GetDocument(input, outputStream, new MetadataItems
                         {
                             { Keys.DestinationFileBase, System.IO.Path.GetFileNameWithoutExtension(path) },
                             { Keys.DestinationFileExt, System.IO.Path.GetExtension(path) },

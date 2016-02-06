@@ -101,7 +101,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="content">The content for each output document.</param>
         public Documents(params string[] content)
         {
-            _contextDocuments = ctx => content.Select(x => ctx.GetDocument().Clone(x));
+            _contextDocuments = ctx => content.Select(x => ctx.GetDocument(x));
         }
         
         /// <summary>
@@ -119,7 +119,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="contentAndMetadata">The content and metadata for each output document.</param>
         public Documents(params Tuple<string, IEnumerable<KeyValuePair<string, object>>>[] contentAndMetadata)
         {
-            _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetDocument(x.Item2).Clone(x.Item1));
+            _contextDocuments = ctx => contentAndMetadata.Select(x => ctx.GetDocument(x.Item1, x.Item2));
         }
 
         /// <summary>

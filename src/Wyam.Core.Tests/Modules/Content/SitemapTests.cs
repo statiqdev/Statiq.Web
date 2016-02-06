@@ -53,22 +53,22 @@ namespace Wyam.Core.Tests.Modules.Content
         {
             [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile.html")]
             [TestCase(null, "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
-            [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html"
-                )]
+            [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
             public void SitemapGeneratedWithSitemapItem(string hostname, string formatterString, string expected)
             {
                 // Given
                 Engine engine = new Engine();
-
                 if (!string.IsNullOrWhiteSpace(hostname))
                     engine.InitialMetadata[Keys.Hostname] = hostname;
-
                 Pipeline contentPipeline = new Pipeline("Content", null);
-                var doc = new Document(engine.InitialMetadata, contentPipeline).DontClone("Test",
-                    new[] {new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")});
+                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
+
+                IDocument doc = context.GetDocument("Test", new[]
+                {
+                    new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
+                });
                 IDocument[] inputs = {doc};
 
-                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
                 Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem,
                     (d, c) => new SitemapItem(d[Keys.RelativeFilePath].ToString()));
                 var outputs = m.Execute(inputs, context);
@@ -100,16 +100,17 @@ namespace Wyam.Core.Tests.Modules.Content
             {
                 // Given
                 Engine engine = new Engine();
-
                 if (!string.IsNullOrWhiteSpace(hostname))
                     engine.InitialMetadata[Keys.Hostname] = hostname;
-
                 Pipeline contentPipeline = new Pipeline("Content", null);
-                var doc = new Document(engine.InitialMetadata, contentPipeline).DontClone("Test",
-                    new[] {new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")});
+                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
+
+                IDocument doc = context.GetDocument("Test", new[]
+                {
+                    new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
+                });
                 IDocument[] inputs = {doc};
 
-                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
                 Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem,
                     (d, c) => d[Keys.RelativeFilePath].ToString());
                 var outputs = m.Execute(inputs, context);

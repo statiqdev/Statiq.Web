@@ -79,7 +79,7 @@ namespace Wyam.Core.Modules.Control
             }
             return inputs.SelectMany(input =>
             {
-                return partitions.Select((x, i) => input.Clone(
+                return partitions.Select((x, i) => context.GetDocument(input,
                     new Dictionary<string, object>
                     {
                         {Keys.PageDocuments, partitions[i]},

@@ -18,12 +18,11 @@ using Wyam.Core.Modules.Control;
 namespace Wyam.Core.Modules.IO
 {
     /// <summary>
-    /// Downloads from HTTP and outputs results as documents.
+    /// Downloads from HTTP and outputs the results as new documents.
     /// </summary>
     /// <remarks>
-    /// The requested resources are downloaded for each input document. The output of this module is the aggregate
-    /// sequence of all downloaded resources for each input document. The original input document (along with it's content)
-    /// is not part of the output of this module. If you want to retain the original content, consider using the
+    /// The original input documents are ignored and are not part of the output 
+    /// of this module. If you want to retain the original input documents, consider using the
     /// <see cref="ConcatBranch"/> module.
     /// </remarks>
     /// <category>Input/Output</category>
@@ -90,35 +89,32 @@ namespace Wyam.Core.Modules.IO
             List<Task<DownloadResult>> tasks = _urls.Select(DownloadUrl).ToList();
 
             Task.WhenAll(tasks).Wait();
-
-            return inputs.SelectMany(input =>
+            
+            return tasks.Where(x => !x.IsFaulted).Select(t =>
             {
-                return tasks.Where(x => !x.IsFaulted).Select(t =>
+                string key = t.Result.Uri.ToString();
+                IDocument doc;
+
+                if (_cacheResponse && context.ExecutionCache.TryGetValue(key, out doc))
                 {
-                    string key = t.Result.Uri.ToString();
-                    IDocument doc;
-
-                    if (_cacheResponse && context.ExecutionCache.TryGetValue(key, out doc))
-                    {
-                        return doc;
-                    }
-
-                    DownloadResult result = t.Result;
-
-                    string uri = result.Uri.ToString();
-                    doc = input.Clone(uri, result.Stream, new MetadataItems
-                    {
-                        { Keys.SourceUri, uri },
-                        { Keys.SourceHeaders, result.Headers }
-                    });
-
-                    if (_cacheResponse)
-                    {
-                        context.ExecutionCache.Set(key, doc);
-                    }
-
                     return doc;
+                }
+
+                DownloadResult result = t.Result;
+
+                string uri = result.Uri.ToString();
+                doc = context.GetDocument(uri, result.Stream, new MetadataItems
+                {
+                    { Keys.SourceUri, uri },
+                    { Keys.SourceHeaders, result.Headers }
                 });
+
+                if (_cacheResponse)
+                {
+                    context.ExecutionCache.Set(key, doc);
+                }
+
+                return doc;
             });
         }
 

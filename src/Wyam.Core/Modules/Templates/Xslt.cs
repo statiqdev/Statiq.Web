@@ -60,7 +60,7 @@ namespace Wyam.Core.Modules.Templates
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
                 try
                 {
@@ -68,26 +68,26 @@ namespace Wyam.Core.Modules.Templates
 
                     if (_xsltPath != null)
                     {
-                        string path = _xsltPath.Invoke<string>(x, context);
+                        string path = _xsltPath.Invoke<string>(input, context);
                         path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
                         xslt.Load(path);
                     }
                     else if (_xsltGeneration != null)
                     {
-                        IDocument xsltDocument = context.Execute(_xsltGeneration, new [] { x }).Single();
+                        IDocument xsltDocument = context.Execute(_xsltGeneration, new [] { input }).Single();
                         using (Stream stream = xsltDocument.GetStream())
                         {
                             xslt.Load(System.Xml.XmlReader.Create(stream));
                         }
                     }
-                    using (Stream stream = x.GetStream())
+                    using (Stream stream = input.GetStream())
                     {
                         StringWriter str = new System.IO.StringWriter();
                         using (XmlTextWriter writer = new System.Xml.XmlTextWriter(str))
                         {
                             xslt.Transform(System.Xml.XmlReader.Create(stream), writer);
                         }
-                        return x.Clone(str.ToString());
+                        return context.GetDocument(input, str.ToString());
                     }
 
                 }

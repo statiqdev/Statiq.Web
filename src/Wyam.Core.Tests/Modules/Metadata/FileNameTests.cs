@@ -33,7 +33,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, input)
                 }) };
@@ -56,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
 			    Pipeline pipeline = new Pipeline("Pipeline", null);
 			    IExecutionContext context = new ExecutionContext(engine, pipeline);
-			    IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+			    IDocument[] inputs = { context.GetDocument(new MetadataItems
 			    {
                     new MetadataItem(Keys.SourceFileName, input)
 			    }) };
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			    Engine engine = new Engine();
 			    Pipeline pipeline = new Pipeline("Pipeline", null);
 			    IExecutionContext context = new ExecutionContext(engine, pipeline);
-			    IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+			    IDocument[] inputs = { context.GetDocument(new MetadataItems
 			    {
                     new MetadataItem(Keys.SourceFileName, input)
 			    }) };
@@ -103,7 +103,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, input)
                 }) };
@@ -128,7 +128,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 string manyCharactersWow = new String(character[0], 10);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, 
                         string.Format("testing {0} some of {0} these {0}", manyCharactersWow))
@@ -151,7 +151,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, input)
                 }) };
@@ -176,7 +176,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
-                    new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                    context.GetDocument(new MetadataItems
                     {
                         new MetadataItem("MyKey", input)
                     })
@@ -202,7 +202,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs =
                 {
-                    new Document(engine.InitialMetadata, pipeline).DontClone(new []
+                    context.GetDocument(new MetadataItems
                     {
                         new MetadataItem("MyKey", input)
                     })

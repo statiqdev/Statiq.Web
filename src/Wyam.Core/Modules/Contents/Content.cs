@@ -58,7 +58,7 @@ namespace Wyam.Core.Modules.Contents
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            return new [] { content == null ? input : input.Clone(content.ToString()) };
+            return new [] { content == null ? input : context.GetDocument(input, content.ToString()) };
         }
     }
 }

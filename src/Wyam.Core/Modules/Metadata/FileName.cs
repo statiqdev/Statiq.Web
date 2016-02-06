@@ -28,7 +28,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <category>Metadata</category>
     public class FileName : IModule
     {
-	    private List<string> _allowedCharacters = new List<string>();
+	    private readonly List<string> _allowedCharacters = new List<string>();
 
 	    internal static readonly string[] ReservedChars = new string[]
         {
@@ -192,13 +192,13 @@ namespace Wyam.Core.Modules.Metadata
                         string relativeFileDir = input.String(Keys.RelativeFileDir);
                         if (!string.IsNullOrWhiteSpace(_pathOutputKey) && !string.IsNullOrWhiteSpace(relativeFileDir))
                         {
-							return input.Clone(new MetadataItems
+							return context.GetDocument(input, new MetadataItems
                             {
                                 { _outputKey, fileName },
                                 { _pathOutputKey, Path.Combine(relativeFileDir, fileName) }
                             });
                         }
-                        return input.Clone(new MetadataItems
+                        return context.GetDocument(input, new MetadataItems
                         {
                             { _outputKey, fileName }
                         });

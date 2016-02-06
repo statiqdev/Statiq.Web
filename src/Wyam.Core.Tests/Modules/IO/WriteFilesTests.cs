@@ -54,8 +54,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone("Test") };
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
                 // When
@@ -78,8 +78,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone("Test") };
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles("txt");
 
                 // When
@@ -104,8 +104,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.InitialMetadata[Keys.SourceFileDir] = @"TestFiles/Input/Subfolder";
                 engine.InitialMetadata[Keys.SourceFileBase] = @"write-test";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone("Test") };
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles((x, y) => null);
 
                 // When
@@ -132,8 +132,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline).DontClone("Test") };
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles("txt");
 
                 // When
@@ -157,8 +157,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.InputFolder = @"TestFiles\Input";
                 engine.OutputFolder = @"TestFiles\Output\";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
-                IDocument[] inputs = { new Document(engine.InitialMetadata, pipeline) };
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument() };
                 ReadFiles readFiles = new ReadFiles(@"test-c.txt");
                 WriteFiles writeFiles = new WriteFiles("txt");
 
@@ -196,26 +196,26 @@ namespace Wyam.Core.Tests.Modules.IO
                 engine.OutputFolder = @"TestFiles\Output\";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 MemoryStream emptyStream = new MemoryStream(new byte[] { });
+                IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs =
                 {
-                    new Document(engine.InitialMetadata, pipeline).Clone("Test", 
-                        new [] {
+                    context.GetDocument("Test", 
+                        new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, @"Subfolder/write-test")
                         }),
-                    new Document(engine.InitialMetadata, pipeline).Clone(string.Empty,
-                        new [] {
+                    context.GetDocument(string.Empty,
+                        new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, @"Subfolder/empty-test"), 
                         }),
-                    new Document(engine.InitialMetadata, pipeline).Clone(null,
-                        new [] {
+                    context.GetDocument((string)null,
+                        new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, @"Subfolder/null-test")
                         }),
-                    new Document(engine.InitialMetadata, pipeline).Clone(emptyStream,
-                        new [] {
+                    context.GetDocument(emptyStream,
+                        new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, @"Subfolder/stream-test")
                         })
                 };
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
                 WriteFiles writeFiles = new WriteFiles();
 
                 // When
