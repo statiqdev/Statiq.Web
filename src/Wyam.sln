@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
@@ -69,6 +69,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Testing", "Wyam.Testing\Wyam.Testing.csproj", "{7726D040-4192-49C7-B9EA-E192397127C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{50B6158B-0946-4467-8D2D-6CFAA826A65E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.AmazonWebServices", "Wyam.Modules.AmazonWebServices\Wyam.Modules.AmazonWebServices.csproj", "{327A23F7-AE78-48B3-97B0-7180492CF08C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,6 +202,10 @@ Global
 		{7726D040-4192-49C7-B9EA-E192397127C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7726D040-4192-49C7-B9EA-E192397127C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7726D040-4192-49C7-B9EA-E192397127C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{327A23F7-AE78-48B3-97B0-7180492CF08C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327A23F7-AE78-48B3-97B0-7180492CF08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327A23F7-AE78-48B3-97B0-7180492CF08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327A23F7-AE78-48B3-97B0-7180492CF08C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,5 +235,6 @@ Global
 		{F835BE84-9121-4E31-B2DA-0C7E5391DAC3} = {50B6158B-0946-4467-8D2D-6CFAA826A65E}
 		{F55FB154-8722-450C-B641-6DE331ED94A0} = {50B6158B-0946-4467-8D2D-6CFAA826A65E}
 		{25A5AC38-6AE9-49F4-B87B-08EAFD11AB5C} = {50B6158B-0946-4467-8D2D-6CFAA826A65E}
+		{327A23F7-AE78-48B3-97B0-7180492CF08C} = {50B6158B-0946-4467-8D2D-6CFAA826A65E}
 	EndGlobalSection
 EndGlobal

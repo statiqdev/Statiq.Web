@@ -50,6 +50,7 @@ namespace Wyam
         private DirectoryPath _rootPath = null;
         private DirectoryPath _inputPath = null;
         private DirectoryPath _outputPath = null;
+        private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
 
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
@@ -114,8 +115,9 @@ namespace Wyam
                 messagePump = true;
                 try
                 {
-                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, engine.FileSystem.OutputPath);
-                    previewServer = Preview(engine);
+                    var rootPath = _previewRoot == null ? engine.FileSystem.GetOutputDirectory().Path.FullPath : _previewRoot.FullPath;
+                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, rootPath);
+                    previewServer = Preview(engine, rootPath);
                 }
                 catch (Exception ex)
                 {
@@ -263,6 +265,7 @@ namespace Wyam
                 {
                     syntax.ReportError("force-ext can only be specified if the preview server is running."); 
                 }
+                syntax.DefineOption("r|root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.");
                 syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
@@ -384,7 +387,7 @@ namespace Wyam
             return true;
         }
 
-        private IDisposable Preview(Engine engine)
+        private IDisposable Preview(Engine engine, string root)
         {
             StartOptions options = new StartOptions("http://localhost:" + _previewPort);
 
@@ -394,7 +397,7 @@ namespace Wyam
 
             return WebApp.Start(options, app =>
             {
-                IFileSystem outputFolder = new PhysicalFileSystem(engine.FileSystem.GetOutputDirectory().Path.FullPath);
+                IFileSystem outputFolder = new PhysicalFileSystem(root);
 
                 // Disable caching
                 app.Use((c, t) =>
