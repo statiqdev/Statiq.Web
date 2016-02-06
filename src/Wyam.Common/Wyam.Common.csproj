@@ -66,7 +66,6 @@
     <Compile Include="Documents\DocumentCollectionExtensions.cs" />
     <Compile Include="Configuration\DocumentConfig.cs" />
     <Compile Include="Documents\IDocumentCollection.cs" />
-    <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
     <Compile Include="Tracing\IIndentedTraceEvent.cs" />

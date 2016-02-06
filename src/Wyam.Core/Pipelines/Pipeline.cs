@@ -12,6 +12,7 @@ using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
+using Wyam.Core.Util;
 
 namespace Wyam.Core.Pipelines
 {
@@ -19,8 +20,7 @@ namespace Wyam.Core.Pipelines
     {
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
         private readonly List<IModule> _modules = new List<IModule>();
-        private readonly ConcurrentDictionary<string, byte> _documentSources 
-            = new ConcurrentDictionary<string, byte>();                             // Hacky workaround for the lack of a ConcurrentHashSet<T>
+        private readonly ConcurrentHashSet<string> _documentSources = new ConcurrentHashSet<string>();
         private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
         private readonly Dictionary<string, List<IDocument>> _processedSources; 
         private bool _disposed;
@@ -207,7 +207,7 @@ namespace Wyam.Core.Pipelines
 
             // Execute all modules in the pipeline
             ExecutionContext context = new ExecutionContext(engine, this);
-            ImmutableArray<IDocument> inputs = new [] { engine.DocumentFactory.GetDocument() }.ToImmutableArray();
+            ImmutableArray<IDocument> inputs = new [] { engine.DocumentFactory.GetDocument(context) }.ToImmutableArray();
             IReadOnlyList<IDocument> resultDocuments = Execute(context, _modules, inputs);
 
             // Dispose documents that aren't part of the final collection for this pipeline
@@ -251,7 +251,7 @@ namespace Wyam.Core.Pipelines
             {
                 throw new ArgumentException(nameof(source));
             }
-            if (!_documentSources.TryAdd(source, default(byte)))
+            if (!_documentSources.Add(source))
             {
                 throw new ArgumentException("Document source must be unique within the pipeline: " + source);
             }

@@ -4,15 +4,12 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
-using Wyam.Common.Tracing;
-using Wyam.Core.Documents;
 
 namespace Wyam.Core.Pipelines
 {
@@ -99,14 +96,14 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetDocument()
         {
-            IDocument document = Engine.DocumentFactory.GetDocument();
+            IDocument document = Engine.DocumentFactory.GetDocument(this);
             _pipeline.AddClonedDocument(document);
             return document;
         }
 
         public IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            IDocument document = Engine.DocumentFactory.GetDocument(sourceDocument, source, content, items);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
             _pipeline.AddDocumentSource(source);
             _pipeline.AddClonedDocument(document);
             return document;
@@ -114,14 +111,14 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            IDocument document = Engine.DocumentFactory.GetDocument(sourceDocument, content, items);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, content, items);
             _pipeline.AddClonedDocument(document);
             return document;
         }
 
         public IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            IDocument document = Engine.DocumentFactory.GetDocument(sourceDocument, source, stream, items, disposeStream);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, stream, items, disposeStream);
             _pipeline.AddDocumentSource(source);
             _pipeline.AddClonedDocument(document);
             return document;
@@ -129,14 +126,14 @@ namespace Wyam.Core.Pipelines
 
         public IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            IDocument document = Engine.DocumentFactory.GetDocument(sourceDocument, stream, items, disposeStream);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, stream, items, disposeStream);
             _pipeline.AddClonedDocument(document);
             return document;
         }
 
         public IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items)
         {
-            IDocument document = Engine.DocumentFactory.GetDocument(sourceDocument, items);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, items);
             _pipeline.AddClonedDocument(document);
             return document;
         }

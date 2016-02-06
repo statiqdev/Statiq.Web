@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.Modules;
+using Wyam.Core.Util;
 
-namespace Wyam.Common.Modules
+namespace Wyam.Core.Modules
 {
     public static class ModuleExtensions
     {
+        internal static ConcurrentHashSet<IModule> AsNewDocumentModules { get; } = new ConcurrentHashSet<IModule>();
+
         public static TModule AsNewDocuments<TModule>(this TModule module) where TModule : IModule
         {
+            AsNewDocumentModules.Add(module);
             return module;
         }
     }

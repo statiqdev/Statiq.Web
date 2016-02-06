@@ -11,7 +11,7 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.Common.Pipelines
 {
-    public interface IExecutionContext : IDocumentFactory
+    public interface IExecutionContext
     {
         byte[] RawConfigAssembly { get; }
         IEnumerable<Assembly> Assemblies { get; }
@@ -27,6 +27,12 @@ namespace Wyam.Common.Pipelines
         string OutputFolder { get; }
         IFileSystem FileSystem { get; }
         IDocumentCollection Documents { get; }
+
+        /// <summary>
+        /// Gets a new document with default initial metadata.
+        /// </summary>
+        /// <returns>The new document.</returns>
+        IDocument GetDocument();
 
         /// <summary>
         /// Gets a new document with the specified source, content, and metadata (in addition to the default initial metadata).
@@ -76,6 +82,65 @@ namespace Wyam.Common.Pipelines
         /// <param name="items">The metadata items.</param>
         /// <returns>The new document.</returns>
         IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items);
+        
+        /// <summary>
+        /// Clones the specified source document with a new source, new content, and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+
+        /// <summary>
+        /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+
+        /// <summary>
+        /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// document takes ownership of the <see cref="Stream"/>).
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="source">The source.</param>
+        /// <param name="stream">The content stream.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+
+        /// <summary>
+        /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// document takes ownership of the <see cref="Stream"/>).
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="stream">The content stream.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+
+        /// <summary>
+        /// Clones the specified source document with identical content and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items);
 
         // This provides access to the same enhanced type conversion used to convert metadata types
         bool TryConvert<T>(object value, out T result);
