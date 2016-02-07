@@ -165,21 +165,21 @@ namespace Wyam.Modules.Html
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            return inputs.AsParallel().SelectMany(x =>
+            return inputs.AsParallel().SelectMany(input =>
             {
                 // Parse the HTML content
                 IHtmlDocument htmlDocument;
                 try
                 {
-                    using (Stream stream = x.GetStream())
+                    using (Stream stream = input.GetStream())
                     {
                         htmlDocument = parser.Parse(stream);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while parsing HTML for {0}: {1}", x.Source, ex.Message);
-                    return new [] { x };
+                    Trace.Warning("Exception while parsing HTML for {0}: {1}", input.Source, ex.Message);
+                    return new [] { input };
                 }
 
                 // Evaluate the query selector
@@ -204,18 +204,18 @@ namespace Wyam.Modules.Html
 
                                 // Clone the document and optionally change content to the HTML element
                                 documents.Add(_outerHtmlContent.HasValue
-                                    ? x.Clone(_outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
-                                    : x.Clone(metadata));
+                                    ? context.GetDocument(input, _outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
+                                    : context.GetDocument(input, metadata));
                             }
                             return (IEnumerable<IDocument>) documents;
                         }
                     }
-                    return new[] { x };
+                    return new[] { input };
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while processing HTML for {0}: {1}", x.Source, ex.Message);
-                    return new[] { x };
+                    Trace.Warning("Exception while processing HTML for {0}: {1}", input.Source, ex.Message);
+                    return new[] { input };
                 }
             });
         }

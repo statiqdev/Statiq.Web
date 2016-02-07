@@ -132,7 +132,7 @@ namespace Wyam.Modules.Git
 
             // Iterate the contributors
             ImmutableArray<IDocument> contributorDocuments = 
-                contributors.Select(x => context.GetDocument(new[]
+                contributors.Select(x => context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(GitKeys.ContributorEmail, x.Key),
                     new MetadataItem(GitKeys.ContributorName, x.Value.Item1),
@@ -159,7 +159,7 @@ namespace Wyam.Modules.Git
                     return input;
                 }
                 ImmutableArray<IDocument> inputContributorDocuments = contributorDocuments
-                    .Select(x => context.GetDocument(new []
+                    .Select(x => context.GetDocument(new MetadataItems
                     {
                         new MetadataItem(GitKeys.ContributorEmail, x[GitKeys.ContributorEmail]),
                         new MetadataItem(GitKeys.ContributorName, x[GitKeys.ContributorName]),
@@ -169,7 +169,7 @@ namespace Wyam.Modules.Git
                     }))
                     .Where(x => x.Get<IReadOnlyList<IDocument>>(GitKeys.Commits).Count > 0)
                     .ToImmutableArray();
-                return input.Clone(new[]
+                return context.GetDocument(input, new MetadataItems
                 {
                     new MetadataItem(_contributorsMetadataKey, inputContributorDocuments)
                 });

@@ -23,20 +23,20 @@ namespace Wyam.Modules.Tables
     {
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
                 try
                 {
-                    using (var stream = x.GetStream())
+                    using (var stream = input.GetStream())
                     {
                         Tabular.Table table = Tabular.Excel.ReadFrom(stream, Tabular.ExcelFormat.Excel2007);
                         Tabular.Csv csv = Tabular.Csv.ToCsv(table);
-                        return x.Clone(csv.Data);
+                        return context.GetDocument(input, csv.Data);
                     }
                 }
                 catch (Exception e)
                 {
-                    Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
+                    Trace.Error($"An {e.ToString()} occurred ({input.Source}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

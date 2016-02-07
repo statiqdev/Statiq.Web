@@ -137,12 +137,12 @@ namespace Wyam.Modules.Razor
             TaskScheduler exclusiveScheduler = new ConcurrentExclusiveSchedulerPair().ExclusiveScheduler;
             CancellationToken cancellationToken = new CancellationToken();
             return validInputs
-                .Select(x =>
+                .Select(input =>
                 {
-                    using (Trace.WithIndent().Verbose("Processing Razor for {0}", x.Source))
+                    using (Trace.WithIndent().Verbose("Processing Razor for {0}", input.Source))
                     {
                         Tuple<ViewContext, ViewEngineResult> compilationResult;
-                        if (compilationResults.TryGetValue(x, out compilationResult))
+                        if (compilationResults.TryGetValue(input, out compilationResult))
                         {
                             using (StringWriter writer = new StringWriter())
                             {
@@ -150,10 +150,10 @@ namespace Wyam.Modules.Razor
                                 compilationResult.Item1.Writer = writer;
                                 Task.Factory.StartNew(() => compilationResult.Item2.View.RenderAsync(compilationResult.Item1),
                                     cancellationToken, TaskCreationOptions.None, exclusiveScheduler).Unwrap().GetAwaiter().GetResult();
-                                return x.Clone(writer.ToString());
+                                return context.GetDocument(input, writer.ToString());
                             }
                         }
-                        Trace.Warning("Could not find compilation result for {0}", x.Source);
+                        Trace.Warning("Could not find compilation result for {0}", input.Source);
                         return null;
                     }
                 });

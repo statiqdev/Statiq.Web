@@ -56,12 +56,12 @@ namespace Wyam.Modules.Yaml
         {
             return inputs
                 .AsParallel()
-                .Select(x =>
+                .Select(input =>
                 {
                     try
                     {
                         Dictionary<string, object> items = new Dictionary<string, object>();
-                        using (TextReader contentReader = new StringReader(x.Content))
+                        using (TextReader contentReader = new StringReader(input.Content))
                         {
                             YamlStream yamlStream = new YamlStream();
                             yamlStream.Load(contentReader);
@@ -92,11 +92,11 @@ namespace Wyam.Modules.Yaml
                                 }
                             }
                         }
-                        return x.Clone(items);
+                        return context.GetDocument(input, items);
                     }
                     catch (Exception ex)
                     {
-                        Trace.Error("Error processing YAML for {0}: {1}", x.Source, ex.ToString());
+                        Trace.Error("Error processing YAML for {0}: {1}", input.Source, ex.ToString());
                     }
                     return null;
                 })

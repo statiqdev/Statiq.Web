@@ -106,7 +106,7 @@ namespace Wyam.Modules.Git
                 ImmutableArray<IDocument> inputCommitDocuments = commitDocuments
                     .Where(x => x.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries).ContainsKey(relativePath))
                     .ToImmutableArray();
-                return input.Clone(new[]
+                return context.GetDocument(input, new MetadataItems
                 {
                     new MetadataItem(_commitsMetadataKey, inputCommitDocuments)
                 });

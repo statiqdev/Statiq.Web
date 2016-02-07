@@ -180,7 +180,7 @@ namespace Wyam.Modules.AmazonWebServices
 
                 writer.WriteEndArray();
 
-                return new[] { context.GetNewDocument(sw.ToString()) };
+                return new[] { context.GetDocument(sw.ToString()) };
             }
         }
     }

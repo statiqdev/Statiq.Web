@@ -34,11 +34,11 @@ namespace Wyam.Modules.Tables
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
                 try
                 {
-                    Tabular.Csv csv = new Tabular.Csv() { Data = x.Content };
+                    Tabular.Csv csv = new Tabular.Csv() { Data = input.Content };
                     Tabular.Table table = Tabular.Csv.FromCsv(csv);
                     StringBuilder builder = new StringBuilder();
 
@@ -62,11 +62,11 @@ namespace Wyam.Modules.Tables
                         firstLine = false;
                     }
                     builder.Append("</table>");
-                    return x.Clone(builder.ToString());
+                    return context.GetDocument(input, builder.ToString());
                 }
                 catch (Exception e)
                 {
-                    Trace.Error($"An {e.ToString()} occurred ({x.Source}): {e.Message}");
+                    Trace.Error($"An {e.ToString()} occurred ({input.Source}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

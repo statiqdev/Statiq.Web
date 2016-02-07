@@ -45,7 +45,7 @@ namespace Wyam.Core.Modules.IO
     /// <metadata name="RelativeFileDir" type="string">The relative directory of the file 
     /// from the Wyam input folder.</metadata>
     /// <category>Input/Output</category>
-    public class ReadFiles : IModule
+    public class ReadFiles : IModule, IAsNewDocuments
     {
         private readonly string _searchPattern;
         private readonly DocumentConfig _pathDelegate;
@@ -140,7 +140,7 @@ namespace Wyam.Core.Modules.IO
                     Execute(input, _pathDelegate.Invoke<string>(input, context), context));
         }
 
-        public IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        private IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
         {
             if (path != null)
             {

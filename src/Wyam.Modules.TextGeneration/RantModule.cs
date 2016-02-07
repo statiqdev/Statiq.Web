@@ -104,9 +104,9 @@ namespace Wyam.Modules.TextGeneration
             {
                 output = _engine.Do(content.ToString());
             }
-            return new[] {Execute(output, input)};
+            return new[] {Execute(output, input, context)};
         }
 
-        protected abstract IDocument Execute(string content, IDocument input);
+        protected abstract IDocument Execute(string content, IDocument input, IExecutionContext context);
     }
 }

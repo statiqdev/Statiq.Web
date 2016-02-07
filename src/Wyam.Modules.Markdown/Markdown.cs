@@ -60,36 +60,36 @@ namespace Wyam.Modules.Markdown
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
                 Trace.Verbose("Processing Markdown {0}for {1}", 
-                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), x.Source);
+                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.Source);
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;
-                if (!executionCache.TryGetValue<string>(x, _sourceKey, out result))
+                if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
                 {
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        result = CommonMark.CommonMarkConverter.Convert(x.Content);
+                        result = CommonMark.CommonMarkConverter.Convert(input.Content);
                     }
                     else
                     {
-                        if (!x.ContainsKey(_sourceKey))
+                        if (!input.ContainsKey(_sourceKey))
                         {
                             // Don't do anything if the key doesn't exist
-                            return x;
+                            return input;
                         }
-                        result = CommonMark.CommonMarkConverter.Convert(x.String(_sourceKey) ?? string.Empty);
+                        result = CommonMark.CommonMarkConverter.Convert(input.String(_sourceKey) ?? string.Empty);
                     }
                     if (_escapeAt)
                     {
                         result = result.Replace("@", "&#64;");
                     }
-                    executionCache.Set(x, _sourceKey, result);
+                    executionCache.Set(input, _sourceKey, result);
                 }
                 return string.IsNullOrEmpty(_sourceKey)
-                    ? x.Clone(result)
-                    : x.Clone(new MetadataItems
+                    ? context.GetDocument(input, result)
+                    : context.GetDocument(input, new MetadataItems
                     {
                         { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }
                     });

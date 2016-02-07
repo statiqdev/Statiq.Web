@@ -399,7 +399,7 @@ namespace Wyam.Modules.Images
 
                     var output = ProcessImage(input, format, ins);
 
-                    var clone = input.Clone(output, new MetadataItems
+                    var clone = context.GetDocument(input, output, new MetadataItems
                         {
                             { Keys.WritePath, destinationPath},
                             { Keys.WriteExtension, extension }

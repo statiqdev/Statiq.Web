@@ -7,6 +7,7 @@ using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.TextGeneration
 {
@@ -77,9 +78,9 @@ namespace Wyam.Modules.TextGeneration
             _key = key;
         }
 
-        protected override IDocument Execute(string content, IDocument input)
+        protected override IDocument Execute(string content, IDocument input, IExecutionContext context)
         {
-            return input.Clone(new[] { new KeyValuePair<string, object>(_key, content) });
+            return context.GetDocument(input, new[] { new KeyValuePair<string, object>(_key, content) });
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Wyam.Modules.Git
             {
                 return repository.Commits
                     .OrderByDescending(x => x.Author.When)
-                    .Select(x => context.GetDocument(new[]
+                    .Select(x => context.GetDocument(new MetadataItems
                     {
                         new MetadataItem(GitKeys.Sha, x.Sha),
                         new MetadataItem(GitKeys.Parents, x.Parents.Select(y => y.Sha).ToImmutableArray()),

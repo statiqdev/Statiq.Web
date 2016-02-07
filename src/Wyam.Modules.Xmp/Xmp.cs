@@ -106,12 +106,12 @@ namespace Wyam.Modules.Xmp
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select(x =>
+            return inputs.Select(input =>
              {
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try
                  {
-                     using (var stream = x.GetStream())
+                     using (var stream = input.GetStream())
                      {
 
                          xmpDirectory = ImageMetadataReader.ReadMetadata(stream).OfType<XmpDirectory>().FirstOrDefault();
@@ -123,9 +123,9 @@ namespace Wyam.Modules.Xmp
                  }
                  if (xmpDirectory == null) // Try to read sidecarfile
                  {
-                     if (x.ContainsKey(Keys.SourceFilePath) && System.IO.File.Exists(x[Keys.SourceFilePath] + ".xmp"))
+                     if (input.ContainsKey(Keys.SourceFilePath) && System.IO.File.Exists(input[Keys.SourceFilePath] + ".xmp"))
                      {
-                         string xmpXml = System.IO.File.ReadAllText(x[Keys.SourceFilePath] + ".xmp");
+                         string xmpXml = System.IO.File.ReadAllText(input[Keys.SourceFilePath] + ".xmp");
                          xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
                      }
                  }
@@ -133,11 +133,11 @@ namespace Wyam.Modules.Xmp
                  {
                      if (_toSearch.Any(y => y.IsMandatory))
                      {
-                         Trace.Warning($"File doe not contain Metadata or sidecar file ({x.Source})");
+                         Trace.Warning($"File doe not contain Metadata or sidecar file ({input.Source})");
                          if (_skipElementOnMissingData)
                              return null;
                      }
-                     return x;
+                     return input;
                  }
 
                  Dictionary<string, object> newValues = new Dictionary<string, object>();
@@ -154,7 +154,7 @@ namespace Wyam.Modules.Xmp
                          {
                              if (search.IsMandatory)
                              {
-                                 Trace.Error($"Metadata does not Contain {search.XmpPath} ({x.Source})");
+                                 Trace.Error($"Metadata does not Contain {search.XmpPath} ({input.Source})");
                                  if (_skipElementOnMissingData)
                                  {
                                      return null;
@@ -165,7 +165,7 @@ namespace Wyam.Modules.Xmp
                          object value = GetObjectFromMetadata(metadata, hierarchicalDirectory);
                          if (newValues.ContainsKey(search.MetadataKey) && _errorOnDoubleKeys)
                          {
-                             Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({x.Source})");
+                             Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({input.Source})");
                          }
                          else
                          {
@@ -180,7 +180,7 @@ namespace Wyam.Modules.Xmp
                              return null;
                      }
                  }
-                 return newValues.Any() ? x.Clone(newValues) : x;
+                 return newValues.Any() ? context.GetDocument(input, newValues) : input;
              }).Where(x => x != null);
         }
 

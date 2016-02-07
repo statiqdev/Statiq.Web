@@ -23,7 +23,7 @@ namespace Wyam.Modules.GitHub
     /// document.
     /// </remarks>
     /// <category>Metadata</category>
-    public class GitHub : IModule
+    public class GitHub : IModule, IAsNewDocuments
     {
         private readonly Credentials _credentials;
         private Uri _url;
@@ -133,22 +133,22 @@ namespace Wyam.Modules.GitHub
             {
                 github.Credentials = _credentials;
             }
-            return inputs.AsParallel().Select(doc =>
+            return inputs.AsParallel().Select(input =>
             {
                 ConcurrentDictionary<string, object> results = new ConcurrentDictionary<string, object>();
                 foreach (KeyValuePair<string, Func<IDocument, IExecutionContext, GitHubClient, object>> request in _requests.AsParallel())
                 {
-                    Trace.Verbose("Submitting {0} GitHub request for {1}", request.Key, doc.Source);
+                    Trace.Verbose("Submitting {0} GitHub request for {1}", request.Key, input.Source);
                     try
                     {
-                        results[request.Key] = request.Value(doc, context, github);
+                        results[request.Key] = request.Value(input, context, github);
                     }
                     catch (Exception ex)
                     {
-                        Trace.Warning("Exception while submitting {0} GitHub request for {1}: {2}", request.Key, doc.Source, ex.ToString());
+                        Trace.Warning("Exception while submitting {0} GitHub request for {1}: {2}", request.Key, input.Source, ex.ToString());
                     }
                 }
-                return doc.Clone(results);
+                return context.GetDocument(input, results);
             });
         }
     }

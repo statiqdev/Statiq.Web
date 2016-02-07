@@ -18,12 +18,16 @@ namespace Wyam.Modules.CodeAnalysis
 {
     /// <summary>
     /// Reads an MSBuild solution or project file and returns all referenced source files as documents.
+    /// This module will be executed once and input documents will be ignored if a search path is 
+    /// specified. Otherwise, if a delegate is specified the module will be executed once per input 
+    /// document and the resulting output documents will be aggregated.
     /// Note that this requires the MSBuild tools to be installed (included with Visual Studio).
     /// See https://github.com/dotnet/roslyn/issues/212 and https://roslyn.codeplex.com/workitem/218.
     /// </summary>
-    public abstract class ReadWorkspace : IModule
+    public abstract class ReadWorkspace : IModule, IAsNewDocuments
     {
-        private readonly ConfigHelper<string> _path;
+        private readonly string _path;
+        private readonly DocumentConfig _pathDelegate;
         private Func<string, bool> _whereProject;
         private Func<string, bool> _whereFile;
         private string[] _extensions;
@@ -38,7 +42,7 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 throw new ArgumentException(nameof(path));
             }
-            _path = new ConfigHelper<string>(path);
+            _path = path;
         }
 
         protected ReadWorkspace(DocumentConfig path)
@@ -47,7 +51,7 @@ namespace Wyam.Modules.CodeAnalysis
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            _path = new ConfigHelper<string>(path);
+            _pathDelegate = path;
         }
         
         /// <summary>
@@ -87,26 +91,31 @@ namespace Wyam.Modules.CodeAnalysis
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().SelectMany(input =>
+            return _path != null
+                ? Execute(null, _path, context)
+                : inputs.AsParallel().SelectMany(input =>
+                    Execute(input, _pathDelegate.Invoke<string>(input, context), context));
+        }
+
+        private IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        {
+            if (path != null)
             {
-                string path = _path.GetValue(input, context);
-                if (path != null)
-                {
-                    path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                    return GetProjects(path)
-                        .AsParallel()
-                        .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
-                        .SelectMany(project =>
-                        {
-                            Trace.Verbose("Read project {0}", project.Name);
-                            return project.Documents
-                                .AsParallel()
-                                .Where(x => !string.IsNullOrWhiteSpace(x.FilePath) && File.Exists(x.FilePath)
-                                    && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
-                                .Select(document => {
-                                    Trace.Verbose("Read file {0}", document.FilePath);
-                                    return context.GetDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
-                                    {
+                path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
+                return GetProjects(path)
+                    .AsParallel()
+                    .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
+                    .SelectMany(project =>
+                    {
+                        Trace.Verbose("Read project {0}", project.Name);
+                        return project.Documents
+                            .AsParallel()
+                            .Where(x => !string.IsNullOrWhiteSpace(x.FilePath) && File.Exists(x.FilePath)
+                                && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
+                            .Select(document => {
+                                Trace.Verbose("Read file {0}", document.FilePath);
+                                return context.GetDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
+                                {
                                         {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
                                         {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},
                                         {Keys.SourceFileExt, System.IO.Path.GetExtension(document.FilePath)},
@@ -117,12 +126,11 @@ namespace Wyam.Modules.CodeAnalysis
                                         {Keys.RelativeFilePath, PathHelper.GetRelativePath(path, document.FilePath)},
                                         {Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(path, document.FilePath))},
                                         {Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
-                                    });
                                 });
-                        });
-                }
-                return (IEnumerable<IDocument>)Array.Empty<IDocument>();
-            });
+                            });
+                    });
+            }
+            return Array.Empty<IDocument>();
         }
     }
 }

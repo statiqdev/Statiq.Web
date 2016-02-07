@@ -118,19 +118,19 @@ namespace Wyam.Modules.Html
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();            
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
                 try
                 {
                     // Get the links
-                    IDictionary<string, string> links = _links.GetValue(x, context, v => _extraLinks
+                    IDictionary<string, string> links = _links.GetValue(input, context, v => _extraLinks
                         .Concat(v.Where(l => !_extraLinks.ContainsKey(l.Key)))
                         .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>"));
 
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();
                     IHtmlDocument htmlDocument;
-                    using (Stream stream = x.GetStream())
+                    using (Stream stream = input.GetStream())
                     {
                         htmlDocument = parser.Parse(stream);
                     }
@@ -155,14 +155,14 @@ namespace Wyam.Modules.Html
                         {
                             replacement.Key.Replace(parser.ParseFragment(replacement.Value, replacement.Key.ParentElement).ToArray());
                         }
-                        return x.Clone(htmlDocument.ToHtml());
+                        return context.GetDocument(input, htmlDocument.ToHtml());
                     }
-                    return x;
+                    return input;
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while parsing HTML for {0}: {1}", x.Source, ex.Message);
-                    return x;
+                    Trace.Warning("Exception while parsing HTML for {0}: {1}", input.Source, ex.Message);
+                    return input;
                 }
             });
         }

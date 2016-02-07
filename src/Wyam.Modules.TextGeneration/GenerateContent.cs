@@ -6,6 +6,7 @@ using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
+using Wyam.Common.Pipelines;
 
 namespace Wyam.Modules.TextGeneration
 {
@@ -51,9 +52,9 @@ namespace Wyam.Modules.TextGeneration
         {
         }
 
-        protected override IDocument Execute(string content, IDocument input)
+        protected override IDocument Execute(string content, IDocument input, IExecutionContext context)
         {
-            return input.Clone(content);
+            return context.GetDocument(input, content);
         }
     }
 }

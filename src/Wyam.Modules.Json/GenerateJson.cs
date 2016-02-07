@@ -80,20 +80,20 @@ namespace Wyam.Modules.Json
         {
             return inputs
                .AsParallel()
-               .Select(doc =>
+               .Select(input =>
                {
                    try
                    {
-                       object data = _data(doc, context);
+                       object data = _data(input, context);
                        if (data != null)
                        {
                            string result = JsonConvert.SerializeObject(data,
                                _indenting ? Formatting.Indented : Formatting.None);
                            if (string.IsNullOrEmpty(_destinationKey))
                            {
-                               return doc.Clone(result);
+                               return context.GetDocument(input, result);
                            }
-                           return doc.Clone(new MetadataItems
+                           return context.GetDocument(input, new MetadataItems
                            {
                                {_destinationKey, result}
                            });
@@ -101,9 +101,9 @@ namespace Wyam.Modules.Json
                    }
                    catch (Exception ex)
                    {
-                       Trace.Error("Error serializing JSON for {0}: {1}", doc.Source, ex.ToString());
+                       Trace.Error("Error serializing JSON for {0}: {1}", input.Source, ex.ToString());
                    }
-                   return doc;
+                   return input;
                })
                .Where(x => x != null);
         }

@@ -54,14 +54,14 @@ namespace Wyam.Modules.Json
         {
             return inputs
                 .AsParallel()
-                .Select(doc =>
+                .Select(input =>
                 {
                     try
                     {
                         JsonSerializer serializer = new JsonSerializer();
                         Dictionary<string, object> items = new Dictionary<string, object>();
                         ExpandoObject json;
-                        using (TextReader contentReader = new StringReader(doc.Content))
+                        using (TextReader contentReader = new StringReader(input.Content))
                         {
                             using (JsonReader jsonReader = new JsonTextReader(contentReader))
                             {
@@ -81,14 +81,14 @@ namespace Wyam.Modules.Json
                                     items[item.Key] = item.Value;
                                 }
                             }
-                            return doc.Clone(items);
+                            return context.GetDocument(input, items);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Trace.Error("Error processing JSON for {0}: {1}", doc.Source, ex.ToString());
+                        Trace.Error("Error processing JSON for {0}: {1}", input.Source, ex.ToString());
                     }
-                    return doc;
+                    return input;
                 })
                 .Where(x => x != null);
         }

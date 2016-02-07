@@ -190,9 +190,9 @@ namespace Wyam.Modules.Html
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(x =>
+            return inputs.AsParallel().Select(input =>
             {
-                string oldContent = x.Content;
+                string oldContent = input.Content;
                 StringWriter outputString = new StringWriter();
                 bool escaped = false;
 
@@ -228,7 +228,7 @@ namespace Wyam.Modules.Html
                         }
                     }
                 }
-                return escaped ? x.Clone(outputString.ToString()) : x;
+                return escaped ? context.GetDocument(input, outputString.ToString()) : input;
             });
         }
     }

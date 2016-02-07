@@ -27,7 +27,7 @@ namespace Wyam.Core.Modules.IO
     /// <metadata name="SourceFilePath" type="string">The full path (including file name) of the source file.</metadata>
     /// <metadata name="DestinationFilePath" type="string">The full path (including file name) of the destination file.</metadata>
     /// <category>Input/Output</category>
-    public class CopyFiles : IModule
+    public class CopyFiles : IModule, IAsNewDocuments
     {
         private readonly DocumentConfig _sourcePathDelegate;
         private readonly string _searchPattern;
