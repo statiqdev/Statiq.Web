@@ -24,7 +24,7 @@ namespace Wyam.Common.Documents
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>
-        /// <param name="source">The source.</param>
+        /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
@@ -50,7 +50,7 @@ namespace Wyam.Common.Documents
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>
-        /// <param name="source">The source.</param>
+        /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
         /// <param name="stream">The content stream.</param>
         /// <param name="items">The metadata items.</param>
         /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>

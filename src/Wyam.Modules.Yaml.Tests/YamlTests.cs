@@ -10,6 +10,7 @@ using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Testing;
 using YamlDotNet.Dynamic;
 
@@ -25,16 +26,17 @@ namespace Wyam.Modules.Yaml.Tests
             public void SetsMetadataKey()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(@"A: 1");
                 Yaml yaml = new Yaml("MyYaml");
 
                 // When
-                yaml.Execute(new [] { document }, null).ToList();  // Make sure to materialize the result list
+                yaml.Execute(new [] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyYaml"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(Arg.Is(document), (Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyYaml")));
             }
 
             [Test]
@@ -43,8 +45,9 @@ namespace Wyam.Modules.Yaml.Tests
                 // Given
                 IDocument document = Substitute.For<IDocument>();
                 IEnumerable<KeyValuePair<string, object>> items = null;
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
                 document.Content.Returns(@"
 A: 1
@@ -54,10 +57,10 @@ C: Yes
                 Yaml yaml = new Yaml("MyYaml");
 
                 // When
-                yaml.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                yaml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
                 Assert.AreEqual(1, items.Count());
                 Assert.IsInstanceOf<DynamicYaml>(items.First().Value);
                 Assert.AreEqual(1, (int)((dynamic)items.First().Value).A);
@@ -71,8 +74,9 @@ C: Yes
                 // Given
                 IDocument document = Substitute.For<IDocument>();
                 IEnumerable<KeyValuePair<string, object>> items = null;
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
                 document.Content.Returns(@"
 A: 1
@@ -82,10 +86,10 @@ C: Yes
                 Yaml yaml = new Yaml();
 
                 // When
-                yaml.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                yaml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
                 Assert.AreEqual(3, items.Count());
                 Assert.AreEqual("1", items.First(x => x.Key == "A").Value);
                 Assert.AreEqual("true", items.First(x => x.Key == "B").Value);

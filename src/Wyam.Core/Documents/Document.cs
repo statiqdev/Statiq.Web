@@ -80,16 +80,11 @@ namespace Wyam.Core.Documents
             _streamLock = stream != null && streamLock != null ? streamLock : new object();
         }
 
-        // Cloning constructors
-
+        // Cloning constructors (if source is specified but source document already contains a source, it is ignored and source document source is used)
         internal Document(Document sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-            : this(sourceDocument.Id, sourceDocument._metadata, source, content, items)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source != string.Empty ? sourceDocument.Source : source, content, items)
         {
             sourceDocument.CheckDisposed();
-            if (sourceDocument.Source != string.Empty)
-            {
-                throw new ArgumentException($"Cannot change document source during clone (from {sourceDocument.Source} to {source})", nameof(source));
-            }
         }
 
         internal Document(Document sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
@@ -99,13 +94,9 @@ namespace Wyam.Core.Documents
         }
 
         internal Document(Document sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-            : this(sourceDocument.Id, sourceDocument._metadata, source, stream, null, items, disposeStream)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source != string.Empty ? sourceDocument.Source : source, stream, null, items, disposeStream)
         {
             sourceDocument.CheckDisposed();
-            if (sourceDocument.Source != string.Empty)
-            {
-                throw new ArgumentException($"Cannot change document source during clone (from {sourceDocument.Source} to {source})", nameof(source));
-            }
         }
 
         internal Document(Document sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)

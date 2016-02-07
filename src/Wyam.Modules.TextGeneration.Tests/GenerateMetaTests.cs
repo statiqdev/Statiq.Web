@@ -40,8 +40,8 @@ namespace Wyam.Modules.TextGeneration.Tests
                 generateContent.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(Arg.Is(document), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(
                     x => x.SequenceEqual(new[] { new KeyValuePair<string, object>("Foo", "nectarine, gambler, marijuana, chickadee") })));
                 stream.Dispose();
             }

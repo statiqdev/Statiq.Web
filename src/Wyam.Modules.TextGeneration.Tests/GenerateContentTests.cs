@@ -40,8 +40,8 @@ namespace Wyam.Modules.TextGeneration.Tests
                 generateContent.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone("nectarine, gambler, marijuana, chickadee");
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(Arg.Is(document), "nectarine, gambler, marijuana, chickadee");
                 stream.Dispose();
             }
         }

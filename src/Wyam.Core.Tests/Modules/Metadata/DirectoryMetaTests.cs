@@ -277,22 +277,19 @@ namespace Wyam.Core.Tests.Modules.Metadata
             documentsIndexLookup = documentsArray.ToDictionary(x => x.Document, x => x.Index);
             var tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
             cloneDictionary = tempDictionary;
-            foreach (var document in documents.Values)
-            {
-                //TODO: Change so multiple recursive calls to clone can be tracked.
-                context
-                    .When(x => x.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                    .Do(x =>
+            context
+                .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                .Do(x =>
+                {
+                    var document = x.Arg<IDocument>();
+                    var newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                    var oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
+                    foreach (var m in newMetadata) // overriding the old metadata like Document would do it.
                     {
-                        var newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
-                        var oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
-                        foreach (var m in newMetadata) // overriding the old metadata like Document would do it.
-                        {
-                            oldMetadata[m.Key] = m.Value;
-                        }
-                        tempDictionary[document] = oldMetadata;
-                    });
-            }
+                        oldMetadata[m.Key] = m.Value;
+                    }
+                    tempDictionary[document] = oldMetadata;
+                });
         }
 
         /// <summary>
