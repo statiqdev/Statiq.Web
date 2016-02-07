@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common.Documents;
@@ -16,6 +16,7 @@ namespace Wyam.Core.Modules.Metadata
         private readonly string _fromKey;
         private readonly string _toKey;
         private string _format;
+        private Func<string, string> _execute; 
 
         /// <summary>
         /// The specified object in fromKey is copied to toKey. If a format is provided, the fromKey value is processed through string.Format before being copied (if the existing value is a DateTime, the format is passed as the argument to ToString).
@@ -48,6 +49,16 @@ namespace Wyam.Core.Modules.Metadata
             return this;
         }
 
+        public CopyMeta WithFormat(Func<string,string> execute)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException(nameof(execute));
+            }
+            _execute = execute;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().SelectMany(input =>
@@ -68,6 +79,12 @@ namespace Wyam.Core.Modules.Metadata
                             existingValue = string.Format(_format, existingValue);
                         }
                     }
+
+                    if (_execute != null)
+                    {
+                        existingValue = _execute.Invoke(existingValue.ToString());
+                    }
+
                     return new[] { input.Clone(new[] { new KeyValuePair<string, object>(_toKey, existingValue) }) };
                 }
                 else
