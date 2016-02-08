@@ -104,7 +104,11 @@ namespace Wyam.Core.Pipelines
         public IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
-            _pipeline.AddDocumentSource(source);
+            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            {
+                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
+                _pipeline.AddDocumentSource(source);
+            }
             _pipeline.AddClonedDocument(document);
             return document;
         }
@@ -119,7 +123,11 @@ namespace Wyam.Core.Pipelines
         public IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, stream, items, disposeStream);
-            _pipeline.AddDocumentSource(source);
+            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            {
+                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
+                _pipeline.AddDocumentSource(source);
+            }
             _pipeline.AddClonedDocument(document);
             return document;
         }
