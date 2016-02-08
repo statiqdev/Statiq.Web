@@ -1,6 +1,11 @@
 # 0.11.2
 
-- Feature - New **CopyMeta** module to allow copying metadata from one key to another with optional string formatting (#209 and #207, thanks @deanebarker)
+- Feature - New command-line switch `--preview-root` to set an alternate root path for the preview server (#213, thanks @deanebarker)
+- Feature - New **Merge** module that merges the content and metadata from documents output by a module sequence into the input documents 
+- Refactoring - **Breaking change**: ReadFiles now outputs new documents and only reads the files once if supplying a search pattern, to replicate the old behavior where ReadFiles read the matching files for each input document wrap it in the new Merge module
+- Feature - New **GenerateCloudSearchData** module to generate JSON data for AWS Cloud Search (#213, thanks @deanebarker)
+- Feature - New **Take** module that only outputs the first N input documents (#208 and #211, thanks @deanebarker)
+- Feature - New **CopyMeta** module to allow copying metadata from one key to another with optional formatting (#209 and #207, thanks @deanebarker)
 - Feature - Added `.WithGuidMetaKey()` to the Rss module to specify a metadata item that has the GUID (#206, thanks @deanebarker)
 - Feature - A tools NuGet package is now published that includes the CLI (#204)
 - Feature - Added void delegates to Execute module so you no longer have to return a value (#194)

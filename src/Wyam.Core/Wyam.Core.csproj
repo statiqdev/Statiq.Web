@@ -116,6 +116,7 @@
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
+    <Compile Include="Modules\Control\Merge.cs" />
     <Compile Include="Modules\Control\ModuleCollection.cs" />
     <Compile Include="Modules\Control\Take.cs" />
     <Compile Include="Modules\IO\Download.cs" />
