@@ -52,64 +52,67 @@ namespace Wyam.Modules.Json.Tests
             public void GetsObjectFromMetadata()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Get("JsonObject").Returns(JsonObject);
                 GenerateJson generateJson = new GenerateJson("JsonObject");
 
                 // When
-                generateJson.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(Arg.Is(JsonContent));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, Arg.Is(JsonContent));
             }
 
             [Test]
             public void GetsObjectFromContextDelegate()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                IDocument document = Substitute.For<IDocument>();
                 GenerateJson generateJson = new GenerateJson(ctx => JsonObject);
 
                 // When
-                generateJson.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(Arg.Is(JsonContent));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, Arg.Is(JsonContent));
             }
 
             [Test]
             public void GetsObjectFromDocumentDelegate()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Get("JsonObject").Returns(JsonObject);
                 GenerateJson generateJson = new GenerateJson((doc, ctx) => doc.Get("JsonObject"));
 
                 // When
-                generateJson.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(Arg.Is(JsonContent));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, Arg.Is(JsonContent));
             }
 
             [Test]
             public void SetsMetadataKey()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Get("JsonObject").Returns(JsonObject);
                 GenerateJson generateJson = new GenerateJson("JsonObject", "OutputKey");
 
                 // When
-                generateJson.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<MetadataItems>());
-                document.Received().Clone(Arg.Is<MetadataItems>(
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(
                     x => x.First().Key == "OutputKey" && (string)x.First().Value == JsonContent));
             }
 
@@ -117,17 +120,18 @@ namespace Wyam.Modules.Json.Tests
             public void DoesNotIndent()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Get("JsonObject").Returns(JsonObject);
                 GenerateJson generateJson = new GenerateJson("JsonObject").WithIndenting(false);
                 string nonIndentedJsonContent = JsonContent.Replace(" ", "").Replace("\r\n", "");
 
                 // When
-                generateJson.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(Arg.Is(nonIndentedJsonContent));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, Arg.Is(nonIndentedJsonContent));
             }
         }
     }

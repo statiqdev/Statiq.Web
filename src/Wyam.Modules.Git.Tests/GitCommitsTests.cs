@@ -25,11 +25,11 @@ namespace Wyam.Modules.Git.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
-                        .Returns(getNewDocumentCallInfo.ArgAt<IEnumerable<MetadataItem>>(0).Select(x => (KeyValuePair<string, object>)x).GetEnumerator());
+                        .Returns(getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).GetEnumerator());
                     return newDocument;
                 });
                 IDocument document = Substitute.For<IDocument>();
@@ -57,21 +57,21 @@ namespace Wyam.Modules.Git.Tests
                     );
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.InputFolder.Returns(inputFolder);
-                context.GetDocument(Arg.Any<IEnumerable<MetadataItem>>()).Returns(getNewDocumentCallInfo =>
+                context.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
-                        .Returns(getNewDocumentCallInfo.ArgAt<IEnumerable<MetadataItem>>(0).Select(x => (KeyValuePair<string, object>)x).GetEnumerator());
+                        .Returns(getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).GetEnumerator());
                     newDocument.Get<IReadOnlyDictionary<string, string>>(Arg.Any<string>())
-                        .Returns(getCallInfo => (IReadOnlyDictionary<string, string>)getNewDocumentCallInfo.ArgAt<IEnumerable<MetadataItem>>(0).First(x => x.Key == getCallInfo.ArgAt<string>(0)).Value);
+                        .Returns(getCallInfo => (IReadOnlyDictionary<string, string>)getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).First(x => x.Key == getCallInfo.ArgAt<string>(0)).Value);
                     return newDocument;
                 });
                 IDocument document = Substitute.For<IDocument>();
                 document.Source.Returns(Path.Combine(inputFolder, "Wyam.Core\\IModule.cs"));  // Use file that no longer exists so commit count is stable
-                document.Clone(Arg.Any<IEnumerable<MetadataItem>>()).Returns(x =>
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(x =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
-                    newDocument.GetEnumerator().Returns(x.ArgAt<IEnumerable<MetadataItem>>(0).Select(y => (KeyValuePair<string, object>)y).GetEnumerator());
+                    newDocument.GetEnumerator().Returns(x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1).GetEnumerator());
                     return newDocument;
                 });
                 GitCommits gitCommits = new GitCommits().ForEachInputDocument();

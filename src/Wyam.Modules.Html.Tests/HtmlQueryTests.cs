@@ -8,6 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Testing;
 
 namespace Wyam.Modules.Html.Tests
@@ -33,22 +34,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetOuterHtml("Key");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some Foobar text</p>")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some other text</p>")
@@ -71,22 +73,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetOuterHtml("Key");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", @"<p foo=""bar"">This is some Foobar text</p>")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", @"<p foo=""baz"" a=""A"">This is some other text</p>")
@@ -109,6 +112,7 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
@@ -116,11 +120,11 @@ namespace Wyam.Modules.Html.Tests
                     .First();
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(1).GetDocument(document, Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some Foobar text</p>")
@@ -143,22 +147,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetInnerHtml("Key");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "This is some Foobar text")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "This is some other text")
@@ -181,6 +186,7 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
@@ -188,17 +194,17 @@ namespace Wyam.Modules.Html.Tests
                     .GetOuterHtml("OuterHtmlKey");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some Foobar text"),
                         new KeyValuePair<string, object>("OuterHtmlKey", "<p>This is some Foobar text</p>")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some other text"),
@@ -222,18 +228,19 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .SetContent();
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<string>());
-                document.Received().Clone("<p>This is some Foobar text</p>");
-                document.Received().Clone("<p>This is some other text</p>");
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,"<p>This is some Foobar text</p>");
+                context.Received().GetDocument(document,"<p>This is some other text</p>");
                 stream.Dispose();
             }
 
@@ -252,18 +259,19 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .SetContent(false);
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<string>());
-                document.Received().Clone("This is some Foobar text");
-                document.Received().Clone("This is some other text");
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,"This is some Foobar text");
+                context.Received().GetDocument(document,"This is some other text");
                 stream.Dispose();
             }
 
@@ -282,6 +290,7 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
@@ -290,17 +299,17 @@ namespace Wyam.Modules.Html.Tests
                     .GetOuterHtml("OuterHtmlKey");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone("<p>This is some Foobar text</p>",
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,"<p>This is some Foobar text</p>",
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some Foobar text"),
                         new KeyValuePair<string, object>("OuterHtmlKey", "<p>This is some Foobar text</p>")
                     })));
-                document.Received().Clone("<p>This is some other text</p>",
+                context.Received().GetDocument(document,"<p>This is some other text</p>",
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some other text"),
@@ -324,22 +333,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetTextContent("TextContentKey");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("TextContentKey", "This is some Foobar text")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("TextContentKey", "This is some other text")
@@ -362,22 +372,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetAttributeValue("foo", "Foo");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Foo", "bar")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Foo", "baz")
@@ -400,22 +411,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetAttributeValue("foo");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz")
@@ -438,22 +450,23 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetAttributeValue("foo");
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz")
@@ -476,24 +489,25 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetAttributeValues();
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar"),
                         new KeyValuePair<string, object>("a", "A"),
                         new KeyValuePair<string, object>("b", "B")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz"),
@@ -517,17 +531,18 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 HtmlQuery query = new HtmlQuery("p")
                     .GetAll();
 
                 // When
-                query.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(2).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("OuterHtml", @"<p foo=""bar"" a=""A"" b=""B"">This is some <b>Foobar</b> text</p>"),
@@ -537,7 +552,7 @@ namespace Wyam.Modules.Html.Tests
                         new KeyValuePair<string, object>("a", "A"),
                         new KeyValuePair<string, object>("b", "B")
                     })));
-                document.Received().Clone(
+                context.Received().GetDocument(document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("OuterHtml", @"<p foo=""baz"" x=""X"">This is some other text</p>"),

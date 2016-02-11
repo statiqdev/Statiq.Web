@@ -52,7 +52,7 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.DidNotReceiveWithAnyArgs().Clone((string)null);
+                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
                 stream.Dispose();
             }
 
@@ -97,8 +97,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -145,8 +145,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -191,8 +191,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -237,8 +237,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -283,8 +283,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -330,8 +330,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -379,8 +379,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -426,8 +426,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -473,8 +473,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -520,8 +520,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
 
@@ -566,8 +566,8 @@ namespace Wyam.Modules.Html.Tests
                 autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output.Replace("\r\n", "\n"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
         }

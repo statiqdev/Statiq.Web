@@ -33,35 +33,37 @@ namespace Wyam.Modules.Json.Tests
             public void SetsMetadataKey()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(JsonContent);
                 Json json = new Json("MyJson");
 
                 // When
-                json.Execute(new[] {document}, null).ToList();  // Make sure to materialize the result list
+                json.Execute(new[] {document}, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyJson"));
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyJson"));
             }
 
             [Test]
             public void GeneratesDynamicObject()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 IEnumerable<KeyValuePair<string, object>> items = null;
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                context
+                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
                 document.Content.Returns(JsonContent);
                 Json json = new Json("MyJson");
 
                 // When
-                json.Execute(new[] {document}, null).ToList();  // Make sure to materialize the result list
+                json.Execute(new[] {document}, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
                 Assert.AreEqual(1, items.Count());
                 Assert.IsInstanceOf<ExpandoObject>(items.First().Value);
                 Assert.AreEqual("james@example.com", (string)((dynamic)items.First().Value).Email);
@@ -74,19 +76,20 @@ namespace Wyam.Modules.Json.Tests
             public void FlattensTopLevel()
             {
                 // Given
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 IEnumerable<KeyValuePair<string, object>> items = null;
-                document
-                    .When(x => x.Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                context
+                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
                 document.Content.Returns(JsonContent);
                 Json json = new Json();
 
                 // When
-                json.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
                 Assert.AreEqual(4, items.Count());
                 Assert.AreEqual("james@example.com", items.First(x => x.Key == "Email").Value);
                 Assert.AreEqual(true, items.First(x => x.Key == "Active").Value);
@@ -110,7 +113,7 @@ namespace Wyam.Modules.Json.Tests
                 List<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(0).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
                 Assert.IsTrue(results.Single().Equals(document));
             }
         }

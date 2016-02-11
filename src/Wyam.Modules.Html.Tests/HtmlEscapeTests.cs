@@ -50,7 +50,7 @@ namespace Wyam.Modules.Html.Tests
                 htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.DidNotReceiveWithAnyArgs().Clone((string)null);
+                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
                 stream.Dispose();
             }
 
@@ -126,8 +126,8 @@ namespace Wyam.Modules.Html.Tests
                 htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
                 stream.Dispose();
             }
 
@@ -171,8 +171,8 @@ namespace Wyam.Modules.Html.Tests
                 htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
                 stream.Dispose();
             }
         }

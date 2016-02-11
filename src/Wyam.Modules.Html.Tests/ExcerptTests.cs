@@ -8,6 +8,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Pipelines;
 using Wyam.Testing;
 
 namespace Wyam.Modules.Html.Tests
@@ -33,16 +34,17 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 Excerpt excerpt = new Excerpt();
 
                 // When
-                excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
                 {
                     new KeyValuePair<string, object>("Excerpt", "<p>This is some Foobar text</p>")
                 })));
@@ -64,16 +66,17 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 Excerpt excerpt = new Excerpt("div");
 
                 // When
-                excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
                 {
                     new KeyValuePair<string, object>("Excerpt", "<div>This is some other text</div>")
                 })));
@@ -95,16 +98,17 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 Excerpt excerpt = new Excerpt().SetMetadataKey("Baz");
 
                 // When
-                excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
                 {
                     new KeyValuePair<string, object>("Baz", "<p>This is some Foobar text</p>")
                 })));
@@ -126,16 +130,17 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 Excerpt excerpt = new Excerpt().GetOuterHtml(false);
 
                 // When
-                excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                document.Received().Clone(Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new[]
                 {
                     new KeyValuePair<string, object>("Excerpt", "This is some Foobar text")
                 })));
@@ -156,6 +161,7 @@ namespace Wyam.Modules.Html.Tests
                         </body>
                     </html>";
                 IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
                 Excerpt excerpt = new Excerpt("p");
@@ -164,7 +170,7 @@ namespace Wyam.Modules.Html.Tests
                 excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.DidNotReceiveWithAnyArgs().Clone((string)null);
+                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
                 stream.Dispose();
             }
         }
