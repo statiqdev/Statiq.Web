@@ -47,6 +47,7 @@ namespace Wyam
         private bool _pause = false;
         private bool _updatePackages = false;
         private bool _outputScripts = false;
+        private bool _verifyConfig = false;
         private DirectoryPath _rootPath = null;
         private DirectoryPath _inputPath = null;
         private DirectoryPath _outputPath = null;
@@ -98,6 +99,13 @@ namespace Wyam
             {
                 return (int)ExitCode.ConfigurationError;
             }
+
+            if(_verifyConfig)
+            {
+                Trace.Information("No errors. Exiting.");
+                return (int)ExitCode.Normal;
+            }
+
             Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.RootPath}");
             Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engine.FileSystem.InputPaths)}");
             Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.OutputPath}");
@@ -270,6 +278,7 @@ namespace Wyam
                     syntax.ReportError("preview-root can only be specified if the preview server is running.");
                 }
                 syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
+                syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
                 syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
                 syntax.DefineOption("u|update-packages", ref _updatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
