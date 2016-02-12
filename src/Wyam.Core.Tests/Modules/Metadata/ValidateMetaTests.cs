@@ -18,7 +18,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
     {
         public class ExecuteMethodTests : ValidateMetaTests
         {
-            [Test]
+            /*[Test]
             public void TestForExistenceOfKey()
             {
                 // Given
@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Assert.Pass();
-            }
+            }*/
         }
     }
 }
