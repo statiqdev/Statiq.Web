@@ -131,6 +131,7 @@
     <Compile Include="Modules\Metadata\Index.cs" />
     <Compile Include="Modules\Control\OrderBy.cs" />
     <Compile Include="Modules\Control\Paginate.cs" />
+    <Compile Include="Modules\Metadata\ValidateMeta.cs" />
     <Compile Include="Modules\Templates\Xslt.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
