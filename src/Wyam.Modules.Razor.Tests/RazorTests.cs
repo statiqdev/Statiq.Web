@@ -47,8 +47,8 @@ namespace Wyam.Modules.Razor.Tests
                 razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(" <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ");
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, " <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ");
             }
 
             [Test]
@@ -126,8 +126,8 @@ namespace Wyam.Modules.Razor.Tests
                 razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone("<p>MyValue</p>");
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, "<p>MyValue</p>");
             }
 
             [Test]
@@ -154,8 +154,8 @@ namespace Wyam.Modules.Razor.Tests
                 razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(@"<p>C:\Temp\temp.txt</p>");
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, @"<p>C:\Temp\temp.txt</p>");
             }
 
             [Test]
@@ -182,8 +182,8 @@ namespace Wyam.Modules.Razor.Tests
                 razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(@"<p>C:\Temp\temp.txt</p>");
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, @"<p>C:\Temp\temp.txt</p>");
             }
 
             [Test]

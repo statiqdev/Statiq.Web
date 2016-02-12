@@ -1,5 +1,7 @@
 # 0.11.2
 
+- Feature - New command-line switch `--verify-config` for validating the config file without actually running (#223, thanks @deanebarker)
+- Feature - New **ValidateMeta** module for validating metadata (#220, thanks @deanebarker)
 - Feature - New command-line switch `--preview-root` to set an alternate root path for the preview server (#213, thanks @deanebarker)
 - Feature - New **Merge** module that merges the content and metadata from documents output by a module sequence into the input documents 
 - Refactoring - **Breaking change**: ReadFiles now outputs new documents and only reads the files once if supplying a search pattern, to replicate the old behavior where ReadFiles read the matching files for each input document wrap it in the new Merge module

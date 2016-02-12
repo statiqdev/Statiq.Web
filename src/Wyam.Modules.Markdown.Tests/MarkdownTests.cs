@@ -40,8 +40,8 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
             }
 
             [Test]
@@ -61,8 +61,8 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
             }
 
             [Test]
@@ -82,8 +82,8 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(1).Clone(Arg.Any<string>());
-                document.Received().Clone(output);
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
             }
 
             [Test]
@@ -109,9 +109,9 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(0).Clone(Arg.Any<string>());
-                document.Received(1).Clone(Arg.Any<MetadataItems>());
-                document.Received().Clone(Arg.Is<MetadataItems>(x => x.SequenceEqual(new MetadataItems
+                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(Arg.Any<IDocument>(), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new MetadataItems
                 {
                     { "meta", output }
                 })));
@@ -140,9 +140,9 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(0).Clone(Arg.Any<string>());
-                document.Received(1).Clone(Arg.Any<MetadataItems>());
-                document.Received().Clone(Arg.Is<MetadataItems>(x => x.SequenceEqual(new MetadataItems
+                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                context.Received().GetDocument(Arg.Any<IDocument>(), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new MetadataItems
                 {
                     { "meta2", output }
                 })));
@@ -161,8 +161,8 @@ namespace Wyam.Modules.Markdown.Tests
                 markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received(0).Clone(Arg.Any<string>());
-                document.Received(0).Clone(Arg.Any<MetadataItems>());
+                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
             }
         }
     }

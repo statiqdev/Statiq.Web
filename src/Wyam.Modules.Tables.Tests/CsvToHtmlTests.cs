@@ -337,7 +337,7 @@ namespace Wyam.Modules.Tables.Tests
                 module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received().Clone(output);
+                context.Received().GetDocument(document, output);
                 stream.Dispose();
             }
 
@@ -662,7 +662,7 @@ namespace Wyam.Modules.Tables.Tests
                 module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                document.Received().Clone(output);
+                context.Received().GetDocument(document, output);
                 stream.Dispose();
             }
         }

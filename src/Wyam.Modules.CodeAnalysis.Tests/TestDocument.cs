@@ -191,54 +191,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             throw new NotSupportedException();
         }
 
-        public IDocument Clone(string source, string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
+        public void Dispose()
         {
-            throw new NotSupportedException();
-        }
-
-        public IDocument Clone(string source, string content, IEnumerable<MetadataItem> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDocument Clone(string content, IEnumerable<KeyValuePair<string, object>> metadata = null)
-        {
-            throw new NotSupportedException();
-        }
-
-        public IDocument Clone(string content, IEnumerable<MetadataItem> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDocument Clone(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
-        {
-            throw new NotSupportedException();
-        }
-
-        public IDocument Clone(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDocument Clone(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata = null, bool disposeStream = true)
-        {
-            throw new NotSupportedException();
-        }
-
-        public IDocument Clone(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDocument Clone(IEnumerable<KeyValuePair<string, object>> metadata)
-        {
-            throw new NotSupportedException();
-        }
-
-        public IDocument Clone(IEnumerable<MetadataItem> items)
-        {
-            throw new NotImplementedException();
         }
     }
 }
