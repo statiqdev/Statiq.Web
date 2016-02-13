@@ -44,6 +44,8 @@ namespace Wyam.Core.Pipelines
 
         public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
 
+        public string ApplicationInput => Engine.ApplicationInput;
+
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
             Engine = engine;
@@ -66,25 +68,25 @@ namespace Wyam.Core.Pipelines
         {
             return TypeHelper.TryConvert(value, out result);
         }
-        
+
         public IDocument GetDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetDocument((IDocument) null, source, content, items);
+            return GetDocument((IDocument)null, source, content, items);
         }
 
         public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetDocument((IDocument) null, content, items);
+            return GetDocument((IDocument)null, content, items);
         }
 
         public IDocument GetDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return GetDocument((IDocument) null, source, stream, items, disposeStream);
+            return GetDocument((IDocument)null, source, stream, items, disposeStream);
         }
 
         public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return GetDocument((IDocument) null, stream, items, disposeStream);
+            return GetDocument((IDocument)null, stream, items, disposeStream);
         }
 
         public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items)
@@ -171,8 +173,8 @@ namespace Wyam.Core.Pipelines
 
             // Store the document list before executing the child modules and restore it afterwards
             IReadOnlyList<IDocument> originalDocuments = Engine.DocumentCollection.Get(_pipeline.Name);
-            ImmutableArray<IDocument> documents = inputs?.ToImmutableArray() 
-                ?? new [] { GetDocument(items) }.ToImmutableArray();
+            ImmutableArray<IDocument> documents = inputs?.ToImmutableArray()
+                ?? new[] { GetDocument(items) }.ToImmutableArray();
             IReadOnlyList<IDocument> results = _pipeline.Execute(this, modules, documents);
             Engine.DocumentCollection.Set(_pipeline.Name, originalDocuments);
             return results;

@@ -45,7 +45,7 @@ namespace Wyam.Core
         public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
 
         public IDocumentCollection Documents => DocumentCollection;
-        
+
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
         public byte[] RawConfigAssembly => _config.RawConfigAssembly;
@@ -55,13 +55,13 @@ namespace Wyam.Core
         public IEnumerable<string> Namespaces => _config.Namespaces;
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
-        
+
         public bool NoCache
         {
             get { return ExecutionCacheManager.NoCache; }
             set { ExecutionCacheManager.NoCache = value; }
         }
-        
+
         private string _rootFolder = Environment.CurrentDirectory;
         private string _inputFolder = "Input";
         private string _outputFolder = "Output";
@@ -107,6 +107,8 @@ namespace Wyam.Core
                 FileSystem.OutputPath = value;
             }
         }
+
+        public string ApplicationInput { get; set; }
 
         private IDocumentFactory _documentFactory;
 
@@ -206,7 +208,7 @@ namespace Wyam.Core
             {
                 System.IO.Directory.CreateDirectory(OutputFolder);
             }
-            
+
             try
             {
                 System.Diagnostics.Stopwatch engineStopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -218,7 +220,7 @@ namespace Wyam.Core
 
                     // Enumerate pipelines and execute each in order
                     int c = 1;
-                    foreach(Pipeline pipeline in _pipelines.Pipelines)
+                    foreach (Pipeline pipeline in _pipelines.Pipelines)
                     {
                         string pipelineName = pipeline.Name;
                         System.Diagnostics.Stopwatch pipelineStopwatch = System.Diagnostics.Stopwatch.StartNew();

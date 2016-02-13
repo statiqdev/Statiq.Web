@@ -18,6 +18,7 @@ using Wyam.Core;
 using Wyam.Owin;
 using IFileSystem = Microsoft.Owin.FileSystems.IFileSystem;
 using Path = System.IO.Path;
+using System.Text;
 
 namespace Wyam
 {
@@ -48,6 +49,7 @@ namespace Wyam
         private bool _updatePackages = false;
         private bool _outputScripts = false;
         private bool _verifyConfig = false;
+        private string _stdin = null;
         private DirectoryPath _rootPath = null;
         private DirectoryPath _inputPath = null;
         private DirectoryPath _outputPath = null;
@@ -100,7 +102,7 @@ namespace Wyam
                 return (int)ExitCode.ConfigurationError;
             }
 
-            if(_verifyConfig)
+            if (_verifyConfig)
             {
                 Trace.Information("No errors. Exiting.");
                 return (int)ExitCode.Normal;
@@ -141,26 +143,26 @@ namespace Wyam
                 messagePump = true;
 
                 Trace.Information("Watching paths(s) {0}", string.Join(", ", engine.FileSystem.InputPaths));
-                inputFolderWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path, 
+                inputFolderWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
                     engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
-                {
-                    _changedFiles.Enqueue(path);
-                    _messageEvent.Set();
-                });
+                    {
+                        _changedFiles.Enqueue(path);
+                        _messageEvent.Set();
+                    });
 
                 if (_configFilePath != null)
                 {
                     Trace.Information("Watching configuration file {0}", _configFilePath);
                     Engine closureEngine = engine;
-                    configFileWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path, 
-                        new [] { _configFilePath.GetDirectory() }, false, _configFilePath.GetFilename().FullPath, path =>
-                    {
-                        if (closureEngine.FileSystem.PathComparer.Equals((FilePath)path, _configFilePath))
+                    configFileWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
+                        new[] { _configFilePath.GetDirectory() }, false, _configFilePath.GetFilename().FullPath, path =>
                         {
-                            _newEngine.Set();
-                            _messageEvent.Set();
-                        }
-                    });
+                            if (closureEngine.FileSystem.PathComparer.Equals((FilePath)path, _configFilePath))
+                            {
+                                _newEngine.Set();
+                                _messageEvent.Set();
+                            }
+                        });
                 }
             }
 
@@ -262,16 +264,16 @@ namespace Wyam
             }
             return (int)exitCode;
         }
-        
+
         private bool ParseArgs(string[] args, out bool hasErrors)
         {
             System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
             {
                 syntax.DefineOption("w|watch", ref _watch, "Watches the input folder for any changes.");
                 _preview = syntax.DefineOption("p|preview", ref _previewPort, false, "Start the preview web server on the specified port (default is " + _previewPort + ").").IsSpecified;
-                if(syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
+                if (syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
                 {
-                    syntax.ReportError("force-ext can only be specified if the preview server is running."); 
+                    syntax.ReportError("force-ext can only be specified if the preview server is running.");
                 }
                 if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
                 {
@@ -288,16 +290,16 @@ namespace Wyam
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
                 _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
-                if(!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
+                if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
                     _logFilePath = null;
                 }
-                if(syntax.DefineParameter("root", ref _rootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
+                if (syntax.DefineParameter("root", ref _rootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
                 {
                     // If a root folder was defined, but it actually points to a file, set the root folder to the directory
                     // and use the specified file as the config file (if a config file was already specified, it's an error)
                     FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(_rootPath.FullPath);
-                    if(File.Exists(rootDirectoryPathAsConfigFile.FullPath))
+                    if (File.Exists(rootDirectoryPathAsConfigFile.FullPath))
                     {
                         // The specified root actually points to a file...
                         if (_configFilePath != null)
@@ -313,6 +315,15 @@ namespace Wyam
                 }
             });
             hasErrors = parsed.HasErrors;
+
+            if (Console.IsInputRedirected)
+            {
+                using (var reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
+                {
+                    _stdin = reader.ReadToEnd();
+                }
+            }
+
             return !(parsed.IsHelpRequested() || hasErrors);
         }
 
@@ -334,7 +345,7 @@ namespace Wyam
             {
                 engine.NoCache = true;
             }
-            
+
             // Set folders
             engine.FileSystem.RootPath = _rootPath;
             if (_inputPath != null)
@@ -349,6 +360,8 @@ namespace Wyam
             {
                 engine.CleanOutputPathOnExecute = false;
             }
+
+            engine.ApplicationInput = _stdin;
 
             // Set up the log file         
             if (_logFilePath != null)
