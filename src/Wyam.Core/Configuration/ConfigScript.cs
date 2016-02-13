@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
@@ -38,9 +39,11 @@ namespace Wyam.Core.Configuration
                 scriptBuilder.AppendLine(declarations);
             }
             scriptBuilder.Append(@"
-                public static class ConfigScript
+                public class ConfigScript : ConfigScriptBase
                 {
-                    public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
+                    public ConfigScript(IEngine engine) : base(engine) { }
+
+                    public override void Run()
                     {" + Environment.NewLine + config + @"
                     }");
 
@@ -144,11 +147,11 @@ namespace Wyam.Core.Configuration
             AssemblyFullName = Assembly.FullName;
         }
 
-        public void Invoke(IInitialMetadata initialMetadata, IPipelineCollection pipelines, IConfigurableFileSystem fileSystem)
+        public void Invoke(IEngine engine)
         {
-            var scriptType = Assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
-            MethodInfo runMethod = scriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);
-            runMethod.Invoke(null, new object[] { initialMetadata, pipelines, fileSystem });
+            Type configScriptType = Assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
+            ConfigScriptBase configScript = (ConfigScriptBase)Activator.CreateInstance(configScriptType, engine);
+            configScript.Run();
         }
     }
 }

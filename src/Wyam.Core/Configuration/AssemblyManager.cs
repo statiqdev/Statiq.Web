@@ -20,7 +20,8 @@ namespace Wyam.Core.Configuration
             "System.Linq",
             "System.IO",
             "Wyam.Core",
-            "Wyam.Core.Configuration"
+            "Wyam.Core.Configuration",
+            "Wyam.Core.Documents"  // For custom document type support
         };
 
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();

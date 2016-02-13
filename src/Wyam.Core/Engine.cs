@@ -28,7 +28,7 @@ using Wyam.Core.Tracing;
 
 namespace Wyam.Core
 {
-    public class Engine : IDisposable
+    public class Engine : IEngine, IDisposable
     {
         private readonly FileSystem _fileSystem = new FileSystem();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
@@ -37,6 +37,8 @@ namespace Wyam.Core
         private bool _disposed;
 
         public IConfigurableFileSystem FileSystem => _fileSystem;
+
+        IFileSystem IEngine.FileSystem => _fileSystem; 
 
         public IConfig Config => _config;
 
@@ -130,7 +132,7 @@ namespace Wyam.Core
         public Engine()
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
-            _config = new Config(FileSystem, InitialMetadata, Pipelines);
+            _config = new Config(this, FileSystem);
             _documentFactory = new DocumentFactory(InitialMetadata);
         }
 

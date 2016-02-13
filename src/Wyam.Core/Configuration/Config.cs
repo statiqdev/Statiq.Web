@@ -26,9 +26,8 @@ namespace Wyam.Core.Configuration
     {
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly AssemblyManager _assemblyManager = new AssemblyManager();
+        private readonly IEngine _engine;
         private readonly IConfigurableFileSystem _fileSystem;
-        private readonly IInitialMetadata _initialMetadata;
-        private readonly IPipelineCollection _pipelines;
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
@@ -48,11 +47,10 @@ namespace Wyam.Core.Configuration
 
         public byte[] RawConfigAssembly => _configScript?.RawAssembly;
 
-        public Config(IConfigurableFileSystem fileSystem, IInitialMetadata initialMetadata, IPipelineCollection pipelines)
+        public Config(IEngine engine, IConfigurableFileSystem fileSystem)
         {
+            _engine = engine;
             _fileSystem = fileSystem;
-            _initialMetadata = initialMetadata;
-            _pipelines = pipelines;
             _packages = new PackagesCollection(fileSystem);
             
             // Manually resolve included assemblies
@@ -154,7 +152,7 @@ namespace Wyam.Core.Configuration
                         _assemblyManager.Namespaces);
                     OutputScript(ConfigScript.AssemblyName, _configScript.Code);
                     _configScript.Compile(_assemblyManager.Assemblies);
-                    _configScript.Invoke(_initialMetadata, _pipelines, _fileSystem);
+                    _configScript.Invoke(_engine);
                 }
             }
             catch (TargetInvocationException ex)

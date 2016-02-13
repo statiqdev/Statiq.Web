@@ -105,10 +105,14 @@
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Configuration\ConfigScript.cs" />
+    <Compile Include="Configuration\ConfigScriptBase.cs" />
     <Compile Include="Configuration\ConfigSplitter.cs" />
     <Compile Include="Configuration\SetupScript.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
+    <Compile Include="Documents\CustomDocument.cs" />
+    <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
+    <Compile Include="IEngine.cs" />
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />
     <Compile Include="IO\FileSystem.cs" />

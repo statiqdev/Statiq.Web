@@ -60,9 +60,11 @@ namespace Wyam.Core.Tests.Configuration
                 string[] namespaces = Array.Empty<string>();
                 string expected = $@"
 
-                public static class ConfigScript
+                public class ConfigScript : ConfigScriptBase
                 {{
-                    public static void Run(IInitialMetadata InitialMetadata, IPipelineCollection Pipelines, IFileSystem FileSystem)
+                    public ConfigScript(IEngine engine) : base(engine) {{ }}
+
+                    public override void Run()
                     {{
 {output}
                     }}
