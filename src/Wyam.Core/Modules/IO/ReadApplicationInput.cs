@@ -25,7 +25,7 @@ namespace Wyam.Core.Modules.IO
     /// <example>
     /// An example of redirecting the contents of a file to Wyam.
     /// <code>
-    /// Wyam.exe <&lt; my_initial_document.txt
+    /// Wyam.exe &lt; my_initial_document.txt
     /// </code>
     /// </example>
     /// <example>
