@@ -118,6 +118,7 @@
     <Compile Include="Modules\Control\ModuleCollection.cs" />
     <Compile Include="Modules\Control\Take.cs" />
     <Compile Include="Modules\IO\Download.cs" />
+    <Compile Include="Modules\IO\ReadApplicationInput.cs" />
     <Compile Include="Modules\Metadata\CopyMeta.cs" />
     <Compile Include="Modules\Metadata\DirectoryMeta.cs" />
     <Compile Include="Modules\IO\RequestHeader.cs" />

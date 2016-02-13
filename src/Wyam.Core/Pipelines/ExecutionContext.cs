@@ -4,15 +4,12 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
-using Wyam.Common.Tracing;
-using Wyam.Core.Documents;
 
 namespace Wyam.Core.Pipelines
 {
@@ -47,6 +44,8 @@ namespace Wyam.Core.Pipelines
 
         public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
 
+        public string ApplicationInput => Engine.ApplicationInput;
+
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
             Engine = engine;
@@ -69,55 +68,84 @@ namespace Wyam.Core.Pipelines
         {
             return TypeHelper.TryConvert(value, out result);
         }
-
-        public IDocument GetNewDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        
+        public IDocument GetDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(Engine.InitialMetadata, _pipeline, source, null, content, items, true);
+            return GetDocument((IDocument) null, source, content, items);
         }
 
-        public IDocument GetNewDocument(string source, string content, IEnumerable<MetadataItem> items)
+        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetNewDocument(source, content, items?.Select(x => x.Pair));
+            return GetDocument((IDocument) null, content, items);
         }
 
-        public IDocument GetNewDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument GetDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, null, content, items, true);
+            return GetDocument((IDocument) null, source, stream, items, disposeStream);
         }
 
-        public IDocument GetNewDocument(string content, IEnumerable<MetadataItem> items)
+        public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return GetNewDocument(content, items?.Select(x => x.Pair));
+            return GetDocument((IDocument) null, stream, items, disposeStream);
         }
 
-        public IDocument GetNewDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items)
         {
-            return new Document(Engine.InitialMetadata, _pipeline, source, stream, null, items, disposeStream);
+            return GetDocument((IDocument)null, items);
         }
 
-        public IDocument GetNewDocument(string source, Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        // IDocumentFactory
+
+        public IDocument GetDocument()
         {
-            return GetNewDocument(source, stream, items?.Select(x => x.Pair), disposeStream);
+            IDocument document = Engine.DocumentFactory.GetDocument(this);
+            _pipeline.AddClonedDocument(document);
+            return document;
         }
 
-        public IDocument GetNewDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, stream, null, items, disposeStream);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
+            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            {
+                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
+                _pipeline.AddDocumentSource(source);
+            }
+            _pipeline.AddClonedDocument(document);
+            return document;
         }
 
-        public IDocument GetNewDocument(Stream stream, IEnumerable<MetadataItem> items, bool disposeStream = true)
+        public IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetNewDocument(stream, items?.Select(x => x.Pair), disposeStream);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, content, items);
+            _pipeline.AddClonedDocument(document);
+            return document;
         }
 
-        public IDocument GetNewDocument(IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return new Document(Engine.InitialMetadata, _pipeline, string.Empty, null, null, items, true);
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, stream, items, disposeStream);
+            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            {
+                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
+                _pipeline.AddDocumentSource(source);
+            }
+            _pipeline.AddClonedDocument(document);
+            return document;
         }
 
-        public IDocument GetNewDocument(IEnumerable<MetadataItem> items)
+        public IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            return GetNewDocument(items?.Select(x => x.Pair));
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, stream, items, disposeStream);
+            _pipeline.AddClonedDocument(document);
+            return document;
+        }
+
+        public IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items)
+        {
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, items);
+            _pipeline.AddClonedDocument(document);
+            return document;
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
@@ -146,7 +174,7 @@ namespace Wyam.Core.Pipelines
             // Store the document list before executing the child modules and restore it afterwards
             IReadOnlyList<IDocument> originalDocuments = Engine.DocumentCollection.Get(_pipeline.Name);
             ImmutableArray<IDocument> documents = inputs?.ToImmutableArray() 
-                ?? new [] { GetNewDocument(items) }.ToImmutableArray();
+                ?? new [] { GetDocument(items) }.ToImmutableArray();
             IReadOnlyList<IDocument> results = _pipeline.Execute(this, modules, documents);
             Engine.DocumentCollection.Set(_pipeline.Name, originalDocuments);
             return results;
