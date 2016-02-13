@@ -28,6 +28,8 @@ namespace Wyam.Common.Pipelines
         IFileSystem FileSystem { get; }
         IDocumentCollection Documents { get; }
 
+        string ApplicationInput { get; }
+
         /// <summary>
         /// Gets a new document with default initial metadata.
         /// </summary>
