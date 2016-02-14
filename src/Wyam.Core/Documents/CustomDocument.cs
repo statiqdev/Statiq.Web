@@ -10,67 +10,66 @@ using Wyam.Common.Meta;
 
 namespace Wyam.Core.Documents
 {
-    public class CustomDocument : IDocument
+    public abstract class CustomDocument : IDocument
     {
-        private IDocument _document;
+        internal IDocument Document { get; set; }
 
-        internal void SetDocument(IDocument document) => 
-            _document = document;
+        protected internal abstract CustomDocument Clone(CustomDocument sourceDocument);
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => 
-            _document.GetEnumerator();
+            Document.GetEnumerator();
 
-        public int Count => _document.Count;
+        public int Count => Document.Count;
 
-        public bool ContainsKey(string key) => _document.ContainsKey(key);
+        public bool ContainsKey(string key) => Document.ContainsKey(key);
 
         public bool TryGetValue(string key, out object value) => 
-            _document.TryGetValue(key, out value);
+            Document.TryGetValue(key, out value);
 
-        public object this[string key] => _document[key];
+        public object this[string key] => Document[key];
 
-        public IEnumerable<string> Keys => _document.Keys;
+        public IEnumerable<string> Keys => Document.Keys;
 
-        public IEnumerable<object> Values => _document.Values;
+        public IEnumerable<object> Values => Document.Values;
 
-        public IMetadata<T> MetadataAs<T>() => _document.MetadataAs<T>();
+        public IMetadata<T> MetadataAs<T>() => Document.MetadataAs<T>();
 
         public object Get(string key, object defaultValue = null) => 
-            _document.Get(key, defaultValue);
+            Document.Get(key, defaultValue);
 
-        public T Get<T>(string key) => _document.Get<T>(key);
+        public T Get<T>(string key) => Document.Get<T>(key);
 
         public T Get<T>(string key, T defaultValue) => 
-            _document.Get(key, defaultValue);
+            Document.Get(key, defaultValue);
 
         public string String(string key, string defaultValue = null) => 
-            _document.String(key, defaultValue);
+            Document.String(key, defaultValue);
 
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => 
-            _document.List(key, defaultValue);
+            Document.List(key, defaultValue);
 
-        public IDocument Document(string key) => 
-            _document.Document(key);
+        IDocument IMetadata.Document(string key) => 
+            Document.Document(key);
 
-        public IReadOnlyList<IDocument> Documents(string key) => _document.Documents(key);
+        public IReadOnlyList<IDocument> Documents(string key) => Document.Documents(key);
 
         public string Link(string key, string defaultValue = null, bool pretty = true) => 
-            _document.Link(key, defaultValue, pretty);
+            Document.Link(key, defaultValue, pretty);
 
         public dynamic Dynamic(string key, object defaultValue = null) => 
-            _document.Dynamic(key, defaultValue);
+            Document.Dynamic(key, defaultValue);
 
-        public void Dispose() => _document.Dispose();
+        public void Dispose() => Document.Dispose();
 
-        public string Source => _document.Source;
+        public string Source => Document.Source;
 
-        public string Id => _document.Id;
+        public string Id => Document.Id;
 
-        public IMetadata Metadata => _document.Metadata;
+        public IMetadata Metadata => Document.Metadata;
 
-        public string Content => _document.Content;
+        public string Content => Document.Content;
 
-        public Stream GetStream() => _document.GetStream();
+        public Stream GetStream() => Document.GetStream();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

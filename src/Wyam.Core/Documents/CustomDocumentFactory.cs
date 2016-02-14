@@ -18,34 +18,62 @@ namespace Wyam.Core.Documents
             _documentFactory = documentFactory;
         }
 
-        public IDocument GetDocument(IExecutionContext context) => 
-            GetCustomDocument(_documentFactory.GetDocument(context));
+        public IDocument GetDocument(IExecutionContext context)
+        {
+            return GetCustomDocument(null, _documentFactory.GetDocument(context));
+        }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, string content,
-            IEnumerable<KeyValuePair<string, object>> items = null) => 
-            GetCustomDocument(_documentFactory.GetDocument(context, sourceDocument, source, content, items));
+            IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            CustomDocument customDocument = (CustomDocument) sourceDocument;
+            IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, source, content, items);
+            return GetCustomDocument(customDocument, document);
+        }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, 
-            string content, IEnumerable<KeyValuePair<string, object>> items = null) => 
-            GetCustomDocument(_documentFactory.GetDocument(context, sourceDocument, content, items));
+            string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            CustomDocument customDocument = (CustomDocument)sourceDocument;
+            IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, content, items);
+            return GetCustomDocument(customDocument, document);
+        }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, Stream stream,
-            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
-            GetCustomDocument(_documentFactory.GetDocument(context, sourceDocument, source, stream, items, disposeStream));
+            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        {
+            CustomDocument customDocument = (CustomDocument)sourceDocument;
+            IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, source, stream, items, disposeStream);
+            return GetCustomDocument(customDocument, document);
+        }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream, 
-            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
-            GetCustomDocument(_documentFactory.GetDocument(context, sourceDocument, stream, items, disposeStream));
+            IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        { 
+            CustomDocument customDocument = (CustomDocument)sourceDocument;
+            IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, stream, items, disposeStream);
+            return GetCustomDocument(customDocument, document);
+        }
 
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, 
-            IEnumerable<KeyValuePair<string, object>> items) => 
-            GetCustomDocument(_documentFactory.GetDocument(context, sourceDocument, items));
-
-        private IDocument GetCustomDocument(IDocument document)
+            IEnumerable<KeyValuePair<string, object>> items)
         {
-            CustomDocument customDocument = Activator.CreateInstance<T>();
-            customDocument.SetDocument(document);
-            return customDocument;
+            CustomDocument customDocument = (CustomDocument)sourceDocument;
+            IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, items);
+            return GetCustomDocument(customDocument, document);
+        }
+
+        private IDocument GetCustomDocument(CustomDocument customDocument, IDocument document)
+        {
+            CustomDocument newCustomDocument = customDocument == null 
+                ? Activator.CreateInstance<T>() 
+                : customDocument.Clone(customDocument);
+            if (newCustomDocument == null || newCustomDocument == customDocument)
+            {
+                throw new Exception("Custom document type must return new instance from Clone method");
+            }
+            newCustomDocument.Document = document;
+            return newCustomDocument;
         }
     }
 }

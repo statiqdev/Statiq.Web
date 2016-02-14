@@ -348,9 +348,42 @@ foo bar;
 public class MyDocument : CustomDocument
 {
     public int Count { get; set; }
+
+    protected override CustomDocument Clone(CustomDocument sourceDocument)
+    {
+        return new MyDocument();
+    }
 }
 ---
 Engine.DocumentFactory = new CustomDocumentFactory<MyDocument>(Engine.DocumentFactory);
+";
+
+                // When
+                config.Configure(configScript, false, null, false);
+
+                // Then
+                Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
+            }
+
+            [Test]
+            public void SetCustomDocumentTypeSetsDocumentFactory()
+            {
+                // Given
+                Engine engine = new Engine();
+                FileSystem fileSystem = new FileSystem();
+                Config config = new Config(engine, fileSystem);
+                string configScript = @"
+public class MyDocument : CustomDocument
+{
+    public int Count { get; set; }
+
+    protected override CustomDocument Clone(CustomDocument sourceDocument)
+    {
+        return new MyDocument();
+    }
+}
+---
+SetCustomDocumentType<MyDocument>();
 ";
 
                 // When

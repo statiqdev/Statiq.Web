@@ -62,6 +62,7 @@
     <Compile Include="Configuration\ConfigScriptTests.cs" />
     <Compile Include="Configuration\ConfigSplitterTests.cs" />
     <Compile Include="Configuration\SetupScriptTests.cs" />
+    <Compile Include="Documents\CustomDocumentFactoryTests.cs" />
     <Compile Include="Documents\DocumentTests.cs" />
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
     <Compile Include="Configuration\ConfigTests.cs" />

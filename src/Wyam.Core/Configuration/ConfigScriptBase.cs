@@ -2,6 +2,7 @@
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
+using Wyam.Core.Documents;
 
 namespace Wyam.Core.Configuration
 {
@@ -27,5 +28,10 @@ namespace Wyam.Core.Configuration
         public IFileSystem FileSystem => _engine.FileSystem;
 
         public IEngine Engine => _engine;
+
+        public void SetCustomDocumentType<T>() where T : CustomDocument, new()
+        {
+            Engine.DocumentFactory = new CustomDocumentFactory<T>(Engine.DocumentFactory);
+        }
     }
 }
