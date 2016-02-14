@@ -349,7 +349,7 @@ public class MyDocument : CustomDocument
 {
     public int Count { get; set; }
 
-    protected override CustomDocument Clone(CustomDocument sourceDocument)
+    protected override CustomDocument Clone()
     {
         return new MyDocument();
     }
@@ -377,7 +377,7 @@ public class MyDocument : CustomDocument
 {
     public int Count { get; set; }
 
-    protected override CustomDocument Clone(CustomDocument sourceDocument)
+    protected override CustomDocument Clone()
     {
         return new MyDocument();
     }
