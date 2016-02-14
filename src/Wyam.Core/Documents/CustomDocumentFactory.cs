@@ -67,7 +67,7 @@ namespace Wyam.Core.Documents
         {
             CustomDocument newCustomDocument = customDocument == null 
                 ? Activator.CreateInstance<T>() 
-                : customDocument.Clone(customDocument);
+                : customDocument.Clone();
             if (newCustomDocument == null || newCustomDocument == customDocument)
             {
                 throw new Exception("Custom document type must return new instance from Clone method");

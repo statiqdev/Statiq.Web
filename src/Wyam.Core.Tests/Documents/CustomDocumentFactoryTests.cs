@@ -102,19 +102,18 @@ namespace Wyam.Core.Tests.Documents
         {
             public string Title { get; set; }
 
-            protected internal override CustomDocument Clone(CustomDocument sourceDocument)
+            protected internal override CustomDocument Clone()
             {
-                TestDocument testDocument = (TestDocument) sourceDocument;
                 return new TestDocument
                 {
-                    Title = testDocument.Title
+                    Title = Title
                 };
             }
         }
 
         private class CloneReturnsNullDocument : CustomDocument
         {
-            protected internal override CustomDocument Clone(CustomDocument sourceDocument)
+            protected internal override CustomDocument Clone()
             {
                 return null;
             }
@@ -122,9 +121,9 @@ namespace Wyam.Core.Tests.Documents
 
         private class CloneReturnsSameDocument : CustomDocument
         {
-            protected internal override CustomDocument Clone(CustomDocument sourceDocument)
+            protected internal override CustomDocument Clone()
             {
-                return sourceDocument;
+                return this;
             }
         }
     }

@@ -1,0 +1,11 @@
+@{
+    MyDocument myDoc = (MyDocument)Model;
+}
+THIS IS MY PAGE
+<hr />
+<h1>@myDoc.Title</h1>
+<h2>@myDoc.Published</h2>
+<hr />
+@RenderBody()
+<hr />
+FOOTER

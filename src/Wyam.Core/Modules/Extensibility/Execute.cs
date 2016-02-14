@@ -17,34 +17,39 @@ namespace Wyam.Core.Modules.Extensibility
     /// <category>Extensibility</category>
     public class Execute : IModule
     {
-        private readonly DocumentConfig _executeDocuments;
+        private readonly DocumentConfig _executeDocument;
         private readonly ContextConfig _executeContext;
 
         /// <summary>
-        /// Specifies a delegate that should be invoked once for each input document.
+        /// Specifies a delegate that should be invoked once for each input document. The delegate
+        /// should return a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>. If null is returned, this
+        /// module will return the input documents. If anything else is returned, an exception will be thrown.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a IEnumerable%lt;IDocument&gt;.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
         public Execute(DocumentConfig execute)
         {
-            _executeDocuments = execute;
+            _executeDocument = execute;
         }
 
         /// <summary>
-        /// Specifies a delegate that should be invoked once for all input documents.
+        /// Specifies a delegate that should be invoked once for all input documents. The delegate
+        /// should return a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>. If null is returned, this
+        /// module will return the input documents. If anything else is returned, an exception will be thrown.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a IEnumerable%lt;IDocument&gt;.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
         public Execute(ContextConfig execute)
         {
             _executeContext = execute;
         }
 
         /// <summary>
-        /// Specifies an action that should be invoked once for each input document.
+        /// Specifies a delegate that should be invoked once for each input document.
+        /// This will return the input documents.
         /// </summary>
-        /// <param name="execute">An action to invoke.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
         public Execute(Action<IDocument, IExecutionContext> execute)
         {
-            _executeDocuments = (doc, ctx) =>
+            _executeDocument = (doc, ctx) =>
             {
                 execute(doc, ctx);
                 return null;
@@ -52,9 +57,10 @@ namespace Wyam.Core.Modules.Extensibility
         }
 
         /// <summary>
-        /// Specifies an action that should be invoked once for all input documents.
+        /// Specifies a delegate that should be invoked once for all input documents.
+        /// This will return the input documents.
         /// </summary>
-        /// <param name="execute">An action to invoke.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
         public Execute(Action<IExecutionContext> execute)
         {
             _executeContext = ctx =>
@@ -66,11 +72,33 @@ namespace Wyam.Core.Modules.Extensibility
 
         IEnumerable<IDocument> IModule.Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            if (_executeDocuments != null)
+            if (_executeDocument != null)
             {
-                return inputs.SelectMany(x => _executeDocuments.Invoke<IEnumerable<IDocument>>(x, context) ?? Array.Empty<IDocument>());
+                return inputs.SelectMany(input => GetDocuments(_executeDocument(input, context)) ?? new [] { input });
             }
-            return _executeContext.Invoke<IEnumerable<IDocument>>(context) ?? Array.Empty<IDocument>();
+            return GetDocuments(_executeContext(context)) ?? inputs;
         }
+
+        private IEnumerable<IDocument> GetDocuments(object result)
+        {
+            if (result == null)
+            {
+                return null;
+            }
+            IEnumerable<IDocument> documents = result as IEnumerable<IDocument>;
+            if (documents == null)
+            {
+                IDocument document = result as IDocument;
+                if (document != null)
+                {
+                    documents = new[] { document };
+                }
+            }
+            if (documents != null)
+            {
+                return documents;
+            }
+            throw new Exception("Execute delegate must return IEnumerable<IDocument>, IDocument, or null");
+        } 
     }
 }

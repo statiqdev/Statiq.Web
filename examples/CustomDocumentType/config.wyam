@@ -1,0 +1,33 @@
+public class MyDocument : CustomDocument
+{
+    public string Title { get; set; }
+    public DateTime Published { get; set; }
+    
+    protected override CustomDocument Clone()
+    {
+        return new MyDocument
+        {
+            Title = Title,
+            Published = Published
+        };
+    }
+}
+
+---
+SetCustomDocumentType<MyDocument>();
+
+Pipelines.Add("Posts",
+	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
+    Execute((doc, ctx) => { ((MyDocument)@doc).Title = @doc.String("Title"); }),  // Move the title to MyDocument.Title
+    Execute((doc, ctx) => { ((MyDocument)@doc).Published = @doc.Get<DateTime>("Published"); }),  // Move the published date to MyDocument.Published
+	Markdown(),  // Render the markdown content
+	Razor(),  // Compile and render the page template
+	WriteFiles(".html")  // Write the posts
+);
+
+Pipelines.Add("Home",
+	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
+	Razor(),
+	WriteFiles(".html")
+);
