@@ -1,6 +1,7 @@
 # 0.11.2
 
 - A special thanks to @deanebarker who contributed a ton of new functionality as well as generated lots of great ideas, discussion, and bug reports - this release wouldn't be what it was without his help and support
+- Note that the I/O abstraction support is still under development and may continue to change in the next version
 - Feature - Support for custom document types (#183)
 - Feature - Support for reading from stdin, including a new **ReadApplicationInput** module (#226, thanks @deanebarker)
 - Feature - New command-line switch `--verify-config` for validating the config file without actually running (#223, thanks @deanebarker)
