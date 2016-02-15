@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Wyam.Common.Tracing;
-using Wyam.Core;
-using Wyam.Testing;
 
 namespace Wyam.Examples.Tests
 {
     namespace Wyam.Examples.Tests
     {
         [TestFixture(Category = "ExcludeFromAppVeyor")]
-        public class ExamplesTests : BaseFixture
+        public class ExamplesTests
         {
             private static IEnumerable<string> _paths;
 
@@ -43,15 +41,19 @@ namespace Wyam.Examples.Tests
             [TestCaseSource(typeof(ExamplesTests), nameof(Paths))]
             public void ExecuteExample(string example)
             {
-                Engine engine = new Engine();
-                engine.FileSystem.RootPath = example;
-                engine.Config.Assemblies.LoadDirectory(TestContext.CurrentContext.TestDirectory);
-                string config = Path.Combine(example, "config.wyam");
-                if (File.Exists(config))
-                {
-                    engine.Configure(File.ReadAllText(config));
-                }
-                engine.Execute();
+                Process process = new Process();
+                process.StartInfo.FileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.exe");
+                process.StartInfo.Arguments = example;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.OutputDataReceived += (s, e) => TestContext.Out.WriteLine(e.Data);
+                process.ErrorDataReceived += (s, e) => TestContext.Out.WriteLine(e.Data);
+                process.Start();
+                process.BeginOutputReadLine();
+                process.WaitForExit();
+                Assert.AreEqual(0, process.ExitCode);
             }
         }
     }

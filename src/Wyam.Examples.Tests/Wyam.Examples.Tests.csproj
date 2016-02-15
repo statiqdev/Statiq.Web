@@ -95,9 +95,9 @@
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Modules.Yaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
-      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
-      <Name>Wyam.Testing</Name>
+    <ProjectReference Include="..\Wyam\Wyam.csproj">
+      <Project>{9cadde07-290f-4958-b0d4-2e613b8f127f}</Project>
+      <Name>Wyam</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

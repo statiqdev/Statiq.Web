@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Wyam.Testing
 {
     // Throws exceptions on error or warning traces, but only for the current thread
-    internal class TestTraceListener : ConsoleTraceListener
+    public class TestTraceListener : ConsoleTraceListener
     {
         public string TestId { get; private set; }
 
