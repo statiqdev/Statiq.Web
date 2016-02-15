@@ -20,10 +20,11 @@ namespace Wyam.Core.Documents
         /// <summary>
         /// Clones this instance of the document. You must return a new instance of your 
         /// custom document type, even if nothing will change, otherwise the document factory 
-        /// will throw an exception.
+        /// will throw an exception. The default implementation of this method performs a
+        /// <code>object.MemberwiseClone()</code>.
         /// </summary>
         /// <returns>A new custom document instance with the same values as the current instance.</returns>
-        protected internal abstract CustomDocument Clone();
+        protected internal virtual CustomDocument Clone() => (CustomDocument)MemberwiseClone();
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() =>
             Document.GetEnumerator();
