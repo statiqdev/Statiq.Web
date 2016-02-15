@@ -78,7 +78,8 @@ namespace Wyam
             OutputLogo();
 
             // Fix the root folder and other files
-            _rootPath = Environment.CurrentDirectory;
+            DirectoryPath currentDirectory = Environment.CurrentDirectory;
+            _rootPath = _rootPath == null ? currentDirectory : currentDirectory.Combine(_rootPath);
             _logFilePath = _logFilePath == null ? null : _rootPath.CombineFile(_logFilePath);
             _configFilePath = _rootPath.CombineFile(_configFilePath ?? "config.wyam");
 
@@ -329,47 +330,55 @@ namespace Wyam
 
         private Engine GetEngine()
         {
-            Engine engine = new Engine();
-
-            // Add a default trace listener
-            Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
-
-            // Set verbose tracing
-            if (_verbose)
+            try
             {
-                Trace.Level = System.Diagnostics.SourceLevels.Verbose;
-            }
+                Engine engine = new Engine();
 
-            // Set no cache if requested
-            if (_noCache)
-            {
-                engine.NoCache = true;
-            }
+                // Add a default trace listener
+                Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
 
-            // Set folders
-            engine.FileSystem.RootPath = _rootPath;
-            if (_inputPath != null)
-            {
-                engine.FileSystem.InputPaths.Add(_inputPath);
-            }
-            if (_outputPath != null)
-            {
-                engine.FileSystem.OutputPath = _outputPath;
-            }
-            if (_noClean)
-            {
-                engine.CleanOutputPathOnExecute = false;
-            }
+                // Set verbose tracing
+                if (_verbose)
+                {
+                    Trace.Level = System.Diagnostics.SourceLevels.Verbose;
+                }
 
-            engine.ApplicationInput = _stdin;
+                // Set no cache if requested
+                if (_noCache)
+                {
+                    engine.NoCache = true;
+                }
 
-            // Set up the log file         
-            if (_logFilePath != null)
-            {
-                Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
+                // Set folders
+                engine.FileSystem.RootPath = _rootPath;
+                if (_inputPath != null)
+                {
+                    engine.FileSystem.InputPaths.Add(_inputPath);
+                }
+                if (_outputPath != null)
+                {
+                    engine.FileSystem.OutputPath = _outputPath;
+                }
+                if (_noClean)
+                {
+                    engine.CleanOutputPathOnExecute = false;
+                }
+
+                engine.ApplicationInput = _stdin;
+
+                // Set up the log file         
+                if (_logFilePath != null)
+                {
+                    Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
+                }
+
+                return engine;
             }
-
-            return engine;
+            catch (Exception ex)
+            {
+                Trace.Critical("Error while instantiating engine: {0}", ex.Message);
+                return null;
+            }
         }
 
         private bool Configure(Engine engine)
