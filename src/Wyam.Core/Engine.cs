@@ -257,7 +257,7 @@ namespace Wyam.Core
 
                     engineStopwatch.Stop();
                     Trace.Information("Executed {0}/{1} pipelines in {2} ms",
-                        c, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
+                        c - 1, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
                 }
 
             }
