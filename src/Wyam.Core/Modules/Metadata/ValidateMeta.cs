@@ -8,7 +8,7 @@ using Wyam.Common.Pipelines;
 namespace Wyam.Core.Modules.Metadata
 {
     /// <summary>
-    /// Tests metadata for (1) existence, (2) typing, and (3) supplied assertions.
+    /// Tests metadata for existence, typing, and supplied assertions.
     /// </summary>
     /// <remarks>
     /// This module performs tests on metadata. It can ensure metadata exists, that it can be converted to the correct type, and that is passes 
@@ -39,7 +39,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <code>
     /// ValidateMeta&lt;int&gt;("Age")
     ///    .WithAssertion(a =&gt; a &gt; 0, "You have to be born.")
-    ///    .WithAssertion(a =&gt; a &lt= 120, "You are way, way too old.")
+    ///    .WithAssertion(a =&gt; a &lt;= 120, "You are way, way too old.")
     /// </code>
     /// </example>
     /// <category>Metadata</category>

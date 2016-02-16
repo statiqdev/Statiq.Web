@@ -111,7 +111,7 @@ namespace Wyam
 
             Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.RootPath}");
             Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engine.FileSystem.InputPaths)}");
-            Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.OutputPath}");
+            Console.WriteLine($"Output path:{Environment.NewLine}  {engine.FileSystem.OutputPath}");
             if (!Execute(engine))
             {
                 return (int)ExitCode.ExecutionError;
