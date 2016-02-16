@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+// using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
@@ -45,6 +45,11 @@ namespace Wyam.Core
         public IPipelineCollection Pipelines => _pipelines;
 
         public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
+
+        /// <summary>
+        /// Global execution metadata.
+        /// </summary>
+        public Dictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
         public IDocumentCollection Documents => DocumentCollection;
 
@@ -257,7 +262,7 @@ namespace Wyam.Core
 
                     engineStopwatch.Stop();
                     Trace.Information("Executed {0}/{1} pipelines in {2} ms",
-                        c, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
+                        c - 1, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
                 }
 
             }

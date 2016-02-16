@@ -55,6 +55,7 @@ namespace Wyam
         private DirectoryPath _outputPath = null;
         private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
+        private IReadOnlyList<string> _globalRawMetadata = null;
 
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -88,6 +89,15 @@ namespace Wyam
             if (engine == null)
             {
                 return (int)ExitCode.CommandLineError;
+            }
+
+            // Populate engine's metadata
+            if (_globalRawMetadata != null && _globalRawMetadata.Count > 0)
+            {
+                foreach (var meta in _globalRawMetadata)
+                {
+                    engine.Metadata.Add(meta, null);
+                }
             }
 
             // Pause
@@ -290,6 +300,7 @@ namespace Wyam
                 syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
+                syntax.DefineOptionList("pass", ref _globalRawMetadata, "Specifies arguments which could be accessed inside Wyam config.");
                 _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
@@ -315,6 +326,7 @@ namespace Wyam
                     }
                 }
             });
+
             hasErrors = parsed.HasErrors;
 
             if (Console.IsInputRedirected)
