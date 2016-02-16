@@ -22,7 +22,7 @@ namespace Wyam.Core
         /// <summary>
         /// Global execution metadata.
         /// </summary>
-        Dictionary<string, object> Metadata { get; set; }
+        Dictionary<string, string> Metadata { get; set; }
 
         IPipelineCollection Pipelines { get; }
 

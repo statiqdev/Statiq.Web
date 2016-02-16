@@ -92,12 +92,9 @@ namespace Wyam
             }
 
             // Populate engine's metadata
-            if (_globalRawMetadata != null && _globalRawMetadata.Count > 0)
+            if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
-                foreach (var meta in _globalRawMetadata)
-                {
-                    engine.Metadata.Add(meta, null);
-                }
+                engine.Metadata = (new GlobalMetadataParser()).Parse(_globalRawMetadata);
             }
 
             // Pause

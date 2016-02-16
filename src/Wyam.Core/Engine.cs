@@ -49,7 +49,7 @@ namespace Wyam.Core
         /// <summary>
         /// Global execution metadata.
         /// </summary>
-        public Dictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 
         public IDocumentCollection Documents => DocumentCollection;
 
