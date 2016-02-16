@@ -222,7 +222,7 @@ namespace Wyam.Core
                     ExecutionCacheManager.ResetEntryHits();
 
                     // Enumerate pipelines and execute each in order
-                    int c = 1;
+                    int c = 0;
                     foreach (Pipeline pipeline in _pipelines.Pipelines)
                     {
                         string pipelineName = pipeline.Name;
