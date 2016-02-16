@@ -162,7 +162,8 @@ namespace Wyam.Core
             }
             catch (Exception ex)
             {
-                Trace.Verbose("Exception: {0}", ex);
+                if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                    Trace.Error("Exception: {0}", ex);
                 throw;
             }
         }
