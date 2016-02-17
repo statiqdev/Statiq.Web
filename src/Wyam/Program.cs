@@ -94,7 +94,7 @@ namespace Wyam
             // Populate engine's metadata
             if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
-                engine.Metadata = (new GlobalMetadataParser()).Parse(_globalRawMetadata);
+                engine.Metadata = (new Core.Util.GlobalMetadataParser()).Parse(_globalRawMetadata);
             }
 
             // Pause

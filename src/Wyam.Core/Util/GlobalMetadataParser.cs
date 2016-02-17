@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Tracing;
 
-namespace Wyam
+namespace Wyam.Core.Util
 {
     /// <summary>
     /// Parses INI-like args.
     /// Key=Value
     /// </summary>
-    class GlobalMetadataParser
+    public class GlobalMetadataParser
     {
         /// <summary>
         /// Parses command line args and outputs dictionary.
