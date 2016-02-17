@@ -94,8 +94,18 @@ namespace Wyam
             // Populate engine's metadata
             if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
-                engine.Metadata = (new Core.Util.GlobalMetadataParser()).Parse(_globalRawMetadata);
-                // Not used anymore, so free resources.
+                try {
+                    engine.Metadata = (new Core.Util.GlobalMetadataParser()).Parse(_globalRawMetadata);
+                }
+                catch (Core.Util.MetadataParseException ex)
+                {
+                    Trace.Error("Error while parsing metadata: {0}", ex.Message);
+                    if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                        Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
+
+                    return (int)ExitCode.CommandLineError;
+                }
+                // Not used anymore, release resources.
                 _globalRawMetadata = null;
             }
 

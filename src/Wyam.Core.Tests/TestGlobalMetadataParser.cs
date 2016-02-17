@@ -4,7 +4,7 @@ using Wyam.Core.Util;
 
 namespace Wyam.Core.Tests
 {
-   public class TestGlobalMetadataParser
+    public class TestGlobalMetadataParser
     {
         GlobalMetadataParser parser;
 
@@ -45,6 +45,15 @@ namespace Wyam.Core.Tests
                 StringAssert.DoesNotStartWith(" ", arg.Value, "Arguments value should be trimmed.");
                 StringAssert.DoesNotEndWith(" ", arg.Value, "Arguments value should be trimmed.");
             }
+        }
+
+        /// <summary>
+        /// Same keys are not valid.
+        /// </summary>
+        [Test]
+        public void TestMetadataKeyCollision()
+        {
+            Assert.Throws<MetadataParseException>(() => parser.Parse(new string[] { "hello=world", "hello=exception" }));
         }
     }
 }

@@ -7,6 +7,13 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.Core.Util
 {
+    [Serializable]
+    public class MetadataParseException : Exception
+    {
+        public MetadataParseException(string message) : base(message) { }
+        public MetadataParseException(string message, Exception inner) : base(message, inner) { }
+    }
+
     /// <summary>
     /// Parses INI-like args.
     /// Key=Value
@@ -16,10 +23,7 @@ namespace Wyam.Core.Util
         /// <summary>
         /// Parses command line args and outputs dictionary.
         /// </summary>
-        /// <remarks>
-        /// TODO: decouple tracing from parsing.
-        /// </remarks>
-        /// <param name="args"></param>
+        /// <param name="args">Arguments from command line.</param>
         /// <returns></returns>
         public Dictionary<string, string> Parse(IEnumerable<string> args)
         {
@@ -27,18 +31,14 @@ namespace Wyam.Core.Util
             foreach (var arg in args)
             {
                 var pair = ParseSingle(arg);
-                try {
+                try
+                {
                     metadata.Add(pair.Key, pair.Value);
                 }
                 catch (Exception ex)
                 {
-                    // catching Dictionary key insertion exceptions:
                     if (ex is ArgumentException || ex is ArgumentNullException)
-                    {
-                        Trace.Warning("Metadata arg \"{0}\" is dropped because of exception: {1}", arg, ex.Message);
-                        if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
-                            Trace.Warning("Stack trace:{0} {1}", Environment.NewLine, ex.StackTrace);
-                    }
+                        throw new MetadataParseException(string.Format("Error while adding metadata \"{0}\" to dictionary: {1}", arg, ex.Message), ex);
                 }
             }
 
@@ -57,9 +57,10 @@ namespace Wyam.Core.Util
                 // "key=value" is a pair.
                 if (c == '=' && (i > 0 && arg[i - 1] != '\\'))
                 {
-                    var pair = new KeyValuePair<string, string>
-                        (arg.Substring(0, i).Trim(), arg.Substring(i + 1).Trim());
-                    return pair;
+                    var key = arg.Substring(0, i).Trim();
+                    var value = arg.Substring(i + 1).Trim();
+
+                    return new KeyValuePair<string, string>(key, value);
                 }
             }
 
