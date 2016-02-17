@@ -95,6 +95,8 @@ namespace Wyam
             if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
                 engine.Metadata = (new Core.Util.GlobalMetadataParser()).Parse(_globalRawMetadata);
+                // Not used anymore, so free resources.
+                _globalRawMetadata = null;
             }
 
             // Pause
@@ -297,7 +299,7 @@ namespace Wyam
                 syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
-                syntax.DefineOptionList("pass", ref _globalRawMetadata, "Specifies arguments which could be accessed inside Wyam config from EngineMetadata variable (--pass key=value).");
+                syntax.DefineOptionList("meta", ref _globalRawMetadata, "Specifies arguments which could be accessed inside Wyam config from EngineMetadata variable (--meta key=value).");
                 _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
