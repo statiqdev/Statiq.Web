@@ -17,12 +17,15 @@ namespace Wyam.Core
     /// </summary>
     public interface IEngine
     {
-        IInitialMetadata InitialMetadata { get; }
+        /// <summary>
+        /// The initial metadata that is used to populate every new document.
+        /// </summary>
+        ISimpleMetadata InitialMetadata { get; }
 
         /// <summary>
-        /// Global execution metadata.
+        /// Global execution metadata that is available from the execution context.
         /// </summary>
-        Dictionary<string, string> Metadata { get; set; }
+        ISimpleMetadata GlobalMetadata { get; set; }
 
         IPipelineCollection Pipelines { get; }
 

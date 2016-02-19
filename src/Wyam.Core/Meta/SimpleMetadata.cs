@@ -7,7 +7,7 @@ using Wyam.Common.Meta;
 
 namespace Wyam.Core.Meta
 {
-    public class InitialMetadata : Dictionary<string, object>, IInitialMetadata
+    public class SimpleMetadata : Dictionary<string, object>, ISimpleMetadata
     {
 
     }

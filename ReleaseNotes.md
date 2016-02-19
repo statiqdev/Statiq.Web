@@ -1,3 +1,9 @@
+# 0.11.3
+
+- Feature - New support for specifying global metadata on the command line and accessing it from config files, the engine, and the execution context (#233 and #237, thanks @miere43)
+- Fix - Incorrect number of pipelines reported in output (#235 and #236, thanks @miere43)
+- Fix - Exceptions are now highlighted in the CLI (#230 and #232, thanks @miere43)
+
 # 0.11.2
 
 - A special thanks to @deanebarker who contributed a ton of new functionality as well as generated lots of great ideas, discussion, and bug reports - this release wouldn't be what it was without his help and support

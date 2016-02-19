@@ -27,6 +27,7 @@ namespace Wyam.Common.Pipelines
         string OutputFolder { get; }
         IFileSystem FileSystem { get; }
         IDocumentCollection Documents { get; }
+        IReadOnlyDictionary<string, object> GlobalMetadata { get; } 
 
         string ApplicationInput { get; }
 

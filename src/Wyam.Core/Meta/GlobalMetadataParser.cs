@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common.Tracing;
 
-namespace Wyam.Core.Util
+namespace Wyam.Core.Meta
 {
     [Serializable]
     public class MetadataParseException : Exception
@@ -25,9 +21,9 @@ namespace Wyam.Core.Util
         /// </summary>
         /// <param name="args">Arguments from command line.</param>
         /// <returns></returns>
-        public Dictionary<string, string> Parse(IEnumerable<string> args)
+        public SimpleMetadata Parse(IEnumerable<string> args)
         {
-            var metadata = new Dictionary<string, string>();
+            var metadata = new SimpleMetadata();
             foreach (var arg in args)
             {
                 var pair = ParseSingle(arg);

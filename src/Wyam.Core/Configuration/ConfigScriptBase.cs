@@ -22,13 +22,13 @@ namespace Wyam.Core.Configuration
 
         public abstract void Run();
 
-        public IInitialMetadata InitialMetadata => _engine.InitialMetadata;
+        public ISimpleMetadata InitialMetadata => _engine.InitialMetadata;
 
         public IPipelineCollection Pipelines => _engine.Pipelines;
 
         public IFileSystem FileSystem => _engine.FileSystem;
 
-        public IDictionary<string, string> EngineMetadata => _engine.Metadata;
+        public ISimpleMetadata GlobalMetadata => _engine.GlobalMetadata;
 
         public IEngine Engine => _engine;
 

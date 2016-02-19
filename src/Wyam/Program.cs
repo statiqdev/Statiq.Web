@@ -17,8 +17,7 @@ using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Owin;
 using IFileSystem = Microsoft.Owin.FileSystems.IFileSystem;
-using Path = System.IO.Path;
-using System.Text;
+using Wyam.Core.Meta;
 
 namespace Wyam
 {
@@ -95,9 +94,9 @@ namespace Wyam
             if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
                 try {
-                    engine.Metadata = (new Core.Util.GlobalMetadataParser()).Parse(_globalRawMetadata);
+                    engine.GlobalMetadata = new GlobalMetadataParser().Parse(_globalRawMetadata);
                 }
-                catch (Core.Util.MetadataParseException ex)
+                catch (MetadataParseException ex)
                 {
                     Trace.Error("Error while parsing metadata: {0}", ex.Message);
                     if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
@@ -309,7 +308,7 @@ namespace Wyam
                 syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
-                syntax.DefineOptionList("meta", ref _globalRawMetadata, "Specifies arguments which could be accessed inside Wyam config from EngineMetadata variable (--meta key=value).");
+                syntax.DefineOptionList("meta", ref _globalRawMetadata, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
                 _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {

@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-// using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Core.Configuration;
-using Wyam.Core.NuGet;
-using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -22,7 +13,6 @@ using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
 using Wyam.Core.Meta;
-using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Core.Tracing;
 
@@ -44,12 +34,12 @@ namespace Wyam.Core
 
         public IPipelineCollection Pipelines => _pipelines;
 
-        public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
+        public ISimpleMetadata InitialMetadata { get; } = new SimpleMetadata();
 
         /// <summary>
         /// Global execution metadata.
         /// </summary>
-        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+        public ISimpleMetadata GlobalMetadata { get; set; } = new SimpleMetadata();
 
         public IDocumentCollection Documents => DocumentCollection;
 

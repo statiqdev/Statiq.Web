@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Meta
             public void MissingKeyThrowsKeyNotFoundException()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -38,7 +38,7 @@ namespace Wyam.Core.Tests.Meta
             public void NullKeyThrowsKeyNotFoundException()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -55,7 +55,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithMetadataValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata
+                SimpleMetadata initialMetadata = new SimpleMetadata
                 {
                     ["A"] = new SimpleMetadataValue { Value = "a" }
                 };
@@ -75,7 +75,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -89,7 +89,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -106,7 +106,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -122,7 +122,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -138,7 +138,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithMetadataValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata
+                SimpleMetadata initialMetadata = new SimpleMetadata
                 {
                     ["A"] = new SimpleMetadataValue { Value = "a" }
                 };
@@ -160,7 +160,7 @@ namespace Wyam.Core.Tests.Meta
             public void CanCloneWithNewValues()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -174,7 +174,7 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsPreviousValues()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -188,7 +188,7 @@ namespace Wyam.Core.Tests.Meta
             public void ClonedMetadataDoesNotContainNewValues()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -202,7 +202,7 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsNewValues()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -216,7 +216,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReplacesValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = "a"};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -234,7 +234,7 @@ namespace Wyam.Core.Tests.Meta
             public void GetWithMetadataValueReturnsCorrectResult()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = "a" };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = "a" };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -248,7 +248,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithDerivedMetadataValue()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata
+                SimpleMetadata initialMetadata = new SimpleMetadata
                 {
                     ["A"] = new DerivedMetadataValue { Key = "X" },
                     ["X"] = "x"
@@ -267,7 +267,7 @@ namespace Wyam.Core.Tests.Meta
             {
                 // Given
                 SimpleMetadataValue metadataValue = new SimpleMetadataValue { Value = "a" };
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = metadataValue };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = metadataValue };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -287,7 +287,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForList()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = new List<int> {1, 2, 3}};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<int> {1, 2, 3}};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -302,7 +302,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForConvertedStringList()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = new List<string> {"1", "2", "3"}};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<string> {"1", "2", "3"}};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -317,7 +317,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForConvertedIntList()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = new List<int> {1, 2, 3}};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<int> {1, 2, 3}};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -332,7 +332,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForArray()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata {["A"] = new[] {1, 2, 3}};
+                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new[] {1, 2, 3}};
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -350,7 +350,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsNullWhenKeyNotFound()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -364,7 +364,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsEmptyListForListOfInt()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<int> { 1, 2, 3 } };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = new List<int> { 1, 2, 3 } };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -379,7 +379,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsEmptyListForSingleInt()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = 1 };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = 1 };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -397,7 +397,7 @@ namespace Wyam.Core.Tests.Meta
                 IDocument a = Substitute.For<IDocument>();
                 IDocument b = Substitute.For<IDocument>();
                 IDocument c = Substitute.For<IDocument>();
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = new List<IDocument> { a, b, c } };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = new List<IDocument> { a, b, c } };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -413,7 +413,7 @@ namespace Wyam.Core.Tests.Meta
             {
                 // Given
                 IDocument a = Substitute.For<IDocument>();
-                InitialMetadata initialMetadata = new InitialMetadata { ["A"] = a };
+                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = a };
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -454,7 +454,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResult(string value, bool pretty, string link)
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata
+                SimpleMetadata initialMetadata = new SimpleMetadata
                 {
                     ["A"] = new SimpleMetadataValue {Value = value}
                 };
@@ -474,7 +474,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertIntToString()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -490,7 +490,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringToInt()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -506,7 +506,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertIntArrayToStringArray()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -522,7 +522,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringArrayToIntArray()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -538,7 +538,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertIntArrayToStringEnumerable()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -554,7 +554,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringEnumerableToIntArray()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -570,7 +570,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringToIntArray()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Metadata metadata = new Metadata(initialMetadata);
 
                 // When
@@ -589,7 +589,7 @@ namespace Wyam.Core.Tests.Meta
             public void EnumeratingMetadataValuesReturnsCorrectResults()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata
+                SimpleMetadata initialMetadata = new SimpleMetadata
                 {
                     ["A"] = new SimpleMetadataValue {Value = "a"},
                     ["B"] = new SimpleMetadataValue {Value = "b"},

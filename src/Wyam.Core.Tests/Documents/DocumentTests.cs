@@ -26,7 +26,7 @@ namespace Wyam.Core.Tests.Documents
             public void IdIsNotTheSameForDifferentDocuments()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
 
                 // When
                 Document a = new Document(initialMetadata);
@@ -43,7 +43,7 @@ namespace Wyam.Core.Tests.Documents
             public void IdIsTheSameAfterClone()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 Document document = new Document(initialMetadata);
 
                 // When
@@ -60,7 +60,7 @@ namespace Wyam.Core.Tests.Documents
             public void StreamIsDisposedCorrectlyAfterClone()
             {
                 // Given
-                InitialMetadata initialMetadata = new InitialMetadata();
+                SimpleMetadata initialMetadata = new SimpleMetadata();
                 DisposeCheckStream stream = new DisposeCheckStream();
                 Document originalDoc = new Document(initialMetadata, "Test", stream, null,
                     Array.Empty<KeyValuePair<string, object>>(), true);

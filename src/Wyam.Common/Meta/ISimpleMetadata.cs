@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.Meta
 {
-    public interface IInitialMetadata : IDictionary<string, object>
+    public interface ISimpleMetadata : IDictionary<string, object>
     {
     }
 }

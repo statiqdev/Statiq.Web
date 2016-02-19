@@ -46,6 +46,8 @@ namespace Wyam.Core.Pipelines
 
         public string ApplicationInput => Engine.ApplicationInput;
 
+        public IReadOnlyDictionary<string, object> GlobalMetadata => Engine.GlobalMetadata.ToImmutableDictionary(); 
+
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
             Engine = engine;
