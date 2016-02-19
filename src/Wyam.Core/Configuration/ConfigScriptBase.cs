@@ -1,4 +1,5 @@
-﻿using Wyam.Common.Documents;
+﻿using System.Collections.Generic;
+using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
@@ -26,6 +27,8 @@ namespace Wyam.Core.Configuration
         public IPipelineCollection Pipelines => _engine.Pipelines;
 
         public IFileSystem FileSystem => _engine.FileSystem;
+
+        public IDictionary<string, string> EngineMetadata => _engine.Metadata;
 
         public IEngine Engine => _engine;
 

@@ -18,11 +18,22 @@ namespace Wyam.Core
     public interface IEngine
     {
         IInitialMetadata InitialMetadata { get; }
+
+        /// <summary>
+        /// Global execution metadata.
+        /// </summary>
+        Dictionary<string, string> Metadata { get; set; }
+
         IPipelineCollection Pipelines { get; }
+
         IFileSystem FileSystem { get; }
+
         string ApplicationInput { get; set; }
+
         IDocumentFactory DocumentFactory { get; set; }
+
         bool CleanOutputPathOnExecute { get; set; }
+
         bool NoCache { get; set; }
     }
 }

@@ -112,6 +112,7 @@
     <Compile Include="Documents\CustomDocument.cs" />
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
+    <Compile Include="Util\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IO\Directory.cs" />
     <Compile Include="IO\File.cs" />

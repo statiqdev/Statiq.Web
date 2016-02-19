@@ -94,6 +94,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="TestGlobalMetadataParser.cs" />
     <Compile Include="TypeHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>

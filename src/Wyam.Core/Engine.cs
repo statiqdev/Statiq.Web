@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
+// using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Wyam.Core.Configuration;
 using Wyam.Core.NuGet;
@@ -45,6 +45,11 @@ namespace Wyam.Core
         public IPipelineCollection Pipelines => _pipelines;
 
         public IInitialMetadata InitialMetadata { get; } = new InitialMetadata();
+
+        /// <summary>
+        /// Global execution metadata.
+        /// </summary>
+        public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 
         public IDocumentCollection Documents => DocumentCollection;
 
