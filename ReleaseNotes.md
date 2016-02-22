@@ -1,5 +1,6 @@
 # 0.11.3
 
+- Fix - Duplicate trace messages when config file is changed in watch mode
 - Feature - New support for specifying global metadata on the command line and accessing it from config files, the engine, and the execution context (#233 and #237, thanks @miere43)
 - Fix - Incorrect number of pipelines reported in output (#235 and #236, thanks @miere43)
 - Fix - Exceptions are now highlighted in the CLI (#230 and #232, thanks @miere43)

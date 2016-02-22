@@ -63,9 +63,13 @@ namespace Wyam
 
         private int Run(string[] args)
         {
+            // Add a default trace listener
+            Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
+
+            // Output version info
             AssemblyInformationalVersionAttribute versionAttribute
                 = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
-            Console.WriteLine("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
+            Trace.Information("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
 
             // Parse the command line
             bool hasParseArgsErrors;
@@ -82,6 +86,12 @@ namespace Wyam
             _rootPath = _rootPath == null ? currentDirectory : currentDirectory.Combine(_rootPath);
             _logFilePath = _logFilePath == null ? null : _rootPath.CombineFile(_logFilePath);
             _configFilePath = _rootPath.CombineFile(_configFilePath ?? "config.wyam");
+
+            // Set up the log file         
+            if (_logFilePath != null)
+            {
+                Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
+            }
 
             // Get the engine
             Engine engine = GetEngine();
@@ -353,10 +363,7 @@ namespace Wyam
             try
             {
                 Engine engine = new Engine();
-
-                // Add a default trace listener
-                Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
-
+                
                 // Set verbose tracing
                 if (_verbose)
                 {
@@ -385,13 +392,7 @@ namespace Wyam
                 }
 
                 engine.ApplicationInput = _stdin;
-
-                // Set up the log file         
-                if (_logFilePath != null)
-                {
-                    Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
-                }
-
+                
                 return engine;
             }
             catch (Exception ex)
