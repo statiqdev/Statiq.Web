@@ -56,6 +56,7 @@ namespace Wyam
         private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
         private IReadOnlyList<string> _globalRawMetadata = null;
+        private System.Diagnostics.ConsoleTraceListener _engineListener = null;
 
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -356,7 +357,10 @@ namespace Wyam
                 Engine engine = new Engine();
 
                 // Add a default trace listener
-                Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
+                if (_engineListener != null)
+                    Trace.RemoveListener(_engineListener);
+                _engineListener = new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None };
+                Trace.AddListener(_engineListener);
 
                 // Set verbose tracing
                 if (_verbose)
