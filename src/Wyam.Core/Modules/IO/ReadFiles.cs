@@ -155,6 +155,7 @@ namespace Wyam.Core.Modules.IO
                         .Select(file =>
                         {
                             Trace.Verbose("Read file {0}", file);
+                            string relativePath = PathHelper.GetRelativePath(context.InputFolder, file);
                             return context.GetDocument(input, file, SafeIOHelper.OpenRead(file), new MetadataItems
                             {
                                     { Keys.SourceFileRoot, fileRoot },
@@ -164,9 +165,9 @@ namespace Wyam.Core.Modules.IO
                                     { Keys.SourceFileDir, System.IO.Path.GetDirectoryName(file) },
                                     { Keys.SourceFilePath, file },
                                     { Keys.SourceFilePathBase, PathHelper.RemoveExtension(file) },
-                                    { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.InputFolder, file) },
-                                    { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.InputFolder, file)) },
-                                    { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, file)) }
+                                    { Keys.RelativeFilePath, relativePath },
+                                    { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(relativePath) },
+                                    { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(relativePath) }
                             });
                         });
                 }

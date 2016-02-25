@@ -36,6 +36,12 @@ namespace Wyam.Common.IO
         [Obsolete("This will be replaced by new IO functionality in the next release")]
         public static string GetRelativePath(string fromPath, string toPath)
         {
+            // Remove single . self-references
+            fromPath = fromPath.Replace(@"\.\", @"\");
+            fromPath = fromPath.Trim('.');
+            toPath = toPath.Replace(@"\.\", @"\");
+            toPath = toPath.Trim('.');
+
             if (fromPath == null)
             {
                 throw new ArgumentNullException(nameof(fromPath));
