@@ -21,14 +21,15 @@ namespace Wyam.Core.Tests.Modules.IO
         [SetUp]
         public void SetUp()
         {
-            if (Directory.Exists(@"TestFiles\Output\"))
+            string testFilesOutputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\");
+            if (Directory.Exists(testFilesOutputPath))
             {
                 int c = 0;
                 while (true)
                 {
                     try
                     {
-                        Directory.Delete(@"TestFiles\Output\", true);
+                        Directory.Delete(testFilesOutputPath, true);
                         break;
                     }
                     catch (System.IO.IOException)
@@ -51,6 +52,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine engine = new Engine();
+                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
@@ -66,8 +68,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 }
 
                 // Then
-                Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
-                Assert.AreEqual("Test", File.ReadAllText(@"TestFiles\Output\Subfolder\write-test.txt"));
+                Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
+                Assert.AreEqual("Test", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
             }
 
             [Test]
@@ -75,6 +77,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine engine = new Engine();
+                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
@@ -90,8 +93,8 @@ namespace Wyam.Core.Tests.Modules.IO
                 }
 
                 // Then
-                Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test.txt"));
-                Assert.AreEqual("Test", File.ReadAllText(@"TestFiles\Output\Subfolder\write-test.txt"));
+                Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
+                Assert.AreEqual("Test", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
             }
 
             [Test]
@@ -99,6 +102,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine engine = new Engine();
+                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.SourceFileRoot] = @"TestFiles/Input";
                 engine.InitialMetadata[Keys.SourceFileDir] = @"TestFiles/Input/Subfolder";
@@ -129,6 +133,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine engine = new Engine();
+                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.OutputFolder = @"TestFiles\Output\";
                 engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
@@ -193,6 +198,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine engine = new Engine();
+                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
                 engine.OutputFolder = @"TestFiles\Output\";
                 Pipeline pipeline = new Pipeline("Pipeline", null);
                 MemoryStream emptyStream = new MemoryStream(new byte[] { });
@@ -227,10 +233,10 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // Then
                 Assert.AreEqual(4, outputs.Count());
-                Assert.IsTrue(File.Exists(@"TestFiles\Output\Subfolder\write-test"));
-                Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\empty-test"));
-                Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\null-test"));
-                Assert.IsFalse(File.Exists(@"TestFiles\Output\Subfolder\stream-test"));
+                Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test")));
+                Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\empty-test")));
+                Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\null-test")));
+                Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\stream-test")));
             }
         }
     }
