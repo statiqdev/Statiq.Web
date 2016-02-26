@@ -1,6 +1,8 @@
 # 0.11.3
 
-- Fix - Duplicate trace messages when config file is changed in watch mode
+- Fix - Specifying input path(s) on the command line now correctly removes the default input path (#241 and #231)
+- Fix - Correctly handle paths that contain single . chars (#244)
+- Fix - Duplicate trace messages when config file is changed in watch mode (#243)
 - Feature - New support for specifying global metadata on the command line and accessing it from config files, the engine, and the execution context (#233 and #237, thanks @miere43)
 - Fix - Incorrect number of pipelines reported in output (#235 and #236, thanks @miere43)
 - Fix - Exceptions are now highlighted in the CLI (#230 and #232, thanks @miere43)
