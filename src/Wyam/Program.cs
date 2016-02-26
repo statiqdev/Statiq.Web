@@ -50,7 +50,7 @@ namespace Wyam
         private bool _verifyConfig = false;
         private string _stdin = null;
         private DirectoryPath _rootPath = null;
-        private DirectoryPath _inputPath = null;
+        private IReadOnlyList<DirectoryPath> _inputPaths = null;
         private DirectoryPath _outputPath = null;
         private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
@@ -308,7 +308,7 @@ namespace Wyam
                 {
                     syntax.ReportError("preview-root can only be specified if the preview server is running.");
                 }
-                syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
+                syntax.DefineOptionList("i|input", ref _inputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
                 syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
@@ -378,9 +378,12 @@ namespace Wyam
 
                 // Set folders
                 engine.FileSystem.RootPath = _rootPath;
-                if (_inputPath != null)
+                if (_inputPaths != null && _inputPaths.Count > 0)
                 {
-                    engine.FileSystem.InputPaths.Add(_inputPath);
+                    // Clear existing default paths if new ones are set
+                    // and reverse the inputs so the last one is first to match the semantics of multiple occurrence single options
+                    engine.FileSystem.InputPaths.Clear();
+                    engine.FileSystem.InputPaths.AddRange(_inputPaths.Reverse());
                 }
                 if (_outputPath != null)
                 {
