@@ -123,21 +123,21 @@ namespace Wyam.Common.Tests.IO
 
         public class SegmentsPropertyTests : NormalizedPathTests
         {
-            //[Test]
-            //[TestCase("Hello/World")]
-            //[TestCase("/Hello/World")]
-            //[TestCase("/Hello/World/")]
-            //[TestCase("./Hello/World/")]
-            //public void ShouldReturnSegmentsOfPath(string pathName)
-            //{
-            //    // Given
-            //    TestPath path = new TestPath(pathName);
+            [Test]
+            [TestCase("Hello/World")]
+            [TestCase("/Hello/World")]
+            [TestCase("/Hello/World/")]
+            [TestCase("./Hello/World/")]
+            public void ShouldReturnSegmentsOfPath(string pathName)
+            {
+                // Given
+                TestPath path = new TestPath(pathName);
 
-            //    // When, Then
-            //    Assert.AreEqual(2, path.Segments.Length);
-            //    Assert.AreEqual("Hello", path.Segments[0]);
-            //    Assert.AreEqual("World", path.Segments[1]);
-            //}
+                // When, Then
+                Assert.AreEqual(2, path.Segments.Length);
+                Assert.AreEqual("Hello", path.Segments[0]);
+                Assert.AreEqual("World", path.Segments[1]);
+            }
         }
 
         public class FullPathPropertyTests : NormalizedPathTests

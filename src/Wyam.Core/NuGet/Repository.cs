@@ -4,14 +4,13 @@ using NuGet;
 using NuGet.Frameworks;
 using Wyam.Common.IO;
 using Wyam.Common.NuGet;
-using Wyam.Core.IO;
 using Path = System.IO.Path;
 
 namespace Wyam.Core.NuGet
 {
     internal class Repository : IRepository
     {
-        private readonly List<Package> _packages = new List<Package>(); 
+        private readonly List<Package> _packages = new List<Package>();
         private readonly IPackageRepository _packageRepository;
 
         public Repository(string packageSource)
@@ -31,8 +30,8 @@ namespace Wyam.Core.NuGet
             _packages.Add(package);
             return this;
         }
-        
-        public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, FileSystem fileSystem, bool updatePackages)
+
+        public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, IConfigurableFileSystem fileSystem, bool updatePackages)
         {
             PackageManager packageManager = new PackageManager(_packageRepository, absolutePackagesPath);
 

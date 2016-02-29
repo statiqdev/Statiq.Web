@@ -44,6 +44,7 @@
     <Compile Include="Configuration\IConfig.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
+    <Compile Include="IO\IConfigurableFileSystem.cs" />
     <Compile Include="IO\PathCollection.cs" />
     <Compile Include="IO\FilePath.cs" />
     <Compile Include="IO\IDirectory.cs" />

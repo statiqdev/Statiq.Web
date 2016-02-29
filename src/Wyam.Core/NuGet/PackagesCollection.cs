@@ -8,7 +8,6 @@ using NuGet.Frameworks;
 using Wyam.Common.IO;
 using Wyam.Common.NuGet;
 using Wyam.Common.Tracing;
-using Wyam.Core.IO;
 
 namespace Wyam.Core.NuGet
 {
@@ -16,9 +15,9 @@ namespace Wyam.Core.NuGet
     {
         private DirectoryPath _packagesPath = "packages";
         private DirectoryPath _contentPath = "content";
-        private readonly FileSystem _fileSystem;
+        private readonly IConfigurableFileSystem _fileSystem;
 
-        public PackagesCollection(FileSystem fileSystem)
+        public PackagesCollection(IConfigurableFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }
@@ -69,7 +68,7 @@ namespace Wyam.Core.NuGet
             return Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
         }
 
-        public IRepository Install(string packageId, string versionSpec = null, 
+        public IRepository Install(string packageId, string versionSpec = null,
             bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
             _repositories[0].Install(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
@@ -97,7 +96,7 @@ namespace Wyam.Core.NuGet
             {
                 List<KeyValuePair<IPackageFile, NuGetFramework>> filesAndFrameworks = package.GetLibFiles()
                     .Where(x => x.TargetFramework != null)
-                    .Select(x => new KeyValuePair<IPackageFile, NuGetFramework>(x, 
+                    .Select(x => new KeyValuePair<IPackageFile, NuGetFramework>(x,
                         new NuGetFramework(x.TargetFramework.Identifier, x.TargetFramework.Version, x.TargetFramework.Profile)))
                     .ToList();
                 NuGetFramework targetPackageFramework = reducer.GetNearest(targetFramework, filesAndFrameworks.Select(x => x.Value));

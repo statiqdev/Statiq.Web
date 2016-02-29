@@ -134,10 +134,6 @@ namespace Wyam.Common.IO
 
             // Extract path segments.
             Segments = _path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            if (_path.StartsWith("/") && Segments.Length > 0)
-            {
-                Segments[0] = "/" + Segments[0];
-            }
         }
 
         /// <summary>
