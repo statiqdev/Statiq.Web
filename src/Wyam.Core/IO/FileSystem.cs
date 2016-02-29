@@ -11,7 +11,7 @@ using Wyam.Common.IO;
 namespace Wyam.Core.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
-    internal sealed class FileSystem : IConfigurableFileSystem
+    public class FileSystem : IFileSystem
     {
         public bool IsCaseSensitive { get; set; }
 
@@ -65,7 +65,7 @@ namespace Wyam.Core.IO
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
 
-        private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemInfo
+        private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemEntry
         {
             T notFound = default(T);
             foreach (DirectoryPath inputPath in InputPaths.Reverse())
@@ -123,7 +123,7 @@ namespace Wyam.Core.IO
             return new Directory(path.Collapse());
         }
 
-        public FileSystem()
+        internal FileSystem()
         {
             PathComparer = new PathComparer(this);
             InputPaths = new PathCollection<DirectoryPath>(
@@ -140,7 +140,7 @@ namespace Wyam.Core.IO
         
         private const int RetryCount = 3;
 
-        public static T Retry<T>(Func<T> func)
+        internal static T Retry<T>(Func<T> func)
         {
             int retryCount = 0;
             while (true)
@@ -162,7 +162,7 @@ namespace Wyam.Core.IO
             }
         }
 
-        public static void Retry(Action action)
+        internal static void Retry(Action action)
         {
             Retry<object>(() =>
             {

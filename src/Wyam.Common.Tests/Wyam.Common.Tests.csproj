@@ -48,7 +48,7 @@
     <Compile Include="DocumentCollectionExtensionsTests.cs" />
     <Compile Include="IO\DirectoryPathTests.cs" />
     <Compile Include="IO\FilePathTests.cs" />
-    <Compile Include="IO\PathTests.cs" />
+    <Compile Include="IO\NormalizedPathTests.cs" />
     <Compile Include="IO\PathCollectionTests.cs" />
     <Compile Include="IO\PathComparerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

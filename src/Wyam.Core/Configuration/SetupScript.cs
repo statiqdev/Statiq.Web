@@ -6,6 +6,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.NuGet;
+using Wyam.Core.IO;
 
 namespace Wyam.Core.Configuration
 {
@@ -28,6 +29,7 @@ namespace Wyam.Core.Configuration
         {
             StringBuilder builder = new StringBuilder(@"
                         using System;
+                        using Wyam.Core.IO;
                         using Wyam.Common.Configuration;
                         using Wyam.Common.IO;
                         using Wyam.Common.NuGet;");
@@ -40,7 +42,7 @@ namespace Wyam.Core.Configuration
             builder.AppendLine(@"
                         public static class SetupScript
                         {
-                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
+                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, FileSystem FileSystem)
                             {");
             builder.Append(setup);
             builder.AppendLine(@"
@@ -64,7 +66,7 @@ namespace Wyam.Core.Configuration
             Assembly = Assembly.Load(RawAssembly);
         }
 
-        public void Invoke(IPackagesCollection packages, IAssemblyCollection assemblies, IConfigurableFileSystem fileSystem)
+        public void Invoke(IPackagesCollection packages, IAssemblyCollection assemblies, FileSystem fileSystem)
         {
             var scriptType = Assembly.GetExportedTypes().First(t => t.Name == "SetupScript");
             MethodInfo runMethod = scriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);

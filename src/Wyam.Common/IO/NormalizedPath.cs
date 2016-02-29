@@ -13,13 +13,6 @@ namespace Wyam.Common.IO
     /// </summary>
     public abstract class NormalizedPath
     {
-        private static readonly char[] InvalidPathCharacters;
-
-        static NormalizedPath()
-        {
-            InvalidPathCharacters = System.IO.Path.GetInvalidPathChars().Concat(new[] { '*', '?' }).ToArray();
-        }
-
         private readonly string _path;
 
         /// <summary>
@@ -43,11 +36,70 @@ namespace Wyam.Common.IO
         public string[] Segments { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NormalizedPath"/> class.
+        /// Gets the provider for this path.
+        /// </summary>
+        /// <value>
+        /// The provider for this path.
+        /// </value>
+        public string Provider { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NormalizedPath" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
         protected NormalizedPath(string path)
+            : this(GetProviderAndPath(path))
         {
+        }
+
+        /// <summary>
+        /// Gets the provider and path from a path string. Implemented as a static
+        /// so it can be used in a constructor chain.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The provider (item 1) and path (item 2).</returns>
+        internal static Tuple<string, string> GetProviderAndPath(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            string provider = string.Empty;
+            int providerIndex = path.IndexOf("::", StringComparison.Ordinal);
+            if (providerIndex != -1)
+            {
+                provider = path.Substring(0, providerIndex);
+                path = path.Substring(providerIndex + 2);
+            }
+            return Tuple.Create(provider, path);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NormalizedPath" /> class
+        /// with the given provider.
+        /// </summary>
+        /// <param name="provider">The provider for this path.</param>
+        /// <param name="path">The path.</param>
+        protected NormalizedPath(string provider, string path)
+            : this(Tuple.Create(provider, path))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NormalizedPath" /> class.
+        /// </summary>
+        /// <param name="providerAndPath">The provider and path as a Tuple so it can
+        /// be passed from both of the other constructors.</param>
+        private NormalizedPath(Tuple<string, string> providerAndPath)
+        {
+            string provider = providerAndPath.Item1;
+            string path = providerAndPath.Item2;
+
+            if (provider == null)
+            {
+                throw new ArgumentNullException(nameof(provider));
+            }
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -57,6 +109,7 @@ namespace Wyam.Common.IO
                 throw new ArgumentException("Path cannot be empty", nameof(path));
             }
 
+            Provider = provider;
             _path = path.Replace('\\', '/').Trim();
             _path = _path == "./" ? string.Empty : _path;
 
@@ -85,18 +138,8 @@ namespace Wyam.Common.IO
             {
                 Segments[0] = "/" + Segments[0];
             }
-
-            // Validate the path.
-            foreach (var character in path)
-            {
-                if (InvalidPathCharacters.Contains(character))
-                {
-                    const string format = "Illegal characters in directory path ({0})";
-                    throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, format, character), nameof(path));
-                }
-            }
         }
-        
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this path.
         /// </summary>

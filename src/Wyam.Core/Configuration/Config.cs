@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,7 +14,9 @@ using Wyam.Common.Modules;
 using Wyam.Common.NuGet;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
+using Wyam.Core.IO;
 using Wyam.Core.NuGet;
+using File = System.IO.File;
 
 namespace Wyam.Core.Configuration
 {
@@ -27,7 +28,7 @@ namespace Wyam.Core.Configuration
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly AssemblyManager _assemblyManager = new AssemblyManager();
         private readonly IEngine _engine;
-        private readonly IConfigurableFileSystem _fileSystem;
+        private readonly FileSystem _fileSystem;
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
@@ -47,7 +48,7 @@ namespace Wyam.Core.Configuration
 
         public byte[] RawConfigAssembly => _configScript?.RawAssembly;
 
-        public Config(IEngine engine, IConfigurableFileSystem fileSystem)
+        public Config(IEngine engine, FileSystem fileSystem)
         {
             _engine = engine;
             _fileSystem = fileSystem;

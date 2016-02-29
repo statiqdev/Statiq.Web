@@ -11,7 +11,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Represents a directory.
     /// </summary>
-    public interface IDirectory : IFileSystemInfo
+    public interface IDirectory : IFileSystemEntry
     {
         /// <summary>
         /// Gets the path to the directory.

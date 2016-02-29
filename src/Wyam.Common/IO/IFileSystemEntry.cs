@@ -10,7 +10,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Represents an entry in the file system
     /// </summary>
-    public interface IFileSystemInfo
+    public interface IFileSystemEntry
     {
         /// <summary>
         /// Gets the path to the entry.
@@ -19,7 +19,7 @@ namespace Wyam.Common.IO
         NormalizedPath Path { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="IFileSystemInfo"/> exists.
+        /// Gets a value indicating whether this <see cref="IFileSystemEntry"/> exists.
         /// </summary>
         /// <value>
         ///   <c>true</c> if the entry exists; otherwise, <c>false</c>.
@@ -27,7 +27,7 @@ namespace Wyam.Common.IO
         bool Exists { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="IFileSystemInfo"/> is hidden.
+        /// Gets a value indicating whether this <see cref="IFileSystemEntry"/> is hidden.
         /// </summary>
         /// <value>
         ///   <c>true</c> if the entry is hidden; otherwise, <c>false</c>.

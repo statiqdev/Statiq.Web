@@ -16,7 +16,7 @@ namespace Wyam.Core.IO
 
         public FilePath Path => _path;
 
-        Wyam.Common.IO.NormalizedPath IFileSystemInfo.Path => _path;
+        Wyam.Common.IO.NormalizedPath IFileSystemEntry.Path => _path;
 
         public IDirectory Directory => new Directory(_path.GetDirectory());
 

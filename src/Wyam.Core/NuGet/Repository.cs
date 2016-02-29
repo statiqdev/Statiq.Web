@@ -4,6 +4,7 @@ using NuGet;
 using NuGet.Frameworks;
 using Wyam.Common.IO;
 using Wyam.Common.NuGet;
+using Wyam.Core.IO;
 using Path = System.IO.Path;
 
 namespace Wyam.Core.NuGet
@@ -31,7 +32,7 @@ namespace Wyam.Core.NuGet
             return this;
         }
         
-        public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, IConfigurableFileSystem fileSystem, bool updatePackages)
+        public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, FileSystem fileSystem, bool updatePackages)
         {
             PackageManager packageManager = new PackageManager(_packageRepository, absolutePackagesPath);
 

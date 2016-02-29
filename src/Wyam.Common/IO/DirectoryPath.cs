@@ -23,6 +23,17 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath" /> class
+        /// with the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        public DirectoryPath(string provider, string path)
+                    : base(provider, path)
+        {
+        }
+
+        /// <summary>
         /// Gets the name of the directory.
         /// </summary>
         /// <returns>The directory name.</returns>
@@ -45,7 +56,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return new FilePath(System.IO.Path.Combine(FullPath, path.GetFilename().FullPath));
+            return new FilePath(Provider, System.IO.Path.Combine(FullPath, path.GetFilename().FullPath));
         }
 
         /// <summary>
@@ -60,7 +71,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return !path.IsRelative ? path : new FilePath(System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new FilePath(Provider, System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
@@ -75,14 +86,14 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return !path.IsRelative ? path : new DirectoryPath(System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new DirectoryPath(Provider, System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
         /// Collapses a <see cref="DirectoryPath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="DirectoryPath"/>.</returns>
-        public DirectoryPath Collapse() => new DirectoryPath(Collapse(this));
+        public DirectoryPath Collapse() => new DirectoryPath(Provider, Collapse(this));
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.

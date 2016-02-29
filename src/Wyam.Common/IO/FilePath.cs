@@ -31,6 +31,17 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FilePath" /> class
+        /// with the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        public FilePath(string provider, string path)
+                    : base(provider, path)
+        {
+        }
+
+        /// <summary>
         /// Gets the directory part of the path.
         /// </summary>
         /// <returns>The directory part of the path.</returns>
@@ -41,21 +52,21 @@ namespace Wyam.Common.IO
             {
                 directory = "./";
             }
-            return new DirectoryPath(directory);
+            return new DirectoryPath(Provider, directory);
         }
 
         /// <summary>
         /// Gets the filename.
         /// </summary>
         /// <returns>The filename.</returns>
-        public FilePath GetFilename() => new FilePath(System.IO.Path.GetFileName(FullPath));
+        public FilePath GetFilename() => new FilePath(Provider, System.IO.Path.GetFileName(FullPath));
 
         /// <summary>
         /// Gets the filename without it's extension.
         /// </summary>
         /// <returns>The filename without it's extension.</returns>
         public FilePath GetFilenameWithoutExtension() => 
-            new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
+            new FilePath(Provider, System.IO.Path.GetFileNameWithoutExtension(FullPath));
 
         /// <summary>
         /// Gets the file extension.
@@ -73,7 +84,7 @@ namespace Wyam.Common.IO
         /// <param name="extension">The new extension.</param>
         /// <returns>A new <see cref="FilePath"/> with a new extension.</returns>
         public FilePath ChangeExtension(string extension) => 
-            new FilePath(System.IO.Path.ChangeExtension(FullPath, extension));
+            new FilePath(Provider, System.IO.Path.ChangeExtension(FullPath, extension));
 
         /// <summary>
         /// Appends a file extension to the path.
@@ -90,14 +101,14 @@ namespace Wyam.Common.IO
             {
                 extension = string.Concat(".", extension);
             }
-            return new FilePath(string.Concat(FullPath, extension));
+            return new FilePath(Provider, string.Concat(FullPath, extension));
         }
 
         /// <summary>
         /// Collapses a <see cref="FilePath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="FilePath"/>.</returns>
-        public FilePath Collapse() => new FilePath(Collapse(this));
+        public FilePath Collapse() => new FilePath(Provider, Collapse(this));
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FilePath"/>.

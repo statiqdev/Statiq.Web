@@ -8,6 +8,7 @@ using NuGet.Frameworks;
 using Wyam.Common.IO;
 using Wyam.Common.NuGet;
 using Wyam.Common.Tracing;
+using Wyam.Core.IO;
 
 namespace Wyam.Core.NuGet
 {
@@ -15,9 +16,9 @@ namespace Wyam.Core.NuGet
     {
         private DirectoryPath _packagesPath = "packages";
         private DirectoryPath _contentPath = "content";
-        private readonly IConfigurableFileSystem _fileSystem;
+        private readonly FileSystem _fileSystem;
 
-        public PackagesCollection(IConfigurableFileSystem fileSystem)
+        public PackagesCollection(FileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }

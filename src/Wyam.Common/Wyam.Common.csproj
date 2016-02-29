@@ -46,11 +46,10 @@
     <Compile Include="IO\DirectoryPath.cs" />
     <Compile Include="IO\PathCollection.cs" />
     <Compile Include="IO\FilePath.cs" />
-    <Compile Include="IO\IConfigurableFileSystem.cs" />
     <Compile Include="IO\IDirectory.cs" />
     <Compile Include="IO\IFile.cs" />
     <Compile Include="IO\IFileSystem.cs" />
-    <Compile Include="IO\IFileSystemInfo.cs" />
+    <Compile Include="IO\IFileSystemEntry.cs" />
     <Compile Include="IO\NormalizedPath.cs" />
     <Compile Include="IO\PathComparer.cs" />
     <Compile Include="IO\SafeIOHelper.cs" />
