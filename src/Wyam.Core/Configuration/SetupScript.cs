@@ -40,7 +40,7 @@ namespace Wyam.Core.Configuration
             builder.AppendLine(@"
                         public static class SetupScript
                         {
-                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IConfigurableFileSystem FileSystem)
+                            public static void Run(IPackagesCollection Packages, IAssemblyCollection Assemblies, IFileSystem FileSystem)
                             {");
             builder.Append(setup);
             builder.AppendLine(@"
@@ -64,7 +64,7 @@ namespace Wyam.Core.Configuration
             Assembly = Assembly.Load(RawAssembly);
         }
 
-        public void Invoke(IPackagesCollection packages, IAssemblyCollection assemblies, IConfigurableFileSystem fileSystem)
+        public void Invoke(IPackagesCollection packages, IAssemblyCollection assemblies, IFileSystem fileSystem)
         {
             var scriptType = Assembly.GetExportedTypes().First(t => t.Name == "SetupScript");
             MethodInfo runMethod = scriptType.GetMethod("Run", BindingFlags.Public | BindingFlags.Static);

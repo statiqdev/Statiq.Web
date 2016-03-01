@@ -122,7 +122,7 @@ namespace Wyam.Common.Tests.IO
         public class GetFilenameMethodTests : FilePathTests
         {
             [Test]
-            public void Can_Get_Filename_From_Path()
+            public void CanGetFilenameFromPath()
             {
                 // Given
                 FilePath path = new FilePath("/input/test.txt");
@@ -133,6 +133,19 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual("test.txt", result.FullPath);
             }
+
+            [Test]
+            public void NullProviderSetForReturnPath()
+            {
+                // Given
+                FilePath path = new FilePath("foo", "/input/test.txt");
+
+                // When
+                FilePath result = path.GetFilename();
+
+                // Then
+                Assert.AreEqual(null, result.Provider);
+            }
         }
 
         public class GetFilenameWithoutExtensionMethodTests : FilePathTests
@@ -140,7 +153,7 @@ namespace Wyam.Common.Tests.IO
             [Test]
             [TestCase("/input/test.txt", "test")]
             [TestCase("/input/test", "test")]
-            public void Should_Return_Filename_Without_Extension_From_Path(string fullPath, string expected)
+            public void ShouldReturnFilenameWithoutExtensionFromPath(string fullPath, string expected)
             {
                 // Given
                 FilePath path = new FilePath(fullPath);
@@ -150,6 +163,19 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual(expected, result.FullPath);
+            }
+
+            [Test]
+            public void NullProviderSetForReturnPath()
+            {
+                // Given
+                FilePath path = new FilePath("foo", "/input/test.txt");
+
+                // When
+                FilePath result = path.GetFilenameWithoutExtension();
+
+                // Then
+                Assert.AreEqual(null, result.Provider);
             }
         }
     }

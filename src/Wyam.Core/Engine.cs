@@ -26,9 +26,7 @@ namespace Wyam.Core
         private readonly Config _config;
         private bool _disposed;
 
-        public IConfigurableFileSystem FileSystem => _fileSystem;
-
-        IFileSystem IEngine.FileSystem => _fileSystem; 
+        public IFileSystem FileSystem => _fileSystem;
 
         public IConfig Config => _config;
 

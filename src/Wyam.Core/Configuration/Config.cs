@@ -27,7 +27,7 @@ namespace Wyam.Core.Configuration
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly AssemblyManager _assemblyManager = new AssemblyManager();
         private readonly IEngine _engine;
-        private readonly IConfigurableFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
@@ -47,7 +47,7 @@ namespace Wyam.Core.Configuration
 
         public byte[] RawConfigAssembly => _configScript?.RawAssembly;
 
-        public Config(IEngine engine, IConfigurableFileSystem fileSystem)
+        public Config(IEngine engine, IFileSystem fileSystem)
         {
             _engine = engine;
             _fileSystem = fileSystem;

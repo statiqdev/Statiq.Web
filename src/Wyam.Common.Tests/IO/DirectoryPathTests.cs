@@ -51,6 +51,8 @@ namespace Wyam.Common.Tests.IO
 #if !UNIX
             [TestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
             [TestCase("c:/", "simple.frag", "c:/simple.frag")]
+            [TestCase("c:/", "c:/simple.frag", "c:/simple.frag")]
+            [TestCase("c:/", "c:/test/simple.frag", "c:/simple.frag")]
             [TestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/simple.frag")]
             [TestCase("c:/", "test/simple.frag", "c:/simple.frag")]
 #endif
@@ -58,8 +60,11 @@ namespace Wyam.Common.Tests.IO
             [TestCase("assets/shaders/", "simple.frag", "assets/shaders/simple.frag")]
             [TestCase("/assets/shaders/", "simple.frag", "/assets/shaders/simple.frag")]
             [TestCase("assets/shaders", "test/simple.frag", "assets/shaders/simple.frag")]
+            [TestCase("assets/shaders", "/test/simple.frag", "assets/shaders/simple.frag")]
             [TestCase("assets/shaders/", "test/simple.frag", "assets/shaders/simple.frag")]
+            [TestCase("assets/shaders/", "/test/simple.frag", "assets/shaders/simple.frag")]
             [TestCase("/assets/shaders/", "test/simple.frag", "/assets/shaders/simple.frag")]
+            [TestCase("/assets/shaders/", "/test/simple.frag", "/assets/shaders/simple.frag")]
             public void ShouldCombinePaths(string first, string second, string expected)
             {
                 // Given
@@ -70,6 +75,27 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual(expected, result.FullPath);
+            }
+
+            [Test]
+#if !UNIX
+            [TestCase("first", "c:/assets/shaders/", null, "simple.frag")]
+            [TestCase("first", "c:/", "second", "c:/simple.frag")]
+#endif
+            [TestCase(null, "assets/shaders", null, "simple.frag")]
+            [TestCase("first", "/assets/shaders/", null, "simple.frag")]
+            [TestCase(null, "assets/shaders", "second", "/simple.frag")]
+            [TestCase("first", "/assets/shaders/", "second", "/simple.frag")]
+            public void FileProviderFromDirectoryPathIsUsed(string firstProvider, string firstPath, string secondProvider, string secondPath)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(firstProvider, firstPath);
+
+                // When
+                FilePath result = path.GetFilePath(new FilePath(secondProvider, secondPath));
+
+                // Then
+                Assert.AreEqual(firstProvider, result.Provider);
             }
         }
 

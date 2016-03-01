@@ -40,7 +40,7 @@ namespace Wyam.Core.Pipelines
         [Obsolete("This will be replaced by new IO functionality in the next release")]
         public string OutputFolder => Engine.OutputFolder;
 
-        public IFileSystem FileSystem => Engine.FileSystem;
+        public IReadOnlyFileSystem FileSystem => Engine.FileSystem;
 
         public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
 

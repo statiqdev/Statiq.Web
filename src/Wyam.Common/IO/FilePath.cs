@@ -59,14 +59,15 @@ namespace Wyam.Common.IO
         /// Gets the filename.
         /// </summary>
         /// <returns>The filename.</returns>
-        public FilePath GetFilename() => new FilePath(Provider, System.IO.Path.GetFileName(FullPath));
+        public FilePath GetFilename() => 
+            new FilePath(System.IO.Path.GetFileName(FullPath));
 
         /// <summary>
         /// Gets the filename without it's extension.
         /// </summary>
         /// <returns>The filename without it's extension.</returns>
         public FilePath GetFilenameWithoutExtension() => 
-            new FilePath(Provider, System.IO.Path.GetFileNameWithoutExtension(FullPath));
+            new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
 
         /// <summary>
         /// Gets the file extension.

@@ -11,9 +11,14 @@ using Wyam.Common.IO;
 namespace Wyam.Core.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
-    internal class FileSystem : IConfigurableFileSystem
+    internal class FileSystem : IFileSystem
     {
         public bool IsCaseSensitive { get; set; }
+
+        // TODO: Add a new default LocalProvider
+        public IFileProviderCollection FileProviders => new FileProviderCollection();
+
+        IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
 
         public PathComparer PathComparer { get; private set; }
 
@@ -39,7 +44,7 @@ namespace Wyam.Core.IO
 
         public PathCollection<DirectoryPath> InputPaths { get; private set; }
 
-        IReadOnlyList<DirectoryPath> IFileSystem.InputPaths => InputPaths;
+        IReadOnlyList<DirectoryPath> IReadOnlyFileSystem.InputPaths => InputPaths;
 
         public DirectoryPath OutputPath
         {

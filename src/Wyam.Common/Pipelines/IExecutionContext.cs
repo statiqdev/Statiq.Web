@@ -25,7 +25,7 @@ namespace Wyam.Common.Pipelines
         string InputFolder { get; }
         [Obsolete("This will be replaced by new IO functionality in the next release")]
         string OutputFolder { get; }
-        IFileSystem FileSystem { get; }
+        IReadOnlyFileSystem FileSystem { get; }
         IDocumentCollection Documents { get; }
         IReadOnlyDictionary<string, object> GlobalMetadata { get; } 
 

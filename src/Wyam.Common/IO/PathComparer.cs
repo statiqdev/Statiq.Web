@@ -19,7 +19,7 @@ namespace Wyam.Common.IO
         /// <value>
         /// The file system or <c>null</c>.
         /// </value>
-        public IFileSystem FileSystem { get; }
+        public IReadOnlyFileSystem FileSystem { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this comparer is case sensitive.
@@ -42,7 +42,7 @@ namespace Wyam.Common.IO
         /// Initializes a new instance of the <see cref="PathComparer"/> class.
         /// </summary>
         /// <param name="fileSystem">The file system.</param>
-        public PathComparer(IFileSystem fileSystem)
+        public PathComparer(IReadOnlyFileSystem fileSystem)
         {
             if (fileSystem == null)
             {

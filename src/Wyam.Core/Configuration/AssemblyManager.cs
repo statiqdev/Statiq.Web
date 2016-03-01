@@ -49,7 +49,7 @@ namespace Wyam.Core.Configuration
         }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
-        public void Initialize(AssemblyCollection assemblyCollection, PackagesCollection packages, IFileSystem fileSystem)
+        public void Initialize(AssemblyCollection assemblyCollection, PackagesCollection packages, IReadOnlyFileSystem fileSystem)
         {
             // Add all module namespaces from Wyam.Core
             _namespaces.AddRange(typeof(Engine).Assembly.GetTypes()

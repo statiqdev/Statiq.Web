@@ -46,7 +46,8 @@ namespace Wyam.Common.IO
         public string GetDirectoryName() => Segments.Last();
 
         /// <summary>
-        /// Combines the current path with the file name of a <see cref="FilePath"/>.
+        /// Combines the current path with the file name of a <see cref="FilePath"/>. The current file provider
+        /// is maintained.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A combination of the current path and the file name of the provided <see cref="FilePath"/>.</returns>
@@ -61,10 +62,11 @@ namespace Wyam.Common.IO
 
         /// <summary>
         /// Combines the current path with a <see cref="FilePath"/>.
-        /// The provided <see cref="FilePath"/> must be relative.
+        /// If the provided <see cref="FilePath"/> is not relative, then it is returned.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns>A combination of the current path and the provided <see cref="FilePath"/>.</returns>
+        /// <returns>A combination of the current path and the provided <see cref="FilePath"/>, unless
+        /// the provided <see cref="FilePath"/> is absolute in which case it is returned.</returns>
         public FilePath CombineFile(FilePath path)
         {
             if (path == null)
@@ -76,10 +78,11 @@ namespace Wyam.Common.IO
 
         /// <summary>
         /// Combines the current path with another <see cref="DirectoryPath"/>.
-        /// The provided <see cref="DirectoryPath"/> must be relative.
+        /// If the provided <see cref="DirectoryPath"/> is not relative, then it is returned.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns>A combination of the current path and the provided <see cref="DirectoryPath"/>.</returns>
+        /// <returns>A combination of the current path and the provided <see cref="DirectoryPath"/>, unless
+        /// the provided <see cref="DirectoryPath"/> is absolute in which case it is returned.</returns>
         public DirectoryPath Combine(DirectoryPath path)
         {
             if (path == null)

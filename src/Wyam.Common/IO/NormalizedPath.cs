@@ -13,13 +13,11 @@ namespace Wyam.Common.IO
     /// </summary>
     public abstract class NormalizedPath
     {
-        private readonly string _path;
-
         /// <summary>
         /// Gets the full path.
         /// </summary>
         /// <value>The full path.</value>
-        public string FullPath => _path;
+        public string FullPath { get; }
 
         /// <summary>
         /// Gets a value indicating whether this path is relative.
@@ -65,11 +63,12 @@ namespace Wyam.Common.IO
                 throw new ArgumentNullException(nameof(path));
             }
 
-            string provider = string.Empty;
+            string provider = null;
             int providerIndex = path.IndexOf("::", StringComparison.Ordinal);
             if (providerIndex != -1)
             {
-                provider = path.Substring(0, providerIndex);
+                // Return a null provider if the :: was used as an escape without an actual provider
+                provider = providerIndex == 0 ? null : path.Substring(0, providerIndex);
                 path = path.Substring(providerIndex + 2);
             }
             return Tuple.Create(provider, path);
@@ -95,11 +94,7 @@ namespace Wyam.Common.IO
         {
             string provider = providerAndPath.Item1;
             string path = providerAndPath.Item2;
-
-            if (provider == null)
-            {
-                throw new ArgumentNullException(nameof(provider));
-            }
+            
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -109,31 +104,48 @@ namespace Wyam.Common.IO
                 throw new ArgumentException("Path cannot be empty", nameof(path));
             }
 
-            Provider = provider;
-            _path = path.Replace('\\', '/').Trim();
-            _path = _path == "./" ? string.Empty : _path;
+            FullPath = path.Replace('\\', '/').Trim();
+            FullPath = FullPath == "./" ? string.Empty : FullPath;
 
             // Remove relative part of a path.
-            if (_path.StartsWith("./", StringComparison.Ordinal))
+            if (FullPath.StartsWith("./", StringComparison.Ordinal))
             {
-                _path = _path.Substring(2);
+                FullPath = FullPath.Substring(2);
             }
 
             // Remove trailing slashes.
-            _path = _path.TrimEnd('/', '\\');
+            FullPath = FullPath.TrimEnd('/', '\\');
 
 #if !UNIX
-            if (_path.EndsWith(":", StringComparison.OrdinalIgnoreCase))
+            if (FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))
             {
-                _path = string.Concat(_path, "/");
+                FullPath = string.Concat(FullPath, "/");
             }
 #endif
 
             // Relative path?
-            IsRelative = !System.IO.Path.IsPathRooted(_path);
+            IsRelative = !System.IO.Path.IsPathRooted(FullPath);
+
+            // Set provider (but only if absolute)
+            if (IsRelative)
+            {
+                if (!string.IsNullOrEmpty(provider))
+                {
+                    throw new ArgumentException("Can not specify provider for relative paths", nameof(provider));
+                }
+
+                // If the provider is the default provider, set to null for relative paths
+                provider = null;
+            }
+            else if (provider == null)
+            {
+                // Use string.Empty as the default provider for absolute paths
+                provider = string.Empty;
+            }
+            Provider = provider;
 
             // Extract path segments.
-            Segments = _path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            Segments = FullPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         /// <summary>

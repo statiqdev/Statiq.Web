@@ -34,10 +34,10 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void ShouldThrowIfProviderIsNull()
+            public void ShouldThrowIfProviderIsSpecifiedForRelativePath()
             {
                 // Given, When, Then
-                Assert.Throws<ArgumentNullException>(() => new TestPath(null, "/test"));
+                Assert.Throws<ArgumentException>(() => new TestPath("foo", "Hello/World"));
             }
 
             [Test]
@@ -108,15 +108,19 @@ namespace Wyam.Common.Tests.IO
 
         public class ProviderPropertyTests : NormalizedPathTests
         {
-            public void ShouldReturnProvider(string pathName)
+            [Test]
+            [TestCase("foo", "/Hello/World", "foo")]
+            [TestCase("", "/Hello/World", "")]
+            [TestCase(null, "/Hello/World", "")]
+            [TestCase(null, "Hello/World", null)]
+            [TestCase("", "Hello/World", null)]
+            public void ShouldReturnProvider(string provider, string pathName, string expectedProvider)
             {
-                // Given
-                TestPath path = new TestPath("Hello/World");
+                // Given, W
+                TestPath path = new TestPath(provider, pathName);
 
-                // When, Then
-                Assert.AreEqual(2, path.Segments.Length);
-                Assert.AreEqual("Hello", path.Segments[0]);
-                Assert.AreEqual("World", path.Segments[1]);
+                // Then
+                Assert.AreEqual(expectedProvider, path.Provider);
 
             }
         }
@@ -130,10 +134,10 @@ namespace Wyam.Common.Tests.IO
             [TestCase("./Hello/World/")]
             public void ShouldReturnSegmentsOfPath(string pathName)
             {
-                // Given
+                // Given, When
                 TestPath path = new TestPath(pathName);
 
-                // When, Then
+                // Then
                 Assert.AreEqual(2, path.Segments.Length);
                 Assert.AreEqual("Hello", path.Segments[0]);
                 Assert.AreEqual("World", path.Segments[1]);
@@ -237,11 +241,11 @@ namespace Wyam.Common.Tests.IO
         public class GetProviderAndPathMethodTests : NormalizedPathTests
         {
             [Test]
-            [TestCase("C:/a/b", "", "C:/a/b")]
-            [TestCase(@"C:\a\b", "", @"C:\a\b")]
-            [TestCase(@"::C::\a\b", "", @"C::\a\b")]
+            [TestCase("C:/a/b", null, "C:/a/b")]
+            [TestCase(@"C:\a\b", null, @"C:\a\b")]
+            [TestCase(@"::C::\a\b", null, @"C::\a\b")]
             [TestCase(@"provider::C::\a\b", "provider", @"C::\a\b")]
-            [TestCase("/a/b", "", "/a/b")]
+            [TestCase("/a/b", null, "/a/b")]
             [TestCase("provider::/a/b", "provider", "/a/b")]
             public void ShouldParseProvider(string fullPath, string provider, string path)
             {
