@@ -8,5 +8,7 @@ namespace Wyam.Common.IO
 {
     public interface IFileProvider
     {
+        IFile GetFile(FilePath path);
+        IDirectory GetDirectory(DirectoryPath path);
     }
 }

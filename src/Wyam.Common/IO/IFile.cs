@@ -9,7 +9,8 @@ namespace Wyam.Common.IO
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
-    /// Represents a file.
+    /// Represents a file. Not all implementations will support all
+    /// available methods and may throw <see cref="NotSupportedException"/>.
     /// </summary>
     public interface IFile : IFileSystemEntry
     {
@@ -58,19 +59,21 @@ namespace Wyam.Common.IO
         string ReadAllText();
 
         /// <summary>
-        /// Opens the file using the specified options.
+        /// Opens the file for reading.
         /// </summary>
-        /// <param name="fileMode">The file mode.</param>
-        /// <returns>A <see cref="Stream"/> to the file.</returns>
-        Stream Open(FileMode fileMode);
+        Stream OpenRead();
+        
+        /// <summary>
+        /// Opens the file for writing.
+        /// </summary>
+        Stream OpenWrite();
 
         /// <summary>
-        /// Opens the file using the specified options.
+        /// Opens the file with the specified options.
         /// </summary>
-        /// <param name="fileMode">The file mode.</param>
-        /// <param name="fileAccess">The file access.</param>
-        /// <param name="fileShare">The file share.</param>
-        /// <returns>A <see cref="Stream"/> to the file.</returns>
+        /// <param name="fileMode">The file mode options.</param>
+        /// <param name="fileAccess">The file access options.</param>
+        /// <param name="fileShare">The file share options.</param>
         Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare);
     }
 }

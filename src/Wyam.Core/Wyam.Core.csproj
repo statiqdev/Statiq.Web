@@ -113,10 +113,11 @@
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="IO\FileProviderCollection.cs" />
+    <Compile Include="IO\LocalDirectory.cs" />
+    <Compile Include="IO\LocalFile.cs" />
+    <Compile Include="IO\LocalFileProvider.cs" />
     <Compile Include="Meta\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />
-    <Compile Include="IO\Directory.cs" />
-    <Compile Include="IO\File.cs" />
     <Compile Include="IO\FileSystem.cs" />
     <Compile Include="Meta\SimpleMetadata.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />

@@ -116,20 +116,54 @@ namespace Wyam.Common.Tests.IO
 
             [Test]
 #if !UNIX
-            [TestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag", "first")]
-            [TestCase("c:/", "simple.frag", "c:/simple.frag", "first")]
-            [TestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/test/simple.frag", "first")]
-            [TestCase("c:/", "test/simple.frag", "c:/test/simple.frag", "first")]
-            [TestCase("c:/", "c:/test/simple.frag", "c:/test/simple.frag", "second")]
+            [TestCase("c:/assets/shaders/", "simple.frag", "c:/assets/shaders/simple.frag")]
+            [TestCase("c:/", "simple.frag", "c:/simple.frag")]
+            [TestCase("c:/assets/shaders/", "test/simple.frag", "c:/assets/shaders/test/simple.frag")]
+            [TestCase("c:/", "test/simple.frag", "c:/test/simple.frag")]
+            [TestCase("c:/", "c:/test/simple.frag", "c:/test/simple.frag")]
 #endif
-            [TestCase("assets/shaders", "simple.frag", "assets/shaders/simple.frag", "first")]
-            [TestCase("assets/shaders/", "simple.frag", "assets/shaders/simple.frag", "first")]
-            [TestCase("/assets/shaders/", "simple.frag", "/assets/shaders/simple.frag", "first")]
-            [TestCase("assets/shaders", "test/simple.frag", "assets/shaders/test/simple.frag", "first")]
-            [TestCase("assets/shaders/", "test/simple.frag", "assets/shaders/test/simple.frag", "first")]
-            [TestCase("/assets/shaders/", "test/simple.frag", "/assets/shaders/test/simple.frag", "first")]
-            [TestCase("assets", "/other/asset.txt", "/other/asset.txt", "second")]
-            public void ShouldCombinePaths(string first, string second, string expected, string expectedProvider)
+            [TestCase("assets/shaders", "simple.frag", "assets/shaders/simple.frag")]
+            [TestCase("assets/shaders/", "simple.frag", "assets/shaders/simple.frag")]
+            [TestCase("/assets/shaders/", "simple.frag", "/assets/shaders/simple.frag")]
+            [TestCase("assets/shaders", "test/simple.frag", "assets/shaders/test/simple.frag")]
+            [TestCase("assets/shaders/", "test/simple.frag", "assets/shaders/test/simple.frag")]
+            [TestCase("/assets/shaders/", "test/simple.frag", "/assets/shaders/test/simple.frag")]
+            [TestCase("assets", "/other/asset.txt", "/other/asset.txt")]
+            public void ShouldCombinePaths(string first, string second, string expected)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(first);
+
+                // When
+                FilePath result = path.CombineFile(new FilePath(second));
+
+                // Then
+                Assert.AreEqual(expected, result.FullPath);
+            }
+
+            [Test]
+#if !UNIX
+            [TestCase("c:/assets/shaders/", "simple.frag")]
+#endif
+            [TestCase("/assets/shaders/", "simple.frag")]
+            public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath("first", first);
+
+                // When
+                FilePath result = path.CombineFile(new FilePath(second));
+
+                // Then
+                Assert.AreEqual("first", result.Provider);
+            }
+
+            [Test]
+#if !UNIX
+            [TestCase("c:/assets/shaders/", "c:/simple.frag")]
+#endif
+            [TestCase("/assets/shaders/", "/simple.frag")]
+            public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
             {
                 // Given
                 DirectoryPath path = new DirectoryPath("first", first);
@@ -138,8 +172,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.CombineFile(new FilePath("second", second));
 
                 // Then
-                Assert.AreEqual(expected, result.FullPath);
-                Assert.AreEqual(expectedProvider, result.Provider);
+                Assert.AreEqual("second", result.Provider);
             }
         }
 
@@ -147,25 +180,58 @@ namespace Wyam.Common.Tests.IO
         {
             [Test]
 #if !UNIX
-            [TestCase("c:/assets/shaders/", "simple", "c:/assets/shaders/simple", "first")]
-            [TestCase("c:/", "simple", "c:/simple", "first")]
-            [TestCase("c:/assets/shaders/", "c:/simple", "c:/simple", "second")]
+            [TestCase("c:/assets/shaders/", "simple", "c:/assets/shaders/simple")]
+            [TestCase("c:/", "simple", "c:/simple")]
+            [TestCase("c:/assets/shaders/", "c:/simple", "c:/simple")]
 #endif
-            [TestCase("assets/shaders", "simple", "assets/shaders/simple", "first")]
-            [TestCase("assets/shaders/", "simple", "assets/shaders/simple", "first")]
-            [TestCase("/assets/shaders/", "simple", "/assets/shaders/simple", "first")]
-            [TestCase("assets", "/other/assets", "/other/assets", "second")]
-            public void ShouldCombinePaths(string first, string second, string expected, string expectedProvider)
+            [TestCase("assets/shaders", "simple", "assets/shaders/simple")]
+            [TestCase("assets/shaders/", "simple", "assets/shaders/simple")]
+            [TestCase("/assets/shaders/", "simple", "/assets/shaders/simple")]
+            [TestCase("assets", "/other/assets", "/other/assets")]
+            public void ShouldCombinePaths(string first, string second, string expected)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(first);
+
+                // When
+                DirectoryPath result = path.Combine(new DirectoryPath(second));
+
+                // Then
+                Assert.AreEqual(expected, result.FullPath);
+            }
+
+            [Test]
+#if !UNIX
+            [TestCase("c:/assets/shaders/", "simple")]
+#endif
+            [TestCase("/assets/shaders/", "simple")]
+            public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
             {
                 // Given
                 DirectoryPath path = new DirectoryPath("first", first);
 
                 // When
-                var result = path.Combine(new DirectoryPath("second", second));
+                DirectoryPath result = path.Combine(new DirectoryPath(second));
 
                 // Then
-                Assert.AreEqual(expected, result.FullPath);
-                Assert.AreEqual(expectedProvider, result.Provider);
+                Assert.AreEqual("first", result.Provider);
+            }
+
+            [Test]
+#if !UNIX
+            [TestCase("c:/assets/shaders/", "c:/simple")]
+#endif
+            [TestCase("/assets/shaders/", "/simpl")]
+            public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath("first", first);
+
+                // When
+                DirectoryPath result = path.Combine(new DirectoryPath("second", second));
+
+                // Then
+                Assert.AreEqual("second", result.Provider);
             }
 
             [Test]

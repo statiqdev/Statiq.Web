@@ -55,7 +55,7 @@ namespace Wyam.Core.NuGet
 
                     IFile file = packageContentDirectory.GetFile(packageFile.EffectivePath);
                     file.Directory.Create();
-                    using (var fileStream = file.Open(FileMode.Create))
+                    using (Stream fileStream = file.Open(FileMode.Open, FileAccess.Write, FileShare.None))
                     {
                         packageFile.GetStream().CopyTo(fileStream);
                     }

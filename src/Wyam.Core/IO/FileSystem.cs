@@ -16,7 +16,7 @@ namespace Wyam.Core.IO
         public bool IsCaseSensitive { get; set; }
 
         // TODO: Add a new default LocalProvider
-        public IFileProviderCollection FileProviders => new FileProviderCollection();
+        public IFileProviderCollection FileProviders => new FileProviderCollection(new LocalFileProvider());
 
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
 
@@ -61,11 +61,11 @@ namespace Wyam.Core.IO
 
         public IFile GetInputFile(FilePath path) =>
             path.IsRelative ? GetInput(inputPath => 
-                new File(RootPath.Combine(inputPath).CombineFile(path).Collapse())) : new File(path);
+                GetFile(RootPath.Combine(inputPath).CombineFile(path).Collapse())) : GetFile(path);
 
         public IDirectory GetInputDirectory(DirectoryPath path) =>
             path.IsRelative ? GetInput(inputPath => 
-                new Directory(RootPath.Combine(inputPath).Combine(path).Collapse())) : new Directory(path);
+                GetDirectory(RootPath.Combine(inputPath).Combine(path).Collapse())) : GetDirectory(path);
 
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
@@ -93,39 +93,45 @@ namespace Wyam.Core.IO
         }
 
         public IFile GetOutputFile(FilePath path) =>
-            new File(RootPath.Combine(OutputPath).CombineFile(path).Collapse());
+            GetFile(RootPath.Combine(OutputPath).CombineFile(path).Collapse());
 
         public IDirectory GetOutputDirectory(DirectoryPath path) =>
-            new Directory(RootPath.Combine(OutputPath).Combine(path).Collapse());
+            GetDirectory(RootPath.Combine(OutputPath).Combine(path).Collapse());
 
         public IDirectory GetOutputDirectory() =>
             GetRootDirectory(OutputPath);
 
         public IFile GetRootFile(FilePath path) =>
-            new File(RootPath.CombineFile(path).Collapse());
+            GetFile(RootPath.CombineFile(path).Collapse());
 
         public IDirectory GetRootDirectory(DirectoryPath path) =>
-            new Directory(RootPath.Combine(path).Collapse());
+            GetDirectory(RootPath.Combine(path).Collapse());
 
         public IDirectory GetRootDirectory() =>
-            new Directory(RootPath.Collapse());
+            GetDirectory(RootPath.Collapse());
 
-        public IFile GetFile(FilePath path)
+        public IFile GetFile(FilePath path) => 
+            GetFileProvider(path).GetFile(path.Collapse());
+
+        public IDirectory GetDirectory(DirectoryPath path) =>
+            GetFileProvider(path).GetDirectory(path.Collapse());
+
+        public IFileProvider GetFileProvider(NormalizedPath path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
             if (path.IsRelative)
             {
                 throw new ArgumentException("The path must be absolute");
             }
-            return new File(path.Collapse());
-        }
-
-        public IDirectory GetDirectory(DirectoryPath path)
-        {
-            if (path.IsRelative)
+            IFileProvider fileProvider;
+            if (!FileProviders.TryGet(path.Provider, out fileProvider))
             {
-                throw new ArgumentException("The path must be absolute");
+                throw new ArgumentException($"Provider {path.Provider} could not be found", nameof(path));
             }
-            return new Directory(path.Collapse());
+            return fileProvider;
         }
 
         public FileSystem()
@@ -137,47 +143,5 @@ namespace Wyam.Core.IO
                     DirectoryPath.FromString("input")
                 }, PathComparer);
         }
-
-        // *** Retry logic (used by File and Directory)
-
-        private static readonly TimeSpan InitialInterval = TimeSpan.FromMilliseconds(100);
-        private static readonly TimeSpan IntervalDelta = TimeSpan.FromMilliseconds(100);
-        
-        private const int RetryCount = 3;
-
-        public static T Retry<T>(Func<T> func)
-        {
-            int retryCount = 0;
-            while (true)
-            {
-                try
-                {
-                    return func();
-                }
-                catch (Exception ex)
-                {
-                    TimeSpan? interval = ShouldRetry(retryCount, ex);
-                    if (!interval.HasValue)
-                    {
-                        throw;
-                    }
-                    Thread.Sleep(interval.Value);
-                }
-                retryCount++;
-            }
-        }
-
-        public static void Retry(Action action)
-        {
-            Retry<object>(() =>
-            {
-                action();
-                return null;
-            });
-        }
-
-        private static TimeSpan? ShouldRetry(int retryCount, Exception exception) =>
-            (exception is IOException || exception is UnauthorizedAccessException) && retryCount < RetryCount
-                ? (TimeSpan?)InitialInterval.Add(TimeSpan.FromMilliseconds(IntervalDelta.TotalMilliseconds * retryCount)) : null;
     }
 }

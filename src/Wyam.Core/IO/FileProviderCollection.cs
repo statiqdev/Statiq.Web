@@ -13,6 +13,11 @@ namespace Wyam.Core.IO
         private readonly Dictionary<string, IFileProvider> _fileProviders
             = new Dictionary<string, IFileProvider>();
 
+        public FileProviderCollection(IFileProvider defaultFileProvider)
+        {
+            _fileProviders[string.Empty] = defaultFileProvider;
+        }
+
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();
 
         public bool Add(string name, IFileProvider provider)
