@@ -28,6 +28,14 @@ namespace Wyam.Common.IO
         public bool IsRelative { get; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this path is absolute.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this path is absolute; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsAbsolute => !IsRelative;
+
+        /// <summary>
         /// Gets the segments making up the path.
         /// </summary>
         /// <value>The segments making up the path.</value>

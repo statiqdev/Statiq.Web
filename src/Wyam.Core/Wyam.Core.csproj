@@ -116,6 +116,7 @@
     <Compile Include="IO\LocalDirectory.cs" />
     <Compile Include="IO\LocalFile.cs" />
     <Compile Include="IO\LocalFileProvider.cs" />
+    <Compile Include="IO\VirtualInputDirectory.cs" />
     <Compile Include="Meta\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IO\FileSystem.cs" />

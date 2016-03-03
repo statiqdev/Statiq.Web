@@ -64,6 +64,8 @@
     <Compile Include="Configuration\SetupScriptTests.cs" />
     <Compile Include="Documents\CustomDocumentFactoryTests.cs" />
     <Compile Include="Documents\DocumentTests.cs" />
+    <Compile Include="IO\FileProviderCollectionTests.cs" />
+    <Compile Include="IO\FileSystemTests.cs" />
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
     <Compile Include="Configuration\ConfigTests.cs" />
     <Compile Include="EngineTests.cs" />

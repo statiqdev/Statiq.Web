@@ -22,8 +22,6 @@ namespace Wyam.Core.IO
 
         public bool Exists => _file.Exists;
 
-        public bool Hidden => (_file.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden;
-
         public long Length => _file.Length;
 
         public LocalFile(FilePath path)

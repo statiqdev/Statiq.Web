@@ -25,13 +25,5 @@ namespace Wyam.Common.IO
         ///   <c>true</c> if the entry exists; otherwise, <c>false</c>.
         /// </value>
         bool Exists { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="IFileSystemEntry"/> is hidden.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if the entry is hidden; otherwise, <c>false</c>.
-        /// </value>
-        bool Hidden { get; }
     }
 }

@@ -51,6 +51,7 @@
     <Compile Include="IO\NormalizedPathTests.cs" />
     <Compile Include="IO\PathCollectionTests.cs" />
     <Compile Include="IO\PathComparerTests.cs" />
+    <Compile Include="IO\RelativePathResolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>

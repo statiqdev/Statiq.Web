@@ -20,8 +20,6 @@ namespace Wyam.Core.IO
 
         public bool Exists => _directory.Exists;
 
-        public bool Hidden => (_directory.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden;
-
         public LocalDirectory(DirectoryPath path)
         {
             if (path == null)

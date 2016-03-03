@@ -15,6 +15,11 @@ namespace Wyam.Core.IO
 
         public FileProviderCollection(IFileProvider defaultFileProvider)
         {
+            if (defaultFileProvider == null)
+            {
+                throw new ArgumentNullException(nameof(defaultFileProvider));
+            }
+
             _fileProviders[string.Empty] = defaultFileProvider;
         }
 

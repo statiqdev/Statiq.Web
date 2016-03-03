@@ -61,6 +61,26 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
+        /// Get the relative path to another directory.
+        /// </summary>
+        /// <param name="target">The target directory path.</param>
+        /// <returns>A <see cref="DirectoryPath"/>.</returns>
+        public DirectoryPath GetRelativePath(DirectoryPath target)
+        {
+            return RelativePathResolver.Resolve(this, target);
+        }
+
+        /// <summary>
+        /// Get the relative path to another file.
+        /// </summary>
+        /// <param name="target">The target file path.</param>
+        /// <returns>A <see cref="FilePath"/>.</returns>
+        public FilePath GetRelativePath(FilePath target)
+        {
+            return RelativePathResolver.Resolve(this, target);
+        }
+
+        /// <summary>
         /// Combines the current path with a <see cref="FilePath"/>.
         /// If the provided <see cref="FilePath"/> is not relative, then it is returned.
         /// </summary>
@@ -97,7 +117,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <returns>A collapsed <see cref="DirectoryPath"/>.</returns>
         public DirectoryPath Collapse() => new DirectoryPath(Provider, Collapse(this));
-
+        
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.
         /// </summary>

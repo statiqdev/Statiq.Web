@@ -13,14 +13,24 @@ namespace Wyam.Core.IO
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class FileSystem : IFileSystem
     {
-        public bool IsCaseSensitive { get; set; }
+        public FileSystem()
+        {
+            FileProviders = new FileProviderCollection(new LocalFileProvider());
+            PathComparer = new PathComparer(this);
+            InputPaths = new PathCollection<DirectoryPath>(
+                new[]
+                {
+                    DirectoryPath.FromString("input")
+                }, PathComparer);
+        }
 
-        // TODO: Add a new default LocalProvider
-        public IFileProviderCollection FileProviders => new FileProviderCollection(new LocalFileProvider());
+        public bool IsCaseSensitive { get; set; }
+        
+        public IFileProviderCollection FileProviders { get; }
 
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
 
-        public PathComparer PathComparer { get; private set; }
+        public PathComparer PathComparer { get; }
 
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
         private DirectoryPath _outputPath = "output";
@@ -42,7 +52,7 @@ namespace Wyam.Core.IO
             }
         }
 
-        public PathCollection<DirectoryPath> InputPaths { get; private set; }
+        public PathCollection<DirectoryPath> InputPaths { get; }
 
         IReadOnlyList<DirectoryPath> IReadOnlyFileSystem.InputPaths => InputPaths;
 
@@ -59,62 +69,115 @@ namespace Wyam.Core.IO
             }
         }
 
-        public IFile GetInputFile(FilePath path) =>
-            path.IsRelative ? GetInput(inputPath => 
-                GetFile(RootPath.Combine(inputPath).CombineFile(path).Collapse())) : GetFile(path);
+        public IFile GetInputFile(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
-        public IDirectory GetInputDirectory(DirectoryPath path) =>
-            path.IsRelative ? GetInput(inputPath => 
-                GetDirectory(RootPath.Combine(inputPath).Combine(path).Collapse())) : GetDirectory(path);
+            if (path.IsRelative)
+            {
+                IFile notFound = null;
+                foreach (DirectoryPath inputPath in InputPaths.Reverse())
+                {
+                    IFile file = GetFile(RootPath.Combine(inputPath).CombineFile(path));
+                    if (notFound == null)
+                    {
+                        notFound = file;
+                    }
+                    if (file.Exists)
+                    {
+                        return file;
+                    }
+                }
+                if (notFound == null)
+                {
+                    throw new InvalidOperationException("The input paths collection must have at least one path");
+                }
+                return notFound;
+            }
+            return GetFile(path);
+        }
+
+        public IDirectory GetInputDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            return path.IsRelative ? new VirtualInputDirectory(this, path) : GetDirectory(path);
+        }
 
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
 
-        private T GetInput<T>(Func<DirectoryPath, T> factory) where T : IFileSystemEntry
+        public IFile GetOutputFile(FilePath path)
         {
-            T notFound = default(T);
-            foreach (DirectoryPath inputPath in InputPaths.Reverse())
+            if (path == null)
             {
-                T info = factory(inputPath);
-                if (notFound == null)
-                {
-                    notFound = info;
-                }
-                if (info.Exists)
-                {
-                    return info;
-                }
+                throw new ArgumentNullException(nameof(path));
             }
-            if (notFound == null)
-            {
-                throw new InvalidOperationException("The input paths collection must have at least one path");
-            }
-            return notFound;
+
+            return GetFile(RootPath.Combine(OutputPath).CombineFile(path));
         }
 
-        public IFile GetOutputFile(FilePath path) =>
-            GetFile(RootPath.Combine(OutputPath).CombineFile(path).Collapse());
+        public IDirectory GetOutputDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
-        public IDirectory GetOutputDirectory(DirectoryPath path) =>
-            GetDirectory(RootPath.Combine(OutputPath).Combine(path).Collapse());
+            return GetDirectory(RootPath.Combine(OutputPath).Combine(path));
+        }
 
         public IDirectory GetOutputDirectory() =>
             GetRootDirectory(OutputPath);
 
-        public IFile GetRootFile(FilePath path) =>
-            GetFile(RootPath.CombineFile(path).Collapse());
+        public IFile GetRootFile(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
-        public IDirectory GetRootDirectory(DirectoryPath path) =>
-            GetDirectory(RootPath.Combine(path).Collapse());
+            return GetFile(RootPath.CombineFile(path));
+        }
+
+        public IDirectory GetRootDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            return GetDirectory(RootPath.Combine(path));
+        }
 
         public IDirectory GetRootDirectory() =>
-            GetDirectory(RootPath.Collapse());
+            GetDirectory(RootPath);
 
-        public IFile GetFile(FilePath path) => 
-            GetFileProvider(path).GetFile(path.Collapse());
+        public IFile GetFile(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
 
-        public IDirectory GetDirectory(DirectoryPath path) =>
-            GetFileProvider(path).GetDirectory(path.Collapse());
+            return GetFileProvider(path).GetFile(path.Collapse());
+        }
+
+        public IDirectory GetDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            return GetFileProvider(path).GetDirectory(path.Collapse());
+        }
 
         public IFileProvider GetFileProvider(NormalizedPath path)
         {
@@ -129,19 +192,9 @@ namespace Wyam.Core.IO
             IFileProvider fileProvider;
             if (!FileProviders.TryGet(path.Provider, out fileProvider))
             {
-                throw new ArgumentException($"Provider {path.Provider} could not be found", nameof(path));
+                throw new KeyNotFoundException($"Provider {path.Provider} could not be found");
             }
             return fileProvider;
-        }
-
-        public FileSystem()
-        {
-            PathComparer = new PathComparer(this);
-            InputPaths = new PathCollection<DirectoryPath>(
-                new[]
-                {
-                    DirectoryPath.FromString("input")
-                }, PathComparer);
         }
     }
 }
