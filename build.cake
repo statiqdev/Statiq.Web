@@ -185,7 +185,8 @@ Task("Create-Tools-NuGet-Package")
         if(nuspec == null)
         {            
             throw new InvalidOperationException("Could not find tools nuspec.");
-        }            
+        }
+        var pattern = string.Format("bin\\{0}\\**\\*", configuration);
         NuGetPack(nuspec, new NuGetPackSettings
         {
             Version = semVersion,
@@ -196,7 +197,7 @@ Task("Create-Tools-NuGet-Package")
             { 
                 new NuSpecContent 
                 { 
-                    Source = "bin/" + configuration + "/**/*",
+                    Source = pattern,
                     Target = "tools"
                 } 
             }
