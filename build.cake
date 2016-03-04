@@ -196,7 +196,7 @@ Task("Create-Tools-NuGet-Package")
             { 
                 new NuSpecContent 
                 { 
-                    Source = @"bin\" + configuration + @"\**\*",
+                    Source = "bin/" + configuration + "/**/*",
                     Target = "tools"
                 } 
             }
