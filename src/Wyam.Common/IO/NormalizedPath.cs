@@ -174,6 +174,10 @@ namespace Wyam.Common.IO
             string[] segments = path.FullPath.Split('/', '\\');
             foreach (string segment in segments)
             {
+                if (segment == ".")
+                {
+                    continue;
+                }
                 if (segment == "..")
                 {
                     if (stack.Count > 1)
@@ -184,7 +188,27 @@ namespace Wyam.Common.IO
                 }
                 stack.Push(segment);
             }
-            return string.Join("/", stack.Reverse());
+            string collapsed = string.Join("/", stack.Reverse());
+            return collapsed == string.Empty ? "." : collapsed;
+        }
+
+        public override bool Equals(object obj)
+        {
+            NormalizedPath other = obj as NormalizedPath;
+            if (other == null)
+            {
+                return false;
+            }
+            if (IsAbsolute && other.IsAbsolute && Provider != other.Provider)
+            {
+                return false;
+            }
+            return FullPath.Equals(other.FullPath);
+        }
+
+        public override int GetHashCode()
+        {
+            return FullPath.GetHashCode();
         }
     }
 }

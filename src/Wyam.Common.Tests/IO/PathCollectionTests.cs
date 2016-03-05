@@ -55,7 +55,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldThrowIfComparerIsNull()
             {
                 // Given, When
-                TestDelegate test = () => new PathCollection<TPath>(Enumerable.Empty<TPath>(), null);
+                TestDelegate test = () => new PathCollection<TPath>(Enumerable.Empty<TPath>());
 
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
@@ -68,9 +68,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnTheNumberOfPathsInTheCollection()
             {
                 // Given
-                PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { _upperCaseA, _upperCaseB },
-                    new PathComparer(false));
+                PathCollection<TPath> collection = new PathCollection<TPath>(new [] { _upperCaseA, _upperCaseB });
 
                 // When, Then
                 Assert.AreEqual(2, collection.Count);
@@ -83,7 +81,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldAddPathIfNotAlreadyPresent()
             {
                 // Given
-                PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(false));
+                PathCollection<TPath> collection = new PathCollection<TPath>();
                 collection.Add(_upperCaseB);
 
                 // When
@@ -99,7 +97,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldRespectFileSystemCaseSensitivityWhenAddingPath(bool caseSensitive, int expectedCount)
             {
                 // Given
-                PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(caseSensitive));
+                PathCollection<TPath> collection = new PathCollection<TPath>();
                 collection.Add(_upperCaseA);
 
                 // When
@@ -117,8 +115,7 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new[] { _upperCaseA, _upperCaseB }, 
-                    new PathComparer(false));
+                    new[] { _upperCaseA, _upperCaseB });
 
                 // When
                 collection.AddRange(new[] { _upperCaseA, _upperCaseB, _upperCaseC });
@@ -134,8 +131,7 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { _upperCaseA, _upperCaseB }, 
-                    new PathComparer(caseSensitive));
+                    new [] { _upperCaseA, _upperCaseB });
 
                 // When
                 collection.AddRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
@@ -153,7 +149,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldRespectFileSystemCaseSensitivityWhenRemovingPath(bool caseSensitive, int expectedCount)
             {
                 // Given
-                PathCollection<TPath> collection = new PathCollection<TPath>(new PathComparer(caseSensitive));
+                PathCollection<TPath> collection = new PathCollection<TPath>();
                 collection.Add(_upperCaseA);
 
                 // When
@@ -173,8 +169,7 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { _upperCaseA, _upperCaseB }, 
-                    new PathComparer(caseSensitive));
+                    new [] { _upperCaseA, _upperCaseB });
 
                 // When
                 collection.RemoveRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });

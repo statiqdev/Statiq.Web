@@ -9,8 +9,6 @@ namespace Wyam.Common.IO
 {
     public interface IFileSystem : IReadOnlyFileSystem
     {
-        new bool IsCaseSensitive { get; set; }
-
         /// <summary>
         /// Gets the file providers.
         /// </summary>

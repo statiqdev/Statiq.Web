@@ -34,24 +34,22 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets directories matching the specified filter and scope.
         /// </summary>
-        /// <param name="filter">The filter.</param>
         /// <param name="searchOption">
         /// Specifies whether the operation should include only 
         /// the current directory or should include all subdirectories.
         /// </param>
         /// <returns>Directories matching the filter and scope.</returns>
-        IEnumerable<IDirectory> GetDirectories(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly);
+        IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly);
 
         /// <summary>
         /// Gets files matching the specified filter and scope.
         /// </summary>
-        /// <param name="filter">The filter.</param>
         /// <param name="searchOption">
         /// Specifies whether the operation should include only 
         /// the current directory or should include all subdirectories.
         /// </param>
         /// <returns>Files matching the specified filter and scope.</returns>
-        IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly);
+        IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly);
 
         /// <summary>
         /// Gets a file by combining it's path with the current directory's path.

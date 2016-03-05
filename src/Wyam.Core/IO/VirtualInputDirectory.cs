@@ -46,13 +46,13 @@ namespace Wyam.Core.IO
             throw new NotSupportedException("Can not delete a virtual input directory");
         }
 
-        public IEnumerable<IDirectory> GetDirectories(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             // Get all the relative child directories
             HashSet<DirectoryPath> directories = new HashSet<DirectoryPath>();
-            foreach (IDirectory directory in GetDirectories())
+            foreach (IDirectory directory in GetActualDirectories())
             {
-                foreach (IDirectory childDirectory in directory.GetDirectories(filter, searchOption))
+                foreach (IDirectory childDirectory in directory.GetDirectories(searchOption))
                 {
                     directories.Add(directory.Path.GetRelativePath(childDirectory.Path));
                 }
@@ -62,13 +62,13 @@ namespace Wyam.Core.IO
             return directories.Select(x => new VirtualInputDirectory(_fileSystem, x));
         }
 
-        public IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             // Get all the files for each input directory, replacing earlier ones with later ones
             Dictionary<FilePath, IFile> files = new Dictionary<FilePath, IFile>();
-            foreach (IDirectory directory in GetDirectories())
+            foreach (IDirectory directory in GetActualDirectories())
             {
-                foreach (IFile file in directory.GetFiles(filter, searchOption))
+                foreach (IFile file in directory.GetFiles(searchOption))
                 {
                     files[directory.Path.GetRelativePath(file.Path)] = file;
                 }
@@ -87,9 +87,9 @@ namespace Wyam.Core.IO
         /// <value>
         /// <c>true</c> if this directory exists at one of the input paths; otherwise, <c>false</c>.
         /// </value>
-        public bool Exists => GetDirectories().Any();
+        public bool Exists => GetActualDirectories().Any();
 
-        private IEnumerable<IDirectory> GetDirectories() => 
+        private IEnumerable<IDirectory> GetActualDirectories() => 
             _fileSystem.InputPaths.Select(x => _fileSystem.GetRootDirectory(x.Combine(_path)));
     }
 }

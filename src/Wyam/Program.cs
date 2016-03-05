@@ -186,7 +186,8 @@ namespace Wyam
                     configFileWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
                         new[] { _configFilePath.GetDirectory() }, false, _configFilePath.GetFilename().FullPath, path =>
                         {
-                            if (closureEngine.FileSystem.PathComparer.Equals((FilePath)path, _configFilePath))
+                            FilePath filePath = new FilePath(path);
+                            if (_configFilePath.Equals(filePath))
                             {
                                 _newEngine.Set();
                                 _messageEvent.Set();

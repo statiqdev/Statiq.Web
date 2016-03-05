@@ -16,22 +16,13 @@ namespace Wyam.Core.IO
         public FileSystem()
         {
             FileProviders = new FileProviderCollection(new LocalFileProvider());
-            PathComparer = new PathComparer(this);
-            InputPaths = new PathCollection<DirectoryPath>(
-                new[]
-                {
-                    DirectoryPath.FromString("input")
-                }, PathComparer);
+            InputPaths = new PathCollection<DirectoryPath>(new[] {  DirectoryPath.FromString("input") });
         }
-
-        public bool IsCaseSensitive { get; set; }
         
         public IFileProviderCollection FileProviders { get; }
 
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
-
-        public PathComparer PathComparer { get; }
-
+        
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
         private DirectoryPath _outputPath = "output";
         

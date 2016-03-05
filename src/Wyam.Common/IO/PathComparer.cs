@@ -11,46 +11,6 @@ namespace Wyam.Common.IO
     /// </summary>
     public sealed class PathComparer : IEqualityComparer<NormalizedPath>
     {
-        private readonly bool _isCaseSensitive;
-
-        /// <summary>
-        /// Gets the file system (if one is set).
-        /// </summary>
-        /// <value>
-        /// The file system or <c>null</c>.
-        /// </value>
-        public IReadOnlyFileSystem FileSystem { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this comparer is case sensitive.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this comparer is case sensitive; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsCaseSensitive => FileSystem?.IsCaseSensitive ?? _isCaseSensitive;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathComparer"/> class.
-        /// </summary>
-        /// <param name="isCaseSensitive">if set to <c>true</c>, comparison is case sensitive.</param>
-        public PathComparer(bool isCaseSensitive)
-        {
-            _isCaseSensitive = isCaseSensitive;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathComparer"/> class.
-        /// </summary>
-        /// <param name="fileSystem">The file system.</param>
-        public PathComparer(IReadOnlyFileSystem fileSystem)
-        {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystem));
-            }
-            FileSystem = fileSystem;
-        }
-
         /// <summary>
         /// Determines whether the specified <see cref="NormalizedPath"/> instances are equal.
         /// </summary>
@@ -70,9 +30,7 @@ namespace Wyam.Common.IO
                 return false;
             }
 
-            return IsCaseSensitive 
-                ? x.FullPath.Equals(y.FullPath) 
-                : x.FullPath.Equals(y.FullPath, StringComparison.OrdinalIgnoreCase);
+            return x.Equals(y);
         }
 
         /// <summary>
@@ -88,9 +46,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(obj));
             }
-            return IsCaseSensitive 
-                ? obj.FullPath.GetHashCode() 
-                : obj.FullPath.ToUpperInvariant().GetHashCode();
+            return obj.GetHashCode();
         }
     }
 }

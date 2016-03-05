@@ -10,32 +10,23 @@ namespace Wyam.Common.IO
     /// </summary>
     public class PathCollection<TPath> : IReadOnlyList<TPath> where TPath : NormalizedPath
     {
-        private readonly PathComparer _comparer;
         private readonly List<TPath> _paths;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectoryPathCollection"/> class.
+        /// Initializes a new path collection.
         /// </summary>
-        /// <param name="comparer">The comparer.</param>
-        public PathCollection(PathComparer comparer)
-            : this(Enumerable.Empty<TPath>(), comparer)
+        public PathCollection()
+            : this(Enumerable.Empty<TPath>())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectoryPathCollection"/> class.
+        /// Initializes a new path collection.
         /// </summary>
         /// <param name="paths">The paths.</param>
-        /// <param name="comparer">The comparer.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="comparer"/> is <c>null</c>.</exception>
-        public PathCollection(IEnumerable<TPath> paths, PathComparer comparer)
+        public PathCollection(IEnumerable<TPath> paths)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            _comparer = comparer;
-            _paths = new List<TPath>(paths.Distinct<TPath>(comparer));
+            _paths = new List<TPath>(paths.Distinct<TPath>(new PathComparer()));
         }
 
         /// <summary>
@@ -83,7 +74,7 @@ namespace Wyam.Common.IO
         /// </returns>
         public bool Add(TPath path)
         {
-            if (_paths.Contains(path, _comparer))
+            if (_paths.Contains(path, new PathComparer()))
             {
                 return false;
             }
@@ -122,7 +113,7 @@ namespace Wyam.Common.IO
         /// <returns><c>true</c> if the collection contains the path, otherwise <c>false</c>.</returns>
         public bool Contains(TPath path)
         {
-            return _paths.Contains(path, _comparer);
+            return _paths.Contains(path, new PathComparer());
         }
 
         /// <summary>
@@ -164,7 +155,7 @@ namespace Wyam.Common.IO
         /// <returns>The index of the specified path, or -1 if not found.</returns>
         public int IndexOf(TPath path)
         {
-            return _paths.FindIndex(x => _comparer.Equals(x, path));
+            return _paths.FindIndex(x => x.Equals(path));
         }
 
         /// <summary>
@@ -175,7 +166,7 @@ namespace Wyam.Common.IO
         /// <returns><c>true</c> if the collection did not contain the path and it was inserted, otherwise <c>false</c></returns>
         public bool Insert(int index, TPath path)
         {
-            if (_paths.Contains(path, _comparer))
+            if (_paths.Contains(path, new PathComparer()))
             {
                 return false;
             }

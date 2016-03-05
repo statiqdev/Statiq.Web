@@ -186,7 +186,7 @@ Task("Create-Tools-NuGet-Package")
         {            
             throw new InvalidOperationException("Could not find tools nuspec.");
         }
-        var pattern = string.Format("bin\\{0}\\**\\*", configuration);
+        var pattern = string.Format("bin\\{0}\\**\\*", configuration);  // This is needed to get around a Mono scripting issue (see #246, #248, #249)
         NuGetPack(nuspec, new NuGetPackSettings
         {
             Version = semVersion,

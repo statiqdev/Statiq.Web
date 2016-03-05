@@ -39,11 +39,11 @@ namespace Wyam.Core.IO
 
         public void Delete(bool recursive) => LocalFileProvider.Retry(() => _directory.Delete(recursive));
 
-        public IEnumerable<IDirectory> GetDirectories(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            LocalFileProvider.Retry(() => _directory.GetDirectories(filter, searchOption).Select(directory => new LocalDirectory(directory.FullName)));
+        public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
+            LocalFileProvider.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new LocalDirectory(directory.FullName)));
 
-        public IEnumerable<IFile> GetFiles(string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            LocalFileProvider.Retry(() => _directory.GetFiles(filter, searchOption).Select(file => new LocalFile(file.FullName)));
+        public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
+            LocalFileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new LocalFile(file.FullName)));
 
         public IFile GetFile(FilePath path)
         {

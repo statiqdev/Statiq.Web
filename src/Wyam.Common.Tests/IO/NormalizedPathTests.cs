@@ -221,6 +221,15 @@ namespace Wyam.Common.Tests.IO
             [TestCase("hello/temp/../temp2/../world", "hello/world")]
             [TestCase("/hello/temp/test/../../world", "/hello/world")]
             [TestCase("/hello/../../../../../../temp", "/temp")]  // Stop collapsing when root is reached
+            [TestCase(".", ".")]
+            [TestCase("/.", ".")]
+            [TestCase("./a", "a")]
+            [TestCase("./..", ".")]
+            [TestCase("a/./b", "a/b")]
+            [TestCase("/a/./b", "/a/b")]
+            [TestCase("a/b/.", "a/b")]
+            [TestCase("/a/b/.", "/a/b")]
+            [TestCase("/./a/b", "/a/b")]
 #if !UNIX
             [TestCase("c:/hello/temp/test/../../world", "c:/hello/world")]
             [TestCase("c:/../../../../../../temp", "c:/temp")]
@@ -255,6 +264,119 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(provider, result.Item1);
                 Assert.AreEqual(path, result.Item2);
+            }
+        }
+
+        public class EqualsMethodTests : NormalizedPathTests
+        {
+            [Test]
+            [TestCase(true)]
+            [TestCase(false)]
+            public void SameAssetInstancesIsConsideredEqual(bool isCaseSensitive)
+            {
+                // Given, When
+                FilePath path = new FilePath("shaders/basic.vert");
+
+                // Then
+                Assert.True(path.Equals(path));
+            }
+
+            [Test]
+            [TestCase(true)]
+            [TestCase(false)]
+            public void PathsAreConsideredInequalIfAnyIsNull(bool isCaseSensitive)
+            {
+                // Given, When
+                bool result = new FilePath("test.txt").Equals(null);
+
+                // Then
+                Assert.False(result);
+            }
+
+            [Test]
+            [TestCase(true)]
+            [TestCase(false)]
+            public void SamePathsAreConsideredEqual(bool isCaseSensitive)
+            {
+                // Given, When
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("shaders/basic.vert");
+
+                // Then
+                Assert.True(first.Equals(second));
+                Assert.True(second.Equals(first));
+            }
+
+            [Test]
+            public void DifferentPathsAreNotConsideredEqual()
+            {
+                // Given, When
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("shaders/basic.frag");
+
+                // Then
+                Assert.False(first.Equals(second));
+                Assert.False(second.Equals(first));
+            }
+
+            [Test]
+            public void SamePathsButDifferentCasingAreNotConsideredEqual()
+            {
+                // Given, When
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("SHADERS/BASIC.VERT");
+
+                // Then
+                Assert.False(first.Equals(second));
+                Assert.False(second.Equals(first));
+            }
+
+            [Test]
+            public void SamePathsWithDifferentProvidersAreNotConsideredEqual()
+            {
+                // Given, When
+                FilePath first = new FilePath("foo", "/shaders/basic.vert");
+                FilePath second = new FilePath("bar", "/shaders/basic.vert");
+
+                // Then
+                Assert.False(first.Equals(second));
+                Assert.False(second.Equals(first));
+            }
+        }
+
+        public class GetHashCodeMethodTests : NormalizedPathTests
+        {
+            [Test]
+            public void SamePathsGetSameHashCode()
+            {
+                // Given, When
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("shaders/basic.vert");
+
+                // Then
+                Assert.AreEqual(first.GetHashCode(), second.GetHashCode());
+            }
+
+            [Test]
+            public void DifferentPathsGetDifferentHashCodes()
+            {
+                // Given, When
+                var first = new FilePath("shaders/basic.vert");
+                var second = new FilePath("shaders/basic.frag");
+
+                // Then
+                Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            }
+
+            [Test]
+            public void SamePathsButDifferentCasingDoNotGetSameHashCode()
+            {
+                // Given, When
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("SHADERS/BASIC.VERT");
+
+                // Then
+                Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
             }
         }
     }
