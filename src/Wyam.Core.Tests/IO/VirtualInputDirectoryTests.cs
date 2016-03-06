@@ -43,7 +43,7 @@ namespace Wyam.Core.Tests.IO
         public class GetDirectoriesTests : VirtualInputDirectoryTests
         {
             [Test]
-            [TestCase(".", SearchOption.AllDirectories, new [] { "c", "d", "a", "a/b" })]
+            [TestCase(".", SearchOption.AllDirectories, new [] { "c", "c/1", "d", "a", "a/b" })]
             [TestCase(".", SearchOption.TopDirectoryOnly, new[] { "c", "d", "a" })]
             [TestCase("a", SearchOption.AllDirectories, new[] { "b" })]
             [TestCase("a", SearchOption.TopDirectoryOnly, new [] { "b" })]
@@ -66,7 +66,32 @@ namespace Wyam.Core.Tests.IO
             }
         }
 
-        // TODO: GetFilesTests
+        public class GetFilesTests : VirtualInputDirectoryTests
+        {
+            [Test]
+            [TestCase(".", SearchOption.AllDirectories, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt", "/a/b/d/baz.txt", "/foo/baz.txt", "/foo/c/baz.txt" })]
+            [TestCase(".", SearchOption.TopDirectoryOnly, new[] { "/foo/baz.txt" })]
+            [TestCase("c", SearchOption.AllDirectories, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt", "/foo/c/baz.txt" })]
+            [TestCase("c", SearchOption.TopDirectoryOnly, new [] { "/a/b/c/foo.txt", "/foo/c/baz.txt" })]
+            public void GetsFiles(string virtualPath, SearchOption searchOption, string[] expectedPaths)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, virtualPath);
+
+                // When
+                IEnumerable<IFile> files = directory.GetFiles(searchOption);
+
+                // Then
+                CollectionAssert.AreEquivalent(expectedPaths, files.Select(x => x.Path.FullPath));
+            }
+
+        }
 
         public class GetFileTests : VirtualInputDirectoryTests
         {
@@ -74,6 +99,8 @@ namespace Wyam.Core.Tests.IO
             [TestCase(".", "c/foo.txt", "/a/b/c/foo.txt", true)]
             [TestCase(".", "baz.txt", "/foo/baz.txt", true)]
             [TestCase("c", "foo.txt", "/a/b/c/foo.txt", true)]
+            [TestCase("c", "1/2.txt", "/a/b/c/1/2.txt", true)]
+            [TestCase("c", "1/3.txt", "/foo/c/1/3.txt", false)]
             [TestCase("c", "baz.txt", "/foo/c/baz.txt", true)]
             [TestCase("c", "bar.txt", "/foo/c/bar.txt", false)]
             [TestCase("x/y/z", "bar.txt", "/foo/x/y/z/bar.txt", false)]
@@ -104,6 +131,7 @@ namespace Wyam.Core.Tests.IO
                 "/a",
                 "/a/b",
                 "/a/b/c",
+                "/a/b/c/1",
                 "/a/b/d",
                 "/a/x",
                 "/a/y",
@@ -113,6 +141,7 @@ namespace Wyam.Core.Tests.IO
             {
                 "/a/b/c/foo.txt",
                 "/a/b/c/baz.txt",
+                "/a/b/c/1/2.txt",
                 "/a/b/d/baz.txt",
                 "/a/x/bar.txt"
             };
@@ -121,7 +150,7 @@ namespace Wyam.Core.Tests.IO
                 .Returns(x =>
                 {
                     string path = ((DirectoryPath)x[0]).FullPath;
-                    return GetDirectory(path, directories.Contains(path), directories);
+                    return GetDirectory(path, directories.Contains(path), directories, files);
                 });
             fileProvider.GetFile(Arg.Any<FilePath>())
                 .Returns(x =>
@@ -153,7 +182,7 @@ namespace Wyam.Core.Tests.IO
                 .Returns(x =>
                 {
                     string path = ((DirectoryPath)x[0]).FullPath;
-                    return GetDirectory(path, directories.Contains(path), directories);
+                    return GetDirectory(path, directories.Contains(path), directories, files);
                 });
             fileProvider.GetFile(Arg.Any<FilePath>())
                 .Returns(x =>
@@ -172,18 +201,26 @@ namespace Wyam.Core.Tests.IO
             return file;
         }
 
-        private IDirectory GetDirectory(string path, bool exists, string[] directories)
+        private IDirectory GetDirectory(string path, bool exists, string[] directories, string[] files)
         {
             IDirectory directory = Substitute.For<IDirectory>();
             directory.Path.Returns(new DirectoryPath(path));
             directory.GetDirectories(SearchOption.AllDirectories)
                 .Returns(directories
                     .Where(x => x.StartsWith(path) && path != x)
-                    .Select(x => GetDirectory(x, true, directories)));
+                    .Select(x => GetDirectory(x, true, directories, files)));
             directory.GetDirectories(SearchOption.TopDirectoryOnly)
                 .Returns(directories
                     .Where(x => x.StartsWith(path) && path.Count(c => c == '/') == x.Count(c => c == '/') - 1)
-                    .Select(x => GetDirectory(x, true, directories)));
+                    .Select(x => GetDirectory(x, true, directories, files)));
+            directory.GetFiles(SearchOption.AllDirectories)
+                .Returns(files
+                    .Where(x => x.StartsWith(path))
+                    .Select(x => GetFile(x, true)));
+            directory.GetFiles(SearchOption.TopDirectoryOnly)
+                .Returns(files
+                    .Where(x => x.StartsWith(path) && path.Count(c => c == '/') == x.Count(c => c == '/') - 1)
+                    .Select(x => GetFile(x, true)));
             directory.Exists.Returns(exists);
             return directory;
         }
