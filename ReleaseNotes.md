@@ -1,3 +1,7 @@
+# 0.11.4
+
+- Fix - Ongoing work with IO abstraction layer (#123, #214) to resolve some file system errors on build
+
 # 0.11.3
 
 - Fix - Specifying input path(s) on the command line now correctly removes the default input path (#241 and #231)

@@ -11,6 +11,7 @@
 // - Push to develop and fast-forward merge to master
 // - Switch to master
 // - Run a Publish build with Cake (".\build.ps1 --target Publish")
+// - Add a version tag to the repo
 // - Switch back to develop branch
 
 #addin "Cake.FileHelpers"

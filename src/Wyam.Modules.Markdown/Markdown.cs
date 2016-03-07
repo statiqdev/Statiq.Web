@@ -18,6 +18,8 @@ namespace Wyam.Modules.Markdown
     /// </summary>
     /// <remarks>
     /// Parses markdown content in each input document and outputs documents with rendered HTML content.
+    /// Note that @ (at) symbols will be automatically escaped for better compatibility with downstream
+    /// Razor modules. Use the <c>EscapeAt()</c> fluent method to modify this behavior.
     /// </remarks>
     /// <category>Templates</category>
     public class Markdown : IModule
