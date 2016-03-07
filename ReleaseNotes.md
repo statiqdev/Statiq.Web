@@ -1,3 +1,7 @@
+# 0.11.5
+
+- Fix - Well this is embarrassing - fix for the fix to properly handle undownloaded NuGet packages
+
 # 0.11.4
 
 - Fix - Ongoing work with IO abstraction layer (#123, #214) to resolve some file system errors on build

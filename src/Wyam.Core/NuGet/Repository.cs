@@ -34,6 +34,9 @@ namespace Wyam.Core.NuGet
 
         public void InstallPackages(string absolutePackagesPath, DirectoryPath contentPath, IFileSystem fileSystem, bool updatePackages)
         {
+
+            // TODO: Use this code when ReadFiles (and other modules) support multiple input paths - make sure to test with clean (I.e., no packages) repo
+            /*
             PackageManager packageManager = new PackageManager(_packageRepository, absolutePackagesPath);
 
             // On package install...
@@ -70,6 +73,47 @@ namespace Wyam.Core.NuGet
             };
 
             // Install the packages
+            foreach (Package package in _packages)
+            {
+                package.InstallPackage(packageManager, updatePackages);
+            }
+            */
+
+            // ***********************************************************
+            // OLD CODE - remove when code above is ready
+            PackageManager packageManager = new PackageManager(_packageRepository, absolutePackagesPath);
+            packageManager.PackageInstalled += (sender, args) =>
+            {
+                // Copy all content files on install
+                foreach (IPackageFile packageFile in args.Package.GetContentFiles())
+                {
+                    IFile filePath = fileSystem.GetInputFile(packageFile.EffectivePath);
+                    IDirectory filePathDirectory = filePath.Directory;
+                    if (!filePathDirectory.Exists)
+                    {
+                        filePathDirectory.Create();
+                    }
+                    if (!filePath.Exists)
+                    {
+                        using (var fileStream = filePath.OpenWrite())
+                        {
+                            packageFile.GetStream().CopyTo(fileStream);
+                        }
+                    }
+                }
+            };
+            packageManager.PackageUninstalling += (sender, args) =>
+            {
+                // Remove all content files on uninstall
+                foreach (IPackageFile packageFile in args.Package.GetContentFiles())
+                {
+                    IFile filePath = fileSystem.GetInputFile(packageFile.EffectivePath);
+                    if (filePath.Exists)
+                    {
+                        filePath.Delete();
+                    }
+                }
+            };
             foreach (Package package in _packages)
             {
                 package.InstallPackage(packageManager, updatePackages);
