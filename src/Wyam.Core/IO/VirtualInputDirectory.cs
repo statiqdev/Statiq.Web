@@ -36,6 +36,15 @@ namespace Wyam.Core.IO
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
+        public IDirectory Parent
+        {
+            get
+            {
+                DirectoryPath parent = _path.Parent;
+                return parent == null ? null : new VirtualInputDirectory(_fileSystem, parent.Collapse());
+            }
+        }
+
         public void Create()
         {
             throw new NotSupportedException("Can not create a virtual input directory");
@@ -50,7 +59,7 @@ namespace Wyam.Core.IO
         {
             // Get all the relative child directories
             HashSet<DirectoryPath> directories = new HashSet<DirectoryPath>();
-            foreach (IDirectory directory in GetActualDirectories())
+            foreach (IDirectory directory in GetExistingDirectories())
             {
                 foreach (IDirectory childDirectory in directory.GetDirectories(searchOption))
                 {
@@ -66,7 +75,7 @@ namespace Wyam.Core.IO
         {
             // Get all the files for each input directory, replacing earlier ones with later ones
             Dictionary<FilePath, IFile> files = new Dictionary<FilePath, IFile>();
-            foreach (IDirectory directory in GetActualDirectories())
+            foreach (IDirectory directory in GetExistingDirectories())
             {
                 foreach (IFile file in directory.GetFiles(searchOption))
                 {
@@ -87,9 +96,11 @@ namespace Wyam.Core.IO
         /// <value>
         /// <c>true</c> if this directory exists at one of the input paths; otherwise, <c>false</c>.
         /// </value>
-        public bool Exists => GetActualDirectories().Any();
+        public bool Exists => GetExistingDirectories().Any();
 
-        private IEnumerable<IDirectory> GetActualDirectories() => 
-            _fileSystem.InputPaths.Select(x => _fileSystem.GetRootDirectory(x.Combine(_path)));
+        private IEnumerable<IDirectory> GetExistingDirectories() => 
+            _fileSystem.InputPaths
+                .Select(x => _fileSystem.GetRootDirectory(x.Combine(_path)))
+                .Where(x => x.Exists);
     }
 }

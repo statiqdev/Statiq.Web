@@ -124,6 +124,124 @@ namespace Wyam.Core.Tests.IO
             }
         }
 
+        public class ParentPropertyTests : VirtualInputDirectoryTests
+        {
+
+            [Test]
+            [TestCase("a/b", "a")]
+            [TestCase("a/b/", "a")]
+            [TestCase("a/b/../c", "a")]
+            public void ReturnsParent(string virtualPath, string expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, virtualPath);
+
+                // When
+                IDirectory parent = directory.Parent;
+
+                // Then
+                Assert.AreEqual(expected, parent.Path.FullPath);
+            }
+
+            [TestCase(".")]
+            [TestCase("a")]
+            public void RootDirectoryReturnsNullParent(string virtualPath)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, virtualPath);
+
+                // When
+                IDirectory parent = directory.Parent;
+
+                // Then
+                Assert.IsNull(parent);
+            }
+        }
+
+        public class ExistsPropertyTests : VirtualInputDirectoryTests
+        {
+
+            [Test]
+            [TestCase(".")]
+            [TestCase("c")]
+            [TestCase("c/1")]
+            [TestCase("a/b")]
+            public void ShouldReturnTrueForExistingPaths(string virtualPath)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, virtualPath);
+                
+                // When, Then
+                Assert.IsTrue(directory.Exists);
+            }
+
+            [TestCase("x")]
+            [TestCase("bar")]
+            [TestCase("baz")]
+            [TestCase("a/b/c")]
+            [TestCase("q/w/e")]
+            public void ShouldReturnFalseForNonExistingPaths(string virtualPath)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, virtualPath);
+
+                // When, Then
+                Assert.IsFalse(directory.Exists);
+            }
+        }
+
+        public class CreateMethodTests : VirtualInputDirectoryTests
+        {
+            [Test]
+            public void ShouldThrow()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, ".");
+
+                // When, Then
+                Assert.Throws<NotSupportedException>(() => directory.Create());
+            }
+        }
+
+        public class DeleteMethodTests : VirtualInputDirectoryTests
+        {
+            [Test]
+            public void ShouldThrow()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, ".");
+
+                // When, Then
+                Assert.Throws<NotSupportedException>(() => directory.Delete(false));
+            }
+        }
+
         private IFileProvider GetFileProviderA()
         {
             string[] directories =

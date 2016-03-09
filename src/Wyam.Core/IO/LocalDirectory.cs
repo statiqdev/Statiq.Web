@@ -18,6 +18,15 @@ namespace Wyam.Core.IO
 
         NormalizedPath IFileSystemEntry.Path => _path;
 
+        public IDirectory Parent
+        {
+            get
+            {
+                DirectoryInfo parent = _directory.Parent;
+                return parent == null ? null : new LocalDirectory(parent.FullName);
+            }
+        }
+
         public bool Exists => _directory.Exists;
 
         public LocalDirectory(DirectoryPath path)

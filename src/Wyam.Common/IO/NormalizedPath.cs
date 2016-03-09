@@ -113,16 +113,18 @@ namespace Wyam.Common.IO
             }
 
             FullPath = path.Replace('\\', '/').Trim();
-            FullPath = FullPath == "./" ? string.Empty : FullPath;
 
-            // Remove relative part of a path.
-            if (FullPath.StartsWith("./", StringComparison.Ordinal))
+            // Remove relative part of a path, but only if it's not the only part
+            if (FullPath.StartsWith("./", StringComparison.Ordinal) && FullPath.Length > 2)
             {
                 FullPath = FullPath.Substring(2);
             }
 
-            // Remove trailing slashes.
-            FullPath = FullPath.TrimEnd('/', '\\');
+            // Remove trailing slashes (as long as this isn't just a slash)
+            if (FullPath.Length > 1)
+            {
+                FullPath = FullPath.TrimEnd('/');
+            }
 
 #if !UNIX
             if (FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))

@@ -29,7 +29,7 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
-        public class GetExtensionMethodTests : FilePathTests
+        public class ExtensionPropertyTests : FilePathTests
         {
             [Test]
             [TestCase("assets/shaders/basic.frag", ".frag")]
@@ -38,23 +38,27 @@ namespace Wyam.Common.Tests.IO
             [TestCase("assets/shaders/basic.frag/test", null)]
             public void CanGetExtension(string fullPath, string expected)
             {
-                // Given, When
+                // Given
                 FilePath result = new FilePath(fullPath);
-                string extension = result.GetExtension();
+
+                // When
+                string extension = result.Extension;
 
                 // Then
                 Assert.AreEqual(expected, extension);
             }
         }
 
-        public class GetDirectoryMethodTests : FilePathTests
+        public class DirectoryPropertyTests : FilePathTests
         {
             [Test]
             public void CanGetDirectoryForFilePath()
             {
-                // Given, When
+                // Given
                 FilePath path = new FilePath("temp/hello.txt");
-                DirectoryPath directory = path.GetDirectory();
+
+                // When
+                DirectoryPath directory = path.Directory;
 
                 // Then
                 Assert.AreEqual("temp", directory.FullPath);
@@ -63,12 +67,14 @@ namespace Wyam.Common.Tests.IO
             [Test]
             public void CanGetDirectoryForFilePathInRoot()
             {
-                // Given, When
+                // Given
                 FilePath path = new FilePath("hello.txt");
-                DirectoryPath directory = path.GetDirectory();
+
+                // When
+                DirectoryPath directory = path.Directory;
 
                 // Then
-                Assert.AreEqual(string.Empty, directory.FullPath);
+                Assert.AreEqual(".", directory.FullPath);
             }
         }
 
@@ -119,7 +125,7 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
-        public class GetFilenameMethodTests : FilePathTests
+        public class FileNamePropertyTests : FilePathTests
         {
             [Test]
             public void CanGetFilenameFromPath()
@@ -128,7 +134,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath path = new FilePath("/input/test.txt");
 
                 // When
-                FilePath result = path.GetFilename();
+                FilePath result = path.FileName;
 
                 // Then
                 Assert.AreEqual("test.txt", result.FullPath);
@@ -141,14 +147,14 @@ namespace Wyam.Common.Tests.IO
                 FilePath path = new FilePath("foo", "/input/test.txt");
 
                 // When
-                FilePath result = path.GetFilename();
+                FilePath result = path.FileName;
 
                 // Then
                 Assert.AreEqual(null, result.Provider);
             }
         }
 
-        public class GetFilenameWithoutExtensionMethodTests : FilePathTests
+        public class FileNameWithoutExtensionPropertyTests : FilePathTests
         {
             [Test]
             [TestCase("/input/test.txt", "test")]
@@ -159,7 +165,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath path = new FilePath(fullPath);
 
                 // When
-                FilePath result = path.GetFilenameWithoutExtension();
+                FilePath result = path.FileNameWithoutExtension;
 
                 // Then
                 Assert.AreEqual(expected, result.FullPath);
@@ -172,7 +178,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath path = new FilePath("foo", "/input/test.txt");
 
                 // When
-                FilePath result = path.GetFilenameWithoutExtension();
+                FilePath result = path.FileNameWithoutExtension;
 
                 // Then
                 Assert.AreEqual(null, result.Provider);

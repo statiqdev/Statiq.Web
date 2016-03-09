@@ -18,7 +18,7 @@ namespace Wyam.Core.IO
 
         NormalizedPath IFileSystemEntry.Path => _path;
 
-        public IDirectory Directory => new LocalDirectory(_path.GetDirectory());
+        public IDirectory Directory => new LocalDirectory(_path.Directory);
 
         public bool Exists => _file.Exists;
 

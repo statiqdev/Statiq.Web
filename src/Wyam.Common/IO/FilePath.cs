@@ -44,39 +44,45 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the directory part of the path.
         /// </summary>
-        /// <returns>The directory part of the path.</returns>
-        public DirectoryPath GetDirectory()
+        /// <value>The directory part of the path.</value>
+        public DirectoryPath Directory
         {
-            string directory = System.IO.Path.GetDirectoryName(FullPath);
-            if (string.IsNullOrWhiteSpace(directory))
+            get
             {
-                directory = "./";
+                string directory = System.IO.Path.GetDirectoryName(FullPath);
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    directory = ".";
+                }
+                return new DirectoryPath(Provider, directory);
             }
-            return new DirectoryPath(Provider, directory);
         }
 
         /// <summary>
         /// Gets the filename.
         /// </summary>
-        /// <returns>The filename.</returns>
-        public FilePath GetFilename() => 
+        /// <value>The filename.</value>
+        public FilePath FileName => 
             new FilePath(System.IO.Path.GetFileName(FullPath));
 
         /// <summary>
         /// Gets the filename without it's extension.
         /// </summary>
-        /// <returns>The filename without it's extension.</returns>
-        public FilePath GetFilenameWithoutExtension() => 
+        /// <value>The filename without it's extension.</value>
+        public FilePath FileNameWithoutExtension => 
             new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
 
         /// <summary>
         /// Gets the file extension.
         /// </summary>
-        /// <returns>The file extension.</returns>
-        public string GetExtension()
+        /// <value>The file extension.</value>
+        public string Extension
         {
-            string extension = System.IO.Path.GetExtension(FullPath);
-            return string.IsNullOrWhiteSpace(extension) ? null : extension;
+            get
+            {
+                string extension = System.IO.Path.GetExtension(FullPath);
+                return string.IsNullOrWhiteSpace(extension) ? null : extension;
+            }
         }
 
         /// <summary>

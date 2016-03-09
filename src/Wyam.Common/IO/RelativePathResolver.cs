@@ -16,7 +16,7 @@ namespace Wyam.Common.IO
                 throw new ArgumentNullException(nameof(target));
             }
 
-            return Resolve(source, target.GetDirectory()).GetFilePath(target.GetFilename());
+            return Resolve(source, target.Directory).GetFilePath(target.FileName);
         }
 
         public static DirectoryPath Resolve(DirectoryPath source, DirectoryPath target)

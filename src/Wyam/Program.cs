@@ -184,7 +184,7 @@ namespace Wyam
                     Trace.Information("Watching configuration file {0}", _configFilePath);
                     Engine closureEngine = engine;
                     configFileWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
-                        new[] { _configFilePath.GetDirectory() }, false, _configFilePath.GetFilename().FullPath, path =>
+                        new[] { _configFilePath.Directory }, false, _configFilePath.FileName.FullPath, path =>
                         {
                             FilePath filePath = new FilePath(path);
                             if (_configFilePath.Equals(filePath))
@@ -339,8 +339,8 @@ namespace Wyam
                         }
                         else
                         {
-                            _configFilePath = rootDirectoryPathAsConfigFile.GetFilename();
-                            _rootPath = rootDirectoryPathAsConfigFile.GetDirectory();
+                            _configFilePath = rootDirectoryPathAsConfigFile.FileName;
+                            _rootPath = rootDirectoryPathAsConfigFile.Directory;
                         }
                     }
                 }

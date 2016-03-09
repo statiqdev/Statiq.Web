@@ -39,6 +39,10 @@
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.FileSystemGlobbing, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileSystemGlobbing.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -113,6 +117,8 @@
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="IO\FileProviderCollection.cs" />
+    <Compile Include="IO\Globbing\DirectoryInfo.cs" />
+    <Compile Include="IO\Globbing\FileInfo.cs" />
     <Compile Include="IO\LocalDirectory.cs" />
     <Compile Include="IO\LocalFile.cs" />
     <Compile Include="IO\LocalFileProvider.cs" />

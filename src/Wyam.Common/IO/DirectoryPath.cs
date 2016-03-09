@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Pipelines;
@@ -36,14 +37,33 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the name of the directory.
         /// </summary>
-        /// <returns>The directory name.</returns>
+        /// <value>The directory name.</value>
         /// <remarks>
         /// If this is passed a file path, it will return the file name.
         /// This is by-and-large equivalent to how DirectoryInfo handles this scenario.
         /// If we wanted to return the *actual* directory name, we'd need to pull in IFileSystem,
         /// and do various checks to make sure things exists.
         /// </remarks>
-        public string GetDirectoryName() => Segments.Last();
+        public string Name => Segments.Last();
+
+        /// <summary>
+        /// Gets the parent path.
+        /// </summary>
+        /// <value>
+        /// The parent path or <c>null</c> if this is a root path.
+        /// </value>
+        public DirectoryPath Parent
+        {
+            get
+            {
+                string directory = System.IO.Path.GetDirectoryName(FullPath);
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    return null;
+                }
+                return new DirectoryPath(Provider, directory);
+            }
+        }
 
         /// <summary>
         /// Combines the current path with the file name of a <see cref="FilePath"/>. The current file provider
@@ -57,7 +77,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return new FilePath(Provider, System.IO.Path.Combine(FullPath, path.GetFilename().FullPath));
+            return new FilePath(Provider, System.IO.Path.Combine(FullPath, path.FileName.FullPath));
         }
 
         /// <summary>

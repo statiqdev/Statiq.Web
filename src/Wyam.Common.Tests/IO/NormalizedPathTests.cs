@@ -50,13 +50,13 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void CurrentDirectoryReturnsEmptyPath()
+            public void CurrentDirectoryReturnsDot()
             {
                 // Given, When
                 TestPath path = new TestPath("./");
 
                 // Then
-                Assert.AreEqual(string.Empty, path.FullPath);
+                Assert.AreEqual(".", path.FullPath);
             }
 
             [Test]
@@ -103,6 +103,44 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
+            }
+
+            [Test]
+            [TestCase("\\")]
+            [TestCase("/")]
+            public void ShouldNotRemoveSingleTrailingSlash(string value)
+            {
+                // Given, When
+                TestPath path = new TestPath(value);
+
+                // Then
+                Assert.AreEqual("/", path.FullPath);
+            }
+
+            [Test]
+            [TestCase("./Hello/World/", "Hello/World")]
+            [TestCase(".\\Hello/World/", "Hello/World")]
+            [TestCase("./file.txt", "file.txt")]
+            [TestCase("./Temp/file.txt", "Temp/file.txt")]
+            public void ShouldRemoveRelativePrefix(string value, string expected)
+            {
+                // Given, When
+                TestPath path = new TestPath(value);
+
+                // Then
+                Assert.AreEqual(expected, path.FullPath);
+            }
+
+            [Test]
+            [TestCase("\\")]
+            [TestCase("/")]
+            public void ShouldNotRemoveOnlyRelativePart(string value)
+            {
+                // Given, When
+                TestPath path = new TestPath(value);
+
+                // Then
+                Assert.AreEqual("/", path.FullPath);
             }
         }
 

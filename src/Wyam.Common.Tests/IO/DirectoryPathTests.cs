@@ -13,7 +13,7 @@ namespace Wyam.Common.Tests.IO
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DirectoryPathTests : BaseFixture
     {
-        public class GetDirectoryNameMethodTests : DirectoryPathTests
+        public class NamePropertyTests : DirectoryPathTests
         {
             [Test]
             [TestCase("C:/Data", "Data")]
@@ -25,10 +25,52 @@ namespace Wyam.Common.Tests.IO
                 DirectoryPath path = new DirectoryPath(directoryPath);
 
                 // When
-                string result = path.GetDirectoryName();
+                string result = path.Name;
 
                 // Then
                 Assert.AreEqual(name, result);
+            }
+        }
+
+        public class ParentPropertyTests : FilePathTests
+        {
+            [Test]
+            [TestCase("/a/b", "/a")]
+            [TestCase("/a/b/", "/a")]
+            [TestCase("/a/b/../c", "/a/b/..")]
+            [TestCase("/a", "/")]
+#if !UNIX
+            [TestCase("C:/a/b", "C:/a")]
+            [TestCase("C:/a", "C:/")]
+#endif
+            public void ReturnsParent(string directoryPath, string expected)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(directoryPath);
+
+                // When
+                DirectoryPath parent = path.Parent;
+
+                // Then
+                Assert.AreEqual(expected, parent.FullPath);
+            }
+
+            [TestCase(".")]
+            [TestCase("/")]
+            [TestCase("a")]
+#if !UNIX
+            [TestCase("C:")]
+#endif
+            public void RootDirectoryReturnsNullParent(string directoryPath)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(directoryPath);
+
+                // When
+                DirectoryPath parent = path.Parent;
+
+                // Then
+                Assert.IsNull(parent);
             }
         }
 

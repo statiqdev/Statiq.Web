@@ -131,7 +131,7 @@ namespace Wyam.Core
 
         public void Configure(IFile configFile, bool updatePackages = false, bool outputScripts = false)
         {
-            Configure(configFile.ReadAllText(), updatePackages, configFile.Path.GetFilename().FullPath, outputScripts);
+            Configure(configFile.ReadAllText(), updatePackages, configFile.Path.FileName.FullPath, outputScripts);
         }
 
         public void Configure(string configScript = null, bool updatePackages = false)
