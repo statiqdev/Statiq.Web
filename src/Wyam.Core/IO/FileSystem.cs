@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.IO.Local;
 
 namespace Wyam.Core.IO
 {
@@ -91,15 +92,10 @@ namespace Wyam.Core.IO
             return GetFile(path);
         }
 
-        public IDirectory GetInputDirectory(DirectoryPath path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            return path.IsRelative ? new VirtualInputDirectory(this, path) : GetDirectory(path);
-        }
+        public IDirectory GetInputDirectory(DirectoryPath path = null) => 
+            path == null
+                ? new VirtualInputDirectory(this, ".")
+                : (path.IsRelative ? new VirtualInputDirectory(this, path) : GetDirectory(path));
 
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
@@ -114,19 +110,11 @@ namespace Wyam.Core.IO
             return GetFile(RootPath.Combine(OutputPath).CombineFile(path));
         }
 
-        public IDirectory GetOutputDirectory(DirectoryPath path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            return GetDirectory(RootPath.Combine(OutputPath).Combine(path));
-        }
-
-        public IDirectory GetOutputDirectory() =>
-            GetRootDirectory(OutputPath);
-
+        public IDirectory GetOutputDirectory(DirectoryPath path = null) => 
+            path == null 
+                ? GetRootDirectory(OutputPath) 
+                : GetDirectory(RootPath.Combine(OutputPath).Combine(path));
+        
         public IFile GetRootFile(FilePath path)
         {
             if (path == null)
@@ -137,19 +125,11 @@ namespace Wyam.Core.IO
             return GetFile(RootPath.CombineFile(path));
         }
 
-        public IDirectory GetRootDirectory(DirectoryPath path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            return GetDirectory(RootPath.Combine(path));
-        }
-
-        public IDirectory GetRootDirectory() =>
-            GetDirectory(RootPath);
-
+        public IDirectory GetRootDirectory(DirectoryPath path = null) => 
+            path == null 
+            ? GetDirectory(RootPath) 
+            : GetDirectory(RootPath.Combine(path));
+        
         public IFile GetFile(FilePath path)
         {
             if (path == null)

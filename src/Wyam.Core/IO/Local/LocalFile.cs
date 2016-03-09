@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO
+namespace Wyam.Core.IO.Local
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class LocalFile : IFile

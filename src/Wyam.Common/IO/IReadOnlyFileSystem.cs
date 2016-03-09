@@ -72,11 +72,13 @@ namespace Wyam.Common.IO
         /// <param name="path">
         /// The path of the input directory. If this is an absolute path,
         /// then a directory representing the specified path is returned.
-        /// If it's a relative path, then operations will search all
-        /// current input paths.
+        /// If it's a relative path, then the returned directory will 
+        /// be a virtual directory that aggregates all input
+        /// paths. If this is <c>null</c> then a virtual
+        /// directory aggregating all input paths is returned.
         /// </param>
         /// <returns>An input directory.</returns>
-        IDirectory GetInputDirectory(DirectoryPath path);
+        IDirectory GetInputDirectory(DirectoryPath path = null);
 
         /// <summary>
         /// Gets all absolute input directories.
@@ -103,16 +105,11 @@ namespace Wyam.Common.IO
         /// The path of the output directory. If this is an absolute path,
         /// then a directory representing the specified path is returned.
         /// If it's a relative path, then it will be combined with the
-        /// current output path.
+        /// current output path. If this is <c>null</c> then the base
+        /// output directory is returned.
         /// </param>
         /// <returns>An output directory.</returns>
-        IDirectory GetOutputDirectory(DirectoryPath path);
-
-        /// <summary>
-        /// Gets the absolute output directory.
-        /// </summary>
-        /// <returns>The absolute output directory.</returns>
-        IDirectory GetOutputDirectory();
+        IDirectory GetOutputDirectory(DirectoryPath path = null);
 
         /// <summary>
         /// Gets a file representing a root file.
@@ -133,16 +130,11 @@ namespace Wyam.Common.IO
         /// The path of the root directory. If this is an absolute path,
         /// then a directory representing the specified path is returned.
         /// If it's a relative path, then it will be combined with the
-        /// current root path.
+        /// current root path. If this is <c>null</c> then the base
+        /// root directory is returned.
         /// </param>
         /// <returns>A root directory.</returns>
-        IDirectory GetRootDirectory(DirectoryPath path);
-
-        /// <summary>
-        /// Gets the absolute directory.
-        /// </summary>
-        /// <returns>The absolute root directory.</returns>
-        IDirectory GetRootDirectory();
+        IDirectory GetRootDirectory(DirectoryPath path = null);
 
         /// <summary>
         /// Gets an absolute file.

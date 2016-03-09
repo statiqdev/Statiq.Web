@@ -44,7 +44,7 @@ namespace Wyam.Common.IO
         /// If we wanted to return the *actual* directory name, we'd need to pull in IFileSystem,
         /// and do various checks to make sure things exists.
         /// </remarks>
-        public string Name => Segments.Last();
+        public string Name => Segments.Length == 0 ? FullPath : Segments.Last();
 
         /// <summary>
         /// Gets the parent path.

@@ -119,9 +119,10 @@
     <Compile Include="IO\FileProviderCollection.cs" />
     <Compile Include="IO\Globbing\DirectoryInfo.cs" />
     <Compile Include="IO\Globbing\FileInfo.cs" />
-    <Compile Include="IO\LocalDirectory.cs" />
-    <Compile Include="IO\LocalFile.cs" />
-    <Compile Include="IO\LocalFileProvider.cs" />
+    <Compile Include="IO\Globbing\Globber.cs" />
+    <Compile Include="IO\Local\LocalDirectory.cs" />
+    <Compile Include="IO\Local\LocalFile.cs" />
+    <Compile Include="IO\Local\LocalFileProvider.cs" />
     <Compile Include="IO\VirtualInputDirectory.cs" />
     <Compile Include="Meta\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />

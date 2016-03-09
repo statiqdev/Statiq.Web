@@ -53,6 +53,9 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="CountModule.cs" />
+    <Compile Include="IO\TestDirectory.cs" />
+    <Compile Include="IO\TestFile.cs" />
+    <Compile Include="IO\TestFileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestTraceListener.cs" />
     <Compile Include="BaseFixture.cs" />

@@ -12,6 +12,7 @@ using NUnit.Framework.Constraints;
 using Wyam.Common.IO;
 using Wyam.Core.IO;
 using Wyam.Testing;
+using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.IO
 {
@@ -135,6 +136,20 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.IsInstanceOf<VirtualInputDirectory>(result);
                 Assert.AreEqual("A/B/C", result.Path.FullPath);
+            }
+
+            [Test]
+            public void ReturnsVirtualInputDirectoryForNullPath()
+            {
+                // Given 
+                FileSystem fileSystem = new FileSystem();
+
+                // When
+                IDirectory result = fileSystem.GetInputDirectory();
+
+                // Then
+                Assert.IsInstanceOf<VirtualInputDirectory>(result);
+                Assert.AreEqual(".", result.Path.FullPath);
             }
 
             [Test]
@@ -311,7 +326,8 @@ namespace Wyam.Core.Tests.IO
         
         private IFileProvider GetFileProvider()
         {
-            string[] directories =
+            TestFileProvider fileProvider = new TestFileProvider();
+            fileProvider.Directories.AddRange(new[]
             {
                 "/a",
                 "/a/b",
@@ -320,42 +336,13 @@ namespace Wyam.Core.Tests.IO
                 "/a/x",
                 "/a/y",
                 "/a/y/z"
-            };
-            string[] files =
+            });
+            fileProvider.Files.AddRange(new[]
             {
                 "/a/b/c/foo.txt",
                 "/a/x/bar.txt"
-            };
-            IFileProvider fileProvider = Substitute.For<IFileProvider>();
-            fileProvider.GetDirectory(Arg.Any<DirectoryPath>())
-                .Returns(x =>
-                {
-                    string path = ((DirectoryPath) x[0]).FullPath;
-                    return GetDirectory(path, directories.Contains(path));
-                });
-            fileProvider.GetFile(Arg.Any<FilePath>())
-                .Returns(x =>
-                {
-                    string path = ((FilePath) x[0]).FullPath;
-                    return GetFile(path, files.Contains(path));
-                });
+            });
             return fileProvider;
-        }
-
-        private IFile GetFile(string path, bool exists)
-        {
-            IFile file = Substitute.For<IFile>();
-            file.Path.Returns(new FilePath(path));
-            file.Exists.Returns(exists);
-            return file;
-        }
-
-        private IDirectory GetDirectory(string path, bool exists)
-        {
-            IDirectory directory = Substitute.For<IDirectory>();
-            directory.Path.Returns(new DirectoryPath(path));
-            directory.Exists.Returns(exists);
-            return directory;
         }
     }
 }

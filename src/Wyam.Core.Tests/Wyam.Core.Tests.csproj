@@ -66,6 +66,7 @@
     <Compile Include="Documents\DocumentTests.cs" />
     <Compile Include="IO\FileProviderCollectionTests.cs" />
     <Compile Include="IO\FileSystemTests.cs" />
+    <Compile Include="IO\Globbing\GlobberTests.cs" />
     <Compile Include="IO\VirtualInputDirectoryTests.cs" />
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
     <Compile Include="Configuration\ConfigTests.cs" />

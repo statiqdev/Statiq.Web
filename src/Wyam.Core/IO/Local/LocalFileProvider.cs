@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO
+namespace Wyam.Core.IO.Local
 {
     public class LocalFileProvider : IFileProvider
     {

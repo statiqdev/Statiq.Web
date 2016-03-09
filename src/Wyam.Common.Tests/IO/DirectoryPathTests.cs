@@ -16,9 +16,19 @@ namespace Wyam.Common.Tests.IO
         public class NamePropertyTests : DirectoryPathTests
         {
             [Test]
+            [TestCase("/a/b", "b")]
+            [TestCase("/a/b/", "b")]
+            [TestCase("/a/b/../c", "c")]
+            [TestCase("/a/b/..", "..")]
+            [TestCase("/a", "a")]
+            [TestCase("/", "/")]
+#if !UNIX
+            [TestCase("C:/", "C:")]
+            [TestCase("C:", "C:")]
             [TestCase("C:/Data", "Data")]
             [TestCase("C:/Data/Work", "Work")]
             [TestCase("C:/Data/Work/file.txt", "file.txt")]
+#endif
             public void ShouldReturnDirectoryName(string directoryPath, string name)
             {
                 // Given
