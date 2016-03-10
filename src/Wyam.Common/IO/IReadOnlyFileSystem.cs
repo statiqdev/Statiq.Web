@@ -67,6 +67,13 @@ namespace Wyam.Common.IO
         IFile GetInputFile(FilePath path);
 
         /// <summary>
+        /// Gets matching input files based on globbing patterns.
+        /// </summary>
+        /// <param name="patterns">The globbing patterns.</param>
+        /// <returns>All input files that match the globbing patterns.</returns>
+        IEnumerable<IFile> GetInputFiles(params string[] patterns);
+
+        /// <summary>
         /// Gets a directory representing an input.
         /// </summary>
         /// <param name="path">
@@ -97,7 +104,7 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>An output file.</returns>
         IFile GetOutputFile(FilePath path);
-
+        
         /// <summary>
         /// Gets a directory representing an output.
         /// </summary>
@@ -145,6 +152,7 @@ namespace Wyam.Common.IO
         /// <returns>A file.</returns>
         IFile GetFile(FilePath path);
 
+
         /// <summary>
         /// Gets an absolute directory.
         /// </summary>
@@ -153,5 +161,15 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>A directory.</returns>
         IDirectory GetDirectory(DirectoryPath path);
+
+        /// <summary>
+        /// Gets matching files based on globbing patterns.
+        /// </summary>
+        /// <param name="directory">The directory to search.</param>
+        /// <param name="patterns">The globbing patterns.</param>
+        /// <returns>
+        /// All files in the specified directory that match the globbing patterns.
+        /// </returns>
+        IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns);
     }
 }

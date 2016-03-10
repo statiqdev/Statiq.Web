@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.IO.Globbing;
 using Wyam.Core.IO.Local;
 
 namespace Wyam.Core.IO
@@ -92,6 +93,11 @@ namespace Wyam.Core.IO
             return GetFile(path);
         }
 
+        public IEnumerable<IFile> GetInputFiles(params string[] patterns)
+        {
+            return Globber.GetFiles(GetInputDirectory(), patterns);
+        }
+
         public IDirectory GetInputDirectory(DirectoryPath path = null) => 
             path == null
                 ? new VirtualInputDirectory(this, ".")
@@ -148,6 +154,11 @@ namespace Wyam.Core.IO
             }
 
             return GetFileProvider(path).GetDirectory(path.Collapse());
+        }
+
+        public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns)
+        {
+            return Globber.GetFiles(directory, patterns);
         }
 
         public IFileProvider GetFileProvider(NormalizedPath path)
