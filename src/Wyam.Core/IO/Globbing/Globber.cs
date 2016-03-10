@@ -20,13 +20,14 @@ namespace Wyam.Core.IO.Globbing
             // Expand braces
             IEnumerable<string> expandedPatterns = patterns
                 .SelectMany(ExpandBraces)
-                .Select(f => f.Replace("\\{", "{").Replace("\\}", "}")); // Normalize escaped braces
+                .Select(f => f.Replace("\\{", "{").Replace("\\}", "}")); // Unescape braces
 
             // Add the patterns, any that start with ! are exclusions
             foreach (string expandedPattern in expandedPatterns)
             {
-                var isExclude = expandedPattern[0] == '!';
-                var finalPattern = isExclude ? expandedPattern.Substring(1) : expandedPattern;
+                bool isExclude = expandedPattern[0] == '!';
+                string finalPattern = isExclude ? expandedPattern.Substring(1) : expandedPattern;
+                finalPattern = finalPattern.Replace("\\!", "!");  // Unescape negation
 
                 // No support for absolute paths
                 if (System.IO.Path.IsPathRooted(finalPattern))
@@ -119,7 +120,20 @@ namespace Wyam.Core.IO.Globbing
                     return new[] { pattern };
                 }
 
-                return ExpandBraces(pattern.Substring(i)).Select(t => prefix + t);
+                return ExpandBraces(pattern.Substring(i)).Select(t =>
+                {
+                    string neg = string.Empty;
+                    if (t.Length > 0 && t[0] == '!')
+                    {
+                        if (prefix[0] != '!')
+                        {
+                            // Only add a new negation if there isn't already one
+                            neg = "!";
+                        }
+                        t = t.Substring(1);
+                    }
+                    return neg + prefix + t;
+                });
             }
 
             // now we have something like:
@@ -238,7 +252,25 @@ namespace Wyam.Core.IO.Globbing
             // x{y,z} -> ["xy", "xz"]
             // console.error("set", set)
             // console.error("suffix", pattern.substr(i))
-            return ExpandBraces(pattern.Substring(i)).SelectMany(s1 => set.Select(s2 => s2 + s1));
+            return ExpandBraces(pattern.Substring(i)).SelectMany(suf =>
+            {
+                bool negated = false;
+                if (suf.Length > 0 && suf[0] == '!')
+                {
+                    negated = true;
+                    suf = suf.Substring(1);
+                }
+                return set.Select(s =>
+                {
+                    string neg = string.Empty;
+                    if (negated && s[0] != '!')
+                    {
+                        // Only add a new negation if there isn't already one
+                        neg = "!";
+                    }
+                    return neg + s + suf;
+                });
+            });
         }
     }
 }
