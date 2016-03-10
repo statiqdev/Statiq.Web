@@ -53,6 +53,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="CountModule.cs" />
+    <Compile Include="IO\StringBuilderStream.cs" />
     <Compile Include="IO\TestDirectory.cs" />
     <Compile Include="IO\TestFile.cs" />
     <Compile Include="IO\TestFileProvider.cs" />

@@ -93,6 +93,8 @@
     <Compile Include="Tracing\IndentedTraceEvent.cs" />
     <Compile Include="Tracing\ITrace.cs" />
     <Compile Include="Tracing\Trace.cs" />
+    <Compile Include="Util\CollectionExtensions.cs" />
+    <Compile Include="Util\ConcurrentHashSet.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

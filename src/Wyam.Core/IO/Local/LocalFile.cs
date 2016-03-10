@@ -73,8 +73,8 @@ namespace Wyam.Core.IO.Local
 
         public Stream OpenWrite() =>
             LocalFileProvider.Retry(() => _file.OpenWrite());
-        
-        public Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare) =>
-            LocalFileProvider.Retry(() => _file.Open(fileMode, fileAccess, fileShare));
+
+        public Stream OpenAppend() =>
+            LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
     }
 }

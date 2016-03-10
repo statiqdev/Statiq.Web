@@ -190,8 +190,6 @@
     <Compile Include="Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />
     <Compile Include="TypeHelper.cs" />
-    <Compile Include="Util\CollectionExtensions.cs" />
-    <Compile Include="Util\ConcurrentHashSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

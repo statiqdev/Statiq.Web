@@ -59,21 +59,21 @@ namespace Wyam.Common.IO
         string ReadAllText();
 
         /// <summary>
-        /// Opens the file for reading.
+        /// Opens the file for reading. If it does not exist, an exception
+        /// will be thrown.
         /// </summary>
         Stream OpenRead();
         
         /// <summary>
-        /// Opens the file for writing.
+        /// Opens the file for writing. This will either create the file
+        /// if it doesn't exist or overwrite it if it does.
         /// </summary>
         Stream OpenWrite();
 
         /// <summary>
-        /// Opens the file with the specified options.
+        /// Opens the file for writing. This will either create the file
+        /// if it doesn't exist or append to it if it does.
         /// </summary>
-        /// <param name="fileMode">The file mode options.</param>
-        /// <param name="fileAccess">The file access options.</param>
-        /// <param name="fileShare">The file share options.</param>
-        Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare);
+        Stream OpenAppend();
     }
 }

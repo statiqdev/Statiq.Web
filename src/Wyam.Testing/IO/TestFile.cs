@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using Wyam.Common.IO;
 
 namespace Wyam.Testing.IO
@@ -19,48 +21,73 @@ namespace Wyam.Testing.IO
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
-        public bool Exists => _fileProvider.Files.Contains(_path);
+        public bool Exists => _fileProvider.Files.ContainsKey(_path);
 
         public IDirectory Directory => new TestDirectory(_fileProvider, System.IO.Path.GetDirectoryName(_path));
 
-        public long Length
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public long Length => _fileProvider.Files[_path].Length;
 
         public void Copy(FilePath destination, bool overwrite)
         {
-            throw new NotImplementedException();
+            if (overwrite)
+            {
+                _fileProvider.Files[destination.FullPath] = new StringBuilder(_fileProvider.Files[_path].ToString());
+            }
+            else
+            {
+                _fileProvider.Files.TryAdd(destination.FullPath, new StringBuilder(_fileProvider.Files[_path].ToString()));
+            }
         }
 
         public void Move(FilePath destination)
         {
-            throw new NotImplementedException();
+            if (!_fileProvider.Files.ContainsKey(_path))
+            {
+                throw new FileNotFoundException();
+            }
+            StringBuilder builder;
+            if (_fileProvider.Files.TryRemove(_path, out builder))
+            {
+                _fileProvider.Files.TryAdd(destination.FullPath, builder);
+            }
         }
 
         public void Delete()
         {
-            throw new NotImplementedException();
+            StringBuilder builder;
+            _fileProvider.Files.TryRemove(_path, out builder);
         }
 
         public string ReadAllText()
         {
-            throw new NotImplementedException();
+            return _fileProvider.Files[_path].ToString();
         }
 
         public Stream OpenRead()
         {
-            throw new NotImplementedException();
+            StringBuilder builder;
+            if (!_fileProvider.Files.TryGetValue(_path, out builder))
+            {
+                throw new FileNotFoundException();
+            }
+            MemoryStream stream = new MemoryStream();
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                writer.Write(builder.ToString());
+                writer.Flush();
+            }
+            stream.Position = 0;
+            return stream;
         }
 
         public Stream OpenWrite()
         {
-            throw new NotImplementedException();
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path, new StringBuilder(), (x, y) => new StringBuilder()));
         }
 
-        public Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+        public Stream OpenAppend()
         {
-            throw new NotImplementedException();
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path, new StringBuilder(), (x, y) => y));
         }
     }
 }

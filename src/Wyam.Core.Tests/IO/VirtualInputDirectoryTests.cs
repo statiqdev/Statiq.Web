@@ -215,45 +215,39 @@ namespace Wyam.Core.Tests.IO
         private IFileProvider GetFileProviderA()
         {
             TestFileProvider fileProvider = new TestFileProvider();
-            fileProvider.Directories.AddRange(new []
-            {
-                "/a",
-                "/a/b",
-                "/a/b/c",
-                "/a/b/c/1",
-                "/a/b/d",
-                "/a/x",
-                "/a/y",
-                "/a/y/z"
-            });
-            fileProvider.Files.AddRange(new[]
-            {
-                "/a/b/c/foo.txt",
-                "/a/b/c/baz.txt",
-                "/a/b/c/1/2.txt",
-                "/a/b/d/baz.txt",
-                "/a/x/bar.txt"
-            });
+
+            fileProvider.AddDirectory("/a");
+            fileProvider.AddDirectory("/a/b");
+            fileProvider.AddDirectory("/a/b/c");
+            fileProvider.AddDirectory("/a/b/c/1");
+            fileProvider.AddDirectory("/a/b/d");
+            fileProvider.AddDirectory("/a/x");
+            fileProvider.AddDirectory("/a/y");
+            fileProvider.AddDirectory("/a/y/z");
+
+            fileProvider.AddFile("/a/b/c/foo.txt");
+            fileProvider.AddFile("/a/b/c/baz.txt");
+            fileProvider.AddFile("/a/b/c/1/2.txt");
+            fileProvider.AddFile("/a/b/d/baz.txt");
+            fileProvider.AddFile("/a/x/bar.txt");
+
             return fileProvider;
         }
 
         private IFileProvider GetFileProviderB()
         {
             TestFileProvider fileProvider = new TestFileProvider();
-            fileProvider.Directories.AddRange(new[]
-            {
-                "/foo",
-                "/foo/a",
-                "/foo/a/b",
-                "/foo/c",
-                "/bar"
-            });
-            fileProvider.Files.AddRange(new[]
-            {
-                "/foo/baz.txt",
-                "/foo/c/baz.txt",
-                "/bar/baz.txt"
-            });
+
+            fileProvider.AddDirectory("/foo");
+            fileProvider.AddDirectory("/foo/a");
+            fileProvider.AddDirectory("/foo/a/b");
+            fileProvider.AddDirectory("/foo/c");
+            fileProvider.AddDirectory("/bar");
+
+            fileProvider.AddFile("/foo/baz.txt");
+            fileProvider.AddFile("/foo/c/baz.txt");
+            fileProvider.AddFile("/bar/baz.txt");
+
             return fileProvider;
         }
     }

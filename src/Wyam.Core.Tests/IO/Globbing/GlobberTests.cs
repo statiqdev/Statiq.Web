@@ -29,6 +29,9 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a", new[] { "**/foo.txt", "**/baz.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt", "/a/b/d/baz.txt" })]
             [TestCase("/a", new[] { "**/foo.txt", "**/c/baz.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt" })]
             [TestCase("/a", new[] { "**/baz.txt", "!**/d/*" }, new[] { "/a/b/c/baz.txt" })]
+            [TestCase("/a", new[] { "**/*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt", "/a/b/c/1/2.txt", "/a/b/d/baz.txt", "/a/x/bar.txt" })]
+            [TestCase("/a/b/c", new[] { "*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt" })]
+            [TestCase("/a", new[] { "**/*.txt", "!**/b*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt" })]
             public void ShouldReturnMatchedFiles(string directoryPath, string[] patterns, string[] resultPaths)
             {
                 // Given
@@ -46,25 +49,22 @@ namespace Wyam.Core.Tests.IO.Globbing
         private IFileProvider GetFileProvider()
         {
             TestFileProvider fileProvider = new TestFileProvider();
-            fileProvider.Directories.AddRange(new[]
-            {
-                "/a",
-                "/a/b",
-                "/a/b/c",
-                "/a/b/c/1",
-                "/a/b/d",
-                "/a/x",
-                "/a/y",
-                "/a/y/z"
-            });
-            fileProvider.Files.AddRange(new[]
-            {
-                "/a/b/c/foo.txt",
-                "/a/b/c/baz.txt",
-                "/a/b/c/1/2.txt",
-                "/a/b/d/baz.txt",
-                "/a/x/bar.txt"
-            });
+
+            fileProvider.AddDirectory("/a");
+            fileProvider.AddDirectory("/a/b");
+            fileProvider.AddDirectory("/a/b/c");
+            fileProvider.AddDirectory("/a/b/c/1");
+            fileProvider.AddDirectory("/a/b/d");
+            fileProvider.AddDirectory("/a/x");
+            fileProvider.AddDirectory("/a/y");
+            fileProvider.AddDirectory("/a/y/z");
+
+            fileProvider.AddFile("/a/b/c/foo.txt");
+            fileProvider.AddFile("/a/b/c/baz.txt");
+            fileProvider.AddFile("/a/b/c/1/2.txt");
+            fileProvider.AddFile("/a/b/d/baz.txt");
+            fileProvider.AddFile("/a/x/bar.txt");
+
             return fileProvider;
         }
     }

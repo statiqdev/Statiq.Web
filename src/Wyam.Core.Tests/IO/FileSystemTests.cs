@@ -327,21 +327,18 @@ namespace Wyam.Core.Tests.IO
         private IFileProvider GetFileProvider()
         {
             TestFileProvider fileProvider = new TestFileProvider();
-            fileProvider.Directories.AddRange(new[]
-            {
-                "/a",
-                "/a/b",
-                "/a/b/c",
-                "/a/b/d",
-                "/a/x",
-                "/a/y",
-                "/a/y/z"
-            });
-            fileProvider.Files.AddRange(new[]
-            {
-                "/a/b/c/foo.txt",
-                "/a/x/bar.txt"
-            });
+
+            fileProvider.AddDirectory("/a");
+            fileProvider.AddDirectory("/a/b");
+            fileProvider.AddDirectory("/a/b/c");
+            fileProvider.AddDirectory("/a/b/d");
+            fileProvider.AddDirectory("/a/x");
+            fileProvider.AddDirectory("/a/y");
+            fileProvider.AddDirectory("/a/y/z");
+
+            fileProvider.AddFile("/a/b/c/foo.txt");
+            fileProvider.AddFile("/a/x/bar.txt");
+
             return fileProvider;
         }
     }

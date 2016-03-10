@@ -6,8 +6,8 @@ using System.Reflection;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.NuGet;
-using Wyam.Core.Util;
 
 namespace Wyam.Core.Configuration
 {

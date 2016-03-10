@@ -32,15 +32,9 @@ namespace Wyam.Testing.IO
             }
         }
 
-        public void Create()
-        {
-            throw new NotImplementedException();
-        }
+        public void Create() => _fileProvider.Directories.Add(_path);
 
-        public void Delete(bool recursive)
-        {
-            throw new NotImplementedException();
-        }
+        public void Delete(bool recursive) => _fileProvider.Directories.Remove(_path);
 
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
@@ -59,11 +53,11 @@ namespace Wyam.Testing.IO
         {
             if (searchOption == SearchOption.TopDirectoryOnly)
             {
-                return _fileProvider.Files
+                return _fileProvider.Files.Keys
                     .Where(x => x.StartsWith(_path) && _path.Count(c => c == '/') == x.Count(c => c == '/') - 1)
                     .Select(x => new TestFile(_fileProvider, x));
             }
-            return _fileProvider.Files
+            return _fileProvider.Files.Keys
                 .Where(x => x.StartsWith(_path))
                 .Select(x => new TestFile(_fileProvider, x));
         }
