@@ -9,43 +9,39 @@ namespace Wyam.Testing.IO
     public class TestDirectory : IDirectory
     {
         private readonly TestFileProvider _fileProvider;
-        private readonly string _path;
+        private readonly DirectoryPath _path;
 
-        public TestDirectory(TestFileProvider fileProvider, string path)
+        public TestDirectory(TestFileProvider fileProvider, DirectoryPath path)
         {
             _fileProvider = fileProvider;
-            _path = path;
+            _path = path.Collapse();
         }
 
-        public DirectoryPath Path => new DirectoryPath(_path);
+        public DirectoryPath Path => _path;
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
-        public bool Exists => _fileProvider.Directories.Contains(_path);
+        public bool Exists => _fileProvider.Directories.Contains(_path.FullPath);
 
-        public IDirectory Parent
-        {
-            get
-            {
-                string parent = System.IO.Path.GetDirectoryName(_path);
-                return parent == null ? null : new TestDirectory(_fileProvider, parent);
-            }
-        }
+        public void Create() => _fileProvider.Directories.Add(_path.FullPath);
 
-        public void Create() => _fileProvider.Directories.Add(_path);
-
-        public void Delete(bool recursive) => _fileProvider.Directories.Remove(_path);
+        public void Delete(bool recursive) => _fileProvider.Directories.Remove(_path.FullPath);
 
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             if (searchOption == SearchOption.TopDirectoryOnly)
             {
+                string adjustedPath = _path.FullPath.EndsWith("/", StringComparison.Ordinal)
+                    ? _path.FullPath.Substring(0, _path.FullPath.Length - 1)
+                    : _path.FullPath;
                 return _fileProvider.Directories
-                    .Where(x => x.StartsWith(_path) && _path.Count(c => c == '/') == x.Count(c => c == '/') - 1)
+                    .Where(x => x.StartsWith(adjustedPath) 
+                        && adjustedPath.Count(c => c == '/') == x.Count(c => c == '/') - 1
+                        && _path.FullPath != x)
                     .Select(x => new TestDirectory(_fileProvider, x));
             }
             return _fileProvider.Directories
-                .Where(x => x.StartsWith(_path) && _path != x)
+                .Where(x => x.StartsWith(_path.FullPath) && _path.FullPath != x)
                 .Select(x => new TestDirectory(_fileProvider, x));
         }
 
@@ -54,15 +50,40 @@ namespace Wyam.Testing.IO
             if (searchOption == SearchOption.TopDirectoryOnly)
             {
                 return _fileProvider.Files.Keys
-                    .Where(x => x.StartsWith(_path) && _path.Count(c => c == '/') == x.Count(c => c == '/') - 1)
+                    .Where(x => x.StartsWith(_path.FullPath) && _path.FullPath.Count(c => c == '/') == x.Count(c => c == '/') - 1)
                     .Select(x => new TestFile(_fileProvider, x));
             }
             return _fileProvider.Files.Keys
-                .Where(x => x.StartsWith(_path))
+                .Where(x => x.StartsWith(_path.FullPath))
                 .Select(x => new TestFile(_fileProvider, x));
         }
 
-        public IFile GetFile(FilePath path) => 
-            new TestFile(_fileProvider, System.IO.Path.Combine(_path, path.FullPath));
+        public IDirectory GetDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
+            return new TestDirectory(_fileProvider, _path.Combine(path));
+        }
+
+        public IFile GetFile(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
+            return new TestFile(_fileProvider, _path.CombineFile(path));
+        }
     }
 }

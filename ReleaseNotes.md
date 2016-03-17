@@ -1,3 +1,9 @@
+# 0.12.0
+
+- **MAJOR BREAKING CHANGES, BEWARE YE WHO ENTER HERE!** - The entire I/O stack has (finally) been rewritten and modules that were using `System.IO` classes have been ported to the new abstraction - read about how to migrate your pre 0.12.0 code at http://wyam.io/knowledgebase/0-12-0-migration and keep on the lookout for bugs
+- Feature - New globbing engine with brace expansion, negation, and wildcard support
+- Refactoring - **Breaking change**: ReadFiles now uses the new I/O API and several configuration methods have been removed or changed
+
 # 0.11.5
 
 - Fix - Well this is embarrassing - fix for the fix to properly handle undownloaded NuGet packages

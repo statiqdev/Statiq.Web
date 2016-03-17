@@ -33,20 +33,26 @@ namespace Wyam.Common.IO
             // Make sure they're both either relative or absolute
             if (source.IsAbsolute != target.IsAbsolute)
             {
-                throw new ArgumentException("Path must both be relative or both be absolute");
+                throw new ArgumentException("Paths must both be relative or both be absolute");
             }
 
             // Collapse the paths
             source = source.Collapse();
             target = target.Collapse();
 
+            // Check if they share the same provider
+            if (source.Provider != target.Provider)
+            {
+                return target;
+            }
+
             // Check if they're the same path
-            if (string.CompareOrdinal(source.FullPath, target.FullPath) == 0)
+            if (source.FullPath == target.FullPath)
             {
                 return new DirectoryPath(".");
             }
 
-            // Check if they don't share the same root
+            // Check if they share the same root
             if (string.CompareOrdinal(source.Segments[0], target.Segments[0]) != 0)
             {
                 return target;

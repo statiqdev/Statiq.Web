@@ -16,15 +16,6 @@ namespace Wyam.Core.IO.Local
 
         NormalizedPath IFileSystemEntry.Path => _path;
 
-        public IDirectory Parent
-        {
-            get
-            {
-                DirectoryInfo parent = _directory.Parent;
-                return parent == null ? null : new LocalDirectory(parent.FullName);
-            }
-        }
-
         public bool Exists => _directory.Exists;
 
         public LocalDirectory(DirectoryPath path)
@@ -39,7 +30,7 @@ namespace Wyam.Core.IO.Local
             }
 
             _path = path;
-            _directory = new DirectoryInfo(_path.FullPath);
+            _directory = new DirectoryInfo(_path.Collapse().FullPath);
         }
 
         public void Create() => LocalFileProvider.Retry(() => _directory.Create());
@@ -52,8 +43,31 @@ namespace Wyam.Core.IO.Local
         public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
             LocalFileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new LocalFile(file.FullName)));
 
+        public IDirectory GetDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
+            return new LocalDirectory(_path.Combine(path));
+        }
+
         public IFile GetFile(FilePath path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
             return new LocalFile(_path.CombineFile(path));
         }
     }

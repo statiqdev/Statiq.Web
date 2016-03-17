@@ -19,15 +19,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <value>The path.</value>
         new DirectoryPath Path { get; }
-
-        /// <summary>
-        /// Gets the parent directory.
-        /// </summary>
-        /// <value>
-        /// The parent directory or <c>null</c> if this directory is a root.
-        /// </value>
-        IDirectory Parent { get; }
-
+        
         /// <summary>
         /// Creates the directory.
         /// </summary>
@@ -60,7 +52,16 @@ namespace Wyam.Common.IO
         IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly);
 
         /// <summary>
+        /// Gets a directory by combining it's path with the current directory's path.
+        /// The specified directory path must be relative.
+        /// </summary>
+        /// <param name="directory">The path of the directory.</param>
+        /// <returns>The directory.</returns>
+        IDirectory GetDirectory(DirectoryPath directory);
+
+        /// <summary>
         /// Gets a file by combining it's path with the current directory's path.
+        /// The specified file path must be relative.
         /// </summary>
         /// <param name="path">The path of the file.</param>
         /// <returns>The file.</returns>

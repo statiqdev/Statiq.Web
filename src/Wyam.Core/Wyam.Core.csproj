@@ -117,6 +117,7 @@
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="IO\FileProviderCollection.cs" />
+    <Compile Include="IO\FileSystem.cs" />
     <Compile Include="IO\Globbing\DirectoryInfo.cs" />
     <Compile Include="IO\Globbing\FileInfo.cs" />
     <Compile Include="IO\Globbing\Globber.cs" />
@@ -126,7 +127,6 @@
     <Compile Include="IO\VirtualInputDirectory.cs" />
     <Compile Include="Meta\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />
-    <Compile Include="IO\FileSystem.cs" />
     <Compile Include="Meta\SimpleMetadata.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
@@ -136,6 +136,7 @@
     <Compile Include="Modules\Control\Take.cs" />
     <Compile Include="Modules\IO\Download.cs" />
     <Compile Include="Modules\IO\ReadApplicationInput.cs" />
+    <Compile Include="Modules\IO\ReadFiles.cs" />
     <Compile Include="Modules\Metadata\CopyMeta.cs" />
     <Compile Include="Modules\Metadata\DirectoryMeta.cs" />
     <Compile Include="Modules\IO\RequestHeader.cs" />
@@ -173,7 +174,6 @@
     <Compile Include="Modules\Control\If.cs" />
     <Compile Include="Modules\Metadata\Meta.cs" />
     <Compile Include="Modules\Contents\Prepend.cs" />
-    <Compile Include="Modules\IO\ReadFiles.cs" />
     <Compile Include="Modules\IO\WriteFiles.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="Pipelines\Pipeline.cs" />

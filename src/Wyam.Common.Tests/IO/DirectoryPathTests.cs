@@ -299,5 +299,39 @@ namespace Wyam.Common.Tests.IO
                 Assert.Throws<ArgumentNullException>(test);
             }
         }
+
+        public class CollapseMethodTests : FilePathTests
+        {
+            [Test]
+            [TestCase("/a/b/c/../d", "/a/b/d")]
+#if !UNIX
+            [TestCase("c:/a/b/c/../d", "c:/a/b/d")]
+#endif
+            public void ShouldCollapse(string fullPath, string expected)
+            {
+                // Given
+                DirectoryPath directoryPath = new DirectoryPath(fullPath);
+
+                // When
+                DirectoryPath path = directoryPath.Collapse();
+
+                // Then
+                Assert.AreEqual(expected, path.FullPath);
+            }
+
+            [Test]
+            public void CollapseRetainsProvider()
+            {
+                // Given
+                DirectoryPath directoryPath = new DirectoryPath("foo", "/a/b/../c");
+
+                // When
+                DirectoryPath path = directoryPath.Collapse();
+
+                // Then
+                Assert.AreEqual("/a/c", path.FullPath);
+                Assert.AreEqual("foo", path.Provider);
+            }
+        }
     }
 }

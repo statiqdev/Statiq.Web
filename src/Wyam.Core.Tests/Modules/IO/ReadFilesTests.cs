@@ -5,284 +5,184 @@ using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
+using Wyam.Core.IO;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Testing;
+using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ReadFilesTests : BaseFixture
     {
+        private Engine Engine { get; set; }
+        private Pipeline Pipeline { get; set; }
+        private IExecutionContext Context { get; set; }
+        private IDocument[] Inputs { get; set; }
+
+        [SetUp]
+        public void SetUp()
+        {
+            Engine = new Engine();
+            Engine.FileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+            Engine.FileSystem.RootPath = "/";
+            Engine.FileSystem.InputPaths.Clear();
+            Engine.FileSystem.InputPaths.Add("/TestFiles/Input");
+            Pipeline = new Pipeline("Pipeline", null);
+            Context = new ExecutionContext(Engine, Pipeline);
+            Inputs = new [] { Context.GetDocument() };
+        }
+
         public class ConstructorTests : ReadFilesTests
         {
             [Test]
             public void ThrowsOnNullPathFunction()
             {
-                // Given
-
-                // When
-
-                // Then
+                // Given, When, Then
                 Assert.Throws<ArgumentNullException>(() => new ReadFiles((DocumentConfig) null));
             }
 
             [Test]
-            public void ThrowsOnNullExtension()
+            public void ThrowsOnNullPatterns()
             {
-                // Given
-
-                // When
-
-                // Then
-                Assert.Throws<ArgumentNullException>(() => new ReadFiles((string) null));
+                // Given, When, Then
+                Assert.Throws<ArgumentNullException>(() => new ReadFiles((string[]) null));
             }
         }
 
         public class ExecuteMethodTests : ReadFilesTests
         {
-            [TestCase("*.foo", SearchOption.TopDirectoryOnly, 0)]
-            [TestCase("*.foo", SearchOption.AllDirectories, 0)]
-            [TestCase("*.txt", SearchOption.TopDirectoryOnly, 2)]
-            [TestCase("*.txt", SearchOption.AllDirectories, 3)]
-            [TestCase("*.md", SearchOption.TopDirectoryOnly, 1)]
-            [TestCase("*.md", SearchOption.AllDirectories, 2)]
-            [TestCase("*.*", SearchOption.TopDirectoryOnly, 3)]
-            [TestCase("*.*", SearchOption.AllDirectories, 5)]
-            public void SearchPatternFindsCorrectFiles(string searchPattern, SearchOption searchOption,
-                int expectedCount)
+            [TestCase("*.foo", 0)]
+            [TestCase("**/*.foo", 0)]
+            [TestCase("*.txt", 2)]
+            [TestCase("**/*.txt", 3)]
+            [TestCase("*.md", 1)]
+            [TestCase("**/*.md", 2)]
+            [TestCase("*.*", 3)]
+            [TestCase("**/*.*", 5)]
+            public void PatternFindsCorrectFiles(string pattern, int expectedCount)
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input\";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles(searchPattern).WithSearchOption(searchOption);
+                ReadFiles readFiles = new ReadFiles(pattern);
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
 
                 // Then
-                Assert.AreEqual(expectedCount, count);
+                Assert.AreEqual(expectedCount, documents.Count());
             }
 
             [Test]
-            public void SearchPatternWorksWithoutInputPathTrailingSlash()
+            public void PatternWorksWithSubpath()
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.txt");
+                ReadFiles readFiles = new ReadFiles("Subfolder/*.txt");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
 
                 // Then
-                Assert.AreEqual(3, count);
+                Assert.AreEqual(1, documents.Count());
             }
 
             [Test]
-            public void SearchPatternWorksWithInputPathTrailingSlash()
+            public void PatternWorksWithSingleFile()
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.txt");
+                ReadFiles readFiles = new ReadFiles("test-a.txt");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
 
                 // Then
-                Assert.AreEqual(3, count);
+                Assert.AreEqual(1, documents.Count());
             }
 
             [Test]
-            public void SearchPatternWorksWithSubpath()
+            public void GetsCorrectContent()
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles(@"Subfolder\*.txt");
+                ReadFiles readFiles = new ReadFiles("test-a.txt");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
-
-                // Then
-                Assert.AreEqual(1, count);
-            }
-
-            [Test]
-            public void SearchPatternWorksWithSingleFile()
-            {
-                // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles(@"test-a.txt");
-
-                // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
-
-                // Then
-                Assert.AreEqual(1, count);
-            }
-
-            [Test]
-            public void ExecuteGetsCorrectContent()
-            {
-                // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles(@"test-a.txt");
-
-                // When
-                IDocument document = readFiles.Execute(inputs, context).First();
+                IDocument document = readFiles.Execute(Inputs, Context).First();
 
                 // Then
                 Assert.AreEqual("aaa", document.Content);
             }
 
-            [TestCase(Keys.SourceFileRoot, @"TestFiles\Input")]
-            [TestCase(Keys.SourceFileBase, @"test-c")]
-            [TestCase(Keys.SourceFileExt, @".txt")]
-            [TestCase(Keys.SourceFileName, @"test-c.txt")]
-            [TestCase(Keys.SourceFileDir, @"TestFiles\Input\Subfolder")]
-            [TestCase(Keys.SourceFilePath, @"TestFiles\Input\Subfolder\test-c.txt")]
-            [TestCase(Keys.SourceFilePathBase, @"TestFiles\Input\Subfolder\test-c")]
-            [TestCase(Keys.RelativeFilePath, @"Subfolder\test-c.txt")]
-            [TestCase(Keys.RelativeFilePathBase, @"Subfolder\test-c")]
-            [TestCase(Keys.RelativeFileDir, @"Subfolder")]
-            public void ReadFilesSetsMetadata(string key, string expectedEnding)
+            [TestCase(Keys.SourceFileRoot, "/TestFiles/Input")]
+            [TestCase(Keys.SourceFileBase, "test-c")]
+            [TestCase(Keys.SourceFileExt, ".txt")]
+            [TestCase(Keys.SourceFileName, "test-c.txt")]
+            [TestCase(Keys.SourceFileDir, "/TestFiles/Input/Subfolder")]
+            [TestCase(Keys.SourceFilePath, "/TestFiles/Input/Subfolder/test-c.txt")]
+            [TestCase(Keys.SourceFilePathBase, "/TestFiles/Input/Subfolder/test-c")]
+            [TestCase(Keys.RelativeFilePath, "Subfolder/test-c.txt")]
+            [TestCase(Keys.RelativeFilePathBase, "Subfolder/test-c")]
+            [TestCase(Keys.RelativeFileDir, "Subfolder")]
+            public void ShouldSetMetadata(string key, string expected)
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles(@"test-c.txt");
+                ReadFiles readFiles = new ReadFiles("**/test-c.txt");
 
                 // When
-                IDocument output = readFiles.Execute(inputs, context).First();
-                foreach (IDocument document in inputs)
-                {
-                    ((IDisposable) document).Dispose();
-                }
+                IDocument output = readFiles.Execute(Inputs, Context).First();
 
                 // Then
-                Assert.That(output.Metadata[key], Does.EndWith(expectedEnding));
-                ((IDisposable) output).Dispose();
+                Assert.AreEqual(output.String(key), expected);
             }
 
             [Test]
-            public void WithExtensionsGetsCorrectFiles()
+            public void WorksWithMultipleExtensions()
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.*").WithExtensions(".txt");
+                ReadFiles readFiles = new ReadFiles("**/*.{txt,md}");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
 
                 // Then
-                Assert.AreEqual(3, count);
+                Assert.AreEqual(5, documents.Count());
             }
 
             [Test]
-            public void WithExtensionsWorksWithoutDotPrefix()
+            public void PredicateShouldReturnMatchingFiles()
             {
                 // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.*").WithExtensions("txt", "md");
+                ReadFiles readFiles = new ReadFiles("**/*").Where(x => x.Path.FullPath.Contains("test"));
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
 
                 // Then
-                Assert.AreEqual(5, count);
+                Assert.AreEqual(3, documents.Count());
             }
+        }
 
-            [Test]
-            public void WhereGetsCorrectFiles()
-            {
-                // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("test"));
+        private IFileProvider GetFileProvider()
+        {
+            TestFileProvider fileProvider = new TestFileProvider();
 
-                // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
+            fileProvider.AddDirectory("/");
+            fileProvider.AddDirectory("/TestFiles");
+            fileProvider.AddDirectory("/TestFiles/Input");
+            fileProvider.AddDirectory("/TestFiles/Input/Subfolder");
 
-                // Then
-                Assert.AreEqual(3, count);
-            }
+            fileProvider.AddFile("/TestFiles/test-above-input.txt", "test");
+            fileProvider.AddFile("/TestFiles/Input/markdown-x.md", "xxx");
+            fileProvider.AddFile("/TestFiles/Input/test-a.txt", "aaa");
+            fileProvider.AddFile("/TestFiles/Input/test-b.txt", "bbb");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/markdown-y.md", "yyy");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/test-c.txt", "ccc");
 
-            [Test]
-            public void WhereAndWithExtensionsGetsCorrectFiles()
-            {
-                // Given
-                Engine engine = new Engine();
-                engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-                engine.InputFolder = @"TestFiles\Input";
-                Pipeline pipeline = new Pipeline("Pipeline", null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument() };
-                ReadFiles readFiles = new ReadFiles("*.*").Where(x => x.Contains("-c")).WithExtensions("txt");
-
-                // When
-                IEnumerable<IDocument> documents = readFiles.Execute(inputs, context);
-                int count = documents.Count();
-
-                // Then
-                Assert.AreEqual(1, count);
-            }
+            return fileProvider;
         }
     }
 }

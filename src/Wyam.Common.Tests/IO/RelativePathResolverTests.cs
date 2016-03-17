@@ -172,6 +172,20 @@ namespace Wyam.Common.Tests.IO
                 // When, Then
                 Assert.Throws<ArgumentException>(() => RelativePathResolver.Resolve(sourcePath, targetPath));
             }
+
+            [Test]
+            public void ShouldReturnTargetPathIfProvidersDontMatch()
+            {
+                // Given
+                DirectoryPath sourcePath = new DirectoryPath("foo::/A/B");
+                FilePath targetPath = new FilePath("bar", "/A/B/C/test.txt");
+
+                // When
+                FilePath resultPath = RelativePathResolver.Resolve(sourcePath, targetPath);
+
+                // Then
+                Assert.AreEqual(targetPath, resultPath);
+            }
         }
     }
 }

@@ -9,44 +9,44 @@ namespace Wyam.Testing.IO
     public class TestFile : IFile
     {
         private readonly TestFileProvider _fileProvider;
-        private readonly string _path;
+        private readonly FilePath _path;
 
-        public TestFile(TestFileProvider fileProvider, string path)
+        public TestFile(TestFileProvider fileProvider, FilePath path)
         {
             _fileProvider = fileProvider;
-            _path = path;
+            _path = path.Collapse();
         }
 
-        public FilePath Path => new FilePath(_path);
+        public FilePath Path => _path;
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
-        public bool Exists => _fileProvider.Files.ContainsKey(_path);
+        public bool Exists => _fileProvider.Files.ContainsKey(_path.FullPath);
 
-        public IDirectory Directory => new TestDirectory(_fileProvider, System.IO.Path.GetDirectoryName(_path));
+        public IDirectory Directory => new TestDirectory(_fileProvider, _path.Directory);
 
-        public long Length => _fileProvider.Files[_path].Length;
+        public long Length => _fileProvider.Files[_path.FullPath].Length;
 
         public void Copy(FilePath destination, bool overwrite)
         {
             if (overwrite)
             {
-                _fileProvider.Files[destination.FullPath] = new StringBuilder(_fileProvider.Files[_path].ToString());
+                _fileProvider.Files[destination.FullPath] = new StringBuilder(_fileProvider.Files[_path.FullPath].ToString());
             }
             else
             {
-                _fileProvider.Files.TryAdd(destination.FullPath, new StringBuilder(_fileProvider.Files[_path].ToString()));
+                _fileProvider.Files.TryAdd(destination.FullPath, new StringBuilder(_fileProvider.Files[_path.FullPath].ToString()));
             }
         }
 
         public void Move(FilePath destination)
         {
-            if (!_fileProvider.Files.ContainsKey(_path))
+            if (!_fileProvider.Files.ContainsKey(_path.FullPath))
             {
                 throw new FileNotFoundException();
             }
             StringBuilder builder;
-            if (_fileProvider.Files.TryRemove(_path, out builder))
+            if (_fileProvider.Files.TryRemove(_path.FullPath, out builder))
             {
                 _fileProvider.Files.TryAdd(destination.FullPath, builder);
             }
@@ -55,39 +55,33 @@ namespace Wyam.Testing.IO
         public void Delete()
         {
             StringBuilder builder;
-            _fileProvider.Files.TryRemove(_path, out builder);
+            _fileProvider.Files.TryRemove(_path.FullPath, out builder);
         }
 
         public string ReadAllText()
         {
-            return _fileProvider.Files[_path].ToString();
+            return _fileProvider.Files[_path.FullPath].ToString();
         }
 
         public Stream OpenRead()
         {
             StringBuilder builder;
-            if (!_fileProvider.Files.TryGetValue(_path, out builder))
+            if (!_fileProvider.Files.TryGetValue(_path.FullPath, out builder))
             {
                 throw new FileNotFoundException();
             }
-            MemoryStream stream = new MemoryStream();
-            using (StreamWriter writer = new StreamWriter(stream))
-            {
-                writer.Write(builder.ToString());
-                writer.Flush();
-            }
-            stream.Position = 0;
-            return stream;
+            byte[] bytes = Encoding.UTF8.GetBytes(builder.ToString());
+            return new MemoryStream(bytes);
         }
 
         public Stream OpenWrite()
         {
-            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path, new StringBuilder(), (x, y) => new StringBuilder()));
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => new StringBuilder()));
         }
 
         public Stream OpenAppend()
         {
-            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path, new StringBuilder(), (x, y) => y));
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
         }
     }
 }

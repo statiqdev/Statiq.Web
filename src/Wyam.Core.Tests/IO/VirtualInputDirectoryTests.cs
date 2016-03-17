@@ -46,9 +46,22 @@ namespace Wyam.Core.Tests.IO
             [Test]
             [TestCase(".", SearchOption.AllDirectories, new [] { "c", "c/1", "d", "a", "a/b" })]
             [TestCase(".", SearchOption.TopDirectoryOnly, new[] { "c", "d", "a" })]
-            [TestCase("a", SearchOption.AllDirectories, new[] { "b" })]
-            [TestCase("a", SearchOption.TopDirectoryOnly, new [] { "b" })]
-            public void GetsDirectories(string virtualPath, SearchOption searchOption, string[] expectedPaths)
+            public void RootVirtualDirectoryDoesNotIncludeSelf(string virtualPath, SearchOption searchOption, string[] expectedPaths)
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
+
+                // When
+                IEnumerable<IDirectory> directories = directory.GetDirectories(searchOption);
+
+                // Then
+                CollectionAssert.AreEquivalent(expectedPaths, directories.Select(x => x.Path.FullPath));
+            }
+
+            [Test]
+            [TestCase("a", SearchOption.AllDirectories, new[] { "a/b" })]
+            [TestCase("a", SearchOption.TopDirectoryOnly, new[] { "a/b" })]
+            public void NonRootVirtualDirectoryIncludesSelf(string virtualPath, SearchOption searchOption, string[] expectedPaths)
             {
                 // Given
                 VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
@@ -105,45 +118,93 @@ namespace Wyam.Core.Tests.IO
                 Assert.AreEqual(expectedPath, file.Path.FullPath);
                 Assert.AreEqual(expectedExists, file.Exists);
             }
-        }
-
-        public class ParentPropertyTests : VirtualInputDirectoryTests
-        {
 
             [Test]
-            [TestCase("a/b", "a")]
-            [TestCase("a/b/", "a")]
-            [TestCase("a/b/../c", "a")]
-            public void ReturnsParent(string virtualPath, string expected)
+            public void GetsInputFileAboveInputDirectory()
             {
                 // Given
-                VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b/d");
+                fileSystem.InputPaths.Add("alt::/foo");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProviderA());
+                fileSystem.FileProviders.Add("alt", GetFileProviderB());
+                VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, ".");
 
                 // When
-                IDirectory parent = directory.Parent;
+                IFile file = directory.GetFile("../c/foo.txt");
 
                 // Then
-                Assert.AreEqual(expected, parent.Path.FullPath);
+                Assert.AreEqual("/a/b/c/foo.txt", file.Path.FullPath);
             }
 
-            [TestCase(".")]
-            [TestCase("a")]
-            public void RootDirectoryReturnsNullParent(string virtualPath)
+            [Test]
+            public void ThrowsForNullPath()
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(".");
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => directory.GetFile(null));
+            }
+
+            [Test]
+            public void ThrowsForAbsolutePath()
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(".");
+                FilePath filePath = "/a/test.txt";
+
+                // When, Then
+                Assert.Throws<ArgumentException>(() => directory.GetFile(filePath));
+            }
+        }
+
+        public class GetDirectoryMethodTests : VirtualInputDirectoryTests
+        {
+            [Test]
+            [TestCase("a/b", "..", "a")]
+            [TestCase("a/b/", "..", "a")]
+            [TestCase("a/b/../c", "..", "a")]
+            [TestCase(".", "..", ".")]
+            [TestCase("a", "..", "a")]
+            [TestCase("a/b", "c", "a/b/c")]
+            public void ShouldReturnDirectory(string virtualPath, string path, string expected)
             {
                 // Given
                 VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
 
                 // When
-                IDirectory parent = directory.Parent;
+                IDirectory result = directory.GetDirectory(path);
 
                 // Then
-                Assert.IsNull(parent);
+                Assert.AreEqual(expected, result.Path.Collapse().FullPath);
+            }
+
+            [Test]
+            public void ThrowsForNullPath()
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(".");
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => directory.GetDirectory(null));
+            }
+
+            [Test]
+            public void ThrowsForAbsolutePath()
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(".");
+                DirectoryPath directoryPath = "/a/b";
+
+                // When, Then
+                Assert.Throws<ArgumentException>(() => directory.GetDirectory(directoryPath));
             }
         }
 
         public class ExistsPropertyTests : VirtualInputDirectoryTests
         {
-
             [Test]
             [TestCase(".")]
             [TestCase("c")]

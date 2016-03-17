@@ -272,13 +272,30 @@ namespace Wyam.Common.Tests.IO
             [TestCase("c:/hello/temp/test/../../world", "c:/hello/world")]
             [TestCase("c:/../../../../../../temp", "c:/temp")]
 #endif
-            public void ShouldCollapsePath(string fullPath, string expected)
+            public void ShouldCollapseDirectoryPath(string fullPath, string expected)
             {
                 // Given
                 DirectoryPath directoryPath = new DirectoryPath(fullPath);
 
                 // When
                 string path = NormalizedPath.Collapse(directoryPath);
+
+                // Then
+                Assert.AreEqual(expected, path);
+            }
+
+            [Test]
+            [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
+#if !UNIX
+            [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
+#endif
+            public void ShouldCollapseFilePath(string fullPath, string expected)
+            {
+                // Given
+                FilePath filePath = new FilePath(fullPath);
+
+                // When
+                string path = NormalizedPath.Collapse(filePath);
 
                 // Then
                 Assert.AreEqual(expected, path);

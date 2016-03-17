@@ -6,13 +6,13 @@ using System.Linq;
 namespace Wyam.Common.IO
 {
     // This contains some additional helpers for the file system
-    [Obsolete("This will be replaced by new IO functionality in the next release")]
+    [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
     public class PathHelper
     {
         private static readonly char[] WildcardCharacters = { '*', '?' };
 
         // Converts slashes to Path.DirectorySeparatorChar
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string NormalizePath(string path)
         {
             return path
@@ -20,20 +20,20 @@ namespace Wyam.Common.IO
                 .Replace('/', System.IO.Path.DirectorySeparatorChar);
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string ToLink(string path)
         {
             return path.Replace("\\", "/");
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string ToRootLink(string path)
         {
             return path.StartsWith("/") ? ToLink(path) : "/" + ToLink(path);
         }
 
         // From http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string GetRelativePath(string fromPath, string toPath)
         {
             // Remove single . self-references
@@ -111,14 +111,14 @@ namespace Wyam.Common.IO
             return newPath;
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string RemoveExtension(string path)
         {
             string extension = System.IO.Path.GetExtension(path);
             return string.IsNullOrWhiteSpace(extension) ? path : path.Substring(0, path.Length - extension.Length);
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public static string CombineToFullPath(params string[] paths)
         {
             string combinedPath = System.IO.Path.Combine(paths);

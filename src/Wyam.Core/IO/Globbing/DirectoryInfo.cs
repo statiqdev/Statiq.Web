@@ -43,7 +43,7 @@ namespace Wyam.Core.IO.Globbing
         {
             if (string.Equals(name, "..", StringComparison.Ordinal))
             {
-                return new DirectoryInfo(_directory.Parent, true);
+                return ParentDirectory;
             }
             return _directory.GetDirectories()
                 .Where(x => x.Path.Name == name)
@@ -57,13 +57,6 @@ namespace Wyam.Core.IO.Globbing
 
         public override string FullName => _directory.Path.FullPath;
 
-        public override DirectoryInfoBase ParentDirectory
-        {
-            get
-            {
-                IDirectory parent = _directory.Parent;
-                return parent == null ? null : new DirectoryInfo(parent);
-            }
-        }
+        public override DirectoryInfoBase ParentDirectory => new DirectoryInfo(_directory.GetDirectory(".."), true);
     }
 }

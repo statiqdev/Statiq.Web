@@ -20,7 +20,7 @@ namespace Wyam.Core.Modules.IO
     /// <remarks>
     /// If the metadata keys <c>WriteFileName</c> (which requires <c>RelativeFileDir</c> to be 
     /// set, usually by the ReadFiles module), <c>WriteExtension</c> (which 
-    /// requires <c>RelativeFilePath</c> to be set, usually by the <see cref="ReadFiles"/> module) 
+    /// requires <c>RelativeFilePath</c> to be set, usually by the <see cref="ReadFilesLegacy"/> module) 
     /// or <c>WritePath</c> are set on an input document, that value will be used instead 
     /// of what's specified in the module. For example, if you have a bunch 
     /// of Razor .cshtml files that need to be rendered to .html files but one of them 
@@ -74,7 +74,7 @@ namespace Wyam.Core.Modules.IO
         /// <summary>
         /// Writes the document content to disk with the specified extension with the same 
         /// base file name and relative path as the input file. This requires metadata 
-        /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFiles"/> module).
+        /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFilesLegacy"/> module).
         /// </summary>
         /// <param name="extension">The extension to use for writing the file.</param>
         public WriteFiles(string extension)
@@ -99,7 +99,7 @@ namespace Wyam.Core.Modules.IO
         /// <summary>
         /// Writes the document content to disk with the same file name and relative path 
         /// as the input file. This requires metadata for <c>RelativeFilePath</c> to be set 
-        /// (which is done by default by the <see cref="ReadFiles"/> module).
+        /// (which is done by default by the <see cref="ReadFilesLegacy"/> module).
         /// </summary>
         public WriteFiles()
         {

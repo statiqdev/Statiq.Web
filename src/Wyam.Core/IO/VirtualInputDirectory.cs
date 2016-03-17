@@ -36,15 +36,6 @@ namespace Wyam.Core.IO
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
-        public IDirectory Parent
-        {
-            get
-            {
-                DirectoryPath parent = _path.Parent;
-                return parent == null ? null : new VirtualInputDirectory(_fileSystem, parent.Collapse());
-            }
-        }
-
         public void Create()
         {
             throw new NotSupportedException("Can not create a virtual input directory");
@@ -55,6 +46,8 @@ namespace Wyam.Core.IO
             throw new NotSupportedException("Can not delete a virtual input directory");
         }
 
+        // For the root (".") virtual directory, this should just return the child name,
+        // but for all others it should include the child directory name
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly)
         {
             // Get all the relative child directories
@@ -63,7 +56,7 @@ namespace Wyam.Core.IO
             {
                 foreach (IDirectory childDirectory in directory.GetDirectories(searchOption))
                 {
-                    directories.Add(directory.Path.GetRelativePath(childDirectory.Path));
+                    directories.Add(_path.Combine(directory.Path.GetRelativePath(childDirectory.Path)));
                 }
             }
 
@@ -85,8 +78,31 @@ namespace Wyam.Core.IO
             return files.Values;
         }
 
+        public IDirectory GetDirectory(DirectoryPath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
+            return new VirtualInputDirectory(_fileSystem, _path.Combine(path));
+        }
+
         public IFile GetFile(FilePath path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsRelative)
+            {
+                throw new ArgumentException("Path must be relative", nameof(path));
+            }
+
             return _fileSystem.GetInputFile(_path.CombineFile(path));
         }
 

@@ -77,6 +77,7 @@
     <Compile Include="Modules\Control\ModuleCollectionTests.cs" />
     <Compile Include="Modules\IO\CopyFilesTests.cs" />
     <Compile Include="Modules\IO\DownloadTests.cs" />
+    <Compile Include="Modules\IO\ReadFilesTests.cs" />
     <Compile Include="Modules\Metadata\DirectoryMetaTests.cs" />
     <Compile Include="Modules\Control\DocumentsTests.cs" />
     <Compile Include="Modules\Extensibility\ExecuteTests.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="Modules\Control\IfTests.cs" />
     <Compile Include="Modules\Control\OrderByTests.cs" />
     <Compile Include="Modules\Control\PaginateTests.cs" />
-    <Compile Include="Modules\IO\ReadFilesTests.cs" />
     <Compile Include="Modules\Content\SitemapTests.cs" />
     <Compile Include="Modules\Control\SwitchTests.cs" />
     <Compile Include="Modules\Extensibility\TraceTests.cs" />

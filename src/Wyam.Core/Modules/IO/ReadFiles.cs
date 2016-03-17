@@ -20,8 +20,8 @@ namespace Wyam.Core.Modules.IO
     /// </summary>
     /// <remarks>
     /// For each output document, several metadata values are set with information about the file. This module will
-    /// be executed once and input documents will be ignored if a search path is specified. Otherwise, if a delegate
-    /// is specified the module will be executed once per input document and the resulting output documents will be
+    /// be executed once and input documents will be ignored if search patterns are specified. Otherwise, if a delegate
+    /// is specified, the module will be executed once per input document and the resulting output documents will be
     /// aggregated. In either case, the input documents will not be returned as output of this module. If you want to add 
     /// additional files to a current pipeline, you should enclose your ReadFiles modules with <see cref="Concat"/>.
     /// </remarks>
@@ -47,132 +47,91 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class ReadFiles : IModule, IAsNewDocuments
     {
-        private readonly string _searchPattern;
-        private readonly DocumentConfig _pathDelegate;
-        private SearchOption _searchOption = System.IO.SearchOption.AllDirectories;
-        private Func<string, bool> _predicate = null;
-        private string[] _extensions;
+        private readonly string[] _patterns;
+        private readonly DocumentConfig _patternsDelegate;
+        private Func<IFile, bool> _predicate = null;
 
         /// <summary>
-        /// Reads all files that match the specified path. This allows you to specify different search paths depending on the input.
+        /// Reads all files that match the specified globbing patterns and/or absolute paths. This allows you to 
+        /// specify different patterns and/or paths depending on the input.
         /// </summary>
-        /// <param name="path">A delegate that returns a <c>string</c> with the search path.</param>
-        public ReadFiles(DocumentConfig path)
+        /// <param name="patterns">A delegate that returns one or more globbing patterns and/or absolute paths.</param>
+        public ReadFiles(DocumentConfig patterns)
         {
-            if (path == null)
+            if (patterns == null)
             {
-                throw new ArgumentNullException(nameof(path));
+                throw new ArgumentNullException(nameof(patterns));
             }
 
-            _pathDelegate = path;
+            _patternsDelegate = patterns;
         }
 
         /// <summary>
-        /// Reads all files that match the specified search pattern.
+        /// Reads all files that match the specified globbing patterns and/or absolute paths.
         /// </summary>
-        /// <param name="searchPattern">The search pattern to use.</param>
-        public ReadFiles(string searchPattern)
+        /// <param name="patterns">The globbing patterns and/or absolute paths to read.</param>
+        public ReadFiles(params string[] patterns)
         {
-            if (searchPattern == null)
+            if (patterns == null)
             {
-                throw new ArgumentNullException(nameof(searchPattern));
+                throw new ArgumentNullException(nameof(patterns));
+            }
+            if (patterns.Any(x => x == null))
+            {
+                throw new ArgumentNullException(nameof(patterns));
             }
 
-            _searchPattern = searchPattern;
+            _patterns = patterns;
         }
 
         /// <summary>
-        /// Specifies whether to search all directories or just the top directory.
+        /// Specifies a predicate that must be satisfied for the file to be read.
         /// </summary>
-        /// <param name="searchOption">The search option to use.</param>
-        public ReadFiles WithSearchOption(SearchOption searchOption)
+        /// <param name="predicate">A predicate that returns <c>true</c> if the file should be read.</param>
+        public ReadFiles Where(Func<IFile, bool> predicate)
         {
-            _searchOption = searchOption;
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies that all directories should be searched.
-        /// </summary>
-        public ReadFiles FromAllDirectories()
-        {
-            _searchOption = System.IO.SearchOption.AllDirectories;
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies that only the top-level directory should be searched.
-        /// </summary>
-        public ReadFiles FromTopDirectoryOnly()
-        {
-            _searchOption = System.IO.SearchOption.TopDirectoryOnly;
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies a predicate that must be satisfied for the file to be 
-        /// copied. The input to the predicate is the full path to the source file.
-        /// </summary>
-        /// <param name="predicate">A predicate that returns <c>true</c> if the file should be copied.</param>
-        public ReadFiles Where(Func<string, bool> predicate)
-        {
-            Func<string, bool> currentPredicate = _predicate;
+            Func<IFile, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies that only files with the given extensions should be read.
-        /// </summary>
-        /// <param name="extensions">The extensions to include.</param>
-        /// <returns></returns>
-        public ReadFiles WithExtensions(params string[] extensions)
-        {
-            _extensions = extensions.Select(x => x.StartsWith(".") ? x : "." + x).ToArray();
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return _searchPattern != null
-                ? Execute(null, _searchPattern, context)
+            return _patterns != null
+                ? Execute(null, _patterns, context)
                 : inputs.AsParallel().SelectMany(input =>
-                    Execute(input, _pathDelegate.Invoke<string>(input, context), context));
+                    Execute(input, _patternsDelegate.Invoke<string[]>(input, context), context));
         }
 
-        private IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        private IEnumerable<IDocument> Execute(IDocument input, string[] patterns, IExecutionContext context)
         {
-            if (path != null)
+            if (patterns != null)
             {
-                path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                path = System.IO.Path.Combine(System.IO.Path.GetFullPath(System.IO.Path.GetDirectoryName(path)), System.IO.Path.GetFileName(path));
-                string fileRoot = System.IO.Path.GetDirectoryName(path);
-                if (fileRoot != null && Directory.Exists(fileRoot))
-                {
-                    return Directory.EnumerateFiles(fileRoot, System.IO.Path.GetFileName(path), _searchOption)
-                        .AsParallel()
-                        .Where(x => (_predicate == null || _predicate(x)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x))))
-                        .Select(file =>
+                return context.FileSystem
+                    .GetInputFiles(patterns.Where(p => p != null).ToArray())
+                    .AsParallel()
+                    .Where(x => _predicate == null || _predicate(x))
+                    .Select(x =>
+                    {
+                        Trace.Verbose($"Read file {x.Path.FullPath}");
+                        DirectoryPath inputPath = context.FileSystem.GetInputPath(x.Path);
+                        FilePath relativePath = inputPath.GetRelativePath(x.Path);
+                        return context.GetDocument(input, x.Path.FullPath, x.OpenRead(), new MetadataItems
                         {
-                            Trace.Verbose("Read file {0}", file);
-                            string relativePath = PathHelper.GetRelativePath(context.InputFolder, file);
-                            return context.GetDocument(input, file, SafeIOHelper.OpenRead(file), new MetadataItems
-                            {
-                                    { Keys.SourceFileRoot, fileRoot },
-                                    { Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(file) },
-                                    { Keys.SourceFileExt, System.IO.Path.GetExtension(file) },
-                                    { Keys.SourceFileName, System.IO.Path.GetFileName(file) },
-                                    { Keys.SourceFileDir, System.IO.Path.GetDirectoryName(file) },
-                                    { Keys.SourceFilePath, file },
-                                    { Keys.SourceFilePathBase, PathHelper.RemoveExtension(file) },
-                                    { Keys.RelativeFilePath, relativePath },
-                                    { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(relativePath) },
-                                    { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(relativePath) }
-                            });
+                            {Keys.SourceFileRoot, inputPath.FullPath.ToString()},
+                            {Keys.SourceFileBase, x.Path.FileNameWithoutExtension},
+                            {Keys.SourceFileExt, x.Path.Extension},
+                            {Keys.SourceFileName, x.Path.FileName},
+                            {Keys.SourceFileDir, x.Path.Directory.FullPath},
+                            {Keys.SourceFilePath, x.Path.FullPath},
+                            {Keys.SourceFilePathBase, x.Path.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
+                            {Keys.RelativeFilePath, relativePath},
+                            {Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
+                            {Keys.RelativeFileDir, relativePath.Directory.FullPath}
                         });
-                }
+                    });
             }
             return Array.Empty<IDocument>();
-        } 
+        }
     }
 }

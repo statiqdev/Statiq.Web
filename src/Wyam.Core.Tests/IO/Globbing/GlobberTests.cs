@@ -32,10 +32,12 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a/b/c", new[] { "*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt" })]
             [TestCase("/a", new[] { "**/*.txt", "!**/b*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt" })]
             [TestCase("/a", new[] { "x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
-            [TestCase("/a", new[] { "x/*.\\{xml,txt\\}" }, new string[] {})]
+            [TestCase("/a", new[] { "x/*.\\{xml,txt\\}" }, new string[] { })]
             [TestCase("/a", new[] { "x/*", "!x/*.{xml,txt}" }, new[] { "/a/x/foo.doc" })]
             [TestCase("/a", new[] { "x/*", "\\!x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml", "/a/x/foo.doc" })]
             [TestCase("/a", new[] { "x/*.{*,!doc}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
+            [TestCase("/a", new[] { "x/*{!doc,}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
+            [TestCase("/a/b/c", new[] { "../d/*.txt" }, new[] { "/a/b/d/baz.txt" })]
             public void ShouldReturnMatchedFiles(string directoryPath, string[] patterns, string[] resultPaths)
             {
                 // Given
@@ -96,6 +98,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("a{b{x,y}}c", new[] { "a{bx}c", "a{by}c" })]
             [TestCase("a{b,c{d,e},{f,g}h}x{y,z}", new[] { "abxy", "abxz", "acdxy", "acdxz", "acexy", "acexz", "afhxy", "afhxz", "aghxy", "aghxz" })]
             [TestCase("{a,b}", new[] { "a", "b" })]
+            [TestCase("**/{!_,}*.cshtml", new[] { "**/*.cshtml", "!**/_*.cshtml" })]
             public void ShouldExpandBraces(string pattern, string[] expected)
             {
                 // Given, When

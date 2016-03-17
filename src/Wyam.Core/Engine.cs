@@ -61,7 +61,7 @@ namespace Wyam.Core
         private string _inputFolder = "Input";
         private string _outputFolder = "Output";
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string RootFolder
         {
             get { return PathHelper.NormalizePath(FileSystem.GetRootDirectory().Path.FullPath); }
@@ -75,7 +75,7 @@ namespace Wyam.Core
             }
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string InputFolder
         {
             get { return PathHelper.NormalizePath(FileSystem.GetInputDirectories().First().Path.FullPath); }
@@ -89,7 +89,7 @@ namespace Wyam.Core
             }
         }
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string OutputFolder
         {
             get { return PathHelper.NormalizePath(FileSystem.GetOutputDirectory().Path.FullPath); }

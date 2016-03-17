@@ -81,7 +81,8 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Get the relative path to another directory.
+        /// Get the relative path to another directory. If this path and the target path
+        /// do not share the same provider, the target path is returned.
         /// </summary>
         /// <param name="target">The target directory path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
@@ -91,7 +92,8 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Get the relative path to another file.
+        /// Get the relative path to another file. If this path and the target path
+        /// do not share the same provider, the target path is returned.
         /// </summary>
         /// <param name="target">The target file path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>

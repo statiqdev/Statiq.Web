@@ -32,7 +32,7 @@ namespace Wyam.Core.IO.Local
             }
 
             _path = path;
-            _file = new FileInfo(path.FullPath);
+            _file = new FileInfo(path.Collapse().FullPath);
         }
 
         public void Copy(FilePath destination, bool overwrite)

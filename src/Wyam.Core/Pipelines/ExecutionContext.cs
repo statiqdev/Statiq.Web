@@ -31,13 +31,13 @@ namespace Wyam.Core.Pipelines
 
         public IDocumentCollection Documents => Engine.Documents;
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string RootFolder => Engine.RootFolder;
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string InputFolder => Engine.InputFolder;
 
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         public string OutputFolder => Engine.OutputFolder;
 
         public IReadOnlyFileSystem FileSystem => Engine.FileSystem;

@@ -95,7 +95,7 @@ namespace Wyam.Core.IO
 
         public IEnumerable<IFile> GetInputFiles(params string[] patterns)
         {
-            return Globber.GetFiles(GetInputDirectory(), patterns);
+            return GetFiles(GetInputDirectory(), patterns);
         }
 
         public IDirectory GetInputDirectory(DirectoryPath path = null) => 
@@ -105,6 +105,23 @@ namespace Wyam.Core.IO
 
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
+
+        public DirectoryPath GetInputPath(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            if (!path.IsAbsolute)
+            {
+                throw new ArgumentException("The file path must be absolute", nameof(path));
+            }
+            return InputPaths
+                .Reverse()
+                .Select(x => RootPath.Combine(x))
+                .FirstOrDefault(x => x.Provider == path.Provider 
+                    && path.FullPath.StartsWith(x.Collapse().FullPath));
+        }
 
         public IFile GetOutputFile(FilePath path)
         {
@@ -143,7 +160,7 @@ namespace Wyam.Core.IO
                 throw new ArgumentNullException(nameof(path));
             }
 
-            return GetFileProvider(path).GetFile(path.Collapse());
+            return GetFileProvider(path).GetFile(path);
         }
 
         public IDirectory GetDirectory(DirectoryPath path)
@@ -153,12 +170,49 @@ namespace Wyam.Core.IO
                 throw new ArgumentNullException(nameof(path));
             }
 
-            return GetFileProvider(path).GetDirectory(path.Collapse());
+            return GetFileProvider(path).GetDirectory(path);
         }
-
+        
         public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns)
         {
-            return Globber.GetFiles(directory, patterns);
+            if (directory == null)
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+            if (patterns == null || patterns.Any(x => x == null))
+            {
+                throw new ArgumentNullException(nameof(patterns));
+            }
+
+            // Remove absolute paths from patterns and process after globbing
+            HashSet<FilePath> absolutePaths = new HashSet<FilePath>();
+            HashSet<FilePath> negatedAbsolutePaths = new HashSet<FilePath>();
+            string[] globbingPatterns = patterns.Where(x =>
+            {
+                bool negated = x[0] == '!';
+                FilePath filePath = negated ? new FilePath(x.Substring(1)) : new FilePath(x);
+                if (filePath.IsAbsolute)
+                {
+                    if (negated)
+                    {
+                        negatedAbsolutePaths.Add(filePath.Collapse());
+                    }
+                    else
+                    {
+                        absolutePaths.Add(filePath.Collapse());
+                    }
+                    return false;
+                }
+                return true;
+            }).ToArray();
+
+            // Get the globbing matches
+            IEnumerable<IFile> globbingMatches = Globber.GetFiles(directory, globbingPatterns);
+            
+            // Add existing absolute files and remove any negated absolute paths
+            return globbingMatches
+                .Concat(absolutePaths.Select(GetFile).Where(x => x.Exists))
+                .Where(x => !negatedAbsolutePaths.Contains(x.Path.Collapse()));
         }
 
         public IFileProvider GetFileProvider(NormalizedPath path)

@@ -19,11 +19,11 @@ namespace Wyam.Common.Pipelines
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         string RootFolder { get; }
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         string InputFolder { get; }
-        [Obsolete("This will be replaced by new IO functionality in the next release")]
+        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         string OutputFolder { get; }
         IReadOnlyFileSystem FileSystem { get; }
         IDocumentCollection Documents { get; }

@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using NSubstitute;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -120,6 +121,22 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.AreEqual(expected, result.Path.FullPath);
             }
+
+            [Test]
+            public void ReturnsInputFileAboveInputDirectory()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("x/t");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When
+                IFile result = fileSystem.GetInputFile("../bar.txt");
+
+                // Then
+                Assert.AreEqual("/a/x/bar.txt", result.Path.FullPath);
+            }
         }
 
         public class GetInputDirectoryMethodTests : FileSystemTests
@@ -192,6 +209,53 @@ namespace Wyam.Core.Tests.IO
                     "/a/x",
                     "/a/y"
                 }, result.Select(x => x.Path.FullPath));
+            }
+        }
+
+        public class GetInputPathMethodTests : FileSystemTests
+        {
+            [Test]
+            public void ThrowsForNullPath()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetInputPath(null));
+            }
+
+            [Test]
+            public void ThrowsForRelativeDirectoryPath()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                FilePath relativePath = new FilePath("A/B/C.txt");
+
+                // When, Then
+                Assert.Throws<ArgumentException>(() => fileSystem.GetInputPath(relativePath));
+            }
+
+            [Test]
+            [TestCase("/a/b/c/foo.txt", "/a/b")]
+            [TestCase("/a/x/bar.txt", "/a/x")]
+            [TestCase("/a/x/baz.txt", "/a/x")]
+            [TestCase("/z/baz.txt", null)]
+            [TestCase("/a/b/c/../e/foo.txt", "/a/b")]
+            public void ShouldReturnContainingDirectoryPath(string path, string expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("x");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+                FilePath filePath = new FilePath(path);
+
+                // When
+                DirectoryPath inputPath = fileSystem.GetInputPath(path);
+
+                // Then
+                Assert.AreEqual(expected, inputPath?.FullPath);
             }
         }
 
@@ -323,11 +387,82 @@ namespace Wyam.Core.Tests.IO
                 Assert.Throws<KeyNotFoundException>(() => fileSystem.GetFileProvider(path));
             }
         }
-        
+
+        public class GetFilesMethodTests : FileSystemTests
+        {
+            [Test]
+            public void ShouldThrowForNullDirectory()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(null, "/"));
+            }
+
+            [Test]
+            public void ShouldThrowForNullPatterns()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+                IDirectory dir = fileSystem.GetDirectory("/");
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(dir, null));
+            }
+
+            [Test]
+            public void ShouldThrowForNullPattern()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+                IDirectory dir = fileSystem.GetDirectory("/");
+
+                // When, Then
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(dir, "/a", null, "/b"));
+            }
+
+            [TestCase("/", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/a", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/a", new[] { "a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/", new[] { "!/a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/", new[] { "**/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "**/foo.txt", "/a/x/bar.txt" }, new[] { "/a/b/c/foo.txt", "/a/x/bar.txt" })]
+            [TestCase("/", new[] { "**/foo.txt", "/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "**/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
+            [TestCase("/", new[] { "**/foo.txt", "!/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "**/foo.txt", "!**/foo.txt" }, new string[] { })]
+            [TestCase("/", new[] { "**/foo.txt", "!**/bar.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "/a/b/c/d/../foo.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/d/../foo.txt" }, new string[] { })]
+            public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+                IDirectory dir = fileSystem.GetDirectory(directory);
+
+                // When
+                IEnumerable<IFile> results = fileSystem.GetFiles(dir, patterns);
+
+                // Then
+                CollectionAssert.AreEquivalent(expected, results.Select(x => x.Path.FullPath));
+            }
+        }
+
         private IFileProvider GetFileProvider()
         {
             TestFileProvider fileProvider = new TestFileProvider();
 
+            fileProvider.AddDirectory("/");
             fileProvider.AddDirectory("/a");
             fileProvider.AddDirectory("/a/b");
             fileProvider.AddDirectory("/a/b/c");

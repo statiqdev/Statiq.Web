@@ -14,10 +14,10 @@ namespace Wyam.Testing.IO
         public ConcurrentDictionary<string, StringBuilder> Files { get; } = new ConcurrentDictionary<string, StringBuilder>();
 
         public IDirectory GetDirectory(DirectoryPath path) => 
-            new TestDirectory(this, path.FullPath);
+            new TestDirectory(this, path.Collapse().FullPath);
 
         public IFile GetFile(FilePath path) =>
-            new TestFile(this, path.FullPath);
+            new TestFile(this, path.Collapse().FullPath);
 
         public void AddDirectory(string path) => Directories.Add(path);
 
