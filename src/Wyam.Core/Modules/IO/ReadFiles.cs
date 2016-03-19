@@ -108,26 +108,26 @@ namespace Wyam.Core.Modules.IO
             if (patterns != null)
             {
                 return context.FileSystem
-                    .GetInputFiles(patterns.Where(p => p != null).ToArray())
+                    .GetInputFiles(patterns)
                     .AsParallel()
-                    .Where(x => _predicate == null || _predicate(x))
-                    .Select(x =>
+                    .Where(file => _predicate == null || _predicate(file))
+                    .Select(file =>
                     {
-                        Trace.Verbose($"Read file {x.Path.FullPath}");
-                        DirectoryPath inputPath = context.FileSystem.GetInputPath(x.Path);
-                        FilePath relativePath = inputPath.GetRelativePath(x.Path);
-                        return context.GetDocument(input, x.Path.FullPath, x.OpenRead(), new MetadataItems
+                        Trace.Verbose($"Read file {file.Path.FullPath}");
+                        DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
+                        FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
+                        return context.GetDocument(input, file.Path.FullPath, file.OpenRead(), new MetadataItems
                         {
-                            {Keys.SourceFileRoot, inputPath.FullPath.ToString()},
-                            {Keys.SourceFileBase, x.Path.FileNameWithoutExtension.FullPath},
-                            {Keys.SourceFileExt, x.Path.Extension},
-                            {Keys.SourceFileName, x.Path.FileName.FullPath},
-                            {Keys.SourceFileDir, x.Path.Directory.FullPath},
-                            {Keys.SourceFilePath, x.Path.FullPath},
-                            {Keys.SourceFilePathBase, x.Path.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
-                            {Keys.RelativeFilePath, relativePath.FullPath},
-                            {Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
-                            {Keys.RelativeFileDir, relativePath.Directory.FullPath}
+                            { Keys.SourceFileRoot, inputPath?.FullPath ?? file.Path.Directory.FullPath },
+                            { Keys.SourceFileBase, file.Path.FileNameWithoutExtension.FullPath },
+                            { Keys.SourceFileExt, file.Path.Extension },
+                            { Keys.SourceFileName, file.Path.FileName.FullPath },
+                            { Keys.SourceFileDir, file.Path.Directory.FullPath },
+                            { Keys.SourceFilePath, file.Path.FullPath },
+                            { Keys.SourceFilePathBase, file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension).FullPath },
+                            { Keys.RelativeFilePath, relativePath.FullPath },
+                            { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension).FullPath },
+                            { Keys.RelativeFileDir, relativePath.Directory.FullPath }
                         });
                     });
             }

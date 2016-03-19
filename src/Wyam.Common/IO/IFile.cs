@@ -35,17 +35,18 @@ namespace Wyam.Common.IO
         long Length { get; }
 
         /// <summary>
-        /// Copies the file to the specified destination path.
+        /// Copies the file to the specified destination file.
         /// </summary>
-        /// <param name="destination">The destination path.</param>
+        /// <param name="destination">The destination file.</param>
         /// <param name="overwrite">Will overwrite existing destination file if set to <c>true</c>.</param>
-        void Copy(FilePath destination, bool overwrite);
+        /// <param name="createDirectory">Will create any needed directories that don't already exist if set to <c>true</c>.</param>
+        void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true);
 
         /// <summary>
-        /// Moves the file to the specified destination path.
+        /// Moves the file to the specified destination file.
         /// </summary>
-        /// <param name="destination">The destination path.</param>
-        void Move(FilePath destination);
+        /// <param name="destination">The destination file.</param>
+        void MoveTo(IFile destination);
 
         /// <summary>
         /// Deletes the file.

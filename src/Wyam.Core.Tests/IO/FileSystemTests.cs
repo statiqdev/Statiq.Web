@@ -269,7 +269,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
 
                 // When, Then
-                Assert.Throws<ArgumentNullException>(() => fileSystem.GetInputPath(null));
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetContainingInputPath(null));
             }
 
             [Test]
@@ -280,7 +280,7 @@ namespace Wyam.Core.Tests.IO
                 FilePath relativePath = new FilePath("A/B/C.txt");
 
                 // When, Then
-                Assert.Throws<ArgumentException>(() => fileSystem.GetInputPath(relativePath));
+                Assert.Throws<ArgumentException>(() => fileSystem.GetContainingInputPath(relativePath));
             }
 
             [Test]
@@ -299,7 +299,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
-                DirectoryPath inputPath = fileSystem.GetInputPath(path);
+                DirectoryPath inputPath = fileSystem.GetContainingInputPath(path);
 
                 // Then
                 Assert.AreEqual(expected, inputPath?.FullPath);
@@ -321,7 +321,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
-                DirectoryPath inputPath = fileSystem.GetInputPath(path);
+                DirectoryPath inputPath = fileSystem.GetContainingInputPath(path);
 
                 // Then
                 Assert.AreEqual(expected, inputPath?.FullPath);
@@ -483,15 +483,18 @@ namespace Wyam.Core.Tests.IO
             }
 
             [Test]
-            public void ShouldThrowForNullPattern()
+            public void ShouldNotThrowForNullPattern()
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
                 IDirectory dir = fileSystem.GetDirectory("/");
 
-                // When, Then
-                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(dir, "/a", null, "/b"));
+                // When
+                IEnumerable<IFile> results = fileSystem.GetFiles(dir, null, "**/foo.txt");
+
+                // Then
+                CollectionAssert.AreEquivalent(new[] { "/a/b/c/foo.txt" }, results.Select(x => x.Path.FullPath));
             }
 
             [TestCase("/", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]

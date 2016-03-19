@@ -75,6 +75,14 @@ namespace Wyam.Common.IO
         IEnumerable<IFile> GetInputFiles(params string[] patterns);
 
         /// <summary>
+        /// Gets matching input files based on globbing patterns and/or absolute paths. If any absolute paths
+        /// are provided, only those that actually exist are returned.
+        /// </summary>
+        /// <param name="patterns">The globbing patterns and/or absolute paths.</param>
+        /// <returns>All input files that match the globbing patterns and/or absolute paths.</returns>
+        IEnumerable<IFile> GetInputFiles(IEnumerable<string> patterns);
+
+        /// <summary>
         /// Gets a directory representing an input.
         /// </summary>
         /// <param name="path">
@@ -94,7 +102,6 @@ namespace Wyam.Common.IO
         /// <returns>The absolute input directories.</returns>
         IReadOnlyList<IDirectory> GetInputDirectories();
 
-
         /// <summary>
         /// Gets the absolute input path that contains the specified file. The provided
         /// file path must be absolute. Not that a file need not actually exist at the
@@ -104,7 +111,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The file path.</param>
         /// <returns>The input path that contains the specified file, 
         /// or <c>null</c> if no input path does.</returns>
-        DirectoryPath GetInputPath(FilePath path);
+        DirectoryPath GetContainingInputPath(FilePath path);
 
         /// <summary>
         /// Gets a file representing an output.
@@ -184,5 +191,16 @@ namespace Wyam.Common.IO
         /// All files in the specified directory that match the globbing patterns and/or absolute paths.
         /// </returns>
         IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns);
+
+        /// <summary>
+        /// Gets matching files based on globbing patterns and/or absolute paths. If any absolute paths
+        /// are provided, only those that actually exist are returned.
+        /// </summary>
+        /// <param name="directory">The directory to search.</param>
+        /// <param name="patterns">The globbing patterns and/or absolute paths.</param>
+        /// <returns>
+        /// All files in the specified directory that match the globbing patterns and/or absolute paths.
+        /// </returns>
+        IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns);
     }
 }

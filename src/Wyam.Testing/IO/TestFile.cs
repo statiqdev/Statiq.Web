@@ -27,19 +27,23 @@ namespace Wyam.Testing.IO
 
         public long Length => _fileProvider.Files[_path.FullPath].Length;
 
-        public void Copy(FilePath destination, bool overwrite)
+        public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)
         {
+            if (!createDirectory)
+            {
+                throw new NotSupportedException("Test file does not yet support checking for directory existence, must still implement if needed.");
+            }
             if (overwrite)
             {
-                _fileProvider.Files[destination.FullPath] = new StringBuilder(_fileProvider.Files[_path.FullPath].ToString());
+                _fileProvider.Files[destination.Path.FullPath] = new StringBuilder(_fileProvider.Files[_path.FullPath].ToString());
             }
             else
             {
-                _fileProvider.Files.TryAdd(destination.FullPath, new StringBuilder(_fileProvider.Files[_path.FullPath].ToString()));
+                _fileProvider.Files.TryAdd(destination.Path.FullPath, new StringBuilder(_fileProvider.Files[_path.FullPath].ToString()));
             }
         }
 
-        public void Move(FilePath destination)
+        public void MoveTo(IFile destination)
         {
             if (!_fileProvider.Files.ContainsKey(_path.FullPath))
             {
@@ -48,7 +52,7 @@ namespace Wyam.Testing.IO
             StringBuilder builder;
             if (_fileProvider.Files.TryRemove(_path.FullPath, out builder))
             {
-                _fileProvider.Files.TryAdd(destination.FullPath, builder);
+                _fileProvider.Files.TryAdd(destination.Path.FullPath, builder);
             }
         }
 

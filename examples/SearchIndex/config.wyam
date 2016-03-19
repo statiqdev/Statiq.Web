@@ -33,7 +33,7 @@ Pipelines.Add("Index",
 );
 
 Pipelines.Add("CopyAssets",
-	CopyFiles( "assets/*.*")
+	CopyFiles( "assets/**/*")
 );
 
 Pipelines.Add("SearchIndex",

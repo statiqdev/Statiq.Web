@@ -95,6 +95,11 @@ namespace Wyam.Core.IO
 
         public IEnumerable<IFile> GetInputFiles(params string[] patterns)
         {
+            return GetInputFiles((IEnumerable<string>)patterns);
+        }
+
+        public IEnumerable<IFile> GetInputFiles(IEnumerable<string> patterns)
+        {
             return GetFiles(GetInputDirectory(), patterns);
         }
 
@@ -106,7 +111,7 @@ namespace Wyam.Core.IO
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
 
-        public DirectoryPath GetInputPath(FilePath path)
+        public DirectoryPath GetContainingInputPath(FilePath path)
         {
             if (path == null)
             {
@@ -172,16 +177,17 @@ namespace Wyam.Core.IO
 
             return GetFileProvider(path).GetDirectory(path);
         }
-        
+
         public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns)
+        {
+            return GetFiles(directory, (IEnumerable<string>) patterns);
+        }
+
+        public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns)
         {
             if (directory == null)
             {
                 throw new ArgumentNullException(nameof(directory));
-            }
-            if (patterns == null || patterns.Any(x => x == null))
-            {
-                throw new ArgumentNullException(nameof(patterns));
             }
 
             // Remove absolute paths from patterns and process after globbing
@@ -189,6 +195,10 @@ namespace Wyam.Core.IO
             HashSet<FilePath> negatedAbsolutePaths = new HashSet<FilePath>();
             string[] globbingPatterns = patterns.Where(x =>
             {
+                if (x == null)
+                {
+                    return false;
+                }
                 bool negated = x[0] == '!';
                 FilePath filePath = negated ? new FilePath(x.Substring(1)) : new FilePath(x);
                 if (filePath.IsAbsolute)

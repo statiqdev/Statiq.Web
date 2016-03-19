@@ -181,6 +181,9 @@ namespace Wyam.Common.Tests.IO
             [TestCase("assets/shaders/", "test/simple.frag", "assets/shaders/test/simple.frag")]
             [TestCase("/assets/shaders/", "test/simple.frag", "/assets/shaders/test/simple.frag")]
             [TestCase("assets", "/other/asset.txt", "/other/asset.txt")]
+            [TestCase(".", "asset.txt", "asset.txt")]
+            [TestCase(".", "other/asset.txt", "other/asset.txt")]
+            [TestCase(".", "/other/asset.txt", "/other/asset.txt")]
             public void ShouldCombinePaths(string first, string second, string expected)
             {
                 // Given

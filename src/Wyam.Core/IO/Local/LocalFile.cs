@@ -35,32 +35,61 @@ namespace Wyam.Core.IO.Local
             _file = new FileInfo(path.Collapse().FullPath);
         }
 
-        public void Copy(FilePath destination, bool overwrite)
+        public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)
         {
             if (destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
-            if (destination.IsRelative)
-            {
-                throw new ArgumentException("Destination must be absolute", nameof(destination));
-            }
 
-            LocalFileProvider.Retry(() => _file.CopyTo(destination.FullPath, overwrite));
+            // Create the directory
+            if (createDirectory)
+            {
+                destination.Directory.Create();
+            }
+            
+            // Use the file system APIs if destination is also in the file system
+            if (destination is LocalFile)
+            {
+                LocalFileProvider.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
+            }
+            else
+            {
+                // Otherwise use streams to perform the copy
+                using (Stream sourceStream = OpenRead())
+                {
+                    using (Stream destinationStream = destination.OpenWrite())
+                    {
+                        sourceStream.CopyTo(destinationStream);
+                    }
+                }
+            }
         }
 
-        public void Move(FilePath destination)
+        public void MoveTo(IFile destination)
         {
             if (destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
-            if (destination.IsRelative)
-            {
-                throw new ArgumentException("Destination must be absolute", nameof(destination));
-            }
 
-            LocalFileProvider.Retry(() => _file.MoveTo(destination.FullPath));
+            // Use the file system APIs if destination is also in the file system
+            if (destination is LocalFile)
+            {
+                LocalFileProvider.Retry(() => _file.MoveTo(destination.Path.FullPath));
+            }
+            else
+            {
+                // Otherwise use streams to perform the move
+                using (Stream sourceStream = OpenRead())
+                {
+                    using (Stream destinationStream = destination.OpenWrite())
+                    {
+                        sourceStream.CopyTo(destinationStream);
+                    }
+                }
+                Delete();
+            }
         }
 
         public void Delete() => LocalFileProvider.Retry(() => _file.Delete());
