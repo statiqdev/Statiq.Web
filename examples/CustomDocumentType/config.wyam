@@ -17,7 +17,7 @@ public class MyDocument : CustomDocument
 SetCustomDocumentType<MyDocument>();
 
 Pipelines.Add("Posts",
-	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	ReadFiles("posts/*.md"),  // Read all markdown files in the "posts" directory
 	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
     Execute((doc, ctx) => { ((MyDocument)@doc).Title = @doc.String("Title"); }),  // Move the title to MyDocument.Title
     Execute((doc, ctx) => { ((MyDocument)@doc).Published = @doc.Get<DateTime>("Published"); }),  // Move the published date to MyDocument.Published
@@ -27,7 +27,7 @@ Pipelines.Add("Posts",
 );
 
 Pipelines.Add("Home",
-	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
+	ReadFiles("{!_,}*.cshtml"),
 	Razor(),
 	WriteFiles(".html")
 );

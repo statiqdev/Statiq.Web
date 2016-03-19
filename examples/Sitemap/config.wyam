@@ -1,11 +1,11 @@
 InitialMetadata["Hostname"] = "http://www.example.com";
 
 Pipelines.Add("Posts",
-	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	ReadFiles("posts/*.md"),  // Read all markdown files in the "posts" directory
 	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
 	Markdown(),  // Render the markdown content
 	Meta("Post", @doc.Content),  // Move the markdown content to metadata
-	Merge(ReadFiles(@"posts\Post.cshtml")),  // Load the Razor post page template
+	Merge(ReadFiles("posts/post.cshtml")),  // Load the Razor post page template
 	Razor(),  // Compile and render the page template
 	Meta("PostFile", string.Format(@"posts/{0}.html", ((string)@doc["Title"]).ToLower().Replace(' ', '-'))),  // Use the post title as the filename and save it in metadata so we can use it in links later
 	WriteFiles((string)@doc["PostFile"]),  // Write the post file 
@@ -13,7 +13,7 @@ Pipelines.Add("Posts",
 );
 
 Pipelines.Add("Home",
-	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
+	ReadFiles("{!_,}*.cshtml"),
 	Razor(),
 	WriteFiles(".html"),
 	// add all sites to the sitemap, except the about page
@@ -32,18 +32,21 @@ Pipelines.Add("BuildSitemap",
 	// it will be checked whether an location is absolute or not
 	// if it is relative, the above specified "Hostname" metadata is used to generate absolute urls
 	Documents(@ctx.Documents),
-	Sitemap("sitemap.xml")
+	Sitemap("sitemap.xml"),
+    WriteFiles((d, c) => "sitemap.xml")
 );
 
 Pipelines.Add("BuildSitemap2",
 	Documents("Posts"), // we only use the documents of the "Posts"-pipeline for sitemap generation
-	Sitemap("sitemap2.xml")
+	Sitemap("sitemap2.xml"),
+    WriteFiles((d, c) => "sitemap2.xml")
 );
 
 Pipelines.Add("BuildSitemap3",
 	// we format all the added relative urls (when using the formatter, any "Hostname" meta data is ignored)
 	Documents(@ctx.Documents),
-	Sitemap("sitemap3.xml", urlLocation => "http://www.example.org/" + urlLocation )
+	Sitemap("sitemap3.xml", urlLocation => "http://www.example.org/" + urlLocation ),
+    WriteFiles((d, c) => "sitemap3.xml")
 );
 
 // the generated sitemap is "minified" for better performance

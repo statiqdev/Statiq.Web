@@ -1,6 +1,6 @@
 // This pipeline generates a document for each symbol, uses Razor to generate a file for each one, and then outputs it to disk
 Pipelines.Add("Code",
-	ReadFiles(@"..\Code\*.cs"),
+	ReadFiles("../Code/*.cs"),
 	AnalyzeCSharp()
 		.WhereNamespaces(false)  // Ignore the global namespace
 		.WithNamedTypes()  // Restrict output to only named types (I.e., classes)

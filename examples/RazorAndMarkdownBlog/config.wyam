@@ -1,10 +1,10 @@
 Pipelines.Add("Posts",
-	ReadFiles(@"posts\*.md"),  // Read all markdown files in the "posts" directory
+	ReadFiles("posts/*.md"),  // Read all markdown files in the "posts" directory
 	FrontMatter(Yaml()),  // Load any frontmatter and parse it as YAML markup
 	Markdown(),  // Render the markdown content
 	Meta("Post", @doc.Content),  // Move the markdown content to metadata
 	Merge(
-        ReadFiles(@"posts\Post.cshtml")  // Load the Razor post page template
+        ReadFiles("posts/post.cshtml")  // Load the Razor post page template
     ),
 	Razor(),  // Compile and render the page template
 	Meta("PostFile", string.Format(@"posts\{0}.html", ((string)@doc["Title"]).ToLower().Replace(' ', '-'))),  // Use the post title as the filename and save it in metadata so we can use it in links later
@@ -12,7 +12,7 @@ Pipelines.Add("Posts",
 );
 
 Pipelines.Add("Home",
-	ReadFiles(@"*.cshtml").FromTopDirectoryOnly().Where(x => System.IO.Path.GetFileName(x)[0] != '_'),
+	ReadFiles("{!_,}*.cshtml"),
 	Razor(),
 	WriteFiles(".html")
 );

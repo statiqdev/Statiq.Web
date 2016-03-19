@@ -1,5 +1,3 @@
-===
----
 Pipelines.Add("Blog posts",
 	ReadFiles("posts/*.md"),
 	FrontMatter(Yaml()),
