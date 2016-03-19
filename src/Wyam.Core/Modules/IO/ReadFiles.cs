@@ -119,13 +119,13 @@ namespace Wyam.Core.Modules.IO
                         return context.GetDocument(input, x.Path.FullPath, x.OpenRead(), new MetadataItems
                         {
                             {Keys.SourceFileRoot, inputPath.FullPath.ToString()},
-                            {Keys.SourceFileBase, x.Path.FileNameWithoutExtension},
+                            {Keys.SourceFileBase, x.Path.FileNameWithoutExtension.FullPath},
                             {Keys.SourceFileExt, x.Path.Extension},
-                            {Keys.SourceFileName, x.Path.FileName},
+                            {Keys.SourceFileName, x.Path.FileName.FullPath},
                             {Keys.SourceFileDir, x.Path.Directory.FullPath},
                             {Keys.SourceFilePath, x.Path.FullPath},
                             {Keys.SourceFilePathBase, x.Path.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
-                            {Keys.RelativeFilePath, relativePath},
+                            {Keys.RelativeFilePath, relativePath.FullPath},
                             {Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(x.Path.FileNameWithoutExtension).FullPath},
                             {Keys.RelativeFileDir, relativePath.Directory.FullPath}
                         });

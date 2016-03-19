@@ -137,6 +137,38 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.AreEqual("/a/x/bar.txt", result.Path.FullPath);
             }
+
+            [Test]
+            public void ReturnsInputFileWhenInputDirectoryAboveRoot()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a/b";
+                fileSystem.InputPaths.Add("../x");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When
+                IFile result = fileSystem.GetInputFile("bar.txt");
+
+                // Then
+                Assert.AreEqual("/a/x/bar.txt", result.Path.FullPath);
+            }
+
+            [Test]
+            public void ReturnsInputFileWhenInputDirectoryAndFileAscend()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a/b";
+                fileSystem.InputPaths.Add("../x/y");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When
+                IFile result = fileSystem.GetInputFile("../bar.txt");
+
+                // Then
+                Assert.AreEqual("/a/x/bar.txt", result.Path.FullPath);
+            }
         }
 
         public class GetInputDirectoryMethodTests : FileSystemTests
@@ -153,6 +185,20 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.IsInstanceOf<VirtualInputDirectory>(result);
                 Assert.AreEqual("A/B/C", result.Path.FullPath);
+            }
+
+            [Test]
+            public void ReturnsVirtualInputDirectoryForAscendingPath()
+            {
+                // Given 
+                FileSystem fileSystem = new FileSystem();
+
+                // When
+                IDirectory result = fileSystem.GetInputDirectory("../A/B/C");
+
+                // Then
+                Assert.IsInstanceOf<VirtualInputDirectory>(result);
+                Assert.AreEqual("../A/B/C", result.Path.FullPath);
             }
 
             [Test]
@@ -195,6 +241,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.InputPaths.Add("b/d");
                 fileSystem.InputPaths.Add("x");
                 fileSystem.InputPaths.Add("y");
+                fileSystem.InputPaths.Add("../z");
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
@@ -207,7 +254,8 @@ namespace Wyam.Core.Tests.IO
                     "/a/b/c",
                     "/a/b/d",
                     "/a/x",
-                    "/a/y"
+                    "/a/y",
+                    "/z"
                 }, result.Select(x => x.Path.FullPath));
             }
         }
@@ -249,7 +297,28 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.InputPaths.Add("b");
                 fileSystem.InputPaths.Add("x");
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
-                FilePath filePath = new FilePath(path);
+
+                // When
+                DirectoryPath inputPath = fileSystem.GetInputPath(path);
+
+                // Then
+                Assert.AreEqual(expected, inputPath?.FullPath);
+            }
+
+            [Test]
+            [TestCase("/a/b/c/foo.txt", "/a/y/../b")]
+            [TestCase("/a/x/bar.txt", "/a/y/../x")]
+            [TestCase("/a/x/baz.txt", "/a/y/../x")]
+            [TestCase("/z/baz.txt", null)]
+            [TestCase("/a/b/c/../e/foo.txt", "/a/y/../b")]
+            public void ShouldReturnContainingDirectoryPathForInputPathAboveRootPath(string path, string expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a/y";
+                fileSystem.InputPaths.Add("../b");
+                fileSystem.InputPaths.Add("../x");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
                 DirectoryPath inputPath = fileSystem.GetInputPath(path);
