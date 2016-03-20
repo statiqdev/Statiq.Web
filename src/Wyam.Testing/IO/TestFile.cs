@@ -29,9 +29,18 @@ namespace Wyam.Testing.IO
 
         public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)
         {
-            if (!createDirectory)
+            if (!createDirectory && !_fileProvider.Directories.Contains(destination.Path.Directory.Collapse().FullPath))
             {
-                throw new NotSupportedException("Test file does not yet support checking for directory existence, must still implement if needed.");
+                throw new IOException($"Directory {destination.Path.Directory.FullPath} does not exist");
+            }
+            if (createDirectory)
+            {
+                DirectoryPath parent = destination.Path.Directory.Collapse();
+                while (parent != null)
+                {
+                    _fileProvider.Directories.Add(parent.FullPath);
+                    parent = parent.Parent;
+                }
             }
             if (overwrite)
             {

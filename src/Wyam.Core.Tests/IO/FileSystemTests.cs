@@ -513,13 +513,23 @@ namespace Wyam.Core.Tests.IO
             [TestCase("/", new[] { "**/foo.txt", "!/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" })]
             [TestCase("/", new[] { "**/foo.txt", "!**/foo.txt" }, new string[] { })]
             [TestCase("/", new[] { "**/foo.txt", "!**/bar.txt" }, new[] { "/a/b/c/foo.txt" })]
+            [TestCase("/", new[] { "/**/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
             [TestCase("/", new[] { "/a/b/c/d/../foo.txt" }, new[] { "/a/b/c/foo.txt" })]
             [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/d/../foo.txt" }, new string[] { })]
+            [TestCase("/", new[] { "qwerty::/**/*.txt" }, new[] { "/q/werty.txt" })]
+            [TestCase("/", new[] { "/q/werty.txt" }, new string[] { })]
+            [TestCase("qwerty::/", new[] { "/q/werty.txt" }, new string[] { })]
+            [TestCase("/", new[] { "qwerty::/q/werty.txt" }, new[] { "/q/werty.txt" })]
             public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected)
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+                TestFileProvider alternateProvider = new TestFileProvider();
+                alternateProvider.AddDirectory("/");
+                alternateProvider.AddDirectory("/q");
+                alternateProvider.AddFile("/q/werty.txt");
+                fileSystem.FileProviders.Add("qwerty", alternateProvider);
                 IDirectory dir = fileSystem.GetDirectory(directory);
 
                 // When

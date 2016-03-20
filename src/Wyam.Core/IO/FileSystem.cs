@@ -190,39 +190,25 @@ namespace Wyam.Core.IO
                 throw new ArgumentNullException(nameof(directory));
             }
 
-            // Remove absolute paths from patterns and process after globbing
-            HashSet<FilePath> absolutePaths = new HashSet<FilePath>();
-            HashSet<FilePath> negatedAbsolutePaths = new HashSet<FilePath>();
-            string[] globbingPatterns = patterns.Where(x =>
-            {
-                if (x == null)
+            return patterns
+                .Where(x => x != null)
+                .Select(x =>
                 {
-                    return false;
-                }
-                bool negated = x[0] == '!';
-                FilePath filePath = negated ? new FilePath(x.Substring(1)) : new FilePath(x);
-                if (filePath.IsAbsolute)
-                {
-                    if (negated)
+                    bool negated = x[0] == '!';
+                    FilePath filePath = negated ? new FilePath(x.Substring(1)) : new FilePath(x);
+                    if (filePath.IsAbsolute)
                     {
-                        negatedAbsolutePaths.Add(filePath.Collapse());
+                        // The globber doesn't support absolute paths, so get the root directory of this path (including provider)
+                        DirectoryPath rootDirectoryPath = new DirectoryPath(filePath.Provider, "/");
+                        IDirectory rootDirectory = GetDirectory(rootDirectoryPath);
+                        FilePath relativeFilePath = rootDirectoryPath.GetRelativePath(filePath);
+                        return Tuple.Create(rootDirectory,
+                            negated ? ('!' + relativeFilePath.FullPath) : relativeFilePath.FullPath);
                     }
-                    else
-                    {
-                        absolutePaths.Add(filePath.Collapse());
-                    }
-                    return false;
-                }
-                return true;
-            }).ToArray();
-
-            // Get the globbing matches
-            IEnumerable<IFile> globbingMatches = Globber.GetFiles(directory, globbingPatterns);
-            
-            // Add existing absolute files and remove any negated absolute paths
-            return globbingMatches
-                .Concat(absolutePaths.Select(GetFile).Where(x => x.Exists))
-                .Where(x => !negatedAbsolutePaths.Contains(x.Path.Collapse()));
+                    return Tuple.Create(directory, x);
+                })
+                .GroupBy(x => x.Item1, x => x.Item2, new DirectoryComparer())
+                .SelectMany(x => Globber.GetFiles(x.Key, x));
         }
 
         public IFileProvider GetFileProvider(NormalizedPath path)

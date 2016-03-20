@@ -43,7 +43,9 @@
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\IConfig.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
+    <Compile Include="IO\DirectoryComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
+    <Compile Include="IO\FileComparer.cs" />
     <Compile Include="IO\IFileProviderCollection.cs" />
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\IFileProvider.cs" />

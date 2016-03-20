@@ -39,6 +39,26 @@ namespace Wyam.Core.Tests.Modules.IO
             Inputs = new [] { Context.GetDocument() };
         }
 
+
+        private IFileProvider GetFileProvider()
+        {
+            TestFileProvider fileProvider = new TestFileProvider();
+
+            fileProvider.AddDirectory("/");
+            fileProvider.AddDirectory("/TestFiles");
+            fileProvider.AddDirectory("/TestFiles/Input");
+            fileProvider.AddDirectory("/TestFiles/Input/Subfolder");
+
+            fileProvider.AddFile("/TestFiles/test-above-input.txt", "test");
+            fileProvider.AddFile("/TestFiles/Input/markdown-x.md", "xxx");
+            fileProvider.AddFile("/TestFiles/Input/test-a.txt", "aaa");
+            fileProvider.AddFile("/TestFiles/Input/test-b.txt", "bbb");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/markdown-y.md", "yyy");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/test-c.txt", "ccc");
+
+            return fileProvider;
+        }
+
         public class ConstructorTests : ReadFilesTests
         {
             [Test]
@@ -72,7 +92,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles(pattern);
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context).ToList();
 
                 // Then
                 Assert.AreEqual(expectedCount, documents.Count());
@@ -98,7 +118,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles("test-a.txt");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context).ToList();
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
@@ -111,7 +131,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles("test-a.txt");
 
                 // When
-                IDocument document = readFiles.Execute(Inputs, Context).First();
+                IDocument document = readFiles.Execute(Inputs, Context).ToList().First();
 
                 // Then
                 Assert.AreEqual("aaa", document.Content);
@@ -133,7 +153,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles("**/test-c.txt");
 
                 // When
-                IDocument output = readFiles.Execute(Inputs, Context).First();
+                IDocument output = readFiles.Execute(Inputs, Context).ToList().First();
 
                 // Then
                 Assert.AreEqual(output.String(key), expected);
@@ -146,7 +166,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles("**/*.{txt,md}");
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context).ToList();
 
                 // Then
                 Assert.AreEqual(5, documents.Count());
@@ -159,30 +179,11 @@ namespace Wyam.Core.Tests.Modules.IO
                 ReadFiles readFiles = new ReadFiles("**/*").Where(x => x.Path.FullPath.Contains("test"));
 
                 // When
-                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context);
+                IEnumerable<IDocument> documents = readFiles.Execute(Inputs, Context).ToList();
 
                 // Then
                 Assert.AreEqual(3, documents.Count());
             }
-        }
-
-        private IFileProvider GetFileProvider()
-        {
-            TestFileProvider fileProvider = new TestFileProvider();
-
-            fileProvider.AddDirectory("/");
-            fileProvider.AddDirectory("/TestFiles");
-            fileProvider.AddDirectory("/TestFiles/Input");
-            fileProvider.AddDirectory("/TestFiles/Input/Subfolder");
-
-            fileProvider.AddFile("/TestFiles/test-above-input.txt", "test");
-            fileProvider.AddFile("/TestFiles/Input/markdown-x.md", "xxx");
-            fileProvider.AddFile("/TestFiles/Input/test-a.txt", "aaa");
-            fileProvider.AddFile("/TestFiles/Input/test-b.txt", "bbb");
-            fileProvider.AddFile("/TestFiles/Input/Subfolder/markdown-y.md", "yyy");
-            fileProvider.AddFile("/TestFiles/Input/Subfolder/test-c.txt", "ccc");
-
-            return fileProvider;
         }
     }
 }

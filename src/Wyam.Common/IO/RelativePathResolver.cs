@@ -52,6 +52,12 @@ namespace Wyam.Common.IO
                 return new DirectoryPath(".");
             }
 
+            // Special case if source is just root
+            if (source.IsAbsolute && source.Segments.Length == 0)
+            {
+                return new DirectoryPath(string.Join("/", target.Segments));
+            }
+
             // Check if they share the same root
             if (string.CompareOrdinal(source.Segments[0], target.Segments[0]) != 0)
             {

@@ -49,8 +49,12 @@ namespace Wyam.Testing.IO
         {
             if (searchOption == SearchOption.TopDirectoryOnly)
             {
+                string adjustedPath = _path.FullPath.EndsWith("/", StringComparison.Ordinal)
+                    ? _path.FullPath.Substring(0, _path.FullPath.Length - 1)
+                    : _path.FullPath;
                 return _fileProvider.Files.Keys
-                    .Where(x => x.StartsWith(_path.FullPath) && _path.FullPath.Count(c => c == '/') == x.Count(c => c == '/') - 1)
+                    .Where(x => x.StartsWith(adjustedPath) 
+                        && adjustedPath.Count(c => c == '/') == x.Count(c => c == '/') - 1)
                     .Select(x => new TestFile(_fileProvider, x));
             }
             return _fileProvider.Files.Keys
