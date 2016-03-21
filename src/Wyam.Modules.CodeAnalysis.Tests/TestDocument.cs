@@ -74,6 +74,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             return Get<string>(key, defaultValue);
         }
 
+        public FilePath FilePath(string key, FilePath defaultValue = null)
+        {
+             return Get<FilePath>(key, defaultValue);
+        }
+
+public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
+        {
+             return Get<DirectoryPath>(key, defaultValue);
+        }
+
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
         {
             return Get<IReadOnlyList<T>>(key, defaultValue);
