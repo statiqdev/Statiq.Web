@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NSubstitute;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Core.Meta;
 using Wyam.Testing;
@@ -422,6 +423,141 @@ namespace Wyam.Core.Tests.Meta
                 // Then
                 Assert.IsNotNull(result);
                 CollectionAssert.AreEqual(new[] { a }, result);
+            }
+        }
+
+        public class StringMethodTests : MetadataTests
+        {
+            [TestCase("/a/b/c.txt", "/a/b/c.txt")]
+            [TestCase("a/b/c.txt", "a/b/c.txt")]
+            [TestCase("Foo::/a/b/c.txt", "/a/b/c.txt")]
+            public void ReturnsCorrectStringForFilePath(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new FilePath(path)) });
+                object result = metadata.String("A");
+
+                // Then
+                Assert.IsInstanceOf<string>(result);
+                Assert.AreEqual(expected, result);
+            }
+
+            [TestCase("/a/b/c", "/a/b/c")]
+            [TestCase("a/b/c", "a/b/c")]
+            [TestCase("Foo::/a/b/c", "/a/b/c")]
+            public void ReturnsCorrectStringForDirectoryPath(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new DirectoryPath(path)) });
+                object result = metadata.String("A");
+
+                // Then
+                Assert.IsInstanceOf<string>(result);
+                Assert.AreEqual(expected, result);
+            }
+        }
+
+        public class FilePathMethodTests : MetadataTests
+        {
+            [TestCase("/a/b/c.txt", "/a/b/c.txt")]
+            [TestCase("a/b/c.txt", "a/b/c.txt")]
+            [TestCase("Foo::/a/b/c.txt", "/a/b/c.txt")]
+            public void ReturnsCorrectFilePathForFilePath(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new FilePath(path)) });
+                object result = metadata.FilePath("A");
+
+                // Then
+                Assert.IsInstanceOf<FilePath>(result);
+                Assert.AreEqual(expected, ((FilePath)result).FullPath);
+            }
+            
+            [TestCase("/a/b/c.txt", "/a/b/c.txt")]
+            [TestCase("a/b/c.txt", "a/b/c.txt")]
+            [TestCase("Foo::/a/b/c.txt", "/a/b/c.txt")]
+            [TestCase("Foo::a/b/c.txt", null)]
+            [TestCase(null, null)]
+            public void ReturnsCorrectFilePathForString(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", path) });
+                object result = metadata.FilePath("A");
+
+                // Then
+                if (expected == null)
+                {
+                    Assert.IsNull(result);
+                }
+                else
+                {
+                    Assert.IsInstanceOf<FilePath>(result);
+                    Assert.AreEqual(expected, ((FilePath)result).FullPath);
+                }
+            }
+        }
+
+        public class DirectoryPathMethodTests : MetadataTests
+        {
+            [TestCase("/a/b/c", "/a/b/c")]
+            [TestCase("a/b/c", "a/b/c")]
+            [TestCase("Foo::/a/b/c", "/a/b/c")]
+            public void ReturnsCorrectDirectoryPathForDirectoryPath(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new DirectoryPath(path)) });
+                object result = metadata.DirectoryPath("A");
+
+                // Then
+                Assert.IsInstanceOf<DirectoryPath>(result);
+                Assert.AreEqual(expected, ((DirectoryPath)result).FullPath);
+            }
+
+            [TestCase("/a/b/c", "/a/b/c")]
+            [TestCase("a/b/c", "a/b/c")]
+            [TestCase("Foo::/a/b/c", "/a/b/c")]
+            [TestCase("Foo::a/b/c", null)]
+            [TestCase(null, null)]
+            public void ReturnsCorrectDirectoryPathForString(string path, string expected)
+            {
+                // Given
+                SimpleMetadata initialMetadata = new SimpleMetadata();
+                Metadata metadata = new Metadata(initialMetadata);
+
+                // When
+                metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", path) });
+                object result = metadata.DirectoryPath("A");
+
+                // Then
+                if (expected == null)
+                {
+                    Assert.IsNull(result);
+                }
+                else
+                {
+                    Assert.IsInstanceOf<DirectoryPath>(result);
+                    Assert.AreEqual(expected, ((DirectoryPath)result).FullPath);
+                }
             }
         }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Core.Meta;
 
@@ -260,6 +261,10 @@ namespace Wyam.Core.Documents
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
         public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
+
+        public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
+
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _metadata.DirectoryPath(key, defaultValue);
 
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _metadata.List<T>(key, defaultValue);
 

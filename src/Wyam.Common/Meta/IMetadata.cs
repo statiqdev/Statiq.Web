@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Microsoft.SqlServer.Server;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 
 namespace Wyam.Common.Meta
 {
@@ -50,6 +52,24 @@ namespace Wyam.Common.Meta
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a string.</param>
         /// <returns>The value for the specified key converted to a string or the specified default value.</returns>
         string String(string key, string defaultValue = null);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to a <see cref="FilePath"/>. This method never throws an exception. It will
+        /// return the specified default value if the key is not found or if the string value can't be converted to a <see cref="FilePath"/>.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a <see cref="FilePath"/>.</param>
+        /// <returns>The value for the specified key converted to a <see cref="FilePath"/> or the specified default value.</returns>
+        FilePath FilePath(string key, FilePath defaultValue = null);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to a <see cref="DirectoryPath"/>. This method never throws an exception. It will
+        /// return the specified default value if the key is not found or if the string value can't be converted to a <see cref="DirectoryPath"/>.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a <see cref="DirectoryPath"/>.</param>
+        /// <returns>The value for the specified key converted to a <see cref="DirectoryPath"/> or the specified default value.</returns>
+        DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null);
 
         /// <summary>
         /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{T}"/>. This method never throws an exception. It will return the specified 

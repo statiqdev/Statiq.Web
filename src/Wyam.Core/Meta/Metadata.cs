@@ -92,7 +92,11 @@ namespace Wyam.Core.Meta
 
         public T Get<T>(string key, T defaultValue) => MetadataAs<T>().Get(key, defaultValue);
 
-        public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
+        public string String(string key, string defaultValue = null) => Get(key, defaultValue);
+
+        public FilePath FilePath(string key, FilePath defaultValue = null) => Get(key, defaultValue);
+
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Get(key, defaultValue);
 
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Get<IReadOnlyList<T>>(key, defaultValue);
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 
 namespace Wyam.Core.Documents
@@ -54,6 +55,12 @@ namespace Wyam.Core.Documents
 
         public string String(string key, string defaultValue = null) =>
             Document.String(key, defaultValue);
+
+        public FilePath FilePath(string key, FilePath defaultValue = null) =>
+            Document.FilePath(key, defaultValue);
+
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) =>
+            Document.DirectoryPath(key, defaultValue);
 
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) =>
             Document.List(key, defaultValue);
