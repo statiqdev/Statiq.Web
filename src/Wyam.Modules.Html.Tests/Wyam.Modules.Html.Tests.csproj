@@ -52,6 +52,7 @@
     <Compile Include="HtmlEscapeTests.cs" />
     <Compile Include="AutoLinkTests.cs" />
     <Compile Include="ExcerptTests.cs" />
+    <Compile Include="HtmlMinifyTests.cs" />
     <Compile Include="HtmlQueryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
