@@ -75,7 +75,7 @@ namespace Wyam.Core.Modules.Contents
     ///     Markdown(),
     ///     WriteFiles(".html"),
     ///     Rss(siteRoot: "http://example.org",
-    ///         outputRssFilePath: "posts/feed.rss"
+    ///         outputRssFilePath: "posts/feed.rss",
     ///         feedTitle: "My awesome blog",
     ///         feedDescription: "Blog about something"
     ///     ),
@@ -85,20 +85,20 @@ namespace Wyam.Core.Modules.Contents
     /// 
     /// Output/posts/feed.rss:
     /// <code>
-    /// &lt;![CDATA[&lt;?xml version = &quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-    /// &lt;rss version = &quot;2.0&quot; xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+    /// &lt;![CDATA[&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+    /// &lt;rss version=&quot;2.0&quot; xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;
     ///   &lt;channel&gt;
     ///     &lt;title&gt;My awesome blog&lt;/title&gt;
     ///     &lt;description&gt;Blog about something&lt;/description&gt;
     ///     &lt;link&gt;http://example.org&lt;/link&gt;
-    ///     &lt;atom:link href = &quot; http://example.org/posts/feed.rss&quot; rel=&quot;self&quot; /&gt;
+    ///     &lt;atom:link href=&quot; http://example.org/posts/feed.rss&quot; rel=&quot;self&quot; /&gt;
     ///     &lt;lastBuildDate&gt;Wed, 30 Dec 2015 13:39:16 +0300&lt;/lastBuildDate&gt;
     ///     &lt;item&gt;
     ///       &lt;title&gt;Hello, world!&lt;/title&gt;
     ///       &lt;link&gt;http://example.org/posts/hello.html&lt;/link&gt;
     ///       &lt;description&gt;My first blog post&lt;/description&gt;
     ///       &lt;pubDate&gt;Sat, 10 Nov 2012 00:00:00 +0400&lt;/pubDate&gt;
-    ///       &lt;guid isPermaLink = &quot;false&quot;&gt; 81a26807-355a-dbf9-7729-c6601f1d8a2b&lt;/guid&gt;
+    ///       &lt;guid isPermaLink=&quot;false&quot;&gt; 81a26807-355a-dbf9-7729-c6601f1d8a2b&lt;/guid&gt;
     ///     &lt;/item&gt;
     ///   &lt;/channel&gt;
     /// &lt;/rss&gt;
@@ -217,6 +217,9 @@ namespace Wyam.Core.Modules.Contents
             return this;
         }
 
+        /// <summary>
+        /// Set metadata key to lookup in documents for RSS item description.
+        /// </summary>
         public Rss WithDescriptionMetaKey(string key)
         {
             if (string.IsNullOrEmpty(key))
