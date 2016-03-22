@@ -9,7 +9,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Compares <see cref="NormalizedPath"/> instances.
     /// </summary>
-    public sealed class PathComparer : IEqualityComparer<NormalizedPath>
+    public sealed class PathEqualityComparer : IEqualityComparer<NormalizedPath>
     {
         /// <summary>
         /// Determines whether the specified <see cref="NormalizedPath"/> instances are equal.

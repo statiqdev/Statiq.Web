@@ -2,7 +2,7 @@
 
 namespace Wyam.Common.IO
 {
-    public class FileComparer : IEqualityComparer<IFile>
+    public class FileEqualityComparer : IEqualityComparer<IFile>
     {
         public bool Equals(IFile x, IFile y)
         {

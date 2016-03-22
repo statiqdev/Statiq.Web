@@ -20,36 +20,36 @@ namespace Wyam.Core.Modules.IO
     /// <remarks>
     /// If the metadata keys <c>WriteFileName</c> (which requires <c>RelativeFileDir</c> to be 
     /// set, usually by the ReadFiles module), <c>WriteExtension</c> (which 
-    /// requires <c>RelativeFilePath</c> to be set, usually by the <see cref="ReadFilesLegacy"/> module) 
+    /// requires <c>RelativeFilePath</c> to be set, usually by the <see cref="ReadFiles"/> module) 
     /// or <c>WritePath</c> are set on an input document, that value will be used instead 
     /// of what's specified in the module. For example, if you have a bunch 
     /// of Razor .cshtml files that need to be rendered to .html files but one of them 
     /// should be output as a .xml file instead, define the <c>WriteExtension</c> metadata value 
     /// in the front matter of the page.
     /// </remarks>
-    /// <metadata name="DestinationFilePath" type="string">The full absolute path (including file name) 
+    /// <metadata name="DestinationFilePath" type="FilePath">The full absolute path (including file name) 
     /// of the destination file.</metadata>
-    /// <metadata name="DestinationFilePathBase" type="string">The full absolute path (including file name) 
+    /// <metadata name="DestinationFilePathBase" type="FilePath">The full absolute path (including file name) 
     /// of the destination file without the file extension.</metadata>
-    /// <metadata name="DestinationFileBase" type="string">The file name without any extension. Equivalent 
+    /// <metadata name="DestinationFileBase" type="FilePath">The file name without any extension. Equivalent 
     /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.</metadata>
     /// <metadata name="DestinationFileExt" type="string">The extension of the file. Equivalent 
     /// to <c>Path.GetExtension(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileName" type="string">The full file name. Equivalent 
+    /// <metadata name="DestinationFileName" type="FilePath">The full file name. Equivalent 
     /// to <c>Path.GetFileName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileDir" type="string">The full absolute directory of the file. 
+    /// <metadata name="DestinationFileDir" type="DirectoryPath">The full absolute directory of the file. 
     /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="RelativeFilePath" type="string">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam output folder.</metadata>
-    /// <metadata name="RelativeFilePathBase" type="string">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam output folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="string">The relative directory of the file 
+    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file 
     /// from the Wyam output folder.</metadata>
     /// <category>Input/Output</category>
     public class WriteFiles : IModule
     {
         private readonly DocumentConfig _path;
-        private bool _warnOnWriteMetadata;
+        private readonly bool _warnOnWriteMetadata;
         private bool _useWriteMetadata = true;
         private bool _ignoreEmptyContent = true;
         private Func<IDocument, IExecutionContext, bool> _predicate = null;
@@ -59,7 +59,7 @@ namespace Wyam.Core.Modules.IO
         /// The output of the function should be either a full path to the disk 
         /// location (including file name) or a path relative to the output folder.
         /// </summary>
-        /// <param name="path">A delegate that returns a <c>string</c> with the desired path.</param>
+        /// <param name="path">A delegate that returns a <see cref="FilePath"/> with the desired path.</param>
         public WriteFiles(DocumentConfig path)
         {
             if (path == null)
@@ -74,7 +74,7 @@ namespace Wyam.Core.Modules.IO
         /// <summary>
         /// Writes the document content to disk with the specified extension with the same 
         /// base file name and relative path as the input file. This requires metadata 
-        /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFilesLegacy"/> module).
+        /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFiles"/> module).
         /// </summary>
         /// <param name="extension">The extension to use for writing the file.</param>
         public WriteFiles(string extension)
@@ -86,30 +86,26 @@ namespace Wyam.Core.Modules.IO
 
             _path = (x, y) =>
             {
-                string fileRelative = x.String(Keys.RelativeFilePath);
-                if (!string.IsNullOrWhiteSpace(fileRelative))
-                {
-                    return System.IO.Path.ChangeExtension(fileRelative, extension);
-                }
-                return null;
+                FilePath fileRelative = x.FilePath(Keys.RelativeFilePath);
+                return fileRelative?.ChangeExtension(extension);
             };
             _warnOnWriteMetadata = true;
         }
 
         /// <summary>
         /// Writes the document content to disk with the same file name and relative path 
-        /// as the input file. This requires metadata for <c>RelativeFilePath</c> to be set 
-        /// (which is done by default by the <see cref="ReadFilesLegacy"/> module).
+        /// as the input file. This requires metadata for <c>RelativeFilePath</c> to be set,
+        /// which is done by the <see cref="ReadFiles"/> module or can be set manually.
         /// </summary>
         public WriteFiles()
         {
-            _path = (x, y) => x.String(Keys.RelativeFilePath);
+            _path = (x, y) => x.FilePath(Keys.RelativeFilePath);
         }
         
         /// <summary>
         /// By default the metadata values for <c>WritePath</c>, <c>WriteFileName</c>, and <c>WriteExtension</c> 
-        /// are checked and used first. This can be used to turn off the default behavior and always
-        /// rely on the delegate for obtaining the write location.
+        /// are checked and used first, even if a delegate is specified in the constructor. This method can be used 
+        /// to turn off the default behavior and always rely on the delegate for obtaining the write location.
         /// </summary>
         /// <param name="useWriteMetadata">If set to <c>false</c>, metadata of the input document will not be used.</param>
         public WriteFiles UseWriteMetadata(bool useWriteMetadata = true)
@@ -146,38 +142,41 @@ namespace Wyam.Core.Modules.IO
             return _predicate == null || _predicate(input, context);
         }
 
-        protected string GetPath(IDocument input, IExecutionContext context)
+        protected IFile GetOutputFile(IDocument input, IExecutionContext context)
         {
-            string path = null;
+            FilePath path = null;
 
             if (_useWriteMetadata)
             {
                 string metadataKey = null;
 
                 // WritePath
-                path = input.String(Keys.WritePath);
-                if (!string.IsNullOrWhiteSpace(path))
+                path = input.FilePath(Keys.WritePath);
+                if (path != null)
                 {
                     metadataKey = Keys.WritePath;
-                    path = PathHelper.NormalizePath(path);
                 }
 
                 // WriteFileName
-                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteFileName)
-                    && input.ContainsKey(Keys.RelativeFileDir))
+                DirectoryPath relativeFileDir = input.DirectoryPath(Keys.RelativeFileDir);
+                FilePath writeFileName = input.FilePath(Keys.WriteFileName);
+                if (path == null 
+                    && relativeFileDir != null
+                    && writeFileName != null)
                 {
                     metadataKey = Keys.WriteFileName;
-                    path = System.IO.Path.Combine(input.String(Keys.RelativeFileDir),
-                        PathHelper.NormalizePath(input.String(Keys.WriteFileName)));
+                    path = relativeFileDir.CombineFile(writeFileName);
                 }
 
                 // WriteExtension
-                if (string.IsNullOrWhiteSpace(path) && input.ContainsKey(Keys.WriteExtension)
-                    && input.ContainsKey(Keys.RelativeFilePath))
+                FilePath relativeFilePath = input.FilePath(Keys.RelativeFilePath);
+                string writeExtension = input.String(Keys.WriteExtension);
+                if (path == null 
+                    && relativeFilePath != null
+                    && !string.IsNullOrWhiteSpace(writeExtension))
                 {
                     metadataKey = Keys.WriteExtension;
-                    path = System.IO.Path.ChangeExtension(input.String(Keys.RelativeFilePath),
-                        input.String(Keys.WriteExtension));
+                    path = relativeFilePath.ChangeExtension(writeExtension);
                 }
 
                 // Warn if needed
@@ -190,65 +189,53 @@ namespace Wyam.Core.Modules.IO
             }
 
             // Func
-            if (string.IsNullOrWhiteSpace(path))
+            if (path == null)
             {
-                path = _path.Invoke<string>(input, context);
+                path = _path.Invoke<FilePath>(input, context);
             }
 
-            if (!string.IsNullOrWhiteSpace(path))
-            {
-                path = System.IO.Path.GetFullPath(System.IO.Path.Combine(context.OutputFolder, path));
-                if (!string.IsNullOrWhiteSpace(path))
-                {
-                    return path;
-                }
-            }
-
-            return null;
+            return path != null ? context.FileSystem.GetOutputFile(path) : null;
         }
 
         public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
-            {
-                if (ShouldProcess(input, context))
+            return inputs
+                .AsParallel()
+                .Where(input => ShouldProcess(input, context))
+                .Select(input =>
                 {
-                    string path = GetPath(input, context);
-                    if (path != null)
+                    IFile output = GetOutputFile(input, context);
+                    if (output != null)
                     {
-                        string pathDirectory = System.IO.Path.GetDirectoryName(path);
-                        if (pathDirectory != null && !Directory.Exists(pathDirectory))
-                        {
-                            Directory.CreateDirectory(pathDirectory);
-                        }
-                        FileStream outputStream;
                         using (Stream inputStream = input.GetStream())
                         {
                             if (_ignoreEmptyContent && inputStream.Length == 0)
                             {
                                 return input;
                             }
-                            outputStream = File.Open(path, FileMode.Create);
-                            inputStream.CopyTo(outputStream);
+                            using (Stream outputStream = output.OpenWrite())
+                            {
+                                inputStream.CopyTo(outputStream);
+                            }
                         }
-                        Trace.Verbose("Wrote file {0}", path);
-                        return context.GetDocument(input, outputStream, new MetadataItems
+                        Trace.Verbose("Wrote file {0}", output.Path.FullPath);
+                        FilePath relativePath = context.FileSystem.GetOutputPath().GetRelativePath(output.Path) ?? output.Path.FileName;
+                        return context.GetDocument(input, output.OpenRead(), new MetadataItems
                         {
-                            { Keys.DestinationFileBase, System.IO.Path.GetFileNameWithoutExtension(path) },
-                            { Keys.DestinationFileExt, System.IO.Path.GetExtension(path) },
-                            { Keys.DestinationFileName, System.IO.Path.GetFileName(path) },
-                            { Keys.DestinationFileDir, System.IO.Path.GetDirectoryName(path) },
-                            { Keys.DestinationFilePath, path },
-                            { Keys.DestinationFilePathBase, PathHelper.RemoveExtension(path) },
-                            { Keys.RelativeFilePath, PathHelper.GetRelativePath(context.OutputFolder, path) },
-                            { Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(context.OutputFolder, path)) },
-                            { Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.OutputFolder, path)) }
+                            { Keys.DestinationFileBase, output.Path.FileNameWithoutExtension },
+                            { Keys.DestinationFileExt, output.Path.Extension },
+                            { Keys.DestinationFileName, output.Path.FileName },
+                            { Keys.DestinationFileDir, output.Path.Directory },
+                            { Keys.DestinationFilePath, output.Path },
+                            { Keys.DestinationFilePathBase, output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                            { Keys.RelativeFilePath, relativePath },
+                            { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                            { Keys.RelativeFileDir, relativePath.Directory }
                         });
                     }
-                }
-                return input;
-            })
-            .Where(x => x != null);
+                    return input;
+                })
+                .Where(x => x != null);
         }
     }
 }

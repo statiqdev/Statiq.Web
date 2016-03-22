@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
-    public class DirectoryComparer : IEqualityComparer<IDirectory>
+    public class DirectoryEqualityComparer : IEqualityComparer<IDirectory>
     {
         public bool Equals(IDirectory x, IDirectory y)
         {

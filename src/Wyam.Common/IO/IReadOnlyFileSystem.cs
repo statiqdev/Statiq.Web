@@ -114,6 +114,21 @@ namespace Wyam.Common.IO
         DirectoryPath GetContainingInputPath(FilePath path);
 
         /// <summary>
+        /// Gets an output file path by combining it with the root path and output path.
+        /// </summary>
+        /// <param name="path">The path to combine with the root path and output path.</param>
+        /// <returns>The output file path.</returns>
+        FilePath GetOutputPath(FilePath path);
+
+        /// <summary>
+        /// Gets an output directory path by combining it with the root path and output path.
+        /// </summary>
+        /// <param name="path">The path to combine with the root path and output path.
+        /// If this is <c>null</c>, returns the root path combined with the output path.</param>
+        /// <returns>The output directory path.</returns>
+        DirectoryPath GetOutputPath(DirectoryPath path = null);
+
+        /// <summary>
         /// Gets a file representing an output.
         /// </summary>
         /// <param name="path">

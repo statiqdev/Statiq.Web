@@ -27,21 +27,27 @@ namespace Wyam.Testing.IO
 
         public long Length => _fileProvider.Files[_path.FullPath].Length;
 
-        public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)
+        private void CreateDirectory(bool createDirectory, IFile file)
         {
-            if (!createDirectory && !_fileProvider.Directories.Contains(destination.Path.Directory.Collapse().FullPath))
+            if (!createDirectory && !_fileProvider.Directories.Contains(file.Path.Directory.Collapse().FullPath))
             {
-                throw new IOException($"Directory {destination.Path.Directory.FullPath} does not exist");
+                throw new IOException($"Directory {file.Path.Directory.FullPath} does not exist");
             }
             if (createDirectory)
             {
-                DirectoryPath parent = destination.Path.Directory.Collapse();
+                DirectoryPath parent = file.Path.Directory.Collapse();
                 while (parent != null)
                 {
                     _fileProvider.Directories.Add(parent.FullPath);
                     parent = parent.Parent;
                 }
             }
+        }
+
+        public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)
+        {
+            CreateDirectory(createDirectory, destination);
+
             if (overwrite)
             {
                 _fileProvider.Files[destination.Path.FullPath] = new StringBuilder(_fileProvider.Files[_path.FullPath].ToString());
@@ -87,13 +93,15 @@ namespace Wyam.Testing.IO
             return new MemoryStream(bytes);
         }
 
-        public Stream OpenWrite()
+        public Stream OpenWrite(bool createDirectory = true)
         {
+            CreateDirectory(createDirectory, this);
             return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => new StringBuilder()));
         }
 
-        public Stream OpenAppend()
+        public Stream OpenAppend(bool createDirectory = true)
         {
+            CreateDirectory(createDirectory, this);
             return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
         }
     }

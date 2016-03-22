@@ -15,7 +15,6 @@ namespace Wyam.Common.Tests.IO
     {
         public class HasExtensionPropertyTests : FilePathTests
         {
-            [Test]
             [TestCase("assets/shaders/basic.txt", true)]
             [TestCase("assets/shaders/basic", false)]
             [TestCase("assets/shaders/basic/", false)]
@@ -31,7 +30,6 @@ namespace Wyam.Common.Tests.IO
 
         public class ExtensionPropertyTests : FilePathTests
         {
-            [Test]
             [TestCase("assets/shaders/basic.frag", ".frag")]
             [TestCase("assets/shaders/basic.frag/test.vert", ".vert")]
             [TestCase("assets/shaders/basic", null)]
@@ -80,17 +78,20 @@ namespace Wyam.Common.Tests.IO
 
         public class ChangeExtensionMethodTests : FilePathTests
         {
-            [Test]
-            public void CanChangeExtensionOfPath()
+            [TestCase(".dat", "temp/hello.dat")]
+            [TestCase("dat", "temp/hello.dat")]
+            [TestCase(".txt", "temp/hello.txt")]
+            [TestCase("txt", "temp/hello.txt")]
+            public void ShouldChangeExtension(string extension, string expected)
             {
                 // Given
                 FilePath path = new FilePath("temp/hello.txt");
 
                 // When
-                path = path.ChangeExtension(".dat");
+                path = path.ChangeExtension(extension);
 
                 // Then
-                Assert.AreEqual("temp/hello.dat", path.ToString());
+                Assert.AreEqual(expected, path.ToString());
             }
         }
 
@@ -108,8 +109,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
             }
-
-            [Test]
+            
             [TestCase("dat", "temp/hello.txt.dat")]
             [TestCase(".dat", "temp/hello.txt.dat")]
             public void CanAppendExtensionToPath(string extension, string expected)
@@ -156,7 +156,6 @@ namespace Wyam.Common.Tests.IO
 
         public class FileNameWithoutExtensionPropertyTests : FilePathTests
         {
-            [Test]
             [TestCase("/input/test.txt", "test")]
             [TestCase("/input/test", "test")]
             public void ShouldReturnFilenameWithoutExtensionFromPath(string fullPath, string expected)
@@ -187,7 +186,6 @@ namespace Wyam.Common.Tests.IO
 
         public class CollapseMethodTests : FilePathTests
         {
-            [Test]
             [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
 #if !UNIX
             [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]

@@ -25,24 +25,24 @@ namespace Wyam.Core.Modules.IO
     /// aggregated. In either case, the input documents will not be returned as output of this module. If you want to add 
     /// additional files to a current pipeline, you should enclose your ReadFiles modules with <see cref="Concat"/>.
     /// </remarks>
-    /// <metadata name="SourceFileRoot" type="string">The absolute root search path without any nested directories 
+    /// <metadata name="SourceFileRoot" type="DirectoryPath">The absolute root search path without any nested directories 
     /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
-    /// <metadata name="SourceFilePath" type="string">The full absolute path of the file (including file name).</metadata>
-    /// <metadata name="SourceFilePathBase" type="string">The full absolute path of the file (including file name) 
+    /// <metadata name="SourceFilePath" type="FilePath">The full absolute path of the file (including file name).</metadata>
+    /// <metadata name="SourceFilePathBase" type="FilePath">The full absolute path of the file (including file name) 
     /// without the file extension.</metadata>
-    /// <metadata name="SourceFileBase" type="string">The file name without any extension. Equivalent 
+    /// <metadata name="SourceFileBase" type="FilePath">The file name without any extension. Equivalent 
     /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
     /// <metadata name="SourceFileExt" type="string">The extension of the file. Equivalent 
     /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileName" type="string">The full file name. Equivalent 
+    /// <metadata name="SourceFileName" type="FilePath">The full file name. Equivalent 
     /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileDir" type="string">The full absolute directory of the file. 
+    /// <metadata name="SourceFileDir" type="DirectoryPath">The full absolute directory of the file. 
     /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
-    /// <metadata name="RelativeFilePath" type="string">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam input folder.</metadata>
-    /// <metadata name="RelativeFilePathBase" type="string">The relative path to the file (including file name)
+    /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam input folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="string">The relative directory of the file 
+    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file 
     /// from the Wyam input folder.</metadata>
     /// <category>Input/Output</category>
     public class ReadFiles : IModule, IAsNewDocuments
@@ -118,16 +118,16 @@ namespace Wyam.Core.Modules.IO
                         FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
                         return context.GetDocument(input, file.Path.FullPath, file.OpenRead(), new MetadataItems
                         {
-                            { Keys.SourceFileRoot, inputPath?.FullPath ?? file.Path.Directory.FullPath },
-                            { Keys.SourceFileBase, file.Path.FileNameWithoutExtension.FullPath },
+                            { Keys.SourceFileRoot, inputPath ?? file.Path.Directory },
+                            { Keys.SourceFileBase, file.Path.FileNameWithoutExtension },
                             { Keys.SourceFileExt, file.Path.Extension },
-                            { Keys.SourceFileName, file.Path.FileName.FullPath },
-                            { Keys.SourceFileDir, file.Path.Directory.FullPath },
-                            { Keys.SourceFilePath, file.Path.FullPath },
-                            { Keys.SourceFilePathBase, file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension).FullPath },
-                            { Keys.RelativeFilePath, relativePath.FullPath },
-                            { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension).FullPath },
-                            { Keys.RelativeFileDir, relativePath.Directory.FullPath }
+                            { Keys.SourceFileName, file.Path.FileName },
+                            { Keys.SourceFileDir, file.Path.Directory },
+                            { Keys.SourceFilePath, file.Path },
+                            { Keys.SourceFilePathBase, file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            { Keys.RelativeFilePath, relativePath },
+                            { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                            { Keys.RelativeFileDir, relativePath.Directory }
                         });
                     });
             }

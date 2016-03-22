@@ -100,10 +100,22 @@ namespace Wyam.Core.IO.Local
         public Stream OpenRead() =>
             LocalFileProvider.Retry(() => _file.OpenRead());
 
-        public Stream OpenWrite() =>
-            LocalFileProvider.Retry(() => _file.OpenWrite());
+        public Stream OpenWrite(bool createDirectory = true)
+        {
+            if (createDirectory)
+            {
+                Directory.Create();
+            }
+            return LocalFileProvider.Retry(() => _file.OpenWrite());
+        }
 
-        public Stream OpenAppend() =>
-            LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
+        public Stream OpenAppend(bool createDirectory = true)
+        {
+            if (createDirectory)
+            {
+                Directory.Create();
+            }
+            return LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
+        }
     }
 }

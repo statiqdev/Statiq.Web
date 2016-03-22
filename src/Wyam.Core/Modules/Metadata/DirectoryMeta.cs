@@ -16,7 +16,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <para>
     /// This module allows you to specify certain documents that contain common metadata for all other
     /// documents in the same directory (and optionally nested directories). It assumes that all input documents
-    /// are generated from the file system (for example, from the <see cref="ReadFilesLegacy"/> module). In other words,
+    /// are generated from the file system (for example, from the <see cref="ReadFiles"/> module). In other words,
     /// both the documents that contain the common metadata and the documents to which the common metadata should
     /// be applied should be passed as inputs to this module.
     /// </para>

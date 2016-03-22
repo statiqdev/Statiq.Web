@@ -193,7 +193,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"SimpleTemplate\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -213,7 +213,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"Layout\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"Layout\Test.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -233,7 +233,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"ViewStartAndLayout\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"ViewStartAndLayout\Test.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -253,7 +253,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"AlternateViewStartPath\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"AlternateViewStartPath\Test.cshtml");
             //    Razor razor = new Razor().WithViewStart(@"AlternateViewStart\_ViewStart.cshtml");
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -273,7 +273,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"IgnoreUnderscores\*.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"IgnoreUnderscores\*.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -293,7 +293,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"AlternateIgnorePrefix\*.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"AlternateIgnorePrefix\*.cshtml");
             //    Razor razor = new Razor().IgnorePrefix("Ignore");
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -313,7 +313,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"LayoutWithSection\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
@@ -333,7 +333,7 @@ namespace Wyam.Modules.Razor.Tests
             //    Engine engine = new Engine();
             //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
             //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFilesLegacy readFiles = new ReadFilesLegacy(@"LayoutWithSection\Test.cshtml");
+            //    ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
             //    Razor razor = new Razor();
             //    Meta meta = new Meta("Content", (x, y) => x.Content);
             //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);

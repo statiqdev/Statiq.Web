@@ -128,20 +128,26 @@ namespace Wyam.Core.IO
                     && path.FullPath.StartsWith(x.Collapse().FullPath));
         }
 
-        public IFile GetOutputFile(FilePath path)
+        public FilePath GetOutputPath(FilePath path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            return GetFile(RootPath.Combine(OutputPath).CombineFile(path));
+            return RootPath.Combine(OutputPath).CombineFile(path);
         }
 
-        public IDirectory GetOutputDirectory(DirectoryPath path = null) => 
-            path == null 
-                ? GetRootDirectory(OutputPath) 
-                : GetDirectory(RootPath.Combine(OutputPath).Combine(path));
+        public DirectoryPath GetOutputPath(DirectoryPath path = null) =>
+            path == null
+                ? RootPath.Combine(OutputPath)
+                : RootPath.Combine(OutputPath).Combine(path);
+
+        public IFile GetOutputFile(FilePath path) => 
+            GetFile(GetOutputPath(path));
+
+        public IDirectory GetOutputDirectory(DirectoryPath path = null) =>
+            GetDirectory(GetOutputPath(path));
         
         public IFile GetRootFile(FilePath path)
         {
@@ -207,7 +213,7 @@ namespace Wyam.Core.IO
                     }
                     return Tuple.Create(directory, x);
                 })
-                .GroupBy(x => x.Item1, x => x.Item2, new DirectoryComparer())
+                .GroupBy(x => x.Item1, x => x.Item2, new DirectoryEqualityComparer())
                 .SelectMany(x => Globber.GetFiles(x.Key, x));
         }
 

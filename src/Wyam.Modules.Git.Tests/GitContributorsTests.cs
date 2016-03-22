@@ -14,6 +14,7 @@ using Wyam.Testing;
 namespace Wyam.Modules.Git.Tests
 {
     [TestFixture]
+    [Ignore("Too slow")]
     public class GitContributorsTests : BaseFixture
     {
         public class ExecuteMethodTests : GitContributorsTests

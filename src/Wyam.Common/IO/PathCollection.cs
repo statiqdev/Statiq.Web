@@ -26,7 +26,7 @@ namespace Wyam.Common.IO
         /// <param name="paths">The paths.</param>
         public PathCollection(IEnumerable<TPath> paths)
         {
-            _paths = new List<TPath>(paths.Distinct<TPath>(new PathComparer()));
+            _paths = new List<TPath>(paths.Distinct<TPath>(new PathEqualityComparer()));
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Wyam.Common.IO
         /// </returns>
         public bool Add(TPath path)
         {
-            if (_paths.Contains(path, new PathComparer()))
+            if (_paths.Contains(path, new PathEqualityComparer()))
             {
                 return false;
             }
@@ -113,7 +113,7 @@ namespace Wyam.Common.IO
         /// <returns><c>true</c> if the collection contains the path, otherwise <c>false</c>.</returns>
         public bool Contains(TPath path)
         {
-            return _paths.Contains(path, new PathComparer());
+            return _paths.Contains(path, new PathEqualityComparer());
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Wyam.Common.IO
         /// <returns><c>true</c> if the collection did not contain the path and it was inserted, otherwise <c>false</c></returns>
         public bool Insert(int index, TPath path)
         {
-            if (_paths.Contains(path, new PathComparer()))
+            if (_paths.Contains(path, new PathEqualityComparer()))
             {
                 return false;
             }

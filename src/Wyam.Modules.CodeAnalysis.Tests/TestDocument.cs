@@ -79,7 +79,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
              return Get<FilePath>(key, defaultValue);
         }
 
-public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
         {
              return Get<DirectoryPath>(key, defaultValue);
         }

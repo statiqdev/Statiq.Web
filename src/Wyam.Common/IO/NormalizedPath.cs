@@ -11,7 +11,7 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Provides properties and instance methods for working with paths.
     /// </summary>
-    public abstract class NormalizedPath
+    public abstract class NormalizedPath : IComparable<NormalizedPath>, IComparable
     {
         /// <summary>
         /// Gets the full path.
@@ -211,6 +211,43 @@ namespace Wyam.Common.IO
         public override int GetHashCode()
         {
             return FullPath.GetHashCode();
+        }
+
+        public int CompareTo(object obj)
+        {
+            NormalizedPath path = obj as NormalizedPath;
+            return path == null ? 1 : CompareTo(path);
+        }
+
+        public int CompareTo(NormalizedPath other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (GetType() != other.GetType())
+            {
+                throw new ArgumentException("Paths are not the same type");
+            }
+
+            // Compare provider
+            int providerCompare = 0;
+            if (Provider != null && other.Provider != null)
+            {
+                providerCompare = string.Compare(Provider, other.Provider, StringComparison.Ordinal);
+            }
+            if (Provider == null || other.Provider == null)
+            {
+                providerCompare = 1;
+            }
+            if (providerCompare != 0)
+            {
+                return providerCompare;
+            }
+
+            // Compare paths
+            return string.Compare(FullPath, other.FullPath, StringComparison.Ordinal);
         }
     }
 }
