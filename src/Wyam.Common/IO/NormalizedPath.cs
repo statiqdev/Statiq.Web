@@ -230,24 +230,11 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentException("Paths are not the same type");
             }
-
-            // Compare provider
-            int providerCompare = 0;
-            if (Provider != null && other.Provider != null)
-            {
-                providerCompare = string.Compare(Provider, other.Provider, StringComparison.Ordinal);
-            }
-            if (Provider == null || other.Provider == null)
-            {
-                providerCompare = 1;
-            }
-            if (providerCompare != 0)
-            {
-                return providerCompare;
-            }
-
-            // Compare paths
-            return string.Compare(FullPath, other.FullPath, StringComparison.Ordinal);
+            
+            int providerCompare = string.Compare(Provider, other.Provider, StringComparison.Ordinal);
+            return providerCompare == 0
+                ? string.Compare(FullPath, other.FullPath, StringComparison.Ordinal)
+                : providerCompare;
         }
     }
 }

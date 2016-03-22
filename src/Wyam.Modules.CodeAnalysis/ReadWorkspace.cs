@@ -116,16 +116,17 @@ namespace Wyam.Modules.CodeAnalysis
                                 Trace.Verbose("Read file {0}", document.FilePath);
                                 return context.GetDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
                                 {
-                                        {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
-                                        {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},
-                                        {Keys.SourceFileExt, System.IO.Path.GetExtension(document.FilePath)},
-                                        {Keys.SourceFileName, System.IO.Path.GetFileName(document.FilePath)},
-                                        {Keys.SourceFileDir, System.IO.Path.GetDirectoryName(document.FilePath)},
-                                        {Keys.SourceFilePath, document.FilePath},
-                                        {Keys.SourceFilePathBase, PathHelper.RemoveExtension(document.FilePath)},
-                                        {Keys.RelativeFilePath, PathHelper.GetRelativePath(path, document.FilePath)},
-                                        {Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(path, document.FilePath))},
-                                        {Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
+                                    //TODO: Change to path-based metadata
+                                    {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
+                                    {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},
+                                    {Keys.SourceFileExt, System.IO.Path.GetExtension(document.FilePath)},
+                                    {Keys.SourceFileName, System.IO.Path.GetFileName(document.FilePath)},
+                                    {Keys.SourceFileDir, System.IO.Path.GetDirectoryName(document.FilePath)},
+                                    {Keys.SourceFilePath, document.FilePath},
+                                    {Keys.SourceFilePathBase, PathHelper.RemoveExtension(document.FilePath)},
+                                    {Keys.RelativeFilePath, PathHelper.GetRelativePath(path, document.FilePath)},
+                                    {Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(path, document.FilePath))},
+                                    {Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
                                 });
                             });
                     });

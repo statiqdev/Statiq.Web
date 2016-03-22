@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
@@ -21,7 +22,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
 			    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
             [TestCase("Děku.jemeविकीвики-движка", "děku.jemeविकीвикидвижка")]
-            [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].", 
+            [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].",
                 "this-is-my-title-and-some-clever-piece-of-text-here-ok")]
             [TestCase("this is my title?!! /r/science/ and #firstworldproblems :* :sadface=true",
                 "this-is-my-title-rscience-and-firstworldproblems-sadfacetrue")]
@@ -43,7 +44,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
                 // Then
-                Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
 		    [Test]
@@ -58,7 +59,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			    IExecutionContext context = new ExecutionContext(engine, pipeline);
 			    IDocument[] inputs = { context.GetDocument(new MetadataItems
 			    {
-                    new MetadataItem(Keys.SourceFileName, input)
+                    new MetadataItem(Keys.SourceFileName, new FilePath(input))
 			    }) };
 			    FileName fileName = new FileName();
 
@@ -66,7 +67,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			    IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			    // Then
-			    Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+			    Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
 		    }
 
 		    [Test]
@@ -81,7 +82,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			    IExecutionContext context = new ExecutionContext(engine, pipeline);
 			    IDocument[] inputs = { context.GetDocument(new MetadataItems
 			    {
-                    new MetadataItem(Keys.SourceFileName, input)
+                    new MetadataItem(Keys.SourceFileName, new FilePath(input))
 			    }) };
 			    FileName fileName = new FileName();
 
@@ -90,7 +91,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 			    IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
 			    // Then
-			    Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+			    Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
             [Test]
@@ -105,7 +106,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
-                    new MetadataItem(Keys.SourceFileName, input)
+                    new MetadataItem(Keys.SourceFileName, new FilePath(input))
                 }) };
                 FileName fileName = new FileName();
 
@@ -114,7 +115,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
                 // Then
-                Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
             public static string[] ReservedChars => FileName.ReservedChars;
@@ -139,7 +140,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
                 // Then
-                Assert.AreEqual("testing-some-of-these-", documents.First()[Keys.WriteFileName]);
+                Assert.AreEqual("testing-some-of-these-", documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
             [TestCase(null)]
@@ -187,7 +188,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
                 // Then
-                Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
             [Test]
@@ -213,7 +214,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
                 // Then
-                Assert.AreEqual(output, documents.First()[Keys.WriteFileName]);
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
         }
     }

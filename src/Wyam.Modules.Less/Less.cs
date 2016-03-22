@@ -12,6 +12,7 @@ using Pandora.Fluent;
 using ReflectionMagic;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
@@ -53,16 +54,16 @@ namespace Wyam.Modules.Less
                 // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
                 engine.AsDynamic().Underlying.Cache = new LessCache(context.ExecutionCache);
 
-                string path = input.Get<string>(Keys.SourceFilePath, null);
+                FilePath path = input.FilePath(Keys.SourceFilePath);
                 string fileName = null;
                 if (path != null)
                 {
-                    engine.CurrentDirectory = Path.GetDirectoryName(path);
-                    fileName = Path.GetFileName(path);
+                    engine.CurrentDirectory = path.Directory.FullPath;
+                    fileName = path.FileName.FullPath;
                 }
                 else
                 {
-                    engine.CurrentDirectory = context.InputFolder;
+                    engine.CurrentDirectory = context.FileSystem.InputPaths.Last().FullPath;
                     fileName = Path.GetRandomFileName();
                 }
                 string content = engine.TransformToCss(input.Content, fileName);

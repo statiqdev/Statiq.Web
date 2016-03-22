@@ -17,8 +17,8 @@ Pipelines.Add("Home",
 	Razor(),
 	WriteFiles(".html"),
 	// add all sites to the sitemap, except the about page
-	If((string)@doc["DestinationFileBase"] != "about",
-		Meta("SitemapItem", new SitemapItem((string)@doc["RelativeFilePath"]){
+	If(@doc.String("DestinationFileBase") != "about",
+		Meta("SitemapItem", new SitemapItem(@doc.String("RelativeFilePath")){
 			LastModUtc = DateTime.UtcNow,
 			ChangeFrequency = ChangeFrequency.Weekly,
 			Priority = 0.1

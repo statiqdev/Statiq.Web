@@ -327,8 +327,8 @@ namespace Wyam.Core.Modules.Contents
                     }
                     else
                     {
-                        linkTemp = null;
-                        if (input.TryGetValue("RelativeFilePath", out linkTemp))
+                        linkTemp = input.String(Keys.RelativeFilePath);
+                        if (linkTemp != null)
                         {
                             link = PathHelper.ToRootLink((string)linkTemp);
                             if (_linkCustomizerDelegate != null)

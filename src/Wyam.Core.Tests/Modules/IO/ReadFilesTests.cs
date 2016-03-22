@@ -136,18 +136,14 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Then
                 Assert.AreEqual("aaa", document.Content);
             }
-
-            [TestCase(Keys.SourceFileRoot, "/TestFiles/Input")]
+            
             [TestCase(Keys.SourceFileBase, "test-c")]
-            [TestCase(Keys.SourceFileExt, ".txt")]
             [TestCase(Keys.SourceFileName, "test-c.txt")]
-            [TestCase(Keys.SourceFileDir, "/TestFiles/Input/Subfolder")]
             [TestCase(Keys.SourceFilePath, "/TestFiles/Input/Subfolder/test-c.txt")]
             [TestCase(Keys.SourceFilePathBase, "/TestFiles/Input/Subfolder/test-c")]
             [TestCase(Keys.RelativeFilePath, "Subfolder/test-c.txt")]
             [TestCase(Keys.RelativeFilePathBase, "Subfolder/test-c")]
-            [TestCase(Keys.RelativeFileDir, "Subfolder")]
-            public void ShouldSetMetadata(string key, string expected)
+            public void ShouldSetFilePathMetadata(string key, string expected)
             {
                 // Given
                 ReadFiles readFiles = new ReadFiles("**/test-c.txt");
@@ -156,7 +152,41 @@ namespace Wyam.Core.Tests.Modules.IO
                 IDocument output = readFiles.Execute(Inputs, Context).ToList().First();
 
                 // Then
-                Assert.AreEqual(output.String(key), expected);
+                object result = output[key];
+                Assert.IsInstanceOf<FilePath>(result);
+                Assert.AreEqual(expected, ((FilePath)result).FullPath);
+            }
+
+            [TestCase(Keys.SourceFileRoot, "/TestFiles/Input")]
+            [TestCase(Keys.SourceFileDir, "/TestFiles/Input/Subfolder")]
+            [TestCase(Keys.RelativeFileDir, "Subfolder")]
+            public void ShouldSetDirectoryPathMetadata(string key, string expected)
+            {
+                // Given
+                ReadFiles readFiles = new ReadFiles("**/test-c.txt");
+
+                // When
+                IDocument output = readFiles.Execute(Inputs, Context).ToList().First();
+
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<DirectoryPath>(result);
+                Assert.AreEqual(expected, ((DirectoryPath)result).FullPath);
+            }
+
+            [TestCase(Keys.SourceFileExt, ".txt")]
+            public void ShouldSetStringMetadata(string key, string expected)
+            {
+                // Given
+                ReadFiles readFiles = new ReadFiles("**/test-c.txt");
+
+                // When
+                IDocument output = readFiles.Execute(Inputs, Context).ToList().First();
+
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<string>(result);
+                Assert.AreEqual(expected, result);
             }
 
             [Test]

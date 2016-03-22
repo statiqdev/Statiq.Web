@@ -2,7 +2,7 @@ Pipelines.Add("Blog posts",
 	ReadFiles("posts/*.md"),
 	FrontMatter(Yaml()),
 	Markdown(),
-	WriteFiles(string.Format("{0}/index.html", (string)@doc["RelativeFilePathBase"])),
+	WriteFiles(string.Format("{0}/index.html", @doc.String("RelativeFilePathBase"))),
 	Branch(
 		Rss(siteRoot: "http://example.org",
 			outputRssFilePath: "posts/feed.rss",

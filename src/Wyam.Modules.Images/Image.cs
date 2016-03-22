@@ -358,61 +358,57 @@ namespace Wyam.Modules.Images
         {
             foreach (IDocument input in inputs)
             {
-                var path = input.Get<string>(Keys.SourceFilePath);
-
-                if (string.IsNullOrWhiteSpace(path))
+                FilePath relativePath = input.FilePath(Keys.RelativeFilePath);
+                if (relativePath == null)
+                {
                     continue;
-
-                var relativePath = System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(context.InputFolder, path));
-                string destination = System.IO.Path.Combine(context.OutputFolder, relativePath, System.IO.Path.GetFileName(path));
-
-                string destinationDirectory = System.IO.Path.GetDirectoryName(destination);
-                if (!Directory.Exists(destinationDirectory))
-                {
-                    Directory.CreateDirectory(destinationDirectory);
                 }
-
-                var extension = System.IO.Path.GetExtension(path);
-
+                FilePath destinationPath = context.FileSystem.GetOutputPath(relativePath);
                 
-                foreach (var ins in _instructions)
+                foreach (ImageInstruction instruction in _instructions)
                 {
-                    ISupportedImageFormat format = GetFormat(extension, ins);
+                    ISupportedImageFormat format = GetFormat(relativePath.Extension, instruction);
                     if (format == null)
-                        continue;
-                    
-                    string destinationFile = System.IO.Path.GetFileNameWithoutExtension(path);
-
-                    if (ins.IsFileNameCustomized)
                     {
-                        if (!string.IsNullOrWhiteSpace(ins.FileNamePrefix))
-                            destinationFile = ins.FileNamePrefix + destinationFile;
+                        continue;
+                    }
 
-                        if (!string.IsNullOrWhiteSpace(ins.FileNameSuffix))
-                            destinationFile += ins.FileNameSuffix + extension;
+                    string destinationFile = relativePath.FileNameWithoutExtension.FullPath;
+
+                    if (instruction.IsFileNameCustomized)
+                    {
+                        if (!string.IsNullOrWhiteSpace(instruction.FileNamePrefix))
+                        {
+                            destinationFile = instruction.FileNamePrefix + destinationFile;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(instruction.FileNameSuffix))
+                        {
+                            destinationFile += instruction.FileNameSuffix + relativePath.Extension;
+                        }
                     }
                     else
-                        destinationFile += ins.GetSuffix() + extension;
+                    {
+                        destinationFile += instruction.GetSuffix() + relativePath.Extension;
+                    }
 
-                    var destinationPath = System.IO.Path.Combine(destinationDirectory, destinationFile);
+                    destinationPath = destinationPath.Directory.CombineFile(destinationFile);
                     Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
 
-                    var output = ProcessImage(input, format, ins);
+                    Stream output = ProcessImage(input, format, instruction);
 
-                    var clone = context.GetDocument(input, output, new MetadataItems
-                        {
-                            { Keys.WritePath, destinationPath},
-                            { Keys.WriteExtension, extension }
-                        });
-
-                    yield return clone;
+                    yield return context.GetDocument(input, output, new MetadataItems
+                    {
+                        { Keys.WritePath, destinationPath},
+                        { Keys.WriteExtension, relativePath.Extension }
+                    });
                 }
             }
         }
 
         private Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)
         {
-            using (var imageFactory = new img.ImageFactory(preserveExifData: true))
+            using (img.ImageFactory imageFactory = new img.ImageFactory(preserveExifData: true))
             {
                 // Load, resize, set the format and quality and save an image.
                 img.ImageFactory fac;

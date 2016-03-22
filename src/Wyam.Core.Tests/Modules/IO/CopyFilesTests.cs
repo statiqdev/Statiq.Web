@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
@@ -203,6 +204,33 @@ namespace Wyam.Core.Tests.Modules.IO
                 Assert.IsFalse(Engine.FileSystem.GetOutputDirectory("Subfolder").Exists);
                 Assert.IsFalse(Engine.FileSystem.GetOutputFile("markdown-x.md").Exists);
                 Assert.IsFalse(Engine.FileSystem.GetOutputFile("Subfolder/markdown-y.md").Exists);
+            }
+
+            [Test]
+            public void ShouldSetMetadata()
+            {
+                // Given
+                CopyFiles copyFiles = new CopyFiles("**/test-a.txt");
+
+                // When
+                copyFiles.Execute(Inputs, Context).ToList();
+
+            }
+            
+            [TestCase(Keys.SourceFilePath, "/TestFiles/Input/test-a.txt")]
+            [TestCase(Keys.DestinationFilePath, "/output/test-a.txt")]
+            public void ShouldSetFilePathMetadata(string key, string expected)
+            {
+                // Given
+                CopyFiles copyFiles = new CopyFiles("**/test-a.txt");
+
+                // When
+                IDocument output = copyFiles.Execute(Inputs, Context).ToList().First();
+
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<FilePath>(result);
+                Assert.AreEqual(expected, ((FilePath)result).FullPath);
             }
         }
     }

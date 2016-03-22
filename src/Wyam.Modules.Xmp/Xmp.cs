@@ -11,6 +11,7 @@ using Wyam.Common.Pipelines;
 using MetadataExtractor.Formats.Xmp;
 using XmpCore;
 using System.Globalization;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 
@@ -123,10 +124,15 @@ namespace Wyam.Modules.Xmp
                  }
                  if (xmpDirectory == null) // Try to read sidecarfile
                  {
-                     if (input.ContainsKey(Keys.SourceFilePath) && System.IO.File.Exists(input[Keys.SourceFilePath] + ".xmp"))
+                     FilePath sourceFilePath = input.FilePath(Keys.SourceFilePath);
+                     if (sourceFilePath != null)
                      {
-                         string xmpXml = System.IO.File.ReadAllText(input[Keys.SourceFilePath] + ".xmp");
-                         xmpDirectory = new MetadataExtractor.Formats.Xmp.XmpReader().Extract(xmpXml);
+                         IFile sidecarFile = context.FileSystem.GetInputFile(sourceFilePath.FullPath + ".xmp");
+                         if (sidecarFile.Exists)
+                         {
+                             string xmpXml = sidecarFile.ReadAllText();
+                             xmpDirectory = new XmpReader().Extract(xmpXml);
+                         }
                      }
                  }
                  if (xmpDirectory == null)

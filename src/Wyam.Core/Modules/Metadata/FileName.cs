@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
@@ -21,9 +22,9 @@ namespace Wyam.Core.Modules.Metadata
     /// for use as a filename by removing reserved characters, white-listing characters,
     /// etc.
     /// </remarks>
-    /// <metadata name="WriteFileName" type="string">Contains the optimized filename (unless
+    /// <metadata name="WriteFileName" type="FilePath">Contains the optimized filename (unless
     /// an alternate metadata key was specified).</metadata>
-    /// <metadata name="WritePath" type="string">Contains the full path with the optimized filename (unless
+    /// <metadata name="WritePath" type="FilePath">Contains the full path with the optimized filename (unless
     /// an alternate metadata key was specified).</metadata>
     /// <category>Metadata</category>
     public class FileName : IModule
@@ -189,18 +190,19 @@ namespace Wyam.Core.Modules.Metadata
                     fileName = GetFileName(fileName);
                     if (!string.IsNullOrWhiteSpace(fileName))
                     {
-                        string relativeFileDir = input.String(Keys.RelativeFileDir);
-                        if (!string.IsNullOrWhiteSpace(_pathOutputKey) && !string.IsNullOrWhiteSpace(relativeFileDir))
+                        FilePath filePath = new FilePath(fileName);
+                        DirectoryPath relativeFileDir = input.DirectoryPath(Keys.RelativeFileDir);
+                        if (!string.IsNullOrWhiteSpace(_pathOutputKey) && relativeFileDir != null)
                         {
 							return context.GetDocument(input, new MetadataItems
                             {
-                                { _outputKey, fileName },
-                                { _pathOutputKey, Path.Combine(relativeFileDir, fileName) }
+                                { _outputKey, filePath },
+                                { _pathOutputKey, relativeFileDir.CombineFile(filePath) }
                             });
                         }
                         return context.GetDocument(input, new MetadataItems
                         {
-                            { _outputKey, fileName }
+                            { _outputKey, filePath }
                         });
                     }
                 }
@@ -208,7 +210,7 @@ namespace Wyam.Core.Modules.Metadata
             });
         }
 
-		private string GetFileName(string fileName)
+        private string GetFileName(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -216,7 +218,7 @@ namespace Wyam.Core.Modules.Metadata
             }
 
             // Trim whitespace
-		    fileName = fileName.Trim();
+            fileName = fileName.Trim();
 
             // Remove multiple dashes
             fileName = Regex.Replace(fileName, @"\-{2,}", "");
@@ -228,10 +230,10 @@ namespace Wyam.Core.Modules.Metadata
             }
 
             // Trim dot (special case, only reserved if at beginning or end)
-		    if (!_allowedCharacters.Contains("."))
-		    {
-		        fileName = fileName.Trim('.');
-		    }
+            if (!_allowedCharacters.Contains("."))
+            {
+                fileName = fileName.Trim('.');
+            }
 
             // Remove multiple spaces
             fileName = Regex.Replace(fileName, @"\s+", " ");
@@ -245,8 +247,8 @@ namespace Wyam.Core.Modules.Metadata
                 fileName = FileNameRegex.Matches(fileName)[0].Value;
             }
 
-			// Urls should not be case-sensitive
-			fileName = fileName.ToLowerInvariant();
+            // Urls should not be case-sensitive
+            fileName = fileName.ToLowerInvariant();
 
             return fileName;
         }

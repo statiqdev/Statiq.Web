@@ -112,7 +112,7 @@ namespace Wyam.Modules.Razor
             List<IDocument> validInputs = inputs
                 .Where(x => _ignorePrefix == null 
                     || !x.ContainsKey(Keys.SourceFileName) 
-                    || !x.String(Keys.SourceFileName).StartsWith(_ignorePrefix))
+                    || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
 
             // Compile the pages in parallel

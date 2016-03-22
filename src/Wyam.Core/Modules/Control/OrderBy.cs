@@ -66,7 +66,7 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            var orderdList = _descending
+            IOrderedEnumerable<IDocument> orderdList = _descending
                 ? inputs.OrderByDescending(x => _key(x, context))
                 : inputs.OrderBy(x => _key(x, context));
             foreach (ThenByEntry thenBy in _thenByList)

@@ -141,6 +141,19 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
+            public void GetsFileNameIfJustFileName()
+            {
+                // Given
+                FilePath path = new FilePath("test.txt");
+
+                // When
+                FilePath result = path.FileName;
+
+                // Then
+                Assert.AreEqual("test.txt", result.FullPath);
+            }
+
+            [Test]
             public void NullProviderSetForReturnPath()
             {
                 // Given
