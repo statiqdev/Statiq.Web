@@ -78,6 +78,7 @@
     <Compile Include="Modules\IO\CopyFilesTests.cs" />
     <Compile Include="Modules\IO\DownloadTests.cs" />
     <Compile Include="Modules\IO\ReadFilesTests.cs" />
+    <Compile Include="Modules\IO\UnwrittenFilesTests.cs" />
     <Compile Include="Modules\Metadata\DirectoryMetaTests.cs" />
     <Compile Include="Modules\Control\DocumentsTests.cs" />
     <Compile Include="Modules\Extensibility\ExecuteTests.cs" />

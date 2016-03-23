@@ -59,6 +59,12 @@ namespace Wyam.Testing.IO
             _buffer.Write(buffer, offset, count);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            Flush();
+            base.Dispose(disposing);
+        }
+
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
             return _buffer.BeginWrite(buffer, offset, count, callback, state);

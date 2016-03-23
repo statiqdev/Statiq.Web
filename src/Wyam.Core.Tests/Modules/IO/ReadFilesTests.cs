@@ -39,7 +39,6 @@ namespace Wyam.Core.Tests.Modules.IO
             Inputs = new [] { Context.GetDocument() };
         }
 
-
         private IFileProvider GetFileProvider()
         {
             TestFileProvider fileProvider = new TestFileProvider();

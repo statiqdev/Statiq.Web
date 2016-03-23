@@ -2,215 +2,200 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
-using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
 using Wyam.Testing;
-using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
+using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class WriteFilesTests : BaseFixture
     {
+        private Engine Engine { get; set; }
+        private Pipeline Pipeline { get; set; }
+        private IExecutionContext Context { get; set; }
+
+        [SetUp]
+        public void SetUp()
+        {
+            Engine = new Engine();
+            Engine.FileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+            Engine.FileSystem.RootPath = "/";
+            Engine.FileSystem.InputPaths.Clear();
+            Engine.FileSystem.InputPaths.Add("/TestFiles/Input");
+            Pipeline = new Pipeline("Pipeline", null);
+            Context = new ExecutionContext(Engine, Pipeline);
+        }
+
+        private IFileProvider GetFileProvider()
+        {
+            TestFileProvider fileProvider = new TestFileProvider();
+
+            fileProvider.AddDirectory("/");
+            fileProvider.AddDirectory("/TestFiles");
+            fileProvider.AddDirectory("/TestFiles/Input");
+            fileProvider.AddDirectory("/TestFiles/Input/Subfolder");
+
+            fileProvider.AddFile("/TestFiles/test-above-input.txt", "test");
+            fileProvider.AddFile("/TestFiles/Input/markdown-x.md", "xxx");
+            fileProvider.AddFile("/TestFiles/Input/test-a.txt", "aaa");
+            fileProvider.AddFile("/TestFiles/Input/test-b.txt", "bbb");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/markdown-y.md", "yyy");
+            fileProvider.AddFile("/TestFiles/Input/Subfolder/test-c.txt", "ccc");
+
+            return fileProvider;
+        }
+
         public class ExecuteMethodTests : WriteFilesTests
         {
-            //[Test]
-            //public void ExtensionWithDotWritesFile()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs = { context.GetDocument("Test") };
-            //    WriteFiles writeFiles = new WriteFiles(".txt");
+            [Test]
+            public void ExtensionWithDotWritesFiles()
+            {
+                // Given
+                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles(".txt");
 
-            //    // When
-            //    IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
-            //    foreach (IDocument document in inputs.Concat(outputs))
-            //    {
-            //        ((IDisposable)document).Dispose();
-            //    }
+                // When
+                writeFiles.Execute(inputs, Context).ToList();
 
-            //    // Then
-            //    Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
-            //    Assert.AreEqual("Test", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
-            //}
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile("Subfolder/write-test.txt");
+                Assert.IsTrue(outputFile.Exists);
+                Assert.AreEqual("Test", outputFile.ReadAllText());
+            }
 
-            //[Test]
-            //public void ExtensionWithoutDotWritesFile()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs = { context.GetDocument("Test") };
-            //    WriteFiles writeFiles = new WriteFiles("txt");
+            [Test]
+            public void ExtensionWithoutDotWritesFiles()
+            {
+                // Given
+                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles("txt");
 
-            //    // When
-            //    IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
-            //    foreach (IDocument document in inputs.Concat(outputs))
-            //    {
-            //        ((IDisposable)document).Dispose();
-            //    }
+                // When
+                writeFiles.Execute(inputs, Context).ToList();
 
-            //    // Then
-            //    Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
-            //    Assert.AreEqual("Test", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test.txt")));
-            //}
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile("Subfolder/write-test.txt");
+                Assert.IsTrue(outputFile.Exists);
+                Assert.AreEqual("Test", outputFile.ReadAllText());
+            }
 
-            //[Test]
-            //public void ExecuteReturnsSameContent()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    engine.InitialMetadata[Keys.SourceFileRoot] = @"TestFiles/Input";
-            //    engine.InitialMetadata[Keys.SourceFileDir] = @"TestFiles/Input/Subfolder";
-            //    engine.InitialMetadata[Keys.SourceFileBase] = @"write-test";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs = { context.GetDocument("Test") };
-            //    WriteFiles writeFiles = new WriteFiles((x, y) => null);
+            [Test]
+            public void OutputDocumentContainsSameContent()
+            {
+                // Given
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles((x, y) => null);
 
-            //    // When
-            //    IDocument output = writeFiles.Execute(inputs, context).First();
+                // When
+                IDocument output = writeFiles.Execute(inputs, Context).ToList().First();
 
-            //    // Then
-            //    Assert.AreEqual("Test", output.Content);
-            //    ((IDisposable)output).Dispose();
-            //}
+                // Then
+                Assert.AreEqual("Test", output.Content);
+            }
 
-            //[TestCase(Keys.DestinationFileBase, @"write-test")]
-            //[TestCase(Keys.DestinationFileExt, @".txt")]
-            //[TestCase(Keys.DestinationFileName, @"write-test.txt")]
-            //[TestCase(Keys.DestinationFileDir, @"TestFiles\Output\Subfolder")]
-            //[TestCase(Keys.DestinationFilePath, @"TestFiles\Output\Subfolder\write-test.txt")]
-            //[TestCase(Keys.DestinationFilePathBase, @"TestFiles\Output\Subfolder\write-test")]
-            //[TestCase(Keys.RelativeFilePath, @"Subfolder\write-test.txt")]
-            //[TestCase(Keys.RelativeFilePathBase, @"Subfolder\write-test")]
-            //[TestCase(Keys.RelativeFileDir, @"Subfolder")]
-            //public void WriteFilesSetsMetadata(string key, string expectedEnding)
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    engine.InitialMetadata[Keys.RelativeFilePath] = @"Subfolder/write-test.abc";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs = { context.GetDocument("Test") };
-            //    WriteFiles writeFiles = new WriteFiles("txt");
+            [TestCase(Keys.DestinationFileBase, "write-test")]
+            [TestCase(Keys.DestinationFileName, "write-test.txt")]
+            [TestCase(Keys.DestinationFilePath, "/output/Subfolder/write-test.txt")]
+            [TestCase(Keys.DestinationFilePathBase, "/output/Subfolder/write-test")]
+            [TestCase(Keys.RelativeFilePath, "Subfolder/write-test.txt")]
+            [TestCase(Keys.RelativeFilePathBase, "Subfolder/write-test")]
+            public void ShouldSetFilePathMetadata(string key, string expected)
+            {
+                // Given
+                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles(".txt");
 
-            //    // When
-            //    IDocument output = writeFiles.Execute(inputs, context).First();
-            //    foreach (IDocument document in inputs)
-            //    {
-            //        ((IDisposable)document).Dispose();
-            //    }
+                // When
+                IDocument output = writeFiles.Execute(inputs, Context).ToList().First();
 
-            //    // Then
-            //    Assert.That(output.Metadata[key], Does.EndWith(expectedEnding));
-            //    ((IDisposable)output).Dispose();
-            //}
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<FilePath>(result);
+                Assert.AreEqual(expected, ((FilePath)result).FullPath);
+            }
 
-            //[Test]
-            //public void RelativePathsAreConsistentBeforeAndAfterWriteFiles()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input";
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs = { context.GetDocument() };
-            //    ReadFiles readFiles = new ReadFiles(@"test-c.txt");
-            //    WriteFiles writeFiles = new WriteFiles("txt");
+            [TestCase(Keys.DestinationFileDir, "/output/Subfolder")]
+            [TestCase(Keys.RelativeFileDir, "Subfolder")]
+            public void ShouldSetDirectoryPathMetadata(string key, string expected)
+            {
+                // Given
+                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles(".txt");
 
-            //    // When
-            //    IDocument readFilesDocument = readFiles.Execute(inputs, context).First();
-            //    object readFilesRelativeFilePath = readFilesDocument.Metadata[Keys.RelativeFilePath];
-            //    object readFilesRelativeFilePathBase = readFilesDocument.Metadata[Keys.RelativeFilePathBase];
-            //    object readFilesRelativeFileDir = readFilesDocument.Metadata[Keys.RelativeFileDir];
-            //    IDocument writeFilesDocument = writeFiles.Execute(new [] { readFilesDocument }, context).First();
-            //    object writeFilesRelativeFilePath = writeFilesDocument.Metadata[Keys.RelativeFilePath];
-            //    object writeFilesRelativeFilePathBase = writeFilesDocument.Metadata[Keys.RelativeFilePathBase];
-            //    object writeFilesRelativeFileDir = writeFilesDocument.Metadata[Keys.RelativeFileDir];
-            //    foreach (IDocument document in inputs)
-            //    {
-            //        ((IDisposable)document).Dispose();
-            //    }
+                // When
+                IDocument output = writeFiles.Execute(inputs, Context).ToList().First();
 
-            //    // Then
-            //    Assert.AreEqual(@"Subfolder\test-c.txt", readFilesRelativeFilePath);
-            //    Assert.AreEqual(@"Subfolder\test-c", readFilesRelativeFilePathBase);
-            //    Assert.AreEqual(@"Subfolder", readFilesRelativeFileDir);
-            //    Assert.AreEqual(@"Subfolder\test-c.txt", writeFilesRelativeFilePath);
-            //    Assert.AreEqual(@"Subfolder\test-c", writeFilesRelativeFilePathBase);
-            //    Assert.AreEqual(@"Subfolder", writeFilesRelativeFileDir);
-            //    ((IDisposable)readFilesDocument).Dispose();
-            //    ((IDisposable)writeFilesDocument).Dispose();
-            //}
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<DirectoryPath>(result);
+                Assert.AreEqual(expected, ((DirectoryPath)result).FullPath);
+            }
 
+            [TestCase(Keys.DestinationFileExt, ".txt")]
+            public void ShouldSetStringMetadata(string key, string expected)
+            {
+                // Given
+                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles(".txt");
 
-            //[Test]
-            //public void IgnoresEmptyDocuments()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.OutputFolder = @"TestFiles\Output\";
-            //    Pipeline pipeline = new Pipeline("Pipeline", null);
-            //    MemoryStream emptyStream = new MemoryStream(new byte[] { });
-            //    IExecutionContext context = new ExecutionContext(engine, pipeline);
-            //    IDocument[] inputs =
-            //    {
-            //        context.GetDocument("Test", 
-            //            new MetadataItems {
-            //                new MetadataItem(Keys.RelativeFilePath, @"Subfolder/write-test")
-            //            }),
-            //        context.GetDocument(string.Empty,
-            //            new MetadataItems {
-            //                new MetadataItem(Keys.RelativeFilePath, @"Subfolder/empty-test"), 
-            //            }),
-            //        context.GetDocument((string)null,
-            //            new MetadataItems {
-            //                new MetadataItem(Keys.RelativeFilePath, @"Subfolder/null-test")
-            //            }),
-            //        context.GetDocument(emptyStream,
-            //            new MetadataItems {
-            //                new MetadataItem(Keys.RelativeFilePath, @"Subfolder/stream-test")
-            //            })
-            //    };
-            //    WriteFiles writeFiles = new WriteFiles();
+                // When
+                IDocument output = writeFiles.Execute(inputs, Context).ToList().First();
 
-            //    // When
-            //    IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, context).ToList();
-            //    foreach (IDocument document in inputs.Concat(outputs))
-            //    {
-            //        ((IDisposable)document).Dispose();
-            //    }
+                // Then
+                object result = output[key];
+                Assert.IsInstanceOf<string>(result);
+                Assert.AreEqual(expected, result);
+            }
 
-            //    // Then
-            //    Assert.AreEqual(4, outputs.Count());
-            //    Assert.IsTrue(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\write-test")));
-            //    Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\empty-test")));
-            //    Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\null-test")));
-            //    Assert.IsFalse(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestFiles\Output\Subfolder\stream-test")));
-            //}
+            [Test]
+            public void IgnoresEmptyDocuments()
+            {
+                // Given
+                MemoryStream emptyStream = new MemoryStream(new byte[] { });
+                IDocument[] inputs =
+                {
+                    Context.GetDocument("Test",
+                        new MetadataItems {
+                            new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/write-test"))
+                        }),
+                    Context.GetDocument(string.Empty,
+                        new MetadataItems {
+                            new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/empty-test")),
+                        }),
+                    Context.GetDocument((string)null,
+                        new MetadataItems {
+                            new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/null-test"))
+                        }),
+                    Context.GetDocument(emptyStream,
+                        new MetadataItems {
+                            new MetadataItem(Keys.RelativeFilePath, new FilePath(@"Subfolder/stream-test"))
+                        })
+                    };
+                WriteFiles writeFiles = new WriteFiles();
+
+                // When
+                IEnumerable<IDocument> outputs = writeFiles.Execute(inputs, Context).ToList();
+
+                // Then
+                Assert.AreEqual(4, outputs.Count());
+                Assert.IsTrue(Context.FileSystem.GetOutputFile("Subfolder/write-test").Exists);
+                Assert.IsFalse(Context.FileSystem.GetOutputFile("output/Subfolder/empty-test").Exists);
+                Assert.IsFalse(Context.FileSystem.GetOutputFile("output/Subfolder/null-test").Exists);
+                Assert.IsFalse(Context.FileSystem.GetOutputFile("output/Subfolder/stream-test").Exists);
+            }
         }
     }
 }

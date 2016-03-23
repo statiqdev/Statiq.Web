@@ -20,6 +20,7 @@ using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class CopyFilesTests : BaseFixture
     {
         private Engine Engine { get; set; }

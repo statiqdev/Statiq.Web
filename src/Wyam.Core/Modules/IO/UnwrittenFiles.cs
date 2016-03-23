@@ -24,24 +24,6 @@ namespace Wyam.Core.Modules.IO
     /// end of the pipeline and any other modules or pages that rely on them (for example, an 
     /// image directory) will not be correct.
     /// </remarks>
-    /// <metadata name="DestinationFilePath" type="FilePath">The full absolute path (including file name) 
-    /// of the destination file.</metadata>
-    /// <metadata name="DestinationFilePathBase" type="FilePath">The full absolute path (including file name) 
-    /// of the destination file without the file extension.</metadata>
-    /// <metadata name="DestinationFileBase" type="FilePath">The file name without any extension. Equivalent 
-    /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileExt" type="string">The extension of the file. Equivalent 
-    /// to <c>Path.GetExtension(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileName" type="FilePath">The full file name. Equivalent 
-    /// to <c>Path.GetFileName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileDir" type="DirectoryPath">The full absolute directory of the file. 
-    /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam output folder.</metadata>
-    /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam output folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file 
-    /// from the Wyam output folder.</metadata>
     /// <category>Input/Output</category>
     public class UnwrittenFiles : WriteFiles
     {
