@@ -96,6 +96,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase("file.txt\\", "file.txt")]
             [TestCase("Temp/file.txt/", "Temp/file.txt")]
             [TestCase("Temp\\file.txt\\", "Temp/file.txt")]
+            [TestCase("http://www.foo.bar/", "http://www.foo.bar")]
+            [TestCase("http://www.foo.bar/test/page.html/", "http://www.foo.bar/test/page.html")]
             public void ShouldRemoveTrailingSlashes(string value, string expected)
             {
                 // Given, When

@@ -12,7 +12,6 @@ using Wyam.Common.Pipelines;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Pipelines;
-using Wyam.Core.Tests.Modules.Content;
 using Wyam.Testing;
 using Wyam.Testing.IO;
 using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;

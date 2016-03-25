@@ -4,14 +4,10 @@ Pipelines.Add("Blog posts",
 	Markdown(),
 	WriteFiles(string.Format("{0}/index.html", @doc.String("RelativeFilePathBase"))),
 	Branch(
-		Rss(siteRoot: "http://example.org",
-			outputRssFilePath: "posts/feed.rss",
-			feedTitle: "My awesome blog",
-			feedDescription: "Blog about something")
-				.WithTitleMetaKey("Title")
-				.WithDescriptionMetaKey("Description")
-				.WithLinkCustomizer((link) => link.EndsWith("/index.html") ? link.Substring(0, link.IndexOf("/index.html")) : link),
-
+		Rss("http://example.org", "posts/feed.rss", "My awesome blog", "Blog about something")
+            .WithTitleMetaKey("Title")
+            .WithDescriptionMetaKey("Description")
+            .WithLinkCustomizer((link) => link.FileName.FullPath == "index.html" ? new FilePath(link.Directory.FullPath) : link),
 		WriteFiles()
 	)
 	// Use Branch so RSS feed document doesn't get outputted

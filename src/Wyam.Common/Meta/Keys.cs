@@ -82,6 +82,10 @@ namespace Wyam.Common.Meta
         // Index
         public const string Index = "Index";
 
+        // Rss
+        public const string RssItemUrl = "RssItemUrl";
+        public const string IsRssFeed = "IsRssFeed";
+
         // Sitemap
         public const string SitemapItem = "SitemapItem";
 

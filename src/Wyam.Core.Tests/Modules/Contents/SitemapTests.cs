@@ -15,7 +15,7 @@ using Wyam.Core.Pipelines;
 using Wyam.Testing;
 using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
 
-namespace Wyam.Core.Tests.Modules.Content
+namespace Wyam.Core.Tests.Modules.Contents
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

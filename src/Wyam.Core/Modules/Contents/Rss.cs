@@ -104,8 +104,8 @@ namespace Wyam.Core.Modules.Contents
     /// &lt;/rss&gt;
     /// </code>
     /// </example>
-    /// <metadata name="RssPath" type="string">Absolute path to output RSS file on server.</metadata>
-    /// <metadata name="WritePath" type="string">Path where RSS file will be written via WriteFiles module.</metadata>
+    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output RSS file.</metadata>
+    /// <metadata name="WritePath" type="FilePath">Relative path to the output RSS file (primarily to support the WriteFiles module).</metadata>
     /// <category>Content</category>
     public class Rss : IModule
     {
@@ -119,9 +119,9 @@ namespace Wyam.Core.Modules.Contents
         /// </summary>
         private readonly string _feedDescription = string.Empty;
 
-        private readonly string _siteRoot = null;
+        private readonly Uri _siteUri;
 
-        private readonly string _outputRssFilePath = null;
+        private readonly FilePath _rssPath;
 
         // Default meta keys
         private string _pubDateMetaKey = "RssPubDate";
@@ -139,26 +139,34 @@ namespace Wyam.Core.Modules.Contents
 
         private bool _assumePermalinks = false;
 
-        private Func<string, string> _linkCustomizerDelegate = null;
+        private Func<FilePath, FilePath> _linkCustomizerDelegate = null;
 
         private static readonly XNamespace AtomNamespace = XNamespace.Get(@"http://www.w3.org/2005/Atom");
 
         /// <summary>
         /// Creates RSS feed from input documents.
         /// </summary>
-        /// <param name="siteRoot">Site root URL (example: "http://mysite.com").</param>
+        /// <param name="siteUri">The full URI of the site, including hostname (example: "http://mysite.com/blog/").</param>
+        /// <param name="rssPath">Relative output location where generated RSS feed will be placed on server. (example: "feeds/feed.rss").</param>
         /// <param name="feedTitle">Title of the RSS feed.</param>
         /// <param name="feedDescription">Description of the RSS feed.</param>
-        /// <param name="outputRssFilePath">Relative output location where generated RSS feed will be placed on server. (example: "blog/feed.rss").</param>
-        public Rss(string siteRoot, string outputRssFilePath, string feedTitle, string feedDescription)
+        public Rss(Uri siteUri, FilePath rssPath, string feedTitle, string feedDescription)
         {
-            if (string.IsNullOrEmpty(siteRoot))
+            if (siteUri == null)
             {
-                throw new ArgumentException(nameof(siteRoot));
+                throw new ArgumentNullException(nameof(siteUri));
             }
-            if (string.IsNullOrEmpty(outputRssFilePath))
+            if (!siteUri.IsAbsoluteUri)
             {
-                throw new ArgumentException(nameof(outputRssFilePath));
+                throw new ArgumentException("The site URI must be absolute", nameof(siteUri));
+            }
+            if (rssPath == null)
+            {
+                throw new ArgumentNullException(nameof(rssPath));
+            }
+            if (!rssPath.IsRelative)
+            {
+                throw new ArgumentException("The RSS path must be relative", nameof(rssPath));
             }
             if (string.IsNullOrEmpty(feedTitle))
             {
@@ -169,10 +177,22 @@ namespace Wyam.Core.Modules.Contents
                 throw new ArgumentException(nameof(feedDescription));
             }
 
-            _siteRoot = PathHelper.ToLink(siteRoot.TrimEnd('/', '\\'));
-            _outputRssFilePath = outputRssFilePath;
+            _siteUri = siteUri;
+            _rssPath = rssPath;
             _feedDescription = feedDescription;
             _feedTitle = feedTitle;
+        }
+
+        /// <summary>
+        /// Creates RSS feed from input documents.
+        /// </summary>
+        /// <param name="siteUri">The full URI of the site, including hostname (example: "http://mysite.com/blog/").</param>
+        /// <param name="rssPath">Relative output location where generated RSS feed will be placed on server. (example: "feeds/feed.rss").</param>
+        /// <param name="feedTitle">Title of the RSS feed.</param>
+        /// <param name="feedDescription">Description of the RSS feed.</param>
+        public Rss(string siteUri, FilePath rssPath, string feedTitle, string feedDescription)
+            : this(new Uri(siteUri), rssPath, feedTitle, feedDescription)
+        {
         }
 
         /// <summary>
@@ -262,9 +282,9 @@ namespace Wyam.Core.Modules.Contents
         /// Does not execute when document explicitly
         /// defines output URL via RssItemUrl metadata.
         /// </summary>
-        /// <param name="customizer"></param>
+        /// <param name="customizer">A delegate that takes and returns a <see cref="FilePath"/>.</param>
         /// <returns></returns>
-        public Rss WithLinkCustomizer(Func<string, string> customizer)
+        public Rss WithLinkCustomizer(Func<FilePath, FilePath> customizer)
         {
             if (customizer == null)
             {
@@ -287,19 +307,19 @@ namespace Wyam.Core.Modules.Contents
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             XDocument rss = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-            var rssAbsolutePath = PathHelper.ToLink(System.IO.Path.Combine(_siteRoot, _outputRssFilePath));
+            FilePath rssPath = new DirectoryPath(_siteUri.ToString()).CombineFile(_rssPath);
 
-            var rssRoot = new XElement("rss",
+            XElement rssRoot = new XElement("rss",
                 new XAttribute("version", "2.0"),
                 new XAttribute(XNamespace.Xmlns + "atom", AtomNamespace)
             );
 
-            var channel = new XElement("channel",
+            XElement channel = new XElement("channel",
                 new XElement("title", _feedTitle),
                 new XElement("description", _feedDescription),
-                new XElement("link", _siteRoot),
+                new XElement("link", _siteUri.ToString()),
                 new XElement(AtomNamespace + "link",
-                    new XAttribute("href", rssAbsolutePath),
+                    new XAttribute("href", rssPath.FullPath),
                     new XAttribute("rel", "self")
                 ),
                 new XElement("lastBuildDate", DateTimeHelper.ToRssDate(DateTime.Now))
@@ -310,44 +330,41 @@ namespace Wyam.Core.Modules.Contents
                 channel.Add(new XElement("language", _language));
             }
 
-            foreach (var input in inputs)
+            foreach (IDocument input in inputs)
             {
-                var item = new XElement("item");
+                XElement item = new XElement("item");
 
                 object title;
                 bool hasTitle = input.TryGetValue(_titleMetaKey, out title);
                 item.Add(new XElement("title", hasTitle ? title : "Untitled"));
-
-                string link = null;
+                
+                // Get the item link
+                FilePath link = input.FilePath(Keys.RssItemUrl) 
+                    ?? input.FilePath(Keys.RelativeFilePath);
+                if(link != null)
                 {
-                    object linkTemp = null;
-                    if (input.TryGetValue("RssItemUrl", out linkTemp))
+                    if (link.IsAbsolute)
                     {
-                        link = PathHelper.ToRootLink((string)linkTemp);
+                        link = new DirectoryPath("/").GetRelativePath(link);
                     }
-                    else
+                    if (_linkCustomizerDelegate != null)
                     {
-                        linkTemp = input.String(Keys.RelativeFilePath);
-                        if (linkTemp != null)
+                        link = _linkCustomizerDelegate(link);
+
+                        // Check for absolute one more time in case the customizer returned an absolute path
+                        if (link.IsAbsolute)
                         {
-                            link = PathHelper.ToRootLink((string)linkTemp);
-                            if (_linkCustomizerDelegate != null)
-                                link = _linkCustomizerDelegate(link);
+                            link = new DirectoryPath("/").GetRelativePath(link);
                         }
                     }
                 }
-
-                //foreach (var m in input.Metadata)
-                //{
-                //    Console.WriteLine("{0}: {1}", m.Key, m.Value);
-                //}
-
-                if (string.IsNullOrWhiteSpace(link))
+                if (link == null)
                 {
-                    throw new ArgumentException("Required RssItemUrl or RelativeFilePath was not found in metadata in document " + input.Source);
+                    throw new Exception($"Required metadata keys {Keys.RssItemUrl} or {Keys.RelativeFilePath} were not found in the document {input.Source}");
                 }
-
-                item.Add(new XElement("link", PathHelper.ToLink(_siteRoot + link)));
+            
+                FilePath itemLink = new DirectoryPath(_siteUri.ToString()).CombineFile(link);
+                item.Add(new XElement("link", itemLink.FullPath));
 
                 object description = null;
                 bool hasDescription = input.TryGetValue(_descriptionMetaKey, out description);
@@ -361,7 +378,6 @@ namespace Wyam.Core.Modules.Contents
 
                 if (_appendGuid)
                 {
-                   
                     object guid;
                     bool hasGuid = input.TryGetValue(_guidMetaKey, out guid);
                        
@@ -377,7 +393,7 @@ namespace Wyam.Core.Modules.Contents
                         }
                         else if (string.IsNullOrWhiteSpace(input.Source))
                         {
-                            Trace.Warning("Cannot generate RSS item guid for document " + input.Source + " because document Source is not valid.");
+                            Trace.Warning($"Cannot generate RSS item guid for document {input.Source} because document source is not valid");
                         }
                         else
                         {
@@ -393,16 +409,16 @@ namespace Wyam.Core.Modules.Contents
             rssRoot.Add(channel);
 
             // rss.ToString() doesn't return XML declaration
-            var outText = new StringBuilder();
-            using (var stream = new UTF8StringWriter(outText))
+            StringBuilder outText = new StringBuilder();
+            using (UTF8StringWriter stream = new UTF8StringWriter(outText))
             {
                 rss.Save(stream);
             }
 
             return new IDocument[] { context.GetDocument(outText.ToString(), new KeyValuePair<string, object>[] {
-                new KeyValuePair<string, object>("IsRssFeed", true),
-                new KeyValuePair<string, object>("RelativeFilePath", _outputRssFilePath),
-                new KeyValuePair<string, object>("WritePath", _outputRssFilePath)
+                new KeyValuePair<string, object>(Keys.IsRssFeed, true),
+                new KeyValuePair<string, object>(Keys.RelativeFilePath, _rssPath),
+                new KeyValuePair<string, object>(Keys.WritePath, _rssPath)
             })};
         }
     }

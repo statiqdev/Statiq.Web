@@ -88,7 +88,7 @@
     <Compile Include="Modules\Control\IfTests.cs" />
     <Compile Include="Modules\Control\OrderByTests.cs" />
     <Compile Include="Modules\Control\PaginateTests.cs" />
-    <Compile Include="Modules\Content\SitemapTests.cs" />
+    <Compile Include="Modules\Contents\SitemapTests.cs" />
     <Compile Include="Modules\Control\SwitchTests.cs" />
     <Compile Include="Modules\Extensibility\TraceTests.cs" />
     <Compile Include="Modules\IO\WriteFilesTests.cs" />
