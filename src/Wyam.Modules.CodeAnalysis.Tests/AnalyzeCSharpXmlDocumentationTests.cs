@@ -914,7 +914,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <a href=\"/Foo/414E2165/00F22A50.html\">Blue()</a> method", GetResult(results, "Green")["Summary"]);
+                Assert.AreEqual("Check <a href=\"/Foo/414E2165/00F22A50\">Blue()</a> method", GetResult(results, "Green")["Summary"]);
                 stream.Dispose();
             }
 

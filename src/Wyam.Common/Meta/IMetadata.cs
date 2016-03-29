@@ -97,17 +97,6 @@ namespace Wyam.Common.Meta
         IReadOnlyList<IDocument> Documents(string key);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a link. This method never throws an exception. It will return the specified
-        /// default value if the key is not found. The difference between this and getting a plain string is that forward-slashes are
-        /// replaced with back-slashes to create valid links from file system paths and other strings.
-        /// </summary>
-        /// <param name="key">The key of the value to get.</param>
-        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a string.</param>
-        /// <param name="pretty">If set to <c>true</c>, trailing "/index.html" and "/index.htm" are trimmed.</param>
-        /// <returns>The value for the specified key converted to a link or the specified default value.</returns>
-        string Link(string key, string defaultValue = null, bool pretty = true);
-
-        /// <summary>
         /// Gets the value associated with the specified key as a dynamic object. This is equivalent
         /// to calling <c>as dynamic</c> to cast the value.
         /// </summary>

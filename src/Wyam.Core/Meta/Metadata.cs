@@ -104,21 +104,6 @@ namespace Wyam.Core.Meta
 
         public IReadOnlyList<IDocument> Documents(string key) => Get<IReadOnlyList<IDocument>>(key);
 
-        public string Link(string key, string defaultValue = null, bool pretty = true)
-        {
-            string value = Get<string>(key, defaultValue);
-            value = string.IsNullOrWhiteSpace(value) ? "#" : PathHelper.ToRootLink(value);
-            if (pretty && (value == "/index.html" || value == "/index.htm"))
-            {
-                return "/";
-            }
-            if(pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm")))
-            {
-                return value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal));
-            }
-            return value;
-        }
-
         public dynamic Dynamic(string key, object defaultValue = null) => Get(key, defaultValue) ?? defaultValue;
 
         public object this[string key]

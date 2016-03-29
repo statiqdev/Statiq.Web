@@ -236,5 +236,60 @@ namespace Wyam.Common.IO
                 ? string.Compare(FullPath, other.FullPath, StringComparison.Ordinal)
                 : providerCompare;
         }
+
+        /// <summary>
+        /// Converts the path into a string appropriate for use as a link.
+        /// </summary>
+        /// <param name="root">The root of the link, which could be a web URL such as
+        /// "http://foo.com" or "http://foo.com/bar", a relative path such as "/foo/bar",
+        /// or any other string. The value of this parameter is prepended to the link text
+        /// and separated with a slash. If this parameter is <c>null</c>, the link text
+        /// is returned as-is and no initial slash is inferred.</param>
+        /// <param name="hideIndexPages">If set to <c>true</c>, "index.htm" and "index.html" file
+        /// names will be hidden.</param>
+        /// <param name="hideWebExtensions">If set to <c>true</c>, extensions ending in ".htm" or
+        /// ".html" will be hidden.</param>
+        /// <returns>A string representation of the path suitable for a web link with the specified
+        /// root and hidden file name or extension.</returns>
+        public string ToLink(string root = "/", bool hideIndexPages = true, bool hideWebExtensions = true)
+        {
+            // Remove index pages and extensions if a file path
+            NormalizedPath path = this;
+            FilePath filePath = path as FilePath;
+            if (filePath != null)
+            {
+                if (hideIndexPages && (filePath.FileName.FullPath == "index.htm" || filePath.FileName.FullPath == "index.html"))
+                {
+                    path = filePath.Directory;
+                }
+                else if (hideWebExtensions && (filePath.Extension == ".htm" || filePath.Extension == ".html"))
+                {
+                    path = filePath.ChangeExtension(null);
+                }
+            }
+
+            // Get the link
+            string link = Collapse(path);
+            if (string.IsNullOrWhiteSpace(link) || link == ".")
+            {
+                return "/";
+            }
+            if (root != null && link.StartsWith("/"))
+            {
+                link = link.Substring(1);
+            }
+
+            // Combine with the root
+            if (root == null)
+            {
+                root = string.Empty;
+            }
+            else if (!root.EndsWith("/"))
+            {
+                root += "/";
+            }
+
+            return root + link;
+        }
     }
 }

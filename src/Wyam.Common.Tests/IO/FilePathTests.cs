@@ -82,6 +82,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase("dat", "temp/hello.dat")]
             [TestCase(".txt", "temp/hello.txt")]
             [TestCase("txt", "temp/hello.txt")]
+            [TestCase("", "temp/hello.")]
+            [TestCase(null, "temp/hello")]
             public void ShouldChangeExtension(string extension, string expected)
             {
                 // Given

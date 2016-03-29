@@ -261,7 +261,7 @@ namespace Wyam.Modules.CodeAnalysis
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
 			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
-				link = $"<a href=\"{crefDoc.Link(Keys.WritePath)}\">{name}</a>";
+				link = $"<a href=\"{crefDoc.FilePath(Keys.WritePath).ToLink()}\">{name}</a>";
 			    return name;
 			}
 			link = null;

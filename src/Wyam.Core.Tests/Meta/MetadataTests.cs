@@ -561,49 +561,6 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class LinkMethodTests : MetadataTests
-        {
-            [TestCase("foo/bar", false, "/foo/bar")]
-            [TestCase("foo/bar", true, "/foo/bar")]
-            [TestCase("/foo/bar", false, "/foo/bar")]
-            [TestCase("/foo/bar", true, "/foo/bar")]
-            [TestCase("/foo/bar/index.html", false, "/foo/bar/index.html")]
-            [TestCase("/foo/bar/index.html", true, "/foo/bar")]
-            [TestCase("/foo/bar/index.htm", false, "/foo/bar/index.htm")]
-            [TestCase("/foo/bar/index.htm", true, "/foo/bar")]
-            [TestCase("/foo/bar/baz.html", false, "/foo/bar/baz.html")]
-            [TestCase("/foo/bar/baz.html", true, "/foo/bar/baz.html")]
-            [TestCase(null, false, "#")]
-            [TestCase(null, true, "#")]
-            [TestCase("", false, "#")]
-            [TestCase("", true, "#")]
-            [TestCase(" ", false, "#")]
-            [TestCase(" ", true, "#")]
-            [TestCase("/index.html", false, "/index.html")]
-            [TestCase("/index.html", true, "/")]
-            [TestCase("index.html", false, "/index.html")]
-            [TestCase("index.html", true, "/")]
-            [TestCase("/foo.html", false, "/foo.html")]
-            [TestCase("/foo.html", true, "/foo.html")]
-            [TestCase("foo.html", false, "/foo.html")]
-            [TestCase("foo.html", true, "/foo.html")]
-            public void ReturnsCorrectResult(string value, bool pretty, string link)
-            {
-                // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata
-                {
-                    ["A"] = new SimpleMetadataValue {Value = value}
-                };
-                Metadata metadata = new Metadata(initialMetadata);
-
-                // When
-                object result = metadata.Link("A", pretty: pretty);
-
-                // Then
-                Assert.AreEqual(link, result);
-            }
-        }
-
         public class MetadataAsMethodTests : MetadataTests
         {
             [Test]
@@ -743,7 +700,7 @@ namespace Wyam.Core.Tests.Meta
 
         private class SimpleMetadataValue : IMetadataValue
         {
-            public string Value { get; set; }
+            public object Value { get; set; }
             public int Calls { get; set; }
 
             object IMetadataValue.Get(string key, IMetadata metadata)

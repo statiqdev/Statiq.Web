@@ -76,12 +76,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
-             return Get<FilePath>(key, defaultValue);
+            object value = Get(key, (object)defaultValue);
+            string stringValue = value as string;
+            return stringValue != null ? new FilePath(stringValue) : (FilePath) value;
         }
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
         {
-             return Get<DirectoryPath>(key, defaultValue);
+            object value = Get(key, (object)defaultValue);
+            string stringValue = value as string;
+            return stringValue != null ? new DirectoryPath(stringValue) : (DirectoryPath)value;
         }
 
         public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
@@ -97,21 +101,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
         public IReadOnlyList<IDocument> Documents(string key)
         {
             return Get<IReadOnlyList<IDocument>>(key);
-        }
-
-        public string Link(string key, string defaultValue = null, bool pretty = true)
-        {
-            string value = Get<string>(key, defaultValue);
-            value = string.IsNullOrWhiteSpace(value) ? "#" : PathHelper.ToRootLink(value);
-            if (pretty && (value == "/index.html" || value == "/index.htm"))
-            {
-                return "/";
-            }
-            if (pretty && (value.EndsWith("/index.html") || value.EndsWith("/index.htm")))
-            {
-                return value.Substring(0, value.LastIndexOf("/", StringComparison.Ordinal));
-            }
-            return value;
         }
 
         public dynamic Dynamic(string key, object defaultValue = null)

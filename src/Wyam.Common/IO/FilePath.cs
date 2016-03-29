@@ -75,7 +75,7 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the file extension.
         /// </summary>
-        /// <value>The file extension.</value>
+        /// <value>The file extension (including the preceding ".").</value>
         public string Extension
         {
             get
@@ -132,6 +132,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>
-        public static FilePath FromString(string path) => new FilePath(path);
+        public static FilePath FromString(string path) => 
+            string.IsNullOrWhiteSpace(path) ? null : new FilePath(path);
     }
 }

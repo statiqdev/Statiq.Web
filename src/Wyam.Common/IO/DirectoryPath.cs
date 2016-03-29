@@ -155,6 +155,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
-        public static DirectoryPath FromString(string path) => new DirectoryPath(path);
+        public static DirectoryPath FromString(string path) => 
+            string.IsNullOrWhiteSpace(path) ? null : new DirectoryPath(path);
     }
 }

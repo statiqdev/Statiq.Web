@@ -70,9 +70,6 @@ namespace Wyam.Core.Documents
 
         public IReadOnlyList<IDocument> Documents(string key) => Document.Documents(key);
 
-        public string Link(string key, string defaultValue = null, bool pretty = true) =>
-            Document.Link(key, defaultValue, pretty);
-
         public dynamic Dynamic(string key, object defaultValue = null) =>
             Document.Dynamic(key, defaultValue);
 
