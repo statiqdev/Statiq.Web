@@ -9,5 +9,5 @@ using System.Reflection;
 [assembly: AssemblyVersion("0.11.5")]
 [assembly: AssemblyFileVersion("0.11.5")]
 [assembly: AssemblyInformationalVersion("0.11.5-beta")]
-[assembly: AssemblyCopyright("Copyright (c) Wyam Contributors")]
+[assembly: AssemblyCopyright("Copyright \xa9 Wyam Contributors")]
 

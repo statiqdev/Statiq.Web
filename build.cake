@@ -82,7 +82,7 @@ Task("Patch-Assembly-Info")
         var file = "./src/SolutionInfo.cs";
         CreateAssemblyInfo(file, new AssemblyInfoSettings {
             Product = "Wyam",
-            Copyright = "Copyright (c) Wyam Contributors",
+            Copyright = "Copyright \xa9 Wyam Contributors",
             Version = version,
             FileVersion = version,
             InformationalVersion = semVersion
