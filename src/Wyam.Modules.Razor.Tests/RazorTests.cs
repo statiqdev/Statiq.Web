@@ -186,6 +186,7 @@ namespace Wyam.Modules.Razor.Tests
                 context.Received().GetDocument(document, @"<p>C:\Temp\temp.txt</p>");
             }
 
+            // TODO: Uncomment once new IO support is live
             //[Test]
             //public void LoadSimpleTemplateFile()
             //{

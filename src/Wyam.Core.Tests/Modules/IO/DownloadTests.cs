@@ -20,31 +20,6 @@ namespace Wyam.Core.Tests.Modules.IO
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class DownloadTests : BaseFixture
     {
-        public static string AssemblyDirectory
-        {
-            get
-            {
-                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-                UriBuilder uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
-        }
-
-        public static byte[] ReadToByte(Stream input)
-        {
-            byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
-        }
-
         public class ExecuteMethodTests : DownloadTests
         {
             [Test]
@@ -54,7 +29,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 Stream stream = null;
                 IEnumerable<KeyValuePair<string, object>> metadata = null;
                 string source = null;
-                IModule download = new Download().WithUris("http://www.siwawi.com/");
+                IModule download = new Download().WithUris("http://wyam.io/");
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context
                     .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
@@ -105,7 +80,7 @@ namespace Wyam.Core.Tests.Modules.IO
                         output.Add(Tuple.Create(x.Arg<Stream>(), x.Arg<IEnumerable<KeyValuePair<string, object>>>()));
                     });
 
-                IModule download = new Download().WithUris("http://www.siwawi.com/", "http://stackoverflow.com/questions/221925/creating-a-byte-array-from-a-stream");
+                IModule download = new Download().WithUris("http://wyam.io/", "https://github.com/Wyamio/Wyam");
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -148,20 +123,15 @@ namespace Wyam.Core.Tests.Modules.IO
                         metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
 
-                IModule download = new Download().WithUris("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg");
-                context.OutputFolder.Returns(x => AssemblyDirectory);
+                IModule download = new Download().WithUris("http://wyam.io/Content/images/nav-logo.png");
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 stream.Seek(0, SeekOrigin.Begin);
-
-                var path = Path.Combine(context.OutputFolder, "test.jpg");
-                File.WriteAllBytes(path, ReadToByte(stream));
+                Assert.AreNotEqual(-1, stream.ReadByte());
                 stream.Dispose();
-
-                Assert.IsTrue(File.Exists(path), "Download cannot be empty");
             }
 
             [Test]
@@ -183,20 +153,15 @@ namespace Wyam.Core.Tests.Modules.IO
                 var header = new RequestHeader();
                 header.Accept.Add("image/jpeg");
 
-                IModule download = new Download().WithUri("http://siwawi.com/images/cover/617215_113386155490459_1547184305_o-cover.jpg", header);
-                context.OutputFolder.Returns(x => AssemblyDirectory);
+                IModule download = new Download().WithUri("http://wyam.io/Content/images/nav-logo.png", header);
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 stream.Seek(0, SeekOrigin.Begin);
-
-                var path = Path.Combine(context.OutputFolder, "test-with-request-header.jpg");
-                File.WriteAllBytes(path, ReadToByte(stream));
+                Assert.AreNotEqual(-1, stream.ReadByte());
                 stream.Dispose();
-
-                Assert.IsTrue(File.Exists(path), "Download cannot be empty");
             }
         }
     }
