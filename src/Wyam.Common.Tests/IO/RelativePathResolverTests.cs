@@ -185,7 +185,8 @@ namespace Wyam.Common.Tests.IO
                 FilePath resultPath = RelativePathResolver.Resolve(sourcePath, targetPath);
 
                 // Then
-                Assert.AreEqual(targetPath, resultPath);
+                // Assert.AreEqual(targetPath, resultPath); // Uncomment and use this when NUnit is fixed
+                Assert.IsTrue(targetPath.Equals(resultPath)); // Workaround for bug in NUnit with explicitly implemented interface method IEquality.Equals()
             }
         }
     }
