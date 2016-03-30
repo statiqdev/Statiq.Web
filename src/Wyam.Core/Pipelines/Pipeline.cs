@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
@@ -20,9 +21,9 @@ namespace Wyam.Core.Pipelines
     {
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
         private readonly List<IModule> _modules = new List<IModule>();
-        private readonly ConcurrentHashSet<string> _documentSources = new ConcurrentHashSet<string>();
+        private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
-        private readonly Dictionary<string, List<IDocument>> _processedSources; 
+        private readonly Dictionary<FilePath, List<IDocument>> _processedSources; 
         private bool _disposed;
 
         public string Name { get; }
@@ -43,7 +44,7 @@ namespace Wyam.Core.Pipelines
             if (processDocumentsOnce)
             {
                 _previouslyProcessedCache = new Cache<List<IDocument>>();
-                _processedSources = new Dictionary<string, List<IDocument>>();
+                _processedSources = new Dictionary<FilePath, List<IDocument>>();
             }
             if (modules != null)
             {
@@ -142,7 +143,7 @@ namespace Wyam.Core.Pipelines
                         documents = outputs?.Where(x => x != null).ToImmutableArray() ?? ImmutableArray<IDocument>.Empty;
 
                         // Remove any documents that were previously processed (checking will also mark the cache entry as hit)
-                        if (_previouslyProcessedCache != null)
+                        if (_previouslyProcessedCache != null && _processedSources != null)
                         {
                             ImmutableArray<IDocument>.Builder newDocuments = ImmutableArray.CreateBuilder<IDocument>();
                             foreach (IDocument document in documents)
@@ -215,7 +216,7 @@ namespace Wyam.Core.Pipelines
             _clonedDocuments = new ConcurrentBag<IDocument>(resultDocuments);
 
             // Check the previously processed cache for any previously processed documents that need to be added
-            if (_previouslyProcessedCache != null)
+            if (_previouslyProcessedCache != null && _processedSources != null)
             {
                 // Dispose the previously processed documents that we didn't get this time around
                 Parallel.ForEach(_previouslyProcessedCache.ClearUnhitEntries().SelectMany(x => x), x => x.Dispose());
@@ -233,7 +234,7 @@ namespace Wyam.Core.Pipelines
                     }
                     else
                     {
-                        Trace.Warning("Could not find processed document cache for source {0}, please report this warning to the developers", resultDocument.Source);
+                        Trace.Warning("Could not find processed document cache for source {0}, please report this warning to the developers", resultDocument.SourceString());
                     }
                 }
 
@@ -245,11 +246,11 @@ namespace Wyam.Core.Pipelines
 
         public void AddClonedDocument(IDocument document) => _clonedDocuments.Add(document);
 
-        public void AddDocumentSource(string source)
+        public void AddDocumentSource(FilePath source)
         {
-            if (string.IsNullOrWhiteSpace(source))
+            if (source == null)
             {
-                throw new ArgumentException(nameof(source));
+                throw new ArgumentNullException(nameof(source));
             }
             if (!_documentSources.Add(source))
             {

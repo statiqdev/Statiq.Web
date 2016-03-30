@@ -16,10 +16,35 @@ namespace Wyam.Common.IO
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath"/> class.
+        /// The path will be considered absolute if the underlying OS file system
+        /// considers it absolute.
         /// </summary>
         /// <param name="path">The path.</param>
         public DirectoryPath(string path)
-            : base(path)
+            : base(path, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath"/> class.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
+        public DirectoryPath(string path, bool absolute)
+            : base(path, absolute)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath" /> class
+        /// with the specified provider.
+        /// The path will be considered absolute if the underlying OS file system
+        /// considers it absolute.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        public DirectoryPath(string provider, string path)
+            : base(provider, path, null)
         {
         }
 
@@ -29,8 +54,9 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <param name="path">The path.</param>
-        public DirectoryPath(string provider, string path)
-                    : base(provider, path)
+        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
+        public DirectoryPath(string provider, string path, bool absolute)
+            : base(provider, path, absolute)
         {
         }
 

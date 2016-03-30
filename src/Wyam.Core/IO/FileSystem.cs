@@ -111,7 +111,7 @@ namespace Wyam.Core.IO
         public IReadOnlyList<IDirectory> GetInputDirectories() =>
             InputPaths.Select(GetRootDirectory).ToImmutableArray();
 
-        public DirectoryPath GetContainingInputPath(FilePath path)
+        public DirectoryPath GetContainingInputPath(NormalizedPath path)
         {
             if (path == null)
             {
@@ -119,7 +119,7 @@ namespace Wyam.Core.IO
             }
             if (!path.IsAbsolute)
             {
-                throw new ArgumentException("The file path must be absolute", nameof(path));
+                throw new ArgumentException("The contained path must be absolute", nameof(path));
             }
             return InputPaths
                 .Reverse()

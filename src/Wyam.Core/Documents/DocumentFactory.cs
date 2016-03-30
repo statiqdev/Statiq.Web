@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Modules;
@@ -23,10 +24,10 @@ namespace Wyam.Core.Documents
 
         public IDocument GetDocument(IExecutionContext context)
         {
-            return new Document(_initialMetadata, string.Empty, null, null, null, true);
+            return new Document(_initialMetadata, null, null, null, null, true);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, string content, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content, 
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
@@ -41,12 +42,12 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_initialMetadata, string.Empty, null, content, items, true);
+                return new Document(_initialMetadata, null, null, content, items, true);
             }
             return new Document((Document)sourceDocument, content, items);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, Stream stream, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream, 
             IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
@@ -61,7 +62,7 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_initialMetadata, string.Empty, stream, null, items, disposeStream);
+                return new Document(_initialMetadata, null, stream, null, items, disposeStream);
             }
             return new Document((Document)sourceDocument, stream, items, disposeStream);
         }
@@ -70,7 +71,7 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_initialMetadata, string.Empty, null, null, items, true);
+                return new Document(_initialMetadata, null, null, null, items, true);
             }
             return new Document((Document)sourceDocument, items);
         }

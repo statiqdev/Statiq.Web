@@ -66,7 +66,7 @@ namespace Wyam.Modules.Tables
                 }
                 catch (Exception e)
                 {
-                    Trace.Error($"An {e.ToString()} occurred ({input.Source}): {e.Message}");
+                    Trace.Error($"An {e.ToString()} occurred ({input.SourceString()}): {e.Message}");
                     return null;
                 }
             }).Where(x => x != null);

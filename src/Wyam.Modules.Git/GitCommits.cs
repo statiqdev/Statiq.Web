@@ -8,7 +8,6 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using LibGit2Sharp;
-using System.IO;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -41,7 +40,7 @@ namespace Wyam.Modules.Git
     /// <metadata name="CommitterEmail" type="string">The email of the committer.</metadata>
     /// <metadata name="CommitterWhen" type="DateTimeOffset">The date of the committer signature.</metadata>
     /// <metadata name="Message" type="string">The commit message.</metadata>
-    /// <metadata name="Entries" type="IReadOnlyDictionary&lt;string, string&gt;">
+    /// <metadata name="Entries" type="IReadOnlyDictionary&lt;FilePath, string&gt;">
     /// All commit entries. The key is the path of the file and the value is the status of the file within the commit.
     /// </metadata>
     /// <metadata name="Commits" type="IReadOnlyList&lt;IDocument&gt;">
@@ -63,9 +62,9 @@ namespace Wyam.Modules.Git
         /// <summary>
         /// Gets commits from the repository the specified path is a part of.
         /// </summary>
-        /// <param name="repositoryLocation">The repository location.</param>
-        public GitCommits(string repositoryLocation)
-            : base(repositoryLocation)
+        /// <param name="repositoryPath">The repository path.</param>
+        public GitCommits(DirectoryPath repositoryPath)
+            : base(repositoryPath)
         {
         }
 
@@ -88,23 +87,26 @@ namespace Wyam.Modules.Git
             {
                 return commitDocuments;
             }
-            var test = commitDocuments.Select(x => x.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries));
 
             // Outputting commit information for each document
-            string repositoryLocation = GetRepositoryLocation(context);
+            DirectoryPath repositoryPath = GetRepositoryPath(context);
             return inputs.AsParallel().Select(input =>
             {
-                if (string.IsNullOrEmpty(input.Source))
+                if (input.Source == null)
                 {
                     return input;
                 }
-                string relativePath = PathHelper.GetRelativePath(repositoryLocation, input.Source);
-                if (string.IsNullOrEmpty(relativePath))
+                FilePath relativePath = repositoryPath.GetRelativePath(input.Source);
+                if (relativePath.Equals(input.Source))
                 {
                     return input;
                 }
                 ImmutableArray<IDocument> inputCommitDocuments = commitDocuments
-                    .Where(x => x.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries).ContainsKey(relativePath))
+                    .Where(x =>
+                    {
+                        IReadOnlyDictionary<FilePath, string> entries = x.Get<IReadOnlyDictionary<FilePath, string>>(GitKeys.Entries);
+                        return x.Get<IReadOnlyDictionary<FilePath, string>>(GitKeys.Entries).ContainsKey(relativePath);
+                    })
                     .ToImmutableArray();
                 return context.GetDocument(input, new MetadataItems
                 {

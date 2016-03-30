@@ -184,7 +184,7 @@ namespace Wyam.Core.Modules.IO
                 {
                     Trace.Warning("An extension or delegate was specified for the WriteFiles module, but the metadata key {0} took precedence for the document with source {1}."
                         + " Call UseWriteMetadata(false) to prevent the special write metadata keys from overriding WriteFiles constructor values.",
-                        metadataKey, input.Source);
+                        metadataKey, input.SourceString());
                 }
             }
 

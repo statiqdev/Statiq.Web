@@ -25,34 +25,34 @@ namespace Wyam.Core.Documents
         // Normal constructors
 
         internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, string content = null)
-            : this(initialMetadata, string.Empty, null, content, null, true)
+            : this(initialMetadata, null, null, content, null, true)
         {
         }
 
-        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, string source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, FilePath source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
             : this(Guid.NewGuid().ToString(), new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
         
-        private Document(string id, Metadata metadata, string source, string content, IEnumerable<KeyValuePair<string, object>> items)
+        private Document(string id, Metadata metadata, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items)
             : this(id, metadata, source, null, null, content, items, true)
         {
         }
 
-        private Document(string id, Metadata metadata, string source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string id, Metadata metadata, FilePath source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
             : this(id, metadata, source, stream, streamLock, null, items, disposeStream)
         {
         }
 
-        private Document(string id, Metadata metadata, string source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string id, Metadata metadata, FilePath source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
-            if (source == null)
+            if (source != null && !source.IsAbsolute)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentException("Document sources must be absolute", nameof(source));
             }
 
             Id = id;
@@ -82,8 +82,8 @@ namespace Wyam.Core.Documents
         }
 
         // Cloning constructors (if source is specified but source document already contains a source, it is ignored and source document source is used)
-        internal Document(Document sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source != string.Empty ? sourceDocument.Source : source, content, items)
+        internal Document(Document sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source ?? source, content, items)
         {
             sourceDocument.CheckDisposed();
         }
@@ -94,8 +94,8 @@ namespace Wyam.Core.Documents
             sourceDocument.CheckDisposed();
         }
 
-        internal Document(Document sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source != string.Empty ? sourceDocument.Source : source, stream, null, items, disposeStream)
+        internal Document(Document sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source ?? source, stream, null, items, disposeStream)
         {
             sourceDocument.CheckDisposed();
         }
@@ -116,7 +116,16 @@ namespace Wyam.Core.Documents
             sourceDocument._disposeStream = false;
         }
 
-        public string Source { get; }
+        public FilePath Source { get; }
+
+        public string SourceString()
+        {
+            if (Source == null)
+            {
+                return "[unknown source]";
+            }
+            return (string.IsNullOrWhiteSpace(Source.Provider) ? string.Empty : Source.Provider + "::") + Source.FullPath;
+        }
 
         public string Id { get; }
 

@@ -44,7 +44,7 @@ namespace Wyam.Common.Pipelines
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The new document.</returns>
-        IDocument GetDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
         /// Gets a new document with the specified content and metadata (in addition to the default initial metadata).
@@ -65,7 +65,7 @@ namespace Wyam.Common.Pipelines
         /// <param name="items">The metadata items.</param>
         /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
         /// <returns>The new document.</returns>
-        IDocument GetDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
         /// Gets a new document with the specified content stream and metadata (in addition to the default initial metadata).
@@ -95,7 +95,7 @@ namespace Wyam.Common.Pipelines
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
-        IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
         /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
@@ -120,7 +120,7 @@ namespace Wyam.Common.Pipelines
         /// <param name="items">The metadata items.</param>
         /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
         /// <returns>The cloned or new document.</returns>
-        IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument GetDocument(IDocument sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)

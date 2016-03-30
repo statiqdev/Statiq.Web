@@ -35,6 +35,10 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentNullException(nameof(provider));
             }
+            if (name == NormalizedPath.AbstractProvider)
+            {
+                throw new ArgumentException($"Can not register a provider with the reserved abstract provider name \"{NormalizedPath.AbstractProvider}\"");
+            }
             
             if (_fileProviders.ContainsKey(name))
             {

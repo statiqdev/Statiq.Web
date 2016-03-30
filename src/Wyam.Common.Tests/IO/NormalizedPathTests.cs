@@ -15,11 +15,11 @@ namespace Wyam.Common.Tests.IO
     {
         private class TestPath : NormalizedPath
         {
-            public TestPath(string path) : base(path)
+            public TestPath(string path) : base(path, null)
             {
             }
 
-            public TestPath(string provider, string path) : base(provider, path)
+            public TestPath(string provider, string path) : base(provider, path, null)
             {
             }
         }

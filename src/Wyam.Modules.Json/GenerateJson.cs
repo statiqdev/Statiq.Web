@@ -101,7 +101,7 @@ namespace Wyam.Modules.Json
                    }
                    catch (Exception ex)
                    {
-                       Trace.Error("Error serializing JSON for {0}: {1}", input.Source, ex.ToString());
+                       Trace.Error("Error serializing JSON for {0}: {1}", input.SourceString(), ex.ToString());
                    }
                    return input;
                })

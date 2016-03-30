@@ -65,7 +65,7 @@ namespace Wyam.Modules.Markdown
             return inputs.AsParallel().Select(input =>
             {
                 Trace.Verbose("Processing Markdown {0}for {1}", 
-                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.Source);
+                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.SourceString());
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;
                 if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))

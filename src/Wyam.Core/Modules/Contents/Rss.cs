@@ -360,7 +360,7 @@ namespace Wyam.Core.Modules.Contents
                 }
                 if (link == null)
                 {
-                    throw new Exception($"Required metadata keys {Keys.RssItemUrl} or {Keys.RelativeFilePath} were not found in the document {input.Source}");
+                    throw new Exception($"Required metadata keys {Keys.RssItemUrl} or {Keys.RelativeFilePath} were not found in the document {input.SourceString()}");
                 }
             
                 FilePath itemLink = new DirectoryPath(_siteUri.ToString()).CombineFile(link);
@@ -391,13 +391,13 @@ namespace Wyam.Core.Modules.Contents
                         {
                             item.Add(new XElement("guid", link));
                         }
-                        else if (string.IsNullOrWhiteSpace(input.Source))
+                        else if (input.Source == null)
                         {
-                            Trace.Warning($"Cannot generate RSS item guid for document {input.Source} because document source is not valid");
+                            Trace.Warning($"Cannot generate RSS item guid for document {input.SourceString()} because document source is not valid");
                         }
                         else
                         {
-                            item.Add(new XElement("guid", GuidHelper.ToGuid(input.Source).ToString(), new XAttribute("isPermaLink", false)));
+                            item.Add(new XElement("guid", GuidHelper.ToGuid(input.Source.FullPath).ToString(), new XAttribute("isPermaLink", false)));
                         }
                     }
                 }

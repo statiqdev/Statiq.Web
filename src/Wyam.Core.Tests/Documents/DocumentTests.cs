@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -62,7 +63,7 @@ namespace Wyam.Core.Tests.Documents
                 // Given
                 SimpleMetadata initialMetadata = new SimpleMetadata();
                 DisposeCheckStream stream = new DisposeCheckStream();
-                Document originalDoc = new Document(initialMetadata, "Test", stream, null,
+                Document originalDoc = new Document(initialMetadata, new FilePath("Test", true), stream, null,
                     Array.Empty<KeyValuePair<string, object>>(), true);
                 Document clonedDoc = new Document(originalDoc, Array.Empty<KeyValuePair<string, object>>());
 

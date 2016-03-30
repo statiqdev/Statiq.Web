@@ -11,8 +11,14 @@ namespace Wyam.Common.IO
     /// <summary>
     /// Provides properties and instance methods for working with paths.
     /// </summary>
-    public abstract class NormalizedPath : IComparable<NormalizedPath>, IComparable
+    public abstract class NormalizedPath : IComparable<NormalizedPath>, IComparable, IEquatable<NormalizedPath>
     {
+        /// <summary>
+        /// Use this provider name to indicate that the path is not intended for use with an actual file provider.
+        /// For example, as the source for documents generated on the fly by a module.
+        /// </summary>
+        public static readonly string AbstractProvider = "abstract";
+
         /// <summary>
         /// Gets the full path.
         /// </summary>
@@ -25,7 +31,7 @@ namespace Wyam.Common.IO
         /// <value>
         /// <c>true</c> if this path is relative; otherwise, <c>false</c>.
         /// </value>
-        public bool IsRelative { get; }
+        public bool IsRelative => !IsAbsolute;
 
         /// <summary>
         /// Gets or sets a value indicating whether this path is absolute.
@@ -33,7 +39,7 @@ namespace Wyam.Common.IO
         /// <value>
         /// <c>true</c> if this path is absolute; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAbsolute => !IsRelative;
+        public bool IsAbsolute { get; }
 
         /// <summary>
         /// Gets the segments making up the path.
@@ -53,8 +59,9 @@ namespace Wyam.Common.IO
         /// Initializes a new instance of the <see cref="NormalizedPath" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        protected NormalizedPath(string path)
-            : this(GetProviderAndPath(path))
+        /// <param name="absolute">Indicates if the path should be explicitly considered absolute.</param>
+        protected NormalizedPath(string path, bool? absolute)
+            : this(GetProviderAndPath(path), absolute)
         {
         }
 
@@ -88,8 +95,9 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="provider">The provider for this path.</param>
         /// <param name="path">The path.</param>
-        protected NormalizedPath(string provider, string path)
-            : this(Tuple.Create(provider, path))
+        /// <param name="absolute">Indicates if the path should be explicitly considered absolute.</param>
+        protected NormalizedPath(string provider, string path, bool? absolute)
+            : this(Tuple.Create(provider, path), absolute)
         {
         }
 
@@ -98,11 +106,12 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="providerAndPath">The provider and path as a Tuple so it can
         /// be passed from both of the other constructors.</param>
-        private NormalizedPath(Tuple<string, string> providerAndPath)
+        /// <param name="absolute">Indicates if the path should be explicitly considered absolute.</param>
+        private NormalizedPath(Tuple<string, string> providerAndPath, bool? absolute)
         {
             string provider = providerAndPath.Item1;
             string path = providerAndPath.Item2;
-            
+
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -133,8 +142,8 @@ namespace Wyam.Common.IO
             }
 #endif
 
-            // Relative path?
-            IsRelative = !System.IO.Path.IsPathRooted(FullPath);
+            // Absolute path?
+            IsAbsolute = absolute ?? System.IO.Path.IsPathRooted(FullPath);
 
             // Set provider (but only if absolute)
             if (IsRelative)
@@ -194,23 +203,24 @@ namespace Wyam.Common.IO
             return collapsed == string.Empty ? "." : collapsed;
         }
 
+        public override int GetHashCode()
+        {
+            return FullPath.GetHashCode();
+        }
+
         public override bool Equals(object obj)
         {
             NormalizedPath other = obj as NormalizedPath;
-            if (other == null)
-            {
-                return false;
-            }
+            return other != null && ((IEquatable<NormalizedPath>)this).Equals(other);
+        }
+
+        bool IEquatable<NormalizedPath>.Equals(NormalizedPath other)
+        {
             if (IsAbsolute && other.IsAbsolute && Provider != other.Provider)
             {
                 return false;
             }
             return FullPath.Equals(other.FullPath);
-        }
-
-        public override int GetHashCode()
-        {
-            return FullPath.GetHashCode();
         }
 
         public int CompareTo(object obj)

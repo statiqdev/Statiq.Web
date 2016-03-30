@@ -116,7 +116,7 @@ namespace Wyam.Core.Modules.IO
                         Trace.Verbose($"Read file {file.Path.FullPath}");
                         DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
                         FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
-                        return context.GetDocument(input, file.Path.FullPath, file.OpenRead(), new MetadataItems
+                        return context.GetDocument(input, file.Path, file.OpenRead(), new MetadataItems
                         {
                             { Keys.SourceFileRoot, inputPath ?? file.Path.Directory },
                             { Keys.SourceFileBase, file.Path.FileNameWithoutExtension },

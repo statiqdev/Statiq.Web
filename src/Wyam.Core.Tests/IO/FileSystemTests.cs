@@ -299,10 +299,12 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
-                DirectoryPath inputPath = fileSystem.GetContainingInputPath(path);
+                DirectoryPath inputPathFromFilePath = fileSystem.GetContainingInputPath(new FilePath(path));
+                DirectoryPath inputPathFromDirectoryPath = fileSystem.GetContainingInputPath(new DirectoryPath(path));
 
                 // Then
-                Assert.AreEqual(expected, inputPath?.FullPath);
+                Assert.AreEqual(expected, inputPathFromFilePath?.FullPath);
+                Assert.AreEqual(expected, inputPathFromDirectoryPath?.FullPath);
             }
 
             [Test]
@@ -321,10 +323,12 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
 
                 // When
-                DirectoryPath inputPath = fileSystem.GetContainingInputPath(path);
+                DirectoryPath inputPathFromFilePath = fileSystem.GetContainingInputPath(new FilePath(path));
+                DirectoryPath inputPathFromDirectoryPath = fileSystem.GetContainingInputPath(new DirectoryPath(path));
 
                 // Then
-                Assert.AreEqual(expected, inputPath?.FullPath);
+                Assert.AreEqual(expected, inputPathFromFilePath?.FullPath);
+                Assert.AreEqual(expected, inputPathFromDirectoryPath?.FullPath);
             }
         }
 

@@ -71,7 +71,7 @@ namespace Wyam.Core.Pipelines
             return TypeHelper.TryConvert(value, out result);
         }
 
-        public IDocument GetDocument(string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return GetDocument((IDocument)null, source, content, items);
         }
@@ -81,7 +81,7 @@ namespace Wyam.Core.Pipelines
             return GetDocument((IDocument)null, content, items);
         }
 
-        public IDocument GetDocument(string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             return GetDocument((IDocument)null, source, stream, items, disposeStream);
         }
@@ -105,10 +105,10 @@ namespace Wyam.Core.Pipelines
             return document;
         }
 
-        public IDocument GetDocument(IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
+        public IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
-            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            if (sourceDocument != null && sourceDocument.Source == null)
             {
                 // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
                 _pipeline.AddDocumentSource(source);
@@ -124,10 +124,10 @@ namespace Wyam.Core.Pipelines
             return document;
         }
 
-        public IDocument GetDocument(IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
+        public IDocument GetDocument(IDocument sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, stream, items, disposeStream);
-            if (sourceDocument != null && sourceDocument.Source == string.Empty)
+            if (sourceDocument != null && sourceDocument.Source == null)
             {
                 // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
                 _pipeline.AddDocumentSource(source);

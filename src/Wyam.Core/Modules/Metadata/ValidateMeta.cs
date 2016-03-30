@@ -125,7 +125,7 @@ namespace Wyam.Core.Modules.Metadata
         }
 
         private Exception GetException(IDocument document, string message) => 
-            new Exception($"{message ?? "Assertion failed"} [Source: {document.Source}; Id: {document.Id}]");
+            new Exception($"{message ?? "Assertion failed"} [Source: {document.SourceString()}; Id: {document.Id}]");
     }
 
     internal class Assertion<T>

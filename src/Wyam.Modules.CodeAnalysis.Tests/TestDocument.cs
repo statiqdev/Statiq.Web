@@ -170,9 +170,14 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             get { throw new NotSupportedException(); }
         }
 
-        public string Source
+        public FilePath Source
         {
             get { throw new NotSupportedException(); }
+        }
+
+        public string SourceString()
+        {
+            throw new NotSupportedException();
         }
 
         public IMetadata Metadata

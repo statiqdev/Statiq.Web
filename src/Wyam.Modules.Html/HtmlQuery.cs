@@ -178,7 +178,7 @@ namespace Wyam.Modules.Html
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while parsing HTML for {0}: {1}", input.Source, ex.Message);
+                    Trace.Warning("Exception while parsing HTML for {0}: {1}", input.SourceString(), ex.Message);
                     return new [] { input };
                 }
 
@@ -214,7 +214,7 @@ namespace Wyam.Modules.Html
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while processing HTML for {0}: {1}", input.Source, ex.Message);
+                    Trace.Warning("Exception while processing HTML for {0}: {1}", input.SourceString(), ex.Message);
                     return new[] { input };
                 }
             });

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
@@ -33,7 +34,7 @@ namespace Wyam.Testing
                     Value++;
                     if(CloneSource)
                     {
-                        yield return context.GetDocument(input, ValueKey + sourceCount++, input.Content == null ? Value.ToString() : input.Content + Value, 
+                        yield return context.GetDocument(input, new FilePath(ValueKey + sourceCount++, true), input.Content == null ? Value.ToString() : input.Content + Value, 
                             new Dictionary<string, object> { { ValueKey, Value } });
                     }
                     else

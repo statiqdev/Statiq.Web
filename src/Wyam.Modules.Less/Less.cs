@@ -48,7 +48,7 @@ namespace Wyam.Modules.Less
             
             return inputs.AsParallel().Select(input =>
             {
-                Trace.Verbose("Processing Less for {0}", input.Source);
+                Trace.Verbose("Processing Less for {0}", input.SourceString());
                 ILessEngine engine = engineFactory.GetEngine();
                 
                 // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 
 namespace Wyam.Common.Documents
@@ -19,8 +20,13 @@ namespace Wyam.Common.Documents
     public interface IDocument : IMetadata, IDisposable
     {
         /// <summary>An identifier for the document meant to reflect the source of the data. These should be unique (such as a file name).</summary>
-        /// <value>The source of the document.</value>
-        string Source { get; }
+        /// <value>The source of the document, or <c>null</c> if the document doesn't have a source.</value>
+        FilePath Source { get; }
+
+        /// <summary>
+        /// Gets a string representation of the source that's guaranteed non-null, used primarily for trace messages.
+        /// </summary>
+        string SourceString();
 
         /// <summary>An identifier that is generated when the document is created and stays the same after cloning.</summary>
         /// <value>The identifier.</value>

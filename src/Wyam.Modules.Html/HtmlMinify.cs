@@ -129,20 +129,20 @@ namespace Wyam.Modules.Html
 
                     if (result.Errors.Count > 0)
                     {
-                        Trace.Error("{0} errors found while minifing HTML for {1}:{2}{3}", result.Errors.Count, input.Source, Environment.NewLine, string.Join(Environment.NewLine, result.Errors.Select(x => MinificationErrorInfoToString(x))));
+                        Trace.Error("{0} errors found while minifing HTML for {1}:{2}{3}", result.Errors.Count, input.SourceString(), Environment.NewLine, string.Join(Environment.NewLine, result.Errors.Select(x => MinificationErrorInfoToString(x))));
                         return input;
                     }
 
                     if (result.Warnings.Count > 0)
                     {
-                        Trace.Warning("{0} warnings found while minifing HTML for {1}:{2}{3}", result.Warnings.Count, input.Source, Environment.NewLine, string.Join(Environment.NewLine, result.Warnings.Select(x => MinificationErrorInfoToString(x))));
+                        Trace.Warning("{0} warnings found while minifing HTML for {1}:{2}{3}", result.Warnings.Count, input.SourceString(), Environment.NewLine, string.Join(Environment.NewLine, result.Warnings.Select(x => MinificationErrorInfoToString(x))));
                     }
 
                     return context.GetDocument(input, result.MinifiedContent);
                 }
                 catch (Exception ex)
                 {
-                    Trace.Error("Exception while minifing HTML for {0}: {1}", input.Source, ex.Message);
+                    Trace.Error("Exception while minifing HTML for {0}: {1}", input.SourceString(), ex.Message);
                     return input;
                 }
             });

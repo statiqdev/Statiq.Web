@@ -20,7 +20,7 @@ namespace Wyam.Core.Caching
         {
             using (Stream stream = document.GetStream())
             {
-                return document.Source + " " + Crc32.Calculate(stream);
+                return (document.Source?.FullPath ?? "null") + " " + Crc32.Calculate(stream);
             }
         }
 

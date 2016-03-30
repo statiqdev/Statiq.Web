@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 
@@ -28,7 +29,7 @@ namespace Wyam.Common.Documents
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
-        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
+        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
         /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
@@ -55,7 +56,7 @@ namespace Wyam.Common.Documents
         /// <param name="items">The metadata items.</param>
         /// <param name="disposeStream">If set to <c>true</c> the provided <see cref="Stream"/> is disposed when the document is.</param>
         /// <returns>The cloned or new document.</returns>
-        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
+        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)

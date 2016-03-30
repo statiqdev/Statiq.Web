@@ -8,7 +8,6 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using LibGit2Sharp;
-using System.IO;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -54,9 +53,9 @@ namespace Wyam.Modules.Git
         /// <summary>
         /// Gets authors from the repository the specified path is a part of.
         /// </summary>
-        /// <param name="repositoryLocation">The repository location.</param>
-        public GitContributors(string repositoryLocation)
-            : base(repositoryLocation)
+        /// <param name="repositoryPath">The repository path.</param>
+        public GitContributors(DirectoryPath repositoryPath)
+            : base(repositoryPath)
         {
         }
 
@@ -146,15 +145,15 @@ namespace Wyam.Modules.Git
             }
 
             // Outputting contributor information for each document (with only commits for that document)
-            string repositoryLocation = GetRepositoryLocation(context);
+            DirectoryPath repositoryPath = GetRepositoryPath(context);
             return inputs.AsParallel().Select(input =>
             {
-                if (string.IsNullOrEmpty(input.Source))
+                if (input.Source == null)
                 {
                     return input;
                 }
-                string relativePath = PathHelper.GetRelativePath(repositoryLocation, input.Source);
-                if (string.IsNullOrEmpty(relativePath))
+                FilePath relativePath = repositoryPath.GetRelativePath(input.Source);
+                if (relativePath.Equals(input.Source))
                 {
                     return input;
                 }
@@ -164,7 +163,7 @@ namespace Wyam.Modules.Git
                         new MetadataItem(GitKeys.ContributorEmail, x[GitKeys.ContributorEmail]),
                         new MetadataItem(GitKeys.ContributorName, x[GitKeys.ContributorName]),
                         new MetadataItem(GitKeys.Commits, x.Get<IReadOnlyList<IDocument>>(GitKeys.Commits)
-                            .Where(y => y.Get<IReadOnlyDictionary<string, string>>(GitKeys.Entries).ContainsKey(relativePath))
+                            .Where(y => y.Get<IReadOnlyDictionary<FilePath, string>>(GitKeys.Entries).ContainsKey(relativePath))
                             .ToImmutableArray())
                     }))
                     .Where(x => x.Get<IReadOnlyList<IDocument>>(GitKeys.Commits).Count > 0)

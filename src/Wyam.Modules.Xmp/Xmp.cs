@@ -139,7 +139,7 @@ namespace Wyam.Modules.Xmp
                  {
                      if (_toSearch.Any(y => y.IsMandatory))
                      {
-                         Trace.Warning($"File doe not contain Metadata or sidecar file ({input.Source})");
+                         Trace.Warning($"File doe not contain Metadata or sidecar file ({input.SourceString()})");
                          if (_skipElementOnMissingData)
                              return null;
                      }
@@ -160,7 +160,7 @@ namespace Wyam.Modules.Xmp
                          {
                              if (search.IsMandatory)
                              {
-                                 Trace.Error($"Metadata does not Contain {search.XmpPath} ({input.Source})");
+                                 Trace.Error($"Metadata does not Contain {search.XmpPath} ({input.SourceString()})");
                                  if (_skipElementOnMissingData)
                                  {
                                      return null;
@@ -171,7 +171,7 @@ namespace Wyam.Modules.Xmp
                          object value = GetObjectFromMetadata(metadata, hierarchicalDirectory);
                          if (newValues.ContainsKey(search.MetadataKey) && _errorOnDoubleKeys)
                          {
-                             Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({input.Source})");
+                             Trace.Error($"This Module tries to write same Key multiple times {search.MetadataKey} ({input.SourceString()})");
                          }
                          else
                          {

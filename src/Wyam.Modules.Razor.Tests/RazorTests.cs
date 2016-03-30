@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Pipelines;
 using Wyam.Common.Tracing;
 using Wyam.Core;
@@ -146,7 +147,7 @@ namespace Wyam.Modules.Razor.Tests
                 engine.Configure();
                 context.Assemblies.Returns(engine.Assemblies);
                 IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(@"C:\Temp\temp.txt");
+                document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Document.Source</p>")));
                 Razor razor = new Razor();
 
@@ -155,7 +156,7 @@ namespace Wyam.Modules.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>C:\Temp\temp.txt</p>");
+                context.Received().GetDocument(document, @"<p>C:/Temp/temp.txt</p>");
             }
 
             [Test]
@@ -174,7 +175,7 @@ namespace Wyam.Modules.Razor.Tests
                 engine.Configure();
                 context.Assemblies.Returns(engine.Assemblies);
                 IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(@"C:\Temp\temp.txt");
+                document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Model.Source</p>")));
                 Razor razor = new Razor();
 
@@ -183,7 +184,7 @@ namespace Wyam.Modules.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>C:\Temp\temp.txt</p>");
+                context.Received().GetDocument(document, @"<p>C:/Temp/temp.txt</p>");
             }
 
             // TODO: Uncomment once new IO support is live

@@ -6,6 +6,7 @@ using System.Reflection;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
@@ -28,14 +29,14 @@ namespace Wyam.Core.Tests.Modules.IO
                 IDocument document = Substitute.For<IDocument>();
                 Stream stream = null;
                 IEnumerable<KeyValuePair<string, object>> metadata = null;
-                string source = null;
+                FilePath source = null;
                 IModule download = new Download().WithUris("http://wyam.io/");
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context
-                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
+                    .When(x => x.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
                     .Do(x =>
                     {
-                        source = x.Arg<string>();
+                        source = x.Arg<FilePath>();
                         stream = x.Arg<Stream>();
                         metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
@@ -45,7 +46,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // Then
 
-                Assert.IsNotEmpty(source, "Source cannot be empty");
+                Assert.IsNotNull(source, "Source cannot be empty");
 
                 var headers = metadata.FirstOrDefault(x => x.Key == Keys.SourceHeaders).Value as Dictionary<string, string>;
 
@@ -116,7 +117,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context
-                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                    .When(x => x.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
                         stream = x.Arg<Stream>();
@@ -143,7 +144,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context
-                    .When(x => x.GetDocument(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                    .When(x => x.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
                         stream = x.Arg<Stream>();

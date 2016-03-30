@@ -96,7 +96,7 @@ namespace Wyam.Modules.Yaml
                     }
                     catch (Exception ex)
                     {
-                        Trace.Error("Error processing YAML for {0}: {1}", input.Source, ex.ToString());
+                        Trace.Error("Error processing YAML for {0}: {1}", input.SourceString(), ex.ToString());
                     }
                     return null;
                 })

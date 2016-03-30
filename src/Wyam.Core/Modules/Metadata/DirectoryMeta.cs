@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
 using Wyam.Core.Modules.IO;
@@ -64,7 +65,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <summary>
         /// Specifies a file name to use as common metadata using a delegate so that the common metadata document can be specific to the input document.
         /// </summary>
-        /// <param name="metadataFileName">A delegate that returns a <c>string</c> with the name of the metadata file.</param>
+        /// <param name="metadataFileName">A delegate that returns a <c>bool</c> indicating if the current document contains the metadata you want to use.</param>
         /// <param name="inherited">If set to <c>true</c>, metadata from documents with this file name will be inherited by documents in nested directories.</param>
         /// <param name="replace">If set to <c>true</c>, metadata from this document will replace any existing metadata on the target document.</param>
         public DirectoryMeta WithMetadataFile(DocumentConfig metadataFileName, bool inherited = false, bool replace = false)
@@ -79,71 +80,87 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="metadataFileName">Name of the metadata file.</param>
         /// <param name="inherited">If set to <c>true</c>, metadata from documents with this file name will be inherited by documents in nested directories.</param>
         /// <param name="replace">If set to <c>true</c>, metadata from this document will replace any existing metadata on the target document.</param>
-        public DirectoryMeta WithMetadataFile(string metadataFileName, bool inherited = false, bool replace = false)
+        public DirectoryMeta WithMetadataFile(FilePath metadataFileName, bool inherited = false, bool replace = false)
         {
-            return WithMetadataFile((x, y) => Path.GetFileName(x.Source) == metadataFileName, inherited, replace);
+            return WithMetadataFile((x, y) => x.Source != null && x.Source.FileName.Equals(metadataFileName), inherited, replace);
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            //Find MetadataFles
-
-            var metadataDictinary = inputs.Select(x =>
-            {
-                var found = _metadataFile
-                .Select((y, index) => new { Index = index, MetadataFileEntry = y })
-                .FirstOrDefault(y => y.MetadataFileEntry.MetadataFileName.Invoke<bool>(x, context));
-                if (found == null)
-                    return null;
-                return new
+            //Find metadata files
+            var metadataDictionary = inputs
+                .Where(input => input.Source != null)
+                .Select(input =>
                 {
-                    Priority = found.Index,
-                    Path = Path.GetDirectoryName(x.Source),
-                    found.MetadataFileEntry,
-                    x.Metadata
-                };
-            })
-            .Where(x => x != null)
-            .ToLookup(x => x.Path)
-            .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
+                    var found = _metadataFile
+                        .Select((y, index) => new
+                        {
+                            Index = index,
+                            MetadataFileEntry = y
+                        })
+                        .FirstOrDefault(y => y.MetadataFileEntry.MetadataFileName.Invoke<bool>(input, context));
+                    if (found == null)
+                    {
+                        return null;
+                    }
+                    return new
+                    {
+                        Priority = found.Index,
+                        Path = input.Source.Directory.Collapse(),
+                        found.MetadataFileEntry,
+                        input.Metadata
+                    };
+                })
+                .Where(x => x != null)
+                .ToLookup(x => x.Path)
+                .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Priority).ToArray());
 
             // Apply Metadata
-
             return inputs
+                .Where(input => input.Source != null)
                 .Where(input => _preserveMetadataFiles || !(_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(input, context)))) // ignore files that define Metadata if not preserved
                 .Select(input =>
                 {
-                    // First add the inhered Metadata to temp dictionary.
-                    string dir = Path.GetDirectoryName(input.Source);
-                    List<string> sourcePathes = new List<string>();
-                    while (dir.StartsWith(context.InputFolder))
+                    // First add the inherited metadata to the temp dictionary
+                    List<DirectoryPath> sourcePaths = new List<DirectoryPath>();
+                    DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(input.Source)?.Collapse();
+                    if (inputPath != null)
                     {
-                        sourcePathes.Add(dir);
-                        dir = Path.GetDirectoryName(dir);
+                        DirectoryPath dir = input.Source.Directory.Collapse();
+                        while (dir != null && dir.FullPath.StartsWith(inputPath.FullPath))
+                        {
+                            sourcePaths.Add(dir);
+                            dir = dir.Parent;
+                        }
                     }
 
                     HashSet<string> overriddenKeys = new HashSet<string>(); // we need to know which keys we may override if they are overridden.
                     List<KeyValuePair<string, object>> newMetadata = new List<KeyValuePair<string, object>>();
 
                     bool firstLevel = true;
-                    foreach (var path in sourcePathes)
+                    foreach (DirectoryPath path in sourcePaths)
                     {
-                        if (metadataDictinary.ContainsKey(path))
+                        if (metadataDictionary.ContainsKey(path))
                         {
-
-                            foreach (var metadataEntry in metadataDictinary[path])
+                            foreach (var metadataEntry in metadataDictionary[path])
                             {
                                 if (!firstLevel && !metadataEntry.MetadataFileEntry.Inherited)
+                                {
                                     continue; // If we are not in the same directory and inherited isn't activated 
+                                }
 
-                                foreach (var keyValuePair in metadataEntry.Metadata)
+                                foreach (KeyValuePair<string, object> keyValuePair in metadataEntry.Metadata)
                                 {
                                     if (overriddenKeys.Contains(keyValuePair.Key))
+                                    {
                                         continue; // The value was already written.
+                                    }
 
                                     if (input.Metadata.ContainsKey(keyValuePair.Key)
                                         && !metadataEntry.MetadataFileEntry.Replace)
+                                    {
                                         continue; // The value already exists and this MetadataFile has no override
+                                    }
 
                                     // We can add the value.
                                     overriddenKeys.Add(keyValuePair.Key); // no other MetadataFile may override it.

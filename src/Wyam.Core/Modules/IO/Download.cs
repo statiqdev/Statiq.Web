@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
@@ -103,7 +104,7 @@ namespace Wyam.Core.Modules.IO
                 DownloadResult result = t.Result;
 
                 string uri = result.Uri.ToString();
-                doc = context.GetDocument(uri, result.Stream, new MetadataItems
+                doc = context.GetDocument(new FilePath(NormalizedPath.AbstractProvider, uri, true), result.Stream, new MetadataItems
                 {
                     { Keys.SourceUri, uri },
                     { Keys.SourceHeaders, result.Headers }

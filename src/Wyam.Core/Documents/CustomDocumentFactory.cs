@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Pipelines;
 
 namespace Wyam.Core.Documents
@@ -23,7 +24,7 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(null, _documentFactory.GetDocument(context));
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, string content,
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CustomDocument customDocument = (CustomDocument) sourceDocument;
@@ -39,7 +40,7 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string source, Stream stream,
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream,
             IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Pipelines;
 using Wyam.Testing;
@@ -25,7 +25,8 @@ namespace Wyam.Modules.Git.Tests
             {
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
+                context.FileSystem.RootPath.Returns(new DirectoryPath("/"));
+                context.FileSystem.InputPaths.Returns(x => new [] { new DirectoryPath(TestContext.CurrentContext.TestDirectory) });
                 context.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
@@ -48,27 +49,21 @@ namespace Wyam.Modules.Git.Tests
             public void GetCommitsForInputDocument()
             {
                 // Given
-                string inputFolder = 
-                    Path.GetDirectoryName(
-                        Path.GetDirectoryName(
-                            Path.GetDirectoryName(
-                                Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory)
-                            )
-                        )
-                    );
+                DirectoryPath inputPath = new DirectoryPath(TestContext.CurrentContext.TestDirectory).Parent.Parent.Parent.Parent;
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(inputFolder);
+                context.FileSystem.RootPath.Returns(new DirectoryPath("/"));
+                context.FileSystem.InputPaths.Returns(x => new[] { inputPath });
                 context.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();
                     newDocument.GetEnumerator()
                         .Returns(getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).GetEnumerator());
-                    newDocument.Get<IReadOnlyDictionary<string, string>>(Arg.Any<string>())
-                        .Returns(getCallInfo => (IReadOnlyDictionary<string, string>)getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).First(x => x.Key == getCallInfo.ArgAt<string>(0)).Value);
+                    newDocument.Get<IReadOnlyDictionary<FilePath, string>>(Arg.Any<string>())
+                        .Returns(getCallInfo => (IReadOnlyDictionary<FilePath, string>)getNewDocumentCallInfo.ArgAt<IEnumerable<KeyValuePair<string, object>>>(0).First(x => x.Key == getCallInfo.ArgAt<string>(0)).Value);
                     return newDocument;
                 });
                 IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(Path.Combine(inputFolder, "Wyam.Core\\IModule.cs"));  // Use file that no longer exists so commit count is stable
+                document.Source.Returns(inputPath.CombineFile("Wyam.Core/IModule.cs"));  // Use file that no longer exists so commit count is stable
                 context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(x =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();

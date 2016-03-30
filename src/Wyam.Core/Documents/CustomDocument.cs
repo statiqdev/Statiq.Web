@@ -75,7 +75,9 @@ namespace Wyam.Core.Documents
 
         public void Dispose() => Document.Dispose();
 
-        public string Source => Document.Source;
+        public FilePath Source => Document.Source;
+
+        public string SourceString() => Document.SourceString();
 
         public string Id => Document.Id;
 
