@@ -193,6 +193,10 @@
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Modules.Markdown</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Modules.Minification\Wyam.Modules.Minification.csproj">
+      <Project>{ad223a29-5736-4914-9d24-66d8329e663e}</Project>
+      <Name>Wyam.Modules.Minification</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Modules.Razor</Name>

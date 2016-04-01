@@ -30,7 +30,7 @@ namespace Wyam.Modules.Minification
     /// );
     /// </code>
     /// </example>
-    /// <category>Minification</category>
+    /// <category>Content</category>
     public class XmlMinify : MinifierBase, IModule
     {
         private readonly XmlMinificationSettings _minificationSettings;

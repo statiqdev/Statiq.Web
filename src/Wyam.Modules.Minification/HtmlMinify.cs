@@ -25,7 +25,7 @@ namespace Wyam.Modules.Minification
     /// );
     /// </code>
     /// </example>
-    /// <category>Minification</category>
+    /// <category>Content</category>
     public class HtmlMinify : MinifierBase, IModule
     {
         private readonly HtmlMinificationSettings _minificationSettings;

@@ -21,7 +21,7 @@ namespace Wyam.Modules.Minification
     /// );
     /// </code>
     /// </example>
-    /// <category>Minification</category>
+    /// <category>Content</category>
     public class JsMinify : MinifierBase, IModule
     {
         private bool _isInlineCode;

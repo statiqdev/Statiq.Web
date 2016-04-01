@@ -21,7 +21,7 @@ namespace Wyam.Modules.Minification
     /// );
     /// </code>
     /// </example>
-    /// <category>Minification</category>
+    /// <category>Content</category>
     public class CssMinify : MinifierBase, IModule
     {
         private bool _isInlineCode;

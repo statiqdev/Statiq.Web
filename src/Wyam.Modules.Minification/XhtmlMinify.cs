@@ -25,7 +25,7 @@ namespace Wyam.Modules.Minification
     /// );
     /// </code>
     /// </example>
-    /// <category>Minification</category>
+    /// <category>Content</category>
     public class XhtmlMinify : MinifierBase, IModule
     {
         private readonly XhtmlMinificationSettings _minificationSettings;
