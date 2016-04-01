@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using WebMarkupMin.Core;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Pipelines;
-using Wyam.Common.Tracing;
 
-namespace Wyam.Modules.Html
+namespace Wyam.Modules.Minification
 {
     /// <summary>
     /// Minifies the HTML content.
@@ -28,7 +26,7 @@ namespace Wyam.Modules.Html
     /// </code>
     /// </example>
     /// <category>Content</category>
-    public class HtmlMinify : IModule
+    public class HtmlMinify : MinifierBase, IModule
     {
         private readonly HtmlMinificationSettings _minificationSettings;
 
@@ -54,7 +52,7 @@ namespace Wyam.Modules.Html
         /// </list>
         /// </summary>
         /// <param name="emptyTagRenderMode">Enum type <see cref="WebMarkupMin.Core.HtmlEmptyTagRenderMode"/>; default value is <code>HtmlEmptyTagRenderMode.NoSlash</code></param>
-        /// <returns></returns>
+        /// <returns>The current instance.</returns>
         public HtmlMinify EmptyTagRenderMode(HtmlEmptyTagRenderMode emptyTagRenderMode = HtmlEmptyTagRenderMode.NoSlash)
         {
             _minificationSettings.EmptyTagRenderMode = emptyTagRenderMode;
@@ -64,7 +62,7 @@ namespace Wyam.Modules.Html
         /// <summary>
         /// Flag for whether to remove all HTML comments, except conditional, noindex, KnockoutJS containerless comments and AngularJS comment directives.
         /// </summary>
-        /// <param name="removeHtmlComments">Default value is `true`.</param>
+        /// <param name="removeHtmlComments">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
         public HtmlMinify RemoveHtmlComments(bool removeHtmlComments = true)
         {
@@ -73,24 +71,24 @@ namespace Wyam.Modules.Html
         }
 
         /// <summary>
-        /// Flag for whether to remove optional end tags (<code>html</code>, <code>head</code>, <code>body</code>, <code>p</code>, <code>li</code>, <code>dt</code>, <code>dd</code>, <code>rt</code>, <code>rp</code>, <code>optgroup</code>, <code>option</code>, <code>colgroup</code>, <code>thead</code>, <code>tfoot</code>, <code>tbody</code>, <code>tr</code>, <code>th</code> and <code>td</code>).
-        /// </summary>
-        /// <param name="removeOptionalEndTags">Default value is `true`.</param>
-        /// <returns>The current instance.</returns>
-        public HtmlMinify RemoveOptionalEndTags(bool removeOptionalEndTags = true)
-        {
-            _minificationSettings.RemoveOptionalEndTags = removeOptionalEndTags;
-            return this;
-        }
-
-        /// <summary>
         /// Flag for whether to remove tags without content, except for <code>textarea</code>, <code>tr</code>, <code>th</code> and <code>td</code> tags, and tags with <code>class</code>, <code>id</code>, <code>name</code>, <code>role</code>, <code>src</code> and <code>data-*</code> attributes.
         /// </summary>
-        /// <param name="removeTagsWithoutContent">Default value is `false`.</param>
+        /// <param name="removeTagsWithoutContent">Default value is <code>false</code>.</param>
         /// <returns>The current instance.</returns>
         public HtmlMinify RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
         {
             _minificationSettings.RemoveTagsWithoutContent = removeTagsWithoutContent;
+            return this;
+        }
+
+        /// <summary>
+        /// Flag for whether to remove optional end tags (<code>html</code>, <code>head</code>, <code>body</code>, <code>p</code>, <code>li</code>, <code>dt</code>, <code>dd</code>, <code>rt</code>, <code>rp</code>, <code>optgroup</code>, <code>option</code>, <code>colgroup</code>, <code>thead</code>, <code>tfoot</code>, <code>tbody</code>, <code>tr</code>, <code>th</code> and <code>td</code>).
+        /// </summary>
+        /// <param name="removeOptionalEndTags">Default value is <code>true</code>.</param>
+        /// <returns>The current instance.</returns>
+        public HtmlMinify RemoveOptionalEndTags(bool removeOptionalEndTags = true)
+        {
+            _minificationSettings.RemoveOptionalEndTags = removeOptionalEndTags;
             return this;
         }
 
@@ -102,7 +100,11 @@ namespace Wyam.Modules.Html
         /// <example>
         /// <code>
         /// HtmlMinify()
-        ///     .WithSettings(settings => settings.RemoveHtmlComments = false)
+        ///     .WithSettings(settings =>
+        ///     {
+        ///         settings.CollapseBooleanAttributes = false;
+        ///         settings.AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes;
+        ///     })
         /// </code>
         /// </example>
         public HtmlMinify WithSettings(Action<HtmlMinificationSettings> action)
@@ -121,36 +123,7 @@ namespace Wyam.Modules.Html
         {
             HtmlMinifier minifier = new HtmlMinifier(_minificationSettings);
 
-            return inputs.AsParallel().Select(input =>
-            {
-                try
-                {
-                    MarkupMinificationResult result = minifier.Minify(input.Content);
-
-                    if (result.Errors.Count > 0)
-                    {
-                        Trace.Error("{0} errors found while minifing HTML for {1}:{2}{3}", result.Errors.Count, input.SourceString(), Environment.NewLine, string.Join(Environment.NewLine, result.Errors.Select(x => MinificationErrorInfoToString(x))));
-                        return input;
-                    }
-
-                    if (result.Warnings.Count > 0)
-                    {
-                        Trace.Warning("{0} warnings found while minifing HTML for {1}:{2}{3}", result.Warnings.Count, input.SourceString(), Environment.NewLine, string.Join(Environment.NewLine, result.Warnings.Select(x => MinificationErrorInfoToString(x))));
-                    }
-
-                    return context.GetDocument(input, result.MinifiedContent);
-                }
-                catch (Exception ex)
-                {
-                    Trace.Error("Exception while minifing HTML for {0}: {1}", input.SourceString(), ex.Message);
-                    return input;
-                }
-            });
-        }
-
-        private string MinificationErrorInfoToString(MinificationErrorInfo info)
-        {
-            return string.Format("Line {0}, Column {1}:{5}{2} {3}{5}{4}", info.LineNumber, info.ColumnNumber, info.Category, info.Message, info.SourceFragment, Environment.NewLine);
+            return Minify(inputs, context, minifier.Minify, "HTML");
         }
     }
 }

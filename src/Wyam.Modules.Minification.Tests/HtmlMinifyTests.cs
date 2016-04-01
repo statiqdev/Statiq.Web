@@ -5,7 +5,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Pipelines;
 using Wyam.Testing;
 
-namespace Wyam.Modules.Html.Tests
+namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
@@ -22,17 +22,18 @@ namespace Wyam.Modules.Html.Tests
                             <title>Title</title>
                         </head>
                         <body>
+                            <!-- FOO -->
                             <h1>Title</h1>
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                string output = @"<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br>some text</p></body></html>";
+                string output = @"<html><head><title>Title</title><body><h1>Title</h1><p>This is<br>some text";
 
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                HtmlMinify htmlMinify = new HtmlMinify().RemoveOptionalEndTags(false);
+                HtmlMinify htmlMinify = new HtmlMinify();
 
                 // When
                 htmlMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -56,7 +57,7 @@ namespace Wyam.Modules.Html.Tests
                             <p>This is<br />some text</p>
                         </body>
                     </html>";
-                string output = @"<html><head><title>Title</title><body><!-- FOO --><h1>Title</h1><p>This is<br>some text";
+                string output = @"<html><head><title>Title</title></head><body><!-- FOO --><h1>Title</h1><p>This is<br>some text</p></body></html>";
 
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
@@ -65,7 +66,7 @@ namespace Wyam.Modules.Html.Tests
                 HtmlMinify htmlMinify = new HtmlMinify()
                     .WithSettings(settings =>
                     {
-                        settings.RemoveOptionalEndTags = true;
+                        settings.RemoveOptionalEndTags = false;
                         settings.RemoveHtmlComments = false;
                     });
 
