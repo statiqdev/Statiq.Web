@@ -1,8 +1,14 @@
 # 0.12.0
 
 - **MAJOR BREAKING CHANGES, BEWARE YE WHO ENTER HERE!** - The entire I/O stack has (finally) been rewritten and modules that were using `System.IO` classes have been ported to the new abstraction - read about how to migrate your pre 0.12.0 code at http://wyam.io/knowledgebase/0-12-0-migration and keep on the lookout for bugs
-- Feature - New globbing engine with brace expansion, negation, and wildcard support
+- Feature - New globbing engine with brace expansion, negation, and wildcard support (see http://wyam.io/getting-started/io for more details)
 - Refactoring - **Breaking change**: ReadFiles now uses the new I/O API and several configuration methods have been removed or changed
+- Refactoring - **Breaking change**: `IDocument.Source` is now a `FilePath`
+- Feature - You can now explicitly specify if a given `FilePath` or `DirectoryPath` is absolute or not
+- Refactoring - **Breaking change**: Moved `IMetadata.Link()` to `NormalizedPath.ToLink()`
+- Feature - New **HtmlMinify** module that can minify HTML content (#260, thanks @leekelleher)
+- Feature - Added `IMetadata.FilePath()` and `IMetadata.DirectoryPath()` to make getting strongly-typed paths from metadata easier
+- Refactoring - **Breaking change**: Refactored several methods in `FilePath` and `DirectoryPath` into properties (`FilePath.GetFilename()` to `FilePath.Filename`, etc.)
 
 # 0.11.5
 
