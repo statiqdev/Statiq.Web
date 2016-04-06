@@ -56,51 +56,68 @@ namespace Wyam.Modules.Yaml
         {
             return inputs
                 .AsParallel()
-                .Select(input =>
+                .SelectMany(input =>
                 {
-                    try
+                    List<Dictionary<string, object>> documentMetadata = new List<Dictionary<string, object>>();
+                    using (TextReader contentReader = new StringReader(input.Content))
                     {
-                        Dictionary<string, object> items = new Dictionary<string, object>();
-                        using (TextReader contentReader = new StringReader(input.Content))
+                        YamlStream yamlStream = new YamlStream();
+                        yamlStream.Load(contentReader);
+                        foreach (YamlDocument document in yamlStream.Documents)
                         {
-                            YamlStream yamlStream = new YamlStream();
-                            yamlStream.Load(contentReader);
-                            if (yamlStream.Documents.Count > 0)
+                            // If this is a sequence, get a document for each item
+                            YamlSequenceNode rootSequence = document.RootNode as YamlSequenceNode;
+                            if (rootSequence != null)
                             {
-                                if (!string.IsNullOrEmpty(_key))
-                                {
-                                    items[_key] = new DynamicYaml(yamlStream.Documents[0].RootNode);
-                                }
-                                if (_flatten)
-                                {
-                                    foreach (YamlDocument document in yamlStream.Documents)
-                                    {
-                                        // Map scalar-to-scalar children
-                                        foreach (KeyValuePair<YamlNode, YamlNode> child in 
-                                            ((YamlMappingNode)document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
-                                        {
-                                            items[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;
-                                        }
-
-                                        // Map simple sequences
-                                        foreach (KeyValuePair<YamlNode, YamlNode> child in
-                                            ((YamlMappingNode) document.RootNode).Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlScalarNode)))
-                                        {
-                                            items[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
-                                        }
-                                    }
-                                }
+                                documentMetadata.AddRange(rootSequence.Children.Select(GetDocumentMetadata));
+                            }
+                            else
+                            {
+                                // Otherwise, just get a single set of metadata
+                                documentMetadata.Add(GetDocumentMetadata(document.RootNode));
                             }
                         }
-                        return context.GetDocument(input, items);
                     }
-                    catch (Exception ex)
-                    {
-                        Trace.Error("Error processing YAML for {0}: {1}", input.SourceString(), ex.ToString());
-                    }
-                    return null;
+                    return documentMetadata.Select(metadata => context.GetDocument(input, metadata));
                 })
                 .Where(x => x != null);
+        }
+
+        private Dictionary<string, object> GetDocumentMetadata(YamlNode node)
+        {
+            Dictionary<string, object> metadata = new Dictionary<string, object>();
+
+            // Get the dynamic representation
+            if (!string.IsNullOrEmpty(_key))
+            {
+                metadata[_key] = new DynamicYaml(node);
+            }
+
+            // Also get the flat metadata if requested
+            if (_flatten)
+            {
+                YamlMappingNode mappingNode = node as YamlMappingNode;
+                if (mappingNode == null)
+                {
+                    throw new InvalidOperationException("Cannot flatten YAML content that doesn't have a mapping node at the root (or within a root sequence).");
+                }
+
+                // Map scalar-to-scalar children
+                foreach (KeyValuePair<YamlNode, YamlNode> child in 
+                    mappingNode.Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
+                {
+                    metadata[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;
+                }
+
+                // Map simple sequences
+                foreach (KeyValuePair<YamlNode, YamlNode> child in
+                    mappingNode.Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlScalarNode)))
+                {
+                    metadata[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
+                }
+            }
+
+            return metadata;
         }
     }
 }
