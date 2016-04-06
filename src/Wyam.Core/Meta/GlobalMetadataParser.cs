@@ -26,7 +26,7 @@ namespace Wyam.Core.Meta
             var metadata = new SimpleMetadata();
             foreach (var arg in args)
             {
-                var pair = ParseSingle(arg);
+                var pair = ParsePair(arg);
                 try
                 {
                     metadata.Add(pair.Key, pair.Value);
@@ -41,7 +41,7 @@ namespace Wyam.Core.Meta
             return metadata;
         }
 
-        private KeyValuePair<string, string> ParseSingle(string arg)
+        private KeyValuePair<string, string> ParsePair(string arg)
         {
             for (int i = 0; i < arg.Length; i++)
             {
