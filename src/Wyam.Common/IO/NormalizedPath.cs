@@ -211,6 +211,20 @@ namespace Wyam.Common.IO
         public override bool Equals(object obj)
         {
             NormalizedPath other = obj as NormalizedPath;
+
+            // Special case for string, attempt to create like-typed path from the value
+            if (other == null && obj is string)
+            {
+                if (this is FilePath)
+                {
+                    other = new FilePath((string)obj);
+                }
+                else if (this is DirectoryPath)
+                {
+                    other = new DirectoryPath((string)obj);
+                }
+            }
+
             return other != null && ((IEquatable<NormalizedPath>)this).Equals(other);
         }
 
