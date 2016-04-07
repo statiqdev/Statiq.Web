@@ -8,5 +8,9 @@ namespace Wyam.Common.Meta
 {
     public interface ISimpleMetadata : IDictionary<string, object>
     {
+        /// <summary>
+        /// Creates clone of this instance.
+        /// </summary>
+        ISimpleMetadata Clone();
     }
 }

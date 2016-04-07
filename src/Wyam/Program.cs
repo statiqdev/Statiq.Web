@@ -55,6 +55,7 @@ namespace Wyam
         private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
         private IReadOnlyList<string> _globalRawMetadata = null;
+        private Common.Meta.ISimpleMetadata _engineGlobalMetadata = null;
 
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -93,18 +94,12 @@ namespace Wyam
                 Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
             }
 
-            // Get the engine
-            Engine engine = GetEngine();
-            if (engine == null)
-            {
-                return (int)ExitCode.CommandLineError;
-            }
-
-            // Populate engine's metadata
+            // Prepare engine's metadata
             if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
             {
-                try {
-                    engine.GlobalMetadata = new GlobalMetadataParser().Parse(_globalRawMetadata);
+                try
+                {
+                    _engineGlobalMetadata = new GlobalMetadataParser().Parse(_globalRawMetadata);
                 }
                 catch (MetadataParseException ex)
                 {
@@ -116,6 +111,13 @@ namespace Wyam
                 }
                 // Not used anymore, release resources.
                 _globalRawMetadata = null;
+            }
+
+            // Get the engine
+            Engine engine = GetEngine();
+            if (engine == null)
+            {
+                return (int)ExitCode.CommandLineError;
             }
 
             // Pause
@@ -393,6 +395,10 @@ namespace Wyam
                 if (_noClean)
                 {
                     engine.CleanOutputPathOnExecute = false;
+                }
+                if (_engineGlobalMetadata != null)
+                {
+                    engine.GlobalMetadata = _engineGlobalMetadata.Clone();
                 }
 
                 engine.ApplicationInput = _stdin;
