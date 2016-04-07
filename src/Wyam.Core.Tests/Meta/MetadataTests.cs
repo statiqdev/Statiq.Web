@@ -158,6 +158,31 @@ namespace Wyam.Core.Tests.Meta
         public class CloneMethodTests : MetadataTests
         {
             [Test]
+            public void GlobalMetadataRetainedInNextIterations()
+            {
+                // TODO add complex object (ex. List<string>) test
+                SimpleMetadata meta = new SimpleMetadata();
+
+                meta.Add("hello", "world");
+                meta.Add("obj", 123);
+
+                {
+                    ISimpleMetadata cloned = meta.Clone();
+                    Assert.IsTrue(((string)cloned["hello"]).Equals("world", StringComparison.Ordinal));
+                    Assert.AreEqual((int)cloned["obj"], 123);
+                    cloned.Clear();
+
+                    Assert.IsTrue(cloned.Count == 0);
+                }
+                {
+                    ISimpleMetadata cloned = meta.Clone();
+                    Assert.IsTrue(cloned.Count == 2);
+                    Assert.IsTrue(((string)cloned["hello"]).Equals("world", StringComparison.Ordinal));
+                    Assert.AreEqual((int)cloned["obj"], 123);
+                }
+            }
+
+            [Test]
             public void CanCloneWithNewValues()
             {
                 // Given

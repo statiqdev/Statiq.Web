@@ -398,7 +398,7 @@ namespace Wyam
                 }
                 if (_engineGlobalMetadata != null)
                 {
-                    engine.GlobalMetadata = _engineGlobalMetadata;
+                    engine.GlobalMetadata = _engineGlobalMetadata.Clone();
                 }
 
                 engine.ApplicationInput = _stdin;
