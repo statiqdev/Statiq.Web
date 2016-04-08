@@ -1,0 +1,29 @@
+public class Combine : IModule
+{
+    public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+    {
+        IDocument result = null;
+        foreach(IDocument input in inputs)
+        {
+            result = result == null ? input : context.GetDocument(result, result.Content + input.Content, input);
+        }
+        return new [] { result };
+    }
+}
+---
+Pipelines.Add(
+    ReadFiles("index.md"),  // Read the index page
+    Markdown(),  // Convert it to HTML         
+    Append(      
+        ReadFiles("projects/*.md"),  // Read each project
+        FrontMatter(Yaml()),  // Move the frontmatter to metadata
+        Markdown(),  // Convert it to HTML
+        ReplaceIn("{{CONTENT}}", ReadFiles("projects/template.html")),  // Load the project template and replace the content placeholder
+        Replace("{{TITLE}}", @doc.Get("Title", "Default Title")),  // Replace the title placeholder
+        Replace("{{DESC}}", @doc.Get("Description", "Default Description")),  // Replace the description placeholder
+        new Combine()  // Combine all the projects before appending    
+    ),
+    Prepend(ReadFiles("header.html")),  // Prepend the index page header
+    Append(ReadFiles("footer.html")),  // Append the index page footer
+    WriteFiles(".html")
+);
