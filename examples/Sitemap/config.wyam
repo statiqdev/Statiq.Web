@@ -32,20 +32,20 @@ Pipelines.Add("BuildSitemap",
 	// it will be checked whether an location is absolute or not
 	// if it is relative, the above specified "Hostname" metadata is used to generate absolute urls
 	Documents(@ctx.Documents),
-	Sitemap("sitemap.xml"),
+	Sitemap(),
     WriteFiles((d, c) => "sitemap.xml")
 );
 
 Pipelines.Add("BuildSitemap2",
 	Documents("Posts"), // we only use the documents of the "Posts"-pipeline for sitemap generation
-	Sitemap("sitemap2.xml"),
+	Sitemap(),
     WriteFiles((d, c) => "sitemap2.xml")
 );
 
 Pipelines.Add("BuildSitemap3",
 	// we format all the added relative urls (when using the formatter, any "Hostname" meta data is ignored)
 	Documents(@ctx.Documents),
-	Sitemap("sitemap3.xml", urlLocation => "http://www.example.org/" + urlLocation ),
+	Sitemap(urlLocation => "http://www.example.org/" + urlLocation ),
     WriteFiles((d, c) => "sitemap3.xml")
 );
 

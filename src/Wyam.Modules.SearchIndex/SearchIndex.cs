@@ -64,17 +64,17 @@ namespace Wyam.Modules.SearchIndex
     {
         private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
         private readonly DocumentConfig _searchIndexItem;
-        private readonly string _stopwordsFilename;
+        private readonly FilePath _stopwordsPath;
         private readonly bool _enableStemming;
 
         /// <summary>
         /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that 
         /// contains a <c>SearchIndexItem</c> instance.
         /// </summary>
-        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
-        public SearchIndex(string stopwordsFilename = null, bool enableStemming = false)
-            : this((doc, ctx) => doc.Get<SearchIndexItem>(SearchIndexKeys.SearchIndexItem), stopwordsFilename, enableStemming)
+        public SearchIndex(FilePath stopwordsPath = null, bool enableStemming = false)
+            : this((doc, ctx) => doc.Get<SearchIndexItem>(SearchIndexKeys.SearchIndexItem), stopwordsPath, enableStemming)
         {
         }
 
@@ -83,10 +83,10 @@ namespace Wyam.Modules.SearchIndex
         /// contains a <c>SearchIndexItem</c> instance.
         /// </summary>
         /// <param name="searchIndexItemMetadataKey">The metadata key that contains the <c>SearchIndexItem</c> instance.</param>
-        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
-        public SearchIndex(string searchIndexItemMetadataKey, string stopwordsFilename = null, bool enableStemming = false)
-            : this((doc, ctx) => doc.Get<SearchIndexItem>(searchIndexItemMetadataKey), stopwordsFilename, enableStemming)
+        public SearchIndex(string searchIndexItemMetadataKey, FilePath stopwordsPath = null, bool enableStemming = false)
+            : this((doc, ctx) => doc.Get<SearchIndexItem>(searchIndexItemMetadataKey), stopwordsPath, enableStemming)
         {
         }
 
@@ -94,17 +94,17 @@ namespace Wyam.Modules.SearchIndex
         /// Creates the search index by using a delegate that returns a <c>SearchIndexItem</c> instance for each input document.
         /// </summary>
         /// <param name="searchIndexItem">A delegate that should return a <c>SearchIndexItem</c>.</param>
-        /// <param name="stopwordsFilename">A file to use that contains a set of stopwords.</param>
+        /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public SearchIndex(DocumentConfig searchIndexItem, string stopwordsFilename = null, bool enableStemming = false)
+        public SearchIndex(DocumentConfig searchIndexItem, FilePath stopwordsPath = null, bool enableStemming = false)
         {
             if (searchIndexItem == null)
             {
                 throw new ArgumentNullException(nameof(searchIndexItem));
             }
             _searchIndexItem = searchIndexItem;
-            _stopwordsFilename = stopwordsFilename;
+            _stopwordsPath = stopwordsPath;
             _enableStemming = enableStemming;
         }
 
@@ -147,7 +147,11 @@ tags:'{itm.Tags}'
 
             foreach (SearchIndexItem itm in searchIndexItems)
             {
-                sb.AppendLine($@"y({{url:'{PathHelper.ToLink(itm.Url)}',title:{ToJsonString(itm.Title)},description:{ToJsonString(itm.Description)}}});");
+                sb.AppendLine($@"y({{
+url:'{new FilePath(itm.Url).ToLink()}',
+title:{ToJsonString(itm.Title)},
+description:{ToJsonString(itm.Description)}
+}});");
             }
 
             return CreateJs(sb.ToString());
@@ -201,13 +205,16 @@ search: function(q) {return idx.search(q).map(function(i){return idMap[i.ref];})
         {
             string[] stopwords = new string[0];
 
-            if (!string.IsNullOrWhiteSpace(_stopwordsFilename))
+            if (_stopwordsPath != null)
             {
-                string fullStopwordsFilename = System.IO.Path.Combine(context.InputFolder, _stopwordsFilename);
-
-                if (File.Exists(fullStopwordsFilename))
+                IFile stopwordsFile = context.FileSystem.GetInputFile(_stopwordsPath);
+                if (stopwordsFile.Exists)
                 {
-                    stopwords = File.ReadAllLines(fullStopwordsFilename).Select(f => f.Trim().ToLowerInvariant()).Where(f => f.Length > 1).ToArray();
+                    stopwords = stopwordsFile.ReadAllText()
+                        .Split(new [] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(f => f.Trim().ToLowerInvariant())
+                        .Where(f => f.Length > 1)
+                        .ToArray();
                 }
             }
 

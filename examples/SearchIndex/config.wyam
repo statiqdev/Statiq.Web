@@ -38,6 +38,6 @@ Pipelines.Add("CopyAssets",
 
 Pipelines.Add("SearchIndex",
 	Documents(),
-	SearchIndex(stopwordsFilename: "stopwords.txt"),
+	SearchIndex((FilePath)"stopwords.txt"),
 	WriteFiles( (doc,ctx) => string.IsNullOrEmpty(doc.Content) ? null : "assets/js/searchindex.js" )
 );
