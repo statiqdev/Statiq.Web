@@ -12,7 +12,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Documents

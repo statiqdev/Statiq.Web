@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Common.Documents
 {

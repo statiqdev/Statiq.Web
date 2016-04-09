@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Common.IO
 {

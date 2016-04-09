@@ -2,11 +2,11 @@
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Modules.Control

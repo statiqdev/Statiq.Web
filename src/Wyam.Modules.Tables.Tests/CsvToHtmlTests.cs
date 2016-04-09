@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Modules.Tables.Tests

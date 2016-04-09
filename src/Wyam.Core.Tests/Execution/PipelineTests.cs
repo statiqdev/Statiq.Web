@@ -9,7 +9,7 @@ using Wyam.Common.Tracing;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Pipelines
+namespace Wyam.Core.Tests.Execution
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

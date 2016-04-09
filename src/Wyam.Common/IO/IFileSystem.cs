@@ -41,5 +41,7 @@ namespace Wyam.Common.IO
         /// The output path.
         /// </value>
         new DirectoryPath OutputPath { get; set; }
+
+
     }
 }

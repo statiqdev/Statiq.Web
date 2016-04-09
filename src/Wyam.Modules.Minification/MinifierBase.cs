@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WebMarkupMin.Core;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.Minification

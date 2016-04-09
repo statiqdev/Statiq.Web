@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
 

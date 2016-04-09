@@ -9,7 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -103,7 +103,7 @@ namespace Wyam.Core.Modules.Contents
                 // Add a sitemap entry if we got an item and valid location
                 if (!string.IsNullOrWhiteSpace(sitemapItem?.Location))
                 {
-                    string location = PathHelper.ToLink(sitemapItem.Location);
+                    string location = sitemapItem.Location;
 
                     // Apply the location formatter if there is one
                     if (_locationFormatter != null)
@@ -112,18 +112,19 @@ namespace Wyam.Core.Modules.Contents
                     }
 
                     // Apply the hostname if defined (and the location formatter didn't already set a hostname)
-                    object hostname;
-                    if (input.TryGetValue(Keys.Hostname, out hostname)
-                        && !location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(location))
                     {
-                        location = $"{hostname.ToString().TrimEnd('/')}{PathHelper.ToRootLink(location)}";
+                        if (!location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            location = new FilePath(location).ToLink(context.OutputSettings);
+                        }
                     }
 
                     // Location being null signals that this document should not be included in the sitemap
                     if (!string.IsNullOrWhiteSpace(location))
                     {
                         sb.Append("<url>");
-                        sb.AppendFormat("<loc>{0}</loc>", PathHelper.ToLink(location));
+                        sb.AppendFormat("<loc>{0}</loc>", location);
 
                         if (sitemapItem.LastModUtc.HasValue)
                         {

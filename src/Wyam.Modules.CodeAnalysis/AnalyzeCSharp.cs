@@ -12,7 +12,7 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Modules.CodeAnalysis
 {

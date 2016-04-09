@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
-namespace Wyam.Core.Pipelines
+namespace Wyam.Core.Execution
 {
     internal class PipelineCollection : IPipelineCollection
     {

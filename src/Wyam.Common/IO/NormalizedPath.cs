@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.Execution;
 
 namespace Wyam.Common.IO
 {
@@ -259,6 +260,23 @@ namespace Wyam.Common.IO
             return providerCompare == 0
                 ? string.Compare(FullPath, other.FullPath, StringComparison.Ordinal)
                 : providerCompare;
+        }
+
+        /// <summary>
+        /// Converts the path into a string appropriate for use as a link using default settings from a
+        /// <see cref="IReadOnlyOutputSettings"/>. This version should be used inside modules to ensure
+        /// consistent link generation.
+        /// </summary>
+        /// <param name="outputSettings">The output settings.</param>
+        /// <returns>A string representation of the path suitable for a web link.</returns>
+        public string ToLink(IReadOnlyOutputSettings outputSettings)
+        {
+            if (outputSettings == null)
+            {
+                throw new ArgumentNullException(nameof(outputSettings));
+            }
+
+            return ToLink(outputSettings.LinkRoot, outputSettings.HideLinkIndexPages, outputSettings.HideLinkWebExtensions);
         }
 
         /// <summary>

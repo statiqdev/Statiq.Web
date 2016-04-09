@@ -15,6 +15,9 @@ namespace Wyam.Core.IO
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class FileSystem : IFileSystem
     {
+        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
+        private DirectoryPath _outputPath = "output";
+
         public FileSystem()
         {
             FileProviders = new FileProviderCollection(new LocalFileProvider());
@@ -24,9 +27,6 @@ namespace Wyam.Core.IO
         public IFileProviderCollection FileProviders { get; }
 
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
-        
-        private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
-        private DirectoryPath _outputPath = "output";
         
         public DirectoryPath RootPath
         {

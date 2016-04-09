@@ -10,7 +10,7 @@ using Wyam.Common.Meta;
 using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Common.Tests

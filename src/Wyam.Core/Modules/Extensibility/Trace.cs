@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core.Modules.Extensibility
 {

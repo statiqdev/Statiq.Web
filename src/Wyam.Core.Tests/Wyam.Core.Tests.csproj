@@ -95,7 +95,7 @@
     <Compile Include="Modules\IO\WriteFilesTests.cs" />
     <Compile Include="Modules\Metadata\ValidateMetaTests.cs" />
     <Compile Include="Modules\Templates\XsltTests.cs" />
-    <Compile Include="Pipelines\PipelineTests.cs" />
+    <Compile Include="Execution\PipelineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core
 {

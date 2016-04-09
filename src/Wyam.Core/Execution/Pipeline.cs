@@ -9,13 +9,13 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 
-namespace Wyam.Core.Pipelines
+namespace Wyam.Core.Execution
 {
     internal class Pipeline : IPipeline, IDisposable
     {

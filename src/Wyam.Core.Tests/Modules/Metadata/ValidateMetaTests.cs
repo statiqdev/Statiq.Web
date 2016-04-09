@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;
 

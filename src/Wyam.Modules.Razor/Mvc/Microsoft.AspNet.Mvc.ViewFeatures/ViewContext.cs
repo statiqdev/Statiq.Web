@@ -6,7 +6,7 @@ using System.IO;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Rendering;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 

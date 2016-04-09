@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using MetadataExtractor.Formats.Xmp;
 using XmpCore;
 using System.Globalization;

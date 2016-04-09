@@ -13,7 +13,7 @@ using AngleSharp.Parser.Html;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using IDocument = Wyam.Common.Documents.IDocument;
 

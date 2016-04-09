@@ -9,9 +9,9 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
-namespace Wyam.Core.Pipelines
+namespace Wyam.Core.Execution
 {
     internal class ExecutionContext : IExecutionContext
     {
@@ -41,6 +41,8 @@ namespace Wyam.Core.Pipelines
         public string OutputFolder => Engine.OutputFolder;
 
         public IReadOnlyFileSystem FileSystem => Engine.FileSystem;
+
+        public IReadOnlyOutputSettings OutputSettings => Engine.OutputSettings;
 
         public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
 

@@ -154,11 +154,12 @@
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\Metadata\ValidateMeta.cs" />
     <Compile Include="Modules\Templates\Xslt.cs" />
+    <Compile Include="Execution\OutputSettings.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Documents\SeekableStream.cs" />
     <Compile Include="Meta\MetadataTypeConverter.cs" />
-    <Compile Include="Pipelines\ExecutionContext.cs" />
+    <Compile Include="Execution\ExecutionContext.cs" />
     <Compile Include="Meta\CoreKeys.cs" />
     <Compile Include="Modules\IO\CopyFiles.cs" />
     <Compile Include="Modules\Control\Documents.cs" />
@@ -177,8 +178,8 @@
     <Compile Include="Modules\Contents\Prepend.cs" />
     <Compile Include="Modules\IO\WriteFiles.cs" />
     <Compile Include="NuGet\Package.cs" />
-    <Compile Include="Pipelines\Pipeline.cs" />
-    <Compile Include="Pipelines\PipelineCollection.cs" />
+    <Compile Include="Execution\Pipeline.cs" />
+    <Compile Include="Execution\PipelineCollection.cs" />
     <Compile Include="Documents\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
@@ -186,7 +187,7 @@
     </Compile>
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
-    <Compile Include="Pipelines\ReadOnlyPipeline.cs" />
+    <Compile Include="Execution\ReadOnlyPipeline.cs" />
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />

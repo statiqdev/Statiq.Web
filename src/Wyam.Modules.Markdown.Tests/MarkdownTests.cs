@@ -8,7 +8,7 @@ using NSubstitute;
 using System.IO;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Modules.Markdown.Tests

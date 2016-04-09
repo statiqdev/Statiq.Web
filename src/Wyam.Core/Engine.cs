@@ -7,13 +7,13 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
 using Wyam.Core.Meta;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Core.Tracing;
 
 namespace Wyam.Core
@@ -21,12 +21,15 @@ namespace Wyam.Core
     public class Engine : IEngine, IDisposable
     {
         private readonly FileSystem _fileSystem = new FileSystem();
+        private readonly OutputSettings _outputSettings = new OutputSettings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
         private readonly Config _config;
         private bool _disposed;
 
         public IFileSystem FileSystem => _fileSystem;
+
+        public IOutputSettings OutputSettings => _outputSettings;
 
         public IConfig Config => _config;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Wyam.Common.Modules;
 
-namespace Wyam.Common.Pipelines
+namespace Wyam.Common.Execution
 {
     public interface IPipeline : IList<IModule>
     {

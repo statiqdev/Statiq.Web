@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.NuGet;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Common.Configuration

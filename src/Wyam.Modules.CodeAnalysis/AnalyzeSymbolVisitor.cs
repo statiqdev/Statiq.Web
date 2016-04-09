@@ -13,7 +13,7 @@ using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Modules.CodeAnalysis
 {
@@ -278,7 +278,7 @@ namespace Wyam.Modules.CodeAnalysis
         {
             string documentationCommentXml = symbol.GetDocumentationCommentXml(expandIncludes: true);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(symbol, _commentIdToDocument, _cssClasses);
+                = new XmlDocumentationParser(_context.OutputSettings, symbol, _commentIdToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements

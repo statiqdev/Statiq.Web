@@ -7,11 +7,11 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
 using Wyam.Core.Modules.IO;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 using Wyam.Testing.IO;
 

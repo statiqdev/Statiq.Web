@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Wyam.Core.Configuration;
 using Wyam.Core.IO;
 using Wyam.Core.Meta;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration

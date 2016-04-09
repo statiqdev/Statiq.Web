@@ -12,7 +12,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
@@ -454,6 +454,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -571,6 +574,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -869,6 +875,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -906,6 +915,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -970,6 +982,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -1006,6 +1021,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -1040,6 +1058,9 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.OutputSettings.LinkRoot.Returns("/");
+                context.OutputSettings.HideLinkIndexPages.Returns(true);
+                context.OutputSettings.HideLinkWebExtensions.Returns(true);
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));

@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 
@@ -18,6 +19,7 @@ namespace Wyam.Modules.CodeAnalysis
 {
 	internal class XmlDocumentationParser
 	{
+	    private readonly IReadOnlyOutputSettings _outputSettings;
 	    private readonly ISymbol _symbol;
 	    private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
 		private readonly ConcurrentDictionary<string, string> _cssClasses;
@@ -43,10 +45,12 @@ namespace Wyam.Modules.CodeAnalysis
 			= ImmutableDictionary<string, IReadOnlyList<OtherComment>>.Empty;
 
 		public XmlDocumentationParser(
+            IReadOnlyOutputSettings outputSettings,
             ISymbol symbol,
             ConcurrentDictionary<string, IDocument> commentIdToDocument,
 			ConcurrentDictionary<string, string> cssClasses)
 		{
+		    _outputSettings = outputSettings;
 		    _symbol = symbol;
 		    _commentIdToDocument = commentIdToDocument;
 			_cssClasses = cssClasses;
@@ -261,7 +265,7 @@ namespace Wyam.Modules.CodeAnalysis
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
 			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
-				link = $"<a href=\"{crefDoc.FilePath(Keys.WritePath).ToLink()}\">{name}</a>";
+				link = $"<a href=\"{crefDoc.FilePath(Keys.WritePath).ToLink(_outputSettings)}\">{name}</a>";
 			    return name;
 			}
 			link = null;

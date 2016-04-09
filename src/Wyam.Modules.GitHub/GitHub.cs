@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Octokit;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.GitHub

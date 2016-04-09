@@ -9,7 +9,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Common.Pipelines
+namespace Wyam.Common.Execution
 {
     public interface IExecutionContext
     {
@@ -26,6 +26,7 @@ namespace Wyam.Common.Pipelines
         [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
         string OutputFolder { get; }
         IReadOnlyFileSystem FileSystem { get; }
+        IReadOnlyOutputSettings OutputSettings { get; }
         IDocumentCollection Documents { get; }
         IReadOnlyDictionary<string, object> GlobalMetadata { get; } 
 

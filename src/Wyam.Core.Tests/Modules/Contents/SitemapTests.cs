@@ -6,14 +6,14 @@ using System.Threading;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Metadata;
-using Wyam.Core.Pipelines;
+using Wyam.Core.Execution;
 using Wyam.Testing;
-using ExecutionContext = Wyam.Core.Pipelines.ExecutionContext;
+using ExecutionContext = Wyam.Core.Execution.ExecutionContext;
 
 namespace Wyam.Core.Tests.Modules.Contents
 {
@@ -23,15 +23,17 @@ namespace Wyam.Core.Tests.Modules.Contents
     {
         public class ExecuteMethodTests : SitemapTests
         {
-            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile.html")]
-            [TestCase(null, "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
+            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile")]
+            [TestCase(null, "http://www.example.com", "http://www.example.com")]
             [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
             public void SitemapGeneratedWithSitemapItem(string hostname, string formatterString, string expected)
             {
                 // Given
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
-                    engine.InitialMetadata[Keys.Hostname] = hostname;
+                {
+                    engine.OutputSettings.LinkRoot = hostname;
+                }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
 
@@ -64,15 +66,17 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
             }
 
-            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile.html")]
-            [TestCase(null, "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
+            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile")]
+            [TestCase(null, "http://www.example.com", "http://www.example.com")]
             [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
             public void SitemapGeneratedWithSitemapItemAsString(string hostname, string formatterString, string expected)
             {
                 // Given
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
-                    engine.InitialMetadata[Keys.Hostname] = hostname;
+                {
+                    engine.OutputSettings.LinkRoot = hostname;
+                }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
 

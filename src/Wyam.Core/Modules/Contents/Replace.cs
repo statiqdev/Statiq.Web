@@ -2,7 +2,7 @@
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using System.Text.RegularExpressions;
 
 namespace Wyam.Core.Modules.Contents

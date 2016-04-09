@@ -14,9 +14,6 @@ namespace Wyam.Common.Meta
     /// </summary>
     public static class Keys
     {
-        // Common
-        public const string Hostname = "Hostname";
-
         // ReadFile/WriteFiles/CopyFiles
         /// <summary>
         /// The absulute Path to the folder of the original file.

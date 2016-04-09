@@ -10,7 +10,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Modules.SearchIndex
@@ -125,11 +125,11 @@ namespace Wyam.Modules.SearchIndex
             }
             
             string[] stopwords = GetStopwords(context);
-            string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords);
+            string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords, context.OutputSettings);
             return new []{ context.GetDocument(jsFileContent) };
         }
         
-        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords)
+        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IReadOnlyOutputSettings outputSettings)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -148,7 +148,7 @@ tags:'{itm.Tags}'
             foreach (SearchIndexItem itm in searchIndexItems)
             {
                 sb.AppendLine($@"y({{
-url:'{new FilePath(itm.Url).ToLink()}',
+url:'{new FilePath(itm.Url).ToLink(outputSettings)}',
 title:{ToJsonString(itm.Title)},
 description:{ToJsonString(itm.Description)}
 }});");

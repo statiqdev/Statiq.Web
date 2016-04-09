@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;

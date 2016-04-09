@@ -10,7 +10,7 @@ using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Common;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Testing;
 using YamlDotNet.Dynamic;
 

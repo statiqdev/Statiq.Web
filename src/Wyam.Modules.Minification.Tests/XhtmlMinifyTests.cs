@@ -2,7 +2,7 @@
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Pipelines;
+using Wyam.Common.Execution;
 using Wyam.Testing;
 
 namespace Wyam.Modules.Minification.Tests
