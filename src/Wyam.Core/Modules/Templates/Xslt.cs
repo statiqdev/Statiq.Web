@@ -31,10 +31,9 @@ namespace Wyam.Core.Modules.Templates
         /// Transforms input documents using a specified XSLT file from the file system.
         /// </summary>
         /// <param name="xsltPath">The path of the XSLT file to use.</param>
-        public Xslt(string xsltPath)
+        public Xslt(FilePath xsltPath)
         {
             _xsltPath = (a, b) => xsltPath;
-
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace Wyam.Core.Modules.Templates
         /// as provided by a delegate. This allows you to use different XSLT files depending
         /// on the input document.
         /// </summary>
-        /// <param name="xsltPath">A delegate that should return the path of the XSLT file to use.</param>
+        /// <param name="xsltPath">A delegate that should return a <see cref="FilePath"/> with the XSLT file to use.</param>
         public Xslt(DocumentConfig xsltPath)
         {
             _xsltPath = xsltPath;
@@ -68,24 +67,33 @@ namespace Wyam.Core.Modules.Templates
 
                     if (_xsltPath != null)
                     {
-                        string path = _xsltPath.Invoke<string>(input, context);
-                        path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                        xslt.Load(path);
+                        FilePath path = _xsltPath.Invoke<FilePath>(input, context);
+                        if (path != null)
+                        {
+                            IFile file = context.FileSystem.GetInputFile(path);
+                            if (file.Exists)
+                            {
+                                using (Stream fileStream = file.OpenRead())
+                                {
+                                    xslt.Load(XmlReader.Create(fileStream));
+                                }
+                            }
+                        }
                     }
                     else if (_xsltGeneration != null)
                     {
-                        IDocument xsltDocument = context.Execute(_xsltGeneration, new [] { input }).Single();
+                        IDocument xsltDocument = context.Execute(_xsltGeneration, new[] {input}).Single();
                         using (Stream stream = xsltDocument.GetStream())
                         {
-                            xslt.Load(System.Xml.XmlReader.Create(stream));
+                            xslt.Load(XmlReader.Create(stream));
                         }
                     }
                     using (Stream stream = input.GetStream())
                     {
-                        StringWriter str = new System.IO.StringWriter();
-                        using (XmlTextWriter writer = new System.Xml.XmlTextWriter(str))
+                        StringWriter str = new StringWriter();
+                        using (XmlTextWriter writer = new XmlTextWriter(str))
                         {
-                            xslt.Transform(System.Xml.XmlReader.Create(stream), writer);
+                            xslt.Transform(XmlReader.Create(stream), writer);
                         }
                         return context.GetDocument(input, str.ToString());
                     }
