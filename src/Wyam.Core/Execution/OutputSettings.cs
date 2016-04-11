@@ -4,34 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Execution;
+using Wyam.Common.IO;
 
 namespace Wyam.Core.Execution
 {
     internal class OutputSettings : IOutputSettings
     {
-        private string _linkRoot = "/";
+        private string _linkHost = null;
 
         public OutputSettings()
         {
-            HideLinkIndexPages = true;
-            HideLinkWebExtensions = true;
+            LinkHideIndexPages = true;
+            LinkHideWebExtensions = true;
         }
 
-        public string LinkRoot
+        public string LinkHost
         {
-            get { return _linkRoot; }
+            get { return _linkHost; }
             set
             {
                 if (value == null)
                 {
-                    throw new ArgumentException(nameof(value));
+                    _linkHost = null;
                 }
-                _linkRoot = value;
+                if (Uri.CheckHostName(value) == UriHostNameType.Unknown)
+                {
+                    throw new ArgumentException("Value must be a valid hostname");
+                }
+                _linkHost = value;
             }
         }
 
-        public bool HideLinkIndexPages { get; set; }
+        public DirectoryPath LinkRoot { get; set; }
 
-        public bool HideLinkWebExtensions { get; set; }
+        public bool LinkHideIndexPages { get; set; }
+
+        public bool LinkHideWebExtensions { get; set; }
     }
 }

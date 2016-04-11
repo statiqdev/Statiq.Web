@@ -10,13 +10,21 @@ namespace Wyam.Common.Execution
     public interface IReadOnlyOutputSettings
     {
         /// <summary>
-        /// Gets the default root to use when generating links 
+        /// Gets the host to use when generating links.
+        /// </summary>
+        /// <value>
+        /// The link host.
+        /// </value>
+        string LinkHost { get; }
+
+        /// <summary>
+        /// Gets the default root path to use when generating links 
         /// with <see cref="NormalizedPath.ToLink"/>
         /// </summary>
         /// <value>
         /// The link root.
         /// </value>
-        string LinkRoot { get; }
+        DirectoryPath LinkRoot { get; }
 
         /// <summary>
         /// Gets a value indicating whether to hide index pages by default
@@ -25,7 +33,7 @@ namespace Wyam.Common.Execution
         /// <value>
         /// <c>true</c> if index pages should be hidden; otherwise, <c>false</c>.
         /// </value>
-        bool HideLinkIndexPages { get; }
+        bool LinkHideIndexPages { get; }
 
         /// <summary>
         /// Gets a value indicating whether to hide web extensions by default
@@ -34,6 +42,6 @@ namespace Wyam.Common.Execution
         /// <value>
         /// <c>true</c> if web extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
-        bool HideLinkWebExtensions { get; }
+        bool LinkHideWebExtensions { get; }
     }
 }

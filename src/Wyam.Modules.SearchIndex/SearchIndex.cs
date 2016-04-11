@@ -125,11 +125,11 @@ namespace Wyam.Modules.SearchIndex
             }
             
             string[] stopwords = GetStopwords(context);
-            string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords, context.OutputSettings);
+            string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords, context);
             return new []{ context.GetDocument(jsFileContent) };
         }
         
-        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IReadOnlyOutputSettings outputSettings)
+        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -148,7 +148,7 @@ tags:'{itm.Tags}'
             foreach (SearchIndexItem itm in searchIndexItems)
             {
                 sb.AppendLine($@"y({{
-url:'{new FilePath(itm.Url).ToLink(outputSettings)}',
+url:'{context.GetLink(new FilePath(itm.Url), true)}',
 title:{ToJsonString(itm.Title)},
 description:{ToJsonString(itm.Description)}
 }});");

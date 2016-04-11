@@ -65,6 +65,11 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             get { return new HtmlHelper(ViewContext); }
         }
 
+        public IExecutionContext Context
+        {
+            get { return ViewContext.ExecutionContext; }
+        }
+
         public IExecutionContext ExecutionContext
         {
             get { return ViewContext.ExecutionContext; }

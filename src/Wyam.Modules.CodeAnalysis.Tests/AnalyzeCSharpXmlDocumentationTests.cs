@@ -454,9 +454,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -468,7 +466,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("<a href=\"/Foo/6412642C\">FooException</a>",
+                Assert.AreEqual("<a href=\"link\">FooException</a>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
                 Assert.AreEqual("Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
@@ -574,9 +572,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -587,7 +583,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(2, GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions").Count);
-                Assert.AreEqual("<a href=\"/Foo/6412642C\">FooException</a>",
+                Assert.AreEqual("<a href=\"link\">FooException</a>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
                 Assert.AreEqual("FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
@@ -875,9 +871,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -887,7 +881,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <a href=\"/Foo/414E2165\">Red</a> class", GetResult(results, "Green")["Summary"]);
+                Assert.AreEqual("Check <a href=\"link\">Red</a> class", GetResult(results, "Green")["Summary"]);
                 stream.Dispose();
             }
 
@@ -915,9 +909,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -927,7 +919,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <a href=\"/Foo/414E2165/00F22A50\">Blue()</a> method", GetResult(results, "Green")["Summary"]);
+                Assert.AreEqual("Check <a href=\"link\">Blue()</a> method", GetResult(results, "Green")["Summary"]);
                 stream.Dispose();
             }
 
@@ -982,9 +974,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -996,7 +986,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 // Then
                 // <seealso> should be removed from the summary and instead placed in the SeeAlso metadata
                 Assert.AreEqual("Check this out ", GetResult(results, "Green")["Summary"]);
-                Assert.AreEqual("<a href=\"/Foo/414E2165\">Red</a>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
+                Assert.AreEqual("<a href=\"link\">Red</a>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
                 stream.Dispose();
             }
 
@@ -1021,9 +1011,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -1033,7 +1021,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<a href=\"/Foo/414E2165\">Red</a>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
+                Assert.AreEqual("<a href=\"link\">Red</a>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
                 stream.Dispose();
             }
 
@@ -1058,9 +1046,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(stream);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.OutputSettings.LinkRoot.Returns("/");
-                context.OutputSettings.HideLinkIndexPages.Returns(true);
-                context.OutputSettings.HideLinkWebExtensions.Returns(true);
+                context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
                 context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
                 context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                     .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
@@ -1070,7 +1056,7 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <a href=\"/Foo/414E2165\">Red</a> class", 
+                Assert.AreEqual("Check <a href=\"link\">Red</a> class", 
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Html);
                 stream.Dispose();
             }

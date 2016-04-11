@@ -23,16 +23,16 @@ namespace Wyam.Core.Tests.Modules.Contents
     {
         public class ExecuteMethodTests : SitemapTests
         {
-            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile")]
+            [TestCase("www.example.org", null, "http://www.example.org/sub/testfile")]
             [TestCase(null, "http://www.example.com", "http://www.example.com")]
-            [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
+            [TestCase("www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
             public void SitemapGeneratedWithSitemapItem(string hostname, string formatterString, string expected)
             {
                 // Given
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
                 {
-                    engine.OutputSettings.LinkRoot = hostname;
+                    engine.OutputSettings.LinkHost = hostname;
                 }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
@@ -66,16 +66,16 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
             }
 
-            [TestCase("http://www.example.org", null, "http://www.example.org/sub/testfile")]
+            [TestCase("www.example.org", null, "http://www.example.org/sub/testfile")]
             [TestCase(null, "http://www.example.com", "http://www.example.com")]
-            [TestCase("http://www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
+            [TestCase("www.example.org", "http://www.example.com/{0}", "http://www.example.com/sub/testfile.html")]
             public void SitemapGeneratedWithSitemapItemAsString(string hostname, string formatterString, string expected)
             {
                 // Given
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
                 {
-                    engine.OutputSettings.LinkRoot = hostname;
+                    engine.OutputSettings.LinkHost = hostname;
                 }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);

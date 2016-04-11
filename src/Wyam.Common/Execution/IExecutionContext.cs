@@ -33,6 +33,38 @@ namespace Wyam.Common.Execution
         string ApplicationInput { get; }
 
         /// <summary>
+        /// Converts the specified path into a string appropriate for use as a link using default settings from the
+        /// <see cref="IReadOnlyOutputSettings" />. This version should be used inside modules to ensure
+        /// consistent link generation. Note that you can optionally include the host or not depending
+        /// on if you want to generate host-specific links. By default, the host is not included so that
+        /// sites work the same on any server including the preview server.
+        /// </summary>
+        /// <param name="path">The path to generate a link for.</param>
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
+        /// <returns>
+        /// A string representation of the path suitable for a web link.
+        /// </returns>
+        string GetLink(NormalizedPath path, bool includeHost = false);
+
+        /// <summary>
+        /// Converts the path into a string appropriate for use as a link, overriding one or more 
+        /// settings from the <see cref="IReadOnlyOutputSettings" />.
+        /// </summary>
+        /// <param name="path">The path to generate a link for.</param>
+        /// <param name="host">The host to use for the link.</param>
+        /// <param name="root">The root of the link. The value of this parameter is prepended to the path.</param>
+        /// <param name="hideIndexPages">If set to <c>true</c>, "index.htm" and "index.html" file
+        /// names will be hidden.</param>
+        /// <param name="hideWebExtensions">If set to <c>true</c>, extensions ending in ".htm" or
+        /// ".html" will be hidden.</param>
+        /// <returns>
+        /// A string representation of the path suitable for a web link with the specified
+        /// root and hidden file name or extension.
+        /// </returns>
+        string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions);
+
+        /// <summary>
         /// Gets a new document with default initial metadata.
         /// </summary>
         /// <returns>The new document.</returns>

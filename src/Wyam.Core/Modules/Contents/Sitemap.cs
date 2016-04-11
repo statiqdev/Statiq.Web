@@ -116,7 +116,7 @@ namespace Wyam.Core.Modules.Contents
                     {
                         if (!location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            location = new FilePath(location).ToLink(context.OutputSettings);
+                            location = context.GetLink(new FilePath(location), true);
                         }
                     }
 

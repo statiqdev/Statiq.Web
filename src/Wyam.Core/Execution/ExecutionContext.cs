@@ -73,6 +73,21 @@ namespace Wyam.Core.Execution
             return TypeHelper.TryConvert(value, out result);
         }
 
+        // GetLink
+
+        public string GetLink(NormalizedPath path, bool includeHost = false)
+        {
+            return GetLink(path, OutputSettings.LinkHost, OutputSettings.LinkRoot, 
+                OutputSettings.LinkHideIndexPages, OutputSettings.LinkHideWebExtensions);
+        }
+
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions)
+        {
+            return LinkGenerator.GetLink(path, host, root, hideIndexPages, hideWebExtensions);
+        }
+
+        // GetDocument
+
         public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             return GetDocument((IDocument)null, source, content, items);
