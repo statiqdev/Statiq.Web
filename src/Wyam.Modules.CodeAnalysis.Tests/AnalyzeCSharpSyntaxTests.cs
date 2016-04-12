@@ -16,6 +16,7 @@ using Wyam.Common.Execution;
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class AnalyzeCSharpSyntaxTests : AnalyzeCSharpBaseFixture
     {
         public class ExecuteMethodTests : AnalyzeCSharpSyntaxTests
@@ -32,13 +33,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -46,7 +42,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(@"internal class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -64,13 +59,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -78,7 +68,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(@"private void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -93,13 +82,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -107,7 +91,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(@"public class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -125,13 +108,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -139,7 +117,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(@"internal void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -156,13 +133,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -172,7 +144,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 Assert.AreEqual(@"[Foo]
 [Bar]
 internal class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -192,13 +163,8 @@ internal class Green", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -208,7 +174,6 @@ internal class Green", GetResult(results, "Green")["Syntax"]);
                 Assert.AreEqual(@"[Foo]
 [Bar]
 private int Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -233,13 +198,8 @@ private int Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -249,7 +209,6 @@ private int Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
                 Assert.AreEqual(@"[Foo]
 [Bar(5)]
 internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -264,13 +223,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -278,7 +232,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal abstract class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -293,13 +246,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -307,7 +255,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal sealed class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -322,13 +269,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -336,7 +278,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal static class Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -354,13 +295,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -368,7 +304,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"private static void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -383,13 +318,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -397,7 +327,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal class Green<out TKey, TValue>", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -412,13 +341,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -426,7 +350,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal class Green<out TKey, TValue> where TValue : class", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -450,13 +373,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -464,7 +382,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal class Green<out TKey, TValue> : Blue, IFoo where TValue : class", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -483,13 +400,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -497,7 +409,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag)", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -516,13 +427,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -530,7 +436,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag) where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -547,13 +452,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -561,7 +461,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal enum Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -578,13 +477,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -592,7 +486,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal enum Green", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -611,13 +504,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -625,7 +513,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"public int Blue { get; }", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -641,13 +528,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -655,7 +537,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"public int Blue { get; set; }", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -674,13 +555,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -689,7 +565,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                 // Then
                 Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag, int something, int somethingElse, int anotherThing) 
     where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -704,13 +579,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -720,7 +590,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                 Assert.AreEqual(@"internal class Green<TKey, TValue> : IReallyLongInterface, INameToForceWrapping, IFoo, IBar, 
     IFooBar, ICircle, ISquare, IRectangle
     where TKey : class", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
 
 
@@ -736,13 +605,8 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -750,7 +614,6 @@ internal class Green : Blue", GetResult(results, "Green")["Syntax"]);
 
                 // Then
                 Assert.AreEqual(@"internal class Green : IFoo, IBar, IFooBar", GetResult(results, "Green")["Syntax"]);
-                stream.Dispose();
             }
         }
     }

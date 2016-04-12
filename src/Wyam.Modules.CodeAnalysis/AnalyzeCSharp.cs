@@ -13,6 +13,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.IO;
 
 namespace Wyam.Modules.CodeAnalysis
 {
@@ -33,8 +34,8 @@ namespace Wyam.Modules.CodeAnalysis
     public class AnalyzeCSharp : IModule
     {
         private Func<ISymbol, bool> _symbolPredicate;
-        private Func<IMetadata, string> _writePath;
-        private string _writePathPrefix = string.Empty;
+        private Func<IMetadata, FilePath> _writePath;
+        private DirectoryPath _writePathPrefix = null;
         private bool _docsForImplicitSymbols = false;
 
         // Use an intermediate Dictionary to initialize with defaults
@@ -65,7 +66,7 @@ namespace Wyam.Modules.CodeAnalysis
                 .Create("CodeAnalysisModule", syntaxTrees)
                 .WithReferences(mscorlib)
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                    xmlReferenceResolver: new XmlFileResolver(context.InputFolder)));
+                    xmlReferenceResolver: new XmlFileResolver(context.FileSystem.RootPath.FullPath)));
 
             // Get and return the document tree
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate,
@@ -203,9 +204,9 @@ namespace Wyam.Modules.CodeAnalysis
         /// anchor to their SymbolId. Note that the default scheme makes the assumption that members will not have their own files, 
         /// if that's not the case a new WritePath function will have to be supplied using this method.
         /// </summary>
-        /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>string</c> to 
+        /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>FilePath</c> to 
         /// use for the <c>WritePath</c> metadata value.</param>
-        public AnalyzeCSharp WithWritePath(Func<IMetadata, string> writePath)
+        public AnalyzeCSharp WithWritePath(Func<IMetadata, FilePath> writePath)
         {
             _writePath = writePath;
             return this;
@@ -213,43 +214,49 @@ namespace Wyam.Modules.CodeAnalysis
         
         /// <summary>
         /// This lets you add a prefix to the default <c>WritePath</c> behavior (such as nesting symbol documents inside 
-        /// a folder like "api/"). This method has no effect if you've supplied a custom <c>WritePath</c> behavior.
+        /// a folder like "api/"). Whatever you supply will be combined with the <c>WritePath</c>. This method has no 
+        /// effect if you've supplied a custom <c>WritePath</c> behavior.
         /// </summary>
         /// <param name="prefix">The prefix to use for each generated <c>WritePath</c>.</param>
-        public AnalyzeCSharp WithWritePathPrefix(string prefix)
+        public AnalyzeCSharp WithWritePathPrefix(DirectoryPath prefix)
         {
-            if (prefix == null)
-            {
-                throw new ArgumentNullException(nameof(prefix));
-            }
             _writePathPrefix = prefix;
             return this;
         }
 
-        private string DefaultWritePath(IMetadata metadata, string prefix)
+        private FilePath DefaultWritePath(IMetadata metadata, DirectoryPath prefix)
         {
             IDocument namespaceDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingNamespace);
+            FilePath writePath = null;
 
             // Namespaces output to the index page in a folder of their full name
             if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.Namespace.ToString())
             {
                 // If this namespace does not have a containing namespace, it's the global namespace
-                return Path.Combine(prefix, namespaceDocument == null ? "global\\index.html" : $"{metadata[CodeAnalysisKeys.DisplayName]}\\index.html");
+                writePath = new FilePath(namespaceDocument == null ? "global/index.html" : $"{metadata[CodeAnalysisKeys.DisplayName]}/index.html");
             }
-
             // Types output to the index page in a folder of their SymbolId under the folder for their namespace
-            if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())
+            else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())
             {
                 // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
-                return Path.Combine(prefix, (namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null)
-                    ? $"global\\{metadata[CodeAnalysisKeys.SymbolId]}\\index.html"
-                    : $"{namespaceDocument[CodeAnalysisKeys.DisplayName]}\\{metadata[CodeAnalysisKeys.SymbolId]}\\index.html");
+                writePath = new FilePath(namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null
+                    ? $"global/{metadata[CodeAnalysisKeys.SymbolId]}/index.html"
+                    : $"{namespaceDocument[CodeAnalysisKeys.DisplayName]}/{metadata[CodeAnalysisKeys.SymbolId]}/index.html");
+            }
+            else
+            {
+                // Members output to a page equal to their SymbolId under the folder for their type
+                IDocument containingTypeDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingType, null);
+                writePath = new FilePath(containingTypeDocument?.FilePath(Keys.WritePath).FullPath.Replace("index.html", metadata.String(CodeAnalysisKeys.SymbolId) + ".html"));
             }
 
-            // Members output to a page equal to their SymbolId under the folder for their type
-            IDocument containingTypeDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingType, null);
-            return containingTypeDocument?.String(Keys.WritePath)
-                .Replace("index.html", metadata.String(CodeAnalysisKeys.SymbolId) + ".html");
+            // Add the prefix
+            if (prefix != null)
+            {
+                writePath = prefix.CombineFile(writePath);
+            }
+
+            return writePath;
         }
     }
 }

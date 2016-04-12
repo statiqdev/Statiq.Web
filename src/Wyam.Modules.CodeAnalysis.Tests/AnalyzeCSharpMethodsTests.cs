@@ -16,6 +16,7 @@ using Wyam.Common.Execution;
 namespace Wyam.Modules.CodeAnalysis.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class AnalyzeCSharpMethodsTests : AnalyzeCSharpBaseFixture
     {
         public class ExecuteMethodTests : AnalyzeCSharpMethodsTests
@@ -39,13 +40,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -54,7 +50,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 // Then
                 CollectionAssert.AreEquivalent(new[] { "Green", "Red" }, 
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
-                stream.Dispose();
             }
 
             [Test]
@@ -72,13 +67,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -86,7 +76,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual("Blue", GetMember(results, "Blue", "Green").Get<IDocument>("ContainingType")["Name"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -111,22 +100,16 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "global\\439037DE\\66F23CDD.html", "Foo\\414E2165\\A94FD382.html" },
-                    results.Where(x => x["Kind"].Equals("Method")).Select(x => x[Keys.WritePath]));
-                stream.Dispose();
+                CollectionAssert.AreEquivalent(new[] { "global/439037DE/66F23CDD.html", "Foo/414E2165/A94FD382.html" },
+                    results.Where(x => x["Kind"].Equals("Method")).Select(x => ((FilePath)x[Keys.WritePath]).FullPath));
             }
 
             [Test]
@@ -149,13 +132,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -165,7 +143,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 Assert.AreEqual("X()", GetMember(results, "Yellow", "X")["DisplayName"]);
                 Assert.AreEqual("Y<T>(T, int)", GetMember(results, "Yellow", "Y")["DisplayName"]);
                 Assert.AreEqual("Z(bool)", GetMember(results, "Yellow", "Z")["DisplayName"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -198,13 +175,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -214,7 +186,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                 Assert.AreEqual("int", GetMember(results, "Blue", "Green").Get<IDocument>("ReturnType")["DisplayName"]);
                 Assert.AreEqual("Red", GetMember(results, "Blue", "GetRed").Get<IDocument>("ReturnType")["DisplayName"]);
                 Assert.AreEqual("TFoo", GetMember(results, "Blue", "Bar").Get<IDocument>("ReturnType")["DisplayName"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -233,13 +204,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp();
 
                 // When
@@ -247,7 +213,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual("Red", GetMember(results, "Red", "Blue").Get<IDocument>("ReturnType").Get<IDocument>("DeclaringType")["Name"]);
-                stream.Dispose();
             }
 
             [Test]
@@ -269,13 +234,8 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                         }
                     }
                 ";
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.InputFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x => new TestDocument((IEnumerable<MetadataItem>)x[2]));
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
                 IModule module = new AnalyzeCSharp().WhereSymbol(x => x.Name != "Green");
 
                 // When
@@ -287,7 +247,6 @@ namespace Wyam.Modules.CodeAnalysis.Tests
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Where(x => x.Get<bool>("IsResult")).Select(x => x["Name"]));
                 CollectionAssert.AreEquivalent(new[] { "Red", "Green" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
-                stream.Dispose();
             }
         }
     }

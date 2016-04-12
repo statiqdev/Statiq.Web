@@ -24,7 +24,7 @@ namespace Wyam.Modules.CodeAnalysis
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
         private readonly IExecutionContext _context;
         private readonly Func<ISymbol, bool> _symbolPredicate;
-        private readonly Func<IMetadata, string> _writePath;
+        private readonly Func<IMetadata, FilePath> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
@@ -32,7 +32,7 @@ namespace Wyam.Modules.CodeAnalysis
         public AnalyzeSymbolVisitor(
             IExecutionContext context, 
             Func<ISymbol, bool> symbolPredicate, 
-            Func<IMetadata, string> writePath, 
+            Func<IMetadata, FilePath> writePath, 
             ConcurrentDictionary<string, string> cssClasses,
             bool docsForImplicitSymbols)
         {
@@ -244,12 +244,13 @@ namespace Wyam.Modules.CodeAnalysis
                 items.AddRange(new[]
                 {
                     new MetadataItem(Keys.WritePath, (k, m) => _writePath(m), true),
-                    new MetadataItem(Keys.RelativeFilePath, 
-                        (k, m) => m.String(Keys.WritePath)),
-                    new MetadataItem(Keys.RelativeFilePathBase, 
-                        (k, m) => PathHelper.RemoveExtension(m.String(Keys.WritePath))),
-                    new MetadataItem(Keys.RelativeFileDir, 
-                        (k, m) => System.IO.Path.GetDirectoryName(m.String(Keys.WritePath)))
+                    new MetadataItem(Keys.RelativeFilePath, (k, m) => m.FilePath(Keys.WritePath)),
+                    new MetadataItem(Keys.RelativeFilePathBase, (k, m) =>
+                    {
+                        FilePath writePath = m.FilePath(Keys.WritePath);
+                        return writePath.Directory.CombineFile(writePath.FileNameWithoutExtension);
+                    }),
+                    new MetadataItem(Keys.RelativeFileDir, (k, m) => m.FilePath(Keys.WritePath).Directory)
                 });
             }
 

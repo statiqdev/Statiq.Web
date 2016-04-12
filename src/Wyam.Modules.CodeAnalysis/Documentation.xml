@@ -8,20 +8,20 @@
       symbol was part of the initial result set. If it is <c>false</c>, the symbol was lazily processed later
       while fetching related symbols and may not contain the full set of metadata.
     </metadata>
-    <metadata name="WritePath" type="string">
+    <metadata name="WritePath" type="FilePath">
       A write path is generated for each symbol during code analysis and serves several purposes. First, it's
       used to automatically create hyperlinks for references in XML documentation comments. It can also be used
       for generating inbound links from other modules or pipelines to a given symbol. Because the WriteFiles module
       will check for any WritePath metadata values when outputting documents, this metadata also makes writing
       symbol documents to disk easier (presumably after they've been sent through a templating module).
     </metadata>
-    <metadata name="RelativeFilePath" type="string">
+    <metadata name="RelativeFilePath" type="FilePath">
       Same as <c>WritePath</c>. This metadata key is available for compatibility with other modules.
     </metadata>
-    <metadata name="RelativeFilePathBase" type="string">
+    <metadata name="RelativeFilePathBase" type="FilePath">
       Same as <c>WritePath</c> without the file extension. This metadata key is available for compatibility with other modules.
     </metadata>
-    <metadata name="RelativeFileDir" type="string">
+    <metadata name="RelativeFileDir" type="DirectoryPath">
       Same as the directory of <c>WritePath</c>. This metadata key is available for compatibility with other modules.
     </metadata>
     <metadata name="SymbolId" type="string">

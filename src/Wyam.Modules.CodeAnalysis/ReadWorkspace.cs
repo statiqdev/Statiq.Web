@@ -26,21 +26,17 @@ namespace Wyam.Modules.CodeAnalysis
     /// </summary>
     public abstract class ReadWorkspace : IModule, IAsNewDocuments
     {
-        private readonly string _path;
+        private readonly FilePath _path;
         private readonly DocumentConfig _pathDelegate;
         private Func<string, bool> _whereProject;
-        private Func<string, bool> _whereFile;
+        private Func<IFile, bool> _whereFile;
         private string[] _extensions;
 
-        protected ReadWorkspace(string path)
+        protected ReadWorkspace(FilePath path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
-            }
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(nameof(path));
             }
             _path = path;
         }
@@ -69,9 +65,9 @@ namespace Wyam.Modules.CodeAnalysis
         /// Filters the source code file based on path.
         /// </summary>
         /// <param name="predicate">A predicate that should return <c>true</c> if the source code file should be included.</param>
-        public ReadWorkspace WhereFile(Func<string, bool> predicate)
+        public ReadWorkspace WhereFile(Func<IFile, bool> predicate)
         {
-            Func<string, bool> currentPredicate = _whereFile;
+            Func<IFile, bool> currentPredicate = _whereFile;
             _whereFile = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
@@ -87,22 +83,22 @@ namespace Wyam.Modules.CodeAnalysis
             return this;
         }
 
-        protected abstract IEnumerable<Project> GetProjects(string path);
+        protected abstract IEnumerable<Project> GetProjects(IFile file);
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _path != null
                 ? Execute(null, _path, context)
                 : inputs.AsParallel().SelectMany(input =>
-                    Execute(input, _pathDelegate.Invoke<string>(input, context), context));
+                    Execute(input, _pathDelegate.Invoke<FilePath>(input, context), context));
         }
 
-        private IEnumerable<IDocument> Execute(IDocument input, string path, IExecutionContext context)
+        private IEnumerable<IDocument> Execute(IDocument input, FilePath projectPath, IExecutionContext context)
         {
-            if (path != null)
+            if (projectPath != null)
             {
-                path = System.IO.Path.Combine(context.InputFolder, PathHelper.NormalizePath(path));
-                return GetProjects(path)
+                IFile projectFile = context.FileSystem.GetInputFile(projectPath);
+                return GetProjects(projectFile)
                     .AsParallel()
                     .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
                     .SelectMany(project =>
@@ -110,23 +106,25 @@ namespace Wyam.Modules.CodeAnalysis
                         Trace.Verbose("Read project {0}", project.Name);
                         return project.Documents
                             .AsParallel()
-                            .Where(x => !string.IsNullOrWhiteSpace(x.FilePath) && File.Exists(x.FilePath)
-                                && (_whereFile == null || _whereFile(x.FilePath)) && (_extensions == null || _extensions.Contains(System.IO.Path.GetExtension(x.FilePath))))
-                            .Select(document => {
-                                Trace.Verbose("Read file {0}", document.FilePath);
-                                return context.GetDocument(document.FilePath, File.OpenRead(document.FilePath), new Dictionary<string, object>
+                            .Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
+                            .Select(x => context.FileSystem.GetInputFile(x.FilePath))
+                            .Where(x => x.Exists && (_whereFile == null || _whereFile(x)) && (_extensions == null || _extensions.Contains(x.Path.Extension)))
+                            .Select(file => {
+                                Trace.Verbose($"Read file {file.Path.FullPath}");
+                                DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
+                                FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectPath.Directory.GetRelativePath(file.Path);
+                                return context.GetDocument(file.Path, file.OpenRead(), new MetadataItems
                                 {
-                                    //TODO: Change to path-based metadata
-                                    {Keys.SourceFileRoot, System.IO.Path.GetDirectoryName(document.FilePath)},
-                                    {Keys.SourceFileBase, System.IO.Path.GetFileNameWithoutExtension(document.FilePath)},
-                                    {Keys.SourceFileExt, System.IO.Path.GetExtension(document.FilePath)},
-                                    {Keys.SourceFileName, System.IO.Path.GetFileName(document.FilePath)},
-                                    {Keys.SourceFileDir, System.IO.Path.GetDirectoryName(document.FilePath)},
-                                    {Keys.SourceFilePath, document.FilePath},
-                                    {Keys.SourceFilePathBase, PathHelper.RemoveExtension(document.FilePath)},
-                                    {Keys.RelativeFilePath, PathHelper.GetRelativePath(path, document.FilePath)},
-                                    {Keys.RelativeFilePathBase, PathHelper.RemoveExtension(PathHelper.GetRelativePath(path, document.FilePath))},
-                                    {Keys.RelativeFileDir, System.IO.Path.GetDirectoryName(PathHelper.GetRelativePath(path, document.FilePath))}
+                                    { Keys.SourceFileRoot, inputPath ?? file.Path.Directory },
+                                    { Keys.SourceFileBase, file.Path.FileNameWithoutExtension },
+                                    { Keys.SourceFileExt, file.Path.Extension },
+                                    { Keys.SourceFileName, file.Path.FileName },
+                                    { Keys.SourceFileDir, file.Path.Directory },
+                                    { Keys.SourceFilePath, file.Path },
+                                    { Keys.SourceFilePathBase, file.Path.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                                    { Keys.RelativeFilePath, relativePath },
+                                    { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(file.Path.FileNameWithoutExtension) },
+                                    { Keys.RelativeFileDir, relativePath.Directory }
                                 });
                             });
                     });
