@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="BaseRazorPage.cs" />
     <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
-    <Compile Include="DocumentFileProvider.cs" />
+    <Compile Include="WyamStreamFileProvider.cs" />
     <Compile Include="FileInfoExtensions.cs" />
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="HttpAbstractions\Microsoft.AspNet.Html.Abstractions\IHtmlContent.cs" />
@@ -116,6 +116,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Razor.cs" />
+    <Compile Include="WyamFileProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">

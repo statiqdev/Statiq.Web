@@ -12,6 +12,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc;
 using Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor;
@@ -73,7 +74,7 @@ namespace Wyam.Modules.Razor
         /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module.
         /// </summary>
         /// <param name="path">The path to the alternate ViewStart file.</param>
-        public Razor WithViewStart(string path)
+        public Razor WithViewStart(FilePath path)
         {
             _viewStartPath = (doc, ctx) => path;
             return this;
@@ -85,7 +86,7 @@ namespace Wyam.Modules.Razor
         /// ViewStart based on document location or document metadata. Returning <c>null</c> from the 
         /// function reverts back to the default ViewStart search behavior for that document.
         /// </summary>
-        /// <param name="path">A delegate that should return the ViewStart path as a <c>string</c>, 
+        /// <param name="path">A delegate that should return the ViewStart path as a <c>FilePath</c>, 
         /// or <c>null</c> for the default ViewStart search behavior.</param>
         public Razor WithViewStart(DocumentConfig path)
         {
@@ -108,7 +109,7 @@ namespace Wyam.Modules.Razor
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context.InputFolder, context, _basePageType);
+            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
             List<IDocument> validInputs = inputs
                 .Where(x => _ignorePrefix == null 
                     || !x.ContainsKey(Keys.SourceFileName) 
@@ -121,7 +122,7 @@ namespace Wyam.Modules.Razor
             Parallel.ForEach(validInputs, x =>
             {
                 Trace.Verbose("Compiling Razor for {0}", x.SourceString());
-                IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<string>(x, context));
+                IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
                 IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                 IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
                 ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x, context, viewEngine);

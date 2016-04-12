@@ -11,16 +11,19 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;
+using Wyam.Testing.IO;
 
 namespace Wyam.Modules.Razor.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class RazorTests : BaseFixture
     {
         public class ExecuteMethodTests : RazorTests
@@ -29,17 +32,9 @@ namespace Wyam.Modules.Razor.Tests
             public void SimpleTemplate()
             {
                 // Given
-                string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
-                if (!Directory.Exists(inputFolder))
-                {
-                    Directory.CreateDirectory(inputFolder);
-                }
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.InputFolder.Returns(inputFolder);
                 Engine engine = new Engine();
                 engine.Configure();
-                context.Assemblies.Returns(engine.Assemblies);
+                IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
                 Razor razor = new Razor();
@@ -57,18 +52,9 @@ namespace Wyam.Modules.Razor.Tests
             public void Tracing()
             {
                 // Given
-                string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
-                if (!Directory.Exists(inputFolder))
-                {
-                    Directory.CreateDirectory(inputFolder);
-                }
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.InputFolder.Returns(inputFolder);
                 Engine engine = new Engine();
                 engine.Configure();
-                context.Assemblies.Returns(engine.Assemblies);
-                context.Namespaces.Returns(engine.Namespaces);
+                IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 TraceListener traceListener = new TraceListener();
                 Trace.AddListener(traceListener);
@@ -107,17 +93,9 @@ namespace Wyam.Modules.Razor.Tests
             public void Metadata()
             {
                 // Given
-                string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
-                if (!Directory.Exists(inputFolder))
-                {
-                    Directory.CreateDirectory(inputFolder);
-                }
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.InputFolder.Returns(inputFolder);
                 Engine engine = new Engine();
                 engine.Configure();
-                context.Assemblies.Returns(engine.Assemblies);
+                IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document["MyKey"].Returns("MyValue");
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
@@ -135,17 +113,9 @@ namespace Wyam.Modules.Razor.Tests
             public void Document()
             {
                 // Given
-                string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
-                if (!Directory.Exists(inputFolder))
-                {
-                    Directory.CreateDirectory(inputFolder);
-                }
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.InputFolder.Returns(inputFolder);
                 Engine engine = new Engine();
                 engine.Configure();
-                context.Assemblies.Returns(engine.Assemblies);
+                IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Document.Source</p>")));
@@ -163,20 +133,10 @@ namespace Wyam.Modules.Razor.Tests
             public void DocumentAsModel()
             {
                 // Given
-                string inputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @".\Input");
-                if (!Directory.Exists(inputFolder))
-                {
-                    Directory.CreateDirectory(inputFolder);
-                }
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.RootFolder.Returns(TestContext.CurrentContext.TestDirectory);
-                context.InputFolder.Returns(inputFolder);
                 Engine engine = new Engine();
                 engine.Configure();
-                context.Assemblies.Returns(engine.Assemblies);
-                IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
-                document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Model.Source</p>")));
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument("C:/Temp/temp.txt", @"<p>@Model.Source</p>");
                 Razor razor = new Razor();
 
                 // When
@@ -184,170 +144,277 @@ namespace Wyam.Modules.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>C:/Temp/temp.txt</p>");
+                context.Received().GetDocument(document, @"<p>/C:/Temp/temp.txt</p>");  // The slash prefix is just added by our dumb mock
             }
 
-            // TODO: Uncomment once new IO support is live
-            //[Test]
-            //public void LoadSimpleTemplateFile()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"SimpleTemplate\Test.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+            [Test]
+            public void LoadLayoutFile()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"Layout/Test.cshtml", 
+@"@{
+	Layout = ""_Layout.cshtml"";
+}
+<p>This is a test</p>");
+                Razor razor = new Razor();
 
-            //    // When
-            //    engine.Execute();
+                // When
+                razor.Execute(new[] { document }, context).ToList();
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, 
+@"LAYOUT
 
-            //[Test]
-            //public void LoadLayoutFile()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"Layout\Test.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+<p>This is a test</p>");
+            }
 
-            //    // When
-            //    engine.Execute();
+            [Test]
+            public void LoadViewStartAndLayoutFile()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"ViewStartAndLayout/Test.cshtml",
+@"<p>This is a test</p>");
+                Razor razor = new Razor();
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+                // When
+                razor.Execute(new[] { document }, context).ToList();
 
-            //[Test]
-            //public void LoadViewStartAndLayoutFile()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"ViewStartAndLayout\Test.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT2
+<p>This is a test</p>");
+            }
 
-            //    // When
-            //    engine.Execute();
+            [Test]
+            public void AlternateViewStartPath()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+@"<p>This is a test</p>");
+                Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStart.cshtml");
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+                // When
+                razor.Execute(new[] { document }, context).ToList();
 
-            //[Test]
-            //public void AlternateViewStartPath()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"AlternateViewStartPath\Test.cshtml");
-            //    Razor razor = new Razor().WithViewStart(@"AlternateViewStart\_ViewStart.cshtml");
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT3
+<p>This is a test</p>");
+            }
 
-            //    // When
-            //    engine.Execute();
+            [Test]
+            public void IgnoresUnderscoresByDefault()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document1 = GetDocument(@"IgnoreUnderscores/Test.cshtml",
+@"@{
+	Layout = ""_Layout.cshtml"";
+}
+<p>This is a test</p>");
+                IDocument document2 = GetDocument(@"IgnoreUnderscores/_Layout.cshtml",
+@"LAYOUT4
+@RenderBody()");
+                Razor razor = new Razor();
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+                // When
+                razor.Execute(new[] { document1, document2 }, context).ToList();
 
-            //[Test]
-            //public void IgnoresUnderscoresByDefault()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"IgnoreUnderscores\*.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document1,
+@"LAYOUT4
 
-            //    // When
-            //    engine.Execute();
+<p>This is a test</p>");
+            }
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+            [Test]
+            public void AlternateIgnorePrefix()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document1 = GetDocument(@"AlternateIgnorePrefix/Test.cshtml",
+@"<p>This is a test</p>");
+                IDocument document2 = GetDocument(@"AlternateIgnorePrefix/IgnoreMe.cshtml",
+@"<p>Ignore me</p>");
+                Razor razor = new Razor().IgnorePrefix("Ignore");
 
-            //[Test]
-            //public void AlternateIgnorePrefix()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"AlternateIgnorePrefix\*.cshtml");
-            //    Razor razor = new Razor().IgnorePrefix("Ignore");
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+                // When
+                razor.Execute(new[] { document1, document2 }, context).ToList();
 
-            //    // When
-            //    engine.Execute();
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document1,
+@"<p>This is a test</p>");
+            }
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual(@"<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+            [Test]
+            public void RenderLayoutSection()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
+@"@{
+	Layout = ""_Layout.cshtml"";
+}
+@section MySection {
+<p>Section Content</p>
+}
+<p>This is a test</p>");
+                Razor razor = new Razor();
 
-            //[Test]
-            //public void RenderLayoutSection()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
+                // When
+                razor.Execute(new[] { document }, context).ToList();
 
-            //    // When
-            //    engine.Execute();
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT5
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n\r\n<p>Section Content</p>\r\n\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+<p>Section Content</p>
 
-            //[Test]
-            //public void RenderLayoutSectionOnMultipleExecution()
-            //{
-            //    // Given
-            //    Engine engine = new Engine();
-            //    engine.RootFolder = TestContext.CurrentContext.TestDirectory;
-            //    engine.InputFolder = @"TestFiles\Input\";
-            //    ReadFiles readFiles = new ReadFiles(@"LayoutWithSection\Test.cshtml");
-            //    Razor razor = new Razor();
-            //    Meta meta = new Meta("Content", (x, y) => x.Content);
-            //    engine.Pipelines.Add("Pipeline", readFiles, razor, meta);
 
-            //    // When
-            //    engine.Execute();
-            //    engine.Execute();
+<p>This is a test</p>");
+            }
 
-            //    // Then
-            //    Assert.AreEqual(1, engine.Documents.FromPipeline("Pipeline").Count());
-            //    Assert.AreEqual("LAYOUT\r\n\r\n<p>Section Content</p>\r\n\r\n\r\n<p>This is a test</p>", engine.Documents.FromPipeline("Pipeline").First().String("Content"));
-            //}
+            [Test]
+            public void RenderLayoutSectionOnMultipleExecution()
+            {
+                // Given
+                Engine engine = new Engine();
+                engine.Configure();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
+@"@{
+	Layout = ""_Layout.cshtml"";
+}
+@section MySection {
+<p>Section Content</p>
+}
+<p>This is a test</p>");
+                Razor razor = new Razor();
+
+                // When
+                razor.Execute(new[] { document }, context).ToList();
+                razor.Execute(new[] { document }, context).ToList();
+
+                // Then
+                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT5
+
+<p>Section Content</p>
+
+
+<p>This is a test</p>");
+            }
+
+            private IDocument GetDocument(string source, string content)
+            {
+                IDocument document = Substitute.For<IDocument>();
+                document.Source.Returns(new FilePath("/" + source));
+                document.ContainsKey(Keys.RelativeFilePath).Returns(true);
+                document.String(Keys.RelativeFilePath).Returns(source);
+                document.ContainsKey(Keys.SourceFileName).Returns(true);
+                document.FilePath(Keys.SourceFileName).Returns(new FilePath(source).FileName);
+                document.GetStream().Returns(
+                    new MemoryStream(Encoding.UTF8.GetBytes(content)),
+                    new MemoryStream(Encoding.UTF8.GetBytes(content)));  // Return a new memory stream if called again
+                return document;
+            }
+
+            private IExecutionContext GetExecutionContext(Engine engine)
+            {
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context.Assemblies.Returns(engine.Assemblies);
+                context.Namespaces.Returns(engine.Namespaces);
+                IReadOnlyFileSystem fileSystem = GetFileSystem();
+                context.FileSystem.Returns(fileSystem);
+                FilePath result;
+                context.TryConvert(Arg.Any<object>(), out result).Returns(x =>
+                {
+                    x[1] = (FilePath) x[0];
+                    return true;
+                });
+                return context;
+            }
+
+            private IReadOnlyFileSystem GetFileSystem()
+            {
+                IReadOnlyFileSystem fileSystem = Substitute.For<IReadOnlyFileSystem>();
+                IFileProvider fileProvider = GetFileProvider();
+                fileSystem.GetInputFile(Arg.Any<FilePath>()).Returns(x =>
+                {
+                    FilePath path = x.ArgAt<FilePath>(0);
+                    if (!path.IsAbsolute)
+                    {
+                        path = new FilePath("/" + path.FullPath);
+                    }
+                    return fileProvider.GetFile(path);
+                });
+                fileSystem.GetInputDirectory(Arg.Any<DirectoryPath>()).Returns(x => fileProvider.GetDirectory(x.ArgAt<DirectoryPath>(0)));
+                return fileSystem;
+            }
+
+            private IFileProvider GetFileProvider()
+            {
+                TestFileProvider fileProvider = new TestFileProvider();
+
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/AlternateIgnorePrefix");
+                fileProvider.AddDirectory("/AlternateViewStart");
+                fileProvider.AddDirectory("/AlternateViewStartPath");
+                fileProvider.AddDirectory("/IgnoreUnderscores");
+                fileProvider.AddDirectory("/Layout");
+                fileProvider.AddDirectory("/LayoutWithSection");
+                fileProvider.AddDirectory("/SimpleTemplate");
+                fileProvider.AddDirectory("/ViewStartAndLayout");
+
+                fileProvider.AddFile("/Layout/_Layout.cshtml",
+@"LAYOUT
+@RenderBody()");
+                fileProvider.AddFile("/ViewStartAndLayout/_ViewStart.cshtml",
+@"@{
+	Layout = ""_Layout.cshtml"";
+}");
+                fileProvider.AddFile("/ViewStartAndLayout/_Layout.cshtml",
+@"LAYOUT2
+@RenderBody()");
+                fileProvider.AddFile("/AlternateViewStart/_ViewStart.cshtml",
+@"@{
+	Layout = @""AlternateViewStart\_Layout.cshtml"";
+}");
+                fileProvider.AddFile("/AlternateViewStart/_Layout.cshtml",
+@"LAYOUT3
+@RenderBody()");
+                fileProvider.AddFile("/IgnoreUnderscores/_Layout.cshtml",
+@"LAYOUT4
+@RenderBody()");
+                fileProvider.AddFile("/LayoutWithSection/_Layout.cshtml",
+@"LAYOUT5
+@RenderSection(""MySection"", false)
+@RenderBody()");
+
+                return fileProvider;
+            }
         }
     }
 }

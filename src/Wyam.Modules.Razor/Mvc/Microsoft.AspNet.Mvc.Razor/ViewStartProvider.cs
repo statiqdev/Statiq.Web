@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Wyam.Common.IO;
 using Wyam.Modules.Razor.Microsoft.Framework.Internal;
 
 namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
@@ -12,9 +13,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
     public class ViewStartProvider : IViewStartProvider
     {
         private readonly IRazorPageFactory _pageFactory;
-        private readonly string _viewStartPath;
+        private readonly FilePath _viewStartPath;
 
-        public ViewStartProvider(IRazorPageFactory pageFactory, string viewStartPath)
+        public ViewStartProvider(IRazorPageFactory pageFactory, FilePath viewStartPath)
         {
             _pageFactory = pageFactory;
             _viewStartPath = viewStartPath;
@@ -25,7 +26,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
         {
             var viewStartLocations = _viewStartPath == null
                 ? ViewHierarchyUtility.GetViewStartLocations(path)
-                : new [] {_viewStartPath};
+                : new [] {_viewStartPath.FullPath};
             var viewStarts = viewStartLocations.Select(_pageFactory.CreateInstance)
                                                .Where(p => p != null)
                                                .ToArray();

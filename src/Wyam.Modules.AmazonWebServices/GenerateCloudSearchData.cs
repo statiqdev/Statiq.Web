@@ -38,10 +38,9 @@ namespace Wyam.Modules.AmazonWebServices
     public class GenerateCloudSearchData : IModule
     {
         private readonly string _idMetaKey;
-        private readonly string _writePath;
         private readonly string _bodyField;
-        private List<MetaFieldMapping> _metaFields;
-        private List<Field> _fields;
+        private readonly List<MetaFieldMapping> _metaFields;
+        private readonly List<Field> _fields;
 
 
         /// <summary>
@@ -118,9 +117,7 @@ namespace Wyam.Modules.AmazonWebServices
                         writer.WriteValue("add");
 
                         writer.WritePropertyName("id");
-                        writer.WriteValue(
-                            _idMetaKey != null ? doc.String(_idMetaKey) : doc.Id
-                            );
+                        writer.WriteValue(_idMetaKey != null ? doc.String(_idMetaKey) : doc.Id);
                                           
                         writer.WritePropertyName("fields");
                         writer.WriteStartObject();
@@ -141,9 +138,7 @@ namespace Wyam.Modules.AmazonWebServices
                                 }
 
                                 writer.WritePropertyName(field.FieldName);
-                                writer.WriteRawValue(
-                                     JsonConvert.SerializeObject(value)
-                                );
+                                writer.WriteRawValue(JsonConvert.SerializeObject(value));
                             }
 
                             foreach(var field in _metaFields)
@@ -168,9 +163,7 @@ namespace Wyam.Modules.AmazonWebServices
                                 }
 
                                 writer.WritePropertyName(field.FieldName);
-                                writer.WriteRawValue(
-                                    JsonConvert.SerializeObject(value)
-                                );
+                                writer.WriteRawValue(JsonConvert.SerializeObject(value));
                             }
 
                         writer.WriteEndObject();
@@ -187,9 +180,9 @@ namespace Wyam.Modules.AmazonWebServices
 
     internal class Field
     {
-        public string FieldName { get; private set; }
-        public object FieldValue { get; private set; }
-        public Func<IDocument, object> Execute { get; private set; }
+        public string FieldName { get; }
+        public object FieldValue { get; }
+        public Func<IDocument, object> Execute { get; }
 
         public Field(string fieldName, object fieldValue)
         {
@@ -212,23 +205,16 @@ namespace Wyam.Modules.AmazonWebServices
                 return FieldValue;
             }
 
-            try
-            {
-                return Execute.Invoke(doc);
-            }
-            catch(Exception e)
-            {
-                throw;
-            }
+            return Execute.Invoke(doc);
         }
     }
 
     internal class MetaFieldMapping
     {
-        public string FieldName { get; private set; }
-        public string MetaKey { get; private set; }
+        public string FieldName { get; }
+        public string MetaKey { get; }
 
-        public Func<object, object> Transformer { get; private set; }
+        public Func<object, object> Transformer { get; }
 
         public MetaFieldMapping(string fieldName, string metaKey, Func<object, object> transformer = null)
         {
@@ -236,7 +222,7 @@ namespace Wyam.Modules.AmazonWebServices
             MetaKey = metaKey;
 
             // If they didn't pass in a transformer, just set it to a function which returns the input unchanged
-            Transformer = transformer != null ? transformer : o=>o;
+            Transformer = transformer ?? (o=>o);
         }
     }
 }

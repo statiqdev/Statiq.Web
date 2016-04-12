@@ -9,31 +9,35 @@ using Microsoft.Framework.Expiration.Interfaces;
 
 namespace Wyam.Modules.Razor
 {
-    public class DocumentFileProvider : IFileProvider
+
+    /// <summary>
+    /// A IFileProvider that provides files based on their stream for use with arbitrary documents.
+    /// </summary>
+    public class WyamStreamFileProvider : IFileProvider
     {
-        private readonly PhysicalFileProvider _physicalFileProvider;
+        private readonly WyamFileProvider _wyamFileProvider;
         private readonly Stream _stream;
 
-        public DocumentFileProvider(string root, Stream stream)
+        public WyamStreamFileProvider(WyamFileProvider wyamFileProvider, Stream stream)
         {
-            _physicalFileProvider = new PhysicalFileProvider(root);
+            _wyamFileProvider = wyamFileProvider;
             _stream = stream;
         }
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            IFileInfo fileInfo = _physicalFileProvider.GetFileInfo(subpath);
+            IFileInfo fileInfo = _wyamFileProvider.GetFileInfo(subpath);
             return new DocumentFileInfo(fileInfo, _stream);
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            return _physicalFileProvider.GetDirectoryContents(subpath);
+            return _wyamFileProvider.GetDirectoryContents(subpath);
         }
 
         public IExpirationTrigger Watch(string filter)
         {
-            return _physicalFileProvider.Watch(filter);
+            throw new NotSupportedException();
         }
 
         private class DocumentFileInfo : IFileInfo
@@ -59,10 +63,7 @@ namespace Wyam.Modules.Razor
 
             public bool IsDirectory => false;
 
-            public Stream CreateReadStream()
-            {
-                return new NonDisposableStreamWrapper(_stream);
-;           }
+            public Stream CreateReadStream() => new NonDisposableStreamWrapper(_stream);
         }
 
         // This prevents the underlying stream from being disposed when the wrapper is

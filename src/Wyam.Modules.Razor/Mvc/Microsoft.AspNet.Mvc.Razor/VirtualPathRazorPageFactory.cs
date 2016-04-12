@@ -20,15 +20,13 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
     /// </summary>
     public class VirtualPathRazorPageFactory : IRazorPageFactory
     {
-        private readonly string _rootDirectory;
-        private readonly IFileProvider _fileProvider;
+        private readonly WyamFileProvider _fileProvider;
         private readonly IRazorCompilationService _razorcompilationService;
         private readonly IExecutionContext _executionContext;
 
-        public VirtualPathRazorPageFactory(string rootDirectory, IExecutionContext executionContext, Type basePageType)
+        public VirtualPathRazorPageFactory(IExecutionContext executionContext, Type basePageType)
         {
-            _rootDirectory = rootDirectory;
-            _fileProvider = new PhysicalFileProvider(rootDirectory);
+            _fileProvider = new WyamFileProvider(executionContext.FileSystem);
             _razorcompilationService = new RazorCompilationService(executionContext, basePageType);
             _executionContext = executionContext;
         }
@@ -50,7 +48,7 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor
             // Code below is taken from CompilerCache (specifically OnCacheMiss) which is responsible for managing the compilation step in MVC
 
             // Check the file
-            var fileProvider = stream == null ? _fileProvider : new DocumentFileProvider(_rootDirectory, stream);
+            var fileProvider = stream == null ? (IFileProvider)_fileProvider : new WyamStreamFileProvider(_fileProvider, stream);
             var fileInfo = fileProvider.GetFileInfo(relativePath);
             if (!fileInfo.Exists)
             {
