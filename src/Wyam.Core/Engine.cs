@@ -59,53 +59,7 @@ namespace Wyam.Core
             get { return ExecutionCacheManager.NoCache; }
             set { ExecutionCacheManager.NoCache = value; }
         }
-
-        private string _rootFolder = Environment.CurrentDirectory;
-        private string _inputFolder = "Input";
-        private string _outputFolder = "Output";
-
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        public string RootFolder
-        {
-            get { return PathHelper.NormalizePath(FileSystem.GetRootDirectory().Path.FullPath); }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("RootFolder");
-                }
-                FileSystem.RootPath = value;
-            }
-        }
-
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        public string InputFolder
-        {
-            get { return PathHelper.NormalizePath(FileSystem.GetInputDirectories().First().Path.FullPath); }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("InputFolder");
-                }
-                FileSystem.InputPaths[0] = value;
-            }
-        }
-
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        public string OutputFolder
-        {
-            get { return PathHelper.NormalizePath(FileSystem.GetOutputDirectory().Path.FullPath); }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("OutputFolder");
-                }
-                FileSystem.OutputPath = value;
-            }
-        }
-
+        
         public string ApplicationInput { get; set; }
 
         private IDocumentFactory _documentFactory;
@@ -198,14 +152,11 @@ namespace Wyam.Core
                 CleanOutputPath();
             }
 
-            // Create the input and output folders if they don't already exist
-            if (!System.IO.Directory.Exists(InputFolder))
+            // Create the output folder if it doesn't already exist
+            IDirectory outputDirectory = FileSystem.GetOutputDirectory();
+            if (!outputDirectory.Exists)
             {
-                System.IO.Directory.CreateDirectory(InputFolder);
-            }
-            if (!System.IO.Directory.Exists(OutputFolder))
-            {
-                System.IO.Directory.CreateDirectory(OutputFolder);
+                outputDirectory.Create();
             }
 
             try

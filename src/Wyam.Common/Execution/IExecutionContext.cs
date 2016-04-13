@@ -19,12 +19,6 @@ namespace Wyam.Common.Execution
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        string RootFolder { get; }
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        string InputFolder { get; }
-        [Obsolete("This is made obsolete by a new IO abstraction layer and will be removed in a future release")]
-        string OutputFolder { get; }
         IReadOnlyFileSystem FileSystem { get; }
         IReadOnlyOutputSettings OutputSettings { get; }
         IDocumentCollection Documents { get; }
