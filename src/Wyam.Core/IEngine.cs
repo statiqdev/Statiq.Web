@@ -25,7 +25,7 @@ namespace Wyam.Core
         /// <summary>
         /// Global execution metadata that is available from the execution context.
         /// </summary>
-        ISimpleMetadata GlobalMetadata { get; set; }
+        ISimpleMetadata GlobalMetadata { get; }
 
         IPipelineCollection Pipelines { get; }
 
@@ -35,8 +35,6 @@ namespace Wyam.Core
 
         IDocumentFactory DocumentFactory { get; set; }
 
-        bool CleanOutputPathOnExecute { get; set; }
-
-        bool NoCache { get; set; }
+        ISettings Settings { get; }
     }
 }

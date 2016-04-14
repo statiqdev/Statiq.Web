@@ -8,11 +8,11 @@ using Wyam.Common.IO;
 
 namespace Wyam.Core.Execution
 {
-    internal class OutputSettings : IOutputSettings
+    internal class Settings : ISettings
     {
         private string _linkHost = null;
 
-        public OutputSettings()
+        public Settings()
         {
             LinkHideIndexPages = true;
             LinkHideWebExtensions = true;
@@ -40,5 +40,9 @@ namespace Wyam.Core.Execution
         public bool LinkHideIndexPages { get; set; }
 
         public bool LinkHideWebExtensions { get; set; }
+
+        public bool UseCache { get; set; } = true;
+
+        public bool CleanOutputPath { get; set; } = true;
     }
 }

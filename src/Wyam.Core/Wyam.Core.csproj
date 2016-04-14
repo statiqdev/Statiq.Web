@@ -155,7 +155,7 @@
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\Metadata\ValidateMeta.cs" />
     <Compile Include="Modules\Templates\Xslt.cs" />
-    <Compile Include="Execution\OutputSettings.cs" />
+    <Compile Include="Execution\Settings.cs" />
     <Compile Include="Tracing\DiagnosticsTraceListener.cs" />
     <Compile Include="Documents\DocumentCollection.cs" />
     <Compile Include="Documents\SeekableStream.cs" />

@@ -87,7 +87,6 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
-            engine.CleanOutputPathOnExecute = false;
             CountModule a = new CountModule("A")
             {
                 AdditionalOutputs = 1
@@ -122,7 +121,6 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
-            engine.CleanOutputPathOnExecute = false;
             int c = 0;
             engine.Pipelines.Add("Pipeline",
                 new Execute((x, ctx) => new[]
@@ -161,7 +159,6 @@ namespace Wyam.Core.Tests
         {
             // Given
             Engine engine = new Engine();
-            engine.CleanOutputPathOnExecute = false;
             int c = 0;
             engine.Pipelines.Add(
                 new Execute((x, ctx) => new[]

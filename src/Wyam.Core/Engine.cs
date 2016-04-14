@@ -21,7 +21,7 @@ namespace Wyam.Core
     public class Engine : IEngine, IDisposable
     {
         private readonly FileSystem _fileSystem = new FileSystem();
-        private readonly OutputSettings _outputSettings = new OutputSettings();
+        private readonly Settings _settings = new Settings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
         private readonly Config _config;
@@ -29,7 +29,7 @@ namespace Wyam.Core
 
         public IFileSystem FileSystem => _fileSystem;
 
-        public IOutputSettings OutputSettings => _outputSettings;
+        public ISettings Settings => _settings;
 
         public IConfig Config => _config;
 
@@ -53,12 +53,6 @@ namespace Wyam.Core
         public IEnumerable<string> Namespaces => _config.Namespaces;
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
-
-        public bool NoCache
-        {
-            get { return ExecutionCacheManager.NoCache; }
-            set { ExecutionCacheManager.NoCache = value; }
-        }
         
         public string ApplicationInput { get; set; }
 
@@ -76,8 +70,6 @@ namespace Wyam.Core
                 _documentFactory = value;
             }
         }
-
-        public bool CleanOutputPathOnExecute { get; set; } = true;
 
         public Engine()
         {
@@ -147,7 +139,7 @@ namespace Wyam.Core
             }
 
             // Clean the output folder if requested
-            if (CleanOutputPathOnExecute)
+            if (Settings.CleanOutputPath)
             {
                 CleanOutputPath();
             }

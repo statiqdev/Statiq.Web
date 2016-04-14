@@ -7,7 +7,7 @@ using Wyam.Common.IO;
 
 namespace Wyam.Common.Execution
 {
-    public interface IOutputSettings : IReadOnlyOutputSettings
+    public interface ISettings : IReadOnlySettings
     {
         /// <summary>
         /// Gets or sets the host to use when generating links.
@@ -43,5 +43,21 @@ namespace Wyam.Common.Execution
         /// <c>true</c> if web extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
         new bool LinkHideWebExtensions { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether caching should be used.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if caching should be used; otherwise, <c>false</c>.
+        /// </value>
+        new bool UseCache { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to clean the output path on each execution.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the output path should be cleaned; otherwise, <c>false</c>.
+        /// </value>
+        new bool CleanOutputPath { get; set; }
     }
 }

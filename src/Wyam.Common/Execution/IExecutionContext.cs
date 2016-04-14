@@ -20,15 +20,21 @@ namespace Wyam.Common.Execution
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }
         IReadOnlyFileSystem FileSystem { get; }
-        IReadOnlyOutputSettings OutputSettings { get; }
+        IReadOnlySettings Settings { get; }
         IDocumentCollection Documents { get; }
-        IReadOnlyDictionary<string, object> GlobalMetadata { get; } 
+        IReadOnlyDictionary<string, object> GlobalMetadata { get; }
 
+        /// <summary>
+        /// Gets any input that was passed to the application (for example, on stdin via piping).
+        /// </summary>
+        /// <value>
+        /// The application input.
+        /// </value>
         string ApplicationInput { get; }
 
         /// <summary>
         /// Converts the specified path into a string appropriate for use as a link using default settings from the
-        /// <see cref="IReadOnlyOutputSettings" />. This version should be used inside modules to ensure
+        /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
         /// consistent link generation. Note that you can optionally include the host or not depending
         /// on if you want to generate host-specific links. By default, the host is not included so that
         /// sites work the same on any server including the preview server.
@@ -43,7 +49,7 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Converts the path into a string appropriate for use as a link, overriding one or more 
-        /// settings from the <see cref="IReadOnlyOutputSettings" />.
+        /// settings from the <see cref="IReadOnlySettings" />.
         /// </summary>
         /// <param name="path">The path to generate a link for.</param>
         /// <param name="host">The host to use for the link.</param>

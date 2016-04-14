@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
                 {
-                    engine.OutputSettings.LinkHost = hostname;
+                    engine.Settings.LinkHost = hostname;
                 }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
@@ -75,7 +75,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Engine engine = new Engine();
                 if (!string.IsNullOrWhiteSpace(hostname))
                 {
-                    engine.OutputSettings.LinkHost = hostname;
+                    engine.Settings.LinkHost = hostname;
                 }
                 Pipeline contentPipeline = new Pipeline("Content", null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);

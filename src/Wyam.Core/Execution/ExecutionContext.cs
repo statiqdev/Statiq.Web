@@ -33,9 +33,9 @@ namespace Wyam.Core.Execution
 
         public IReadOnlyFileSystem FileSystem => Engine.FileSystem;
 
-        public IReadOnlyOutputSettings OutputSettings => Engine.OutputSettings;
+        public IReadOnlySettings Settings => Engine.Settings;
 
-        public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module);
+        public IExecutionCache ExecutionCache => Engine.ExecutionCacheManager.Get(Module, Settings);
 
         public string ApplicationInput => Engine.ApplicationInput;
 
@@ -68,8 +68,8 @@ namespace Wyam.Core.Execution
 
         public string GetLink(NormalizedPath path, bool includeHost = false)
         {
-            return GetLink(path, OutputSettings.LinkHost, OutputSettings.LinkRoot, 
-                OutputSettings.LinkHideIndexPages, OutputSettings.LinkHideWebExtensions);
+            return GetLink(path, Settings.LinkHost, Settings.LinkRoot, 
+                Settings.LinkHideIndexPages, Settings.LinkHideWebExtensions);
         }
 
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions)

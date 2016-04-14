@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Caching;
+using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 
@@ -15,24 +16,13 @@ namespace Wyam.Core.Caching
     {
         private readonly ConcurrentDictionary<IModule, ExecutionCache> _executionCaches 
             = new ConcurrentDictionary<IModule, ExecutionCache>();
-        private bool _noCache;
-
-        public bool NoCache
-        {
-            get { return _noCache; }
-            set
-            {
-                _executionCaches.Clear();
-                _noCache = value;
-            }
-        }
 
         // Creates one if it doesn't exist
-        public IExecutionCache Get(IModule module)
+        public IExecutionCache Get(IModule module, IReadOnlySettings settings)
         {
-            return _noCache
-                ? (IExecutionCache) new NoCache()
-                : _executionCaches.GetOrAdd(module, new ExecutionCache());
+            return settings.UseCache
+                ? _executionCaches.GetOrAdd(module, new ExecutionCache())
+                : (IExecutionCache) new NoCache();
         }
 
         public void ResetEntryHits()

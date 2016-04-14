@@ -26,7 +26,6 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<bool> hasNextPage = new List<bool>();
                 List<bool> hasPreviousPage = new List<bool>();
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 7
@@ -58,7 +57,6 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<IList<string>> content = new List<IList<string>>();
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule count = new CountModule("A")
                 {
                     AdditionalOutputs = 7

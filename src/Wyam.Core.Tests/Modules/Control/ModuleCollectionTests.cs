@@ -19,7 +19,6 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     AdditionalOutputs = 1

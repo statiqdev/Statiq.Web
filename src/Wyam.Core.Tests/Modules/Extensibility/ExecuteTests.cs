@@ -17,7 +17,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute((d, c) => null);
                 engine.Pipelines.Add(execute);
 
@@ -32,7 +31,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute(c => null);
                 engine.Pipelines.Add(execute);
 
@@ -48,7 +46,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 // Given
                 int a = 0;
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute((d, c) => { a = a + 1; });
                 engine.Pipelines.Add(execute);
 
@@ -64,7 +61,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 // Given
                 int a = 0;
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 Execute execute = new Execute(c => { a = a + 1; });
                 engine.Pipelines.Add(execute);
 
@@ -79,7 +75,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 IDocument document = Substitute.For<IDocument>();
                 Execute execute = new Execute(c => document);
                 engine.Pipelines.Add("Test", execute);
@@ -96,7 +91,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 IDocument document = Substitute.For<IDocument>();
                 Execute execute = new Execute((d, c) => document);
                 engine.Pipelines.Add("Test", execute);

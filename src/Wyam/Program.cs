@@ -376,7 +376,7 @@ namespace Wyam
                 // Set no cache if requested
                 if (_noCache)
                 {
-                    engine.NoCache = true;
+                    engine.Settings.UseCache = false;
                 }
 
                 // Set folders
@@ -394,7 +394,7 @@ namespace Wyam
                 }
                 if (_noClean)
                 {
-                    engine.CleanOutputPathOnExecute = false;
+                    engine.Settings.CleanOutputPath = false;
                 }
                 if (_engineGlobalMetadata != null)
                 {

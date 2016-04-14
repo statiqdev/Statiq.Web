@@ -30,6 +30,10 @@ namespace Wyam.Core.Configuration
 
         public ISimpleMetadata GlobalMetadata => _engine.GlobalMetadata;
 
+        public ISettings Settings => _engine.Settings;
+
+        public string ApplicationInput => _engine.ApplicationInput;
+
         public IEngine Engine => _engine;
 
         public void SetCustomDocumentType<T>() where T : CustomDocument, new()

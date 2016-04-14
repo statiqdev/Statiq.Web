@@ -19,7 +19,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 engine.Pipelines.Add(new Trace(traceEventType.ToString()).EventType(traceEventType));
 
                 // When

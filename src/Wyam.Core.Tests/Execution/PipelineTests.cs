@@ -22,7 +22,6 @@ namespace Wyam.Core.Tests.Execution
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,
@@ -62,7 +61,6 @@ namespace Wyam.Core.Tests.Execution
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,
@@ -101,7 +99,6 @@ namespace Wyam.Core.Tests.Execution
             {
                 // Given
                 Engine engine = new Engine();
-                engine.CleanOutputPathOnExecute = false;
                 CountModule a = new CountModule("A")
                 {
                     CloneSource = true,
