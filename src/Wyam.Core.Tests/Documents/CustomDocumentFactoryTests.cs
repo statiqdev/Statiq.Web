@@ -23,7 +23,7 @@ namespace Wyam.Core.Tests.Documents
             public void GetsInitialDocumentWithInitialMetadata()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
+                MetadataDictionary initialMetadata = new MetadataDictionary();
                 initialMetadata.Add("Foo", "Bar");
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
@@ -44,7 +44,7 @@ namespace Wyam.Core.Tests.Documents
             public void ThrowsWhenCloneReturnsNullDocument()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
+                MetadataDictionary initialMetadata = new MetadataDictionary();
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -58,7 +58,7 @@ namespace Wyam.Core.Tests.Documents
             public void ThrowsWhenCloneReturnsSameDocument()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
+                MetadataDictionary initialMetadata = new MetadataDictionary();
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -72,7 +72,7 @@ namespace Wyam.Core.Tests.Documents
             public void CloneResultsInClonedDocument()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
+                MetadataDictionary initialMetadata = new MetadataDictionary();
                 initialMetadata.Add("Foo", "Bar");
                 DocumentFactory documentFactory = new DocumentFactory(initialMetadata);
                 CustomDocumentFactory<TestDocument> customDocumentFactory = new CustomDocumentFactory<TestDocument>(documentFactory);

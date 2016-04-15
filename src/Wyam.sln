@@ -80,6 +80,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Minification",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Minification.Tests", "Wyam.Modules.Minification.Tests\Wyam.Modules.Minification.Tests.csproj", "{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tests", "Wyam.Tests\Wyam.Tests.csproj", "{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -222,6 +224,10 @@ Global
 		{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -258,5 +264,6 @@ Global
 		{7B120825-5F6D-494D-AF76-BCE2D94E0425} = {596452BD-AE34-4989-A36F-88FF72B2DFD8}
 		{AD223A29-5736-4914-9D24-66D8329E663E} = {50B6158B-0946-4467-8D2D-6CFAA826A65E}
 		{6AD5C161-7FF7-4875-B71A-9F95EA3342AE} = {7B120825-5F6D-494D-AF76-BCE2D94E0425}
+		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE} = {596452BD-AE34-4989-A36F-88FF72B2DFD8}
 	EndGlobalSection
 EndGlobal

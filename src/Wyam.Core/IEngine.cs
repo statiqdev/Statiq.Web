@@ -20,12 +20,12 @@ namespace Wyam.Core
         /// <summary>
         /// The initial metadata that is used to populate every new document.
         /// </summary>
-        ISimpleMetadata InitialMetadata { get; }
+        IMetadataDictionary InitialMetadata { get; }
 
         /// <summary>
         /// Global execution metadata that is available from the execution context.
         /// </summary>
-        ISimpleMetadata GlobalMetadata { get; }
+        IMetadataDictionary GlobalMetadata { get; }
 
         IPipelineCollection Pipelines { get; }
 

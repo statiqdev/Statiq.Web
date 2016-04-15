@@ -2,6 +2,7 @@
 using Wyam.Common.Tracing;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
+using Wyam.Testing.Modules;
 
 namespace Wyam.Core.Tests.Modules.Control
 {

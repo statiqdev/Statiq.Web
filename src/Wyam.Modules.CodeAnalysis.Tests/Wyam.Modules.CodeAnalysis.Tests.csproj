@@ -115,7 +115,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="TestDocument.cs" />
     <Compile Include="WrappingStringBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>

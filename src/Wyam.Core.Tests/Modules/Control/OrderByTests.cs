@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
+using Wyam.Testing.Modules;
 
 namespace Wyam.Core.Tests.Modules.Control
 {

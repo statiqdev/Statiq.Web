@@ -60,7 +60,7 @@
     <Compile Include="IO\PathEqualityComparer.cs" />
     <Compile Include="IO\RelativePathResolver.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
-    <Compile Include="Meta\ISimpleMetadata.cs" />
+    <Compile Include="Meta\IMetadataDictionary.cs" />
     <Compile Include="Meta\MetadataItems.cs" />
     <Compile Include="Meta\Keys.cs" />
     <Compile Include="Modules\ContentModule.cs" />

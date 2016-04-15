@@ -15,36 +15,34 @@ namespace Wyam.Core.Documents
     // Document source must be unique within the pipeline
     internal class Document : IDocument
     {
-        private readonly Metadata _metadata;
+        private readonly MetadataStack _metadata;
         private string _content;
         private Stream _stream;
         private readonly object _streamLock;
         private bool _disposeStream;
         private bool _disposed;
-
-        // Normal constructors
-
-        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, string content = null)
+        
+        internal Document(MetadataDictionary initialMetadata, string content = null)
             : this(initialMetadata, null, null, content, null, true)
         {
         }
 
-        internal Document(IEnumerable<KeyValuePair<string, object>> initialMetadata, FilePath source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
-            : this(Guid.NewGuid().ToString(), new Metadata(initialMetadata), source, stream, null, content, items, disposeStream)
+        internal Document(MetadataDictionary initialMetadata, FilePath source, Stream stream, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+            : this(Guid.NewGuid().ToString(), new MetadataStack(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
         
-        private Document(string id, Metadata metadata, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items)
+        private Document(string id, MetadataStack metadata, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items)
             : this(id, metadata, source, null, null, content, items, true)
         {
         }
 
-        private Document(string id, Metadata metadata, FilePath source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string id, MetadataStack metadata, FilePath source, Stream stream, object streamLock, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
             : this(id, metadata, source, stream, streamLock, null, items, disposeStream)
         {
         }
 
-        private Document(string id, Metadata metadata, FilePath source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
+        private Document(string id, MetadataStack metadata, FilePath source, Stream stream, object streamLock, string content, IEnumerable<KeyValuePair<string, object>> items, bool disposeStream)
         {
             if (id == null)
             {

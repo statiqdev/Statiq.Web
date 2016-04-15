@@ -26,13 +26,13 @@ namespace Wyam.Common.Tests
             {
                 // Given
                 IDocument a = new Document(
-                    new SimpleMetadata { { "Numbers", new[] { 1, 2, 3 } } }, "a");
+                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } }, "a");
                 IDocument b = new Document(
-                    new SimpleMetadata { { "Numbers", new [] { 2, 3, 4 } } }, "b");
+                    new MetadataDictionary { { "Numbers", new [] { 2, 3, 4 } } }, "b");
                 IDocument c = new Document(
-                    new SimpleMetadata { { "Numbers", 3 } }, "c");
+                    new MetadataDictionary { { "Numbers", 3 } }, "c");
                 IDocument d = new Document(
-                    new SimpleMetadata { { "Numbers", "4" } }, "d");
+                    new MetadataDictionary { { "Numbers", "4" } }, "d");
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -51,13 +51,13 @@ namespace Wyam.Common.Tests
             {
                 // Given
                 IDocument a = new Document(
-                    new SimpleMetadata { { "Numbers", new[] { 1, 2, 3 } } }, "a");
+                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } }, "a");
                 IDocument b = new Document(
-                    new SimpleMetadata { { "Numbers", new[] { 2, 3, 4 } } }, "b");
+                    new MetadataDictionary { { "Numbers", new[] { 2, 3, 4 } } }, "b");
                 IDocument c = new Document(
-                    new SimpleMetadata { { "Numbers", 3 } }, "c");
+                    new MetadataDictionary { { "Numbers", 3 } }, "c");
                 IDocument d = new Document(
-                    new SimpleMetadata { { "Numbers", "4" } }, "d");
+                    new MetadataDictionary { { "Numbers", "4" } }, "d");
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -76,25 +76,25 @@ namespace Wyam.Common.Tests
             {
                 // Given
                 IDocument a = new Document(
-                    new SimpleMetadata
+                    new MetadataDictionary
                     {
                         { "Numbers", new[] { 1, 2, 3 } },
                         { "Colors", "Red" }
                     }, "a");
                 IDocument b = new Document(
-                    new SimpleMetadata
+                    new MetadataDictionary
                     {
                         { "Numbers", new[] { 2, 3, 4 } },
                         { "Colors", new [] { "Red", "Blue" } }
                     }, "b");
                 IDocument c = new Document(
-                    new SimpleMetadata
+                    new MetadataDictionary
                     {
                         { "Numbers", 3 },
                         { "Colors", "Green" }
                     }, "c");
                 IDocument d = new Document(
-                    new SimpleMetadata
+                    new MetadataDictionary
                     {
                         { "Numbers", "4" },
                         { "Colors", new [] { "Green", "Blue" } }

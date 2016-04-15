@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Testing.Tracing;
 using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Testing

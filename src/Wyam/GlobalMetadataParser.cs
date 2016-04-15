@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Wyam.Core.Meta
+namespace Wyam
 {
     [Serializable]
     public class MetadataParseException : Exception
@@ -14,19 +14,19 @@ namespace Wyam.Core.Meta
     /// Parses INI-like args.
     /// Key=Value
     /// </summary>
-    public class GlobalMetadataParser
+    public static class GlobalMetadataParser
     {
         /// <summary>
         /// Parses command line args and outputs dictionary.
         /// </summary>
         /// <param name="args">Arguments from command line.</param>
         /// <returns></returns>
-        public SimpleMetadata Parse(IEnumerable<string> args)
+        public static IReadOnlyDictionary<string, object> Parse(IEnumerable<string> args)
         {
-            var metadata = new SimpleMetadata();
+            Dictionary<string, object> metadata = new Dictionary<string, object>();
             foreach (var arg in args)
             {
-                var pair = ParsePair(arg);
+                KeyValuePair<string, string> pair = ParsePair(arg);
                 try
                 {
                     metadata.Add(pair.Key, pair.Value);
@@ -34,14 +34,16 @@ namespace Wyam.Core.Meta
                 catch (Exception ex)
                 {
                     if (ex is ArgumentException || ex is ArgumentNullException)
-                        throw new MetadataParseException(string.Format("Error while adding metadata \"{0}\" to dictionary: {1}", arg, ex.Message), ex);
+                    {
+                        throw new MetadataParseException($"Error while adding metadata \"{arg}\" to dictionary: {ex.Message}", ex);
+                    }
                 }
             }
 
             return metadata;
         }
 
-        private KeyValuePair<string, string> ParsePair(string arg)
+        private static KeyValuePair<string, string> ParsePair(string arg)
         {
             for (int i = 0; i < arg.Length; i++)
             {
@@ -53,8 +55,8 @@ namespace Wyam.Core.Meta
                 // "key=value" is a pair.
                 if (c == '=' && (i > 0 && arg[i - 1] != '\\'))
                 {
-                    var key = arg.Substring(0, i).Trim();
-                    var value = arg.Substring(i + 1).Trim();
+                    string key = arg.Substring(0, i).Trim();
+                    string value = arg.Substring(i + 1).Trim();
 
                     return new KeyValuePair<string, string>(key, value);
                 }

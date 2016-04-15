@@ -22,7 +22,7 @@ namespace Wyam.Common.Execution
         IReadOnlyFileSystem FileSystem { get; }
         IReadOnlySettings Settings { get; }
         IDocumentCollection Documents { get; }
-        IReadOnlyDictionary<string, object> GlobalMetadata { get; }
+        IMetadata GlobalMetadata { get; }
 
         /// <summary>
         /// Gets any input that was passed to the application (for example, on stdin via piping).

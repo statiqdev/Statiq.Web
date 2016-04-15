@@ -1,61 +1,33 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Core.Documents;
 
 namespace Wyam.Core.Meta
 {
-    // This class contains a stack of all the metadata generated at a particular pipeline stage
-    // Getting a value checks each of the stacks and returns the first hit
-    // This class is immutable, create a new document to get a new one with additional values
-    internal class Metadata : IMetadata
+    internal abstract class Metadata : IMetadata
     {
-        private readonly Stack<IDictionary<string, object>> _metadataStack;
-        
-        internal Metadata(IEnumerable<KeyValuePair<string, object>> initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
+        protected internal Stack<IDictionary<string, object>> Stack { get; }
+
+        protected Metadata()
         {
-            _metadataStack = new Stack<IDictionary<string, object>>();
-            Dictionary<string, object> dictionary = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> item in initialMetadata)
-            {
-                dictionary[item.Key] = item.Value;
-            }
-            if (items != null)
-            {
-                foreach (KeyValuePair<string, object> item in items)
-                {
-                    dictionary[item.Key] = item.Value;
-                }
-            }
-            _metadataStack.Push(dictionary);
+            Stack = new Stack<IDictionary<string, object>>();
         }
 
-        private Metadata(Metadata original, IEnumerable<KeyValuePair<string, object>> items)
+        protected Metadata(Stack<IDictionary<string, object>> stack)
         {
-            _metadataStack = new Stack<IDictionary<string, object>>(original._metadataStack.Reverse());
-            _metadataStack.Push(new Dictionary<string, object>());
-
-            // Set new items
-            if (items != null)
+            if (stack == null)
             {
-                foreach (KeyValuePair<string, object> item in items)
-                {
-                    _metadataStack.Peek()[item.Key] = item.Value;
-                }
+                throw new ArgumentNullException(nameof(stack));
             }
+
+            Stack = stack;
         }
 
         public IMetadata<T> MetadataAs<T>() => new MetadataAs<T>(this);
-
-        // This clones the stack and pushes a new dictionary on to the cloned stack
-        internal Metadata Clone(IEnumerable<KeyValuePair<string, object>> items)
-        {
-            return new Metadata(this, items);
-        }
 
         public bool ContainsKey(string key)
         {
@@ -63,7 +35,7 @@ namespace Wyam.Core.Meta
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            return _metadataStack.FirstOrDefault(x => x.ContainsKey(key)) != null;
+            return Stack.FirstOrDefault(x => x.ContainsKey(key)) != null;
         }
 
         public bool TryGetValue(string key, out object value)
@@ -73,7 +45,7 @@ namespace Wyam.Core.Meta
                 throw new ArgumentNullException(nameof(key));
             }
             value = null;
-            IDictionary<string, object> meta = _metadataStack.FirstOrDefault(x => x.ContainsKey(key));
+            IDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
             if (meta == null)
             {
                 return false;
@@ -123,16 +95,16 @@ namespace Wyam.Core.Meta
             }
         }
 
-        public IEnumerable<string> Keys => _metadataStack.SelectMany(x => x.Keys);
+        public IEnumerable<string> Keys => Stack.SelectMany(x => x.Keys);
 
-        public IEnumerable<object> Values => _metadataStack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value)));
+        public IEnumerable<object> Values => Stack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value)));
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => 
-            _metadataStack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() =>
+            Stack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public int Count => _metadataStack.Sum(x => x.Count);
+        public int Count => Stack.Sum(x => x.Count);
 
         // This resolves the metadata value by expanding IMetadataValue
         private object GetValue(string key, object value)
@@ -147,6 +119,6 @@ namespace Wyam.Core.Meta
         {
             IMetadataValue metadataValue = item.Value as IMetadataValue;
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(item.Key, this)) : item;
-        } 
+        }
     }
 }

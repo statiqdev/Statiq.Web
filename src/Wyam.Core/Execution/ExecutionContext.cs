@@ -39,7 +39,7 @@ namespace Wyam.Core.Execution
 
         public string ApplicationInput => Engine.ApplicationInput;
 
-        public IReadOnlyDictionary<string, object> GlobalMetadata => Engine.GlobalMetadata.ToImmutableDictionary(); 
+        public IMetadata GlobalMetadata => Engine.GlobalMetadata; 
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {

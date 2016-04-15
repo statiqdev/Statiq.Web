@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
 
-namespace Wyam.Testing
+namespace Wyam.Testing.Modules
 {
     public class CountModule : IModule
     {

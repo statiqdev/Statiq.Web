@@ -73,7 +73,7 @@
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
     <Compile Include="Configuration\ConfigTests.cs" />
     <Compile Include="EngineTests.cs" />
-    <Compile Include="Meta\MetadataTests.cs" />
+    <Compile Include="Meta\MetadataStackTests.cs" />
     <Compile Include="Modules\Control\BranchTests.cs" />
     <Compile Include="Modules\Control\MergeTests.cs" />
     <Compile Include="Modules\Control\ModuleCollectionTests.cs" />
@@ -101,7 +101,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Meta\TestGlobalMetadataParser.cs" />
     <Compile Include="TypeHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>

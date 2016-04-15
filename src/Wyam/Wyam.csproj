@@ -132,6 +132,7 @@
   <ItemGroup>
     <Compile Include="ActionFileSystemWatcher.cs" />
     <Compile Include="ExitCode.cs" />
+    <Compile Include="GlobalMetadataParser.cs" />
     <Compile Include="Owin\ExtensionlessUrlsExtensions.cs" />
     <Compile Include="Owin\ExtensionlessUrlsMiddleware.cs" />
     <Compile Include="InterlockedBool.cs" />

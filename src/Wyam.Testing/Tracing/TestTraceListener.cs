@@ -2,9 +2,11 @@
 using System.Diagnostics;
 using NUnit.Framework;
 
-namespace Wyam.Testing
+namespace Wyam.Testing.Tracing
 {
-    // Throws exceptions on error or warning traces, but only for the current thread
+    /// <summary>
+    /// Throws exceptions on error or warning traces, but only for the current thread
+    /// </summary>
     public class TestTraceListener : ConsoleTraceListener
     {
         public string TestId { get; private set; }

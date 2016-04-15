@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 
-namespace Wyam.Modules.CodeAnalysis.Tests
+namespace Wyam.Testing.Documents
 {
-    internal class TestDocument : IDocument
+    /// <summary>
+    /// A simple document that stores metadata in a <c>Dictionary</c> without any built-in type conversion.
+    /// Also no support for content at this time.
+    /// </summary>
+    public class TestDocument : IDocument
     {
         private readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
 
@@ -59,26 +61,17 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             return TryGetValue(key, out value) ? value : defaultValue;
         }
 
-        public T Get<T>(string key)
-        {
-            return (T) Get(key);
-        }
+        public T Get<T>(string key) => (T)Get(key);
 
-        public T Get<T>(string key, T defaultValue)
-        {
-            return (T) Get(key, (object)defaultValue);
-        }
+        public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);
 
-        public string String(string key, string defaultValue = null)
-        {
-            return Get<string>(key, defaultValue);
-        }
+        public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
 
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
             object value = Get(key, (object)defaultValue);
             string stringValue = value as string;
-            return stringValue != null ? new FilePath(stringValue) : (FilePath) value;
+            return stringValue != null ? new FilePath(stringValue) : (FilePath)value;
         }
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
@@ -88,25 +81,13 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             return stringValue != null ? new DirectoryPath(stringValue) : (DirectoryPath)value;
         }
 
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
-        {
-            return Get<IReadOnlyList<T>>(key, defaultValue);
-        }
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Get<IReadOnlyList<T>>(key, defaultValue);
 
-        public IDocument Document(string key)
-        {
-            return Get<IDocument>(key);
-        }
+        public IDocument Document(string key) => Get<IDocument>(key);
 
-        public IReadOnlyList<IDocument> Documents(string key)
-        {
-            return Get<IReadOnlyList<IDocument>>(key);
-        }
+        public IReadOnlyList<IDocument> Documents(string key) => Get<IReadOnlyList<IDocument>>(key);
 
-        public dynamic Dynamic(string key, object defaultValue = null)
-        {
-            return Get(key, defaultValue) ?? defaultValue;
-        }
+        public dynamic Dynamic(string key, object defaultValue = null) => Get(key, defaultValue) ?? defaultValue;
 
         public object this[string key]
         {
@@ -125,30 +106,15 @@ namespace Wyam.Modules.CodeAnalysis.Tests
             }
         }
 
-        public IEnumerable<string> Keys
-        {
-            get { return _metadata.Keys; }
-        }
+        public IEnumerable<string> Keys => _metadata.Keys;
 
-        public IEnumerable<object> Values
-        {
-            get { return _metadata.Select(x => GetValue(x.Key, x.Value)); }
-        }
+        public IEnumerable<object> Values => _metadata.Select(x => GetValue(x.Key, x.Value));
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _metadata.Select(GetItem).GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _metadata.Select(GetItem).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public int Count
-        {
-            get { return _metadata.Count; }
-        }
+        public int Count => _metadata.Count;
 
         // This resolves the metadata value by expanding IMetadataValue
         private object GetValue(string key, object value)

@@ -10,14 +10,15 @@ using Wyam.Common.Meta;
 using Wyam.Common.Execution;
 using Wyam.Core.Modules;
 using Wyam.Core.Execution;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Documents
 {
     internal class DocumentFactory : IDocumentFactory
     {
-        private readonly ISimpleMetadata _initialMetadata;
+        private readonly MetadataDictionary _initialMetadata;
 
-        public DocumentFactory(ISimpleMetadata initialMetadata)
+        public DocumentFactory(MetadataDictionary initialMetadata)
         {
             _initialMetadata = initialMetadata;
         }

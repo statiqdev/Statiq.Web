@@ -126,9 +126,9 @@
     <Compile Include="IO\Local\LocalFile.cs" />
     <Compile Include="IO\Local\LocalFileProvider.cs" />
     <Compile Include="IO\VirtualInputDirectory.cs" />
-    <Compile Include="Meta\GlobalMetadataParser.cs" />
     <Compile Include="IEngine.cs" />
-    <Compile Include="Meta\SimpleMetadata.cs" />
+    <Compile Include="Meta\Metadata.cs" />
+    <Compile Include="Meta\MetadataDictionary.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
@@ -189,7 +189,7 @@
     <Compile Include="NuGet\Repository.cs" />
     <Compile Include="NuGet\PackagesCollection.cs" />
     <Compile Include="Execution\ReadOnlyPipeline.cs" />
-    <Compile Include="Meta\Metadata.cs" />
+    <Compile Include="Meta\MetadataStack.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />
     <Compile Include="TypeHelper.cs" />

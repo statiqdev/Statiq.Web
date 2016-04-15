@@ -26,9 +26,9 @@ namespace Wyam.Core.Configuration
 
         public IFileSystem FileSystem => _engine.FileSystem;
 
-        public ISimpleMetadata InitialMetadata => _engine.InitialMetadata;
+        public IMetadataDictionary InitialMetadata => _engine.InitialMetadata;
 
-        public ISimpleMetadata GlobalMetadata => _engine.GlobalMetadata;
+        public IMetadataDictionary GlobalMetadata => _engine.GlobalMetadata;
 
         public ISettings Settings => _engine.Settings;
 

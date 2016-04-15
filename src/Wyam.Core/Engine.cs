@@ -25,6 +25,7 @@ namespace Wyam.Core
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
         private readonly Config _config;
+        private readonly MetadataDictionary _initialMetadata = new MetadataDictionary();
         private bool _disposed;
 
         public IFileSystem FileSystem => _fileSystem;
@@ -35,12 +36,9 @@ namespace Wyam.Core
 
         public IPipelineCollection Pipelines => _pipelines;
 
-        public ISimpleMetadata InitialMetadata { get; } = new SimpleMetadata();
-
-        /// <summary>
-        /// Global execution metadata.
-        /// </summary>
-        public ISimpleMetadata GlobalMetadata { get; set; } = new SimpleMetadata();
+        public IMetadataDictionary InitialMetadata => _initialMetadata;
+        
+        public IMetadataDictionary GlobalMetadata { get; } = new MetadataDictionary();
 
         public IDocumentCollection Documents => DocumentCollection;
 
@@ -75,7 +73,7 @@ namespace Wyam.Core
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
             _config = new Config(this, FileSystem);
-            _documentFactory = new DocumentFactory(InitialMetadata);
+            _documentFactory = new DocumentFactory(_initialMetadata);
         }
 
         public void Configure(IFile configFile, bool updatePackages = false, bool outputScripts = false)

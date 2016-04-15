@@ -14,16 +14,16 @@ namespace Wyam.Core.Tests.Meta
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class MetadataTests : BaseFixture
+    public class MetadataStackTests : BaseFixture
     {
-        public class IndexerTests : MetadataTests
+        public class IndexerTests : MetadataStackTests
         {
             [Test]
             public void MissingKeyThrowsKeyNotFoundException()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 TestDelegate test = () =>
@@ -39,8 +39,8 @@ namespace Wyam.Core.Tests.Meta
             public void NullKeyThrowsKeyNotFoundException()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 TestDelegate test = () =>
@@ -56,11 +56,11 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithMetadataValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata
+                MetadataDictionary initialMetadata = new MetadataDictionary
                 {
                     ["A"] = new SimpleMetadataValue { Value = "a" }
                 };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value = metadata["A"];
@@ -70,14 +70,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class ContainsKeyMethodTests : MetadataTests
+        public class ContainsKeyMethodTests : MetadataStackTests
         {
             [Test]
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 bool contains = metadata.ContainsKey("A");
@@ -90,8 +90,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 bool contains = metadata.ContainsKey("B");
@@ -101,14 +101,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class TryGetValueMethodTests : MetadataTests
+        public class TryGetValueMethodTests : MetadataStackTests
         {
             [Test]
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value;
@@ -123,8 +123,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value;
@@ -139,11 +139,11 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithMetadataValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata
+                MetadataDictionary initialMetadata = new MetadataDictionary
                 {
                     ["A"] = new SimpleMetadataValue { Value = "a" }
                 };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value;
@@ -155,39 +155,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class CloneMethodTests : MetadataTests
+        public class CloneMethodTests : MetadataStackTests
         {
-            [Test]
-            public void GlobalMetadataRetainedInNextIterations()
-            {
-                // TODO add complex object (ex. List<string>) test
-                SimpleMetadata meta = new SimpleMetadata();
-
-                meta.Add("hello", "world");
-                meta.Add("obj", 123);
-
-                {
-                    ISimpleMetadata cloned = meta.Clone();
-                    Assert.IsTrue(((string)cloned["hello"]).Equals("world", StringComparison.Ordinal));
-                    Assert.AreEqual((int)cloned["obj"], 123);
-                    cloned.Clear();
-
-                    Assert.IsTrue(cloned.Count == 0);
-                }
-                {
-                    ISimpleMetadata cloned = meta.Clone();
-                    Assert.IsTrue(cloned.Count == 2);
-                    Assert.IsTrue(((string)cloned["hello"]).Equals("world", StringComparison.Ordinal));
-                    Assert.AreEqual((int)cloned["obj"], 123);
-                }
-            }
-
             [Test]
             public void CanCloneWithNewValues()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", "a") });
@@ -200,11 +175,11 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsPreviousValues()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                Metadata clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
 
                 // Then
                 Assert.AreEqual("a", clone["A"]);
@@ -214,11 +189,11 @@ namespace Wyam.Core.Tests.Meta
             public void ClonedMetadataDoesNotContainNewValues()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                Metadata clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
 
                 // Then
                 Assert.IsFalse(metadata.ContainsKey("B"));
@@ -228,11 +203,11 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsNewValues()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                Metadata clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
 
                 // Then
                 Assert.AreEqual("b", clone["B"]);
@@ -242,11 +217,11 @@ namespace Wyam.Core.Tests.Meta
             public void ReplacesValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = "a"};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                Metadata clone = metadata.Clone(new Dictionary<string, object> {{"A", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"A", "b"}});
 
                 // Then
                 Assert.AreEqual("a", metadata["A"]);
@@ -254,14 +229,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class GetMethodTests : MetadataTests
+        public class GetMethodTests : MetadataStackTests
         {
             [Test]
             public void GetWithMetadataValueReturnsCorrectResult()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = "a" };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value = metadata.Get("A");
@@ -274,12 +249,12 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultWithDerivedMetadataValue()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata
+                MetadataDictionary initialMetadata = new MetadataDictionary
                 {
                     ["A"] = new DerivedMetadataValue { Key = "X" },
                     ["X"] = "x"
                 };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value = metadata.Get("A");
@@ -293,8 +268,8 @@ namespace Wyam.Core.Tests.Meta
             {
                 // Given
                 SimpleMetadataValue metadataValue = new SimpleMetadataValue { Value = "a" };
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = metadataValue };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = metadataValue };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object value = metadata.Get("A");
@@ -307,14 +282,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class ListMethodTests : MetadataTests
+        public class ListMethodTests : MetadataStackTests
         {
             [Test]
             public void ReturnsCorrectResultForList()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<int> {1, 2, 3}};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<int> {1, 2, 3}};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<int> result = metadata.List<int>("A");
@@ -328,8 +303,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForConvertedStringList()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<string> {"1", "2", "3"}};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<string> {"1", "2", "3"}};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<int> result = metadata.List<int>("A");
@@ -343,8 +318,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForConvertedIntList()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new List<int> {1, 2, 3}};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<int> {1, 2, 3}};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<string> result = metadata.List<string>("A");
@@ -358,8 +333,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForArray()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata {["A"] = new[] {1, 2, 3}};
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new[] {1, 2, 3}};
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<int> result = metadata.List<int>("A");
@@ -370,14 +345,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class DocumentsMethodTests : MetadataTests
+        public class DocumentsMethodTests : MetadataStackTests
         {
             [Test]
             public void ReturnsNullWhenKeyNotFound()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<IDocument> result = metadata.Documents("A");
@@ -390,8 +365,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsEmptyListForListOfInt()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = new List<int> { 1, 2, 3 } };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<int> { 1, 2, 3 } };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<IDocument> result = metadata.Documents("A");
@@ -405,8 +380,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsEmptyListForSingleInt()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = 1 };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = 1 };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<IDocument> result = metadata.Documents("A");
@@ -423,8 +398,8 @@ namespace Wyam.Core.Tests.Meta
                 IDocument a = Substitute.For<IDocument>();
                 IDocument b = Substitute.For<IDocument>();
                 IDocument c = Substitute.For<IDocument>();
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = new List<IDocument> { a, b, c } };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<IDocument> { a, b, c } };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<IDocument> result = metadata.Documents("A");
@@ -439,8 +414,8 @@ namespace Wyam.Core.Tests.Meta
             {
                 // Given
                 IDocument a = Substitute.For<IDocument>();
-                SimpleMetadata initialMetadata = new SimpleMetadata { ["A"] = a };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = a };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 IReadOnlyList<IDocument> result = metadata.Documents("A");
@@ -451,7 +426,7 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class StringMethodTests : MetadataTests
+        public class StringMethodTests : MetadataStackTests
         {
             [TestCase("/a/b/c.txt", "/a/b/c.txt")]
             [TestCase("a/b/c.txt", "a/b/c.txt")]
@@ -459,8 +434,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectStringForFilePath(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new FilePath(path)) });
@@ -477,8 +452,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectStringForDirectoryPath(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new DirectoryPath(path)) });
@@ -490,7 +465,7 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class FilePathMethodTests : MetadataTests
+        public class FilePathMethodTests : MetadataStackTests
         {
             [TestCase("/a/b/c.txt", "/a/b/c.txt")]
             [TestCase("a/b/c.txt", "a/b/c.txt")]
@@ -498,8 +473,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectFilePathForFilePath(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new FilePath(path)) });
@@ -518,8 +493,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectFilePathForString(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", path) });
@@ -538,7 +513,7 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class DirectoryPathMethodTests : MetadataTests
+        public class DirectoryPathMethodTests : MetadataStackTests
         {
             [TestCase("/a/b/c", "/a/b/c")]
             [TestCase("a/b/c", "a/b/c")]
@@ -546,8 +521,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectDirectoryPathForDirectoryPath(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new DirectoryPath(path)) });
@@ -566,8 +541,8 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectDirectoryPathForString(string path, string expected)
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", path) });
@@ -586,14 +561,14 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class MetadataAsMethodTests : MetadataTests
+        public class MetadataAsMethodTests : MetadataStackTests
         {
             [Test]
             public void ConvertIntToString()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", 1) });
@@ -608,8 +583,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringToInt()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", "1") });
@@ -624,8 +599,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertIntArrayToStringArray()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new int[] { 1, 2, 3 }) });
@@ -640,8 +615,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringArrayToIntArray()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new string[] { "1", "2", "3" }) });
@@ -656,8 +631,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertIntArrayToStringEnumerable()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new int[] { 1, 2, 3 }) });
@@ -672,8 +647,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringEnumerableToIntArray()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", new List<string> { "1", "2", "3" }) });
@@ -688,8 +663,8 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertStringToIntArray()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata();
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 metadata = metadata.Clone(new[] { new KeyValuePair<string, object>("A", "1") });
@@ -701,19 +676,19 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class EnumeratorTests : MetadataTests
+        public class EnumeratorTests : MetadataStackTests
         {
             [Test]
             public void EnumeratingMetadataValuesReturnsCorrectResults()
             {
                 // Given
-                SimpleMetadata initialMetadata = new SimpleMetadata
+                MetadataDictionary initialMetadata = new MetadataDictionary
                 {
                     ["A"] = new SimpleMetadataValue {Value = "a"},
                     ["B"] = new SimpleMetadataValue {Value = "b"},
                     ["C"] = new SimpleMetadataValue {Value = "c"}
                 };
-                Metadata metadata = new Metadata(initialMetadata);
+                MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
                 object[] values = metadata.Select(x => x.Value).ToArray();

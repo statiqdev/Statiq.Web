@@ -11,6 +11,7 @@ using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Core.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Modules;
 
 
 namespace Wyam.Core.Tests

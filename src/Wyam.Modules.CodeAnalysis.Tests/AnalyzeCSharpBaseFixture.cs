@@ -12,6 +12,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
 
 namespace Wyam.Modules.CodeAnalysis.Tests
 {

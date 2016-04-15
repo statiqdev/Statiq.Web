@@ -13,6 +13,7 @@ using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Owin;
@@ -54,8 +55,8 @@ namespace Wyam
         private DirectoryPath _outputPath = null;
         private DirectoryPath _previewRoot = null;
         private FilePath _configFilePath = null;
-        private IReadOnlyList<string> _globalRawMetadata = null;
-        private Common.Meta.ISimpleMetadata _engineGlobalMetadata = null;
+        private IReadOnlyList<string> _globalMetadataArgs = null;
+        private IReadOnlyDictionary<string, object> _globalMetadata = null;
 
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -95,11 +96,11 @@ namespace Wyam
             }
 
             // Prepare engine's metadata
-            if (!_verifyConfig && _globalRawMetadata != null && _globalRawMetadata.Count > 0)
+            if (!_verifyConfig && _globalMetadataArgs != null && _globalMetadataArgs.Count > 0)
             {
                 try
                 {
-                    _engineGlobalMetadata = new GlobalMetadataParser().Parse(_globalRawMetadata);
+                    _globalMetadata = GlobalMetadataParser.Parse(_globalMetadataArgs);
                 }
                 catch (MetadataParseException ex)
                 {
@@ -110,7 +111,7 @@ namespace Wyam
                     return (int)ExitCode.CommandLineError;
                 }
                 // Not used anymore, release resources.
-                _globalRawMetadata = null;
+                _globalMetadataArgs = null;
             }
 
             // Get the engine
@@ -321,7 +322,7 @@ namespace Wyam
                 syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
-                syntax.DefineOptionList("meta", ref _globalRawMetadata, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
+                syntax.DefineOptionList("meta", ref _globalMetadataArgs, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
                 _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
@@ -396,9 +397,12 @@ namespace Wyam
                 {
                     engine.Settings.CleanOutputPath = false;
                 }
-                if (_engineGlobalMetadata != null)
+                if (_globalMetadata != null)
                 {
-                    engine.GlobalMetadata = _engineGlobalMetadata.Clone();
+                    foreach (KeyValuePair<string, object> item in _globalMetadata)
+                    {
+                        engine.GlobalMetadata.Add(item);
+                    }
                 }
 
                 engine.ApplicationInput = _stdin;
