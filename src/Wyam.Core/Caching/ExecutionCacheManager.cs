@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Caching;
+using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;

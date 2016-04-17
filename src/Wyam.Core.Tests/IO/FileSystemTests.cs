@@ -260,7 +260,7 @@ namespace Wyam.Core.Tests.IO
             }
         }
 
-        public class GetInputPathMethodTests : FileSystemTests
+        public class GetContainingInputPathMethodTests : FileSystemTests
         {
             [Test]
             public void ThrowsForNullPath()
@@ -271,25 +271,15 @@ namespace Wyam.Core.Tests.IO
                 // When, Then
                 Assert.Throws<ArgumentNullException>(() => fileSystem.GetContainingInputPath(null));
             }
-
-            [Test]
-            public void ThrowsForRelativeDirectoryPath()
-            {
-                // Given
-                FileSystem fileSystem = new FileSystem();
-                FilePath relativePath = new FilePath("A/B/C.txt");
-
-                // When, Then
-                Assert.Throws<ArgumentException>(() => fileSystem.GetContainingInputPath(relativePath));
-            }
-
-            [Test]
+            
             [TestCase("/a/b/c/foo.txt", "/a/b")]
             [TestCase("/a/x/bar.txt", "/a/x")]
             [TestCase("/a/x/baz.txt", "/a/x")]
             [TestCase("/z/baz.txt", null)]
             [TestCase("/a/b/c/../e/foo.txt", "/a/b")]
-            public void ShouldReturnContainingDirectoryPath(string path, string expected)
+            [TestCase("/a/b/c", "/a/b")]
+            [TestCase("/a/x", "/a/x")]
+            public void ShouldReturnContainingPathForAbsolutePath(string path, string expected)
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
@@ -306,14 +296,13 @@ namespace Wyam.Core.Tests.IO
                 Assert.AreEqual(expected, inputPathFromFilePath?.FullPath);
                 Assert.AreEqual(expected, inputPathFromDirectoryPath?.FullPath);
             }
-
-            [Test]
+            
             [TestCase("/a/b/c/foo.txt", "/a/y/../b")]
             [TestCase("/a/x/bar.txt", "/a/y/../x")]
             [TestCase("/a/x/baz.txt", "/a/y/../x")]
             [TestCase("/z/baz.txt", null)]
             [TestCase("/a/b/c/../e/foo.txt", "/a/y/../b")]
-            public void ShouldReturnContainingDirectoryPathForInputPathAboveRootPath(string path, string expected)
+            public void ShouldReturnContainingPathForInputPathAboveRootPath(string path, string expected)
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
@@ -329,6 +318,48 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.AreEqual(expected, inputPathFromFilePath?.FullPath);
                 Assert.AreEqual(expected, inputPathFromDirectoryPath?.FullPath);
+            }
+
+            [TestCase("c/foo.txt", "/a/b")]
+            [TestCase("bar.txt", "/a/x")]
+            [TestCase("baz.txt", null)]
+            [TestCase("z/baz.txt", null)]
+            [TestCase("c/../e/foo.txt", null)]
+            [TestCase("c/e/../foo.txt", "/a/b")]
+            public void ShouldReturnContainingPathForRelativeFilePath(string path, string expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("x");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When
+                DirectoryPath inputPath = fileSystem.GetContainingInputPath(new FilePath(path));
+
+                // Then
+                Assert.AreEqual(expected, inputPath?.FullPath);
+            }
+
+            [TestCase("c", "/a/b")]
+            [TestCase("z", "/a/y")]
+            [TestCase("r", null)]
+            [TestCase("c/e", null)]
+            public void ShouldReturnContainingPathForRelativeDirectoryPath(string path, string expected)
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("b");
+                fileSystem.InputPaths.Add("y");
+                fileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+
+                // When
+                DirectoryPath inputPath = fileSystem.GetContainingInputPath(new DirectoryPath(path));
+
+                // Then
+                Assert.AreEqual(expected, inputPath?.FullPath);
             }
         }
 

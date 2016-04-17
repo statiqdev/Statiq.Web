@@ -99,7 +99,7 @@ namespace Wyam.Common.IO
             new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
 
         /// <summary>
-        /// Gets the file extension.
+        /// Gets the file extension (including the preceding ".").
         /// </summary>
         /// <value>The file extension (including the preceding ".").</value>
         public string Extension

@@ -1,63 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Wyam.Common.Execution;
 using Wyam.Common.IO;
 
-namespace Wyam.Common.Execution
+namespace Wyam.Common.Configuration
 {
-    public interface IReadOnlySettings
+    public interface ISettings : IReadOnlySettings
     {
         /// <summary>
-        /// Gets the host to use when generating links.
+        /// Gets or sets the host to use when generating links.
         /// </summary>
         /// <value>
         /// The link host.
         /// </value>
-        string LinkHost { get; }
+        new string Host { get; set; }
 
         /// <summary>
-        /// Gets the default root path to use when generating links 
-        /// with <see cref="NormalizedPath.ToLink"/>
+        /// Gets or sets the default root path to use when generating 
+        /// links with <see cref="NormalizedPath.ToLink"/>
         /// </summary>
         /// <value>
         /// The link root.
         /// </value>
-        DirectoryPath LinkRoot { get; }
+        new DirectoryPath LinkRoot { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether to hide index pages by default
+        /// Gets or sets a value indicating whether to hide index pages by default
         /// when generating links with <see cref="NormalizedPath.ToLink"/>.
         /// </summary>
         /// <value>
         /// <c>true</c> if index pages should be hidden; otherwise, <c>false</c>.
         /// </value>
-        bool LinkHideIndexPages { get; }
+        new bool LinkHideIndexPages { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether to hide web extensions by default
+        /// Gets or sets a value indicating whether to hide web extensions by default
         /// when generating links with <see cref="NormalizedPath.ToLink"/>.
         /// </summary>
         /// <value>
         /// <c>true</c> if web extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
-        bool LinkHideWebExtensions { get; }
+        new bool LinkHideWebExtensions { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether caching should be used.
+        /// Gets or sets a value indicating whether caching should be used.
         /// </summary>
         /// <value>
         /// <c>true</c> if caching should be used; otherwise, <c>false</c>.
         /// </value>
-        bool UseCache { get; }
+        new bool UseCache { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether to clean the output path on each execution.
+        /// Gets or sets a value indicating whether to clean the output path on each execution.
         /// </summary>
         /// <value>
         /// <c>true</c> if the output path should be cleaned; otherwise, <c>false</c>.
         /// </value>
-        bool CleanOutputPath { get; }
+        new bool CleanOutputPath { get; set; }
     }
 }

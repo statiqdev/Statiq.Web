@@ -9,9 +9,13 @@ namespace Wyam.Common.NuGet
 {
     public interface IPackagesCollection : IRepository
     {
-        // Sets the path where NuGet packages will be downloaded and cached
+        /// <summary>
+        /// Gets or sets the path where NuGet packages will be downloaded and cached.
+        /// </summary>
+        /// <value>
+        /// The packages path.
+        /// </value>
         DirectoryPath PackagesPath { get; set; }
-        DirectoryPath ContentPath { get; set; }
 
         IRepository Repository(string packageSource);
     }

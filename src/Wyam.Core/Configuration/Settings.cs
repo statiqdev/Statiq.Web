@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.Execution
+namespace Wyam.Core.Configuration
 {
     internal class Settings : ISettings
     {
-        private string _linkHost = null;
+        private string _host = null;
 
         public Settings()
         {
@@ -18,20 +15,20 @@ namespace Wyam.Core.Execution
             LinkHideWebExtensions = true;
         }
 
-        public string LinkHost
+        public string Host
         {
-            get { return _linkHost; }
+            get { return _host; }
             set
             {
                 if (value == null)
                 {
-                    _linkHost = null;
+                    _host = null;
                 }
                 if (Uri.CheckHostName(value) == UriHostNameType.Unknown)
                 {
                     throw new ArgumentException("Value must be a valid hostname");
                 }
-                _linkHost = value;
+                _host = value;
             }
         }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Wyam.Common.Caching;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -66,9 +67,14 @@ namespace Wyam.Core.Execution
 
         // GetLink
 
+        public string GetLink(IDocument document, bool includeHost = false)
+        {
+            return GetLink(document.FilePath(Keys.RelativeFilePath), includeHost);
+        }
+
         public string GetLink(NormalizedPath path, bool includeHost = false)
         {
-            return GetLink(path, Settings.LinkHost, Settings.LinkRoot, 
+            return GetLink(path, Settings.Host, Settings.LinkRoot, 
                 Settings.LinkHideIndexPages, Settings.LinkHideWebExtensions);
         }
 

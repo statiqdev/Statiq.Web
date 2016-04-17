@@ -103,10 +103,12 @@ namespace Wyam.Common.IO
         IReadOnlyList<IDirectory> GetInputDirectories();
 
         /// <summary>
-        /// Gets the absolute input path that contains the specified file or directory. The provided
-        /// file or directory path must be absolute. Not that a file need not actually exist at the
-        /// specified file path, this just returns the input path that would contain
-        /// the file based only on path information.
+        /// Gets the absolute input path that contains the specified file or directory. If the provided
+        /// file or directory path is absolute, this returns the input path that contains the specified
+        /// path (note that the specified file or directory does not need to exist and this just returns 
+        /// the input path that would contain the file or directory based only on path information). If
+        /// the provided path is relative, this checks all input paths for the existence of the file
+        /// or directory and returns the first one where it exists.
         /// </summary>
         /// <param name="path">The file path.</param>
         /// <returns>The input path that contains the specified file, 

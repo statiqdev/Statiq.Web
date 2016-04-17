@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystemReader.cs" />
     <Compile Include="Less.cs" />
     <Compile Include="LessCache.cs" />
     <Compile Include="LessLogger.cs" />

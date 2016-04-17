@@ -117,15 +117,31 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            if (!path.IsAbsolute)
+            if (path.IsAbsolute)
             {
-                throw new ArgumentException("The contained path must be absolute", nameof(path));
+                return InputPaths
+                    .Reverse()
+                    .Select(x => RootPath.Combine(x))
+                    .FirstOrDefault(x => x.Provider == path.Provider 
+                        && path.FullPath.StartsWith(x.Collapse().FullPath));
             }
-            return InputPaths
-                .Reverse()
-                .Select(x => RootPath.Combine(x))
-                .FirstOrDefault(x => x.Provider == path.Provider 
-                    && path.FullPath.StartsWith(x.Collapse().FullPath));
+            FilePath filePath = path as FilePath;
+            if (filePath != null)
+            {
+                IFile file = GetInputFile(filePath);
+                return file.Exists ? GetContainingInputPath(file.Path) : null;
+            }
+            DirectoryPath directoryPath = path as DirectoryPath;
+            if (directoryPath != null)
+            {
+                return InputPaths
+                    .Reverse()
+                    .Select(x => new KeyValuePair<DirectoryPath, IDirectory>(x, GetRootDirectory(x.Combine(directoryPath))))
+                    .Where(x => x.Value.Exists)
+                    .Select(x => RootPath.Combine(x.Key))
+                    .FirstOrDefault();
+            }
+            return null;
         }
 
         public FilePath GetOutputPath(FilePath path)

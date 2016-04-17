@@ -74,8 +74,8 @@
     <Compile Include="Modules\IAsNewDocuments.cs" />
     <Compile Include="NuGet\IPackagesCollection.cs" />
     <Compile Include="NuGet\IRepository.cs" />
-    <Compile Include="Execution\ISettings.cs" />
-    <Compile Include="Execution\IReadOnlySettings.cs" />
+    <Compile Include="Configuration\ISettings.cs" />
+    <Compile Include="Configuration\IReadOnlySettings.cs" />
     <Compile Include="Tracing\IIndentedTraceEvent.cs" />
     <Compile Include="Meta\IMetadata.cs" />
     <Compile Include="Meta\IMetadataValue.cs" />

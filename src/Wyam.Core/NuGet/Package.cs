@@ -39,7 +39,7 @@ namespace Wyam.Core.NuGet
             _allowUnlisted = allowUnlisted;
         }
 
-        public void InstallPackage(PackageManager packageManager, bool updatePackages)
+        public IPackage InstallPackage(PackageManager packageManager, bool updatePackages)
         {
             using (Trace.WithIndent().Verbose("Installing package {0}{1} from {2}",
                 _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source))
@@ -52,7 +52,7 @@ namespace Wyam.Core.NuGet
                 {
                     Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
-                    return;
+                    return localPackage;
                 }
 
                 // Find the source package
@@ -62,7 +62,7 @@ namespace Wyam.Core.NuGet
                 {
                     Trace.Warning("Package {0} {1} could not be found at {2}",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
-                    return;
+                    return null;
                 }
 
                 // Check if we're up to date
@@ -70,10 +70,10 @@ namespace Wyam.Core.NuGet
                 {
                     Trace.Verbose("Package {0}{1} is up to date with version {2}, skipping",
                         _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
-                    return;
+                    return localPackage;
                 }
 
-                // Uninstall the old package (removing any content files)
+                // Uninstall the old package
                 if (localPackage != null)
                 {
                     packageManager.UninstallPackage(localPackage, true);
@@ -83,6 +83,7 @@ namespace Wyam.Core.NuGet
                 // Install it
                 packageManager.InstallPackage(sourcePackage, false, _allowPrereleaseVersions);
                 Trace.Verbose("Installed package {0} {1}", sourcePackage.Id, sourcePackage.Version);
+                return sourcePackage;
             }
         }
     }

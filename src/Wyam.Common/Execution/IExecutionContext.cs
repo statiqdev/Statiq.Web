@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Wyam.Common.Caching;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -31,6 +32,21 @@ namespace Wyam.Common.Execution
         /// The application input.
         /// </value>
         string ApplicationInput { get; }
+
+        /// <summary>
+        /// Gets a link for the specified document using the "RelativeFilePath" metadata value and the default settings from the
+        /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
+        /// consistent link generation. Note that you can optionally include the host or not depending
+        /// on if you want to generate host-specific links. By default, the host is not included so that
+        /// sites work the same on any server including the preview server.
+        /// </summary>
+        /// <param name="document">The document to generate a link for.</param>
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
+        /// <returns>
+        /// A string representation of the path suitable for a web link.
+        /// </returns>
+        string GetLink(IDocument document, bool includeHost = false);
 
         /// <summary>
         /// Converts the specified path into a string appropriate for use as a link using default settings from the

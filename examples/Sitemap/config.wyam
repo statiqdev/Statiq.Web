@@ -1,4 +1,4 @@
-InitialMetadata["Hostname"] = "http://www.example.com";
+Settings.Host = "www.example.com";
 
 Pipelines.Add("Posts",
 	ReadFiles("posts/*.md"),  // Read all markdown files in the "posts" directory

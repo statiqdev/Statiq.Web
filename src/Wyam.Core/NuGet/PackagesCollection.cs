@@ -42,20 +42,7 @@ namespace Wyam.Core.NuGet
             }
         }
 
-        private string AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse().FullPath;
-
-        public DirectoryPath ContentPath
-        {
-            get { return _contentPath; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(ContentPath));
-                }
-                _contentPath = value;
-            }
-        }
+        private DirectoryPath AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse();
 
         public IRepository Repository(string packageSource)
         {
@@ -80,19 +67,18 @@ namespace Wyam.Core.NuGet
         {
             foreach (Repository repository in _repositories)
             {
-                repository.InstallPackages(AbsolutePackagesPath, ContentPath, _fileSystem, updatePackages);
+                repository.InstallPackages(AbsolutePackagesPath, _fileSystem, updatePackages);
             }
         }
-
-        // TODO: Return IEnumerable<DirectoryPath> and remove calls to System.IO
-        public IEnumerable<string> GetCompatibleAssemblyPaths()
+        
+        public IEnumerable<FilePath> GetCompatibleAssemblyPaths()
         {
-            List<string> assemblyPaths = new List<string>();
+            List<FilePath> assemblyPaths = new List<FilePath>();
             FrameworkReducer reducer = new FrameworkReducer();
-            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));  // If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched
+            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));  // TODO: If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched
             NuGetFrameworkFullComparer frameworkComparer = new NuGetFrameworkFullComparer();
-            IPackageRepository packageRepository = PackageRepositoryFactory.Default.CreateRepository(AbsolutePackagesPath);
-            PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath);
+            IPackageRepository packageRepository = PackageRepositoryFactory.Default.CreateRepository(AbsolutePackagesPath.FullPath);
+            PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath.FullPath);
             foreach (IPackage package in packageManager.LocalRepository.GetPackages())
             {
                 List<KeyValuePair<IPackageFile, NuGetFramework>> filesAndFrameworks = package.GetLibFiles()
@@ -103,19 +89,16 @@ namespace Wyam.Core.NuGet
                 NuGetFramework targetPackageFramework = reducer.GetNearest(targetFramework, filesAndFrameworks.Select(x => x.Value));
                 if (targetPackageFramework != null)
                 {
-                    List<string> packageAssemblyPaths = filesAndFrameworks
+                    List<FilePath> packageAssemblyPaths = filesAndFrameworks
                         .Where(x => frameworkComparer.Equals(targetPackageFramework, x.Value))
-                        .Select(x => System.IO.Path.Combine(AbsolutePackagesPath, String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version), x.Key.Path))
-                        .Where(x => System.IO.Path.GetExtension(x) == ".dll")
+                        .Select(x => AbsolutePackagesPath.Combine(String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version)).CombineFile(x.Key.Path))
+                        .Where(x => x.Extension == ".dll")
                         .ToList();
-                    foreach (string packageAssemblyPath in packageAssemblyPaths)
+                    foreach (FilePath packageAssemblyPath in packageAssemblyPaths)
                     {
-                        Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath, package.Id, package.Version);
+                        Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath.ToString(), package.Id, package.Version);
                     }
-                    assemblyPaths.AddRange(filesAndFrameworks
-                        .Where(x => frameworkComparer.Equals(targetPackageFramework, x.Value))
-                        .Select(x => System.IO.Path.Combine(AbsolutePackagesPath, String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version), x.Key.Path))
-                        .Where(x => System.IO.Path.GetExtension(x) == ".dll"));
+                    assemblyPaths.AddRange(packageAssemblyPaths);
                 }
                 else
                 {

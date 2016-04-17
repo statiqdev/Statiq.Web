@@ -1,11 +1,12 @@
 ﻿using System.IO;
+using Wyam.Common.IO;
 
 namespace Wyam.Common.Configuration
 {
     public interface IAssemblyCollection
     {
-        IAssemblyCollection LoadDirectory(string path, SearchOption searchOption = SearchOption.AllDirectories);
-        IAssemblyCollection LoadFile(string path);
+        IAssemblyCollection LoadDirectory(DirectoryPath path, SearchOption searchOption = SearchOption.AllDirectories);
+        IAssemblyCollection LoadFile(FilePath path);
         IAssemblyCollection Load(string name);
     }
 }

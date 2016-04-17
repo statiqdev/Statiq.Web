@@ -62,26 +62,28 @@ namespace Wyam.Core.Configuration
                 .Select(x => x.Namespace));
 
             // Get path to all assemblies (except those specified by name)
-            List<string> assemblyPaths = new List<string>();
+            List<FilePath> assemblyPaths = new List<FilePath>();
             assemblyPaths.AddRange(packages.GetCompatibleAssemblyPaths());
-            assemblyPaths.AddRange(Directory.GetFiles(System.IO.Path.GetDirectoryName(typeof(Config).Assembly.Location), "*.dll", SearchOption.AllDirectories));
+            assemblyPaths.AddRange(Directory.GetFiles(new FilePath(typeof(Config).Assembly.Location).Directory.FullPath, "*.dll", SearchOption.AllDirectories).Select(x => new FilePath(x)));
             assemblyPaths.AddRange(assemblyCollection.Directories
-                .Select(x => new Tuple<string, SearchOption>(System.IO.Path.Combine(fileSystem.RootPath.FullPath, x.Item1), x.Item2))
-                .Where(x => Directory.Exists(x.Item1))
-                .SelectMany(x => Directory.GetFiles(x.Item1, "*.dll", x.Item2)));
+                .Select(x => new Tuple<DirectoryPath, SearchOption>(fileSystem.RootPath.Combine(x.Item1), x.Item2))
+                .Where(x => Directory.Exists(x.Item1.FullPath))
+                .SelectMany(x => Directory.GetFiles(x.Item1.FullPath, "*.dll", x.Item2).Select(y => new FilePath(y))));
             assemblyPaths.AddRange(assemblyCollection.ByFile
-                .Select(x => new Tuple<string, string>(x, System.IO.Path.Combine(fileSystem.RootPath.FullPath, x)))
-                .Select(x => File.Exists(x.Item2) ? x.Item2 : x.Item1));
+                .Select(x => new Tuple<FilePath, FilePath>(x, fileSystem.RootPath.CombineFile(x)))
+                .Select(x => File.Exists(x.Item2.FullPath) ? x.Item2 : x.Item1));
 
             // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
-                string.Join(";", new[] { AppDomain.CurrentDomain.SetupInformation.PrivateBinPath }
-                    .Concat(assemblyPaths.Select(x => System.IO.Path.GetDirectoryName(x).Distinct())));
+                string.Join(";", 
+                    new[] { AppDomain.CurrentDomain.SetupInformation.PrivateBinPath }
+                    .Concat(assemblyPaths.Select(x => x.Directory.FullPath))
+                    .Distinct());
 
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
             // If this approach causes problems, could also try loading assemblies in custom app domain:
             // http://stackoverflow.com/questions/6626647/custom-appdomain-and-privatebinpath
-            foreach (string assemblyPath in assemblyPaths.Distinct())
+            foreach (string assemblyPath in assemblyPaths.Select(x => x.FullPath).Distinct())
             {
                 try
                 {
@@ -145,7 +147,7 @@ namespace Wyam.Core.Configuration
             }
         }
 
-        public bool AddAssembly(Assembly assembly)
+        private bool AddAssembly(Assembly assembly)
         {
             if (_assemblies.ContainsKey(assembly.FullName))
             {
