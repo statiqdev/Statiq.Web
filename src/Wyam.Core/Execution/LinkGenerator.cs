@@ -25,17 +25,19 @@ namespace Wyam.Core.Execution
                 }
             }
 
-            // Get the 
-            
             // Collapse the link to a string
-            string link = path.FullPath;
-            if (string.IsNullOrWhiteSpace(link) || link == ".")
+            string link = string.Empty;
+            if(path != null)
             {
-                link = "/";
-            }
-            if (!link.StartsWith("/"))
-            {
-                link = "/" + link;
+                link = path.FullPath;
+                if (string.IsNullOrWhiteSpace(link) || link == ".")
+                {
+                    link = "/";
+                }
+                if (!link.StartsWith("/"))
+                {
+                    link = "/" + link;
+                }
             }
 
             // Collapse the root and combine

@@ -67,9 +67,9 @@ namespace Wyam.Core.Execution
 
         // GetLink
 
-        public string GetLink(IDocument document, bool includeHost = false)
+        public string GetLink(IMetadata metadata, string key = Keys.RelativeFilePath, bool includeHost = false)
         {
-            return GetLink(document.FilePath(Keys.RelativeFilePath), includeHost);
+            return GetLink(metadata.FilePath(key), includeHost);
         }
 
         public string GetLink(NormalizedPath path, bool includeHost = false)

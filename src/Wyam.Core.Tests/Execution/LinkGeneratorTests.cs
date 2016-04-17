@@ -28,10 +28,11 @@ namespace Wyam.Core.Tests.Execution
             [TestCase("foo.html", "/foo.html")]
             [TestCase("C:/bar/foo.html", "/C:/bar/foo.html")]
             [TestCase("C:/bar/foo.html", "/C:/bar/foo.html")]
+            [TestCase(null, "/")]
             public void ShouldReturnLinkForFilePath(string path, string expected)
             {
                 // Given
-                FilePath filePath = new FilePath(path);
+                FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
                 string link = LinkGenerator.GetLink(filePath, null, null, false, false);
@@ -48,10 +49,13 @@ namespace Wyam.Core.Tests.Execution
             [TestCase("www.google.com", null, "/foo/bar/abc.html", "http://www.google.com/foo/bar/abc.html")]
             [TestCase("www.google.com", "/xyz", "/foo/bar/abc.html", "http://www.google.com/xyz/foo/bar/abc.html")]
             [TestCase("www.google.com", "/xyz/", "/foo/bar/abc.html", "http://www.google.com/xyz/foo/bar/abc.html")]
+            [TestCase(null, "baz", null, "/baz")]
+            [TestCase("www.google.com", null, null, "http://www.google.com/")]
+            [TestCase("www.google.com", "/xyz", null, "http://www.google.com/xyz")]
             public void ShouldJoinHostAndRootForFilePath(string host, string root, string path, string expected)
             {
                 // Given
-                FilePath filePath = new FilePath(path);
+                FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
                 string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), false, false);
@@ -104,6 +108,7 @@ namespace Wyam.Core.Tests.Execution
 
             [TestCase(null, "/", ".", "/")]
             [TestCase(null, null, ".", "/")]
+            [TestCase(null, null, null, "/")]
             [TestCase(null, "/", "foo/bar", "/foo/bar")]
             [TestCase(null, "/", "/foo/bar", "/foo/bar")]
             [TestCase(null, "/", "/foo/baz/../bar", "/foo/bar")]
@@ -114,10 +119,12 @@ namespace Wyam.Core.Tests.Execution
             [TestCase("www.google.com", null, "/foo/bar", "http://www.google.com/foo/bar")]
             [TestCase("www.google.com" ,"xyz", "/foo/bar", "http://www.google.com/xyz/foo/bar")]
             [TestCase("www.google.com", "/xyz/", "/foo/bar", "http://www.google.com/xyz/foo/bar")]
+            [TestCase("www.google.com", null, null, "http://www.google.com/")]
+            [TestCase("www.google.com", "xyz", null, "http://www.google.com/xyz")]
             public void ShouldJoinHostAndRootForDirectoryPath(string host, string root, string path, string expected)
             {
                 // Given
-                DirectoryPath directoryPath = new DirectoryPath(path);
+                DirectoryPath directoryPath = path == null ? null : new DirectoryPath(path);
 
                 // When
                 string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), false, false);
