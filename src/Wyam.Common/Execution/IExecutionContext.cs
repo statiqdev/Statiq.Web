@@ -35,6 +35,22 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Gets a link for the specified metadata (typically a document) using the 
+        /// "RelativeFilePath" metadata value and the default settings from the
+        /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
+        /// consistent link generation. Note that you can optionally include the host or not depending
+        /// on if you want to generate host-specific links. By default, the host is not included so that
+        /// sites work the same on any server including the preview server.
+        /// </summary>
+        /// <param name="metadata">The metadata or document to generate a link for.</param>
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
+        /// <returns>
+        /// A string representation of the path suitable for a web link.
+        /// </returns>
+        string GetLink(IMetadata metadata, bool includeHost = false);
+
+        /// <summary>
+        /// Gets a link for the specified metadata (typically a document) using the 
         /// specified metadata value (by default, "RelativeFilePath") and the default settings from the
         /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
         /// consistent link generation. Note that you can optionally include the host or not depending
@@ -48,7 +64,7 @@ namespace Wyam.Common.Execution
         /// <returns>
         /// A string representation of the path suitable for a web link.
         /// </returns>
-        string GetLink(IMetadata metadata, string key = Keys.RelativeFilePath, bool includeHost = false);
+        string GetLink(IMetadata metadata, string key, bool includeHost = false);
 
         /// <summary>
         /// Converts the specified path into a string appropriate for use as a link using default settings from the
