@@ -7,10 +7,10 @@
 
 // Publishing workflow:
 // - Update ReleaseNotes.md and RELEASE in develop branch
-// - Run a normal build with Cake to set SolutionInfo.cs in the repo and run through unit tests (".\build.ps1")
+// - Run a normal build with Cake to set SolutionInfo.cs in the repo and run through unit tests ("build.cmd")
 // - Push to develop and fast-forward merge to master
 // - Switch to master
-// - Run a Publish build with Cake (".\build.ps1 --target Publish")
+// - Run a Publish build with Cake ("build.cmd --target Publish")
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
 

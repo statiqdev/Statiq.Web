@@ -87,14 +87,14 @@ namespace Wyam.Core.Tests.Execution
 
             [TestCase("/foo/bar/abc.html", "/foo/bar/abc")]
             [TestCase("/foo/bar/abc.htm", "/foo/bar/abc")]
-            [TestCase("/foo/bar/abc.xyz", "/foo/bar/abc.xyz")]
+            [TestCase("/foo/bar/abc.xyz", "/foo/bar/abc")]
             [TestCase("/abc.html", "/abc")]
             [TestCase("/abc.htm", "/abc")]
             [TestCase("abc.html", "/abc")]
             [TestCase("abc.htm", "/abc")]
             [TestCase("/foo/bar/index.html", "/foo/bar/index")]
             [TestCase("/foo/bar/index.htm", "/foo/bar/index")]
-            public void ShouldHideWebExtensionsForFilePath(string path, string expected)
+            public void ShouldHideExtensionsForFilePath(string path, string expected)
             {
                 // Given
                 FilePath filePath = new FilePath(path);
