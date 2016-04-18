@@ -112,7 +112,7 @@ namespace Wyam.Modules.CodeAnalysis
                             .Select(file => {
                                 Trace.Verbose($"Read file {file.Path.FullPath}");
                                 DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
-                                FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectPath.Directory.GetRelativePath(file.Path);
+                                FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectFile.Path.Directory.GetRelativePath(file.Path);
                                 return context.GetDocument(file.Path, file.OpenRead(), new MetadataItems
                                 {
                                     { Keys.SourceFileRoot, inputPath ?? file.Path.Directory },
