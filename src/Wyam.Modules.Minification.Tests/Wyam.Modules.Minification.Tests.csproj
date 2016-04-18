@@ -56,11 +56,11 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="XmlMinifyTests.cs" />
-    <Compile Include="XhtmlMinifyTests.cs" />
-    <Compile Include="JsMinifyTests.cs" />
-    <Compile Include="CssMinifyTests.cs" />
-    <Compile Include="HtmlMinifyTests.cs" />
+    <Compile Include="MinifyXmlTests.cs" />
+    <Compile Include="MinifyXhtmlTests.cs" />
+    <Compile Include="MinifyJsTests.cs" />
+    <Compile Include="MinifyCssTests.cs" />
+    <Compile Include="MinifyHtmlTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

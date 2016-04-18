@@ -26,7 +26,7 @@ namespace Wyam.Modules.Minification
     /// </code>
     /// </example>
     /// <category>Content</category>
-    public class XhtmlMinify : MinifierBase, IModule
+    public class MinifyXhtml : MinifierBase, IModule
     {
         private readonly XhtmlMinificationSettings _minificationSettings;
 
@@ -37,7 +37,7 @@ namespace Wyam.Modules.Minification
         /// Boolean to specify whether to use empty minification settings.
         /// Default value is <code>false</code>, this will use commonly accepted settings.
         /// </param>
-        public XhtmlMinify(bool useEmptyMinificationSettings = false)
+        public MinifyXhtml(bool useEmptyMinificationSettings = false)
         {
             // https://github.com/Taritsyn/WebMarkupMin/wiki/XHTML-Minifier
             _minificationSettings = new XhtmlMinificationSettings(useEmptyMinificationSettings);
@@ -48,7 +48,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeHtmlComments">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public XhtmlMinify RemoveHtmlComments(bool removeHtmlComments = true)
+        public MinifyXhtml RemoveHtmlComments(bool removeHtmlComments = true)
         {
             _minificationSettings.RemoveHtmlComments = removeHtmlComments;
             return this;
@@ -59,7 +59,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeTagsWithoutContent">Default value is <code>false</code>.</param>
         /// <returns>The current instance.</returns>
-        public XhtmlMinify RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
+        public MinifyXhtml RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
         {
             _minificationSettings.RemoveTagsWithoutContent = removeTagsWithoutContent;
             return this;
@@ -70,7 +70,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="renderEmptyTagsWithSpace">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public XhtmlMinify RenderEmptyTagsWithSpace(bool renderEmptyTagsWithSpace = true)
+        public MinifyXhtml RenderEmptyTagsWithSpace(bool renderEmptyTagsWithSpace = true)
         {
             _minificationSettings.RenderEmptyTagsWithSpace = renderEmptyTagsWithSpace;
             return this;
@@ -87,7 +87,7 @@ namespace Wyam.Modules.Minification
         ///     .WithSettings(settings => settings.RemoveHtmlComments = false)
         /// </code>
         /// </example>
-        public XhtmlMinify WithSettings(Action<XhtmlMinificationSettings> action)
+        public MinifyXhtml WithSettings(Action<XhtmlMinificationSettings> action)
         {
             if (action == null)
             {

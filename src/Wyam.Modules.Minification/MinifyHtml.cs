@@ -26,7 +26,7 @@ namespace Wyam.Modules.Minification
     /// </code>
     /// </example>
     /// <category>Content</category>
-    public class HtmlMinify : MinifierBase, IModule
+    public class MinifyHtml : MinifierBase, IModule
     {
         private readonly HtmlMinificationSettings _minificationSettings;
 
@@ -37,7 +37,7 @@ namespace Wyam.Modules.Minification
         /// Boolean to specify whether to use empty minification settings.
         /// Default value is <code>false</code>, this will use commonly accepted settings.
         /// </param>
-        public HtmlMinify(bool useEmptyMinificationSettings = false)
+        public MinifyHtml(bool useEmptyMinificationSettings = false)
         {
             // https://github.com/Taritsyn/WebMarkupMin/wiki/HTML-Minifier
             _minificationSettings = new HtmlMinificationSettings(useEmptyMinificationSettings);
@@ -53,7 +53,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="emptyTagRenderMode">Enum type <see cref="WebMarkupMin.Core.HtmlEmptyTagRenderMode"/>; default value is <code>HtmlEmptyTagRenderMode.NoSlash</code></param>
         /// <returns>The current instance.</returns>
-        public HtmlMinify EmptyTagRenderMode(HtmlEmptyTagRenderMode emptyTagRenderMode = HtmlEmptyTagRenderMode.NoSlash)
+        public MinifyHtml EmptyTagRenderMode(HtmlEmptyTagRenderMode emptyTagRenderMode = HtmlEmptyTagRenderMode.NoSlash)
         {
             _minificationSettings.EmptyTagRenderMode = emptyTagRenderMode;
             return this;
@@ -64,7 +64,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeHtmlComments">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public HtmlMinify RemoveHtmlComments(bool removeHtmlComments = true)
+        public MinifyHtml RemoveHtmlComments(bool removeHtmlComments = true)
         {
             _minificationSettings.RemoveHtmlComments = removeHtmlComments;
             return this;
@@ -75,7 +75,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeTagsWithoutContent">Default value is <code>false</code>.</param>
         /// <returns>The current instance.</returns>
-        public HtmlMinify RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
+        public MinifyHtml RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
         {
             _minificationSettings.RemoveTagsWithoutContent = removeTagsWithoutContent;
             return this;
@@ -86,7 +86,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeOptionalEndTags">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public HtmlMinify RemoveOptionalEndTags(bool removeOptionalEndTags = true)
+        public MinifyHtml RemoveOptionalEndTags(bool removeOptionalEndTags = true)
         {
             _minificationSettings.RemoveOptionalEndTags = removeOptionalEndTags;
             return this;
@@ -107,7 +107,7 @@ namespace Wyam.Modules.Minification
         ///     })
         /// </code>
         /// </example>
-        public HtmlMinify WithSettings(Action<HtmlMinificationSettings> action)
+        public MinifyHtml WithSettings(Action<HtmlMinificationSettings> action)
         {
             if (action == null)
             {

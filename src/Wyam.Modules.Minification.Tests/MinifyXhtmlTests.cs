@@ -9,9 +9,9 @@ namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class XhtmlMinifyTests : BaseFixture
+    public class MinifyXhtmlTests : BaseFixture
     {
-        public class ExecuteMethodTests : XhtmlMinifyTests
+        public class ExecuteMethodTests : MinifyXhtmlTests
         {
             [Test]
             public void Minify()
@@ -33,10 +33,10 @@ namespace Wyam.Modules.Minification.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                XhtmlMinify xhtmlMinify = new XhtmlMinify();
+                MinifyXhtml minifyXhtml = new MinifyXhtml();
 
                 // When
-                xhtmlMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyXhtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());

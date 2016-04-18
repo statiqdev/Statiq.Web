@@ -31,7 +31,7 @@ namespace Wyam.Modules.Minification
     /// </code>
     /// </example>
     /// <category>Content</category>
-    public class XmlMinify : MinifierBase, IModule
+    public class MinifyXml : MinifierBase, IModule
     {
         private readonly XmlMinificationSettings _minificationSettings;
 
@@ -42,7 +42,7 @@ namespace Wyam.Modules.Minification
         /// Boolean to specify whether to use empty minification settings.
         /// Default value is <code>false</code>, this will use commonly accepted settings.
         /// </param>
-        public XmlMinify(bool useEmptyMinificationSettings = false)
+        public MinifyXml(bool useEmptyMinificationSettings = false)
         {
             // https://github.com/Taritsyn/WebMarkupMin/wiki/XML-Minifier
             _minificationSettings = new XmlMinificationSettings(useEmptyMinificationSettings);
@@ -53,7 +53,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="removeXmlComments">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public XmlMinify RemoveXmlComments(bool removeXmlComments = true)
+        public MinifyXml RemoveXmlComments(bool removeXmlComments = true)
         {
             _minificationSettings.RemoveXmlComments = removeXmlComments;
             return this;
@@ -70,7 +70,7 @@ namespace Wyam.Modules.Minification
         ///     .WithSettings(settings => settings.RemoveXmlComments = false)
         /// </code>
         /// </example>
-        public XmlMinify WithSettings(Action<XmlMinificationSettings> action)
+        public MinifyXml WithSettings(Action<XmlMinificationSettings> action)
         {
             if (action == null)
             {

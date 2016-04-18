@@ -9,9 +9,9 @@ namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class XmlMinifyTests : BaseFixture
+    public class MinifyXmlTests : BaseFixture
     {
-        public class ExecuteMethodTests : XmlMinifyTests
+        public class ExecuteMethodTests : MinifyXmlTests
         {
             [Test]
             public void Minify()
@@ -38,10 +38,10 @@ namespace Wyam.Modules.Minification.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                XmlMinify xmlMinify = new XmlMinify();
+                MinifyXml minifyXml = new MinifyXml();
 
                 // When
-                xmlMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyXml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());

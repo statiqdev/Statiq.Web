@@ -5,17 +5,19 @@
 - Refactoring - **Breaking change**: ReadFiles now uses the new I/O API and several configuration methods have been removed or changed
 - Refactoring - **Breaking change**: `IDocument.Source` is now a `FilePath`
 - Feature - You can now explicitly specify if a given `FilePath` or `DirectoryPath` is absolute or not
-- Refactoring - **Breaking change**: Moved `IMetadata.Link()` to `NormalizedPath.ToLink()`
-- Feature - New **HtmlMinify** module that can minify HTML content (#260, thanks @leekelleher)
-- Feature - New **CssMinify** module that can minify CSS content (#266, thanks @leekelleher)
-- Feature - New **JsMinify** module that can minify JavaScript content (#266, thanks @leekelleher)
-- Feature - New **XhtmlMinify** module that can minify XHTML content (#266, thanks @leekelleher)
-- Feature - New **XmlMinify** module that can minify XML content (#266, thanks @leekelleher)
+- Refactoring - **Breaking change**: Moved `IMetadata.Link()` to `IExecutionContext.GetLink()`
+- Feature - Control global link settings (like hostname or whether to hide extensions) from `ISettings` (available from config file as `Settings`)
+- Feature - New **MinifyHtml** module that can minify HTML content (#260, thanks @leekelleher)
+- Feature - New **MinifyCss** module that can minify CSS content (#266, thanks @leekelleher)
+- Feature - New **MinifyJs** module that can minify JavaScript content (#266, thanks @leekelleher)
+- Feature - New **MinifyXhtml** module that can minify XHTML content (#266, thanks @leekelleher)
+- Feature - New **MinifyXml** module that can minify XML content (#266, thanks @leekelleher)
 - Feature - Added `IMetadata.FilePath()` and `IMetadata.DirectoryPath()` to make getting strongly-typed paths from metadata easier
 - Refactoring - **Breaking change**: Refactored several methods in `FilePath` and `DirectoryPath` into properties (`FilePath.GetFilename()` to `FilePath.Filename`, etc.)
 - Fix - Added support for root sequences to the Yaml module
 - Fix - Engine now retains global metadata between invocations in watch mode (#269, thanks @miere43)
 - Feature - New **Combine** module that can combine multiple documents into one
+- Refactoring - Content from NuGet packages is no longer copied to a staging folder and is instead retrieved directly
 
 # 0.11.5
 

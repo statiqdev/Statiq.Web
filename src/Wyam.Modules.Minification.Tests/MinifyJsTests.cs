@@ -9,9 +9,9 @@ namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class JsMinifyTests : BaseFixture
+    public class MinifyJsTests : BaseFixture
     {
-        public class ExecuteMethodTests : JsMinifyTests
+        public class ExecuteMethodTests : MinifyJsTests
         {
             [Test]
             public void Minify()
@@ -51,10 +51,10 @@ if(is.ua.indexOf('gecko')>=0){is.ie=is.ns=false;is.gecko=true;}";
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                JsMinify jsMinify = new JsMinify();
+                MinifyJs minifyJs = new MinifyJs();
 
                 // When
-                jsMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyJs.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());

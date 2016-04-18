@@ -7,43 +7,43 @@ using Wyam.Common.Execution;
 namespace Wyam.Modules.Minification
 {
     /// <summary>
-    /// Minifies the JS content.
+    /// Minifies the CSS content.
     /// </summary>
     /// <remarks>
-    /// This module takes the JS content and uses minification to reduce the output.
+    /// This module takes the CSS content and uses minification to reduce the output.
     /// </remarks>
     /// <example>
     /// <code>
-    /// Pipelines.Add("JS",
-    ///     ReadFiles("*.js"),
-    ///     Minification(),
-    ///     WriteFiles(".js")
+    /// Pipelines.Add("CSS",
+    ///     ReadFiles("*.css"),
+    ///     CssMinify(),
+    ///     WriteFiles(".css")
     /// );
     /// </code>
     /// </example>
     /// <category>Content</category>
-    public class JsMinify : MinifierBase, IModule
+    public class MinifyCss : MinifierBase, IModule
     {
         private bool _isInlineCode;
 
         /// <summary>
-        /// Minifies the JS content.
+        /// Minifies the CSS content.
         /// </summary>
         /// <param name="isInlineCode">
-        /// Boolean to specify whether the content has inline JS code. Default value is <code>false</code>.
+        /// Boolean to specify whether the content has inline CSS code. Default value is <code>false</code>.
         /// </param>
-        public JsMinify(bool isInlineCode = false)
+        public MinifyCss(bool isInlineCode = false)
         {
-            // https://github.com/Taritsyn/WebMarkupMin/wiki/Built-in-JS-minifiers
+            // https://github.com/Taritsyn/WebMarkupMin/wiki/Built-in-CSS-minifiers
             _isInlineCode = isInlineCode;
         }
 
         /// <summary>
-        /// Flag for whether the content has inline JS code.
+        /// Flag for whether the content has inline CSS code.
         /// </summary>
         /// <param name="isInlineCode">Default value is <code>true</code>.</param>
         /// <returns>The current instance.</returns>
-        public JsMinify IsInlineCode(bool isInlineCode = true)
+        public MinifyCss IsInlineCode(bool isInlineCode = true)
         {
             _isInlineCode = isInlineCode;
             return this;
@@ -51,9 +51,9 @@ namespace Wyam.Modules.Minification
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            CrockfordJsMinifier minifier = new CrockfordJsMinifier();
+            KristensenCssMinifier minifier = new KristensenCssMinifier();
 
-            return Minify(inputs, context, (x) => minifier.Minify(x, _isInlineCode), "JS");
+            return Minify(inputs, context, (x) => minifier.Minify(x, _isInlineCode), "CSS");
         }
     }
 }

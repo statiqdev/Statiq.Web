@@ -9,9 +9,9 @@ namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class HtmlMinifyTests : BaseFixture
+    public class MinifyHtmlTests : BaseFixture
     {
-        public class ExecuteMethodTests : HtmlMinifyTests
+        public class ExecuteMethodTests : MinifyHtmlTests
         {
             [Test]
             public void Minify()
@@ -33,10 +33,10 @@ namespace Wyam.Modules.Minification.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                HtmlMinify htmlMinify = new HtmlMinify();
+                MinifyHtml minifyHtml = new MinifyHtml();
 
                 // When
-                htmlMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyHtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
@@ -63,7 +63,7 @@ namespace Wyam.Modules.Minification.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                HtmlMinify htmlMinify = new HtmlMinify()
+                MinifyHtml minifyHtml = new MinifyHtml()
                     .WithSettings(settings =>
                     {
                         settings.RemoveOptionalEndTags = false;
@@ -71,7 +71,7 @@ namespace Wyam.Modules.Minification.Tests
                     });
 
                 // When
-                htmlMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyHtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());

@@ -49,11 +49,11 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="MinifierBase.cs" />
-    <Compile Include="XmlMinify.cs" />
-    <Compile Include="XhtmlMinify.cs" />
-    <Compile Include="JsMinify.cs" />
-    <Compile Include="CssMinify.cs" />
-    <Compile Include="HtmlMinify.cs" />
+    <Compile Include="MinifyXml.cs" />
+    <Compile Include="MinifyXhtml.cs" />
+    <Compile Include="MinifyJs.cs" />
+    <Compile Include="MinifyCss.cs" />
+    <Compile Include="MinifyHtml.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

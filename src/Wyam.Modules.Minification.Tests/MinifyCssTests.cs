@@ -9,9 +9,9 @@ namespace Wyam.Modules.Minification.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class CssMinifyTests : BaseFixture
+    public class MinifyCssTests : BaseFixture
     {
-        public class ExecuteMethodTests : CssMinifyTests
+        public class ExecuteMethodTests : MinifyCssTests
         {
             [Test]
             public void Minify()
@@ -33,10 +33,10 @@ namespace Wyam.Modules.Minification.Tests
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
 
-                CssMinify cssMinify = new CssMinify();
+                MinifyCss minifyCss = new MinifyCss();
 
                 // When
-                cssMinify.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                minifyCss.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
