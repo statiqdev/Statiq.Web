@@ -31,13 +31,13 @@ namespace Wyam.Common.Configuration
         bool LinkHideIndexPages { get; }
 
         /// <summary>
-        /// Gets a value indicating whether to hide web extensions by default
+        /// Gets a value indicating whether to hide extensions by default
         /// when generating links with <see cref="NormalizedPath.ToLink"/>.
         /// </summary>
         /// <value>
-        /// <c>true</c> if web extensions should be hidden; otherwise, <c>false</c>.
+        /// <c>true</c> if extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
-        bool LinkHideWebExtensions { get; }
+        bool LinkHideExtensions { get; }
 
         /// <summary>
         /// Gets a value indicating whether caching should be used.

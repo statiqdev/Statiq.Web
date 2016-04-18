@@ -12,7 +12,7 @@ namespace Wyam.Core.Configuration
         public Settings()
         {
             LinkHideIndexPages = true;
-            LinkHideWebExtensions = true;
+            LinkHideExtensions = true;
         }
 
         public string Host
@@ -36,7 +36,7 @@ namespace Wyam.Core.Configuration
 
         public bool LinkHideIndexPages { get; set; }
 
-        public bool LinkHideWebExtensions { get; set; }
+        public bool LinkHideExtensions { get; set; }
 
         public bool UseCache { get; set; } = true;
 

@@ -80,12 +80,12 @@ namespace Wyam.Core.Execution
         public string GetLink(NormalizedPath path, bool includeHost = false)
         {
             return GetLink(path, Settings.Host, Settings.LinkRoot, 
-                Settings.LinkHideIndexPages, Settings.LinkHideWebExtensions);
+                Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
         }
 
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions)
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions)
         {
-            return LinkGenerator.GetLink(path, host, root, hideIndexPages, hideWebExtensions);
+            return LinkGenerator.GetLink(path, host, root, hideIndexPages, hideExtensions);
         }
 
         // GetDocument

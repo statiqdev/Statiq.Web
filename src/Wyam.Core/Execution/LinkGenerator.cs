@@ -9,7 +9,7 @@ namespace Wyam.Core.Execution
 {
     internal static class LinkGenerator
     {
-        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions)
+        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions)
         {
             // Remove index pages and extensions if a file path
             FilePath filePath = path as FilePath;
@@ -19,7 +19,7 @@ namespace Wyam.Core.Execution
                 {
                     path = filePath.Directory;
                 }
-                else if (hideWebExtensions && (filePath.Extension == ".htm" || filePath.Extension == ".html"))
+                else if (hideExtensions)
                 {
                     path = filePath.ChangeExtension(null);
                 }

@@ -90,13 +90,12 @@ namespace Wyam.Common.Execution
         /// <param name="root">The root of the link. The value of this parameter is prepended to the path.</param>
         /// <param name="hideIndexPages">If set to <c>true</c>, "index.htm" and "index.html" file
         /// names will be hidden.</param>
-        /// <param name="hideWebExtensions">If set to <c>true</c>, extensions ending in ".htm" or
-        /// ".html" will be hidden.</param>
+        /// <param name="hideExtensions">If set to <c>true</c>, extensions will be hidden.</param>
         /// <returns>
         /// A string representation of the path suitable for a web link with the specified
         /// root and hidden file name or extension.
         /// </returns>
-        string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideWebExtensions);
+        string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions);
 
         /// <summary>
         /// Gets a new document with default initial metadata.
