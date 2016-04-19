@@ -20,12 +20,12 @@ namespace Wyam.Modules.Minification
     ///     FrontMatter(Yaml()),
     ///     Markdown(),
     ///     WriteFiles(".html"),
-    ///     Rss(siteRoot: "http://example.org",
-    ///         outputRssFilePath: "posts/feed.rss",
+    ///     Rss(siteUri: "http://example.org",
+    ///         rssPath: new FilePath("posts/feed.rss"),
     ///         feedTitle: "My awesome blog",
     ///         feedDescription: "Blog about something"
     ///     ),
-    ///     XmlMinify(),
+    ///     MinifyXml(),
     ///     WriteFiles()
     /// );
     /// </code>
@@ -40,7 +40,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="useEmptyMinificationSettings">
         /// Boolean to specify whether to use empty minification settings.
-        /// Default value is <code>false</code>, this will use commonly accepted settings.
+        /// Default value is <c>false</c>, this will use commonly accepted settings.
         /// </param>
         public MinifyXml(bool useEmptyMinificationSettings = false)
         {
@@ -51,7 +51,7 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Flag for whether to remove all XML comments.
         /// </summary>
-        /// <param name="removeXmlComments">Default value is <code>true</code>.</param>
+        /// <param name="removeXmlComments">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyXml RemoveXmlComments(bool removeXmlComments = true)
         {
@@ -66,7 +66,7 @@ namespace Wyam.Modules.Minification
         /// <returns>The current instance.</returns>
         /// <example>
         /// <code>
-        /// XmlMinify()
+        /// MinifyXml()
         ///     .WithSettings(settings => settings.RemoveXmlComments = false)
         /// </code>
         /// </example>
