@@ -16,7 +16,7 @@ namespace Wyam.Modules.Minification
     /// <code>
     /// Pipelines.Add("CSS",
     ///     ReadFiles("*.css"),
-    ///     CssMinify(),
+    ///     MinifyCss(),
     ///     WriteFiles(".css")
     /// );
     /// </code>
@@ -30,7 +30,7 @@ namespace Wyam.Modules.Minification
         /// Minifies the CSS content.
         /// </summary>
         /// <param name="isInlineCode">
-        /// Boolean to specify whether the content has inline CSS code. Default value is <code>false</code>.
+        /// Boolean to specify whether the content has inline CSS code. Default value is <c>false</c>.
         /// </param>
         public MinifyCss(bool isInlineCode = false)
         {
@@ -41,7 +41,7 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Flag for whether the content has inline CSS code.
         /// </summary>
-        /// <param name="isInlineCode">Default value is <code>true</code>.</param>
+        /// <param name="isInlineCode">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyCss IsInlineCode(bool isInlineCode = true)
         {

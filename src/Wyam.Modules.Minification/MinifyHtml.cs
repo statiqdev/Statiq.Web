@@ -20,7 +20,7 @@ namespace Wyam.Modules.Minification
     ///     FrontMatter(Yaml()),
     ///     Markdown(),
     ///     Razor(),
-    ///     HtmlMinify(),
+    ///     MinifyHtml(),
     ///     WriteFiles(".html")
     /// );
     /// </code>
@@ -35,7 +35,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="useEmptyMinificationSettings">
         /// Boolean to specify whether to use empty minification settings.
-        /// Default value is <code>false</code>, this will use commonly accepted settings.
+        /// Default value is <c>false</c>, this will use commonly accepted settings.
         /// </param>
         public MinifyHtml(bool useEmptyMinificationSettings = false)
         {
@@ -46,12 +46,12 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Render mode of HTML empty tag. Can take the following values:
         /// <list type="bullets">
-        /// <item><description><code>NoSlash</code>.Without slash(for example, <code>&lt;br&gt;</code>).</description></item>
-        /// <item><description><code>Slash</code>.With slash(for example, <code>&lt;br/&gt;</code>).</description></item>
-        /// <item><description><code>SpaceAndSlash</code>.With space and slash(for example, <code>&lt;br /&gt;</code>).</description></item>
+        /// <item><description><c>NoSlash</c>.Without slash(for example, <c>&lt;br&gt;</c>).</description></item>
+        /// <item><description><c>Slash</c>.With slash(for example, <c>&lt;br/&gt;</c>).</description></item>
+        /// <item><description><c>SpaceAndSlash</c>.With space and slash(for example, <c>&lt;br /&gt;</c>).</description></item>
         /// </list>
         /// </summary>
-        /// <param name="emptyTagRenderMode">Enum type <see cref="WebMarkupMin.Core.HtmlEmptyTagRenderMode"/>; default value is <code>HtmlEmptyTagRenderMode.NoSlash</code></param>
+        /// <param name="emptyTagRenderMode">Enum type <see cref="WebMarkupMin.Core.HtmlEmptyTagRenderMode"/>; default value is <c>HtmlEmptyTagRenderMode.NoSlash</c></param>
         /// <returns>The current instance.</returns>
         public MinifyHtml EmptyTagRenderMode(HtmlEmptyTagRenderMode emptyTagRenderMode = HtmlEmptyTagRenderMode.NoSlash)
         {
@@ -62,7 +62,7 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Flag for whether to remove all HTML comments, except conditional, noindex, KnockoutJS containerless comments and AngularJS comment directives.
         /// </summary>
-        /// <param name="removeHtmlComments">Default value is <code>true</code>.</param>
+        /// <param name="removeHtmlComments">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyHtml RemoveHtmlComments(bool removeHtmlComments = true)
         {
@@ -71,9 +71,9 @@ namespace Wyam.Modules.Minification
         }
 
         /// <summary>
-        /// Flag for whether to remove tags without content, except for <code>textarea</code>, <code>tr</code>, <code>th</code> and <code>td</code> tags, and tags with <code>class</code>, <code>id</code>, <code>name</code>, <code>role</code>, <code>src</code> and <code>data-*</code> attributes.
+        /// Flag for whether to remove tags without content, except for <c>textarea</c>, <c>tr</c>, <c>th</c> and <c>td</c> tags, and tags with <c>class</c>, <c>id</c>, <c>name</c>, <c>role</c>, <c>src</c> and <c>data-*</c> attributes.
         /// </summary>
-        /// <param name="removeTagsWithoutContent">Default value is <code>false</code>.</param>
+        /// <param name="removeTagsWithoutContent">Default value is <c>false</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyHtml RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
         {
@@ -82,9 +82,9 @@ namespace Wyam.Modules.Minification
         }
 
         /// <summary>
-        /// Flag for whether to remove optional end tags (<code>html</code>, <code>head</code>, <code>body</code>, <code>p</code>, <code>li</code>, <code>dt</code>, <code>dd</code>, <code>rt</code>, <code>rp</code>, <code>optgroup</code>, <code>option</code>, <code>colgroup</code>, <code>thead</code>, <code>tfoot</code>, <code>tbody</code>, <code>tr</code>, <code>th</code> and <code>td</code>).
+        /// Flag for whether to remove optional end tags (<c>html</c>, <c>head</c>, <c>body</c>, <c>p</c>, <c>li</c>, <c>dt</c>, <c>dd</c>, <c>rt</c>, <c>rp</c>, <c>optgroup</c>, <c>option</c>, <c>colgroup</c>, <c>thead</c>, <c>tfoot</c>, <c>tbody</c>, <c>tr</c>, <c>th</c> and <c>td</c>).
         /// </summary>
-        /// <param name="removeOptionalEndTags">Default value is <code>true</code>.</param>
+        /// <param name="removeOptionalEndTags">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyHtml RemoveOptionalEndTags(bool removeOptionalEndTags = true)
         {
@@ -99,7 +99,7 @@ namespace Wyam.Modules.Minification
         /// <returns>The current instance.</returns>
         /// <example>
         /// <code>
-        /// HtmlMinify()
+        /// MinifyHtml()
         ///     .WithSettings(settings =>
         ///     {
         ///         settings.CollapseBooleanAttributes = false;

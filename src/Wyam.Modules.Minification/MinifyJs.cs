@@ -16,7 +16,7 @@ namespace Wyam.Modules.Minification
     /// <code>
     /// Pipelines.Add("JS",
     ///     ReadFiles("*.js"),
-    ///     Minification(),
+    ///     MinifyJs(),
     ///     WriteFiles(".js")
     /// );
     /// </code>
@@ -30,7 +30,7 @@ namespace Wyam.Modules.Minification
         /// Minifies the JS content.
         /// </summary>
         /// <param name="isInlineCode">
-        /// Boolean to specify whether the content has inline JS code. Default value is <code>false</code>.
+        /// Boolean to specify whether the content has inline JS code. Default value is <c>false</c>.
         /// </param>
         public MinifyJs(bool isInlineCode = false)
         {
@@ -41,7 +41,7 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Flag for whether the content has inline JS code.
         /// </summary>
-        /// <param name="isInlineCode">Default value is <code>true</code>.</param>
+        /// <param name="isInlineCode">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyJs IsInlineCode(bool isInlineCode = true)
         {

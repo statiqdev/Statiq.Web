@@ -20,7 +20,7 @@ namespace Wyam.Modules.Minification
     ///     FrontMatter(Yaml()),
     ///     Markdown(),
     ///     Razor(),
-    ///     XhtmlMinify(),
+    ///     MinifyXhtml(),
     ///     WriteFiles(".html")
     /// );
     /// </code>
@@ -35,7 +35,7 @@ namespace Wyam.Modules.Minification
         /// </summary>
         /// <param name="useEmptyMinificationSettings">
         /// Boolean to specify whether to use empty minification settings.
-        /// Default value is <code>false</code>, this will use commonly accepted settings.
+        /// Default value is <c>false</c>, this will use commonly accepted settings.
         /// </param>
         public MinifyXhtml(bool useEmptyMinificationSettings = false)
         {
@@ -46,7 +46,7 @@ namespace Wyam.Modules.Minification
         /// <summary>
         /// Flag for whether to remove all HTML comments, except conditional, noindex, KnockoutJS containerless comments and AngularJS comment directives.
         /// </summary>
-        /// <param name="removeHtmlComments">Default value is <code>true</code>.</param>
+        /// <param name="removeHtmlComments">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyXhtml RemoveHtmlComments(bool removeHtmlComments = true)
         {
@@ -55,9 +55,9 @@ namespace Wyam.Modules.Minification
         }
 
         /// <summary>
-        /// Flag for whether to remove tags without content, except for <code>textarea</code>, <code>tr</code>, <code>th</code> and <code>td</code> tags, and tags with <code>class</code>, <code>id</code>, <code>name</code>, <code>role</code>, <code>src</code> and <code>data-*</code> attributes.
+        /// Flag for whether to remove tags without content, except for <c>textarea</c>, <c>tr</c>, <c>th</c> and <c>td</c> tags, and tags with <c>class</c>, <c>id</c>, <c>name</c>, <c>role</c>, <c>src</c> and <c>data-*</c> attributes.
         /// </summary>
-        /// <param name="removeTagsWithoutContent">Default value is <code>false</code>.</param>
+        /// <param name="removeTagsWithoutContent">Default value is <c>false</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyXhtml RemoveTagsWithoutContent(bool removeTagsWithoutContent = false)
         {
@@ -66,9 +66,9 @@ namespace Wyam.Modules.Minification
         }
 
         /// <summary>
-        /// Flag for whether to allow the inserting space before slash in empty tags (for example, <code>true</code> - <code><br /></code>; <code>false</code> - <code><br/></code>).
+        /// Flag for whether to allow the inserting space before slash in empty tags (for example, <c>true</c> - <c><br /></c>; <c>false</c> - <c><br/></c>).
         /// </summary>
-        /// <param name="renderEmptyTagsWithSpace">Default value is <code>true</code>.</param>
+        /// <param name="renderEmptyTagsWithSpace">Default value is <c>true</c>.</param>
         /// <returns>The current instance.</returns>
         public MinifyXhtml RenderEmptyTagsWithSpace(bool renderEmptyTagsWithSpace = true)
         {
@@ -83,7 +83,7 @@ namespace Wyam.Modules.Minification
         /// <returns>The current instance.</returns>
         /// <example>
         /// <code>
-        /// HtmlMinify()
+        /// MinifyXhtml()
         ///     .WithSettings(settings => settings.RemoveHtmlComments = false)
         /// </code>
         /// </example>
