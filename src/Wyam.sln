@@ -82,6 +82,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Modules.Minification.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tests", "Wyam.Tests\Wyam.Tests.csproj", "{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Wyam", "Cake.Wyam\Cake.Wyam.csproj", "{690065CB-CECD-4DF6-A547-38C96B1A7F55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -228,6 +230,10 @@ Global
 		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{690065CB-CECD-4DF6-A547-38C96B1A7F55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{690065CB-CECD-4DF6-A547-38C96B1A7F55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{690065CB-CECD-4DF6-A547-38C96B1A7F55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{690065CB-CECD-4DF6-A547-38C96B1A7F55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
