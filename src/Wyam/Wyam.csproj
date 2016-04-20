@@ -33,34 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.0\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.0.0\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -94,35 +66,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Convention, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Hosting, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Console, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Console.4.0.0-beta-23516\lib\net46\System.Console.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -158,76 +106,12 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.AmazonWebServices\Wyam.Modules.AmazonWebServices.csproj">
-      <Project>{327a23f7-ae78-48b3-97b0-7180492cf08c}</Project>
-      <Name>Wyam.Modules.AmazonWebServices</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.CodeAnalysis\Wyam.Modules.CodeAnalysis.csproj">
-      <Project>{f4c0c025-5e08-4ed2-a089-67c41702ae7b}</Project>
-      <Name>Wyam.Modules.CodeAnalysis</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.GitHub\Wyam.Modules.GitHub.csproj">
-      <Project>{f835be84-9121-4e31-b2da-0c7e5391dac3}</Project>
-      <Name>Wyam.Modules.GitHub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Git\Wyam.Modules.Git.csproj">
-      <Project>{d339951e-dfac-4766-825b-36e69479044b}</Project>
-      <Name>Wyam.Modules.Git</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Images\Wyam.Modules.Images.csproj">
-      <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
-      <Name>Wyam.Modules.Images</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Html\Wyam.Modules.Html.csproj">
-      <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
-      <Name>Wyam.Modules.Html</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Json\Wyam.Modules.Json.csproj">
-      <Project>{f55fb154-8722-450c-b641-6de331ed94a0}</Project>
-      <Name>Wyam.Modules.Json</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Less\Wyam.Modules.Less.csproj">
-      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
-      <Name>Wyam.Modules.Less</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
-      <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
-      <Name>Wyam.Modules.Markdown</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Minification\Wyam.Modules.Minification.csproj">
-      <Project>{ad223a29-5736-4914-9d24-66d8329e663e}</Project>
-      <Name>Wyam.Modules.Minification</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
-      <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
-      <Name>Wyam.Modules.Razor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.SearchIndex\Wyam.Modules.SearchIndex.csproj">
-      <Project>{957fe3a0-7ce0-48a1-9767-d122b9f43907}</Project>
-      <Name>Wyam.Modules.SearchIndex</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Tables\Wyam.Modules.Tables.csproj">
-      <Project>{18e8dfbe-436c-4477-a5a2-61551ce268a2}</Project>
-      <Name>Wyam.Modules.Tables</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
-      <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
-      <Name>Wyam.Modules.TextGeneration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Xmp\Wyam.Modules.Xmp.csproj">
-      <Project>{f17862d9-8b53-44c0-9102-b1b84be72e76}</Project>
-      <Name>Wyam.Modules.Xmp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
-      <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
-      <Name>Wyam.Modules.Yaml</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

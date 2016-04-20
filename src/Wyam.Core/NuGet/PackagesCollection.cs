@@ -75,32 +75,41 @@ namespace Wyam.Core.NuGet
         {
             List<FilePath> assemblyPaths = new List<FilePath>();
             FrameworkReducer reducer = new FrameworkReducer();
-            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));  // TODO: If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched
+
+            // TODO: If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched, or even better fetched from the current framework
+            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));
+
+            // TODO: When we switch to the new v3 NuGet libraries, this will probably have to change since it doesn't copy all packages locally
             NuGetFrameworkFullComparer frameworkComparer = new NuGetFrameworkFullComparer();
             IPackageRepository packageRepository = PackageRepositoryFactory.Default.CreateRepository(AbsolutePackagesPath.FullPath);
             PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath.FullPath);
             foreach (IPackage package in packageManager.LocalRepository.GetPackages())
             {
+                // Get all packages along with their v3 framework
                 List<KeyValuePair<IPackageFile, NuGetFramework>> filesAndFrameworks = package.GetLibFiles()
-                    .Where(x => x.TargetFramework != null)
                     .Select(x => new KeyValuePair<IPackageFile, NuGetFramework>(x,
-                        new NuGetFramework(x.TargetFramework.Identifier, x.TargetFramework.Version, x.TargetFramework.Profile)))
+                        x.TargetFramework == null ? null : new NuGetFramework(x.TargetFramework.Identifier, x.TargetFramework.Version, x.TargetFramework.Profile)))
                     .ToList();
-                NuGetFramework targetPackageFramework = reducer.GetNearest(targetFramework, filesAndFrameworks.Select(x => x.Value));
-                if (targetPackageFramework != null)
+
+                // Find the closest compatible framework
+                NuGetFramework targetPackageFramework = reducer.GetNearest(targetFramework, filesAndFrameworks.Where(x => x.Value != null).Select(x => x.Value));
+                
+                // Restrict to compatible packages or those without a framework
+                List<FilePath> packageAssemblyPaths = filesAndFrameworks
+                    .Where(x => x.Value == null || frameworkComparer.Equals(targetPackageFramework, x.Value))
+                    .Select(x => AbsolutePackagesPath.Combine(String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version)).CombineFile(x.Key.Path))
+                    .Where(x => x.Extension == ".dll")
+                    .ToList();
+
+                // Add the assemblies from compatible packages
+                foreach (FilePath packageAssemblyPath in packageAssemblyPaths)
                 {
-                    List<FilePath> packageAssemblyPaths = filesAndFrameworks
-                        .Where(x => frameworkComparer.Equals(targetPackageFramework, x.Value))
-                        .Select(x => AbsolutePackagesPath.Combine(String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version)).CombineFile(x.Key.Path))
-                        .Where(x => x.Extension == ".dll")
-                        .ToList();
-                    foreach (FilePath packageAssemblyPath in packageAssemblyPaths)
-                    {
-                        Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath.ToString(), package.Id, package.Version);
-                    }
-                    assemblyPaths.AddRange(packageAssemblyPaths);
+                    Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath.ToString(), package.Id, package.Version);
                 }
-                else
+                assemblyPaths.AddRange(packageAssemblyPaths);
+
+                // Output a message if no assemblies were found in this package
+                if(packageAssemblyPaths.Count == 0)
                 {
                     Trace.Verbose("Could not find compatible framework for package {0}.{1} (this is normal for content-only packages)", package.Id, package.Version);
                 }

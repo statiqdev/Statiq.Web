@@ -4,11 +4,11 @@ Pipelines.Add(
     Append(      
         ReadFiles("projects/*.md"),  // Read each project
         FrontMatter(Yaml()),  // Move the frontmatter to metadata
-        OrderBy(@doc["Title"]), // Order for consistency
         Markdown(),  // Convert it to HTML
         ReplaceIn("{{CONTENT}}", ReadFiles("projects/template.html")),  // Load the project template and replace the content placeholder
         Replace("{{TITLE}}", @doc.Get("Title", "Default Title")),  // Replace the title placeholder
         Replace("{{DESC}}", @doc.Get("Description", "Default Description")),  // Replace the description placeholder
+        OrderBy(@doc["Title"]), // Order for consistency
         Combine()  // Combine all the projects before appending    
     ),
     Prepend(ReadFiles("header.html")),  // Prepend the index page header

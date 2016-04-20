@@ -28,6 +28,8 @@ namespace Wyam.Core.Configuration
             return this;
         }
 
+        //TODO: Change LoadDirectory and LoadFile to a single method that loads assemblies based on a globbing pattern
+
         public IAssemblyCollection Load(string name)
         {
             ByName.Add(name);

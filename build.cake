@@ -67,7 +67,7 @@ Task("Clean")
         CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot });
     });
 
-Task("Restore-NuGet-Packages")
+Task("Restore-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
     {
@@ -76,7 +76,7 @@ Task("Restore-NuGet-Packages")
     });
 
 Task("Patch-Assembly-Info")
-    .IsDependentOn("Restore-NuGet-Packages")
+    .IsDependentOn("Restore-Packages")
     .Does(() =>
     {
         var file = "./src/SolutionInfo.cs";
@@ -141,7 +141,7 @@ Task("Zip-Files")
         Zip(binDir, zipPath, files);
     });
 
-Task("Create-Library-NuGet-Packages")
+Task("Create-Library-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {
@@ -152,21 +152,10 @@ Task("Create-Library-NuGet-Packages")
             throw new InvalidOperationException("Could not find nuget.exe.");
         }
         
-        // Exclude packages folders and CLI "Wyam" folder
-        foreach(var nuspec in GetFiles("./src/**/*.nuspec")
-            .Where(x => x.GetDirectory().GetDirectoryName().StartsWith("Wyam.")))
+        // Package all nuspecs (except the tools and all modules packages)
+        foreach(var nuspec in GetFiles("./src/**/Wyam.*/*.nuspec")
+            .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All"))
         {
-            StartProcess(nugetExe, new ProcessSettings()
-                .WithArguments(x => x
-                    .Append("pack")
-                    .AppendQuoted(nuspec.ChangeExtension(".csproj").FullPath)
-                    .AppendSwitch("-Version", semVersion)
-                    .AppendSwitch("-OutputDirectory", nugetRoot.Path.FullPath)
-                    .AppendSwitch("-Prop", "Configuration=" + configuration)
-                )
-            );
-        
-            /*
             NuGetPack(nuspec.ChangeExtension(".csproj"), new NuGetPackSettings
             {
                 Version = semVersion,
@@ -174,11 +163,43 @@ Task("Create-Library-NuGet-Packages")
                 OutputDirectory = nugetRoot,
                 Symbols = false
             });
-            */
         }
     });
     
-Task("Create-Tools-NuGet-Package")
+Task("Create-AllModules-Package")
+    .IsDependentOn("Build")
+    .Does(() =>
+    {        
+        var nuspec = GetFiles("./src/Wyam.Modules.All/*.nuspec").FirstOrDefault();
+        if(nuspec == null)
+        {            
+            throw new InvalidOperationException("Could not find all modules nuspec.");
+        }
+        
+        // Add dependencies for all module libraries
+        List<NuSpecDependency> dependencies = new List<NuSpecDependency>();
+        foreach(var moduleNuspec in GetFiles("./src/**/Wyam.Modules.*/*.nuspec")
+            .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All"))
+        {
+            dependencies.Add(new NuSpecDependency
+            {
+                Id = moduleNuspec.GetDirectory().GetDirectoryName(),
+                Version = semVersion
+            });
+        }
+        
+        // Pack the all modules package
+        NuGetPack(nuspec, new NuGetPackSettings
+        {
+            Version = semVersion,
+            BasePath = nuspec.GetDirectory(),
+            OutputDirectory = nugetRoot,
+            Symbols = false,
+            Dependencies = dependencies
+        });
+    });
+    
+Task("Create-Tools-Package")
     .IsDependentOn("Build")
     .Does(() =>
     {        
@@ -206,7 +227,7 @@ Task("Create-Tools-NuGet-Package")
     });
     
 Task("Publish-MyGet")
-    .IsDependentOn("Create-NuGet-Packages")
+    .IsDependentOn("Create-Packages")
     .WithCriteria(() => !isLocal)
     .WithCriteria(() => !isPullRequest)
     .Does(() =>
@@ -228,8 +249,8 @@ Task("Publish-MyGet")
         }
     });
     
-Task("Publish-NuGet")
-    .IsDependentOn("Create-NuGet-Packages")
+Task("Publish-Packages")
+    .IsDependentOn("Create-Packages")
     .WithCriteria(() => isLocal)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
@@ -299,20 +320,21 @@ Task("Upload-AppVeyor-Artifacts")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-Task("Create-NuGet-Packages")
-    .IsDependentOn("Create-Library-NuGet-Packages")    
-    .IsDependentOn("Create-Tools-NuGet-Package");
+Task("Create-Packages")
+    .IsDependentOn("Create-Library-Packages")   
+    .IsDependentOn("Create-AllModules-Package")    
+    .IsDependentOn("Create-Tools-Package");
     
 Task("Package")
     .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Zip-Files")
-    .IsDependentOn("Create-NuGet-Packages");
+    .IsDependentOn("Create-Packages");
 
 Task("Default")
     .IsDependentOn("Package");    
 
 Task("Publish")
-    .IsDependentOn("Publish-NuGet")
+    .IsDependentOn("Publish-Packages")
     .IsDependentOn("Publish-Release");
     
 Task("AppVeyor")

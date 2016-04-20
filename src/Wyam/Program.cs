@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
@@ -17,7 +16,6 @@ using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core;
 using Wyam.Owin;
-using IFileSystem = Microsoft.Owin.FileSystems.IFileSystem;
 using Wyam.Core.Meta;
 
 namespace Wyam
@@ -466,7 +464,7 @@ namespace Wyam
 
             return WebApp.Start(options, app =>
             {
-                IFileSystem outputFolder = new PhysicalFileSystem(root);
+                Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(root);
 
                 // Disable caching
                 app.Use((c, t) =>

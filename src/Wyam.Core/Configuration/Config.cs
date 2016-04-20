@@ -114,7 +114,7 @@ namespace Wyam.Core.Configuration
             try
             {
                 // Compile and evaluate the script
-                using (Trace.WithIndent().Verbose("Evaluating setup script"))
+                using (Trace.WithIndent().Information("Evaluating setup script"))
                 {
                     SetupScript setupScript = new SetupScript(configParts.Setup);
                     OutputScript(SetupScript.AssemblyName, setupScript.Code);
@@ -123,7 +123,7 @@ namespace Wyam.Core.Configuration
                 }
 
                 // Install packages
-                using (Trace.WithIndent().Verbose("Installing packages"))
+                using (Trace.WithIndent().Information("Installing packages"))
                 {
                     _packages.InstallPackages(updatePackages);
                 }
@@ -139,14 +139,14 @@ namespace Wyam.Core.Configuration
         {
             try
             {
-                HashSet<Type> moduleTypes = new HashSet<Type>();
-                using (Trace.WithIndent().Verbose("Initializing scripting environment"))
+                HashSet<Type> moduleTypes;
+                using (Trace.WithIndent().Information("Initializing scripting environment"))
                 {
                     _assemblyManager.Initialize(_assemblyCollection, _packages, _fileSystem);
                     moduleTypes = _assemblyManager.GetModuleTypes();
                 }
 
-                using (Trace.WithIndent().Verbose("Evaluating configuration script"))
+                using (Trace.WithIndent().Information("Evaluating configuration script"))
                 {
                     _configScript = new ConfigScript(configParts.Declarations, configParts.Config, moduleTypes,
                         _assemblyManager.Namespaces);
