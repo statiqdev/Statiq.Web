@@ -161,7 +161,11 @@ Task("Create-Library-Packages")
                 Version = semVersion,
                 BasePath = nuspec.GetDirectory(),
                 OutputDirectory = nugetRoot,
-                Symbols = false
+                Symbols = false,
+                Properties = new Dictionary<string, string>
+                {
+                    { "Configuration", configuration }
+                }
             });
         }
     });
