@@ -152,9 +152,13 @@ Task("Create-Library-Packages")
             throw new InvalidOperationException("Could not find nuget.exe.");
         }
         
-        // Package all nuspecs (except the tools and all modules packages)
-        foreach(var nuspec in GetFiles("./src/**/Wyam.*/*.nuspec")
-            .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All"))
+        // Get the set of nuspecs to package
+        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/Wyam.*/*.nuspec"));
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Modules.All");
+        nuspecs.AddRange(GetFiles("./src/**/Cake.Wyam/*.nuspec"));
+        
+        // Package all nuspecs
+        foreach(var nuspec in nuspecs)
         {
             NuGetPack(nuspec.ChangeExtension(".csproj"), new NuGetPackSettings
             {

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Cake.Wyam</id>
+    <version>$version$</version>
+    <title>Cake.Wyam</title>
+    <authors>Gary Ewan Park, Dave Glick</authors>
+    <owners>Dave Glick</owners>
+    <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
+    <iconUrl>http://wyam.io/Content/images/logo-square-32.png</iconUrl>
+    <projectUrl>http://wyam.io</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains an addin for Cake for interacting with Wyam.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
+  </metadata>
+  <files></files>
+</package>
