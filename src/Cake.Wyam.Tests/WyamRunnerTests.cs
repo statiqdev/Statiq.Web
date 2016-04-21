@@ -1,4 +1,6 @@
-﻿using Cake.Core;
+﻿using System.Collections.Generic;
+using Cake.Core;
+using Cake.Core.IO;
 using Cake.Testing;
 using Cake.Testing.Fixtures;
 using NUnit.Framework;
@@ -100,83 +102,7 @@ namespace Cake.Wyam.Tests
                 Assert.Throws<CakeException>(() => fixture.Run(), "Wyam: Process returned an error.");
             }
 
-            [Test]
-            public void ShouldSetConfigurationFile()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { ConfigurationFile = "C:/temp/config.wyam" } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--config \"C:/temp/config.wyam\"", result.Args);
-            }
-
-            [Test]
-            public void ShouldSetInputDirectory()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { InputDirectory = "C:/temp" } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--input \"C:/temp\"", result.Args);
-            }
-
-            [Test]
-            public void ShouldSetOutputDirectory()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { OutputDirectory = "C:/temp" } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--output \"C:/temp\"", result.Args);
-            }
-
-            [Test]
-            public void ShouldSetNoCleanFlag()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { NoClean = true } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--noclean", result.Args);
-            }
-
-            [Test]
-            public void ShouldSetNoCacheFlag()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { NoCache = true } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--nocache", result.Args);
-            }
-
-            [Test]
-            public void ShouldSetUpdatePackagesFlag()
-            {
-                // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { UpdatePackages = true } };
-
-                // When
-                ToolFixtureResult result = fixture.Run();
-
-                // Then
-                Assert.AreEqual("--update-packages", result.Args);
-            }
+            // Individual settings tests...
 
             [Test]
             public void ShouldSetWatchFlag()
@@ -188,7 +114,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--watch", result.Args);
+                Assert.AreEqual("--watch \"/Working\"", result.Args);
             }
 
             [Test]
@@ -201,7 +127,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview", result.Args);
+                Assert.AreEqual("--preview \"/Working\"", result.Args);
             }
 
             [Test]
@@ -214,7 +140,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5081", result.Args);
+                Assert.AreEqual("--preview 5081 \"/Working\"", result.Args);
             }
 
             [Test]
@@ -227,7 +153,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview force-ext", result.Args);
+                Assert.AreEqual("--preview --force-ext \"/Working\"", result.Args);
             }
 
             [Test]
@@ -237,18 +163,141 @@ namespace Cake.Wyam.Tests
                 WyamRunnerFixture fixture = new WyamRunnerFixture
                 {
                     Settings =
-                        {
-                            Preview = true,
-                            PreviewPort = 5081,
-                            PreviewForceExtensions = true
-                        }
+                    {
+                        Preview = true,
+                        PreviewPort = 5081,
+                        PreviewForceExtensions = true
+                    }
                 };
 
                 // When
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview 5081 force-ext", result.Args);
+                Assert.AreEqual("--preview 5081 --force-ext \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetPreviewRoot()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture
+                {
+                    Settings =
+                    {
+                        Preview = true,
+                        PreviewRoot = "PreviewRoot"
+                    }
+                };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--preview --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetPreviewFlagAndPortAndForceExtensionsAndPreviewRoot()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture
+                {
+                    Settings =
+                    {
+                        Preview = true,
+                        PreviewPort = 5081,
+                        PreviewForceExtensions = true,
+                        PreviewRoot = "PreviewRoot"
+                    }
+                };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--preview 5081 --force-ext --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetInputPaths()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture
+                {
+                    Settings =
+                    {
+                        InputPaths = new DirectoryPath[] { "C:/temp" }
+                    }
+                };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--input \"C:/temp\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetMultipleInputPaths()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture
+                {
+                    Settings =
+                    {
+                        InputPaths = new DirectoryPath[]
+                        {
+                            "C:/temp",
+                            "a/b"
+                        }
+                    }
+                };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--input \"C:/temp\" --input \"a/b\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetOutputPath()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { OutputPath = "C:/temp" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--output \"C:/temp\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetConfigurationFile()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { ConfigurationFile = "C:/temp/config.wyam" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--config \"C:/temp/config.wyam\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetUpdatePackagesFlag()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { UpdatePackages = true } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--update-packages \"/Working\"", result.Args);
             }
 
             [Test]
@@ -261,20 +310,46 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--output-scripts", result.Args);
+                Assert.AreEqual("--output-scripts \"/Working\"", result.Args);
             }
 
             [Test]
-            public void ShouldAddLogFilePathToArgumentsIfSet()
+            public void ShouldSetVerifyConfigFlag()
             {
                 // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { LogFilePath = @"/temp/log.txt" } };
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { VerifyConfig = true } };
 
                 // When
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--log \"/temp/log.txt\"", result.Args);
+                Assert.AreEqual("--verify-config \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetNoCleanFlag()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { NoClean = true } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--noclean \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetNoCacheFlag()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { NoCache = true } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--nocache \"/Working\"", result.Args);
             }
 
             [Test]
@@ -287,20 +362,82 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--verbose", result.Args);
+                Assert.AreEqual("--verbose \"/Working\"", result.Args);
             }
 
             [Test]
-            public void ShouldSetPauseFlag()
+            public void ShouldSetGlobalMetadata()
             {
                 // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { Pause = true } };
+                WyamRunnerFixture fixture = new WyamRunnerFixture
+                {
+                    Settings =
+                    {
+                        GlobalMetadata = new Dictionary<string, string>
+                        {
+                            { "A", "a" },
+                            { "B", "C" }
+                        }
+                    }
+                };
 
                 // When
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--pause", result.Args);
+                Assert.AreEqual("--meta A=a --meta B=C \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetLogFilePath()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { LogFilePath = @"/temp/log.txt" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--log \"/temp/log.txt\" \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetWorkingPathAsRootPathIfNoneSpecified()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture();
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("\"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetAbsoluteRootPath()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { RootPath = "/a/b" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("\"/a/b\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetRelativeRootPath()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { RootPath = "a/b" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("\"/Working/a/b\"", result.Args);
             }
         }
     }

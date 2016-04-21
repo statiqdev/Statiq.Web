@@ -35,7 +35,7 @@ namespace Cake.Wyam
         {
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             Run(settings, GetArguments(settings), new ProcessSettings(), null);
@@ -63,39 +63,6 @@ namespace Cake.Wyam
         {
             var builder = new ProcessArgumentBuilder();
 
-            if (settings.ConfigurationFile != null)
-            {
-                builder.Append("--config");
-                builder.AppendQuoted(settings.ConfigurationFile.MakeAbsolute(_environment).FullPath);
-            }
-
-            if (settings.InputDirectory != null)
-            {
-                builder.Append("--input");
-                builder.AppendQuoted(settings.InputDirectory.MakeAbsolute(_environment).FullPath);
-            }
-
-            if (settings.OutputDirectory != null)
-            {
-                builder.Append("--output");
-                builder.AppendQuoted(settings.OutputDirectory.MakeAbsolute(_environment).FullPath);
-            }
-
-            if (settings.NoClean)
-            {
-                builder.Append("--noclean");
-            }
-
-            if (settings.NoCache)
-            {
-                builder.Append("--nocache");
-            }
-
-            if (settings.UpdatePackages)
-            {
-                builder.Append("--update-packages");
-            }
-
             if (settings.Watch)
             {
                 builder.Append("--watch");
@@ -112,8 +79,40 @@ namespace Cake.Wyam
 
                 if (settings.PreviewForceExtensions)
                 {
-                    builder.Append("force-ext");
+                    builder.Append("--force-ext");
                 }
+
+                if (settings.PreviewRoot != null)
+                {
+                    builder.Append("--preview-root");
+                    builder.AppendQuoted(settings.PreviewRoot.FullPath);
+                }
+            }
+
+            if (settings.InputPaths != null)
+            {
+                foreach (DirectoryPath inputPath in settings.InputPaths)
+                {
+                    builder.Append("--input");
+                    builder.AppendQuoted(inputPath.FullPath);
+                }
+            }
+
+            if (settings.OutputPath != null)
+            {
+                builder.Append("--output");
+                builder.AppendQuoted(settings.OutputPath.FullPath);
+            }
+
+            if (settings.ConfigurationFile != null)
+            {
+                builder.Append("--config");
+                builder.AppendQuoted(settings.ConfigurationFile.FullPath);
+            }
+
+            if (settings.UpdatePackages)
+            {
+                builder.Append("--update-packages");
             }
 
             if (settings.OutputScripts)
@@ -121,10 +120,19 @@ namespace Cake.Wyam
                 builder.Append("--output-scripts");
             }
 
-            if (settings.LogFilePath != null)
+            if (settings.VerifyConfig)
             {
-                builder.Append("--log");
-                builder.AppendQuoted(settings.LogFilePath.MakeAbsolute(_environment).FullPath);
+                builder.Append("--verify-config");
+            }
+
+            if (settings.NoClean)
+            {
+                builder.Append("--noclean");
+            }
+
+            if (settings.NoCache)
+            {
+                builder.Append("--nocache");
             }
 
             if (settings.Verbose)
@@ -132,9 +140,28 @@ namespace Cake.Wyam
                 builder.Append("--verbose");
             }
 
-            if (settings.Pause)
+            if (settings.GlobalMetadata != null)
             {
-                builder.Append("--pause");
+                foreach (KeyValuePair<string, string> metadata in settings.GlobalMetadata)
+                {
+                    builder.Append("--meta");
+                    builder.Append($"{metadata.Key}={metadata.Value}");
+                }
+            }
+
+            if (settings.LogFilePath != null)
+            {
+                builder.Append("--log");
+                builder.AppendQuoted(settings.LogFilePath.MakeAbsolute(_environment).FullPath);
+            }
+            
+            if (settings.RootPath != null)
+            {
+                builder.AppendQuoted(settings.RootPath.MakeAbsolute(_environment).FullPath);
+            }
+            else
+            {
+                builder.AppendQuoted(_environment.WorkingDirectory.FullPath);
             }
 
             return builder;

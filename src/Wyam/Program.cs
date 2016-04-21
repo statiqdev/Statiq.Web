@@ -155,9 +155,9 @@ namespace Wyam
                 messagePump = true;
                 try
                 {
-                    var rootPath = _previewRoot == null ? engine.FileSystem.GetOutputDirectory().Path.FullPath : _previewRoot.FullPath;
-                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, rootPath);
-                    previewServer = Preview(engine, rootPath);
+                    DirectoryPath previewPath = _previewRoot == null ? engine.FileSystem.GetOutputDirectory().Path : engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
+                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, previewPath);
+                    previewServer = Preview(engine, previewPath);
                 }
                 catch (Exception ex)
                 {
@@ -300,6 +300,8 @@ namespace Wyam
         {
             System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
             {
+                // Any changes here should also be made in Cake.Wyam
+
                 syntax.DefineOption("w|watch", ref _watch, "Watches the input folder for any changes.");
                 _preview = syntax.DefineOption("p|preview", ref _previewPort, false, "Start the preview web server on the specified port (default is " + _previewPort + ").").IsSpecified;
                 if (syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
@@ -311,11 +313,11 @@ namespace Wyam
                     syntax.ReportError("preview-root can only be specified if the preview server is running.");
                 }
                 syntax.DefineOptionList("i|input", ref _inputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
-                syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
                 syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
                 syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
                 syntax.DefineOption("u|update-packages", ref _updatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
                 syntax.DefineOption("output-scripts", ref _outputScripts, "Outputs the config scripts after they've been processed for further debugging.");
+                syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
                 syntax.DefineOption("noclean", ref _noClean, "Prevents cleaning of the output path on each execution.");
                 syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
@@ -454,7 +456,7 @@ namespace Wyam
             return true;
         }
 
-        private IDisposable Preview(Engine engine, string root)
+        private IDisposable Preview(Engine engine, DirectoryPath root)
         {
             StartOptions options = new StartOptions("http://localhost:" + _previewPort);
 
@@ -464,7 +466,7 @@ namespace Wyam
 
             return WebApp.Start(options, app =>
             {
-                Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(root);
+                Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(root.FullPath);
 
                 // Disable caching
                 app.Use((c, t) =>

@@ -1,4 +1,5 @@
-﻿using Cake.Core.IO;
+﻿using System.Collections.Generic;
+using Cake.Core.IO;
 using Cake.Core.Tooling;
 
 namespace Cake.Wyam
@@ -8,39 +9,6 @@ namespace Cake.Wyam
     /// </summary>
     public sealed class WyamSettings : ToolSettings
     {
-        /// <summary>
-        /// Gets or sets a value indicating the Configuration File that should be used while running Wyam.
-        /// </summary>
-        public FilePath ConfigurationFile { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating the Input Directory that should be used while running Wyam.
-        /// </summary>
-        public DirectoryPath InputDirectory { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating the Output Directory that should be used while running Wyam.
-        /// </summary>
-        public DirectoryPath OutputDirectory { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to not clean output folder on every execution.
-        /// </summary>
-        /// <remarks>Default is false</remarks>
-        public bool NoClean { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to turn off Caching mechanism on all modules.
-        /// </summary>
-        /// <remarks>Default is false</remarks>
-        public bool NoCache { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to enable updating of packages.
-        /// </summary>
-        /// <remarks>Default is false</remarks>
-        public bool UpdatePackages { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether to enable watching of input folder for changes to files.
         /// </summary>
@@ -66,15 +34,54 @@ namespace Cake.Wyam
         public bool PreviewForceExtensions { get; set; }
 
         /// <summary>
+        /// The path to the root of the preview server, if not the output folder.
+        /// </summary>
+        public DirectoryPath PreviewRoot { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the input paths that should be used while running Wyam.
+        /// </summary>
+        public IEnumerable<DirectoryPath> InputPaths { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the output path that should be used while running Wyam.
+        /// </summary>
+        public DirectoryPath OutputPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the configuration file that should be used while running Wyam.
+        /// </summary>
+        public FilePath ConfigurationFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable updating of packages.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool UpdatePackages { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to output the scripts at end of execution.
         /// </summary>
         /// <remarks>Default is false</remarks>
         public bool OutputScripts { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the Wyam log file.
+        /// Compile the configuration but do not execute.
         /// </summary>
-        public FilePath LogFilePath { get; set; }
+        /// <remarks>Default is false</remarks>
+        public bool VerifyConfig { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to prevent cleaning of the output path on each execution if <c>true</c>.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool NoClean { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to turn off the caching mechanism on all modules if <c>true</c>.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool NoCache { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to run in verbose mode.
@@ -83,9 +90,19 @@ namespace Cake.Wyam
         public bool Verbose { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to pause execution at the start of the program.
+        /// Gets or sets the global metadata.
         /// </summary>
-        /// <remarks>Default is false</remarks>
-        public bool Pause { get; set; }
+        public IDictionary<string, string> GlobalMetadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to the Wyam log file.
+        /// </summary>
+        public FilePath LogFilePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the The folder (or config file) to use as the root.
+        /// </summary>
+        /// <remarks>Default is the current working directory</remarks>
+        public DirectoryPath RootPath { get; set; }
     }
 }
