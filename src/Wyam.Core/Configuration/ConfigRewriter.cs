@@ -15,9 +15,9 @@ namespace Wyam.Core.Configuration
     {
         private readonly HashSet<string> _moduleTypeNames;
 
-        public ConfigRewriter(HashSet<Type> moduleTypes)
+        public ConfigRewriter(HashSet<string> moduleTypeNames)
         {
-            _moduleTypeNames = new HashSet<string>(moduleTypes.Select(x => x.Name));
+            _moduleTypeNames = moduleTypeNames;
         }
 
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)

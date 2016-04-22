@@ -86,7 +86,7 @@ namespace Wyam.Core.Tests.Configuration
                         }}}}";
 
                 // When
-                string actual = ConfigScript.Generate(null, input, moduleTypes, namespaces);
+                string actual = ConfigCompilation.Generate(null, input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected, actual);
@@ -119,7 +119,7 @@ namespace Wyam.Core.Tests.Configuration
                         }}";
 
                 // When
-                string generated = ConfigScript.GenerateModuleConstructorMethods(typeof(Content), memberNames);
+                string generated = ConfigCompilation.GenerateModuleConstructorMethods(typeof(Content), memberNames);
 
                 // Then
                 Assert.AreEqual(expected, generated);
@@ -141,7 +141,7 @@ namespace Wyam.Core.Tests.Configuration
                         }}";
 
                 // When
-                string generated = ConfigScript.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
+                string generated = ConfigCompilation.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
 
                 // Then
                 Assert.AreEqual(expected, generated);

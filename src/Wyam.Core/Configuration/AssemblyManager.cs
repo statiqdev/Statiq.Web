@@ -26,10 +26,13 @@ namespace Wyam.Core.Configuration
 
         private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
         private readonly HashSet<string> _namespaces = new HashSet<string>();
+        private readonly HashSet<Type> _moduleTypes = new HashSet<Type>();
 
         public IEnumerable<Assembly> Assemblies => _assemblies.Values;
 
         public IEnumerable<string> Namespaces => _namespaces;
+
+        internal IEnumerable<Type> ModuleTypes => _moduleTypes;
 
         public AssemblyManager()
         {
@@ -126,6 +129,9 @@ namespace Wyam.Core.Configuration
                     Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
             }
+
+            // Scan for required types
+            FindModuleTypes();
         }
 
         private void LoadReferencedAssemblies(IEnumerable<AssemblyName> assemblyNames)
@@ -157,9 +163,8 @@ namespace Wyam.Core.Configuration
             return true;
         }
 
-        public HashSet<Type> GetModuleTypes()
+        private void FindModuleTypes()
         {
-            HashSet<Type> moduleTypes = new HashSet<Type>();
             foreach (Assembly assembly in _assemblies.Values)
             {
                 using (Trace.WithIndent().Verbose("Searching for modules in assembly {0}", assembly.FullName))
@@ -168,12 +173,11 @@ namespace Wyam.Core.Configuration
                         && x.IsPublic && !x.IsAbstract && x.IsClass))
                     {
                         Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
-                        moduleTypes.Add(moduleType);
+                        _moduleTypes.Add(moduleType);
                         _namespaces.Add(moduleType.Namespace);
                     }
                 }
             }
-            return moduleTypes;
         }
 
         private static Type[] GetLoadableTypes(Assembly assembly)

@@ -60,8 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ConfigScriptTests.cs" />
-    <Compile Include="Configuration\ConfigSplitterTests.cs" />
-    <Compile Include="Configuration\SetupScriptTests.cs" />
+    <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Documents\CustomDocumentFactoryTests.cs" />
     <Compile Include="Documents\DocumentTests.cs" />
     <Compile Include="Execution\LinkGeneratorTests.cs" />

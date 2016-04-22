@@ -12,7 +12,7 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Core.Configuration
 {
-    internal class ConfigScript
+    internal class ConfigCompilation
     {
         public const string AssemblyName = "WyamConfig";
 
@@ -24,12 +24,12 @@ namespace Wyam.Core.Configuration
 
         public string AssemblyFullName { get; private set; }
 
-        public ConfigScript(string declarations, string config, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
+        public ConfigCompilation(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             Code = Generate(declarations, config, moduleTypes, namespaces);
         }
 
-        public static string Generate(string declarations, string config, HashSet<Type> moduleTypes, IEnumerable<string> namespaces)
+        public static string Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
@@ -49,16 +49,18 @@ namespace Wyam.Core.Configuration
 
             // Add static methods to construct each module
             Dictionary<string, string> moduleNames = new Dictionary<string, string>();
+            HashSet<string> moduleTypeNames = new HashSet<string>();
             foreach (Type moduleType in moduleTypes)
             {
                 scriptBuilder.Append(GenerateModuleConstructorMethods(moduleType, moduleNames));
+                moduleTypeNames.Add(moduleType.Name);
             }
 
             scriptBuilder.Append("}");
 
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
             SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString());
-            ConfigRewriter configRewriter = new ConfigRewriter(moduleTypes);
+            ConfigRewriter configRewriter = new ConfigRewriter(moduleTypeNames);
             return configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 

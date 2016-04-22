@@ -16,7 +16,7 @@ namespace Wyam.Core.Tests.Configuration
         public class ConfigureMethodTests : ConfigTests
         {
             [Test]
-            public void ErrorInSetupContainsCorrectLineNumbers()
+            public void ErrorInDeclarationsContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
@@ -24,10 +24,8 @@ namespace Wyam.Core.Tests.Configuration
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-foo
-===
 class Y { };
+foo bar;
 ---
 int z = 0;
 ";
@@ -46,41 +44,7 @@ int z = 0;
                 // Then
                 Assert.AreEqual(2, exception.InnerExceptions.Count);
                 StringAssert.StartsWith("Line 3", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 3", exception.InnerExceptions[1].Message);
-            }
-
-            [Test]
-            public void ErrorInDeclarationsContainsCorrectLineNumbers()
-            {
-                // Given
-                RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
-                string configScript = @"
-Assemblies.Load("""");
-===
-class Y { };
-foo bar;
----
-int z = 0;
-";
-
-                // When
-                AggregateException exception = null;
-                try
-                {
-                    config.Configure(configScript, false, null, false);
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.AreEqual(2, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 5", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 5", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 3", exception.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -92,10 +56,6 @@ int z = 0;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-
-===
-
 class Y { };
 
 foo bar;
@@ -118,8 +78,8 @@ int z = 0;
 
                 // Then
                 Assert.AreEqual(2, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 8", exception.InnerExceptions[1].Message);
+                StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 4", exception.InnerExceptions[1].Message);
             }
 
             [Test]
@@ -166,9 +126,6 @@ int z = 0;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-
-===
 
 class Y { };
 class X { };
@@ -193,7 +150,7 @@ foo bar;
 
                 // Then
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 13", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -205,8 +162,6 @@ foo bar;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-===
 int z = 0;
 
 foo bar;
@@ -225,7 +180,7 @@ foo bar;
 
                 // Then
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 6", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -237,8 +192,6 @@ foo bar;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-===
 Pipelines.Add(
     Content(true
         && @doc.Get<bool>(""Key"") == false
@@ -261,7 +214,7 @@ foo bar;
 
                 // Then
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -273,8 +226,6 @@ foo bar;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-===
 Pipelines.Add(
     Content(
         @doc.Get<bool>(""Key"") == false
@@ -297,7 +248,7 @@ foo bar;
 
                 // Then
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -309,8 +260,6 @@ foo bar;
                 FileSystem fileSystem = new FileSystem();
                 Config config = new Config(engine, fileSystem);
                 string configScript = @"
-Assemblies.Load("""");
-===
 Pipelines.Add(
     If(
         @doc.Get<bool>(""Key""),
@@ -334,7 +283,7 @@ foo bar;
 
                 // Then
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 11", exception.InnerExceptions[0].Message);
+                StringAssert.StartsWith("Line 9", exception.InnerExceptions[0].Message);
             }
 
             [Test]

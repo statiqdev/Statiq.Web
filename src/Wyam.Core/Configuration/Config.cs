@@ -7,23 +7,18 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
-using Wyam.Common.Meta;
-using Wyam.Common.Modules;
 using Wyam.Common.NuGet;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Core.Configuration.Preprocessing;
 using Wyam.Core.NuGet;
 
 namespace Wyam.Core.Configuration
 {
-    // Manages the dynamic loading of assemblies and namespaces
-
-    // Encapsulates configuration logic
     internal class Config : IConfig, IDisposable
     {
+        private readonly Preprocessor _preprocessor = new Preprocessor();
         private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
         private readonly AssemblyManager _assemblyManager = new AssemblyManager();
         private readonly IEngine _engine;
@@ -31,7 +26,7 @@ namespace Wyam.Core.Configuration
         private readonly PackagesCollection _packages;
 
         private bool _disposed;
-        private ConfigScript _configScript;
+        private ConfigCompilation _compilation;
         private string _fileName;
         private bool _outputScripts;
 
@@ -45,7 +40,7 @@ namespace Wyam.Core.Configuration
 
         public IEnumerable<string> Namespaces => _assemblyManager.Namespaces;
 
-        public byte[] RawConfigAssembly => _configScript?.RawAssembly;
+        public byte[] RawConfigAssembly => _compilation?.RawAssembly;
 
         public Config(IEngine engine, IFileSystem fileSystem)
         {
@@ -90,80 +85,42 @@ namespace Wyam.Core.Configuration
             _fileName = fileName;
             _outputScripts = outputScripts;
 
-            // If no script, nothing else to do
-            if (string.IsNullOrWhiteSpace(script))
-            {
-                Configure(new ConfigParts(null, null, null));
-                return;
-            }
+            // Parse the script (or use an empty result if no script)
+            ConfigParserResult parserResult = string.IsNullOrWhiteSpace(script)
+                ? new ConfigParserResult()
+                : ConfigParser.Parse(script, _preprocessor);
 
-            ConfigParts configParts = ConfigSplitter.Split(script);
+            // TODO: Process preprocessor directives
 
-            // Setup (install packages, specify additional assemblies, etc.)
-            if (!string.IsNullOrWhiteSpace(configParts.Setup))
-            {
-                Setup(configParts, updatePackages);
-            }
-
-            // Configuration
-            Configure(configParts);
+            Initialize(updatePackages);
+            Evaluate(parserResult);
         }
 
-        private void Setup(ConfigParts configParts, bool updatePackages)
+        // Initialize the assembly manager (includes searching for module types)
+        private void Initialize(bool updatePackages)
         {
-            try
+            // Install packages
+            using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
-                // Compile and evaluate the script
-                using (Trace.WithIndent().Information("Evaluating setup script"))
-                {
-                    SetupScript setupScript = new SetupScript(configParts.Setup);
-                    OutputScript(SetupScript.AssemblyName, setupScript.Code);
-                    setupScript.Compile();
-                    setupScript.Invoke(_packages, _assemblyCollection, _fileSystem);
-                }
-
-                // Install packages
-                using (Trace.WithIndent().Information("Installing packages"))
-                {
-                    _packages.InstallPackages(updatePackages);
-                }
+                _packages.InstallPackages(updatePackages);
             }
-            catch (Exception ex)
+
+            // Scan assemblies
+            using (Trace.WithIndent().Information("Initializing scripting environment"))
             {
-                Trace.Error("Unexpected error during setup: {0}", ex.Message);
-                throw;
+                _assemblyManager.Initialize(_assemblyCollection, _packages, _fileSystem);
             }
         }
 
-        private void Configure(ConfigParts configParts)
+        private void Evaluate(ConfigParserResult parserResult)
         {
-            try
+            using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                HashSet<Type> moduleTypes;
-                using (Trace.WithIndent().Information("Initializing scripting environment"))
-                {
-                    _assemblyManager.Initialize(_assemblyCollection, _packages, _fileSystem);
-                    moduleTypes = _assemblyManager.GetModuleTypes();
-                }
-
-                using (Trace.WithIndent().Information("Evaluating configuration script"))
-                {
-                    _configScript = new ConfigScript(configParts.Declarations, configParts.Config, moduleTypes,
-                        _assemblyManager.Namespaces);
-                    OutputScript(ConfigScript.AssemblyName, _configScript.Code);
-                    _configScript.Compile(_assemblyManager.Assemblies);
-                    _configScript.Invoke(_engine);
-                }
-            }
-            catch (TargetInvocationException ex)
-            {
-                Trace.Error("Error during configuration evaluation: {0}", ex.InnerException.Message);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Trace.Error("Error during configuration evaluation: {0}", ex.Message);
-                throw;
+                _compilation = new ConfigCompilation(parserResult.Declarations, parserResult.Body,
+                    _assemblyManager.ModuleTypes, _assemblyManager.Namespaces);
+                OutputScript(ConfigCompilation.AssemblyName, _compilation.Code);
+                _compilation.Compile(_assemblyManager.Assemblies);
+                _compilation.Invoke(_engine);
             }
         }
 
@@ -179,11 +136,11 @@ namespace Wyam.Core.Configuration
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
             // Only start resolving after we've generated the config assembly
-            if (_configScript != null)
+            if (_compilation != null)
             {
-                if (args.Name == _configScript.AssemblyFullName)
+                if (args.Name == _compilation.AssemblyFullName)
                 {
-                    return _configScript.Assembly;
+                    return _compilation.Assembly;
                 }
 
                 Assembly assembly;
