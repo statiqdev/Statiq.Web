@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Wyam.Configuration.Preprocessing
 {
@@ -6,10 +7,9 @@ namespace Wyam.Configuration.Preprocessing
     {
         private readonly Dictionary<string, IDirective> _directives = new Dictionary<string, IDirective>();
 
-        public Preprocessor()
+        public void AddDirectives(Configurator configurator)
         {
-            // Manually add directives instead of using reflection for better startup speed
-            AddDirective(new NuGetDirective(), "n", "nuget");
+            AddDirective(new NuGetDirective(configurator.Packages), "n", "nuget");
         }
 
         private void AddDirective(IDirective directive, params string[] names)
@@ -23,6 +23,25 @@ namespace Wyam.Configuration.Preprocessing
         public bool ContainsDirective(string name)
         {
             return _directives.ContainsKey(name);
+        }
+
+        public void ProcessDirectives(IEnumerable<DirectiveUse> uses)
+        {
+            foreach (DirectiveUse use in uses)
+            {
+                IDirective directive;
+                if (_directives.TryGetValue(use.Name, out directive))
+                {
+                    try
+                    {
+                        directive.Process(use.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"Error while processing directive on line {use.Line}: #{use.Name} {use.Value}{Environment.NewLine}{ex}");
+                    }
+                }
+            }
         }
     }
 }

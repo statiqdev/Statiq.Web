@@ -6,7 +6,7 @@ using IFileSystem = Wyam.Common.IO.IFileSystem;
 
 namespace Wyam.NuGet
 {
-    internal class Repository
+    internal class Repository : IRepository
     {
         private readonly List<Package> _packages = new List<Package>();
         private readonly IPackageRepository _packageRepository;
@@ -17,12 +17,7 @@ namespace Wyam.NuGet
                 string.IsNullOrWhiteSpace(packageSource) ? "https://packages.nuget.org/api/v2" : packageSource);
         }
 
-        public void Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
-        {
-            Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
-        }
-
-        public void Install(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public void AddPackage(string packageId, string versionSpec, bool allowPrereleaseVersions, bool allowUnlisted)
         {
             Package package = new Package(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
             _packages.Add(package);

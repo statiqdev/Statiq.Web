@@ -205,7 +205,7 @@ C", result.Body);
                 {
                     new KeyValuePair<string, string>("valid", "a b c"),
                     new KeyValuePair<string, string>("valid", "x y z")
-                }, result.Directives);
+                }, result.DirectiveUses);
             }
 
             [Test]
@@ -224,7 +224,7 @@ A";
                 Assert.AreEqual(@"#line 1
 # valid a b c
 A", result.Body);
-                CollectionAssert.IsEmpty(result.Directives);
+                CollectionAssert.IsEmpty(result.DirectiveUses);
             }
 
             [Test]
@@ -260,7 +260,7 @@ E-
                 {
                     new KeyValuePair<string, string>("valid", "a"),
                     new KeyValuePair<string, string>("valid", "c")
-                }, result.Directives);
+                }, result.DirectiveUses);
             }
         }
 
@@ -269,6 +269,11 @@ E-
             public bool ContainsDirective(string name)
             {
                 return name == "valid";
+            }
+
+            public void ProcessDirectives(IEnumerable<DirectiveUse> uses)
+            {
+                throw new System.NotImplementedException();
             }
         }
     }

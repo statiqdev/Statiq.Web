@@ -21,7 +21,6 @@ namespace Wyam.Configuration
         private readonly Preprocessor _preprocessor = new Preprocessor();
         private readonly AssemblyLoader _assemblyLoader = new AssemblyLoader();
         private readonly Engine _engine;
-        private readonly PackagesCollection _packages;
 
         private bool _disposed;
         private ConfigCompilation _compilation;
@@ -29,10 +28,12 @@ namespace Wyam.Configuration
         private bool _outputScripts;
         private bool _configured;
 
+        internal PackagesCollection Packages { get; private set; }
+
         public Configurator(Engine engine)
         {
             _engine = engine;
-            _packages = new PackagesCollection(engine.FileSystem);
+            Packages = new PackagesCollection(engine.FileSystem);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
@@ -75,13 +76,18 @@ namespace Wyam.Configuration
             _fileName = fileName;
             _outputScripts = outputScripts;
 
+            // Add the directives at this stage so everything is initialized
+            _preprocessor.AddDirectives(this);
+
             // Parse the script (or use an empty result if no script)
             ConfigParserResult parserResult = string.IsNullOrWhiteSpace(script)
                 ? new ConfigParserResult()
                 : ConfigParser.Parse(script, _preprocessor);
 
-            // TODO: Process preprocessor directives
+            // Process preprocessor directives
+            _preprocessor.ProcessDirectives(parserResult.DirectiveUses);
 
+            // Initialize and evaluate the script
             Initialize(updatePackages);
             Evaluate(parserResult);
         }
@@ -92,13 +98,13 @@ namespace Wyam.Configuration
             // Install packages
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
-                _packages.InstallPackages(updatePackages);
+                Packages.InstallPackages(updatePackages);
             }
 
             // Scan assemblies
             using (Trace.WithIndent().Information("Loading assemblies and scanning for types"))
             {
-                _assemblyLoader.LoadAssemblies(_packages, _engine.FileSystem, _engine.Assemblies, _engine.Namespaces);
+                _assemblyLoader.LoadAssemblies(Packages, _engine.FileSystem, _engine.Assemblies, _engine.Namespaces);
             }
         }
 

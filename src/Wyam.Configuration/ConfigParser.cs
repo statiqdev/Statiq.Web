@@ -25,8 +25,7 @@ namespace Wyam.Configuration
                         string directive = lines[c].Substring(1, firstSpace - 1);
                         if (preprocessor.ContainsDirective(directive))
                         {
-                            result.Directives.Add(new KeyValuePair<string, string>(
-                                directive, lines[c].Substring(firstSpace + 1).Trim()));
+                            result.DirectiveUses.Add(new DirectiveUse(c + 1, directive, lines[c].Substring(firstSpace + 1).Trim()));
                             lines[c] = "//" + lines[c];  // Just comment out the directive so it still shows in exports
                         }
                     }

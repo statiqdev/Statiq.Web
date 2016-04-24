@@ -2,5 +2,6 @@
 {
     internal interface IDirective
     {
+        void Process(string value);
     }
 }

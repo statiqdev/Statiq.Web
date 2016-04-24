@@ -9,7 +9,7 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.NuGet
 {
-    internal class PackagesCollection
+    internal class PackagesCollection : IRepository
     {
         private DirectoryPath _packagesPath = "packages";
         private DirectoryPath _contentPath = "content";
@@ -41,22 +41,16 @@ namespace Wyam.NuGet
 
         private DirectoryPath AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse();
 
-        public Repository Repository(string packageSource)
+        public Repository GetRepository(string packageSource)
         {
             Repository repository = new Repository(packageSource);
             _repositories.Add(repository);
             return repository;
         }
 
-        public void Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
+        public void AddPackage(string packageId, string versionSpec, bool allowPrereleaseVersions, bool allowUnlisted)
         {
-            Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
-        }
-
-        public void Install(string packageId, string versionSpec = null,
-            bool allowPrereleaseVersions = false, bool allowUnlisted = false)
-        {
-            _repositories[0].Install(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
+            _repositories[0].AddPackage(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
         }
 
         public void InstallPackages(bool updatePackages)
