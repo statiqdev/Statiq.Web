@@ -40,8 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\IAssemblyCollection.cs" />
-    <Compile Include="Configuration\IConfig.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
@@ -72,8 +70,6 @@
     <Compile Include="Configuration\DocumentConfig.cs" />
     <Compile Include="Documents\IDocumentCollection.cs" />
     <Compile Include="Modules\IAsNewDocuments.cs" />
-    <Compile Include="NuGet\IPackagesCollection.cs" />
-    <Compile Include="NuGet\IRepository.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Configuration\IReadOnlySettings.cs" />
     <Compile Include="Tracing\IIndentedTraceEvent.cs" />

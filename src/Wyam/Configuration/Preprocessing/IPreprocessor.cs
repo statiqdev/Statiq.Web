@@ -1,4 +1,4 @@
-﻿namespace Wyam.Core.Configuration.Preprocessing
+﻿namespace Wyam.Configuration.Preprocessing
 {
     internal interface IPreprocessor
     {

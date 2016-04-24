@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
-using Wyam.Core.Configuration;
-using Wyam.Core.IO;
-using Wyam.Core.Meta;
+using Wyam.Configuration;
 using Wyam.Core.Execution;
 using Wyam.Testing;
 
@@ -11,18 +10,16 @@ namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.None)]
-    public class ConfigTests : BaseFixture
+    public class ConfiguratorTests : BaseFixture
     {
-        public class ConfigureMethodTests : ConfigTests
+        public class ConfigureMethodTests : ConfiguratorTests
         {
             [Test]
             public void ErrorInDeclarationsContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 class Y { };
 foo bar;
@@ -34,7 +31,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -52,9 +49,7 @@ int z = 0;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 class Y { };
 
@@ -69,7 +64,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -87,9 +82,7 @@ int z = 0;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 class Y { };
 
@@ -104,7 +97,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -122,9 +115,7 @@ int z = 0;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 
 class Y { };
@@ -141,7 +132,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -158,9 +149,7 @@ foo bar;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 int z = 0;
 
@@ -171,7 +160,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -188,9 +177,7 @@ foo bar;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 Pipelines.Add(
     Content(true
@@ -205,7 +192,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -222,9 +209,7 @@ foo bar;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 Pipelines.Add(
     Content(
@@ -239,7 +224,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -256,9 +241,7 @@ foo bar;
             {
                 // Given
                 RemoveListener();
-                Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator();
                 string configScript = @"
 Pipelines.Add(
     If(
@@ -274,7 +257,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    config.Configure(configScript, false, null, false);
+                    configurator.Configure(configScript, false, false, null);
                 }
                 catch (AggregateException ex)
                 {
@@ -291,8 +274,7 @@ foo bar;
             {
                 // Given
                 Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator(engine);
                 string configScript = @"
 public class MyDocument : CustomDocument
 {
@@ -308,7 +290,7 @@ Engine.DocumentFactory = new CustomDocumentFactory<MyDocument>(Engine.DocumentFa
 ";
 
                 // When
-                config.Configure(configScript, false, null, false);
+                configurator.Configure(configScript, false, false, null);
 
                 // Then
                 Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
@@ -319,8 +301,7 @@ Engine.DocumentFactory = new CustomDocumentFactory<MyDocument>(Engine.DocumentFa
             {
                 // Given
                 Engine engine = new Engine();
-                FileSystem fileSystem = new FileSystem();
-                Config config = new Config(engine, fileSystem);
+                Configurator configurator = GetConfigurator(engine);
                 string configScript = @"
 public class MyDocument : CustomDocument
 {
@@ -336,11 +317,86 @@ SetCustomDocumentType<MyDocument>();
 ";
 
                 // When
-                config.Configure(configScript, false, null, false);
+                configurator.Configure(configScript, false, false, null);
 
                 // Then
                 Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
             }
+
+            [Test]
+            public void SetsPrimitiveMetadata()
+            {
+                // Given
+                Engine engine = new Engine();
+                Configurator configurator = GetConfigurator(engine);
+                string configScript = @"
+                    InitialMetadata[""TestString""] = ""teststring"";
+                    InitialMetadata[""TestInt""] = 1234;
+                    InitialMetadata[""TestFloat""] = 1234.567;
+                    InitialMetadata[""TestBool""] = true;
+                ";
+
+                // When
+                configurator.Configure(configScript, false, false, null);
+
+                // Then
+                Assert.AreEqual("teststring", engine.InitialMetadata["TestString"]);
+                Assert.AreEqual(1234, engine.InitialMetadata["TestInt"]);
+                Assert.AreEqual(1234.567, engine.InitialMetadata["TestFloat"]);
+                Assert.AreEqual(true, engine.InitialMetadata["TestBool"]);
+            }
+
+            [Test]
+            public void AddsPipelineAndModules()
+            {
+                // Given
+                Engine engine = new Engine();
+                Configurator configurator = GetConfigurator(engine);
+                string configScript = @"
+                    Pipelines.Add(
+                        new ReadFiles(""*.cshtml""),
+	                    new WriteFiles("".html""));
+                ";
+
+                // When
+                configurator.Configure(configScript, false, false, null);
+
+                // Then
+                Assert.AreEqual(1, engine.Pipelines.Count);
+                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+            }
+
+            [Test]
+            public void SupportsGlobalConstructorMethods()
+            {
+                // Given
+                Engine engine = new Engine();
+                Configurator configurator = GetConfigurator(engine);
+                string configScript = @"
+                    Pipelines.Add(
+                        ReadFiles(""*.cshtml""),
+	                    WriteFiles("".html""));
+                ";
+
+                // When
+                configurator.Configure(configScript, false, false, null);
+
+                // Then
+                Assert.AreEqual(1, engine.Pipelines.Count);
+                Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+            }
+        }
+
+        private Configurator GetConfigurator()
+        {
+            Engine engine = new Engine();
+            return GetConfigurator(engine);
+        }
+
+        private Configurator GetConfigurator(Engine engine)
+        {
+            Configurator configurator = new Configurator(engine);
+            return configurator;
         }
     }
 }

@@ -5,20 +5,17 @@ using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Wyam.Common.Documents;
-using Wyam.Common.IO;
-using Wyam.Common.Meta;
-using Wyam.Common.Execution;
+using Wyam.Core;
+using Wyam.Core.Configuration;
+using Wyam.Core.Execution;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Configuration
 {
     internal class ConfigCompilation
     {
         public const string AssemblyName = "WyamConfig";
 
-        public string Code { get; private set; }
-
-        public byte[] RawAssembly { get; private set; }
+        public string Code { get; }
 
         public Assembly Assembly { get; private set; }
 
@@ -29,7 +26,8 @@ namespace Wyam.Core.Configuration
             Code = Generate(declarations, config, moduleTypes, namespaces);
         }
 
-        public static string Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
+        // Internal for testing
+        internal static string Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
@@ -41,7 +39,7 @@ namespace Wyam.Core.Configuration
             scriptBuilder.Append(@"
                 public class ConfigScript : ConfigScriptBase
                 {
-                    public ConfigScript(IEngine engine) : base(engine) { }
+                    public ConfigScript(Engine engine) : base(engine) { }
 
                     public override void Run()
                     {" + Environment.NewLine + config + @"
@@ -64,7 +62,8 @@ namespace Wyam.Core.Configuration
             return configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 
-        public static string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)
+        // Internal for testing
+        internal static string GenerateModuleConstructorMethods(Type moduleType, Dictionary<string, string> memberNames)
         {
             StringBuilder stringBuilder = new StringBuilder();
             CSharpCompilation compilation = CSharpCompilation
@@ -142,14 +141,15 @@ namespace Wyam.Core.Configuration
             return stringBuilder.ToString();
         }
 
-        public void Compile(IEnumerable<Assembly> referenceAssemblies)
+        public byte[] Compile(IEnumerable<Assembly> referenceAssemblies)
         {
-            RawAssembly = ConfigCompiler.Compile("WyamConfig", referenceAssemblies, Code);
-            Assembly = Assembly.Load(RawAssembly);
+            byte[] rawAssembly = ConfigCompiler.Compile("WyamConfig", referenceAssemblies, Code);
+            Assembly = Assembly.Load(rawAssembly);
             AssemblyFullName = Assembly.FullName;
+            return rawAssembly;
         }
 
-        public void Invoke(IEngine engine)
+        public void Invoke(Engine engine)
         {
             Type configScriptType = Assembly.GetExportedTypes().First(t => t.Name == "ConfigScript");
             ConfigScriptBase configScript = (ConfigScriptBase)Activator.CreateInstance(configScriptType, engine);

@@ -31,15 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NuGet.Core, Version=2.8.60717.93, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\NuGet.Core.2.8.6\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.0.5813.39031, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -59,8 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ConfigScriptTests.cs" />
-    <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Documents\CustomDocumentFactoryTests.cs" />
     <Compile Include="Documents\DocumentTests.cs" />
     <Compile Include="Execution\LinkGeneratorTests.cs" />
@@ -70,7 +61,6 @@
     <Compile Include="IO\VirtualInputDirectoryTests.cs" />
     <Compile Include="Modules\Control\CombineTests.cs" />
     <Compile Include="Modules\Control\ConcatBranchTests.cs" />
-    <Compile Include="Configuration\ConfigTests.cs" />
     <Compile Include="EngineTests.cs" />
     <Compile Include="Meta\MetadataStackTests.cs" />
     <Compile Include="Modules\Control\BranchTests.cs" />

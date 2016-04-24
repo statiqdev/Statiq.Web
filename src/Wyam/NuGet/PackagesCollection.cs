@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using NuGet;
 using NuGet.Frameworks;
 using Wyam.Common.IO;
-using Wyam.Common.NuGet;
 using Wyam.Common.Tracing;
-using IFileSystem = Wyam.Common.IO.IFileSystem;
 
-namespace Wyam.Core.NuGet
+namespace Wyam.NuGet
 {
-    internal class PackagesCollection : IPackagesCollection
+    internal class PackagesCollection
     {
         private DirectoryPath _packagesPath = "packages";
         private DirectoryPath _contentPath = "content";
-        private readonly IFileSystem _fileSystem;
+        private readonly Wyam.Common.IO.IFileSystem _fileSystem;
 
-        public PackagesCollection(IFileSystem fileSystem)
+        public PackagesCollection(Wyam.Common.IO.IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
         }
@@ -44,23 +41,22 @@ namespace Wyam.Core.NuGet
 
         private DirectoryPath AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse();
 
-        public IRepository Repository(string packageSource)
+        public Repository Repository(string packageSource)
         {
             Repository repository = new Repository(packageSource);
             _repositories.Add(repository);
             return repository;
         }
 
-        public IRepository Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
+        public void Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
         {
-            return Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
+            Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
         }
 
-        public IRepository Install(string packageId, string versionSpec = null,
+        public void Install(string packageId, string versionSpec = null,
             bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
             _repositories[0].Install(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
-            return this;
         }
 
         public void InstallPackages(bool updatePackages)

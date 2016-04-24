@@ -1,10 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using NuGet;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Core.NuGet
+namespace Wyam.NuGet
 {
     internal class Package
     {

@@ -15,6 +15,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core;
+using Wyam.Core.Execution;
 using Wyam.Owin;
 using Wyam.Core.Meta;
 
@@ -34,28 +35,8 @@ namespace Wyam
             // Exit with a error exit code
             Environment.Exit((int)ExitCode.UnhandledError);
         }
-
-        private bool _watch = false;
-        private bool _noClean = false;
-        private bool _noCache = false;
-        private bool _preview = false;
-        private int _previewPort = 5080;
-        private bool _previewForceExtension = false;
-        private FilePath _logFilePath = null;
-        private bool _verbose = false;
-        private bool _pause = false;
-        private bool _updatePackages = false;
-        private bool _outputScripts = false;
-        private bool _verifyConfig = false;
-        private string _stdin = null;
-        private DirectoryPath _rootPath = null;
-        private IReadOnlyList<DirectoryPath> _inputPaths = null;
-        private DirectoryPath _outputPath = null;
-        private DirectoryPath _previewRoot = null;
-        private FilePath _configFilePath = null;
-        private IReadOnlyList<string> _globalMetadataArgs = null;
-        private IReadOnlyDictionary<string, object> _globalMetadata = null;
-
+        
+        private readonly Settings _settings = new Settings();
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
         private readonly InterlockedBool _exit = new InterlockedBool(false);
@@ -73,7 +54,7 @@ namespace Wyam
 
             // Parse the command line
             bool hasParseArgsErrors;
-            if (!ParseArgs(args, out hasParseArgsErrors))
+            if (!_settings.ParseArgs(args, out hasParseArgsErrors))
             {
                 return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
             }
@@ -83,22 +64,22 @@ namespace Wyam
 
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
-            _rootPath = _rootPath == null ? currentDirectory : currentDirectory.Combine(_rootPath);
-            _logFilePath = _logFilePath == null ? null : _rootPath.CombineFile(_logFilePath);
-            _configFilePath = _rootPath.CombineFile(_configFilePath ?? "config.wyam");
+            _settings.RootPath = _settings.RootPath == null ? currentDirectory : currentDirectory.Combine(_settings.RootPath);
+            _settings.LogFilePath = _settings.LogFilePath == null ? null : _settings.RootPath.CombineFile(_settings.LogFilePath);
+            _settings.ConfigFilePath = _settings.RootPath.CombineFile(_settings.ConfigFilePath ?? "config.wyam");
 
             // Set up the log file         
-            if (_logFilePath != null)
+            if (_settings.LogFilePath != null)
             {
-                Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
+                Trace.AddListener(new SimpleFileTraceListener(_settings.LogFilePath.FullPath));
             }
 
-            // Prepare engine's metadata
-            if (!_verifyConfig && _globalMetadataArgs != null && _globalMetadataArgs.Count > 0)
+            // Prepare engine metadata
+            if (!_settings.VerifyConfig && _settings.GlobalMetadataArgs != null && _settings.GlobalMetadataArgs.Count > 0)
             {
                 try
                 {
-                    _globalMetadata = GlobalMetadataParser.Parse(_globalMetadataArgs);
+                    _settings.GlobalMetadata = GlobalMetadataParser.Parse(_settings.GlobalMetadataArgs);
                 }
                 catch (MetadataParseException ex)
                 {
@@ -109,39 +90,39 @@ namespace Wyam
                     return (int)ExitCode.CommandLineError;
                 }
                 // Not used anymore, release resources.
-                _globalMetadataArgs = null;
+                _settings.GlobalMetadataArgs = null;
             }
 
-            // Get the engine
-            Engine engine = GetEngine();
-            if (engine == null)
+            // Get the engine and configurator
+            EngineManager engineManager = GetEngineManager();
+            if (engineManager == null)
             {
                 return (int)ExitCode.CommandLineError;
             }
 
             // Pause
-            if (_pause)
+            if (_settings.Pause)
             {
                 Trace.Information("Pause requested, hit any key to continue");
                 Console.ReadKey();
             }
 
             // Configure and execute
-            if (!Configure(engine))
+            if (!engineManager.Configure())
             {
                 return (int)ExitCode.ConfigurationError;
             }
 
-            if (_verifyConfig)
+            if (_settings.VerifyConfig)
             {
                 Trace.Information("No errors. Exiting.");
                 return (int)ExitCode.Normal;
             }
 
-            Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.RootPath}");
-            Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engine.FileSystem.InputPaths)}");
-            Console.WriteLine($"Output path:{Environment.NewLine}  {engine.FileSystem.OutputPath}");
-            if (!Execute(engine))
+            Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
+            Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
+            Console.WriteLine($"Output path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+            if (!engineManager.Execute())
             {
                 return (int)ExitCode.ExecutionError;
             }
@@ -150,14 +131,16 @@ namespace Wyam
 
             // Start the preview server
             IDisposable previewServer = null;
-            if (_preview)
+            if (_settings.Preview)
             {
                 messagePump = true;
                 try
                 {
-                    DirectoryPath previewPath = _previewRoot == null ? engine.FileSystem.GetOutputDirectory().Path : engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, previewPath);
-                    previewServer = Preview(engine, previewPath);
+                    DirectoryPath previewPath = _settings.PreviewRoot == null 
+                        ? engineManager.Engine.FileSystem.GetOutputDirectory().Path 
+                        : engineManager.Engine.FileSystem.GetOutputDirectory(_settings.PreviewRoot).Path;
+                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _settings.PreviewPort, previewPath);
+                    previewServer = Preview(previewPath);
                 }
                 catch (Exception ex)
                 {
@@ -168,27 +151,26 @@ namespace Wyam
             // Start the watchers
             IDisposable inputFolderWatcher = null;
             IDisposable configFileWatcher = null;
-            if (_watch)
+            if (_settings.Watch)
             {
                 messagePump = true;
 
-                Trace.Information("Watching paths(s) {0}", string.Join(", ", engine.FileSystem.InputPaths));
-                inputFolderWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
-                    engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
+                Trace.Information("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
+                inputFolderWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
                     {
                         _changedFiles.Enqueue(path);
                         _messageEvent.Set();
                     });
 
-                if (_configFilePath != null)
+                if (_settings.ConfigFilePath != null)
                 {
-                    Trace.Information("Watching configuration file {0}", _configFilePath);
-                    Engine closureEngine = engine;
-                    configFileWatcher = new ActionFileSystemWatcher(engine.FileSystem.GetOutputDirectory().Path,
-                        new[] { _configFilePath.Directory }, false, _configFilePath.FileName.FullPath, path =>
+                    Trace.Information("Watching configuration file {0}", _settings.ConfigFilePath);
+                    configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                        new[] { _settings.ConfigFilePath.Directory }, false, _settings.ConfigFilePath.FileName.FullPath, path =>
                         {
                             FilePath filePath = new FilePath(path);
-                            if (_configFilePath.Equals(filePath))
+                            if (_settings.ConfigFilePath.Equals(filePath))
                             {
                                 _newEngine.Set();
                                 _messageEvent.Set();
@@ -227,20 +209,20 @@ namespace Wyam
                     if (_newEngine)
                     {
                         // Get a new engine
-                        Trace.Information("Configuration file {0} has changed, re-running", _configFilePath);
-                        engine.Dispose();
-                        engine = GetEngine();
+                        Trace.Information("Configuration file {0} has changed, re-running", _settings.ConfigFilePath);
+                        engineManager.Dispose();
+                        engineManager = GetEngineManager();
 
                         // Configure and execute
-                        if (!Configure(engine))
+                        if (!engineManager.Configure())
                         {
                             exitCode = ExitCode.ConfigurationError;
                             break;
                         }
-                        Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.RootPath}");
-                        Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engine.FileSystem.InputPaths)}");
-                        Console.WriteLine($"Root path:{Environment.NewLine}  {engine.FileSystem.OutputPath}");
-                        if (!Execute(engine))
+                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
+                        Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
+                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+                        if (!engineManager.Execute())
                         {
                             exitCode = ExitCode.ExecutionError;
                             break;
@@ -269,7 +251,7 @@ namespace Wyam
                         if (changedFiles.Count > 0)
                         {
                             Trace.Information("{0} files have changed, re-executing", changedFiles.Count);
-                            if (!Execute(engine))
+                            if (!engineManager.Execute())
                             {
                                 exitCode = ExitCode.ExecutionError;
                                 break;
@@ -288,7 +270,7 @@ namespace Wyam
 
                 // Shutdown
                 Trace.Information("Shutting down");
-                engine.Dispose();
+                engineManager.Dispose();
                 inputFolderWatcher?.Dispose();
                 configFileWatcher?.Dispose();
                 previewServer?.Dispose();
@@ -296,118 +278,11 @@ namespace Wyam
             return (int)exitCode;
         }
 
-        private bool ParseArgs(string[] args, out bool hasErrors)
-        {
-            System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
-            {
-                // Any changes here should also be made in Cake.Wyam
-
-                syntax.DefineOption("w|watch", ref _watch, "Watches the input folder for any changes.");
-                _preview = syntax.DefineOption("p|preview", ref _previewPort, false, "Start the preview web server on the specified port (default is " + _previewPort + ").").IsSpecified;
-                if (syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
-                {
-                    syntax.ReportError("force-ext can only be specified if the preview server is running.");
-                }
-                if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
-                {
-                    syntax.ReportError("preview-root can only be specified if the preview server is running.");
-                }
-                syntax.DefineOptionList("i|input", ref _inputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
-                syntax.DefineOption("o|output", ref _outputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
-                syntax.DefineOption("c|config", ref _configFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
-                syntax.DefineOption("u|update-packages", ref _updatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
-                syntax.DefineOption("output-scripts", ref _outputScripts, "Outputs the config scripts after they've been processed for further debugging.");
-                syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
-                syntax.DefineOption("noclean", ref _noClean, "Prevents cleaning of the output path on each execution.");
-                syntax.DefineOption("nocache", ref _noCache, "Prevents caching information during execution (less memory usage but slower execution).");
-                syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
-                syntax.DefineOption("pause", ref _pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
-                syntax.DefineOptionList("meta", ref _globalMetadataArgs, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
-                _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
-                if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
-                {
-                    _logFilePath = null;
-                }
-                if (syntax.DefineParameter("root", ref _rootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
-                {
-                    // If a root folder was defined, but it actually points to a file, set the root folder to the directory
-                    // and use the specified file as the config file (if a config file was already specified, it's an error)
-                    FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(_rootPath.FullPath);
-                    if (File.Exists(rootDirectoryPathAsConfigFile.FullPath))
-                    {
-                        // The specified root actually points to a file...
-                        if (_configFilePath != null)
-                        {
-                            syntax.ReportError("A config file was both explicitly specified and specified in the root folder.");
-                        }
-                        else
-                        {
-                            _configFilePath = rootDirectoryPathAsConfigFile.FileName;
-                            _rootPath = rootDirectoryPathAsConfigFile.Directory;
-                        }
-                    }
-                }
-            });
-
-            hasErrors = parsed.HasErrors;
-
-            if (Console.IsInputRedirected)
-            {
-                using (var reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
-                {
-                    _stdin = reader.ReadToEnd();
-                }
-            }
-
-            return !(parsed.IsHelpRequested() || hasErrors);
-        }
-
-        private Engine GetEngine()
+        private EngineManager GetEngineManager()
         {
             try
             {
-                Engine engine = new Engine();
-                
-                // Set verbose tracing
-                if (_verbose)
-                {
-                    Trace.Level = System.Diagnostics.SourceLevels.Verbose;
-                }
-
-                // Set no cache if requested
-                if (_noCache)
-                {
-                    engine.Settings.UseCache = false;
-                }
-
-                // Set folders
-                engine.FileSystem.RootPath = _rootPath;
-                if (_inputPaths != null && _inputPaths.Count > 0)
-                {
-                    // Clear existing default paths if new ones are set
-                    // and reverse the inputs so the last one is first to match the semantics of multiple occurrence single options
-                    engine.FileSystem.InputPaths.Clear();
-                    engine.FileSystem.InputPaths.AddRange(_inputPaths.Reverse());
-                }
-                if (_outputPath != null)
-                {
-                    engine.FileSystem.OutputPath = _outputPath;
-                }
-                if (_noClean)
-                {
-                    engine.Settings.CleanOutputPath = false;
-                }
-                if (_globalMetadata != null)
-                {
-                    foreach (KeyValuePair<string, object> item in _globalMetadata)
-                    {
-                        engine.GlobalMetadata.Add(item);
-                    }
-                }
-
-                engine.ApplicationInput = _stdin;
-                
-                return engine;
+                return new EngineManager(_settings);
             }
             catch (Exception ex)
             {
@@ -416,49 +291,9 @@ namespace Wyam
             }
         }
 
-        private bool Configure(Engine engine)
+        private IDisposable Preview(DirectoryPath root)
         {
-            try
-            {
-                // If we have a configuration file use it, otherwise configure with defaults  
-                IFile configFile = engine.FileSystem.GetRootFile(_configFilePath);
-                if (configFile.Exists)
-                {
-                    Trace.Information("Loading configuration from {0}", configFile.Path);
-                    engine.Configure(configFile, _updatePackages, _outputScripts);
-                }
-                else
-                {
-                    Trace.Information("Could not find configuration file {0}, using default configuration", _configFilePath);
-                    engine.Configure(GetDefaultConfigScript(), _updatePackages);
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.Critical("Error while loading configuration: {0}", ex.Message);
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool Execute(Engine engine)
-        {
-            try
-            {
-                engine.Execute();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private IDisposable Preview(Engine engine, DirectoryPath root)
-        {
-            StartOptions options = new StartOptions("http://localhost:" + _previewPort);
+            StartOptions options = new StartOptions("http://localhost:" + _settings.PreviewPort);
 
             // Disable built-in owin tracing by using a null trace output
             // http://stackoverflow.com/questions/17948363/tracelistener-in-owin-self-hosting
@@ -478,7 +313,7 @@ namespace Wyam
                 });
 
                 // Support for extensionless URLs
-                if (!_previewForceExtension)
+                if (!_settings.PreviewForceExtension)
                 {
                     app.UseExtensionlessUrls(new ExtensionlessUrlsOptions
                     {
@@ -508,28 +343,6 @@ namespace Wyam
             {
                 return StreamWriter.Null;
             }
-        }
-
-        // This is a hack until recipes are implemented, at which point it should be removed
-        private string GetDefaultConfigScript()
-        {
-            return @"
-                Pipelines.Add(""Content"",
-	                ReadFiles(""*.md""),
-	                FrontMatter(Yaml()),
-	                Markdown(),
-	                Concat(
-		                ReadFiles(""*.cshtml"").Where(x => Path.GetFileName(x)[0] != '_'),
-		                FrontMatter(Yaml())		
-	                ),
-	                Razor(),
-	                WriteFiles("".html"")
-                );
-
-                Pipelines.Add(""Resources"",
-	                CopyFiles(""*"").Where(x => Path.GetExtension(x) != "".cshtml"" && Path.GetExtension(x) != "".md"")
-                );
-            ";
         }
 
         private void OutputLogo()

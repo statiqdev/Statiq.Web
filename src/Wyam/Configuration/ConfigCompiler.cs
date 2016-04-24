@@ -4,14 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Configuration
 {
     internal static class ConfigCompiler
     {
@@ -24,13 +23,13 @@ namespace Wyam.Core.Configuration
             var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree },
                 referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
-                .AddReferences(
-                    // For some reason, Roslyn really wants these added by filename
-                    // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
-                    MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
+                    .AddReferences(
+                        // For some reason, Roslyn really wants these added by filename
+                        // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
             );
 
             // Emit the assembly

@@ -1,6 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
+using Wyam.Core.Execution;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
 

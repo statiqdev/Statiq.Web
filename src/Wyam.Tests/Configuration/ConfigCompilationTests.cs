@@ -8,6 +8,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Configuration;
 using Wyam.Core.Configuration;
 using Wyam.Core.Modules.Contents;
 using Wyam.Testing;
@@ -16,9 +17,9 @@ namespace Wyam.Core.Tests.Configuration
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ConfigScriptTests : BaseFixture
+    public class ConfigCompilationTests : BaseFixture
     {
-        public class GenerateMethodTests : ConfigScriptTests
+        public class GenerateMethodTests : ConfigCompilationTests
         { 
             [TestCase(@"Pipelines.Add(Content())", @"Pipelines.Add(ConfigScript.Content())")]
             [TestCase(@"Pipelines.Add(Content(Content()))", @"Pipelines.Add(ConfigScript.Content(ConfigScript.Content()))")]
@@ -62,7 +63,7 @@ namespace Wyam.Core.Tests.Configuration
 
                 public class ConfigScript : ConfigScriptBase
                 {{
-                    public ConfigScript(IEngine engine) : base(engine) {{ }}
+                    public ConfigScript(Engine engine) : base(engine) {{ }}
 
                     public override void Run()
                     {{
@@ -93,7 +94,7 @@ namespace Wyam.Core.Tests.Configuration
             }
         }
 
-        public class GenerateModuleConstructorMethodsMethodTests : ConfigScriptTests
+        public class GenerateModuleConstructorMethodsMethodTests : ConfigCompilationTests
         {
             [Test]
             public void GeneratesOverloadedConstructors()

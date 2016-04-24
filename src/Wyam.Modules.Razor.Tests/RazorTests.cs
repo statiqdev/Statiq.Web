@@ -14,6 +14,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core;
+using Wyam.Core.Execution;
 using Wyam.Core.Modules;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
@@ -33,7 +34,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
@@ -53,7 +53,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 TraceListener traceListener = new TraceListener();
@@ -94,7 +93,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document["MyKey"].Returns("MyValue");
@@ -114,7 +112,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = Substitute.For<IDocument>();
                 document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
@@ -134,7 +131,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument("C:/Temp/temp.txt", @"<p>@Model.Source</p>");
                 Razor razor = new Razor();
@@ -152,7 +148,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"Layout/Test.cshtml", 
 @"@{
@@ -177,7 +172,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"ViewStartAndLayout/Test.cshtml",
 @"<p>This is a test</p>");
@@ -198,7 +192,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
@@ -219,7 +212,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document1 = GetDocument(@"IgnoreUnderscores/Test.cshtml",
 @"@{
@@ -247,7 +239,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document1 = GetDocument(@"AlternateIgnorePrefix/Test.cshtml",
 @"<p>This is a test</p>");
@@ -269,7 +260,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
 @"@{
@@ -300,7 +290,6 @@ namespace Wyam.Modules.Razor.Tests
             {
                 // Given
                 Engine engine = new Engine();
-                engine.Configure();
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
 @"@{

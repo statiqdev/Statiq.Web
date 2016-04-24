@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Wyam.Core.Execution;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
 

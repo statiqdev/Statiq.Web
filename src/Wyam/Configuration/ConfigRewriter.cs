@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Configuration
 {
     // Adds qualifiers to module constructor methods
     // Also replaces @docXYZ and @ctxXYZ with lambda expressions

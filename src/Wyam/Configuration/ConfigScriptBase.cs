@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Wyam.Common.Configuration;
-using Wyam.Common.Documents;
+﻿using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Execution;
+using Wyam.Core;
 using Wyam.Core.Documents;
+using Wyam.Core.Execution;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Configuration
 {
     /// <summary>
     /// This is the base class used for the generated configuration script. Put any properties or
@@ -14,9 +14,9 @@ namespace Wyam.Core.Configuration
     /// </summary>
     public abstract class ConfigScriptBase
     {
-        private readonly IEngine _engine;
+        private readonly Engine _engine;
 
-        protected ConfigScriptBase(IEngine engine)
+        protected ConfigScriptBase(Engine engine)
         {
             _engine = engine;
         }
@@ -35,11 +35,7 @@ namespace Wyam.Core.Configuration
 
         public string ApplicationInput => _engine.ApplicationInput;
 
-        public IEngine Engine => _engine;
-
-        public void SetCustomDocumentType<T>() where T : CustomDocument, new()
-        {
-            Engine.DocumentFactory = new CustomDocumentFactory<T>(Engine.DocumentFactory);
-        }
+        public void SetCustomDocumentType<T>() where T : CustomDocument, new() => 
+            _engine.DocumentFactory = new CustomDocumentFactory<T>(_engine.DocumentFactory);
     }
 }

@@ -20,69 +20,6 @@ namespace Wyam.Core.Tests
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class EngineTests : BaseFixture
     {
-        public class ConfigureMethodTests : EngineTests
-        {
-            [Test]
-            public void SetsPrimitiveMetadata()
-            {
-                // Given
-                Engine engine = new Engine();
-                string configScript = @"
-                    InitialMetadata[""TestString""] = ""teststring"";
-                    InitialMetadata[""TestInt""] = 1234;
-                    InitialMetadata[""TestFloat""] = 1234.567;
-                    InitialMetadata[""TestBool""] = true;
-                ";
-
-                // When
-                engine.Configure(configScript);
-
-                // Then
-                Assert.AreEqual("teststring", engine.InitialMetadata["TestString"]);
-                Assert.AreEqual(1234, engine.InitialMetadata["TestInt"]);
-                Assert.AreEqual(1234.567, engine.InitialMetadata["TestFloat"]);
-                Assert.AreEqual(true, engine.InitialMetadata["TestBool"]);
-            }
-
-            [Test]
-            public void AddsPipelineAndModules()
-            {
-                // Given
-                Engine engine = new Engine();
-                string configScript = @"
-                    Pipelines.Add(
-                        new ReadFiles(""*.cshtml""),
-	                    new WriteFiles("".html""));
-                ";
-
-                // When
-                engine.Configure(configScript);
-
-                // Then
-                Assert.AreEqual(1, ((PipelineCollection) engine.Pipelines).Pipelines.Count());
-                Assert.AreEqual(2, ((PipelineCollection) engine.Pipelines).Pipelines.First().Count);
-            }
-
-            [Test]
-            public void SupportsGlobalConstructorMethods()
-            {
-                // Given
-                Engine engine = new Engine();
-                string configScript = @"
-                    Pipelines.Add(
-                        ReadFiles(""*.cshtml""),
-	                    WriteFiles("".html""));
-                ";
-
-                // When
-                engine.Configure(configScript);
-
-                // Then
-                Assert.AreEqual(1, ((PipelineCollection) engine.Pipelines).Pipelines.Count());
-                Assert.AreEqual(2, ((PipelineCollection) engine.Pipelines).Pipelines.First().Count);
-            }
-        }
-
         [Test]
         public void ExecuteResultsInCorrectCounts()
         {

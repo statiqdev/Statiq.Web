@@ -1,16 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using NuGet;
-using NuGet.Frameworks;
 using Wyam.Common.IO;
-using Wyam.Common.NuGet;
 using IFileSystem = Wyam.Common.IO.IFileSystem;
-using Path = System.IO.Path;
 
-namespace Wyam.Core.NuGet
+namespace Wyam.NuGet
 {
-    internal class Repository : IRepository
+    internal class Repository
     {
         private readonly List<Package> _packages = new List<Package>();
         private readonly IPackageRepository _packageRepository;
@@ -21,16 +17,15 @@ namespace Wyam.Core.NuGet
                 string.IsNullOrWhiteSpace(packageSource) ? "https://packages.nuget.org/api/v2" : packageSource);
         }
 
-        public IRepository Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
+        public void Install(string packageId, bool allowPrereleaseVersions, bool allowUnlisted = false)
         {
-            return Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
+            Install(packageId, null, allowPrereleaseVersions, allowUnlisted);
         }
 
-        public IRepository Install(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public void Install(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
         {
             Package package = new Package(packageId, versionSpec, allowPrereleaseVersions, allowUnlisted);
             _packages.Add(package);
-            return this;
         }
 
         public void InstallPackages(DirectoryPath absolutePackagesPath, IFileSystem fileSystem, bool updatePackages)

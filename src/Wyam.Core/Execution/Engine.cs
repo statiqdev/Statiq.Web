@@ -2,37 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Wyam.Core.Configuration;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Core.Caching;
+using Wyam.Core.Configuration;
 using Wyam.Core.Documents;
 using Wyam.Core.IO;
 using Wyam.Core.Meta;
-using Wyam.Core.Execution;
 using Wyam.Core.Tracing;
 
-namespace Wyam.Core
+namespace Wyam.Core.Execution
 {
-    public class Engine : IEngine, IDisposable
+    public class Engine : IDisposable
     {
         private readonly FileSystem _fileSystem = new FileSystem();
         private readonly Settings _settings = new Settings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
-        private readonly Config _config;
         private readonly MetadataDictionary _initialMetadata = new MetadataDictionary();
         private bool _disposed;
 
         public IFileSystem FileSystem => _fileSystem;
 
         public ISettings Settings => _settings;
-
-        public IConfig Config => _config;
 
         public IPipelineCollection Pipelines => _pipelines;
 
@@ -44,11 +40,21 @@ namespace Wyam.Core
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
 
-        public byte[] RawConfigAssembly => _config.RawConfigAssembly;
+        /// <summary>
+        /// Gets the assemblies that should be referenced by modules that support dynamic compilation.
+        /// </summary>
+        public IAssemblyCollection Assemblies { get; } = new AssemblyCollection();
 
-        public IEnumerable<Assembly> Assemblies => _config.Assemblies;
+        /// <summary>
+        /// Gets the namespaces that should be brought in scope by modules that support dynamic compilation.
+        /// </summary>
+        public INamespacesCollection Namespaces { get; } = new NamespaceCollection();
 
-        public IEnumerable<string> Namespaces => _config.Namespaces;
+        /// <summary>
+        /// Gets a collection of all the raw assemblies that should be referenced by modules 
+        /// that support dynamic compilation (such as configuration assemblies).
+        /// </summary>
+        public IRawAssemblyCollection RawAssemblies { get; } = new RawAssemblyCollection();
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
         
@@ -72,40 +78,7 @@ namespace Wyam.Core
         public Engine()
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
-            _config = new Config(this, FileSystem);
             _documentFactory = new DocumentFactory(_initialMetadata);
-        }
-
-        public void Configure(IFile configFile, bool updatePackages = false, bool outputScripts = false)
-        {
-            Configure(configFile.ReadAllText(), updatePackages, configFile.Path.FileName.FullPath, outputScripts);
-        }
-
-        public void Configure(string configScript = null, bool updatePackages = false)
-        {
-            Configure(configScript, updatePackages, null, false);
-        }
-
-        private void Configure(string configScript, bool updatePackages, string fileName, bool outputScripts)
-        {
-            CheckDisposed();
-
-            // Make sure the root path exists
-            if (!FileSystem.GetRootDirectory().Exists)
-            {
-                throw new InvalidOperationException($"The root path {FileSystem.RootPath.FullPath} does not exist.");
-            }
-
-            try
-            {
-                _config.Configure(configScript, updatePackages, fileName, outputScripts);
-            }
-            catch (Exception ex)
-            {
-                if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
-                    Trace.Error("Exception: {0}", ex);
-                throw;
-            }
         }
 
         public void CleanOutputPath()
@@ -129,12 +102,6 @@ namespace Wyam.Core
         public void Execute()
         {
             CheckDisposed();
-
-            // Configure with defaults if not already configured
-            if (!_config.Configured)
-            {
-                Configure();
-            }
 
             // Clean the output folder if requested
             if (Settings.CleanOutputPath)
@@ -216,7 +183,6 @@ namespace Wyam.Core
             {
                 pipeline.Dispose();
             }
-            _config.Dispose();
             System.Diagnostics.Trace.Listeners.Remove(_diagnosticsTraceListener);
             _disposed = true;
         }

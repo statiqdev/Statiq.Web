@@ -1,39 +1,54 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
+using Wyam.Common.Modules;
+using Wyam.Core.Execution;
 
 namespace Wyam.Core.Configuration
 {
     internal class AssemblyCollection : IAssemblyCollection
     {
-        public List<Tuple<DirectoryPath, SearchOption>> Directories { get; } = new List<Tuple<DirectoryPath, SearchOption>>();
-        public List<FilePath> ByFile { get; } = new List<FilePath>();
-        public List<string> ByName { get; } = new List<string>();
+        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
 
-        public IAssemblyCollection LoadDirectory(DirectoryPath path, SearchOption searchOption = SearchOption.AllDirectories)
+        public AssemblyCollection()
         {
-            Directories.Add(new Tuple<DirectoryPath, SearchOption>(path, searchOption));
-            return this;
+            // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
+            Add(Assembly.GetAssembly(typeof(object))); // System
+            Add(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>))); // System.Collections.Generic 
+            Add(Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions))); // System.Linq
+            Add(Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
+            Add(Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)
+            Add(Assembly.GetAssembly(typeof(System.IO.Stream))); // System.IO
+            Add(Assembly.GetAssembly(typeof(System.Diagnostics.TraceSource))); // System.Diagnostics
+            Add(Assembly.GetAssembly(typeof(Engine))); // Wyam.Core
+            Add(Assembly.GetAssembly(typeof(IModule))); // Wyam.Common
         }
 
-        public IAssemblyCollection LoadFile(FilePath path)
+        public bool Add(Assembly assembly)
         {
-            ByFile.Add(path);
-            return this;
+            if (_assemblies.ContainsKey(assembly.FullName))
+            {
+                return false;
+            }
+            _assemblies.Add(assembly.FullName, assembly);
+            return true;
         }
 
-        //TODO: Change LoadDirectory and LoadFile to a single method that loads assemblies based on a globbing pattern
+        public bool ContainsFullName(string fullName) => _assemblies.ContainsKey(fullName);
 
-        public IAssemblyCollection Load(string name)
-        {
-            ByName.Add(name);
-            return this;
-        }
+        public bool TryGetAssembly(string fullName, out Assembly assembly)
+            => _assemblies.TryGetValue(fullName, out assembly);
+
+        public IEnumerator<Assembly> GetEnumerator() => _assemblies.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

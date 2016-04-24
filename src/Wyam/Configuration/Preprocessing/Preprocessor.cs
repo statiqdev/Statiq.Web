@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Wyam.Core.Configuration.Preprocessing
+namespace Wyam.Configuration.Preprocessing
 {
     internal class Preprocessor : IPreprocessor
     {

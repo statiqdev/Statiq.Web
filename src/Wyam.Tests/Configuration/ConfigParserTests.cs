@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Tracing;
-using Wyam.Core.Configuration;
-using Wyam.Core.Configuration.Preprocessing;
+using Wyam.Configuration;
+using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
 
 namespace Wyam.Core.Tests.Configuration
@@ -16,7 +16,7 @@ namespace Wyam.Core.Tests.Configuration
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class ConfigParserTests : BaseFixture
     {
-        public class ParseMethodTests : ConfigScriptTests
+        public class ParseMethodTests : ConfigCompilationTests
         {
             [Test]
             public void ReturnsConfigWithoutDelimiter()
