@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Wyam.Configuration;
 using Wyam.Core.Execution;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Configuration
+namespace Wyam.Configuration.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.None)]
@@ -286,7 +284,7 @@ public class MyDocument : CustomDocument
     }
 }
 ---
-Engine.DocumentFactory = new CustomDocumentFactory<MyDocument>(Engine.DocumentFactory);
+DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
 ";
 
                 // When

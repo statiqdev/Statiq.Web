@@ -1,4 +1,5 @@
 ﻿using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -34,6 +35,12 @@ namespace Wyam.Configuration
         public ISettings Settings => _engine.Settings;
 
         public string ApplicationInput => _engine.ApplicationInput;
+
+        public IDocumentFactory DocumentFactory
+        {
+            get { return _engine.DocumentFactory; }
+            set { _engine.DocumentFactory = value; }
+        }
 
         public void SetCustomDocumentType<T>() where T : CustomDocument, new() => 
             _engine.DocumentFactory = new CustomDocumentFactory<T>(_engine.DocumentFactory);

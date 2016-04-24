@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using Wyam.Common.Tracing;
-using Wyam.Configuration;
-using Wyam.Core.Configuration;
+using Wyam.Common.Modules;
 using Wyam.Core.Modules.Contents;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Configuration
+namespace Wyam.Configuration.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
@@ -132,13 +126,13 @@ namespace Wyam.Core.Tests.Configuration
                 // Given
                 Dictionary<string, string> memberNames = new Dictionary<string, string>();
                 string expected = $@"
-                        public static Wyam.Core.Tests.Configuration.ConfigScriptTests.GenericModule<T> GenericModule<T>(T input)
+                        public static Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T> GenericModule<T>(T input)
                         {{
-                            return new Wyam.Core.Tests.Configuration.ConfigScriptTests.GenericModule<T>(input);  
+                            return new Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T>(input);  
                         }}
-                        public static Wyam.Core.Tests.Configuration.ConfigScriptTests.GenericModule<T> GenericModule<T>(System.Action<T> input)
+                        public static Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T> GenericModule<T>(System.Action<T> input)
                         {{
-                            return new Wyam.Core.Tests.Configuration.ConfigScriptTests.GenericModule<T>(input);  
+                            return new Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T>(input);  
                         }}";
 
                 // When

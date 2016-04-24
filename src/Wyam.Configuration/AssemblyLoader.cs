@@ -56,7 +56,13 @@ namespace Wyam.Configuration
             // Get path to all assemblies (except those specified by name)
             List<FilePath> assemblyPaths = new List<FilePath>();
             assemblyPaths.AddRange(packages.GetCompatibleAssemblyPaths());
-            assemblyPaths.AddRange(Directory.GetFiles(new FilePath(typeof(Program).Assembly.Location).Directory.FullPath, "*.dll", SearchOption.AllDirectories).Select(x => new FilePath(x)));
+            string entryAssemblyLocation = Assembly.GetEntryAssembly()?.Location;
+            if (entryAssemblyLocation != null)
+            {
+                assemblyPaths.AddRange(Directory
+                    .GetFiles(new FilePath(entryAssemblyLocation).Directory.FullPath, "*.dll", SearchOption.AllDirectories)
+                    .Select(x => new FilePath(x)));
+            }
             assemblyPaths.AddRange(_directories
                 .Select(x => new Tuple<DirectoryPath, SearchOption>(fileSystem.RootPath.Combine(x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1.FullPath))

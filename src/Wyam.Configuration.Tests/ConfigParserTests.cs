@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Wyam.Common.Tracing;
-using Wyam.Configuration;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Configuration
+namespace Wyam.Configuration.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

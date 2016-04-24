@@ -23,11 +23,7 @@ namespace Wyam
             _settings = settings;
             Engine = new Engine();
             Configurator = new Configurator(Engine);
-
-            // Add the config namespace and assembly
-            Engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
-            Engine.Assemblies.Add(typeof(ConfigScriptBase).Assembly);
-
+            
             // Set verbose tracing
             if (_settings.Verbose)
             {

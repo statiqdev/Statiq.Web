@@ -16,7 +16,7 @@ using Wyam.NuGet;
 
 namespace Wyam.Configuration
 {
-    internal class Configurator : IDisposable
+    public class Configurator : IDisposable
     {
         private readonly Preprocessor _preprocessor = new Preprocessor();
         private readonly AssemblyLoader _assemblyLoader = new AssemblyLoader();
@@ -33,6 +33,10 @@ namespace Wyam.Configuration
         {
             _engine = engine;
             _packages = new PackagesCollection(engine.FileSystem);
+
+            // Add the config namespace and assembly
+            engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
+            engine.Assemblies.Add(typeof(ConfigScriptBase).Assembly);
 
             // Manually resolve included assemblies
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
