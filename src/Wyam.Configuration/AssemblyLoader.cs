@@ -8,10 +8,10 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using Wyam.Configuration.NuGet;
 using Wyam.Core;
 using Wyam.Core.Configuration;
 using Wyam.Core.Execution;
-using Wyam.NuGet;
 
 namespace Wyam.Configuration
 {
@@ -41,7 +41,7 @@ namespace Wyam.Configuration
         }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
-        public void LoadAssemblies(PackagesCollection packages, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        public void LoadAssemblies(PackageInstaller packages, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies, INamespacesCollection namespaces)
         {
             // Add all module namespaces from Wyam.Core
             namespaces.AddRange(typeof(Engine).Assembly.GetTypes()

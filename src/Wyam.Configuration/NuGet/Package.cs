@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using NuGet;
 using Wyam.Common.Tracing;
 
-namespace Wyam.NuGet
+namespace Wyam.Configuration.NuGet
 {
     internal class Package
     {
@@ -10,6 +11,9 @@ namespace Wyam.NuGet
         private readonly IVersionSpec _versionSpec;
         private readonly bool _allowPrereleaseVersions;
         private readonly bool _allowUnlisted;
+
+        public IReadOnlyList<string> PackageSources { get; }
+        public bool Exclusive { get; }
 
         // The version string is either a simple version or an arithmetic range
         // e.g.
@@ -20,27 +24,30 @@ namespace Wyam.NuGet
         //      (1.0,)      --> 1.0 &lt; x
         //      (1.0, 2.0)   --> 1.0 &lt; x &lt; 2.0
         //      [1.0, 2.0]   --> 1.0 ≤ x ≤ 2.0
-        public Package(string packageId, string versionSpec = null, bool allowPrereleaseVersions = false, bool allowUnlisted = false)
+        public Package(string packageId, IReadOnlyList<string> packageSources, string versionSpec, 
+            bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
             if (packageId == null)
             {
-                throw new ArgumentNullException("packageId");
+                throw new ArgumentNullException(nameof(packageId));
             }
             if (string.IsNullOrWhiteSpace(packageId))
             {
-                throw new ArgumentException("packageId");
+                throw new ArgumentException(nameof(packageId));
             }
 
             _packageId = packageId;
+            PackageSources = packageSources;
             _versionSpec = string.IsNullOrWhiteSpace(versionSpec) ? null : VersionUtility.ParseVersionSpec(versionSpec);
             _allowPrereleaseVersions = allowPrereleaseVersions;
             _allowUnlisted = allowUnlisted;
+            Exclusive = exclusive;
         }
 
         public IPackage InstallPackage(PackageManager packageManager, bool updatePackages)
         {
-            using (Trace.WithIndent().Verbose("Installing package {0}{1} from {2}",
-                _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source))
+            string versionSpec = _versionSpec == null ? string.Empty : " " + _versionSpec;
+            using (Trace.WithIndent().Verbose($"Installing package {_packageId}{versionSpec} (and dependencies)"))
             {
                 // Find the local package
                 IPackage localPackage = packageManager.LocalRepository.FindPackage(_packageId);
@@ -48,8 +55,7 @@ namespace Wyam.NuGet
                 // Check if we're up to date
                 if (localPackage != null && _versionSpec.Satisfies(localPackage.Version) && !updatePackages)
                 {
-                    Trace.Verbose("Package {0}{1} is satisfied by version {2}, skipping",
-                        _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
+                    Trace.Verbose($"Package {_packageId}{versionSpec} is satisfied by version {localPackage.Version}, skipping");
                     return localPackage;
                 }
 
@@ -58,16 +64,14 @@ namespace Wyam.NuGet
                     .FindPackage(_packageId, _versionSpec, _allowPrereleaseVersions, _allowUnlisted);
                 if (sourcePackage == null)
                 {
-                    Trace.Warning("Package {0} {1} could not be found at {2}",
-                        _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, packageManager.SourceRepository.Source);
+                    Trace.Critical($"Package {_packageId}{versionSpec} could not be found");
                     return null;
                 }
 
                 // Check if we're up to date
                 if (localPackage != null && localPackage.Version >= sourcePackage.Version)
                 {
-                    Trace.Verbose("Package {0}{1} is up to date with version {2}, skipping",
-                        _packageId, _versionSpec == null ? string.Empty : " " + _versionSpec, localPackage.Version);
+                    Trace.Verbose($"Package {_packageId}{versionSpec} is up to date with version {localPackage.Version}, skipping");
                     return localPackage;
                 }
 
@@ -75,12 +79,12 @@ namespace Wyam.NuGet
                 if (localPackage != null)
                 {
                     packageManager.UninstallPackage(localPackage, true);
-                    Trace.Verbose("Uninstalled package {0} {1}", localPackage.Id, localPackage.Version);
+                    Trace.Verbose($"Uninstalled package {localPackage.Id} {localPackage.Version}");
                 }
             
                 // Install it
                 packageManager.InstallPackage(sourcePackage, false, _allowPrereleaseVersions);
-                Trace.Verbose("Installed package {0} {1}", sourcePackage.Id, sourcePackage.Version);
+                Trace.Verbose($"Installed package {sourcePackage.Id} {sourcePackage.Version}");
                 return sourcePackage;
             }
         }

@@ -10,9 +10,9 @@ using Microsoft.CodeAnalysis.Emit;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Configuration.NuGet;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
-using Wyam.NuGet;
 
 namespace Wyam.Configuration
 {
@@ -28,12 +28,12 @@ namespace Wyam.Configuration
         private bool _outputScripts;
         private bool _configured;
 
-        internal PackagesCollection Packages { get; private set; }
+        internal PackageInstaller Packages { get; private set; }
 
         public Configurator(Engine engine)
         {
             _engine = engine;
-            Packages = new PackagesCollection(engine.FileSystem);
+            Packages = new PackageInstaller(engine.FileSystem);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);

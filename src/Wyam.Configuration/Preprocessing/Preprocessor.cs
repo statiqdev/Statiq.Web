@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wyam.Configuration.NuGet;
 
 namespace Wyam.Configuration.Preprocessing
 {
@@ -10,6 +11,7 @@ namespace Wyam.Configuration.Preprocessing
         public void AddDirectives(Configurator configurator)
         {
             AddDirective(new NuGetDirective(configurator.Packages), "n", "nuget");
+            AddDirective(new NuGetSourceDirective(configurator.Packages), "ns", "nuget-source");
         }
 
         private void AddDirective(IDirective directive, params string[] names)
