@@ -2,28 +2,48 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using NuGet;
+using NuGet.Configuration;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
+using NuGet.Packaging;
+using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using IFileSystem = Wyam.Common.IO.IFileSystem;
+using IPackageFile = NuGet.Packaging.IPackageFile;
 
 namespace Wyam.Configuration.NuGet
 {
     internal class PackageInstaller
     {
         private readonly NuGetLogger _logger = new NuGetLogger();
-        private readonly List<string> _packageSources = new List<string>
+        private readonly List<PackageSource> _packageSources = new List<PackageSource>
         {
-            "https://packages.nuget.org/api/v2"
+            new PackageSource("https://packages.nuget.org/api/v2")
         };
         private readonly List<Package> _packages = new List<Package>();
-        private readonly Wyam.Common.IO.IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem;
+        private readonly ISettings _settings;
+        private readonly IPackageSourceProvider _packageSourceProvider;
+        private readonly ISourceRepositoryProvider _sourceRepositoryProvider;
         private DirectoryPath _packagesPath = "packages";
 
-        public PackageInstaller(Wyam.Common.IO.IFileSystem fileSystem)
+        public PackageInstaller(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
+            _settings = Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            _packageSourceProvider = new PackageSourceProvider(_settings);
+            _sourceRepositoryProvider = new WyamSourceRepositoryProvider(_packageSourceProvider);
+            FolderProject = new FolderNuGetProject(
+                AbsolutePackagesPath.FullPath,
+                new PackagePathResolver(AbsolutePackagesPath.FullPath));
+            PackageManager = new NuGetPackageManager(_sourceRepositoryProvider, _settings, AbsolutePackagesPath.FullPath);
         }
+
+        public FolderNuGetProject FolderProject { get; }
+
+        public NuGetPackageManager PackageManager { get; }
 
         public DirectoryPath PackagesPath
         {
@@ -41,15 +61,34 @@ namespace Wyam.Configuration.NuGet
         private DirectoryPath AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse();
 
         // Note that sources are searched first at index 0, then index 1, and so on until a match is found
-        public void AddPackageSource(string packageSource) => _packageSources.Insert(0, packageSource);
+        public void AddPackageSource(string packageSource) => _packageSources.Insert(0, new PackageSource(packageSource));
 
         public void AddPackage(string packageId, IReadOnlyList<string> packageSources, string versionSpec, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive) => _packages.Add(new Package(packageId, packageSources, versionSpec, allowPrereleaseVersions, allowUnlisted, exclusive));
 
+        // Based primarily on NuGet.CommandLine.Commands.InstallCommand.InstallPackage()
         public void InstallPackages(bool updatePackages)
         {
-            PackageManager defaultPackageManager = GetPackageManager(_packageSources);
+            // TODO: Don't forget about updatePackages - not sure how to handle w/ v3
+
+            List<SourceRepository> defaultSourceRepositories = _packageSources.Select(_sourceRepositoryProvider.CreateRepository).ToList();
 
             // Install the packages
+            foreach (Package package in _packages)
+            {
+                IEnumerable<SourceRepository> sourcesRepositories = defaultSourceRepositories;
+                if (package.PackageSources != null && package.PackageSources.Count > 0)
+                {
+                    sourcesRepositories = package.PackageSources.Select(_sourceRepositoryProvider.CreateRepository);
+                }
+                package.InstallPackage(this, sourcesRepositories);
+            }
+
+
+
+
+
+            // Install the packages
+            /*
             foreach (Package package in _packages)
             {
                 // Get the correct set of sources and install the package
@@ -72,10 +111,13 @@ namespace Wyam.Configuration.NuGet
                     }
                 }
             }
+            */
         }
 
-        private PackageManager GetPackageManager(IEnumerable<string> packageSources)
+        /*
+        private NuGetPackageManager GetPackageManager(IEnumerable<string> packageSources)
         {
+
             IPackageRepository packageRepository = new AggregateRepository(PackageRepositoryFactory.Default, packageSources, false);
             PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath.FullPath)
             {
@@ -122,5 +164,6 @@ namespace Wyam.Configuration.NuGet
             }
             return assemblyPaths;
         }
+        */
     }
 }

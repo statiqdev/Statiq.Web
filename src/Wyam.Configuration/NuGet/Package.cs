@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using NuGet;
+using System.Linq;
+using NuGet.Configuration;
+using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Configuration.NuGet
@@ -8,11 +13,11 @@ namespace Wyam.Configuration.NuGet
     internal class Package
     {
         private readonly string _packageId;
-        private readonly IVersionSpec _versionSpec;
+        private readonly NuGetVersion _version;
         private readonly bool _allowPrereleaseVersions;
         private readonly bool _allowUnlisted;
 
-        public IReadOnlyList<string> PackageSources { get; }
+        public IReadOnlyList<PackageSource> PackageSources { get; }
         public bool Exclusive { get; }
 
         // The version string is either a simple version or an arithmetic range
@@ -24,7 +29,7 @@ namespace Wyam.Configuration.NuGet
         //      (1.0,)      --> 1.0 &lt; x
         //      (1.0, 2.0)   --> 1.0 &lt; x &lt; 2.0
         //      [1.0, 2.0]   --> 1.0 ≤ x ≤ 2.0
-        public Package(string packageId, IReadOnlyList<string> packageSources, string versionSpec, 
+        public Package(string packageId, IReadOnlyList<string> packageSources, string version, 
             bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
             if (packageId == null)
@@ -37,13 +42,19 @@ namespace Wyam.Configuration.NuGet
             }
 
             _packageId = packageId;
-            PackageSources = packageSources;
-            _versionSpec = string.IsNullOrWhiteSpace(versionSpec) ? null : VersionUtility.ParseVersionSpec(versionSpec);
+            PackageSources = packageSources.Select(x => new PackageSource(x)).ToList();
+            _version = string.IsNullOrWhiteSpace(version) ? null : NuGetVersion.Parse(version);
             _allowPrereleaseVersions = allowPrereleaseVersions;
             _allowUnlisted = allowUnlisted;
             Exclusive = exclusive;
         }
 
+        public void InstallPackage(PackageInstaller installer, IEnumerable<SourceRepository> sourceRepositories)
+        {
+            
+        }
+
+        /*
         public IPackage InstallPackage(PackageManager packageManager, bool updatePackages)
         {
             string versionSpec = _versionSpec == null ? string.Empty : " " + _versionSpec;
@@ -88,5 +99,6 @@ namespace Wyam.Configuration.NuGet
                 return sourcePackage;
             }
         }
+        */
     }
 }
