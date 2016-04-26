@@ -28,12 +28,12 @@ namespace Wyam.Configuration
         private bool _outputScripts;
         private bool _configured;
 
-        internal PackageInstaller Packages { get; private set; }
+        internal PackageInstaller PackageInstaller { get; private set; }
 
         public Configurator(Engine engine)
         {
             _engine = engine;
-            Packages = new PackageInstaller(engine.FileSystem);
+            PackageInstaller = new PackageInstaller(engine.FileSystem);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
@@ -98,13 +98,13 @@ namespace Wyam.Configuration
             // Install packages
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
-                Packages.InstallPackages(updatePackages);
+                PackageInstaller.InstallPackages(updatePackages);
             }
 
             // Scan assemblies
             using (Trace.WithIndent().Information("Loading assemblies and scanning for types"))
             {
-                _assemblyLoader.LoadAssemblies(Packages, _engine.FileSystem, _engine.Assemblies, _engine.Namespaces);
+                _assemblyLoader.LoadAssemblies(PackageInstaller, _engine.FileSystem, _engine.Assemblies, _engine.Namespaces);
             }
         }
 

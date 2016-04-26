@@ -55,7 +55,7 @@ namespace Wyam.Configuration
 
             // Get path to all assemblies (except those specified by name)
             List<FilePath> assemblyPaths = new List<FilePath>();
-            assemblyPaths.AddRange(packages.GetCompatibleAssemblyPaths());
+            //assemblyPaths.AddRange(packages.GetCompatibleAssemblyPaths()); // TODO: Once NuGet stuff is complete
             string entryAssemblyLocation = Assembly.GetEntryAssembly()?.Location;
             if (entryAssemblyLocation != null)
             {

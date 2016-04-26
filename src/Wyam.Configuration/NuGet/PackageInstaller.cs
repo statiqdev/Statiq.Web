@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
@@ -17,33 +20,38 @@ namespace Wyam.Configuration.NuGet
 {
     internal class PackageInstaller
     {
-        private readonly NuGetLogger _logger = new NuGetLogger();
         private readonly List<PackageSource> _packageSources = new List<PackageSource>
         {
             new PackageSource("https://packages.nuget.org/api/v2")
         };
         private readonly List<Package> _packages = new List<Package>();
         private readonly IFileSystem _fileSystem;
-        private readonly ISettings _settings;
-        private readonly IPackageSourceProvider _packageSourceProvider;
         private readonly ISourceRepositoryProvider _sourceRepositoryProvider;
         private DirectoryPath _packagesPath = "packages";
 
         public PackageInstaller(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
-            _settings = Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
-            _packageSourceProvider = new PackageSourceProvider(_settings);
-            _sourceRepositoryProvider = new WyamSourceRepositoryProvider(_packageSourceProvider);
-            FolderProject = new FolderNuGetProject(
-                AbsolutePackagesPath.FullPath,
-                new PackagePathResolver(AbsolutePackagesPath.FullPath));
-            PackageManager = new NuGetPackageManager(_sourceRepositoryProvider, _settings, AbsolutePackagesPath.FullPath);
+            ISettings settings = Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(settings);
+            _sourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
+            string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
+                .OfType<System.Runtime.Versioning.TargetFrameworkAttribute>()
+                .Select(x => x.FrameworkName)
+                .FirstOrDefault();
+            CurrentFramework = frameworkName == null
+                ? NuGetFramework.AnyFramework
+                : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
+            PackageManager = new NuGetPackageManager(_sourceRepositoryProvider, settings, AbsolutePackagesPath.FullPath);
         }
 
-        public FolderNuGetProject FolderProject { get; }
+        public NuGetLogger Logger { get; } = new NuGetLogger();
+
+        public INuGetProjectContext ProjectContext { get; } = new WyamProjectContext();
 
         public NuGetPackageManager PackageManager { get; }
+
+        public NuGetFramework CurrentFramework { get; }
 
         public DirectoryPath PackagesPath
         {
@@ -63,25 +71,35 @@ namespace Wyam.Configuration.NuGet
         // Note that sources are searched first at index 0, then index 1, and so on until a match is found
         public void AddPackageSource(string packageSource) => _packageSources.Insert(0, new PackageSource(packageSource));
 
-        public void AddPackage(string packageId, IReadOnlyList<string> packageSources, string versionSpec, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive) => _packages.Add(new Package(packageId, packageSources, versionSpec, allowPrereleaseVersions, allowUnlisted, exclusive));
+        public void AddPackage(string packageId, IReadOnlyList<string> packageSources, string versionSpec, 
+            bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive) 
+            => _packages.Add(new Package(packageId, packageSources, versionSpec, allowPrereleaseVersions, allowUnlisted, exclusive));
 
-        // Based primarily on NuGet.CommandLine.Commands.InstallCommand.InstallPackage()
+        // Based primarily on NuGet.CommandLine.Commands.UpdateCommand
         public void InstallPackages(bool updatePackages)
         {
-            // TODO: Don't forget about updatePackages - not sure how to handle w/ v3
-
+            List<PackageReference> installedPackages = PackageManager.PackagesFolderNuGetProject
+                .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
             List<SourceRepository> defaultSourceRepositories = _packageSources.Select(_sourceRepositoryProvider.CreateRepository).ToList();
 
             // Install the packages
-            foreach (Package package in _packages)
+            Parallel.ForEach(_packages, package =>
             {
-                IEnumerable<SourceRepository> sourcesRepositories = defaultSourceRepositories;
+                List<SourceRepository> sourceRepositories = defaultSourceRepositories;
                 if (package.PackageSources != null && package.PackageSources.Count > 0)
                 {
-                    sourcesRepositories = package.PackageSources.Select(_sourceRepositoryProvider.CreateRepository);
+                    sourceRepositories = package.PackageSources.Select(_sourceRepositoryProvider.CreateRepository).ToList();
+                    if (!package.Exclusive)
+                    {
+                        sourceRepositories = sourceRepositories.Concat(defaultSourceRepositories).ToList();
+                    }
                 }
-                package.InstallPackage(this, sourcesRepositories);
-            }
+                package.InstallPackage(this, installedPackages, updatePackages, sourceRepositories);
+            });
+
+            // Get all of our installed packages again (because we would have installed more)
+            List<PackageReference> postInstalledPackages = PackageManager.PackagesFolderNuGetProject
+                .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
 
 
 
