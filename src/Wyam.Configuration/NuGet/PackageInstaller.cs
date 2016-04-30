@@ -11,6 +11,8 @@ using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
+using NuGet.Protocol.Core.v3;
+using NuGet.Repositories;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using IFileSystem = Wyam.Common.IO.IFileSystem;
@@ -26,15 +28,14 @@ namespace Wyam.Configuration.NuGet
         };
         private readonly List<Package> _packages = new List<Package>();
         private readonly IFileSystem _fileSystem;
-        private readonly ISourceRepositoryProvider _sourceRepositoryProvider;
         private DirectoryPath _packagesPath = "packages";
 
         public PackageInstaller(IFileSystem fileSystem)
         {
             _fileSystem = fileSystem;
-            ISettings settings = Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
-            IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(settings);
-            _sourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
+            Settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(Settings);
+            SourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
             string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
                 .OfType<System.Runtime.Versioning.TargetFrameworkAttribute>()
                 .Select(x => x.FrameworkName)
@@ -42,16 +43,22 @@ namespace Wyam.Configuration.NuGet
             CurrentFramework = frameworkName == null
                 ? NuGetFramework.AnyFramework
                 : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
-            PackageManager = new NuGetPackageManager(_sourceRepositoryProvider, settings, AbsolutePackagesPath.FullPath);
+            PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, AbsolutePackagesPath.FullPath);
         }
 
         public NuGetLogger Logger { get; } = new NuGetLogger();
 
         public INuGetProjectContext ProjectContext { get; } = new WyamProjectContext();
 
+        private ISettings Settings { get; }
+
+        public  ISourceRepositoryProvider SourceRepositoryProvider { get; private set; }
+
         public NuGetPackageManager PackageManager { get; }
 
         public NuGetFramework CurrentFramework { get; }
+        
+        public bool UseGlobal { get; set; } = true;
 
         public DirectoryPath PackagesPath
         {
@@ -66,7 +73,22 @@ namespace Wyam.Configuration.NuGet
             }
         }
 
-        private DirectoryPath AbsolutePackagesPath => _fileSystem.RootPath.Combine(PackagesPath).Collapse();
+        private DirectoryPath AbsolutePackagesPath
+        {
+            get
+            {
+                DirectoryPath packagesPath = _fileSystem.RootPath.Combine(PackagesPath).Collapse();
+                if (UseGlobal)
+                {
+                    string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(Settings);
+                    if(!string.IsNullOrEmpty(globalPackagesFolder))
+                    {
+                        packagesPath = packagesPath.Combine(new DirectoryPath(globalPackagesFolder)).Collapse();
+                    }
+                }
+                return packagesPath;
+            }
+        }
 
         // Note that sources are searched first at index 0, then index 1, and so on until a match is found
         public void AddPackageSource(string packageSource) => _packageSources.Insert(0, new PackageSource(packageSource));
@@ -78,9 +100,9 @@ namespace Wyam.Configuration.NuGet
         // Based primarily on NuGet.CommandLine.Commands.UpdateCommand
         public void InstallPackages(bool updatePackages)
         {
-            List<PackageReference> installedPackages = PackageManager.PackagesFolderNuGetProject
-                .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
-            List<SourceRepository> defaultSourceRepositories = _packageSources.Select(_sourceRepositoryProvider.CreateRepository).ToList();
+            Trace.Verbose($"Installing packages to {AbsolutePackagesPath.FullPath} ({(UseGlobal ? string.Empty : "not ")}using global packages folder)");
+            SourceRepository localSourceRepository = SourceRepositoryProvider.CreateRepository(new PackageSource(AbsolutePackagesPath.FullPath));
+            List<SourceRepository> defaultSourceRepositories = _packageSources.Select(SourceRepositoryProvider.CreateRepository).ToList();
 
             // Install the packages
             Parallel.ForEach(_packages, package =>
@@ -88,20 +110,21 @@ namespace Wyam.Configuration.NuGet
                 List<SourceRepository> sourceRepositories = defaultSourceRepositories;
                 if (package.PackageSources != null && package.PackageSources.Count > 0)
                 {
-                    sourceRepositories = package.PackageSources.Select(_sourceRepositoryProvider.CreateRepository).ToList();
+                    sourceRepositories = package.PackageSources.Select(SourceRepositoryProvider.CreateRepository).ToList();
                     if (!package.Exclusive)
                     {
                         sourceRepositories = sourceRepositories.Concat(defaultSourceRepositories).ToList();
                     }
                 }
-                package.InstallPackage(this, installedPackages, updatePackages, sourceRepositories);
+                package.InstallPackage(this, updatePackages, localSourceRepository, sourceRepositories);
             });
 
             // Get all of our installed packages again (because we would have installed more)
+            // TODO: The line below doesn't work because GetInstalledPackagesAsync() doesn't actually get packages on disk
             List<PackageReference> postInstalledPackages = PackageManager.PackagesFolderNuGetProject
                 .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
 
-
+            // TODO: Once we have the packages, need to add assemblies and add include paths for content
 
 
 

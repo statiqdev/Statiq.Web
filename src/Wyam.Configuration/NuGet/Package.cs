@@ -56,58 +56,41 @@ namespace Wyam.Configuration.NuGet
             Exclusive = exclusive;
         }
 
-        public void InstallPackage(PackageInstaller installer, List<PackageReference> installedPackages, bool updatePackages, List<SourceRepository> sourceRepositories)
+        public void InstallPackage(PackageInstaller installer, bool updatePackages, SourceRepository localSourceRepository, List<SourceRepository> sourceRepositories)
         {
             string versionRange = _versionRange == null ? string.Empty : " " + _versionRange;
             Trace.Verbose($"Installing package {_packageId}{versionRange} (with dependencies)");
             ResolutionContext resolutionContext = new ResolutionContext(
                 DependencyBehavior.Highest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
-            PackageReference installedPackage =
-                installedPackages.FirstOrDefault(x => x.PackageIdentity.Id == _packageId);
 
-            // Check if we're up to date
-            if (installedPackage != null && _versionRange != null 
-                && _versionRange.Satisfies(installedPackage.PackageIdentity.Version) && !updatePackages)
+            // Get the installed version
+            NuGetVersion installedVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,
+                localSourceRepository, installer.Logger, CancellationToken.None).Result;
+
+            // Does the installed version match the requested version
+            if (installedVersion != null && _versionRange != null
+                && _versionRange.Satisfies(installedVersion) && !updatePackages)
             {
-                Trace.Verbose($"Package {_packageId}{versionRange} is satisfied by version {installedPackage.PackageIdentity.Version}, skipping");
+                Trace.Verbose($"Package {_packageId}{versionRange} is satisfied by version {installedVersion}, skipping");
                 return;
             }
 
-            // Find the source package
+            // Get the latest version
             NuGetVersion latestVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,
                 sourceRepositories, installer.Logger, CancellationToken.None).Result;
-            if (latestVersion == null)
+
+            // Make sure the latest version is newer
+            if (latestVersion <= installedVersion)
             {
-                Trace.Critical($"Package {_packageId}{versionRange} could not be found");
+                Trace.Verbose($"Package {_packageId}{installedVersion} is up to date (latest is {latestVersion}), skipping");
                 return;
             }
 
-            // Check if we're up to date
-            if (installedPackage != null && installedPackage.PackageIdentity.Version >= latestVersion)
-            {
-                Trace.Verbose($"Package {_packageId}{versionRange} is up to date with version {installedPackage.PackageIdentity.Version} (latest is {latestVersion}, skipping");
-                return;
-            }
-
-            // Uninstall the old package
-            if (installedPackage != null)
-            {
-                installer.PackageManager.UninstallPackageAsync(installer.PackageManager.PackagesFolderNuGetProject, _packageId, 
-                    new UninstallationContext(), installer.ProjectContext, CancellationToken.None).Wait();
-                Trace.Verbose($"Uninstalled package {_packageId} {installedPackage.PackageIdentity.Version}");
-            }
-
-            // Install the new package
+            // Install the new version
             installer.PackageManager.InstallPackageAsync(installer.PackageManager.PackagesFolderNuGetProject,
                 _packageId, resolutionContext, installer.ProjectContext, sourceRepositories,
                 Array.Empty<SourceRepository>(), CancellationToken.None).Wait();
             Trace.Verbose($"Installed package {_packageId} {latestVersion}");
-        }
-
-        private void Foo(Func<Task> func)
-        {
-            Task task = Task.Run(async () => { await func(); });
-            task.Wait();
         }
     }
 }
