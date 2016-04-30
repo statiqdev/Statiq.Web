@@ -28,7 +28,7 @@ namespace Wyam.Configuration.NuGet
             {
                 syntax.DefineOption("p|prerelease", ref prerelease, "Specifies that prerelease packages are allowed.");
                 syntax.DefineOption("u|unlisted", ref unlisted, "Specifies that unlisted packages are allowed.");
-                syntax.DefineOption("v|version", ref version, "Specifies the version specification to use for the package.");
+                syntax.DefineOption("v|version", ref version, "Specifies the version of the package to use.");
                 syntax.DefineOptionList("s|source", ref sources, "Specifies the package source(s) to get the package from.");
                 if (syntax.DefineOption("e|exclusive", ref exclusive, "Indicates that only the specified package source(s) should be used to find the package.").IsSpecified
                     && sources == null)

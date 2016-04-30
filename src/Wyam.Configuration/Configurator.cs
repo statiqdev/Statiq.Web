@@ -33,7 +33,7 @@ namespace Wyam.Configuration
         public Configurator(Engine engine)
         {
             _engine = engine;
-            PackageInstaller = new PackageInstaller(engine.FileSystem);
+            PackageInstaller = new PackageInstaller(engine.FileSystem, _assemblyLoader);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);

@@ -24,18 +24,25 @@ namespace Wyam.Configuration.NuGet
     {
         private readonly List<PackageSource> _packageSources = new List<PackageSource>
         {
-            new PackageSource("https://packages.nuget.org/api/v2")
+            new PackageSource("https://api.nuget.org/v3/index.json")
         };
         private readonly List<Package> _packages = new List<Package>();
         private readonly IFileSystem _fileSystem;
         private DirectoryPath _packagesPath = "packages";
 
-        public PackageInstaller(IFileSystem fileSystem)
+        public PackageInstaller(IFileSystem fileSystem, AssemblyLoader assemblyLoader)
         {
             _fileSystem = fileSystem;
+
             Settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
             IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(Settings);
             SourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
+            PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, GetAbsolutePackagesPath().FullPath)
+            {
+                PackagesFolderNuGetProject = new WyamFolderNuGetProject(this, assemblyLoader, GetAbsolutePackagesPath().FullPath)
+            };
+
+            // Get the current framework
             string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
                 .OfType<System.Runtime.Versioning.TargetFrameworkAttribute>()
                 .Select(x => x.FrameworkName)
@@ -43,22 +50,22 @@ namespace Wyam.Configuration.NuGet
             CurrentFramework = frameworkName == null
                 ? NuGetFramework.AnyFramework
                 : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
-            PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, AbsolutePackagesPath.FullPath);
         }
 
-        public NuGetLogger Logger { get; } = new NuGetLogger();
+        internal NuGetLogger Logger { get; } = new NuGetLogger();
 
-        public INuGetProjectContext ProjectContext { get; } = new WyamProjectContext();
+        internal INuGetProjectContext ProjectContext { get; } = new WyamProjectContext();
 
         private ISettings Settings { get; }
 
-        public  ISourceRepositoryProvider SourceRepositoryProvider { get; private set; }
+        private ISourceRepositoryProvider SourceRepositoryProvider { get; }
 
-        public NuGetPackageManager PackageManager { get; }
+        internal NuGetPackageManager PackageManager { get; }
 
-        public NuGetFramework CurrentFramework { get; }
+        internal NuGetFramework CurrentFramework { get; }
         
-        public bool UseGlobal { get; set; } = true;
+        // TODO: Add CLI and directive support for toggling global package source
+        public bool UseGlobal { get; set; } = false;
 
         public DirectoryPath PackagesPath
         {
@@ -73,21 +80,18 @@ namespace Wyam.Configuration.NuGet
             }
         }
 
-        private DirectoryPath AbsolutePackagesPath
+        private DirectoryPath GetAbsolutePackagesPath()
         {
-            get
+            DirectoryPath packagesPath = _fileSystem.RootPath.Combine(PackagesPath).Collapse();
+            if (UseGlobal)
             {
-                DirectoryPath packagesPath = _fileSystem.RootPath.Combine(PackagesPath).Collapse();
-                if (UseGlobal)
+                string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(Settings);
+                if(!string.IsNullOrEmpty(globalPackagesFolder))
                 {
-                    string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(Settings);
-                    if(!string.IsNullOrEmpty(globalPackagesFolder))
-                    {
-                        packagesPath = packagesPath.Combine(new DirectoryPath(globalPackagesFolder)).Collapse();
-                    }
+                    packagesPath = packagesPath.Combine(new DirectoryPath(globalPackagesFolder)).Collapse();
                 }
-                return packagesPath;
             }
+            return packagesPath;
         }
 
         // Note that sources are searched first at index 0, then index 1, and so on until a match is found
@@ -100,8 +104,8 @@ namespace Wyam.Configuration.NuGet
         // Based primarily on NuGet.CommandLine.Commands.UpdateCommand
         public void InstallPackages(bool updatePackages)
         {
-            Trace.Verbose($"Installing packages to {AbsolutePackagesPath.FullPath} ({(UseGlobal ? string.Empty : "not ")}using global packages folder)");
-            SourceRepository localSourceRepository = SourceRepositoryProvider.CreateRepository(new PackageSource(AbsolutePackagesPath.FullPath));
+            Trace.Verbose($"Installing packages to {GetAbsolutePackagesPath().FullPath} ({(UseGlobal ? string.Empty : "not ")}using global packages folder)");
+            SourceRepository localSourceRepository = SourceRepositoryProvider.CreateRepository(new PackageSource(GetAbsolutePackagesPath().FullPath));
             List<SourceRepository> defaultSourceRepositories = _packageSources.Select(SourceRepositoryProvider.CreateRepository).ToList();
 
             // Install the packages
@@ -119,7 +123,8 @@ namespace Wyam.Configuration.NuGet
                 package.InstallPackage(this, updatePackages, localSourceRepository, sourceRepositories);
             });
 
-            // Get all of our installed packages again (because we would have installed more)
+            
+           
             // TODO: The line below doesn't work because GetInstalledPackagesAsync() doesn't actually get packages on disk
             List<PackageReference> postInstalledPackages = PackageManager.PackagesFolderNuGetProject
                 .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
@@ -127,32 +132,7 @@ namespace Wyam.Configuration.NuGet
             // TODO: Once we have the packages, need to add assemblies and add include paths for content
 
 
-
-            // Install the packages
-            /*
-            foreach (Package package in _packages)
-            {
-                // Get the correct set of sources and install the package
-                PackageManager packageManager = defaultPackageManager;
-                if (package.PackageSources != null && package.PackageSources.Count > 0)
-                {
-                    IEnumerable<string> packageSources = package.Exclusive ? package.PackageSources : package.PackageSources.Concat(_packageSources);
-                    packageManager = GetPackageManager(packageSources);
-                }
-                IPackage installedPackage = package.InstallPackage(packageManager, updatePackages);
-
-                // Add the content path(s) to the input paths if there are content files
-                // We need to use the directory name from an actual file to make sure we get the casing right
-                if (installedPackage != null)
-                {
-                    foreach (string contentSegment in installedPackage.GetContentFiles().Select(x => new DirectoryPath(x.Path).Segments[0]).Distinct())
-                    {
-                        string installPath = packageManager.PathResolver.GetInstallPath(installedPackage);
-                        _fileSystem.InputPaths.Insert(0, new DirectoryPath(installPath).Combine(contentSegment));
-                    }
-                }
-            }
-            */
+            
         }
 
         /*

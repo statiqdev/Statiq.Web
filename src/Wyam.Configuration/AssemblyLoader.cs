@@ -17,6 +17,8 @@ namespace Wyam.Configuration
 {
     internal class AssemblyLoader
     {
+        // TODO: Stop loading all referenced assemblies (I.e., we don't need to load all the nuget assemblies)
+        // TODO: Store the added globbing patterns in a concurrent safe hash set
         private readonly List<Tuple<DirectoryPath, SearchOption>> _directories = new List<Tuple<DirectoryPath, SearchOption>>();
         private readonly List<FilePath> _byFile = new List<FilePath>();
         private readonly List<string> _byName = new List<string>();

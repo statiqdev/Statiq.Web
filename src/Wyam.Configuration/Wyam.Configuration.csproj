@@ -185,6 +185,7 @@
     <Compile Include="NuGet\NuGetLogger.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
+    <Compile Include="NuGet\WyamFolderNuGetProject.cs" />
     <Compile Include="NuGet\WyamProjectContext.cs" />
     <Compile Include="NuGet\WyamSourceRepositoryProvider.cs" />
     <Compile Include="Preprocessing\ArgumentSplitter.cs" />

@@ -12,13 +12,14 @@ using NuGet.Resolver;
 using NuGet.Versioning;
 using Wyam.Common.Tracing;
 using System.Threading.Tasks;
+using NuGet.Packaging.Core;
 
 namespace Wyam.Configuration.NuGet
 {
     internal class Package
     {
         private readonly string _packageId;
-        private readonly VersionRange _versionRange;
+        private readonly NuGetVersion _version;
         private readonly bool _allowPrereleaseVersions;
         private readonly bool _allowUnlisted;
 
@@ -27,16 +28,7 @@ namespace Wyam.Configuration.NuGet
         // Indicates that only the specified package sources should be used to find the package
         public bool Exclusive { get; }
 
-        // The version string is either a simple version or an arithmetic range
-        // e.g.
-        //      1.0         --> 1.0 ≤ x
-        //      (,1.0]      --> x ≤ 1.0
-        //      (,1.0)      --> x &lt; 1.0
-        //      [1.0]       --> x == 1.0
-        //      (1.0,)      --> 1.0 &lt; x
-        //      (1.0, 2.0)   --> 1.0 &lt; x &lt; 2.0
-        //      [1.0, 2.0]   --> 1.0 ≤ x ≤ 2.0
-        public Package(string packageId, IReadOnlyList<string> packageSources, string versionRange, 
+        public Package(string packageId, IReadOnlyList<string> packageSources, string version, 
             bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
             if (packageId == null)
@@ -50,7 +42,7 @@ namespace Wyam.Configuration.NuGet
 
             _packageId = packageId;
             PackageSources = packageSources?.Select(x => new PackageSource(x)).ToList();
-            _versionRange = string.IsNullOrWhiteSpace(versionRange) ? null : VersionRange.Parse(versionRange);
+            _version = string.IsNullOrWhiteSpace(version) ? null : NuGetVersion.Parse(version);
             _allowPrereleaseVersions = allowPrereleaseVersions;
             _allowUnlisted = allowUnlisted;
             Exclusive = exclusive;
@@ -58,39 +50,37 @@ namespace Wyam.Configuration.NuGet
 
         public void InstallPackage(PackageInstaller installer, bool updatePackages, SourceRepository localSourceRepository, List<SourceRepository> sourceRepositories)
         {
-            string versionRange = _versionRange == null ? string.Empty : " " + _versionRange;
-            Trace.Verbose($"Installing package {_packageId}{versionRange} (with dependencies)");
+            string versionString = _version == null ? string.Empty : " " + _version;
+            Trace.Verbose($"Installing package {_packageId}{versionString} (with dependencies)");
             ResolutionContext resolutionContext = new ResolutionContext(
                 DependencyBehavior.Highest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
-
+            
             // Get the installed version
             NuGetVersion installedVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,
                 localSourceRepository, installer.Logger, CancellationToken.None).Result;
 
             // Does the installed version match the requested version
-            if (installedVersion != null && _versionRange != null
-                && _versionRange.Satisfies(installedVersion) && !updatePackages)
+            NuGetVersion matchingVersion = installedVersion;
+            if (installedVersion != null && _version != null && installedVersion == _version && !updatePackages)
             {
-                Trace.Verbose($"Package {_packageId}{versionRange} is satisfied by version {installedVersion}, skipping");
-                return;
+                Trace.Verbose($"Package {_packageId}{versionString} is satisfied by version {installedVersion}");
+            }
+            else if (_version != null)
+            {
+                matchingVersion = _version;
+            }
+            else
+            {
+                // Get the latest version
+                matchingVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,
+                    sourceRepositories, installer.Logger, CancellationToken.None).Result;
             }
 
-            // Get the latest version
-            NuGetVersion latestVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,
-                sourceRepositories, installer.Logger, CancellationToken.None).Result;
-
-            // Make sure the latest version is newer
-            if (latestVersion <= installedVersion)
-            {
-                Trace.Verbose($"Package {_packageId}{installedVersion} is up to date (latest is {latestVersion}), skipping");
-                return;
-            }
-
-            // Install the new version
+            // Install the requested version (do even if we're up to date to ensure dependencies are installed)
             installer.PackageManager.InstallPackageAsync(installer.PackageManager.PackagesFolderNuGetProject,
-                _packageId, resolutionContext, installer.ProjectContext, sourceRepositories,
+                new PackageIdentity(_packageId, matchingVersion), resolutionContext, installer.ProjectContext, sourceRepositories,
                 Array.Empty<SourceRepository>(), CancellationToken.None).Wait();
-            Trace.Verbose($"Installed package {_packageId} {latestVersion}");
+            Trace.Verbose($"Installed package {_packageId} {matchingVersion}");
         }
     }
 }
