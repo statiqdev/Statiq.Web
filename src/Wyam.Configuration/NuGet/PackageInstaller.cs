@@ -122,69 +122,6 @@ namespace Wyam.Configuration.NuGet
                 }
                 package.InstallPackage(this, updatePackages, localSourceRepository, sourceRepositories);
             });
-
-            
-           
-            // TODO: The line below doesn't work because GetInstalledPackagesAsync() doesn't actually get packages on disk
-            List<PackageReference> postInstalledPackages = PackageManager.PackagesFolderNuGetProject
-                .GetInstalledPackagesAsync(CancellationToken.None).Result.ToList();
-
-            // TODO: Once we have the packages, need to add assemblies and add include paths for content
-
-
-            
         }
-
-        /*
-        private NuGetPackageManager GetPackageManager(IEnumerable<string> packageSources)
-        {
-
-            IPackageRepository packageRepository = new AggregateRepository(PackageRepositoryFactory.Default, packageSources, false);
-            PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath.FullPath)
-            {
-                Logger = _logger
-            };
-            return packageManager;
-        }
-
-        public IEnumerable<FilePath> GetCompatibleAssemblyPaths()
-        {
-            List<FilePath> assemblyPaths = new List<FilePath>();
-            FrameworkReducer reducer = new FrameworkReducer();
-
-            // TODO: If alternate versions of Wyam are developed (I.e., for DNX), this will need to be switched, or even better fetched from the current framework
-            NuGetFramework targetFramework = new NuGetFramework(".NETFramework", Version.Parse("4.6"));
-
-            // TODO: When we switch to the new v3 NuGet libraries, this will probably have to change since it doesn't copy all packages locally
-            NuGetFrameworkFullComparer frameworkComparer = new NuGetFrameworkFullComparer();
-            IPackageRepository packageRepository = PackageRepositoryFactory.Default.CreateRepository(AbsolutePackagesPath.FullPath);
-            PackageManager packageManager = new PackageManager(packageRepository, AbsolutePackagesPath.FullPath);
-            foreach (IPackage package in packageManager.LocalRepository.GetPackages())
-            {
-                // Get all packages along with their v3 framework
-                List<KeyValuePair<IPackageFile, NuGetFramework>> filesAndFrameworks = package.GetLibFiles().Select(x => new KeyValuePair<IPackageFile, NuGetFramework>(x, x.TargetFramework == null ? null : new NuGetFramework(x.TargetFramework.Identifier, x.TargetFramework.Version, x.TargetFramework.Profile))).ToList();
-
-                // Find the closest compatible framework
-                NuGetFramework targetPackageFramework = reducer.GetNearest(targetFramework, filesAndFrameworks.Where(x => x.Value != null).Select(x => x.Value));
-
-                // Restrict to compatible packages or those without a framework
-                List<FilePath> packageAssemblyPaths = filesAndFrameworks.Where(x => x.Value == null || frameworkComparer.Equals(targetPackageFramework, x.Value)).Select(x => AbsolutePackagesPath.Combine(String.Format(CultureInfo.InvariantCulture, "{0}.{1}", package.Id, package.Version)).CombineFile(x.Key.Path)).Where(x => x.Extension == ".dll").ToList();
-
-                // Add the assemblies from compatible packages
-                foreach (FilePath packageAssemblyPath in packageAssemblyPaths)
-                {
-                    Trace.Verbose("Added assembly file {0} from package {1}.{2}", packageAssemblyPath.ToString(), package.Id, package.Version);
-                }
-                assemblyPaths.AddRange(packageAssemblyPaths);
-
-                // Output a message if no assemblies were found in this package
-                if (packageAssemblyPaths.Count == 0)
-                {
-                    Trace.Verbose("Could not find compatible framework for package {0}.{1} (this is normal for content-only packages)", package.Id, package.Version);
-                }
-            }
-            return assemblyPaths;
-        }
-        */
     }
 }

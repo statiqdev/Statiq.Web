@@ -51,6 +51,7 @@ namespace Wyam.Configuration.Tests
             public void GeneratesCorrectScript(string input, string output)
             {
                 // Given
+                ConfigCompilation compilation = new ConfigCompilation();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = Array.Empty<string>();
                 string expected = $@"
@@ -81,10 +82,10 @@ namespace Wyam.Configuration.Tests
                         }}}}";
 
                 // When
-                string actual = ConfigCompilation.Generate(null, input, moduleTypes, namespaces);
+                compilation.Generate(null, input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected, compilation.Code);
             }
         }
 

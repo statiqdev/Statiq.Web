@@ -19,29 +19,26 @@ namespace Wyam.Configuration
     public class Configurator : IDisposable
     {
         private readonly Preprocessor _preprocessor = new Preprocessor();
-        private readonly AssemblyLoader _assemblyLoader = new AssemblyLoader();
+        private readonly ConfigCompilation _compilation = new ConfigCompilation();
+        private readonly AssemblyLoader _assemblyLoader;
         private readonly Engine _engine;
 
         private bool _disposed;
-        private ConfigCompilation _compilation;
         private string _fileName;
         private bool _outputScripts;
         private bool _configured;
-
-        internal PackageInstaller PackageInstaller { get; private set; }
+        
+        internal PackageInstaller PackageInstaller { get; }
 
         public Configurator(Engine engine)
         {
             _engine = engine;
+            _assemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies, engine.Namespaces);
             PackageInstaller = new PackageInstaller(engine.FileSystem, _assemblyLoader);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
             engine.Assemblies.Add(typeof(ConfigScriptBase).Assembly);
-
-            // Manually resolve included assemblies
-            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
-            AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
         }
 
         public void Dispose()
@@ -51,7 +48,7 @@ namespace Wyam.Configuration
                 return;
             }
 
-            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
+            _assemblyLoader.Dispose();
             _disposed = true;
         }
 
@@ -104,7 +101,7 @@ namespace Wyam.Configuration
             // Scan assemblies
             using (Trace.WithIndent().Information("Loading assemblies and scanning for types"))
             {
-                _assemblyLoader.LoadAssemblies(PackageInstaller, _engine.FileSystem, _engine.Assemblies, _engine.Namespaces);
+                _assemblyLoader.LoadAssemblies();
             }
         }
 
@@ -112,7 +109,7 @@ namespace Wyam.Configuration
         {
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                _compilation = new ConfigCompilation(parserResult.Declarations, parserResult.Body,
+                _compilation.Generate(parserResult.Declarations, parserResult.Body,
                     _assemblyLoader.ModuleTypes, _engine.Namespaces);
                 OutputScript(ConfigCompilation.AssemblyName, _compilation.Code);
                 _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
@@ -128,25 +125,6 @@ namespace Wyam.Configuration
                 File.WriteAllText(System.IO.Path.Combine(_engine.FileSystem.RootPath.FullPath, 
                     $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
             }
-        }
-
-        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            // Only start resolving after we've generated the config assembly
-            if (_compilation != null)
-            {
-                if (args.Name == _compilation.AssemblyFullName)
-                {
-                    return _compilation.Assembly;
-                }
-
-                Assembly assembly;
-                if (_engine.Assemblies.TryGetAssembly(args.Name, out assembly))
-                {
-                    return assembly;
-                }
-            }
-            return null;
         }
     }
 }

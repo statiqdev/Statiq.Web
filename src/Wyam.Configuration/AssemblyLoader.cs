@@ -15,14 +15,45 @@ using Wyam.Core.Execution;
 
 namespace Wyam.Configuration
 {
-    internal class AssemblyLoader
+    internal class AssemblyLoader : IDisposable
     {
         // TODO: Stop loading all referenced assemblies (I.e., we don't need to load all the nuget assemblies)
+
         // TODO: Store the added globbing patterns in a concurrent safe hash set
         private readonly List<Tuple<DirectoryPath, SearchOption>> _directories = new List<Tuple<DirectoryPath, SearchOption>>();
         private readonly List<FilePath> _byFile = new List<FilePath>();
         private readonly List<string> _byName = new List<string>();
         private readonly HashSet<Type> _moduleTypes = new HashSet<Type>();
+
+        private readonly ConfigCompilation _compilation;
+        private readonly IReadOnlyFileSystem _fileSystem;
+        private readonly IAssemblyCollection _assemblies;
+        private readonly INamespacesCollection _namespaces;
+
+        private bool _disposed;
+
+        public AssemblyLoader(ConfigCompilation compilation, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        {
+            _compilation = compilation;
+            _fileSystem = fileSystem;
+            _assemblies = assemblies;
+            _namespaces = namespaces;
+
+            // Manually resolve included assemblies
+            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+            AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
+            _disposed = true;
+        }
 
         internal IEnumerable<Type> ModuleTypes => _moduleTypes;
 
@@ -43,21 +74,20 @@ namespace Wyam.Configuration
         }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
-        public void LoadAssemblies(PackageInstaller packages, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        public void LoadAssemblies()
         {
             // Add all module namespaces from Wyam.Core
-            namespaces.AddRange(typeof(Engine).Assembly.GetTypes()
+            _namespaces.AddRange(typeof(Engine).Assembly.GetTypes()
                 .Where(x => typeof(IModule).IsAssignableFrom(x))
                 .Select(x => x.Namespace));
 
             // Also include all Wyam.Common namespaces
-            namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
+            _namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
                 .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
                 .Select(x => x.Namespace));
 
             // Get path to all assemblies (except those specified by name)
             List<FilePath> assemblyPaths = new List<FilePath>();
-            //assemblyPaths.AddRange(packages.GetCompatibleAssemblyPaths()); // TODO: Once NuGet stuff is complete
             string entryAssemblyLocation = Assembly.GetEntryAssembly()?.Location;
             if (entryAssemblyLocation != null)
             {
@@ -66,19 +96,22 @@ namespace Wyam.Configuration
                     .Select(x => new FilePath(x)));
             }
             assemblyPaths.AddRange(_directories
-                .Select(x => new Tuple<DirectoryPath, SearchOption>(fileSystem.RootPath.Combine(x.Item1), x.Item2))
+                .Select(x => new Tuple<DirectoryPath, SearchOption>(_fileSystem.RootPath.Combine(x.Item1), x.Item2))
                 .Where(x => Directory.Exists(x.Item1.FullPath))
                 .SelectMany(x => Directory.GetFiles(x.Item1.FullPath, "*.dll", x.Item2).Select(y => new FilePath(y))));
             assemblyPaths.AddRange(_byFile
-                .Select(x => new Tuple<FilePath, FilePath>(x, fileSystem.RootPath.CombineFile(x)))
+                .Select(x => new Tuple<FilePath, FilePath>(x, _fileSystem.RootPath.CombineFile(x)))
                 .Select(x => File.Exists(x.Item2.FullPath) ? x.Item2 : x.Item1));
 
             // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
                 string.Join(";", 
                     new[] { AppDomain.CurrentDomain.SetupInformation.PrivateBinPath }
-                    .Concat(assemblyPaths.Select(x => x.Directory.FullPath))
+                    .Concat(assemblyPaths.Select(x => x.Directory.FullPath).Distinct())
                     .Distinct());
+
+            // Keep track of references assemblies, but don't load them yet until all other assemblies are loaded
+            HashSet<AssemblyName> referencedAssemblyNames = new HashSet<AssemblyName>();
 
             // Iterate assemblies by path (making sure to add them to the current path if relative), add them to the script, and check for modules
             // If this approach causes problems, could also try loading assemblies in custom app domain:
@@ -90,13 +123,13 @@ namespace Wyam.Configuration
                     Trace.Verbose("Loading assembly file {0}", assemblyPath);
                     AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
                     Assembly assembly = Assembly.Load(assemblyName);
-                    if (!assemblies.Add(assembly))
+                    if (!_assemblies.Add(assembly))
                     {
                         Trace.Verbose("Skipping assembly file {0} because it was already added", assemblyPath);
                     }
                     else
                     {
-                        LoadReferencedAssemblies(assemblies, assembly.GetReferencedAssemblies());
+                        referencedAssemblyNames.AddRange(assembly.GetReferencedAssemblies());
                     }
                 }
                 catch (Exception ex)
@@ -112,13 +145,13 @@ namespace Wyam.Configuration
                 {
                     Trace.Verbose("Loading assembly {0}", assemblyName);
                     Assembly assembly = Assembly.Load(assemblyName);
-                    if (!assemblies.Add(assembly))
+                    if (!_assemblies.Add(assembly))
                     {
                         Trace.Verbose("Skipping assembly {0} because it was already added", assemblyName);
                     }
                     else
                     {
-                        LoadReferencedAssemblies(assemblies, assembly.GetReferencedAssemblies());
+                        referencedAssemblyNames.AddRange(assembly.GetReferencedAssemblies());
                     }
                 }
                 catch (Exception ex)
@@ -127,11 +160,15 @@ namespace Wyam.Configuration
                 }
             }
 
+            // Load any referenced assemblies
+            LoadReferencedAssemblies(_assemblies, referencedAssemblyNames);
+
             // Scan for required types
-            FindModuleTypes(assemblies, namespaces);
+            FindModuleTypes(_assemblies, _namespaces);
         }
 
-        private void LoadReferencedAssemblies(IAssemblyCollection assemblies, IEnumerable<AssemblyName> assemblyNames)
+        // We need to go ahead and load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
+        private static void LoadReferencedAssemblies(IAssemblyCollection assemblies, IEnumerable<AssemblyName> assemblyNames)
         {
             foreach (AssemblyName assemblyName in assemblyNames.Where(x => !assemblies.ContainsFullName(x.FullName)))
             {
@@ -146,7 +183,6 @@ namespace Wyam.Configuration
                 {
                     Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
-
             }
         }
 
@@ -181,6 +217,27 @@ namespace Wyam.Configuration
                 }
                 return ex.Types.Where(t => t != null).ToArray();
             }
+        }
+
+        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // Only start resolving after we've generated the config assembly
+            if (_compilation.Assembly != null)
+            {
+                // Return the dynamically compiled config assembly if given it's name
+                if (args.Name == _compilation.AssemblyFullName)
+                {
+                    return _compilation.Assembly;
+                }
+
+                // Return an assembly from the cache
+                Assembly assembly;
+                if (_assemblies.TryGetAssembly(args.Name, out assembly))
+                {
+                    return assembly;
+                }
+            }
+            return null;
         }
     }
 }

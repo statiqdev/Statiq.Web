@@ -53,7 +53,7 @@ namespace Wyam.Configuration.NuGet
             string versionString = _version == null ? string.Empty : " " + _version;
             Trace.Verbose($"Installing package {_packageId}{versionString} (with dependencies)");
             ResolutionContext resolutionContext = new ResolutionContext(
-                DependencyBehavior.Highest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
+                DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
             
             // Get the installed version
             NuGetVersion installedVersion = NuGetPackageManager.GetLatestVersionAsync(_packageId, installer.CurrentFramework, resolutionContext,

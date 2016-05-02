@@ -15,19 +15,14 @@ namespace Wyam.Configuration
     {
         public const string AssemblyName = "WyamConfig";
 
-        public string Code { get; }
+        public string Code { get; private set; }
 
         public Assembly Assembly { get; private set; }
 
         public string AssemblyFullName { get; private set; }
 
-        public ConfigCompilation(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
-        {
-            Code = Generate(declarations, config, moduleTypes, namespaces);
-        }
-
         // Internal for testing
-        internal static string Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
+        internal void Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
@@ -59,7 +54,7 @@ namespace Wyam.Configuration
             // Need to replace all instances of module type method name shortcuts to make them fully-qualified
             SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(scriptBuilder.ToString());
             ConfigRewriter configRewriter = new ConfigRewriter(moduleTypeNames);
-            return configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
+            Code = configRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 
         // Internal for testing
