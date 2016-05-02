@@ -29,7 +29,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -62,7 +62,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -95,7 +95,7 @@ int z = 0;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -130,7 +130,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -158,7 +158,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -190,7 +190,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -222,7 +222,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -255,7 +255,7 @@ foo bar;
                 AggregateException exception = null;
                 try
                 {
-                    configurator.Configure(configScript, false, null);
+                    configurator.Configure(configScript);
                 }
                 catch (AggregateException ex)
                 {
@@ -288,7 +288,7 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
 ";
 
                 // When
-                configurator.Configure(configScript, false, null);
+                configurator.Configure(configScript);
 
                 // Then
                 Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
@@ -315,7 +315,7 @@ SetCustomDocumentType<MyDocument>();
 ";
 
                 // When
-                configurator.Configure(configScript, false, null);
+                configurator.Configure(configScript);
 
                 // Then
                 Assert.AreEqual("CustomDocumentFactory`1", engine.DocumentFactory.GetType().Name);
@@ -335,7 +335,7 @@ SetCustomDocumentType<MyDocument>();
                 ";
 
                 // When
-                configurator.Configure(configScript, false, null);
+                configurator.Configure(configScript);
 
                 // Then
                 Assert.AreEqual("teststring", engine.InitialMetadata["TestString"]);
@@ -357,7 +357,7 @@ SetCustomDocumentType<MyDocument>();
                 ";
 
                 // When
-                configurator.Configure(configScript, false, null);
+                configurator.Configure(configScript);
 
                 // Then
                 Assert.AreEqual(1, engine.Pipelines.Count);
@@ -377,7 +377,7 @@ SetCustomDocumentType<MyDocument>();
                 ";
 
                 // When
-                configurator.Configure(configScript, false, null);
+                configurator.Configure(configScript);
 
                 // Then
                 Assert.AreEqual(1, engine.Pipelines.Count);

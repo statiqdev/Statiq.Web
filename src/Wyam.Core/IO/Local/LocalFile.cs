@@ -97,6 +97,9 @@ namespace Wyam.Core.IO.Local
         public string ReadAllText() =>
             LocalFileProvider.Retry(() => File.ReadAllText(_file.FullName));
 
+        public void WriteAllText(string contents) =>
+            LocalFileProvider.Retry(() => File.WriteAllText(_file.FullName, contents));
+
         public Stream OpenRead() =>
             LocalFileProvider.Retry(() => _file.OpenRead());
 

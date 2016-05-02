@@ -126,9 +126,9 @@ namespace Cake.Wyam
                 builder.AppendQuoted(settings.PackagesPath.FullPath);
             }
 
-            if (settings.OutputScripts)
+            if (settings.OutputScript)
             {
-                builder.Append("--output-scripts");
+                builder.Append("--output-script");
             }
 
             if (settings.VerifyConfig)

@@ -327,16 +327,16 @@ namespace Cake.Wyam.Tests
             }
 
             [Test]
-            public void ShouldSetOutputScriptsFlag()
+            public void ShouldSetOutputScriptFlag()
             {
                 // Given
-                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { OutputScripts = true } };
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { OutputScript = true } };
 
                 // When
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--output-scripts \"/Working\"", result.Args);
+                Assert.AreEqual("--output-script \"/Working\"", result.Args);
             }
 
             [Test]

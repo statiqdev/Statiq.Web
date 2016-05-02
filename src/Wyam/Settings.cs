@@ -19,7 +19,7 @@ namespace Wyam
         public bool UpdatePackages = false;
         public bool UseLocalPackages = false;
         public DirectoryPath PackagesPath = null;
-        public bool OutputScripts = false;
+        public bool OutputScript = false;
         public bool VerifyConfig = false;
         public string Stdin = null;
         public DirectoryPath RootPath = null;
@@ -52,7 +52,7 @@ namespace Wyam
                 syntax.DefineOption("u|update-packages", ref UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
                 syntax.DefineOption("l|use-local-packages", ref UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
                 syntax.DefineOption("packages-path", ref PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
-                syntax.DefineOption("output-scripts", ref OutputScripts, "Outputs the config scripts after they've been processed for further debugging.");
+                syntax.DefineOption("output-script", ref OutputScript, "Outputs the config script after it's been processed for further debugging.");
                 syntax.DefineOption("verify-config", ref VerifyConfig, false, "Compile the configuration but do not execute.");
                 syntax.DefineOption("noclean", ref NoClean, "Prevents cleaning of the output path on each execution.");
                 syntax.DefineOption("nocache", ref NoCache, "Prevents caching information during execution (less memory usage but slower execution).");

@@ -71,10 +71,10 @@ namespace Cake.Wyam
         public DirectoryPath PackagesPath { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to output the scripts at end of execution.
+        /// Gets or sets a value indicating whether to output the script at end of execution.
         /// </summary>
         /// <remarks>Default is false</remarks>
-        public bool OutputScripts { get; set; }
+        public bool OutputScript { get; set; }
 
         /// <summary>
         /// Compile the configuration but do not execute.

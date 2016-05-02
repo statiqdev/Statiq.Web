@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration.NuGet;
@@ -24,11 +16,13 @@ namespace Wyam.Configuration
         private readonly Engine _engine;
 
         private bool _disposed;
-        private string _fileName;
-        private bool _outputScripts;
         private bool _configured;
         
         public PackageInstaller PackageInstaller { get; }
+
+        public bool OutputScript { get; set; }
+
+        public FilePath OutputScriptPath { get; set; }
 
         public Configurator(Engine engine)
         {
@@ -62,7 +56,7 @@ namespace Wyam.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script, bool outputScripts, string fileName)
+        public void Configure(string script)
         {
             CheckDisposed();
             if (_configured)
@@ -70,8 +64,6 @@ namespace Wyam.Configuration
                 throw new InvalidOperationException("Configuration has already been performed.");
             }
             _configured = true;
-            _fileName = fileName;
-            _outputScripts = outputScripts;
 
             // Add the directives at this stage so everything is initialized
             _preprocessor.AddDirectives(this);
@@ -111,19 +103,19 @@ namespace Wyam.Configuration
             {
                 _compilation.Generate(parserResult.Declarations, parserResult.Body,
                     _assemblyLoader.ModuleTypes, _engine.Namespaces);
-                OutputScript(ConfigCompilation.AssemblyName, _compilation.Code);
+                WriteScript(ConfigCompilation.AssemblyName, _compilation.Code);
                 _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
                 _compilation.Invoke(_engine);
             }
         }
 
-        private void OutputScript(string assemblyName, string code)
+        private void WriteScript(string assemblyName, string code)
         {
             // Output only if requested
-            if (_outputScripts)
+            if (OutputScript)
             {
-                File.WriteAllText(System.IO.Path.Combine(_engine.FileSystem.RootPath.FullPath, 
-                    $"{(string.IsNullOrWhiteSpace(_fileName) ? string.Empty : _fileName + ".")}{assemblyName}.cs"), code);
+                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath(assemblyName + ".cs"));
+                _engine.FileSystem.GetFile(outputPath)?.WriteAllText(code);
             }
         }
     }

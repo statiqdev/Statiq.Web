@@ -56,8 +56,14 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Reads all text from the file.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All text in the file.</returns>
         string ReadAllText();
+
+        /// <summary>
+        /// Writes the specified text to a file.
+        /// </summary>
+        /// <param name="contents">The text to write.</param>
+        void WriteAllText(string contents);
 
         /// <summary>
         /// Opens the file for reading. If it does not exist, an exception

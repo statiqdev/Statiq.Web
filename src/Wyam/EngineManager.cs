@@ -69,6 +69,9 @@ namespace Wyam
                 Configurator.PackageInstaller.PackagesPath = _settings.PackagesPath;
             }
 
+            // Script output
+            Configurator.OutputScript = _settings.OutputScript;
+
             Engine.ApplicationInput = _settings.Stdin;
         }
 
@@ -98,12 +101,13 @@ namespace Wyam
                 if (configFile.Exists)
                 {
                     Trace.Information("Loading configuration from {0}", configFile.Path);
-                    Configurator.Configure(configFile.ReadAllText(), _settings.OutputScripts, configFile.Path.FileName.FullPath);
+                    Configurator.OutputScriptPath = configFile.Path.ChangeExtension(".generated.cs");
+                    Configurator.Configure(configFile.ReadAllText());
                 }
                 else
                 {
                     Trace.Information("Could not find configuration file {0}, using default configuration", _settings.ConfigFilePath);
-                    Configurator.Configure(GetDefaultConfigScript(), false, null);
+                    Configurator.Configure(GetDefaultConfigScript());
                 }
             }
             catch (Exception ex)
