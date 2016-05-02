@@ -20,7 +20,7 @@ using IPackageFile = NuGet.Packaging.IPackageFile;
 
 namespace Wyam.Configuration.NuGet
 {
-    internal class PackageInstaller
+    public class PackageInstaller
     {
         private readonly List<PackageSource> _packageSources = new List<PackageSource>
         {
@@ -30,7 +30,7 @@ namespace Wyam.Configuration.NuGet
         private readonly IFileSystem _fileSystem;
         private DirectoryPath _packagesPath = "packages";
 
-        public PackageInstaller(IFileSystem fileSystem, AssemblyLoader assemblyLoader)
+        internal PackageInstaller(IFileSystem fileSystem, AssemblyLoader assemblyLoader)
         {
             _fileSystem = fileSystem;
 
@@ -63,9 +63,10 @@ namespace Wyam.Configuration.NuGet
         internal NuGetPackageManager PackageManager { get; }
 
         internal NuGetFramework CurrentFramework { get; }
+
+        public bool UpdatePackages { get; set; }
         
-        // TODO: Add CLI and directive support for toggling global package source
-        public bool UseGlobal { get; set; } = true;
+        public bool UseLocal { get; set; }
 
         public DirectoryPath PackagesPath
         {
@@ -83,7 +84,7 @@ namespace Wyam.Configuration.NuGet
         private DirectoryPath GetAbsolutePackagesPath()
         {
             DirectoryPath packagesPath = _fileSystem.RootPath.Combine(PackagesPath).Collapse();
-            if (UseGlobal)
+            if (!UseLocal)
             {
                 string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(Settings);
                 if(!string.IsNullOrEmpty(globalPackagesFolder))
@@ -102,9 +103,9 @@ namespace Wyam.Configuration.NuGet
             => _packages.Add(new Package(packageId, packageSources, versionSpec, allowPrereleaseVersions, allowUnlisted, exclusive));
 
         // Based primarily on NuGet.CommandLine.Commands.UpdateCommand
-        public void InstallPackages(bool updatePackages)
+        internal void InstallPackages()
         {
-            Trace.Verbose($"Installing packages to {GetAbsolutePackagesPath().FullPath} ({(UseGlobal ? string.Empty : "not ")}using global packages folder)");
+            Trace.Verbose($"Installing packages to {GetAbsolutePackagesPath().FullPath} (using {(UseLocal ? "local" : "global")} packages folder)");
             SourceRepository localSourceRepository = SourceRepositoryProvider.CreateRepository(new PackageSource(GetAbsolutePackagesPath().FullPath));
             List<SourceRepository> defaultSourceRepositories = _packageSources.Select(SourceRepositoryProvider.CreateRepository).ToList();
 
@@ -120,7 +121,7 @@ namespace Wyam.Configuration.NuGet
                         sourceRepositories = sourceRepositories.Concat(defaultSourceRepositories).ToList();
                     }
                 }
-                package.InstallPackage(this, updatePackages, localSourceRepository, sourceRepositories);
+                package.InstallPackage(this, UpdatePackages, localSourceRepository, sourceRepositories);
             });
         }
     }

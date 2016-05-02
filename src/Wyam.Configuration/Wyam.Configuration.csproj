@@ -182,6 +182,7 @@
     <Compile Include="Configurator.cs" />
     <Compile Include="DirectiveUse.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
+    <Compile Include="NuGet\NuGetConfigDirective.cs" />
     <Compile Include="NuGet\NuGetLogger.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />

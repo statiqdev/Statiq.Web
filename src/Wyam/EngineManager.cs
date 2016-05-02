@@ -61,6 +61,14 @@ namespace Wyam
                 }
             }
 
+            // Set NuGet settings
+            Configurator.PackageInstaller.UpdatePackages = _settings.UpdatePackages;
+            Configurator.PackageInstaller.UseLocal = _settings.UseLocalPackages;
+            if (_settings.PackagesPath != null)
+            {
+                Configurator.PackageInstaller.PackagesPath = _settings.PackagesPath;
+            }
+
             Engine.ApplicationInput = _settings.Stdin;
         }
 
@@ -90,12 +98,12 @@ namespace Wyam
                 if (configFile.Exists)
                 {
                     Trace.Information("Loading configuration from {0}", configFile.Path);
-                    Configurator.Configure(configFile.ReadAllText(), _settings.UpdatePackages, _settings.OutputScripts, configFile.Path.FileName.FullPath);
+                    Configurator.Configure(configFile.ReadAllText(), _settings.OutputScripts, configFile.Path.FileName.FullPath);
                 }
                 else
                 {
                     Trace.Information("Could not find configuration file {0}, using default configuration", _settings.ConfigFilePath);
-                    Configurator.Configure(GetDefaultConfigScript(), _settings.UpdatePackages, false, null);
+                    Configurator.Configure(GetDefaultConfigScript(), false, null);
                 }
             }
             catch (Exception ex)

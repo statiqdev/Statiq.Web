@@ -12,6 +12,7 @@ namespace Wyam.Configuration.Preprocessing
         {
             AddDirective(new NuGetDirective(configurator.PackageInstaller), "n", "nuget");
             AddDirective(new NuGetSourceDirective(configurator.PackageInstaller), "ns", "nuget-source");
+            AddDirective(new NuGetConfigDirective(configurator.PackageInstaller), "nc", "nuget-config");
         }
 
         private void AddDirective(IDirective directive, params string[] names)

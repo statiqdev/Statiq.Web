@@ -301,6 +301,32 @@ namespace Cake.Wyam.Tests
             }
 
             [Test]
+            public void ShouldSetUseLocalPackagesFlag()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { UseLocalPackages = true } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--use-local-packages \"/Working\"", result.Args);
+            }
+
+            [Test]
+            public void ShouldSetPackagesPath()
+            {
+                // Given
+                WyamRunnerFixture fixture = new WyamRunnerFixture { Settings = { PackagesPath = "C:/temp" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--packages-path \"C:/temp\" \"/Working\"", result.Args);
+            }
+
+            [Test]
             public void ShouldSetOutputScriptsFlag()
             {
                 // Given

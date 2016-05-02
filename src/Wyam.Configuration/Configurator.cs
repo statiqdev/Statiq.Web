@@ -28,7 +28,7 @@ namespace Wyam.Configuration
         private bool _outputScripts;
         private bool _configured;
         
-        internal PackageInstaller PackageInstaller { get; }
+        public PackageInstaller PackageInstaller { get; }
 
         public Configurator(Engine engine)
         {
@@ -62,7 +62,7 @@ namespace Wyam.Configuration
 
         // Setup is separated from config by a line with only '-' characters
         // If no such line exists, then the entire script is treated as config
-        public void Configure(string script, bool updatePackages, bool outputScripts, string fileName)
+        public void Configure(string script, bool outputScripts, string fileName)
         {
             CheckDisposed();
             if (_configured)
@@ -85,17 +85,17 @@ namespace Wyam.Configuration
             _preprocessor.ProcessDirectives(parserResult.DirectiveUses);
 
             // Initialize and evaluate the script
-            Initialize(updatePackages);
+            Initialize();
             Evaluate(parserResult);
         }
 
         // Initialize the assembly manager (includes searching for module types)
-        private void Initialize(bool updatePackages)
+        private void Initialize()
         {
             // Install packages
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
-                PackageInstaller.InstallPackages(updatePackages);
+                PackageInstaller.InstallPackages();
             }
 
             // Scan assemblies
