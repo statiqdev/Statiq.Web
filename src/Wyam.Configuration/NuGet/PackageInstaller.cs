@@ -34,14 +34,6 @@ namespace Wyam.Configuration.NuGet
         {
             _fileSystem = fileSystem;
 
-            Settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
-            IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(Settings);
-            SourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
-            PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, GetAbsolutePackagesPath().FullPath)
-            {
-                PackagesFolderNuGetProject = new WyamFolderNuGetProject(this, assemblyLoader, GetAbsolutePackagesPath().FullPath)
-            };
-
             // Get the current framework
             string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
                 .OfType<System.Runtime.Versioning.TargetFrameworkAttribute>()
@@ -50,6 +42,14 @@ namespace Wyam.Configuration.NuGet
             CurrentFramework = frameworkName == null
                 ? NuGetFramework.AnyFramework
                 : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
+
+            Settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
+            IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(Settings);
+            SourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
+            PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, GetAbsolutePackagesPath().FullPath)
+            {
+                PackagesFolderNuGetProject = new WyamFolderNuGetProject(fileSystem, assemblyLoader, CurrentFramework, GetAbsolutePackagesPath().FullPath)
+            };
         }
 
         internal NuGetLogger Logger { get; } = new NuGetLogger();
@@ -65,7 +65,7 @@ namespace Wyam.Configuration.NuGet
         internal NuGetFramework CurrentFramework { get; }
         
         // TODO: Add CLI and directive support for toggling global package source
-        public bool UseGlobal { get; set; } = false;
+        public bool UseGlobal { get; set; } = true;
 
         public DirectoryPath PackagesPath
         {
