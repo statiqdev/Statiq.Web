@@ -1,7 +1,10 @@
-﻿namespace Wyam.Configuration.Preprocessing
+﻿using System.Collections.Generic;
+
+namespace Wyam.Configuration.Preprocessing
 {
     internal interface IDirective
     {
-        void Process(string value);
+        IEnumerable<string> DirectiveNames { get; }
+        void Process(Configurator configurator, string value);
     }
 }

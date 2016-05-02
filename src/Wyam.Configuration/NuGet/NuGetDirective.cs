@@ -6,14 +6,9 @@ namespace Wyam.Configuration.NuGet
 {
     internal class NuGetDirective : IDirective
     {
-        private readonly PackageInstaller _packageInstaller;
+        public IEnumerable<string> DirectiveNames { get; } = new[] { "n", "nuget" };
 
-        public NuGetDirective(PackageInstaller packageInstaller)
-        {
-            _packageInstaller = packageInstaller;
-        }
-
-        public void Process(string value)
+        public void Process(Configurator configurator, string value)
         {
             bool prerelease = false;
             bool unlisted = false;
@@ -48,7 +43,7 @@ namespace Wyam.Configuration.NuGet
             // Add the package to the repository (it'll actually get fetched later)
             foreach (string package in packages)
             {
-                _packageInstaller.AddPackage(package, sources, version, prerelease, unlisted, exclusive);
+                configurator.PackageInstaller.AddPackage(package, sources, version, prerelease, unlisted, exclusive);
             }
         }
     }

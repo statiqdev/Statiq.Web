@@ -1,23 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using Wyam.Configuration.Assemblies;
 using Wyam.Configuration.NuGet;
 
 namespace Wyam.Configuration.Preprocessing
 {
     internal class Preprocessor : IPreprocessor
     {
-        private readonly Dictionary<string, IDirective> _directives = new Dictionary<string, IDirective>();
+        private readonly Dictionary<string, IDirective> _directives = new Dictionary<string, IDirective>(StringComparer.OrdinalIgnoreCase);
+        private readonly Configurator _configurator;
 
-        public void AddDirectives(Configurator configurator)
+        public Preprocessor(Configurator configurator)
         {
-            AddDirective(new NuGetDirective(configurator.PackageInstaller), "n", "nuget");
-            AddDirective(new NuGetSourceDirective(configurator.PackageInstaller), "ns", "nuget-source");
-            AddDirective(new NuGetConfigDirective(configurator.PackageInstaller), "nc", "nuget-config");
+            _configurator = configurator;
         }
 
-        private void AddDirective(IDirective directive, params string[] names)
+        public void AddDirectives()
         {
-            foreach (string name in names)
+            AddDirective(new NuGetDirective());
+            AddDirective(new NuGetSourceDirective());
+            AddDirective(new NuGetConfigDirective());
+            AddDirective(new AssemblyDirective());
+            AddDirective(new AssemblyNameDirective());
+        }
+
+        private void AddDirective(IDirective directive)
+        {
+            foreach (string name in directive.DirectiveNames)
             {
                 _directives.Add(name, directive);
             }
@@ -37,7 +46,7 @@ namespace Wyam.Configuration.Preprocessing
                 {
                     try
                     {
-                        directive.Process(use.Value);
+                        directive.Process(_configurator, use.Value);
                     }
                     catch (Exception ex)
                     {

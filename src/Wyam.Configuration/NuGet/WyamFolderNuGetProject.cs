@@ -12,6 +12,7 @@ using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Configuration.Assemblies;
 
 namespace Wyam.Configuration.NuGet
 {
@@ -61,7 +62,7 @@ namespace Wyam.Configuration.NuGet
                     .Where(x => x.FileName.Extension == ".dll" || x.FileName.Extension == ".exe"))
                 {
                     FilePath assemblyPath = installedPath.CombineFile(itemPath);
-                    _assemblyLoader.AddFile(assemblyPath);
+                    _assemblyLoader.AddPattern(assemblyPath.FullPath);
                     Trace.Verbose($"Added NuGet reference {assemblyPath} for loading");
                 }
             }

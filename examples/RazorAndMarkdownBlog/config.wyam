@@ -1,7 +1,4 @@
-#ns "E:\Code\Wyam\build\0.12.0-beta\nuget"
-#n Wyam.Modules.Yaml -p
-#n Wyam.Modules.Razor -p
-#n Wyam.Modules.Markdown -p
+#n -p Wyam.Modules.Yaml Wyam.Modules.Razor Wyam.Modules.Markdown
 
 Pipelines.Add("Posts",
 	ReadFiles("posts/*.md"),  // Read all markdown files in the "posts" directory

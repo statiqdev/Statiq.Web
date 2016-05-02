@@ -2,6 +2,7 @@
 using System.IO;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Configuration.Assemblies;
 using Wyam.Configuration.NuGet;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
@@ -10,15 +11,16 @@ namespace Wyam.Configuration
 {
     public class Configurator : IDisposable
     {
-        private readonly Preprocessor _preprocessor = new Preprocessor();
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
-        private readonly AssemblyLoader _assemblyLoader;
         private readonly Engine _engine;
+        private readonly Preprocessor _preprocessor;
 
         private bool _disposed;
         private bool _configured;
         
         public PackageInstaller PackageInstaller { get; }
+
+        public AssemblyLoader AssemblyLoader { get; }
 
         public bool OutputScript { get; set; }
 
@@ -27,8 +29,9 @@ namespace Wyam.Configuration
         public Configurator(Engine engine)
         {
             _engine = engine;
-            _assemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies, engine.Namespaces);
-            PackageInstaller = new PackageInstaller(engine.FileSystem, _assemblyLoader);
+            AssemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies, engine.Namespaces);
+            PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
+            _preprocessor = new Preprocessor(this);
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
@@ -42,7 +45,7 @@ namespace Wyam.Configuration
                 return;
             }
 
-            _assemblyLoader.Dispose();
+            AssemblyLoader.Dispose();
             _disposed = true;
         }
 
@@ -66,7 +69,7 @@ namespace Wyam.Configuration
             _configured = true;
 
             // Add the directives at this stage so everything is initialized
-            _preprocessor.AddDirectives(this);
+            _preprocessor.AddDirectives();
 
             // Parse the script (or use an empty result if no script)
             ConfigParserResult parserResult = string.IsNullOrWhiteSpace(script)
@@ -93,7 +96,7 @@ namespace Wyam.Configuration
             // Scan assemblies
             using (Trace.WithIndent().Information("Loading assemblies and scanning for types"))
             {
-                _assemblyLoader.LoadAssemblies();
+                AssemblyLoader.LoadAssemblies();
             }
         }
 
@@ -102,7 +105,7 @@ namespace Wyam.Configuration
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
                 _compilation.Generate(parserResult.Declarations, parserResult.Body,
-                    _assemblyLoader.ModuleTypes, _engine.Namespaces);
+                    AssemblyLoader.ModuleTypes, _engine.Namespaces);
                 WriteScript(ConfigCompilation.AssemblyName, _compilation.Code);
                 _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
                 _compilation.Invoke(_engine);

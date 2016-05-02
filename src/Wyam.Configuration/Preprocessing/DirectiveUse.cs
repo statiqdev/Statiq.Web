@@ -1,4 +1,4 @@
-namespace Wyam.Configuration
+namespace Wyam.Configuration.Preprocessing
 {
     internal class DirectiveUse
     {

@@ -172,7 +172,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="Assemblies\AssemblyDirective.cs" />
+    <Compile Include="Assemblies\AssemblyLoader.cs" />
+    <Compile Include="Assemblies\AssemblyNameDirective.cs" />
     <Compile Include="ConfigCompilation.cs" />
     <Compile Include="ConfigCompiler.cs" />
     <Compile Include="ConfigParser.cs" />
@@ -180,7 +182,7 @@
     <Compile Include="ConfigRewriter.cs" />
     <Compile Include="ConfigScriptBase.cs" />
     <Compile Include="Configurator.cs" />
-    <Compile Include="DirectiveUse.cs" />
+    <Compile Include="Preprocessing\DirectiveUse.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
     <Compile Include="NuGet\NuGetConfigDirective.cs" />
     <Compile Include="NuGet\NuGetLogger.cs" />

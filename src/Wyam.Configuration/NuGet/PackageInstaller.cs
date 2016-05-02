@@ -15,6 +15,7 @@ using NuGet.Protocol.Core.v3;
 using NuGet.Repositories;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Configuration.Assemblies;
 using IFileSystem = Wyam.Common.IO.IFileSystem;
 using IPackageFile = NuGet.Packaging.IPackageFile;
 

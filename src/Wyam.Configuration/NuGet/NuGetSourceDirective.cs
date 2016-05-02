@@ -6,14 +6,9 @@ namespace Wyam.Configuration.NuGet
 {
     internal class NuGetSourceDirective : IDirective
     {
-        private readonly PackageInstaller _packageInstaller;
+        public IEnumerable<string> DirectiveNames { get; } = new[] { "ns", "nuget-source" };
 
-        public NuGetSourceDirective(PackageInstaller packageInstaller)
-        {
-            _packageInstaller = packageInstaller;
-        }
-
-        public void Process(string value)
+        public void Process(Configurator configurator, string value)
         {
             IReadOnlyList<string> sources = null;
 
@@ -33,7 +28,7 @@ namespace Wyam.Configuration.NuGet
 
             foreach (string source in sources)
             {
-                _packageInstaller.AddPackageSource(source);
+                configurator.PackageInstaller.AddPackageSource(source);
             }
         }
     }

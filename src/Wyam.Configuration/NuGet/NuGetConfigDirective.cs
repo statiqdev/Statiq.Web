@@ -11,14 +11,9 @@ namespace Wyam.Configuration.NuGet
 {
     internal class NuGetConfigDirective : IDirective
     {
-        private readonly PackageInstaller _packageInstaller;
+        public IEnumerable<string> DirectiveNames { get; } = new[] { "nc", "nuget-config" };
 
-        public NuGetConfigDirective(PackageInstaller packageInstaller)
-        {
-            _packageInstaller = packageInstaller;
-        }
-
-        public void Process(string value)
+        public void Process(Configurator configurator, string value)
         {
             DirectoryPath packagesPath = null;
             bool useLocal = false;
@@ -30,15 +25,15 @@ namespace Wyam.Configuration.NuGet
             {
                 if (syntax.DefineOption("use-local-packages", ref useLocal, "Toggles the use of a local NuGet packages folder.").IsSpecified)
                 {
-                    _packageInstaller.UseLocal = useLocal;
+                    configurator.PackageInstaller.UseLocal = useLocal;
                 }
                 if (syntax.DefineOption("update-packages", ref updatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.").IsSpecified)
                 {
-                    _packageInstaller.UpdatePackages = updatePackages;
+                    configurator.PackageInstaller.UpdatePackages = updatePackages;
                 }
                 if (syntax.DefineParameter("packages-path", ref packagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).").IsSpecified)
                 {
-                    _packageInstaller.PackagesPath = packagesPath;
+                    configurator.PackageInstaller.PackagesPath = packagesPath;
                 }
             });
             if (parsed.HasErrors)
