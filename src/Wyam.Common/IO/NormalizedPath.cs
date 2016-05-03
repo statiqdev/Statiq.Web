@@ -56,6 +56,19 @@ namespace Wyam.Common.IO
         /// </value>
         public string Provider { get; }
 
+        public DirectoryPath Root
+        {
+            get
+            {
+                string directory = IsAbsolute ? System.IO.Path.GetPathRoot(FullPath) : ".";
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    directory = ".";
+                }
+                return new DirectoryPath(Provider, directory);
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NormalizedPath" /> class.
         /// </summary>

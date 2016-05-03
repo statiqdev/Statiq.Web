@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
@@ -201,11 +203,11 @@ A=
 =B
 //#valid   x y z  
 C", result.Body);
-                CollectionAssert.AreEqual(new KeyValuePair<string, string>[]
+                CollectionAssert.AreEqual(new []
                 {
-                    new KeyValuePair<string, string>("valid", "a b c"),
-                    new KeyValuePair<string, string>("valid", "x y z")
-                }, result.DirectiveUses);
+                    Tuple.Create(1, "valid", "a b c"),
+                    Tuple.Create(6, "valid", "x y z")
+                }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
 
             [Test]
@@ -256,11 +258,11 @@ C", result.Declarations);
 E-
 //#valid c
 -F", result.Body);
-                CollectionAssert.AreEqual(new KeyValuePair<string, string>[]
+                CollectionAssert.AreEqual(new[]
                 {
-                    new KeyValuePair<string, string>("valid", "a"),
-                    new KeyValuePair<string, string>("valid", "c")
-                }, result.DirectiveUses);
+                    Tuple.Create(1, "valid", "a"),
+                    Tuple.Create(8, "valid", "c")
+                }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
         }
 

@@ -221,9 +221,8 @@ namespace Wyam.Core.IO
                     if (filePath.IsAbsolute)
                     {
                         // The globber doesn't support absolute paths, so get the root directory of this path (including provider)
-                        DirectoryPath rootDirectoryPath = new DirectoryPath(filePath.Provider, filePath.Segments[0]);
-                        IDirectory rootDirectory = GetDirectory(rootDirectoryPath);
-                        FilePath relativeFilePath = rootDirectoryPath.GetRelativePath(filePath);
+                        IDirectory rootDirectory = GetDirectory(filePath.Root);
+                        FilePath relativeFilePath = filePath.RootRelative.Collapse();
                         return Tuple.Create(rootDirectory,
                             negated ? ('!' + relativeFilePath.FullPath) : relativeFilePath.FullPath);
                     }

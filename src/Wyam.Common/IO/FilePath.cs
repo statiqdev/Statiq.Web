@@ -84,6 +84,21 @@ namespace Wyam.Common.IO
             }
         }
 
+        public FilePath RootRelative
+        {
+            get
+            {
+                if (!IsAbsolute)
+                {
+                    return this;
+                }
+                DirectoryPath root = Root;
+                return root.FullPath == "." 
+                    ? this 
+                    : new FilePath(FullPath.Substring(root.FullPath.Length), false);
+            }
+        }
+
         /// <summary>
         /// Gets the filename.
         /// </summary>

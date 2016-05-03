@@ -15,11 +15,11 @@ namespace Wyam.Common.Tests.IO
     {
         private class TestPath : NormalizedPath
         {
-            public TestPath(string path) : base(path, null)
+            public TestPath(string path, bool? absolute = null) : base(path, absolute)
             {
             }
 
-            public TestPath(string provider, string path) : base(provider, path, null)
+            public TestPath(string provider, string path, bool? absolute = null) : base(provider, path, absolute)
             {
             }
         }
@@ -39,8 +39,7 @@ namespace Wyam.Common.Tests.IO
                 // Given, When, Then
                 Assert.Throws<ArgumentException>(() => new TestPath("foo", "Hello/World"));
             }
-
-            [Test]
+            
             [TestCase("")]
             [TestCase("\t ")]
             public void ShouldThrowIfPathIsEmpty(string fullPath)
@@ -89,7 +88,6 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual("my awesome shaders/basic", path.FullPath);
             }
             
-            [Test]
             [TestCase("/Hello/World/", "/Hello/World")]
             [TestCase("\\Hello\\World\\", "/Hello/World")]
             [TestCase("file.txt/", "file.txt")]
@@ -106,8 +104,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
             }
-
-            [Test]
+            
             [TestCase("\\")]
             [TestCase("/")]
             public void ShouldNotRemoveSingleTrailingSlash(string value)
@@ -118,8 +115,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual("/", path.FullPath);
             }
-
-            [Test]
+            
             [TestCase("./Hello/World/", "Hello/World")]
             [TestCase(".\\Hello/World/", "Hello/World")]
             [TestCase("./file.txt", "file.txt")]
@@ -132,8 +128,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
             }
-
-            [Test]
+            
             [TestCase("\\")]
             [TestCase("/")]
             public void ShouldNotRemoveOnlyRelativePart(string value)
@@ -148,7 +143,6 @@ namespace Wyam.Common.Tests.IO
 
         public class ProviderPropertyTests : NormalizedPathTests
         {
-            [Test]
             [TestCase("foo", "/Hello/World", "foo")]
             [TestCase("", "/Hello/World", "")]
             [TestCase(null, "/Hello/World", "")]
@@ -167,7 +161,6 @@ namespace Wyam.Common.Tests.IO
 
         public class SegmentsPropertyTests : NormalizedPathTests
         {
-            [Test]
             [TestCase("Hello/World")]
             [TestCase("/Hello/World")]
             [TestCase("/Hello/World/")]
@@ -198,9 +191,55 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
+        public class RootPropertyTests : NormalizedPathTests
+        {
+            [TestCase(@"\a\b\c", "/")]
+            [TestCase("/a/b/c", "/")]
+            [TestCase("a/b/c", ".")]
+            [TestCase(@"a\b\c", ".")]
+            [TestCase("foo.txt", ".")]
+            [TestCase("foo", ".")]
+#if !UNIX
+            [TestCase(@"c:\a\b\c", "c:/")]
+            [TestCase("c:/a/b/c", "c:/")]
+#endif
+            public void ShouldReturnRootPath(string fullPath, string expected)
+            {
+                // Given
+                TestPath path = new TestPath(fullPath);
+
+                // When
+                DirectoryPath root = path.Root;
+
+                // Then
+                Assert.AreEqual(expected, root.FullPath);
+            }
+
+            [TestCase(@"\a\b\c")]
+            [TestCase("/a/b/c")]
+            [TestCase("a/b/c")]
+            [TestCase(@"a\b\c")]
+            [TestCase("foo.txt")]
+            [TestCase("foo")]
+#if !UNIX
+            [TestCase(@"c:\a\b\c")]
+            [TestCase("c:/a/b/c")]
+#endif
+            public void ShouldReturnDottedRootForExplicitRelativePath(string fullPath)
+            {
+                // Given
+                TestPath path = new TestPath(fullPath, false);
+
+                // When
+                DirectoryPath root = path.Root;
+
+                // Then
+                Assert.AreEqual(".", root.FullPath);
+            }
+        }
+
         public class IsRelativePropertyTests : NormalizedPathTests
         {
-            [Test]
             [TestCase("assets/shaders", true)]
             [TestCase("assets/shaders/basic.frag", true)]
             [TestCase("/assets/shaders", false)]
@@ -208,14 +247,13 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnWhetherOrNotAPathIsRelative(string fullPath, bool expected)
             {
                 // Given, When
-                var path = new TestPath(fullPath);
+                TestPath path = new TestPath(fullPath);
 
                 // Then
                 Assert.AreEqual(expected, path.IsRelative);
             }
 
 #if !UNIX
-            [Test]
             [TestCase("c:/assets/shaders", false)]
             [TestCase("c:/assets/shaders/basic.frag", false)]
             [TestCase("c:/", false)]
@@ -223,7 +261,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnWhetherOrNotAPathIsRelativeOnWindows(string fullPath, bool expected)
             {
                 // Given, When
-                var path = new TestPath(fullPath);
+                TestPath path = new TestPath(fullPath);
 
                 // Then
                 Assert.AreEqual(expected, path.IsRelative);
@@ -237,7 +275,7 @@ namespace Wyam.Common.Tests.IO
             public void Should_Return_The_Full_Path()
             {
                 // Given, When
-                var path = new TestPath("temp/hello");
+                TestPath path = new TestPath("temp/hello");
 
                 // Then
                 Assert.AreEqual("temp/hello", path.ToString());
@@ -255,8 +293,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
             }
-
-            [Test]
+            
             [TestCase("hello/temp/test/../../world", "hello/world")]
             [TestCase("hello/temp/../temp2/../world", "hello/world")]
             [TestCase("/hello/temp/test/../../world", "/hello/world")]
@@ -285,8 +322,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path);
             }
-
-            [Test]
+            
             [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
 #if !UNIX
             [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
@@ -306,7 +342,6 @@ namespace Wyam.Common.Tests.IO
 
         public class GetProviderAndPathMethodTests : NormalizedPathTests
         {
-            [Test]
             [TestCase("C:/a/b", null, "C:/a/b")]
             [TestCase(@"C:\a\b", null, @"C:\a\b")]
             [TestCase(@"::C::\a\b", null, @"C::\a\b")]
@@ -326,7 +361,6 @@ namespace Wyam.Common.Tests.IO
 
         public class EqualsMethodTests : NormalizedPathTests
         {
-            [Test]
             [TestCase(true)]
             [TestCase(false)]
             public void SameAssetInstancesIsConsideredEqual(bool isCaseSensitive)
@@ -337,8 +371,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.True(path.Equals(path));
             }
-
-            [Test]
+            
             [TestCase(true)]
             [TestCase(false)]
             public void PathsAreConsideredInequalIfAnyIsNull(bool isCaseSensitive)
@@ -349,8 +382,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.False(result);
             }
-
-            [Test]
+            
             [TestCase(true)]
             [TestCase(false)]
             public void SamePathsAreConsideredEqual(bool isCaseSensitive)
@@ -418,8 +450,8 @@ namespace Wyam.Common.Tests.IO
             public void DifferentPathsGetDifferentHashCodes()
             {
                 // Given, When
-                var first = new FilePath("shaders/basic.vert");
-                var second = new FilePath("shaders/basic.frag");
+                FilePath first = new FilePath("shaders/basic.vert");
+                FilePath second = new FilePath("shaders/basic.frag");
 
                 // Then
                 Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());

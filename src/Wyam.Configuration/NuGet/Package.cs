@@ -61,7 +61,9 @@ namespace Wyam.Configuration.NuGet
 
             // Does the installed version match the requested version
             NuGetVersion matchingVersion = installedVersion;
-            if (installedVersion != null && _version != null && installedVersion == _version && !updatePackages)
+            if (installedVersion != null 
+                && (_version == null || installedVersion == _version) 
+                && !updatePackages)
             {
                 Trace.Verbose($"Package {_packageId}{versionString} is satisfied by version {installedVersion}");
             }
