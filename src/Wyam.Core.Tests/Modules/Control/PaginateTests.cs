@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Core.Documents;
+using Wyam.Core.Execution;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;

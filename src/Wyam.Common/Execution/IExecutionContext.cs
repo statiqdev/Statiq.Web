@@ -14,7 +14,7 @@ namespace Wyam.Common.Execution
 {
     public interface IExecutionContext
     {
-        byte[] RawConfigAssembly { get; }
+        IEnumerable<byte[]> RawAssemblies { get; }
         IEnumerable<Assembly> Assemblies { get; }
         IEnumerable<string> Namespaces { get; }
         IReadOnlyPipeline Pipeline { get; }

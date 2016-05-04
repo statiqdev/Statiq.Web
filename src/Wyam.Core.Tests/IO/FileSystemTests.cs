@@ -557,6 +557,8 @@ namespace Wyam.Core.Tests.IO
             [TestCase("/", new[] { "qwerty::/q/werty.txt" }, new[] { "/q/werty.txt" })]
             public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected)
             {
+                TestContext.Out.WriteLine($"Patterns: {string.Join(",", patterns)}");
+
                 // Given
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.FileProviders.Add(string.Empty, GetFileProvider());

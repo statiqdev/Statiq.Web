@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
+using Wyam.Core.Execution;
 using Wyam.Testing;
 using Trace = Wyam.Core.Modules.Extensibility.Trace;
 

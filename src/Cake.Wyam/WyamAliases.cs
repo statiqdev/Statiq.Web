@@ -24,7 +24,7 @@ namespace Cake.Wyam
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
 
             Wyam(context, new WyamSettings());
@@ -48,7 +48,7 @@ namespace Cake.Wyam
         {
             if (context == null)
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
             }
 
             var runner = new WyamRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Globber);

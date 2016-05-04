@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;

@@ -20,7 +20,7 @@ namespace Wyam.Core.Execution
 
         public Engine Engine { get; }
 
-        public byte[] RawConfigAssembly => Engine.RawConfigAssembly;
+        public IEnumerable<byte[]> RawAssemblies => Engine.RawAssemblies;
 
         public IEnumerable<Assembly> Assemblies => Engine.Assemblies;
 

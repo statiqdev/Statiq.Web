@@ -115,9 +115,20 @@ namespace Cake.Wyam
                 builder.Append("--update-packages");
             }
 
-            if (settings.OutputScripts)
+            if (settings.UseLocalPackages)
             {
-                builder.Append("--output-scripts");
+                builder.Append("--use-local-packages");
+            }
+
+            if (settings.PackagesPath != null)
+            {
+                builder.Append("--packages-path");
+                builder.AppendQuoted(settings.PackagesPath.FullPath);
+            }
+
+            if (settings.OutputScript)
+            {
+                builder.Append("--output-script");
             }
 
             if (settings.VerifyConfig)

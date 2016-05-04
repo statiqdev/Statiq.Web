@@ -109,9 +109,9 @@ namespace Wyam.Modules.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                     _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Core.dll"), x => MetadataReference.CreateFromFile(x)),
                     _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Runtime.dll"), x => MetadataReference.CreateFromFile(x))
                 );
-            if (_executionContext.RawConfigAssembly != null && _executionContext.RawConfigAssembly.Length > 0)
+            foreach(byte[] rawAssembly in _executionContext.RawAssemblies)
             {
-                using (MemoryStream memoryStream = new MemoryStream(_executionContext.RawConfigAssembly))
+                using (MemoryStream memoryStream = new MemoryStream(rawAssembly))
                 {
                     compilation = compilation.AddReferences(MetadataReference.CreateFromStream(memoryStream));
                 }

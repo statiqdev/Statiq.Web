@@ -82,6 +82,11 @@ namespace Wyam.Testing.IO
             return _fileProvider.Files[_path.FullPath].ToString();
         }
 
+        public void WriteAllText(string contents)
+        {
+            _fileProvider.Files[_path.FullPath] = new StringBuilder(contents);
+        }
+
         public Stream OpenRead()
         {
             StringBuilder builder;

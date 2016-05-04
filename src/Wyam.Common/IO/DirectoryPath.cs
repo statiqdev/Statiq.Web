@@ -91,6 +91,21 @@ namespace Wyam.Common.IO
             }
         }
 
+        public DirectoryPath RootRelative
+        {
+            get
+            {
+                if (!IsAbsolute)
+                {
+                    return this;
+                }
+                DirectoryPath root = Root;
+                return root.FullPath == "."
+                    ? this
+                    : new DirectoryPath(FullPath.Substring(root.FullPath.Length), false);
+            }
+        }
+
         /// <summary>
         /// Combines the current path with the file name of a <see cref="FilePath"/>. The current file provider
         /// is maintained.

@@ -54,9 +54,18 @@
     <Compile Include="GlobalMetadataParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
+      <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
+      <Name>Wyam.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
+      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
+      <Name>Wyam.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Testing\Wyam.Testing.csproj">
       <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
       <Name>Wyam.Testing</Name>
@@ -65,6 +74,9 @@
       <Project>{9cadde07-290f-4958-b0d4-2e613b8f127f}</Project>
       <Name>Wyam</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

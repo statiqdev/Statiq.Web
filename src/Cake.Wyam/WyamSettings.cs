@@ -60,10 +60,21 @@ namespace Cake.Wyam
         public bool UpdatePackages { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to output the scripts at end of execution.
+        /// Gets or sets a value indicating whether to use a local NuGet packages folder.
         /// </summary>
         /// <remarks>Default is false</remarks>
-        public bool OutputScripts { get; set; }
+        public bool UseLocalPackages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the packages path to use.
+        /// </summary>
+        public DirectoryPath PackagesPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to output the script at end of execution.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool OutputScript { get; set; }
 
         /// <summary>
         /// Compile the configuration but do not execute.

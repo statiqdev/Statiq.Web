@@ -151,6 +151,53 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
+        public class RootRelativePropertyTests : FilePathTests
+        {
+            [TestCase(@"\a\b\c", "a/b/c")]
+            [TestCase("/a/b/c", "a/b/c")]
+            [TestCase("a/b/c", "a/b/c")]
+            [TestCase(@"a\b\c", "a/b/c")]
+            [TestCase("foo.txt", "foo.txt")]
+            [TestCase("foo", "foo")]
+#if !UNIX
+            [TestCase(@"c:\a\b\c", "a/b/c")]
+            [TestCase("c:/a/b/c", "a/b/c")]
+#endif
+            public void ShouldReturnRootRelativePath(string fullPath, string expected)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(fullPath);
+
+                // When
+                DirectoryPath rootRelative = path.RootRelative;
+
+                // Then
+                Assert.AreEqual(expected, rootRelative.FullPath);
+            }
+
+            [TestCase(@"\a\b\c")]
+            [TestCase("/a/b/c")]
+            [TestCase("a/b/c")]
+            [TestCase(@"a\b\c")]
+            [TestCase("foo.txt")]
+            [TestCase("foo")]
+#if !UNIX
+            [TestCase(@"c:\a\b\c")]
+            [TestCase("c:/a/b/c")]
+#endif
+            public void ShouldReturnSelfForExplicitRelativePath(string fullPath)
+            {
+                // Given
+                DirectoryPath path = new DirectoryPath(fullPath, false);
+
+                // When
+                DirectoryPath rootRelative = path.RootRelative;
+
+                // Then
+                Assert.AreEqual(path.FullPath, rootRelative.FullPath);
+            }
+        }
+
         public class CombineFileMethodTests : DirectoryPathTests
         {
             [Test]

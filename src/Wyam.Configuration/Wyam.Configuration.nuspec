@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Wyam.Configuration</id>
+    <version>$version$</version>
+    <title>Wyam.Configuration</title>
+    <authors>Dave Glick</authors>
+    <owners>Dave Glick</owners>
+    <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
+    <iconUrl>http://wyam.io/Content/images/logo-square-32.png</iconUrl>
+    <projectUrl>http://wyam.io</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides services for configuring the engine using configuration files and Roslyn.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
+  </metadata>
+  <files></files>
+</package>
