@@ -308,6 +308,7 @@ Task("Publish-Packages")
     
 Task("Publish-Release")
     .IsDependentOn("Zip-Files")
+    .IsDependentOn("Create-Installer")
     .WithCriteria(() => isLocal)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
