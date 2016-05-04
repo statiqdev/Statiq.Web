@@ -255,6 +255,7 @@ Task("Create-Installer")
         Squirrel(package, new SquirrelSettings
         {
             Silent = true,
+            NoMsi = true,
             ReleaseDirectory = releasesDir
         });
 
@@ -333,6 +334,15 @@ Task("Publish-Release")
         using (var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
         {
             var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
+        }
+        var releaseFiles = GetFiles(releasesDir.Path.FullPath + "/*");
+        foreach (var releaseFile in releaseFiles)
+        {
+            using (var contentStream = System.IO.File.OpenRead(releaseFile.FullPath))
+            {
+                var fileName = releaseFile.GetFilename().ToString();
+                var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(fileName, "application/binary", contentStream, null)).Result;
+            }
         }
     });
     
