@@ -18,25 +18,24 @@ using Wyam.Core;
 using Wyam.Core.Execution;
 using Wyam.Owin;
 using Wyam.Core.Meta;
-using Squirrel;
 
 namespace Wyam
 {
     public class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
             Program program = new Program();
             return program.Run(args);
         }
 
-        static void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
+        private static void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
         {
             // Exit with a error exit code
             Environment.Exit((int)ExitCode.UnhandledError);
         }
-        
+
         private readonly Settings _settings = new Settings();
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -62,256 +61,220 @@ namespace Wyam
 
             // It's not a serious console app unless there's some ASCII art
             OutputLogo();
-            ExitCode exitCode = ExitCode.Normal;
 
-            if (_settings.SelfUpdate)
+            // Fix the root folder and other files
+            DirectoryPath currentDirectory = Environment.CurrentDirectory;
+            _settings.RootPath = _settings.RootPath == null ? currentDirectory : currentDirectory.Combine(_settings.RootPath);
+            _settings.LogFilePath = _settings.LogFilePath == null ? null : _settings.RootPath.CombineFile(_settings.LogFilePath);
+            _settings.ConfigFilePath = _settings.RootPath.CombineFile(_settings.ConfigFilePath ?? "config.wyam");
+
+            // Set up the log file         
+            if (_settings.LogFilePath != null)
             {
-                using (var gitHubTask = UpdateManager.GitHubUpdateManager("https://github.com/Wyamio/Wyam", prerelease: true))
-                {
-                    Console.Write("Contacting the Github repository ... ");
-                    var manager = gitHubTask.Result;
-                    Console.WriteLine("done!");
-
-                    Console.Write("Checking for updates ... ");
-                    var updates = manager.CheckForUpdate().Result;
-                    Console.WriteLine("done!");
-
-                    var releases = updates.ReleasesToApply;
-
-                    if (releases.Count > 0)
-                    {
-                        Console.Write("Downloading updates ... ");
-                        manager.DownloadReleases(releases).Wait();
-                        Console.WriteLine("done!");
-
-                        Console.Write("Applying updates ... ");
-                        var version = manager.ApplyReleases(updates).Result;
-                        Console.WriteLine("done!");
-
-                        Console.WriteLine($"Successfully updated to version {version}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("No updates available.");
-                    }
-                }
+                Trace.AddListener(new SimpleFileTraceListener(_settings.LogFilePath.FullPath));
             }
-            else
+
+            // Prepare engine metadata
+            if (!_settings.VerifyConfig && _settings.GlobalMetadataArgs != null && _settings.GlobalMetadataArgs.Count > 0)
             {
-                // Fix the root folder and other files
-                DirectoryPath currentDirectory = Environment.CurrentDirectory;
-                _settings.RootPath = _settings.RootPath == null ? currentDirectory : currentDirectory.Combine(_settings.RootPath);
-                _settings.LogFilePath = _settings.LogFilePath == null ? null : _settings.RootPath.CombineFile(_settings.LogFilePath);
-                _settings.ConfigFilePath = _settings.RootPath.CombineFile(_settings.ConfigFilePath ?? "config.wyam");
-
-                // Set up the log file         
-                if (_settings.LogFilePath != null)
+                try
                 {
-                    Trace.AddListener(new SimpleFileTraceListener(_settings.LogFilePath.FullPath));
+                    _settings.GlobalMetadata = GlobalMetadataParser.Parse(_settings.GlobalMetadataArgs);
                 }
-
-                // Prepare engine metadata
-                if (!_settings.VerifyConfig && _settings.GlobalMetadataArgs != null && _settings.GlobalMetadataArgs.Count > 0)
+                catch (MetadataParseException ex)
                 {
-                    try
-                    {
-                        _settings.GlobalMetadata = GlobalMetadataParser.Parse(_settings.GlobalMetadataArgs);
-                    }
-                    catch (MetadataParseException ex)
-                    {
-                        Trace.Error("Error while parsing metadata: {0}", ex.Message);
-                        if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
-                            Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
+                    Trace.Error("Error while parsing metadata: {0}", ex.Message);
+                    if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                        Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
 
-                        return (int)ExitCode.CommandLineError;
-                    }
-                    // Not used anymore, release resources.
-                    _settings.GlobalMetadataArgs = null;
-                }
-
-                // Get the engine and configurator
-                EngineManager engineManager = GetEngineManager();
-                if (engineManager == null)
-                {
                     return (int)ExitCode.CommandLineError;
                 }
+                // Not used anymore, release resources.
+                _settings.GlobalMetadataArgs = null;
+            }
 
-                // Pause
-                if (_settings.Pause)
+            // Get the engine and configurator
+            EngineManager engineManager = GetEngineManager();
+            if (engineManager == null)
+            {
+                return (int)ExitCode.CommandLineError;
+            }
+
+            // Pause
+            if (_settings.Pause)
+            {
+                Trace.Information("Pause requested, hit any key to continue");
+                Console.ReadKey();
+            }
+
+            // Configure and execute
+            if (!engineManager.Configure())
+            {
+                return (int)ExitCode.ConfigurationError;
+            }
+
+            if (_settings.VerifyConfig)
+            {
+                Trace.Information("No errors. Exiting.");
+                return (int)ExitCode.Normal;
+            }
+
+            Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
+            Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
+            Console.WriteLine($"Output path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+            if (!engineManager.Execute())
+            {
+                return (int)ExitCode.ExecutionError;
+            }
+
+            bool messagePump = false;
+
+            // Start the preview server
+            IDisposable previewServer = null;
+            if (_settings.Preview)
+            {
+                messagePump = true;
+                try
                 {
-                    Trace.Information("Pause requested, hit any key to continue");
-                    Console.ReadKey();
+                    DirectoryPath previewPath = _settings.PreviewRoot == null
+                        ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
+                        : engineManager.Engine.FileSystem.GetOutputDirectory(_settings.PreviewRoot).Path;
+                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _settings.PreviewPort, previewPath);
+                    previewServer = Preview(previewPath);
                 }
-
-                // Configure and execute
-                if (!engineManager.Configure())
+                catch (Exception ex)
                 {
-                    return (int)ExitCode.ConfigurationError;
+                    Trace.Critical("Error while running preview server: {0}", ex.Message);
                 }
+            }
 
-                if (_settings.VerifyConfig)
-                {
-                    Trace.Information("No errors. Exiting.");
-                    return (int)ExitCode.Normal;
-                }
+            // Start the watchers
+            IDisposable inputFolderWatcher = null;
+            IDisposable configFileWatcher = null;
+            if (_settings.Watch)
+            {
+                messagePump = true;
 
-                Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
-                Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
-                Console.WriteLine($"Output path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
-                if (!engineManager.Execute())
-                {
-                    return (int)ExitCode.ExecutionError;
-                }
-
-                bool messagePump = false;
-
-                // Start the preview server
-                IDisposable previewServer = null;
-                if (_settings.Preview)
-                {
-                    messagePump = true;
-                    try
+                Trace.Information("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
+                inputFolderWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
                     {
-                        DirectoryPath previewPath = _settings.PreviewRoot == null 
-                            ? engineManager.Engine.FileSystem.GetOutputDirectory().Path 
-                            : engineManager.Engine.FileSystem.GetOutputDirectory(_settings.PreviewRoot).Path;
-                        Trace.Information("Preview server listening on port {0} and serving from path {1}", _settings.PreviewPort, previewPath);
-                        previewServer = Preview(previewPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.Critical("Error while running preview server: {0}", ex.Message);
-                    }
-                }
-
-                // Start the watchers
-                IDisposable inputFolderWatcher = null;
-                IDisposable configFileWatcher = null;
-                if (_settings.Watch)
-                {
-                    messagePump = true;
-
-                    Trace.Information("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
-                    inputFolderWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                        engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
-                        {
-                            _changedFiles.Enqueue(path);
-                            _messageEvent.Set();
-                        });
-
-                    if (_settings.ConfigFilePath != null)
-                    {
-                        Trace.Information("Watching configuration file {0}", _settings.ConfigFilePath);
-                        configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                            new[] { _settings.ConfigFilePath.Directory }, false, _settings.ConfigFilePath.FileName.FullPath, path =>
-                            {
-                                FilePath filePath = new FilePath(path);
-                                if (_settings.ConfigFilePath.Equals(filePath))
-                                {
-                                    _newEngine.Set();
-                                    _messageEvent.Set();
-                                }
-                            });
-                    }
-                }
-
-                // Start the message pump if an async process is running
-                if (messagePump)
-                {
-                    // Start the key listening thread
-                    Trace.Information("Hit any key to exit");
-                    var thread = new Thread(() =>
-                    {
-                        Console.ReadKey();
-                        _exit.Set();
+                        _changedFiles.Enqueue(path);
                         _messageEvent.Set();
-                    })
-                    {
-                        IsBackground = true
-                    };
-                    thread.Start();
+                    });
 
-                    // Wait for activity
-                    while (true)
-                    {
-                        _messageEvent.WaitOne();  // Blocks the current thread until a signal
-                        if (_exit)
+                if (_settings.ConfigFilePath != null)
+                {
+                    Trace.Information("Watching configuration file {0}", _settings.ConfigFilePath);
+                    configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                        new[] { _settings.ConfigFilePath.Directory }, false, _settings.ConfigFilePath.FileName.FullPath, path =>
                         {
+                            FilePath filePath = new FilePath(path);
+                            if (_settings.ConfigFilePath.Equals(filePath))
+                            {
+                                _newEngine.Set();
+                                _messageEvent.Set();
+                            }
+                        });
+                }
+            }
+
+            // Start the message pump if an async process is running
+            ExitCode exitCode = ExitCode.Normal;
+            if (messagePump)
+            {
+                // Start the key listening thread
+                Trace.Information("Hit any key to exit");
+                var thread = new Thread(() =>
+                {
+                    Console.ReadKey();
+                    _exit.Set();
+                    _messageEvent.Set();
+                })
+                {
+                    IsBackground = true
+                };
+                thread.Start();
+
+                // Wait for activity
+                while (true)
+                {
+                    _messageEvent.WaitOne();  // Blocks the current thread until a signal
+                    if (_exit)
+                    {
+                        break;
+                    }
+
+                    // See if we need a new engine
+                    if (_newEngine)
+                    {
+                        // Get a new engine
+                        Trace.Information("Configuration file {0} has changed, re-running", _settings.ConfigFilePath);
+                        engineManager.Dispose();
+                        engineManager = GetEngineManager();
+
+                        // Configure and execute
+                        if (!engineManager.Configure())
+                        {
+                            exitCode = ExitCode.ConfigurationError;
+                            break;
+                        }
+                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
+                        Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
+                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+                        if (!engineManager.Execute())
+                        {
+                            exitCode = ExitCode.ExecutionError;
                             break;
                         }
 
-                        // See if we need a new engine
-                        if (_newEngine)
+                        // Clear the changed files since we just re-ran
+                        string changedFile;
+                        while (_changedFiles.TryDequeue(out changedFile))
                         {
-                            // Get a new engine
-                            Trace.Information("Configuration file {0} has changed, re-running", _settings.ConfigFilePath);
-                            engineManager.Dispose();
-                            engineManager = GetEngineManager();
+                        }
 
-                            // Configure and execute
-                            if (!engineManager.Configure())
+                        _newEngine.Unset();
+                    }
+                    else
+                    {
+                        // Execute if files have changed
+                        HashSet<string> changedFiles = new HashSet<string>();
+                        string changedFile;
+                        while (_changedFiles.TryDequeue(out changedFile))
+                        {
+                            if (changedFiles.Add(changedFile))
                             {
-                                exitCode = ExitCode.ConfigurationError;
-                                break;
+                                Trace.Verbose("{0} has changed", changedFile);
                             }
-                            Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
-                            Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
-                            Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+                        }
+                        if (changedFiles.Count > 0)
+                        {
+                            Trace.Information("{0} files have changed, re-executing", changedFiles.Count);
                             if (!engineManager.Execute())
                             {
                                 exitCode = ExitCode.ExecutionError;
                                 break;
                             }
-
-                            // Clear the changed files since we just re-ran
-                            string changedFile;
-                            while (_changedFiles.TryDequeue(out changedFile))
-                            {
-                            }
-
-                            _newEngine.Unset();
                         }
-                        else
-                        {
-                            // Execute if files have changed
-                            HashSet<string> changedFiles = new HashSet<string>();
-                            string changedFile;
-                            while (_changedFiles.TryDequeue(out changedFile))
-                            {
-                                if (changedFiles.Add(changedFile))
-                                {
-                                    Trace.Verbose("{0} has changed", changedFile);
-                                }
-                            }
-                            if (changedFiles.Count > 0)
-                            {
-                                Trace.Information("{0} files have changed, re-executing", changedFiles.Count);
-                                if (!engineManager.Execute())
-                                {
-                                    exitCode = ExitCode.ExecutionError;
-                                    break;
-                                }
-                            }
-                        }
-
-                        // Check one more time for exit
-                        if (_exit)
-                        {
-                            break;
-                        }
-                        Trace.Information("Hit any key to exit");
-                        _messageEvent.Reset();
                     }
 
-                    // Shutdown
-                    Trace.Information("Shutting down");
-                    engineManager.Dispose();
-                    inputFolderWatcher?.Dispose();
-                    configFileWatcher?.Dispose();
-                    previewServer?.Dispose();
+                    // Check one more time for exit
+                    if (_exit)
+                    {
+                        break;
+                    }
+                    Trace.Information("Hit any key to exit");
+                    _messageEvent.Reset();
                 }
-            }
 
+                // Shutdown
+                Trace.Information("Shutting down");
+                engineManager.Dispose();
+                inputFolderWatcher?.Dispose();
+                configFileWatcher?.Dispose();
+                previewServer?.Dispose();
+            }
             return (int)exitCode;
         }
 
