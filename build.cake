@@ -46,8 +46,7 @@ var buildDir = Directory("./src/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build") + Directory(semVersion);
 var nugetRoot = buildResultDir + Directory("nuget");
 var binDir = buildResultDir + Directory("bin");
-var installerDir = buildResultDir + Directory("installer");
-var releasesDir = installerDir + Directory("releases");
+var windowsDir = buildResultDir + Directory("windows");
 
 var zipFile = "Wyam-v" + semVersion + ".zip";
 
@@ -67,7 +66,7 @@ Setup(() =>
 Task("Clean")
     .Does(() =>
     {
-        CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot });
+        CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot, windowsDir });
     });
 
 Task("Restore-Packages")
@@ -158,6 +157,7 @@ Task("Create-Library-Packages")
         // Get the set of nuspecs to package
         List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/Wyam.*/*.nuspec"));
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Modules.All");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
         nuspecs.AddRange(GetFiles("./src/**/Cake.Wyam/*.nuspec"));
         
         // Package all nuspecs
@@ -236,30 +236,46 @@ Task("Create-Tools-Package")
         });
     });
 
-Task("Create-Installer")
+// Note that we're not creating a differential release files since we're using a new releases folder per-version
+// That's by design - in order to distribute diffs from GitHub and have them get picked up by Squirrel, *all* prior
+// versions have to be included in *every* GitHub release. That stinks, and we're not going to do it. Since Squirrel
+// won't do incremental updates if we don't upload everything, it serves no purpose to create the diffs. 
+Task("Create-Windows")
     .IsDependentOn("Copy-Files")
-    .Does(() => {
-        CopyDirectory(binDir, installerDir + Directory("lib") + Directory("net45"));
-        CopyFileToDirectory("./src/Wyam.nuspec", installerDir);
-        var nuspec = GetFiles(installerDir + File("Wyam.nuspec")).FirstOrDefault();
-
-        NuGetPack(nuspec, new NuGetPackSettings
+    .Does(() => {        
+        if(isRunningOnWindows)
         {
-            Version = semVersion,
-            BasePath = nuspec.GetDirectory(),
-            OutputDirectory = installerDir
-        });
-
-        var package = installerDir + File("Wyam." + semVersion + ".nupkg");
-        
-        Squirrel(package, new SquirrelSettings
-        {
-            Silent = true,
-            NoMsi = true,
-            ReleaseDirectory = releasesDir
-        });
-
-        DeleteFile(package);
+            var nuspec = GetFiles("./src/Wyam.Windows/*.nuspec").FirstOrDefault();
+            if (nuspec == null)
+            {            
+                throw new InvalidOperationException("Could not find installer nuspec.");
+            }       
+            var packageDir = nuspec.GetDirectory() + ("/bin/" + configuration);
+            CopyDirectory(binDir, packageDir);  // Copy everything from main Wyam bin to Wyam.Windows bin prior to packaging
+            var pattern = string.Format("bin\\{0}\\**\\*", configuration);  // This is needed to get around a Mono scripting issue (see #246, #248, #249)
+            NuGetPack(nuspec, new NuGetPackSettings
+            {
+                Version = semVersion,
+                BasePath = nuspec.GetDirectory(),
+                OutputDirectory = packageDir,
+                Symbols = false,
+                Files = new [] 
+                { 
+                    new NuSpecContent 
+                    { 
+                        Source = pattern,
+                        Target = "lib/net45"
+                    }
+                }
+            });
+            var package = (packageDir + "/") + File("Wyam.Windows." + semVersion + ".nupkg");          
+            Squirrel(package, new SquirrelSettings
+            {
+                Silent = true,
+                NoMsi = true,
+                ReleaseDirectory = windowsDir
+            });
+        }
     });
     
 Task("Publish-MyGet")
@@ -308,7 +324,7 @@ Task("Publish-Packages")
     
 Task("Publish-Release")
     .IsDependentOn("Zip-Files")
-    .IsDependentOn("Create-Installer")
+    .IsDependentOn("Create-Windows")
     .WithCriteria(() => isLocal)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
@@ -327,7 +343,7 @@ Task("Publish-Release")
         {
             Name = semVersion,
             Body = string.Join(Environment.NewLine, releaseNotes.Notes) + Environment.NewLine + Environment.NewLine
-                + @"### Note that you may need to right-click the zip file after download and select ""Unblock"" in the Security section of the properties dialog, otherwise you could get strange errors when using the application.",
+                + @"### Please see http://wyam.io/getting-started/obtaining for important notes about downloading and installing.",
             Prerelease = true,
             TargetCommitish = "master"
         }).Result; 
@@ -336,12 +352,12 @@ Task("Publish-Release")
         {
             var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
         }
-        var releaseFiles = GetFiles(releasesDir.Path.FullPath + "/*");
-        foreach (var releaseFile in releaseFiles)
+        var windowsFiles = GetFiles(windowsDir.Path.FullPath + "/*");
+        foreach (var windowsFile in windowsFiles)
         {
-            using (var contentStream = System.IO.File.OpenRead(releaseFile.FullPath))
+            using (var contentStream = System.IO.File.OpenRead(windowsFile.FullPath))
             {
-                var fileName = releaseFile.GetFilename().ToString();
+                var fileName = windowsFile.GetFilename().ToString();
                 var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(fileName, "application/binary", contentStream, null)).Result;
             }
         }
@@ -375,6 +391,7 @@ Task("Create-Packages")
 Task("Package")
     .IsDependentOn("Run-Unit-Tests")
     .IsDependentOn("Zip-Files")
+    .IsDependentOn("Create-Windows")
     .IsDependentOn("Create-Packages");
 
 Task("Default")

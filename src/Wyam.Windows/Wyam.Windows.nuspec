@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>Wyam</id>
     <version>$version$</version>
-    <title>Wyam</title>
+    <title>Wyam.Windows</title>
     <authors>Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
     <iconUrl>http://wyam.io/Content/images/logo-square-32.png</iconUrl>
     <projectUrl>http://wyam.io</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This is the core engine and can be used to embed Wyam into your application. If you just want to create sites, download the Wyam executable from Chocolatey or the Wyam website.</description>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator.</description>
     <copyright>Copyright 2016</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>
