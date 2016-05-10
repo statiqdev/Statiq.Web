@@ -16,6 +16,7 @@
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
+#addin "Cake.Squirrel"
 using Octokit;
 
 //////////////////////////////////////////////////////////////////////
@@ -45,6 +46,8 @@ var buildDir = Directory("./src/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build") + Directory(semVersion);
 var nugetRoot = buildResultDir + Directory("nuget");
 var binDir = buildResultDir + Directory("bin");
+var installerDir = buildResultDir + Directory("installer");
+var releasesDir = installerDir + Directory("releases");
 
 var zipFile = "Wyam-v" + semVersion + ".zip";
 
@@ -93,7 +96,7 @@ Task("Build")
     .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
     {
-        if(isRunningOnWindows)
+        if (isRunningOnWindows)
         {
             MSBuild("./src/Wyam.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
@@ -117,7 +120,7 @@ Task("Run-Unit-Tests")
         {
             Work = buildResultDir.Path.FullPath
         };
-        if(isRunningOnAppVeyor)
+        if (isRunningOnAppVeyor)
         {
             settings.Where = "cat != ExcludeFromAppVeyor";
         }
@@ -147,7 +150,7 @@ Task("Create-Library-Packages")
     {
         var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault()
             ?? (isRunningOnAppVeyor ? GetFiles("C:\\Tools\\NuGet3\\nuget.exe").FirstOrDefault() : null);
-        if(nugetExe == null)
+        if (nugetExe == null)
         {            
             throw new InvalidOperationException("Could not find nuget.exe.");
         }
@@ -158,7 +161,7 @@ Task("Create-Library-Packages")
         nuspecs.AddRange(GetFiles("./src/**/Cake.Wyam/*.nuspec"));
         
         // Package all nuspecs
-        foreach(var nuspec in nuspecs)
+        foreach (var nuspec in nuspecs)
         {
             NuGetPack(nuspec.ChangeExtension(".csproj"), new NuGetPackSettings
             {
@@ -179,22 +182,21 @@ Task("Create-AllModules-Package")
     .Does(() =>
     {        
         var nuspec = GetFiles("./src/Wyam.Modules.All/*.nuspec").FirstOrDefault();
-        if(nuspec == null)
+        if (nuspec == null)
         {            
             throw new InvalidOperationException("Could not find all modules nuspec.");
         }
         
         // Add dependencies for all module libraries
-        List<NuSpecDependency> dependencies = new List<NuSpecDependency>();
-        foreach(var moduleNuspec in GetFiles("./src/**/Wyam.Modules.*/*.nuspec")
-            .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All"))
-        {
-            dependencies.Add(new NuSpecDependency
-            {
-                Id = moduleNuspec.GetDirectory().GetDirectoryName(),
-                Version = semVersion
-            });
-        }
+        List<NuSpecDependency> dependencies = new List<NuSpecDependency>(
+            GetFiles("./src/**/Wyam.Modules.*/*.nuspec")
+                .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All")
+                .Select(x => new NuSpecDependency
+                    {
+                        Id = x.GetDirectory().GetDirectoryName(),
+                        Version = semVersion
+                    })
+        );
         
         // Pack the all modules package
         NuGetPack(nuspec, new NuGetPackSettings
@@ -212,7 +214,7 @@ Task("Create-Tools-Package")
     .Does(() =>
     {        
         var nuspec = GetFiles("./src/Wyam/*.nuspec").FirstOrDefault();
-        if(nuspec == null)
+        if (nuspec == null)
         {            
             throw new InvalidOperationException("Could not find tools nuspec.");
         }
@@ -233,6 +235,32 @@ Task("Create-Tools-Package")
             }
         });
     });
+
+Task("Create-Installer")
+    .IsDependentOn("Copy-Files")
+    .Does(() => {
+        CopyDirectory(binDir, installerDir + Directory("lib") + Directory("net45"));
+        CopyFileToDirectory("./src/Wyam.nuspec", installerDir);
+        var nuspec = GetFiles(installerDir + File("Wyam.nuspec")).FirstOrDefault();
+
+        NuGetPack(nuspec, new NuGetPackSettings
+        {
+            Version = semVersion,
+            BasePath = nuspec.GetDirectory(),
+            OutputDirectory = installerDir
+        });
+
+        var package = installerDir + File("Wyam." + semVersion + ".nupkg");
+        
+        Squirrel(package, new SquirrelSettings
+        {
+            Silent = true,
+            NoMsi = true,
+            ReleaseDirectory = releasesDir
+        });
+
+        DeleteFile(package);
+    });
     
 Task("Publish-MyGet")
     .IsDependentOn("Create-Packages")
@@ -242,12 +270,12 @@ Task("Publish-MyGet")
     {
         // Resolve the API key.
         var apiKey = EnvironmentVariable("MYGET_API_KEY");
-        if(string.IsNullOrEmpty(apiKey))
+        if (string.IsNullOrEmpty(apiKey))
         {
             throw new InvalidOperationException("Could not resolve MyGet API key.");
         }
 
-        foreach(var nupkg in GetFiles(nugetRoot.Path.FullPath + "/*.nupkg"))
+        foreach (var nupkg in GetFiles(nugetRoot.Path.FullPath + "/*.nupkg"))
         {
             NuGetPush(nupkg, new NuGetPushSettings 
             {
@@ -264,12 +292,12 @@ Task("Publish-Packages")
     .Does(() =>
     {
         var apiKey = EnvironmentVariable("NUGET_API_KEY");
-        if(string.IsNullOrEmpty(apiKey))
+        if (string.IsNullOrEmpty(apiKey))
         {
             throw new InvalidOperationException("Could not resolve NuGet API key.");
         }
 
-        foreach(var nupkg in GetFiles(nugetRoot.Path.FullPath + "/*.nupkg"))
+        foreach (var nupkg in GetFiles(nugetRoot.Path.FullPath + "/*.nupkg"))
         {
             NuGetPush(nupkg, new NuGetPushSettings 
             {
@@ -280,12 +308,14 @@ Task("Publish-Packages")
     
 Task("Publish-Release")
     .IsDependentOn("Zip-Files")
+    .IsDependentOn("Create-Installer")
     .WithCriteria(() => isLocal)
     // TODO: Add criteria that makes sure this is the master branch
     .Does(() =>
     {
         var githubToken = EnvironmentVariable("WYAM_GITHUB_TOKEN");
-        if(string.IsNullOrEmpty(githubToken)) {
+        if (string.IsNullOrEmpty(githubToken))
+        {
             throw new InvalidOperationException("Could not resolve Wyam GitHub token.");
         }
         
@@ -302,9 +332,18 @@ Task("Publish-Release")
             TargetCommitish = "master"
         }).Result; 
         var zipPath = buildResultDir + File(zipFile);
-        using(var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
+        using (var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
         {
             var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
+        }
+        var releaseFiles = GetFiles(releasesDir.Path.FullPath + "/*");
+        foreach (var releaseFile in releaseFiles)
+        {
+            using (var contentStream = System.IO.File.OpenRead(releaseFile.FullPath))
+            {
+                var fileName = releaseFile.GetFilename().ToString();
+                var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(fileName, "application/binary", contentStream, null)).Result;
+            }
         }
     });
     
