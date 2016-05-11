@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using IWshRuntimeLibrary;
 using Squirrel;
+using File = System.IO.File;
 
 namespace Wyam.Windows
 {
@@ -81,12 +84,13 @@ namespace Wyam.Windows
         private static void SquirrelUpdated(string version)
         {
             CreateCmdFiles(version);
-            CreateShortcuts();
         }
 
         private static void SquirrelUninstall(string version)
         {
+            File.WriteAllText("E:\\temp\\uninstall.txt", "TEST");
             RemoveShortcuts();
+            RemovePath();
         }
 
         private static void SquirrelObsolete(string version)
@@ -99,31 +103,50 @@ namespace Wyam.Windows
 
         private static void CreateCmdFiles(string version)
         {
-            string currentDirectory = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string parentDirectory = GetParentDirectory();
             foreach (string exeFile in _exeFiles)
             {
                 string cmdContent = $@"@echo off{Environment.NewLine}{version}\{exeFile} %*";
-                string cmdPath = Path.Combine(currentDirectory, "..", Path.ChangeExtension(exeFile, ".cmd"));
+                string cmdPath = Path.Combine(parentDirectory, Path.ChangeExtension(exeFile, ".cmd"));
                 File.WriteAllText(cmdPath, cmdContent);
             }
+
+            string promptContent = $@"@echo off{Environment.NewLine}set PATH={parentDirectory};%PATH%{Environment.NewLine}@exit /B 0";
+            string promptPath = Path.Combine(parentDirectory, "wyam.prompt.cmd");
+            File.WriteAllText(promptPath, promptContent);
         }
 
         private static void CreateShortcuts()
         {
-            // Uncomment when ready to create shortcuts
-            //using (UpdateManager manager = GetUpdateManager())
-            //{
-            //    manager.CreateShortcutForThisExe();
-            //}
+            // From http://stackoverflow.com/questions/25024785/how-to-create-start-menu-shortcut
+            string startMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+            string startMenuFolderPath = Path.Combine(startMenuPath, "Wyam.Windows");
+            if (!Directory.Exists(startMenuFolderPath))
+            {
+                Directory.CreateDirectory(startMenuFolderPath);
+            }
+            string shortcutLocation = Path.Combine(startMenuFolderPath, "Wyam Command Prompt.lnk");
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
+            shortcut.TargetPath = "cmd.exe";
+            shortcut.Arguments = $"/k {Path.Combine(GetParentDirectory(), "wyam.prompt.cmd")}";
+            shortcut.Save();
         }
 
         private static void RemoveShortcuts()
         {
-            // Uncomment when ready to create shortcuts
-            //using (UpdateManager manager = GetUpdateManager())
-            //{
-            //    manager.RemoveShortcutForThisExe();
-            //}
+            string startMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+            string startMenuFolderPath = Path.Combine(startMenuPath, "Wyam.Windows");
+            if (Directory.Exists(startMenuFolderPath))
+            {
+                Directory.Delete(startMenuFolderPath, true);
+            }
+        }
+
+        private static string GetParentDirectory()
+        {
+            string currentDirectory = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            return Path.GetDirectoryName(Path.Combine(currentDirectory, ".."));
         }
 
         private static void Update()
@@ -158,17 +181,27 @@ namespace Wyam.Windows
         private static void AddPath()
         {
             string currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
-            Console.WriteLine($"Current PATH: {currentPath}");
+            Console.WriteLine("Current PATH:");
+            Console.WriteLine(currentPath);
             string path = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), ".."));
             string newPath = $"{currentPath};{path}";
-            Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
-            Console.WriteLine($"New PATH: {newPath}");
+            try
+            {
+                Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
+                Console.WriteLine("New PATH:");
+                Console.WriteLine(newPath);
+            }
+            catch (SecurityException)
+            {
+                Console.WriteLine("Failed to set new PATH due to security, you must run as administrator to change system environment variables.");
+            }
         }
 
         private static void RemovePath()
         {
             string currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
-            Console.WriteLine($"Current PATH: {currentPath}");
+            Console.WriteLine("Current PATH:");
+            Console.WriteLine(currentPath);
             List<string> paths = currentPath.Split(';').ToList();
             string path = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), ".."));
             int pathIndex = paths.IndexOf(path);
@@ -179,8 +212,16 @@ namespace Wyam.Windows
             }
             paths.RemoveAt(pathIndex);
             string newPath = string.Join(";", paths);
-            Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
-            Console.WriteLine($"New PATH: {newPath}");
+            try
+            {
+                Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
+                Console.WriteLine("New PATH:");
+                Console.WriteLine(newPath);
+            }
+            catch (SecurityException)
+            {
+                Console.WriteLine("Failed to set new PATH due to security, you must run as administrator to change system environment variables.");
+            }
         }
     }
 }

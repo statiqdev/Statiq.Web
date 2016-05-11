@@ -101,6 +101,10 @@ Task("Build")
                 .SetConfiguration(configuration)
                 .SetVerbosity(Verbosity.Minimal)
             );
+            MSBuild("./src/Wyam.Windows.sln", new MSBuildSettings()
+                .SetConfiguration(configuration)
+                .SetVerbosity(Verbosity.Minimal)
+            );
         }
         else
         {
@@ -268,7 +272,7 @@ Task("Create-Windows")
                     }
                 }
             });
-            var package = (packageDir + "/") + File("Wyam.Windows." + semVersion + ".nupkg");          
+            var package = (packageDir + "/") + File("Wyam.Windows." + semVersion + ".nupkg");            
             Squirrel(package, new SquirrelSettings
             {
                 Silent = true,
