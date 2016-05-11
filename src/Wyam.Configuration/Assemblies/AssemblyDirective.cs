@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,30 +8,26 @@ using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Assemblies
 {
-    internal class AssemblyDirective : IDirective
+    internal class AssemblyDirective : ArgumentSyntaxDirective<AssemblyDirective.Settings>
     {
-        public IEnumerable<string> DirectiveNames { get; } = new [] { "a", "assembly" };
+        public override IEnumerable<string> DirectiveNames { get; } = new[] { "a", "assembly" };
 
-        public void Process(Configurator configurator, string value)
+        public class Settings
         {
-            IReadOnlyList<string> assemblies = null;
+            public IReadOnlyList<string> Assemblies = null;
+        }
 
-            // Parse the directive value
-            IEnumerable<string> arguments = ArgumentSplitter.Split(value);
-            System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(arguments, syntax =>
+        protected override void Define(ArgumentSyntax syntax, Settings settings)
+        {
+            if (!syntax.DefineParameterList("assemblies", ref settings.Assemblies, "The assemblies to load by file or globbing pattern.").IsSpecified)
             {
-                if (!syntax.DefineParameterList("assemblies", ref assemblies, "The assemblies to load by file or globbing pattern.").IsSpecified)
-                {
-                    syntax.ReportError("at least one assembly file or globbing pattern must be specified.");
-                }
-            });
-            if (parsed.HasErrors)
-            {
-                throw new Exception(parsed.GetHelpText());
+                syntax.ReportError("at least one assembly file or globbing pattern must be specified.");
             }
+        }
 
-            // Add the assemblies
-            foreach (string assembly in assemblies)
+        protected override void Process(Configurator configurator, Settings settings)
+        {
+            foreach (string assembly in settings.Assemblies)
             {
                 configurator.AssemblyLoader.AddPattern(assembly);
             }

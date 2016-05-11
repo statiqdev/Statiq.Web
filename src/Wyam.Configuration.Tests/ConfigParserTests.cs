@@ -275,7 +275,12 @@ E-
 
             public void ProcessDirectives(IEnumerable<DirectiveUse> uses)
             {
-                throw new System.NotImplementedException();
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<IDirective> Directives
+            {
+                get { throw new NotImplementedException(); }
             }
         }
     }

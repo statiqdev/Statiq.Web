@@ -182,6 +182,7 @@
     <Compile Include="ConfigRewriter.cs" />
     <Compile Include="ConfigScriptBase.cs" />
     <Compile Include="Configurator.cs" />
+    <Compile Include="Preprocessing\ArgumentSyntaxDirective.cs" />
     <Compile Include="Preprocessing\DirectiveUse.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
     <Compile Include="NuGet\NuGetConfigDirective.cs" />

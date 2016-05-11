@@ -1,32 +1,31 @@
-using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NuGet.Protocol.Core.v3;
 using Wyam.Configuration.Preprocessing;
+using ArgumentSyntax = System.CommandLine.ArgumentSyntax;
 
 namespace Wyam.Configuration.NuGet
 {
-    internal class NuGetSourceDirective : IDirective
+    internal class NuGetSourceDirective : ArgumentSyntaxDirective<NuGetSourceDirective.Settings>
     {
-        public IEnumerable<string> DirectiveNames { get; } = new[] { "ns", "nuget-source" };
+        public override IEnumerable<string> DirectiveNames { get; } = new[] { "ns", "nuget-source" };
 
-        public void Process(Configurator configurator, string value)
+        public class Settings
         {
-            IReadOnlyList<string> sources = null;
+            public IReadOnlyList<string> Sources = null;
+        }
 
-            // Parse the directive value
-            IEnumerable<string> arguments = ArgumentSplitter.Split(value);
-            System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(arguments, syntax =>
+        protected override void Define(ArgumentSyntax syntax, Settings settings)
+        {
+            if (!syntax.DefineParameterList("sources", ref settings.Sources, "The package source(s) to add.").IsSpecified)
             {
-                if (!syntax.DefineParameterList("sources", ref sources, "The package source(s) to add.").IsSpecified)
-                {
-                    syntax.ReportError("package source(s) must be specified");
-                }
-            });
-            if (parsed.HasErrors)
-            {
-                throw new Exception(parsed.GetHelpText());
+                syntax.ReportError("package source(s) must be specified");
             }
+        }
 
-            foreach (string source in sources)
+        protected override void Process(Configurator configurator, Settings settings)
+        {
+            foreach (string source in settings.Sources)
             {
                 configurator.PackageInstaller.AddPackageSource(source);
             }

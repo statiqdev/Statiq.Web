@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using Wyam.Common.IO;
 
@@ -7,6 +8,7 @@ namespace Wyam
 {
     internal class Settings
     {
+        public bool HelpDirectives = false;
         public bool Watch = false;
         public bool NoClean = false;
         public bool NoCache = false;
@@ -36,6 +38,11 @@ namespace Wyam
             {
                 // Any changes here should also be made in Cake.Wyam
 
+                if (syntax.DefineOption("help-directives", ref HelpDirectives, "Displays help for the various preprocessor directives.").IsSpecified)
+                {
+                    // Don't care about anything else
+                    return;
+                }
                 syntax.DefineOption("w|watch", ref Watch, "Watches the input folder for any changes.");
                 Preview = syntax.DefineOption("p|preview", ref PreviewPort, false, "Start the preview web server on the specified port (default is " + PreviewPort + ").").IsSpecified;
                 if (syntax.DefineOption("force-ext", ref PreviewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !Preview)

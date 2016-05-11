@@ -26,6 +26,8 @@ namespace Wyam.Configuration
 
         public FilePath OutputScriptPath { get; set; }
 
+        public IPreprocessor Preprocessor => _preprocessor;
+
         public Configurator(Engine engine)
         {
             _engine = engine;
@@ -67,9 +69,6 @@ namespace Wyam.Configuration
                 throw new InvalidOperationException("Configuration has already been performed.");
             }
             _configured = true;
-
-            // Add the directives at this stage so everything is initialized
-            _preprocessor.AddDirectives();
 
             // Parse the script (or use an empty result if no script)
             ConfigParserResult parserResult = string.IsNullOrWhiteSpace(script)

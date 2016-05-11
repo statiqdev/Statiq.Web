@@ -14,6 +14,8 @@ using Owin;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
+using Wyam.Configuration;
+using Wyam.Configuration.Preprocessing;
 using Wyam.Core;
 using Wyam.Core.Execution;
 using Wyam.Owin;
@@ -57,6 +59,21 @@ namespace Wyam
             if (!_settings.ParseArgs(args, out hasParseArgsErrors))
             {
                 return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
+            }
+
+            // Was help for the preprocessor directives requested?
+            if (_settings.HelpDirectives)
+            {
+                Console.WriteLine("Available preprocessor directives:");
+                Engine engine = new Engine();
+                Configurator configurator = new Configurator(engine);
+                foreach (IDirective directive in configurator.Preprocessor.Directives)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(string.Join(", ", directive.DirectiveNames.Select(x => "#" + x)));
+                    Console.WriteLine(directive.GetHelpText());
+                }
+                return (int) ExitCode.Normal;
             }
 
             // It's not a serious console app unless there's some ASCII art

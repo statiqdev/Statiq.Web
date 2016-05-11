@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Wyam.Configuration.Assemblies;
 using Wyam.Configuration.NuGet;
 
@@ -7,15 +9,11 @@ namespace Wyam.Configuration.Preprocessing
 {
     internal class Preprocessor : IPreprocessor
     {
-        private readonly Dictionary<string, IDirective> _directives = new Dictionary<string, IDirective>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, IDirective> _directives 
+            = new ConcurrentDictionary<string, IDirective>(StringComparer.OrdinalIgnoreCase);
         private readonly Configurator _configurator;
 
-        public Preprocessor(Configurator configurator)
-        {
-            _configurator = configurator;
-        }
-
-        public void AddDirectives()
+        static Preprocessor()
         {
             AddDirective(new NuGetDirective());
             AddDirective(new NuGetSourceDirective());
@@ -24,12 +22,18 @@ namespace Wyam.Configuration.Preprocessing
             AddDirective(new AssemblyNameDirective());
         }
 
-        private void AddDirective(IDirective directive)
+        private static void AddDirective(IDirective directive)
         {
             foreach (string name in directive.DirectiveNames)
             {
-                _directives.Add(name, directive);
+                _directives.TryAdd(name, directive);
             }
+        }
+
+
+        public Preprocessor(Configurator configurator)
+        {
+            _configurator = configurator;
         }
         
         public bool ContainsDirective(string name)
@@ -50,10 +54,13 @@ namespace Wyam.Configuration.Preprocessing
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception($"Error while processing directive on line {use.Line}: #{use.Name} {use.Value}{Environment.NewLine}{ex}");
+                        string line = use.Line.HasValue ? (" on line " + use.Line.Value) : string.Empty;
+                        throw new Exception($"Error while processing directive{line}: #{use.Name} {use.Value}{Environment.NewLine}{ex}");
                     }
                 }
             }
         }
+
+        public IEnumerable<IDirective> Directives => _directives.Values.Distinct();
     }
 }

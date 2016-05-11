@@ -72,7 +72,10 @@ namespace Wyam
             // Script output
             Configurator.OutputScript = _settings.OutputScript;
 
+            // Application input
             Engine.ApplicationInput = _settings.Stdin;
+
+            // TODO: Process preprocessor directives specified on the CLI
         }
 
         public void Dispose()

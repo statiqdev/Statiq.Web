@@ -2,9 +2,10 @@
 
 namespace Wyam.Configuration.Preprocessing
 {
-    internal interface IDirective
+    public interface IDirective
     {
         IEnumerable<string> DirectiveNames { get; }
         void Process(Configurator configurator, string value);
+        string GetHelpText();
     }
 }
