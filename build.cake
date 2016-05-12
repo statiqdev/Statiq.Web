@@ -11,6 +11,7 @@
 // - Push to develop and fast-forward merge to master
 // - Switch to master
 // - Run a Publish build with Cake ("build.cmd --target Publish")
+// - NOTE: The final publish step where the setup gets uploaded to GitHub fails - run Fiddler on next publish to see error message from GitHub
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
 
@@ -279,6 +280,7 @@ Task("Create-Windows")
                 NoMsi = true,
                 ReleaseDirectory = windowsDir
             });
+            DeleteFile(package);
         }
     });
     
@@ -351,11 +353,13 @@ Task("Publish-Release")
             Prerelease = true,
             TargetCommitish = "master"
         }).Result; 
+        
         var zipPath = buildResultDir + File(zipFile);
         using (var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
         {
             var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
         }
+        
         var windowsFiles = GetFiles(windowsDir.Path.FullPath + "/*");
         foreach (var windowsFile in windowsFiles)
         {
