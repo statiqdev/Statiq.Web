@@ -26,14 +26,17 @@ namespace Wyam.Configuration
 
         public FilePath OutputScriptPath { get; set; }
 
-        public IPreprocessor Preprocessor => _preprocessor;
-
         public Configurator(Engine engine)
+            : this(engine, new Preprocessor())
+        {
+        }
+        
+        public Configurator(Engine engine, Preprocessor preprocessor)
         {
             _engine = engine;
             AssemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies, engine.Namespaces);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
-            _preprocessor = new Preprocessor(this);
+            _preprocessor = preprocessor;
 
             // Add the config namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
@@ -76,7 +79,7 @@ namespace Wyam.Configuration
                 : ConfigParser.Parse(script, _preprocessor);
 
             // Process preprocessor directives
-            _preprocessor.ProcessDirectives(parserResult.DirectiveUses);
+            _preprocessor.ProcessDirectives(this, parserResult.DirectiveValues);
 
             // Initialize and evaluate the script
             Initialize();

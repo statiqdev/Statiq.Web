@@ -10,27 +10,29 @@ namespace Wyam.Configuration.Assemblies
 {
     internal class AssemblyNameDirective : ArgumentSyntaxDirective<AssemblyNameDirective.Settings>
     {
-        public override IEnumerable<string> DirectiveNames { get; } = new[] { "an", "assembly-name" };
+        public override IEnumerable<string> DirectiveNames { get; } = new[] { "assembly-name", "an" };
 
+        public override bool SupportsCli => true;
+
+        public override string Description => "Adds a reference to an assembly by name.";
+
+        // Any changes to settings should also be made in Cake.Wyam
         public class Settings
         {
-            public IReadOnlyList<string> Assemblies = null;
+            public string Assembly;
         }
 
         protected override void Define(ArgumentSyntax syntax, Settings settings)
         {
-            if (!syntax.DefineParameterList("assemblies", ref settings.Assemblies, "The assemblies to load by name.").IsSpecified)
+            if (!syntax.DefineParameter("assembly", ref settings.Assembly, "The assembly to load by name.").IsSpecified)
             {
-                syntax.ReportError("at least one assembly name must be specified.");
+                syntax.ReportError("an assembly name must be specified.");
             }
         }
 
         protected override void Process(Configurator configurator, Settings settings)
         {
-            foreach (string assembly in settings.Assemblies)
-            {
-                configurator.AssemblyLoader.AddPattern(assembly);
-            }
+            configurator.AssemblyLoader.AddName(settings.Assembly);
         }
     }
 }

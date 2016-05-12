@@ -5,7 +5,7 @@ namespace Wyam.Configuration
 {
     internal class ConfigParserResult
     {
-        public List<DirectiveUse> DirectiveUses { get; } = new List<DirectiveUse>();
+        public List<DirectiveValue> DirectiveValues { get; } = new List<DirectiveValue>();
         public string Declarations { get; set; }
         public string Body { get; set; }
     }

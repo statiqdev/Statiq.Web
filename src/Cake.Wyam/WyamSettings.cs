@@ -115,5 +115,25 @@ namespace Cake.Wyam
         /// </summary>
         /// <remarks>Default is the current working directory</remarks>
         public DirectoryPath RootPath { get; set; }
+
+        /// <summary>
+        /// Adds NuGet packages (downloading and installing them if needed).
+        /// </summary>
+        public IEnumerable<NuGetSettings> NuGetPackages { get; set; }
+
+        /// <summary>
+        /// Specifies additional package sources to use.
+        /// </summary>
+        public IEnumerable<NuGetSourceSettings> NuGetSources { get; set; }
+
+        /// <summary>
+        /// Adds references to an assemblies by name.
+        /// </summary>
+        public IEnumerable<AssemblyNameSettings> AssemblyNames { get; set; }
+
+        /// <summary>
+        /// Adds references to assemblies by file name or globbing pattern.
+        /// </summary>
+        public IEnumerable<AssemblySettings> Assemblies { get; set; }
     }
 }

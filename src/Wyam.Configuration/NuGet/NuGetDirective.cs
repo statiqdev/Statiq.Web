@@ -7,16 +7,21 @@ namespace Wyam.Configuration.NuGet
 {
     internal class NuGetDirective : ArgumentSyntaxDirective<NuGetDirective.Settings>
     {
-        public override IEnumerable<string> DirectiveNames { get; } = new[] { "n", "nuget" };
+        public override IEnumerable<string> DirectiveNames { get; } = new[] { "nuget", "n" };
 
+        public override bool SupportsCli => true;
+        
+        public override string Description => "Adds a NuGet package (downloading and installing it if needed).";
+
+        // Any changes to settings should also be made in Cake.Wyam
         public class Settings
         {
-            public bool Prerelease = false;
-            public bool Unlisted = false;
-            public bool Exclusive = false;
-            public string Version = null;
-            public IReadOnlyList<string> Sources = null;
-            public IReadOnlyList<string> Packages = null;
+            public bool Prerelease;
+            public bool Unlisted;
+            public bool Exclusive;
+            public string Version;
+            public IReadOnlyList<string> Sources;
+            public string Package;
         }
 
         protected override void Define(ArgumentSyntax syntax, Settings settings)
@@ -30,20 +35,17 @@ namespace Wyam.Configuration.NuGet
             {
                 syntax.ReportError("exclusive can only be used if sources are specified.");
             }
-            if (!syntax.DefineParameterList("package", ref settings.Packages, "The package(s) to install.").IsSpecified)
+            if (!syntax.DefineParameter("package", ref settings.Package, "The package to install.").IsSpecified)
             {
-                syntax.ReportError("at least one package must be specified.");
+                syntax.ReportError("a package must be specified.");
             }
         }
 
         protected override void Process(Configurator configurator, Settings settings)
         {
             // Add the package to the repository (it'll actually get fetched later)
-            foreach (string package in settings.Packages)
-            {
-                configurator.PackageInstaller.AddPackage(package, 
-                    settings.Sources, settings.Version, settings.Prerelease, settings.Unlisted, settings.Exclusive);
-            }
+            configurator.PackageInstaller.AddPackage(settings.Package, 
+                settings.Sources, settings.Version, settings.Prerelease, settings.Unlisted, settings.Exclusive);
         }
     }
 }

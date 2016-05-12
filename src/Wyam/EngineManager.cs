@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration;
+using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
 
 namespace Wyam
@@ -18,11 +19,11 @@ namespace Wyam
         public Engine Engine { get; }
         public Configurator Configurator { get; }
 
-        public EngineManager(Settings settings)
+        public EngineManager(Preprocessor preprocessor, Settings settings)
         {
             _settings = settings;
             Engine = new Engine();
-            Configurator = new Configurator(Engine);
+            Configurator = new Configurator(Engine, preprocessor);
             
             // Set verbose tracing
             if (_settings.Verbose)
@@ -74,8 +75,6 @@ namespace Wyam
 
             // Application input
             Engine.ApplicationInput = _settings.Stdin;
-
-            // TODO: Process preprocessor directives specified on the CLI
         }
 
         public void Dispose()

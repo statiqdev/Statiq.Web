@@ -10,6 +10,8 @@ namespace Wyam.Configuration.Preprocessing
     {
         public abstract IEnumerable<string> DirectiveNames { get; }
 
+        public abstract bool SupportsCli { get; }
+
         public void Process(Configurator configurator, string value)
         {
             Process(configurator, value, false);
@@ -17,14 +19,17 @@ namespace Wyam.Configuration.Preprocessing
 
         public string GetHelpText()
         {
-            return string.Join(Environment.NewLine, Process(null, string.Empty, true)
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.None).Skip(1));
+            return string.Join(Environment.NewLine, 
+                Process(null, string.Empty, true)
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                    .Skip(1)
+                    .Where(x => !string.IsNullOrEmpty(x)));
         }
+
+        public abstract string Description { get; }
 
         private string Process(Configurator configurator, string value, bool getHelpText)
         {
-            IReadOnlyList<string> sources = null;
-
             // Parse the directive value
             IEnumerable<string> arguments = ArgumentSplitter.Split(value);
             ArgumentSyntax parsed = null;

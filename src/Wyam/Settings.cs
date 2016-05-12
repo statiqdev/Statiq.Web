@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
+using System.Linq;
 using Wyam.Common.IO;
+using Wyam.Configuration.Preprocessing;
 
 namespace Wyam
 {
@@ -32,7 +34,7 @@ namespace Wyam
         public IReadOnlyList<string> GlobalMetadataArgs = null;
         public IReadOnlyDictionary<string, object> GlobalMetadata = null;
 
-        public bool ParseArgs(string[] args, out bool hasErrors)
+        public bool ParseArgs(string[] args, Preprocessor preprocessor, out bool hasErrors)
         {
             System.CommandLine.ArgumentSyntax parsed = System.CommandLine.ArgumentSyntax.Parse(args, syntax =>
             {
@@ -66,11 +68,26 @@ namespace Wyam
                 syntax.DefineOption("v|verbose", ref Verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("pause", ref Pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
                 syntax.DefineOptionList("meta", ref GlobalMetadataArgs, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
+
                 LogFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref LogFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
                 {
                     LogFilePath = null;
                 }
+
+                foreach (IDirective directive in preprocessor.Directives.Where(x => x.SupportsCli))
+                {
+                    IReadOnlyList<string> directiveValues = null;
+                    syntax.DefineOptionList(directive.DirectiveNames.First(), ref directiveValues, $"{directive.Description} See below for syntax details.");
+                    if (directiveValues != null)
+                    {
+                        foreach (string directiveValue in directiveValues)
+                        {
+                            preprocessor.AddValue(new DirectiveValue(directive.DirectiveNames.First(), directiveValue));
+                        }
+                    }
+                }
+
                 if (syntax.DefineParameter("root", ref RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
                 {
                     // If a root folder was defined, but it actually points to a file, set the root folder to the directory
@@ -99,6 +116,17 @@ namespace Wyam
                 using (StreamReader reader = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
                 {
                     Stdin = reader.ReadToEnd();
+                }
+            }
+
+            if (parsed.IsHelpRequested())
+            {
+                foreach (IDirective directive in preprocessor.Directives.Where(x => x.SupportsCli))
+                {
+                    Console.WriteLine($"--{directive.DirectiveNames.First()} usage:");
+                    Console.WriteLine();
+                    Console.WriteLine(directive.GetHelpText());
+                    Console.WriteLine();
                 }
             }
 

@@ -7,17 +7,17 @@ using Wyam.Configuration.NuGet;
 
 namespace Wyam.Configuration.Preprocessing
 {
-    internal class Preprocessor : IPreprocessor
+    public class Preprocessor : IPreprocessor
     {
-        private static readonly ConcurrentDictionary<string, IDirective> _directives 
+        private static readonly ConcurrentDictionary<string, IDirective> AllDirectives 
             = new ConcurrentDictionary<string, IDirective>(StringComparer.OrdinalIgnoreCase);
-        private readonly Configurator _configurator;
+
+        private readonly List<DirectiveValue> _values = new List<DirectiveValue>();
 
         static Preprocessor()
         {
             AddDirective(new NuGetDirective());
             AddDirective(new NuGetSourceDirective());
-            AddDirective(new NuGetConfigDirective());
             AddDirective(new AssemblyDirective());
             AddDirective(new AssemblyNameDirective());
         }
@@ -26,41 +26,40 @@ namespace Wyam.Configuration.Preprocessing
         {
             foreach (string name in directive.DirectiveNames)
             {
-                _directives.TryAdd(name, directive);
+                AllDirectives.TryAdd(name, directive);
             }
         }
-
-
-        public Preprocessor(Configurator configurator)
-        {
-            _configurator = configurator;
-        }
         
-        public bool ContainsDirective(string name)
-        {
-            return _directives.ContainsKey(name);
-        }
+        public bool ContainsDirective(string name) => AllDirectives.ContainsKey(name);
 
-        public void ProcessDirectives(IEnumerable<DirectiveUse> uses)
+        public IEnumerable<IDirective> Directives => AllDirectives.Values.Distinct();
+
+        /// <summary>
+        /// Adds values that will be persistent from one configuration to the next.
+        /// </summary>
+        public void AddValue(DirectiveValue value) => _values.Add(value);
+
+        /// <summary>
+        /// Processes both directives that were added to the preprocessor plus any additional ones passed in.
+        /// </summary>
+        internal void ProcessDirectives(Configurator configurator, IEnumerable<DirectiveValue> additionalValues)
         {
-            foreach (DirectiveUse use in uses)
+            foreach (DirectiveValue value in _values.Concat(additionalValues))
             {
                 IDirective directive;
-                if (_directives.TryGetValue(use.Name, out directive))
+                if (AllDirectives.TryGetValue(value.Name, out directive))
                 {
                     try
                     {
-                        directive.Process(_configurator, use.Value);
+                        directive.Process(configurator, value.Value);
                     }
                     catch (Exception ex)
                     {
-                        string line = use.Line.HasValue ? (" on line " + use.Line.Value) : string.Empty;
-                        throw new Exception($"Error while processing directive{line}: #{use.Name} {use.Value}{Environment.NewLine}{ex}");
+                        string line = value.Line.HasValue ? (" on line " + value.Line.Value) : string.Empty;
+                        throw new Exception($"Error while processing directive{line}: #{value.Name} {value.Value}{Environment.NewLine}{ex}");
                     }
                 }
             }
         }
-
-        public IEnumerable<IDirective> Directives => _directives.Values.Distinct();
     }
 }

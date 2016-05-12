@@ -207,7 +207,7 @@ C", result.Body);
                 {
                     Tuple.Create((int?)1, "valid", "a b c"),
                     Tuple.Create((int?)6, "valid", "x y z")
-                }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
+                }, result.DirectiveValues.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
 
             [Test]
@@ -226,7 +226,7 @@ A";
                 Assert.AreEqual(@"#line 1
 # valid a b c
 A", result.Body);
-                CollectionAssert.IsEmpty(result.DirectiveUses);
+                CollectionAssert.IsEmpty(result.DirectiveValues);
             }
 
             [Test]
@@ -262,7 +262,7 @@ E-
                 {
                     Tuple.Create((int?)1, "valid", "a"),
                     Tuple.Create((int?)8, "valid", "c")
-                }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
+                }, result.DirectiveValues.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
         }
 
@@ -273,14 +273,14 @@ E-
                 return name == "valid";
             }
 
-            public void ProcessDirectives(IEnumerable<DirectiveUse> uses)
-            {
-                throw new NotImplementedException();
-            }
-
             public IEnumerable<IDirective> Directives
             {
                 get { throw new NotImplementedException(); }
+            }
+
+            public void AddValue(DirectiveValue value)
+            {
+                throw new NotImplementedException();
             }
         }
     }

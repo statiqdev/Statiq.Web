@@ -61,7 +61,7 @@ namespace Cake.Wyam
 
         private ProcessArgumentBuilder GetArguments(WyamSettings settings)
         {
-            var builder = new ProcessArgumentBuilder();
+            ProcessArgumentBuilder builder = new ProcessArgumentBuilder();
 
             if (settings.Watch)
             {
@@ -165,7 +165,80 @@ namespace Cake.Wyam
                 builder.Append("--log");
                 builder.AppendQuoted(settings.LogFilePath.MakeAbsolute(_environment).FullPath);
             }
-            
+
+            if (settings.NuGetPackages != null)
+            {
+                foreach (NuGetSettings childSettings in settings.NuGetPackages)
+                {
+                    ProcessArgumentBuilder childBuilder = new ProcessArgumentBuilder();
+
+                    if (childSettings.Prerelease)
+                    {
+                        builder.Append("--prerelease");
+                    }
+
+                    if (childSettings.Unlisted)
+                    {
+                        builder.Append("--unlisted");
+                    }
+
+                    if (childSettings.Exclusive)
+                    {
+                        builder.Append("--exclusive");
+                    }
+
+                    if (childSettings.Version != null)
+                    {
+                        builder.Append("--version");
+                        builder.Append(childSettings.Version);
+                    }
+
+                    if (childSettings.Source != null)
+                    {
+                        foreach (string source in childSettings.Source)
+                        {
+                            builder.Append("--source");
+                            builder.Append(source);
+                        }
+                    }
+
+                    if (childSettings.Package != null)
+                    {
+                        builder.Append(childSettings.Package);
+                    }
+
+                    builder.Append("--nuget");
+                    builder.AppendQuoted(childBuilder.Render());
+                }
+            }
+
+            if (settings.NuGetSources != null)
+            {
+                foreach (NuGetSourceSettings childSettings in settings.NuGetSources)
+                {
+                    builder.Append("--nuget-source");
+                    builder.Append(childSettings.Source);
+                }
+            }
+
+            if (settings.AssemblyNames != null)
+            {
+                foreach (AssemblyNameSettings childSettings in settings.AssemblyNames)
+                {
+                    builder.Append("--assembly-name");
+                    builder.Append(childSettings.Assembly);
+                }
+            }
+
+            if (settings.Assemblies != null)
+            {
+                foreach (AssemblySettings childSettings in settings.Assemblies)
+                {
+                    builder.Append("--assembly");
+                    builder.Append(childSettings.Assembly);
+                }
+            }
+
             if (settings.RootPath != null)
             {
                 builder.AppendQuoted(settings.RootPath.MakeAbsolute(_environment).FullPath);
@@ -174,6 +247,8 @@ namespace Cake.Wyam
             {
                 builder.AppendQuoted(_environment.WorkingDirectory.FullPath);
             }
+
+
 
             return builder;
         }

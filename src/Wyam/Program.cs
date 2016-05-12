@@ -38,6 +38,7 @@ namespace Wyam
             Environment.Exit((int)ExitCode.UnhandledError);
         }
 
+        private readonly Preprocessor _preprocessor = new Preprocessor();
         private readonly Settings _settings = new Settings();
         private readonly ConcurrentQueue<string> _changedFiles = new ConcurrentQueue<string>();
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
@@ -47,16 +48,16 @@ namespace Wyam
         private int Run(string[] args)
         {
             // Add a default trace listener
-            Trace.AddListener(new SimpleColorConsoleTraceListener() { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
+            Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
 
             // Output version info
             AssemblyInformationalVersionAttribute versionAttribute
                 = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
             Trace.Information("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
-
+            
             // Parse the command line
             bool hasParseArgsErrors;
-            if (!_settings.ParseArgs(args, out hasParseArgsErrors))
+            if (!_settings.ParseArgs(args, _preprocessor, out hasParseArgsErrors))
             {
                 return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
             }
@@ -65,11 +66,10 @@ namespace Wyam
             if (_settings.HelpDirectives)
             {
                 Console.WriteLine("Available preprocessor directives:");
-                Engine engine = new Engine();
-                Configurator configurator = new Configurator(engine);
-                foreach (IDirective directive in configurator.Preprocessor.Directives)
+                foreach (IDirective directive in _preprocessor.Directives)
                 {
                     Console.WriteLine();
+                    Console.WriteLine($"{directive.Description}:");
                     Console.WriteLine(string.Join(", ", directive.DirectiveNames.Select(x => "#" + x)));
                     Console.WriteLine(directive.GetHelpText());
                 }
@@ -299,7 +299,7 @@ namespace Wyam
         {
             try
             {
-                return new EngineManager(_settings);
+                return new EngineManager(_preprocessor, _settings);
             }
             catch (Exception ex)
             {

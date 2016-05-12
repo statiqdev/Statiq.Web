@@ -183,9 +183,9 @@
     <Compile Include="ConfigScriptBase.cs" />
     <Compile Include="Configurator.cs" />
     <Compile Include="Preprocessing\ArgumentSyntaxDirective.cs" />
-    <Compile Include="Preprocessing\DirectiveUse.cs" />
+    <Compile Include="Preprocessing\CliSupport.cs" />
+    <Compile Include="Preprocessing\DirectiveValue.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
-    <Compile Include="NuGet\NuGetConfigDirective.cs" />
     <Compile Include="NuGet\NuGetLogger.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
