@@ -1,3 +1,13 @@
+# 0.12.1
+
+- Refactoring - **Breaking change**: Non-core module packages are no longer included with the default distribution and will need to be downloaded and installed by NuGet at runtime, see http://wyam.io/knowledgebase/migrating-to-0.12.x for more information (#275)
+- Feature - Preprocessor directives are now supported in your configuration files for NuGet package and assembly loading (#274)
+- Feature - The CLI also supports a similar syntax to the preprocessor directives for specifying NuGet packages and assemblies on the command line (#280)
+- Feature - We now have a **Windows installer**! (#127 and #283, thanks @FlorianRappl)
+- Feature - We also now have a **Cake addin**! (#129 and #276, thanks @gep13)
+- Refactoring - Migrated internal NuGet libraries to v3 (#190)
+- Refactoring - Moved configuration file and NuGet API logic out of Wyam.Core to new Wyam.Configuration library (#279)
+
 # 0.12.0
 
 - **MAJOR BREAKING CHANGES, BEWARE YE WHO ENTER HERE!** - The entire I/O stack has (finally) been rewritten and modules that were using `System.IO` classes have been ported to the new abstraction - read about how to migrate your pre 0.12.0 code at http://wyam.io/knowledgebase/migrating-to-0.12.x and keep on the lookout for bugs
