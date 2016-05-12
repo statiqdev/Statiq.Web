@@ -205,8 +205,8 @@ A=
 C", result.Body);
                 CollectionAssert.AreEqual(new []
                 {
-                    Tuple.Create(1, "valid", "a b c"),
-                    Tuple.Create(6, "valid", "x y z")
+                    Tuple.Create((int?)1, "valid", "a b c"),
+                    Tuple.Create((int?)6, "valid", "x y z")
                 }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
 
@@ -260,8 +260,8 @@ E-
 -F", result.Body);
                 CollectionAssert.AreEqual(new[]
                 {
-                    Tuple.Create(1, "valid", "a"),
-                    Tuple.Create(8, "valid", "c")
+                    Tuple.Create((int?)1, "valid", "a"),
+                    Tuple.Create((int?)8, "valid", "c")
                 }, result.DirectiveUses.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
         }
