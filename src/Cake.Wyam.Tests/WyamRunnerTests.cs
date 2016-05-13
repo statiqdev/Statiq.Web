@@ -127,7 +127,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview \"/Working\"", result.Args);
+                Assert.AreEqual("--preview 5080 \"/Working\"", result.Args);
             }
 
             [Test]
@@ -153,7 +153,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview --force-ext \"/Working\"", result.Args);
+                Assert.AreEqual("--preview 5080 --force-ext \"/Working\"", result.Args);
             }
 
             [Test]
@@ -194,7 +194,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--preview --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
+                Assert.AreEqual("--preview 5080 --preview-root \"PreviewRoot\" \"/Working\"", result.Args);
             }
 
             [Test]
