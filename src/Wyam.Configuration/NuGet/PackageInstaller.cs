@@ -9,6 +9,7 @@ using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Protocol.Core.v3;
@@ -29,6 +30,7 @@ namespace Wyam.Configuration.NuGet
         };
         private readonly List<Package> _packages = new List<Package>();
         private readonly IFileSystem _fileSystem;
+        private readonly WyamFolderNuGetProject _nuGetProject;
         private DirectoryPath _packagesPath = "packages";
 
         internal PackageInstaller(IFileSystem fileSystem, AssemblyLoader assemblyLoader)
@@ -47,9 +49,10 @@ namespace Wyam.Configuration.NuGet
             Settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(_fileSystem.RootPath.FullPath, null, new MachineWideSettings());
             IPackageSourceProvider packageSourceProvider = new PackageSourceProvider(Settings);
             SourceRepositoryProvider = new WyamSourceRepositoryProvider(packageSourceProvider);
+            _nuGetProject = new WyamFolderNuGetProject(fileSystem, assemblyLoader, CurrentFramework, GetAbsolutePackagesPath().FullPath);
             PackageManager = new NuGetPackageManager(SourceRepositoryProvider, Settings, GetAbsolutePackagesPath().FullPath)
             {
-                PackagesFolderNuGetProject = new WyamFolderNuGetProject(fileSystem, assemblyLoader, CurrentFramework, GetAbsolutePackagesPath().FullPath)
+                PackagesFolderNuGetProject = _nuGetProject
             };
         }
 
@@ -111,6 +114,7 @@ namespace Wyam.Configuration.NuGet
             List<SourceRepository> defaultSourceRepositories = _packageSources.Select(SourceRepositoryProvider.CreateRepository).ToList();
 
             // Install the packages
+            _nuGetProject.StartPackageInstall();
             Parallel.ForEach(_packages, package =>
             {
                 List<SourceRepository> sourceRepositories = defaultSourceRepositories;
@@ -124,6 +128,9 @@ namespace Wyam.Configuration.NuGet
                 }
                 package.InstallPackage(this, UpdatePackages, localSourceRepository, sourceRepositories);
             });
+
+            // Process the package (do this after all packages have been installed)
+            _nuGetProject.ProcessAssembliesAndContent();
         }
     }
 }

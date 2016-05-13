@@ -12,6 +12,7 @@ using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Configuration.Assemblies;
 
 namespace Wyam.Configuration.NuGet
@@ -23,6 +24,7 @@ namespace Wyam.Configuration.NuGet
         private readonly IFileSystem _fileSystem;
         private readonly AssemblyLoader _assemblyLoader;
         private readonly NuGetFramework _currentFramework;
+        private readonly ConcurrentHashSet<PackageIdentity> _packageIdentities = new ConcurrentHashSet<PackageIdentity>();
 
         public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, string root) : base(root)
         {
@@ -31,23 +33,30 @@ namespace Wyam.Configuration.NuGet
             _currentFramework = currentFramework;
         }
 
+        public void StartPackageInstall()
+        {
+            _packageIdentities.Clear();
+        }
+
+        // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances
         public override Task<bool> InstallPackageAsync(PackageIdentity packageIdentity, DownloadResourceResult downloadResourceResult,
             INuGetProjectContext nuGetProjectContext, CancellationToken token)
         {
-            return base
-                .InstallPackageAsync(packageIdentity, downloadResourceResult, nuGetProjectContext, token)
-                .ContinueWith(x => ProcessAssembliesAndContent(x, packageIdentity), token);
+            _packageIdentities.Add(packageIdentity);
+            return base.InstallPackageAsync(packageIdentity, downloadResourceResult, nuGetProjectContext, token);
         }
 
-        // This is a continuation of InstallPackageAsync()
-        private bool ProcessAssembliesAndContent(Task<bool> antecedent, PackageIdentity packageIdentity)
+        public void ProcessAssembliesAndContent()
         {
-            DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
-            string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
-            PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
-            AddReferencedAssemblies(installedPath, archiveReader);
-            IncludeContentDirectories(installedPath, archiveReader);
-            return antecedent.Result;
+            Parallel.ForEach(_packageIdentities, packageIdentity =>
+            {
+                DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
+                string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
+                PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
+                AddReferencedAssemblies(installedPath, archiveReader);
+                IncludeContentDirectories(installedPath, archiveReader);
+                Trace.Verbose($"Finished processing NuGet package at {installedPath}");
+            });
         }
 
         // Add all reference items to the assembly list

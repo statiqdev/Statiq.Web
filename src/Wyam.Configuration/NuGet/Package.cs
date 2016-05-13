@@ -13,6 +13,7 @@ using NuGet.Versioning;
 using Wyam.Common.Tracing;
 using System.Threading.Tasks;
 using NuGet.Packaging.Core;
+using Wyam.Common.IO;
 
 namespace Wyam.Configuration.NuGet
 {
