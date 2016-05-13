@@ -1,3 +1,8 @@
+# 0.12.2
+
+- Fix - Emergency resolution for a bug with NuGet operations ordering an file locks
+- **Breaking change**: Please see the release notes for 0.12.1 for more information
+
 # 0.12.1
 
 - Refactoring - **Breaking change**: Non-core module packages are no longer included with the default distribution and will need to be downloaded and installed by NuGet at runtime, see http://wyam.io/knowledgebase/migrating-to-0.12.x for more information (#275)
