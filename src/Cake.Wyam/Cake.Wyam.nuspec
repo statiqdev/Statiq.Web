@@ -14,5 +14,7 @@
     <copyright>Copyright 2016</copyright>
     <tags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>
-  <files></files>
+  <files>
+    <file src="bin\$configuration$\$id$.xml" target="lib\net45\" />
+  </files>
 </package>
