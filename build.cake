@@ -11,7 +11,6 @@
 // - Push to develop and fast-forward merge to master
 // - Switch to master
 // - Run a Publish build with Cake ("build.cmd --target Publish")
-// - NOTE: The final publish step where the setup gets uploaded to GitHub fails - run Fiddler on next publish to see error message from GitHub
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
 
@@ -278,7 +277,8 @@ Task("Create-Windows")
             {
                 Silent = true,
                 NoMsi = true,
-                ReleaseDirectory = windowsDir
+                ReleaseDirectory = windowsDir,
+                SetupIcon = GetFiles("./src/Wyam.Windows/wyam.ico").First().FullPath
             });
             DeleteFile(package);
         }

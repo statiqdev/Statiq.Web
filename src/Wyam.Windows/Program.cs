@@ -103,16 +103,16 @@ namespace Wyam.Windows
 
         private static void CreateCmdFiles(string version)
         {
-            string parentDirectory = GetParentDirectory();
+            string installDirectory = GetInstallDirectory();
             foreach (string exeFile in _exeFiles)
             {
-                string cmdContent = $@"@echo off{Environment.NewLine}{version}\{exeFile} %*";
-                string cmdPath = Path.Combine(parentDirectory, Path.ChangeExtension(exeFile, ".cmd"));
+                string cmdContent = $@"@echo off{Environment.NewLine}{installDirectory}\app-{version}\{exeFile} %*";
+                string cmdPath = Path.Combine(installDirectory, Path.ChangeExtension(exeFile, ".cmd"));
                 File.WriteAllText(cmdPath, cmdContent);
             }
 
-            string promptContent = $@"@echo off{Environment.NewLine}set PATH={parentDirectory};%PATH%{Environment.NewLine}@exit /B 0";
-            string promptPath = Path.Combine(parentDirectory, "wyam.prompt.cmd");
+            string promptContent = $@"@echo off{Environment.NewLine}set PATH={installDirectory};%PATH%{Environment.NewLine}@exit /B 0";
+            string promptPath = Path.Combine(installDirectory, "wyam.prompt.cmd");
             File.WriteAllText(promptPath, promptContent);
         }
 
@@ -129,7 +129,7 @@ namespace Wyam.Windows
             WshShell shell = new WshShell();
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
             shortcut.TargetPath = "cmd.exe";
-            shortcut.Arguments = $"/k {Path.Combine(GetParentDirectory(), "wyam.prompt.cmd")}";
+            shortcut.Arguments = $"/k {Path.Combine(GetInstallDirectory(), "wyam.prompt.cmd")}";
             shortcut.Save();
         }
 
@@ -143,10 +143,9 @@ namespace Wyam.Windows
             }
         }
 
-        private static string GetParentDirectory()
+        private static string GetInstallDirectory()
         {
-            string currentDirectory = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            return Path.GetDirectoryName(Path.Combine(currentDirectory, ".."));
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Wyam");
         }
 
         private static void Update()
@@ -183,8 +182,8 @@ namespace Wyam.Windows
             string currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
             Console.WriteLine("Current PATH:");
             Console.WriteLine(currentPath);
-            string path = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), ".."));
-            string newPath = $"{currentPath};{path}";
+            string installDirectory = GetInstallDirectory();
+            string newPath = $"{currentPath};{installDirectory}";
             try
             {
                 Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
@@ -203,11 +202,11 @@ namespace Wyam.Windows
             Console.WriteLine("Current PATH:");
             Console.WriteLine(currentPath);
             List<string> paths = currentPath.Split(';').ToList();
-            string path = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), ".."));
-            int pathIndex = paths.IndexOf(path);
+            string installDirectory = GetInstallDirectory();
+            int pathIndex = paths.IndexOf(installDirectory);
             if (pathIndex < 0)
             {
-                Console.WriteLine($"{path} was not found in PATH, no modifications made");
+                Console.WriteLine($"{installDirectory} was not found in PATH, no modifications made");
                 return;
             }
             paths.RemoveAt(pathIndex);
