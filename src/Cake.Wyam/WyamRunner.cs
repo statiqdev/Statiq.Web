@@ -76,6 +76,11 @@ namespace Cake.Wyam
                 {
                     builder.Append(settings.PreviewPort.ToString());
                 }
+                else
+                {
+                    // Append the default port to avoid the CLI thinking the root path is the port when this is the last option
+                    builder.Append("5080");
+                }
 
                 if (settings.PreviewForceExtensions)
                 {
@@ -238,7 +243,7 @@ namespace Cake.Wyam
                     builder.Append(childSettings.Assembly);
                 }
             }
-
+            
             if (settings.RootPath != null)
             {
                 builder.AppendQuoted(settings.RootPath.MakeAbsolute(_environment).FullPath);
