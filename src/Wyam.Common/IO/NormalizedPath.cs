@@ -122,10 +122,9 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-
-            Uri provider = DefaultProvider;
             
             // Did we get a delimiter?
+            Uri provider;
             int delimiterIndex = path.IndexOf("|", StringComparison.Ordinal);
             if (delimiterIndex != -1)
             {
@@ -148,8 +147,20 @@ namespace Wyam.Common.IO
             else if (Uri.TryCreate(path, UriKind.Absolute, out provider))
             {
                 // No delimiter, but the path itself is a URI
+                if (!string.IsNullOrEmpty(provider.Query))
+                {
+                    throw new ArgumentException("Query components are not allowed for use in the path");
+                }
+                if (!string.IsNullOrEmpty(provider.Fragment))
+                {
+                    throw new ArgumentException("Fragment components are not allowed for use in the path");
+                }
+                path = provider.AbsolutePath;
                 provider = new Uri(provider.GetLeftPart(UriPartial.Authority));
-                path = provider.PathAndQuery + provider.Fragment;
+            }
+            else
+            {
+                provider = DefaultProvider;
             }
 
             return Tuple.Create(provider, path);
