@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration;
@@ -25,12 +23,6 @@ namespace Wyam
             Engine = new Engine();
             Configurator = new Configurator(Engine, preprocessor);
             
-            // Set verbose tracing
-            if (_settings.Verbose)
-            {
-                Trace.Level = System.Diagnostics.SourceLevels.Verbose;
-            }
-
             // Set no cache if requested
             if (_settings.NoCache)
             {

@@ -12,14 +12,9 @@ using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Common.IO;
-using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
-using Wyam.Configuration;
 using Wyam.Configuration.Preprocessing;
-using Wyam.Core;
-using Wyam.Core.Execution;
 using Wyam.Owin;
-using Wyam.Core.Meta;
 
 namespace Wyam
 {
@@ -49,35 +44,46 @@ namespace Wyam
         {
             // Add a default trace listener
             Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
-
+            
             // Output version info
             AssemblyInformationalVersionAttribute versionAttribute
                 = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
             Trace.Information("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
-            
-            // Parse the command line
-            bool hasParseArgsErrors;
-            if (!_settings.ParseArgs(args, _preprocessor, out hasParseArgsErrors))
-            {
-                return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
-            }
-
-            // Was help for the preprocessor directives requested?
-            if (_settings.HelpDirectives)
-            {
-                Console.WriteLine("Available preprocessor directives:");
-                foreach (IDirective directive in _preprocessor.Directives)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine($"{directive.Description}:");
-                    Console.WriteLine(string.Join(", ", directive.DirectiveNames.Select(x => "#" + x)));
-                    Console.WriteLine(directive.GetHelpText());
-                }
-                return (int) ExitCode.Normal;
-            }
 
             // It's not a serious console app unless there's some ASCII art
             OutputLogo();
+
+            // Parse the command line
+            try
+            {
+                bool hasParseArgsErrors;
+                if (!_settings.ParseArgs(args, _preprocessor, out hasParseArgsErrors))
+                {
+                    return hasParseArgsErrors ? (int)ExitCode.CommandLineError : (int)ExitCode.Normal;
+                }
+
+                // Was help for the preprocessor directives requested?
+                if (_settings.HelpDirectives)
+                {
+                    Console.WriteLine("Available preprocessor directives:");
+                    foreach (IDirective directive in _preprocessor.Directives)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine($"{directive.Description}:");
+                        Console.WriteLine(string.Join(", ", directive.DirectiveNames.Select(x => "#" + x)));
+                        Console.WriteLine(directive.GetHelpText());
+                    }
+                    return (int) ExitCode.Normal;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.Error("Error while parsing command line: {0}", ex.Message);
+                if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                    Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
+
+                return (int)ExitCode.CommandLineError;
+            }
 
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
@@ -136,9 +142,9 @@ namespace Wyam
                 return (int)ExitCode.Normal;
             }
 
-            Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
-            Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
-            Console.WriteLine($"Output path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+            Trace.Information($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
+            Trace.Information($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
+            Trace.Information($"Output path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
             if (!engineManager.Execute())
             {
                 return (int)ExitCode.ExecutionError;
