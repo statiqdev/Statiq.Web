@@ -15,10 +15,9 @@ namespace Wyam.Common.IO
     public abstract class NormalizedPath : IComparable<NormalizedPath>, IComparable, IEquatable<NormalizedPath>
     {
         /// <summary>
-        /// Use this provider name to indicate that the path is not intended for use with an actual file provider.
-        /// For example, as the source for documents generated on the fly by a module.
+        /// The default file provider.
         /// </summary>
-        public static readonly string AbstractProvider = "abstract";
+        public static readonly Uri DefaultProvider = new Uri("file:///", UriKind.Absolute);
 
         /// <summary>
         /// Gets the full path.
@@ -49,13 +48,23 @@ namespace Wyam.Common.IO
         public string[] Segments { get; }
 
         /// <summary>
-        /// Gets the provider for this path.
+        /// Gets the provider for this path. If this is a relative path,
+        /// the provider will always be <c>null</c>. If this is an absolute
+        /// path and the provider is <c>null</c> it indicates the path
+        /// is not intended for use with an actual file provider.
         /// </summary>
         /// <value>
         /// The provider for this path.
         /// </value>
-        public string Provider { get; }
+        public Uri Provider { get; }
 
+        /// <summary>
+        /// Gets the root of this path or "." if this is a relative path
+        /// or there is no root.
+        /// </summary>
+        /// <value>
+        /// The root of this path.
+        /// </value>
         public DirectoryPath Root
         {
             get
@@ -80,39 +89,70 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Gets the provider and path from a path string. Implemented as a static
-        /// so it can be used in a constructor chain.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>The provider (item 1) and path (item 2).</returns>
-        internal static Tuple<string, string> GetProviderAndPath(string path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            string provider = null;
-            int providerIndex = path.IndexOf("::", StringComparison.Ordinal);
-            if (providerIndex != -1)
-            {
-                // Return a null provider if the :: was used as an escape without an actual provider
-                provider = providerIndex == 0 ? null : path.Substring(0, providerIndex);
-                path = path.Substring(providerIndex + 2);
-            }
-            return Tuple.Create(provider, path);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NormalizedPath" /> class
         /// with the given provider.
         /// </summary>
         /// <param name="provider">The provider for this path.</param>
         /// <param name="path">The path.</param>
         /// <param name="absolute">Indicates if the path should be explicitly considered absolute.</param>
-        protected NormalizedPath(string provider, string path, bool? absolute)
+        protected NormalizedPath(Uri provider, string path, bool? absolute)
             : this(Tuple.Create(provider, path), absolute)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NormalizedPath" /> class. The new path
+        /// will be absolute if the specified URI is absolute, otherwise it will be relative.
+        /// </summary>
+        /// <param name="path">The path as a URI.</param>
+        protected NormalizedPath(Uri path)
+            : this(GetProviderAndPath(path.ToString()), path.IsAbsoluteUri)
+        {
+        }
+
+        /// <summary>
+        /// Gets the provider and path from a path string. Implemented as a static
+        /// so it can be used in a constructor chain.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The provider (item 1) and path (item 2).</returns>
+        internal static Tuple<Uri, string> GetProviderAndPath(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Uri provider = DefaultProvider;
+            
+            // Did we get a delimiter?
+            int delimiterIndex = path.IndexOf("|", StringComparison.Ordinal);
+            if (delimiterIndex != -1)
+            {
+                // Path contains a provider delimiter, try to parse the provider
+                string pathProvider = path.Substring(0, delimiterIndex);
+                path = path.Length == delimiterIndex + 1 ? string.Empty : path.Substring(delimiterIndex + 1);
+                if (!Uri.TryCreate(pathProvider, UriKind.Absolute, out provider))
+                {
+                    // Couldn't create the provider as a URI, try it as just a scheme
+                    if (Uri.CheckSchemeName(pathProvider))
+                    {
+                        provider = new Uri($"{pathProvider}:///", UriKind.Absolute);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("The provider URI is not valid");
+                    }
+                }
+            }
+            else if (Uri.TryCreate(path, UriKind.Absolute, out provider))
+            {
+                // No delimiter, but the path itself is a URI
+                provider = new Uri(provider.GetLeftPart(UriPartial.Authority));
+                path = provider.PathAndQuery + provider.Fragment;
+            }
+
+            return Tuple.Create(provider, path);
         }
 
         /// <summary>
@@ -121,9 +161,9 @@ namespace Wyam.Common.IO
         /// <param name="providerAndPath">The provider and path as a Tuple so it can
         /// be passed from both of the other constructors.</param>
         /// <param name="absolute">Indicates if the path should be explicitly considered absolute.</param>
-        private NormalizedPath(Tuple<string, string> providerAndPath, bool? absolute)
+        private NormalizedPath(Tuple<Uri, string> providerAndPath, bool? absolute)
         {
-            string provider = providerAndPath.Item1;
+            Uri provider = providerAndPath.Item1;
             string path = providerAndPath.Item2;
 
             if (path == null)
@@ -160,20 +200,13 @@ namespace Wyam.Common.IO
             IsAbsolute = absolute ?? System.IO.Path.IsPathRooted(FullPath);
 
             // Set provider (but only if absolute)
-            if (IsRelative)
+            if (IsRelative && provider != null)
             {
-                if (!string.IsNullOrEmpty(provider))
-                {
-                    throw new ArgumentException("Can not specify provider for relative paths", nameof(provider));
-                }
-
-                // If the provider is the default provider, set to null for relative paths
-                provider = null;
+                throw new ArgumentException("Can not specify provider for relative paths", nameof(provider));
             }
-            else if (provider == null)
+            if (provider != null && !provider.IsAbsoluteUri)
             {
-                // Use string.Empty as the default provider for absolute paths
-                provider = string.Empty;
+                throw new ArgumentException("The provider URI must always be absolute");
             }
             Provider = provider;
 
@@ -244,7 +277,7 @@ namespace Wyam.Common.IO
 
         bool IEquatable<NormalizedPath>.Equals(NormalizedPath other)
         {
-            if (IsAbsolute && other.IsAbsolute && Provider != other.Provider)
+            if (IsAbsolute && other.IsAbsolute && Provider.Equals(other.Provider))
             {
                 return false;
             }
@@ -269,7 +302,7 @@ namespace Wyam.Common.IO
                 throw new ArgumentException("Paths are not the same type");
             }
             
-            int providerCompare = string.Compare(Provider, other.Provider, StringComparison.Ordinal);
+            int providerCompare = string.Compare(Provider?.ToString(), other.Provider?.ToString(), StringComparison.Ordinal);
             return providerCompare == 0
                 ? string.Compare(FullPath, other.FullPath, StringComparison.Ordinal)
                 : providerCompare;

@@ -91,6 +91,13 @@ namespace Wyam.Common.IO
             }
         }
 
+        /// <summary>
+        /// Gets current path relative to it's root. If this is already a relative
+        /// path or there is no root path, this just returns the current path.
+        /// </summary>
+        /// <value>
+        /// The current path relative to it's root.
+        /// </value>
         public DirectoryPath RootRelative
         {
             get
