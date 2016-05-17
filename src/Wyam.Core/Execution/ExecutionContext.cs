@@ -79,7 +79,7 @@ namespace Wyam.Core.Execution
 
         public string GetLink(NormalizedPath path, bool includeHost = false)
         {
-            return GetLink(path, Settings.Host, Settings.LinkRoot, 
+            return GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, 
                 Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
         }
 
