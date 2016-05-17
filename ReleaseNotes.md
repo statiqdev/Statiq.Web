@@ -1,3 +1,9 @@
+# 0.12.3
+
+- Fix - Fixed a bug where execution could hang in some enviornments that open stdin and leave it open like Azure CI or VS Code task execution (#287)
+- Feature - Added a `--latest` flag to the `#nuget` preprocessor directive to indicate that the latest available package version should always be installed
+- **Breaking changes in 0.12.x**: Please see http://wyam.io/knowledgebase/migrating-to-0.12.x for more information
+
 # 0.12.2
 
 - Fix - Emergency resolution for a bug with NuGet operations ordering an file locks
