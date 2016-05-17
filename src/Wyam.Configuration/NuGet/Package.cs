@@ -21,6 +21,7 @@ namespace Wyam.Configuration.NuGet
     {
         private readonly string _packageId;
         private readonly NuGetVersion _version;
+        private readonly bool _getLatest;
         private readonly bool _allowPrereleaseVersions;
         private readonly bool _allowUnlisted;
 
@@ -30,7 +31,7 @@ namespace Wyam.Configuration.NuGet
         public bool Exclusive { get; }
 
         public Package(string packageId, IReadOnlyList<string> packageSources, string version, 
-            bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
+            bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
             if (packageId == null)
             {
@@ -44,6 +45,11 @@ namespace Wyam.Configuration.NuGet
             _packageId = packageId;
             PackageSources = packageSources?.Select(x => new PackageSource(x)).ToList();
             _version = string.IsNullOrWhiteSpace(version) ? null : NuGetVersion.Parse(version);
+            _getLatest = getLatest;
+            if (getLatest && _version != null)
+            {
+                throw new ArgumentException("Can not specify both a version and the latest package");
+            }
             _allowPrereleaseVersions = allowPrereleaseVersions;
             _allowUnlisted = allowUnlisted;
             Exclusive = exclusive;
@@ -64,7 +70,7 @@ namespace Wyam.Configuration.NuGet
             NuGetVersion matchingVersion = installedVersion;
             if (installedVersion != null 
                 && (_version == null || installedVersion == _version) 
-                && !updatePackages)
+                && !updatePackages && !_getLatest)
             {
                 Trace.Verbose($"Package {_packageId}{versionString} is satisfied by version {installedVersion}");
             }

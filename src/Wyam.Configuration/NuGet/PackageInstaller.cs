@@ -103,8 +103,8 @@ namespace Wyam.Configuration.NuGet
         public void AddPackageSource(string packageSource) => _packageSources.Insert(0, new PackageSource(packageSource));
 
         public void AddPackage(string packageId, IReadOnlyList<string> packageSources, string versionSpec, 
-            bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive) 
-            => _packages.Add(new Package(packageId, packageSources, versionSpec, allowPrereleaseVersions, allowUnlisted, exclusive));
+            bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive) 
+            => _packages.Add(new Package(packageId, packageSources, versionSpec, getLatest, allowPrereleaseVersions, allowUnlisted, exclusive));
 
         // Based primarily on NuGet.CommandLine.Commands.UpdateCommand
         internal void InstallPackages()

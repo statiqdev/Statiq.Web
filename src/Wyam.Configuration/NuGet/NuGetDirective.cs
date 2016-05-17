@@ -20,6 +20,7 @@ namespace Wyam.Configuration.NuGet
             public bool Unlisted;
             public bool Exclusive;
             public string Version;
+            public bool Latest;
             public IReadOnlyList<string> Sources;
             public string Package;
         }
@@ -29,6 +30,11 @@ namespace Wyam.Configuration.NuGet
             syntax.DefineOption("p|prerelease", ref settings.Prerelease, "Specifies that prerelease packages are allowed.");
             syntax.DefineOption("u|unlisted", ref settings.Unlisted, "Specifies that unlisted packages are allowed.");
             syntax.DefineOption("v|version", ref settings.Version, "Specifies the version of the package to use.");
+            if (syntax.DefineOption("l|latest", ref settings.Latest, "Specifies that the latest available version of the package should always be used.").IsSpecified 
+                && !string.IsNullOrEmpty(settings.Version))
+            {
+                syntax.ReportError("latest cannot be specified if a version is specified.");
+            }
             syntax.DefineOptionList("s|source", ref settings.Sources, "Specifies the package source(s) to get the package from.");
             if (syntax.DefineOption("e|exclusive", ref settings.Exclusive, "Indicates that only the specified package source(s) should be used to find the package.").IsSpecified
                 && settings.Sources == null)
@@ -44,8 +50,8 @@ namespace Wyam.Configuration.NuGet
         protected override void Process(Configurator configurator, Settings settings)
         {
             // Add the package to the repository (it'll actually get fetched later)
-            configurator.PackageInstaller.AddPackage(settings.Package, 
-                settings.Sources, settings.Version, settings.Prerelease, settings.Unlisted, settings.Exclusive);
+            configurator.PackageInstaller.AddPackage(settings.Package, settings.Sources, 
+                settings.Version, settings.Latest, settings.Prerelease, settings.Unlisted, settings.Exclusive);
         }
     }
 }
