@@ -220,16 +220,19 @@ namespace Wyam.Core.Modules.IO
                         }
                         Trace.Verbose("Wrote file {0}", output.Path.FullPath);
                         FilePath relativePath = context.FileSystem.GetOutputPath().GetRelativePath(output.Path) ?? output.Path.FileName;
+                        FilePath fileNameWithoutExtension = output.Path.FileNameWithoutExtension;
                         return context.GetDocument(input, output.OpenRead(), new MetadataItems
                         {
-                            { Keys.DestinationFileBase, output.Path.FileNameWithoutExtension },
+                            { Keys.DestinationFileBase, fileNameWithoutExtension },
                             { Keys.DestinationFileExt, output.Path.Extension },
                             { Keys.DestinationFileName, output.Path.FileName },
                             { Keys.DestinationFileDir, output.Path.Directory },
                             { Keys.DestinationFilePath, output.Path },
-                            { Keys.DestinationFilePathBase, output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                            { Keys.DestinationFilePathBase, fileNameWithoutExtension == null
+                                ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
                             { Keys.RelativeFilePath, relativePath },
-                            { Keys.RelativeFilePathBase, relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                            { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                                ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
                             { Keys.RelativeFileDir, relativePath.Directory }
                         });
                     }

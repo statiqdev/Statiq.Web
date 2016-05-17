@@ -220,6 +220,8 @@ namespace Wyam.Common.Tests.IO
         {
             [TestCase("/input/test.txt", "test")]
             [TestCase("/input/test", "test")]
+            [TestCase("test.txt", "test")]
+            [TestCase("test", "test")]
             public void ShouldReturnFilenameWithoutExtensionFromPath(string fullPath, string expected)
             {
                 // Given
@@ -243,6 +245,21 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual(null, result.Provider);
+            }
+
+            [TestCase("/input/.test")]
+            [TestCase(".test")]
+            public void ShouldReturnNullIfOnlyExtension(string fullPath)
+            {
+                // Given
+                FilePath path = new FilePath(fullPath);
+
+                // When
+                FilePath result = path.FileNameWithoutExtension;
+
+                // Then
+                Assert.IsNull(result);
+
             }
         }
 

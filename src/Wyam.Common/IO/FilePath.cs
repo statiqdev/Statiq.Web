@@ -109,9 +109,16 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the filename without it's extension.
         /// </summary>
-        /// <value>The filename without it's extension.</value>
-        public FilePath FileNameWithoutExtension => 
-            new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
+        /// <value>The filename without it's extension, or <c>null</c> if the file has no name.</value>
+        public FilePath FileNameWithoutExtension
+        {
+            get
+            {
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(FullPath);
+                return string.IsNullOrEmpty(fileName) ? null : new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
+            }
+        }
+            
 
         /// <summary>
         /// Gets the file extension (including the preceding ".").

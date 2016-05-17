@@ -90,6 +90,38 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             [Test]
+            public void ShouldWriteDotFile()
+            {
+                // Given
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles((x, y) => ".dotfile");
+
+                // When
+                IDocument document = writeFiles.Execute(inputs, Context).ToList().First();
+
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile(".dotfile");
+                Assert.IsTrue(outputFile.Exists);
+                Assert.AreEqual("Test", outputFile.ReadAllText());
+            }
+
+            [Test]
+            public void ShouldReturnNullBasePathsForDotFiles()
+            {
+                // Given
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles((x, y) => ".dotfile");
+
+                // When
+                IDocument document = writeFiles.Execute(inputs, Context).ToList().First();
+
+                // Then
+                Assert.IsNull(document[Keys.DestinationFileBase]);
+                Assert.IsNull(document[Keys.DestinationFilePathBase]);
+                Assert.IsNull(document[Keys.RelativeFilePathBase]);
+            }
+
+            [Test]
             public void OutputDocumentContainsSameContent()
             {
                 // Given

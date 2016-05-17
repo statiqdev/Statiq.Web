@@ -54,6 +54,7 @@ namespace Wyam.Core.Tests.Modules.IO
             fileProvider.AddFile("/TestFiles/Input/test-b.txt", "bbb");
             fileProvider.AddFile("/TestFiles/Input/Subfolder/markdown-y.md", "yyy");
             fileProvider.AddFile("/TestFiles/Input/Subfolder/test-c.txt", "ccc");
+            fileProvider.AddFile("/TestFiles/Input/.dotfile", "dotfile");
 
             return fileProvider;
         }
@@ -83,8 +84,8 @@ namespace Wyam.Core.Tests.Modules.IO
             [TestCase("**/*.txt", 3)]
             [TestCase("*.md", 1)]
             [TestCase("**/*.md", 2)]
-            [TestCase("*.*", 3)]
-            [TestCase("**/*.*", 5)]
+            [TestCase("*.*", 4)]
+            [TestCase("**/*.*", 6)]
             public void PatternFindsCorrectFiles(string pattern, int expectedCount)
             {
                 // Given
@@ -121,6 +122,21 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
+            }
+
+            [Test]
+            public void ShouldReturnNullBasePathsForDotFiles()
+            {
+                // Given
+                ReadFiles readFiles = new ReadFiles(".dotfile");
+
+                // When
+                IDocument document = readFiles.Execute(Inputs, Context).ToList().First();
+
+                // Then
+                Assert.IsNull(document[Keys.SourceFileBase]);
+                Assert.IsNull(document[Keys.SourceFilePathBase]);
+                Assert.IsNull(document[Keys.RelativeFilePathBase]);
             }
 
             [Test]
