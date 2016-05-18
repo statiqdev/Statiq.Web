@@ -13,6 +13,7 @@
     <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides a common set of abstractions and other classes to make writing extensions easier.</description>
     <copyright>Copyright 2016</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
+    <developmentDependency>true</developmentDependency>
   </metadata>
   <files></files>
 </package>
