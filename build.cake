@@ -73,8 +73,11 @@ Task("Restore-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
     {
-        // Note: specify additional package sources here if needed
         NuGetRestore("./src/Wyam.sln");
+        if (isRunningOnWindows)
+        {
+            NuGetRestore("./src/Wyam.Windows.sln");
+        }
     });
 
 Task("Patch-Assembly-Info")
