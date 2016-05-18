@@ -30,6 +30,11 @@ namespace Wyam
         private static void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
         {
             // Exit with a error exit code
+            Exception exception = e.ExceptionObject as Exception;
+            if (exception != null)
+            {
+                Trace.Critical(exception.Message);
+            }
             Environment.Exit((int)ExitCode.UnhandledError);
         }
 
@@ -206,18 +211,22 @@ namespace Wyam
             ExitCode exitCode = ExitCode.Normal;
             if (messagePump)
             {
-                // Start the key listening thread
-                Trace.Information("Hit any key to exit");
-                var thread = new Thread(() =>
+                // Only wait for a key if console input has not been redirected, otherwise it's on the caller to exit
+                if (!Console.IsInputRedirected)
                 {
-                    Console.ReadKey();
-                    _exit.Set();
-                    _messageEvent.Set();
-                })
-                {
-                    IsBackground = true
-                };
-                thread.Start();
+                    // Start the key listening thread
+                    var thread = new Thread(() =>
+                    {
+                        Trace.Information("Hit any key to exit");
+                        Console.ReadKey();
+                        _exit.Set();
+                        _messageEvent.Set();
+                    })
+                    {
+                        IsBackground = true
+                    };
+                    thread.Start();
+                }
 
                 // Wait for activity
                 while (true)
