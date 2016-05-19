@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.Frameworks;
 using NuGet.PackageManagement;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.Core.v3;
-using NuGet.Repositories;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration.Assemblies;
 using IFileSystem = Wyam.Common.IO.IFileSystem;
-using IPackageFile = NuGet.Packaging.IPackageFile;
 
 namespace Wyam.Configuration.NuGet
 {

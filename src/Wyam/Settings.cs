@@ -21,7 +21,7 @@ namespace Wyam
         public bool PreviewForceExtension = false;
         public FilePath LogFilePath = null;
         public bool Verbose = false;
-        public bool Pause = false;
+        public bool Attach = false;
         public bool UpdatePackages = false;
         public bool UseLocalPackages = false;
         public DirectoryPath PackagesPath = null;
@@ -68,7 +68,7 @@ namespace Wyam
                 syntax.DefineOption("noclean", ref NoClean, "Prevents cleaning of the output path on each execution.");
                 syntax.DefineOption("nocache", ref NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref Verbose, "Turns on verbose output showing additional trace message useful for debugging.");
-                syntax.DefineOption("pause", ref Pause, "Pause execution at the start of the program until a key is pressed (useful for attaching a debugger).");
+                syntax.DefineOption("attach", ref Attach, "Pause execution at the start of the program until a debugger is attached.");
                 syntax.DefineOptionList("meta", ref GlobalMetadataArgs, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
 
                 LogFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";

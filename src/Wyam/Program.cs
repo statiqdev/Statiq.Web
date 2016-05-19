@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,9 +13,9 @@ using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Common.IO;
-using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Owin;
+using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam
 {
@@ -90,6 +91,17 @@ namespace Wyam
                 return (int)ExitCode.CommandLineError;
             }
 
+            // Attach
+            if (_settings.Attach)
+            {
+                Trace.Information("Waiting for a debugger to attach...");
+                while (!Debugger.IsAttached)
+                {
+                    Thread.Sleep(100);
+                }
+                Trace.Information("Debugger attached, continuing execution");
+            }
+
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
             _settings.RootPath = _settings.RootPath == null ? currentDirectory : currentDirectory.Combine(_settings.RootPath);
@@ -127,14 +139,7 @@ namespace Wyam
             {
                 return (int)ExitCode.CommandLineError;
             }
-
-            // Pause
-            if (_settings.Pause)
-            {
-                Trace.Information("Pause requested, hit any key to continue");
-                Console.ReadKey();
-            }
-
+            
             // Configure and execute
             if (!engineManager.Configure())
             {
