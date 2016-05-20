@@ -15,6 +15,13 @@ namespace Wyam.Core.Modules.Metadata
     /// <summary>
     /// Add Metadata to the Documents that describes the position of
     /// the Document in a tree structure. 
+    /// Following keys will be set:
+    /// * Parent (<see cref="IDocument"/>) The parent of this node. <c>null</c> if it is a root
+    /// * Children (<see cref="ReadOnlyCollection{IDocument}"/>) All children of this node.
+    /// * PreviosSilbling (<see cref="IDocument"/>) The previous sibling, that is the previous node in the Children collection of the parent. <c>null</c> if this is the first node in the collection or parent is null.
+    /// * NextSilbling (<see cref="IDocument"/>) The next sibling, that is the next node in the Children collection of the parent. <c>null</c> if this is the last node in the collection or parent is null. 
+    /// * Next (<see cref="IDocument"/>) The next node using a Depth-First-Search. <c>null</c> if this was the last node.
+    /// * Previous (<see cref="IDocument"/>) The previous node using a Depth-First-Search. <c>null</c> if this was the first node.
     /// </summary>
     public class Tree : IModule
     {
@@ -69,7 +76,16 @@ namespace Wyam.Core.Modules.Metadata
             return this;
         }
 
-
+        /// <summary>
+        /// Changes the standard Metadata keys.
+        /// </summary>
+        /// <param name="parentMetadata"></param>
+        /// <param name="childrenMetadata"></param>
+        /// <param name="previousSilblingMetadata"></param>
+        /// <param name="nextSilblingMetadata"></param>
+        /// <param name="nextNodeMetadata"></param>
+        /// <param name="previousNodeMetadata"></param>
+        /// <returns></returns>
         public Tree WithMetadataNames(string parentMetadata = "Parent", string childrenMetadata = "Children", string previousSilblingMetadata = "PreviosSilbling", string nextSilblingMetadata = "NextSilbling", string nextNodeMetadata = "Next", string previousNodeMetadata = "Previous")
         {
             this.parentMetadata = parentMetadata;
