@@ -60,16 +60,17 @@ namespace Wyam.Common.IO
         string ReadAllText();
 
         /// <summary>
-        /// Writes the specified text to a file.
-        /// </summary>
-        /// <param name="contents">The text to write.</param>
-        void WriteAllText(string contents);
-
-        /// <summary>
         /// Opens the file for reading. If it does not exist, an exception
         /// will be thrown.
         /// </summary>
         Stream OpenRead();
+
+        /// <summary>
+        /// Writes the specified text to a file.
+        /// </summary>
+        /// <param name="contents">The text to write.</param>
+        /// <param name="createDirectory">Will create any needed directories that don't already exist if set to <c>true</c>.</param>
+        void WriteAllText(string contents, bool createDirectory = true);
 
         /// <summary>
         /// Opens the file for writing. This will either create the file

@@ -82,11 +82,6 @@ namespace Wyam.Testing.IO
             return _fileProvider.Files[_path.FullPath].ToString();
         }
 
-        public void WriteAllText(string contents)
-        {
-            _fileProvider.Files[_path.FullPath] = new StringBuilder(contents);
-        }
-
         public Stream OpenRead()
         {
             StringBuilder builder;
@@ -96,6 +91,12 @@ namespace Wyam.Testing.IO
             }
             byte[] bytes = Encoding.UTF8.GetBytes(builder.ToString());
             return new MemoryStream(bytes);
+        }
+
+        public void WriteAllText(string contents, bool createDirectory = true)
+        {
+            CreateDirectory(createDirectory, this);
+            _fileProvider.Files[_path.FullPath] = new StringBuilder(contents);
         }
 
         public Stream OpenWrite(bool createDirectory = true)

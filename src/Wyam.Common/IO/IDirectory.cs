@@ -21,7 +21,7 @@ namespace Wyam.Common.IO
         new DirectoryPath Path { get; }
         
         /// <summary>
-        /// Creates the directory.
+        /// Creates the directory, including any necessary parent directories.
         /// </summary>
         void Create();
 

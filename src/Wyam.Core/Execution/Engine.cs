@@ -109,13 +109,6 @@ namespace Wyam.Core.Execution
                 CleanOutputPath();
             }
 
-            // Create the output folder if it doesn't already exist
-            IDirectory outputDirectory = FileSystem.GetOutputDirectory();
-            if (!outputDirectory.Exists)
-            {
-                outputDirectory.Create();
-            }
-
             try
             {
                 System.Diagnostics.Stopwatch engineStopwatch = System.Diagnostics.Stopwatch.StartNew();
