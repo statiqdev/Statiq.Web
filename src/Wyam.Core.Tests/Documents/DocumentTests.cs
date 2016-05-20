@@ -63,7 +63,7 @@ namespace Wyam.Core.Tests.Documents
                 // Given
                 MetadataDictionary initialMetadata = new MetadataDictionary();
                 DisposeCheckStream stream = new DisposeCheckStream();
-                Document originalDoc = new Document(initialMetadata, new FilePath("Test", true), stream, null,
+                Document originalDoc = new Document(initialMetadata, new FilePath("Test", PathKind.Absolute), stream, null,
                     Array.Empty<KeyValuePair<string, object>>(), true);
                 Document clonedDoc = new Document(originalDoc, Array.Empty<KeyValuePair<string, object>>());
 

@@ -178,7 +178,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnTargetPathIfProvidersDontMatch()
             {
                 // Given
-                DirectoryPath sourcePath = new DirectoryPath("foo::/A/B");
+                DirectoryPath sourcePath = new DirectoryPath("foo:///A/B");
                 FilePath targetPath = new FilePath("bar", "/A/B/C/test.txt");
 
                 // When

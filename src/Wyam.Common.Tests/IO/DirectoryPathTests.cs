@@ -131,23 +131,23 @@ namespace Wyam.Common.Tests.IO
 
             [Test]
 #if !UNIX
-            [TestCase("first", "c:/assets/shaders/", null, "simple.frag")]
-            [TestCase("first", "c:/", "second", "c:/simple.frag")]
+            [TestCase("first:///", "c:/assets/shaders/", null, "simple.frag")]
+            [TestCase("first:///", "c:/", "second:///", "c:/simple.frag")]
 #endif
             [TestCase(null, "assets/shaders", null, "simple.frag")]
-            [TestCase("first", "/assets/shaders/", null, "simple.frag")]
-            [TestCase(null, "assets/shaders", "second", "/simple.frag")]
-            [TestCase("first", "/assets/shaders/", "second", "/simple.frag")]
+            [TestCase("first:///", "/assets/shaders/", null, "simple.frag")]
+            [TestCase(null, "assets/shaders", "second:///", "/simple.frag")]
+            [TestCase("first:///", "/assets/shaders/", "second:///", "/simple.frag")]
             public void FileProviderFromDirectoryPathIsUsed(string firstProvider, string firstPath, string secondProvider, string secondPath)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath(firstProvider, firstPath);
+                DirectoryPath path = new DirectoryPath(firstProvider == null ? null : new Uri(firstProvider), firstPath);
 
                 // When
-                FilePath result = path.GetFilePath(new FilePath(secondProvider, secondPath));
+                FilePath result = path.GetFilePath(new FilePath(secondProvider == null ? null : new Uri(secondProvider), secondPath));
 
                 // Then
-                Assert.AreEqual(firstProvider, result.Provider);
+                Assert.AreEqual(firstProvider == null ? null : new Uri(firstProvider), result.Provider);
             }
         }
 
@@ -188,7 +188,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnSelfForExplicitRelativePath(string fullPath)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath(fullPath, false);
+                DirectoryPath path = new DirectoryPath(fullPath, PathKind.Relative);
 
                 // When
                 DirectoryPath rootRelative = path.RootRelative;
@@ -251,13 +251,13 @@ namespace Wyam.Common.Tests.IO
             public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath("first", first);
+                DirectoryPath path = new DirectoryPath(new Uri("foo:///"), first);
 
                 // When
                 FilePath result = path.CombineFile(new FilePath(second));
 
                 // Then
-                Assert.AreEqual("first", result.Provider);
+                Assert.AreEqual(new Uri("foo:///"), result.Provider);
             }
 
             [Test]
@@ -268,13 +268,13 @@ namespace Wyam.Common.Tests.IO
             public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath("first", first);
+                DirectoryPath path = new DirectoryPath(new Uri("first:///"), first);
 
                 // When
-                FilePath result = path.CombineFile(new FilePath("second", second));
+                FilePath result = path.CombineFile(new FilePath(new Uri("second:///"), second));
 
                 // Then
-                Assert.AreEqual("second", result.Provider);
+                Assert.AreEqual(new Uri("second:///"), result.Provider);
             }
         }
 
@@ -310,13 +310,13 @@ namespace Wyam.Common.Tests.IO
             public void CombiningWithRelativePathKeepsFirstProvider(string first, string second)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath("first", first);
+                DirectoryPath path = new DirectoryPath(new Uri("foo:///"), first);
 
                 // When
                 DirectoryPath result = path.Combine(new DirectoryPath(second));
 
                 // Then
-                Assert.AreEqual("first", result.Provider);
+                Assert.AreEqual(new Uri("foo:///"), result.Provider);
             }
 
             [Test]
@@ -327,13 +327,13 @@ namespace Wyam.Common.Tests.IO
             public void CombiningWithAbsolutePathKeepsSecondProvider(string first, string second)
             {
                 // Given
-                DirectoryPath path = new DirectoryPath("first", first);
+                DirectoryPath path = new DirectoryPath(new Uri("first:///"), first);
 
                 // When
-                DirectoryPath result = path.Combine(new DirectoryPath("second", second));
+                DirectoryPath result = path.Combine(new DirectoryPath(new Uri("second:///"), second));
 
                 // Then
-                Assert.AreEqual("second", result.Provider);
+                Assert.AreEqual(new Uri("second:///"), result.Provider);
             }
 
             [Test]
@@ -373,14 +373,14 @@ namespace Wyam.Common.Tests.IO
             public void CollapseRetainsProvider()
             {
                 // Given
-                DirectoryPath directoryPath = new DirectoryPath("foo", "/a/b/../c");
+                DirectoryPath directoryPath = new DirectoryPath(new Uri("foo:///"), "/a/b/../c");
 
                 // When
                 DirectoryPath path = directoryPath.Collapse();
 
                 // Then
                 Assert.AreEqual("/a/c", path.FullPath);
-                Assert.AreEqual("foo", path.Provider);
+                Assert.AreEqual(new Uri("foo:///"), path.Provider);
             }
         }
     }

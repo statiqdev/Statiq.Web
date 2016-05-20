@@ -27,7 +27,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
         protected NormalizedPath(string path, PathKind pathKind)
-            : this(GetProviderAndPath(path), pathKind)
+            : this(GetProviderAndPath(path), false, pathKind)
         {
         }
 
@@ -39,7 +39,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
         protected NormalizedPath(string provider, string path, PathKind pathKind)
-            : this(new Uri(provider, UriKind.Absolute), path, pathKind)
+            : this(GetProviderUri(provider), path, pathKind)
         {
         }
 
@@ -51,7 +51,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
         protected NormalizedPath(Uri provider, string path, PathKind pathKind)
-            : this(Tuple.Create(provider, path), pathKind)
+            : this(Tuple.Create(provider, path), true, pathKind)
         {
         }
 
@@ -61,64 +61,8 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path as a URI.</param>
         protected NormalizedPath(Uri path)
-            : this(GetProviderAndPath(path.ToString()), path.IsAbsoluteUri ? PathKind.Absolute : PathKind.Relative)
+            : this(GetProviderAndPath(path), false, path.IsAbsoluteUri ? PathKind.Absolute : PathKind.Relative)
         {
-        }
-
-        /// <summary>
-        /// Gets the provider and path from a path string. Implemented as a static
-        /// so it can be used in a constructor chain.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>The provider (item 1) and path (item 2).</returns>
-        internal static Tuple<Uri, string> GetProviderAndPath(string path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            
-            // Did we get a delimiter?
-            Uri provider;
-            int delimiterIndex = path.IndexOf(ProviderDelimiter, StringComparison.Ordinal);
-            if (delimiterIndex != -1)
-            {
-                // Path contains a provider delimiter, try to parse the provider
-                string pathProvider = path.Substring(0, delimiterIndex);
-                path = path.Length == delimiterIndex + 1 ? string.Empty : path.Substring(delimiterIndex + 1);
-                if (!Uri.TryCreate(pathProvider, UriKind.Absolute, out provider))
-                {
-                    // Couldn't create the provider as a URI, try it as just a scheme
-                    if (Uri.CheckSchemeName(pathProvider))
-                    {
-                        provider = new Uri($"{pathProvider}:///", UriKind.Absolute);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("The provider URI is not valid");
-                    }
-                }
-            }
-            else if (Uri.TryCreate(path, UriKind.Absolute, out provider))
-            {
-                // No delimiter, but the path itself is a URI
-                if (!string.IsNullOrEmpty(provider.Query))
-                {
-                    throw new ArgumentException("Query components are not allowed for use in the path");
-                }
-                if (!string.IsNullOrEmpty(provider.Fragment))
-                {
-                    throw new ArgumentException("Fragment components are not allowed for use in the path");
-                }
-                path = provider.AbsolutePath;
-                provider = new Uri(provider.GetLeftPart(UriPartial.Authority));
-            }
-            else
-            {
-                provider = DefaultProvider;
-            }
-
-            return Tuple.Create(provider, path);
         }
 
         /// <summary>
@@ -126,8 +70,10 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="providerAndPath">The provider and path as a Tuple so it can
         /// be passed from both of the other constructors.</param>
+        /// <param name="fullySpecified">If set to <c>true</c> indicates that this constructor was
+        /// called from one where the provider and path were fully specified (as opposed to being inferred).</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
-        private NormalizedPath(Tuple<Uri, string> providerAndPath, PathKind pathKind)
+        private NormalizedPath(Tuple<Uri, string> providerAndPath, bool fullySpecified, PathKind pathKind)
         {
             Uri provider = providerAndPath.Item1;
             string path = providerAndPath.Item2;
@@ -181,6 +127,10 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentException("Can not specify provider for relative paths", nameof(provider));
             }
+            if (provider == null && IsAbsolute && !fullySpecified)
+            {
+                provider = DefaultProvider;
+            }
             if (provider != null && !provider.IsAbsoluteUri)
             {
                 throw new ArgumentException("The provider URI must always be absolute");
@@ -190,6 +140,82 @@ namespace Wyam.Common.IO
             // Extract path segments.
             Segments = FullPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
         }
+
+        // Internal for testing
+        internal static Uri GetProviderUri(string provider)
+        {
+            if (string.IsNullOrEmpty(provider))
+            {
+                return null;
+            }
+
+            // The use of IsWellFormedOriginalString() weeds out cases where a file system path was implicitly converted to a URI
+            Uri uri;
+            if (!Uri.TryCreate(provider, UriKind.Absolute, out uri) || !uri.IsWellFormedOriginalString())
+            {
+                // Couldn't create the provider as a URI, try it as just a scheme
+                if (Uri.CheckSchemeName(provider))
+                {
+                    uri = new Uri($"{provider}:", UriKind.Absolute);
+                }
+                else
+                {
+                    throw new ArgumentException("The provider URI is not valid");
+                }
+            }
+            return uri;
+        }
+
+        private static Tuple<Uri, string> GetProviderAndPath(Uri path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            return GetProviderAndPath(path.ToString());
+        }
+
+        /// <summary>
+        /// Gets the provider and path from a path string. Implemented as a static
+        /// so it can be used in a constructor chain.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The provider (item 1) and path (item 2).</returns>
+        internal static Tuple<Uri, string> GetProviderAndPath(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            // Did we get a delimiter?
+            int delimiterIndex = path.IndexOf(ProviderDelimiter, StringComparison.Ordinal);
+            if (delimiterIndex != -1)
+            {
+                // Path contains a provider delimiter, try to parse the provider
+                return Tuple.Create(
+                    GetProviderUri(path.Substring(0, delimiterIndex)),
+                    path.Length == delimiterIndex + 1 ? string.Empty : path.Substring(delimiterIndex + 1));
+            }
+
+            // The use of IsWellFormedOriginalString() weeds out cases where a file system path was implicitly converted to a URI
+            Uri provider;
+            if (Uri.TryCreate(path, UriKind.Absolute, out provider) && provider.IsWellFormedOriginalString())
+            {
+                // No delimiter, but the path itself is a URI
+                return Tuple.Create(
+                    new Uri(GetLeftPart(provider), UriKind.Absolute),
+                    GetRightPart(provider));
+            }
+
+            return Tuple.Create((Uri)null, path);
+        }
+
+        private static string GetLeftPart(Uri uri) => 
+            uri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.PathAndQuery & ~UriComponents.Fragment, UriFormat.Unescaped);
+
+        private static string GetRightPart(Uri uri) =>
+            uri.GetComponents(UriComponents.PathAndQuery | UriComponents.Fragment, UriFormat.Unescaped);
 
         /// <summary>
         /// Gets the full path.
@@ -290,9 +316,11 @@ namespace Wyam.Common.IO
             {
                 return FullPath;
             }
-            if (string.IsNullOrEmpty(Provider.PathAndQuery))
+            string rightPart = GetRightPart(Provider);
+            if (string.IsNullOrEmpty(rightPart) || rightPart == "/")
             {
-                return Provider + FullPath;
+                // Remove the proceeding slash from FullPath if the provider already has one
+                return Provider + (rightPart == "/" && FullPath.StartsWith("/") ? FullPath.Substring(1) : FullPath);
             }
             return Provider + ProviderDelimiter + FullPath;
         }

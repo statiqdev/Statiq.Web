@@ -113,7 +113,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnSelfForExplicitRelativePath(string fullPath)
             {
                 // Given
-                FilePath path = new FilePath(fullPath, false);
+                FilePath path = new FilePath(fullPath, PathKind.Relative);
 
                 // When
                 FilePath rootRelative = path.RootRelative;
@@ -285,14 +285,14 @@ namespace Wyam.Common.Tests.IO
             public void CollapseRetainsProvider()
             {
                 // Given
-                FilePath filePath = new FilePath("foo", "/a/b/../c/bar.txt");
+                FilePath filePath = new FilePath(new Uri("foo:///"), "/a/b/../c/bar.txt");
 
                 // When
                 FilePath path = filePath.Collapse();
 
                 // Then
                 Assert.AreEqual("/a/c/bar.txt", path.FullPath);
-                Assert.AreEqual("foo", path.Provider);
+                Assert.AreEqual(new Uri("foo:///"), path.Provider);
             }
         }
     }

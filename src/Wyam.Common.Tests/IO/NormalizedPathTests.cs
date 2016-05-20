@@ -9,11 +9,12 @@ using Wyam.Testing;
 
 namespace Wyam.Common.Tests.IO
 {
-    // TODO: ToString() tests:
-    // Provder|Path if absolute and provider contains path information in the URI
-    // Provider/Path if absolute and provider does not contain path info (I.e., looks like a URI)
-    // Path if absolute and provider is null
-    // Path if relative
+    // TODO: Test ctor with provider as string but just scheme
+    // TODO: Test string-only path prefixed by delimeter
+    // TODO: Test URI path with delimiter prefix in path component
+    // TODO: Test GetProviderUri()
+    // TODO: Test ctor with absolute path and explicit null provider stay null
+    // TODO: Test ctor with absolute path and implicit null provider becomes default
 
 
     [TestFixture]
@@ -49,12 +50,19 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void ShouldThrowIfProviderIsSpecifiedForRelativePath()
+            public void ShouldThrowIfStringProviderIsSpecifiedForRelativePath()
             {
                 // Given, When, Then
-                Assert.Throws<ArgumentException>(() => new TestPath("foo", "Hello/World"));
+                Assert.Throws<ArgumentException>(() => new TestPath("foo:///", "Hello/World"));
             }
-            
+
+            [Test]
+            public void ShouldThrowIfUriProviderIsSpecifiedForRelativePath()
+            {
+                // Given, When, Then
+                Assert.Throws<ArgumentException>(() => new TestPath(new Uri("foo:///"), "Hello/World"));
+            }
+
             [TestCase("")]
             [TestCase("\t ")]
             public void ShouldThrowIfPathIsEmpty(string fullPath)
@@ -74,7 +82,7 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void WillNormalizePathSeparators()
+            public void ShouldNormalizePathSeparators()
             {
                 // Given, When
                 TestPath path = new TestPath("shaders\\basic");
@@ -84,7 +92,7 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void WillTrimWhiteSpaceFromPath()
+            public void ShouldTrimWhiteSpaceFromPath()
             {
                 // Given, When
                 TestPath path = new TestPath(" shaders/basic ");
@@ -94,7 +102,7 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void WillNotRemoveWhiteSpaceWithinPath()
+            public void ShouldNotRemoveWhiteSpaceWithinPath()
             {
                 // Given, When
                 TestPath path = new TestPath("my awesome shaders/basic");
@@ -114,7 +122,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldRemoveTrailingSlashes(string value, string expected)
             {
                 // Given, When
-                TestPath path = new TestPath(value);
+                TestPath path = new TestPath((Uri)null, value);
 
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
@@ -154,13 +162,128 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual("/", path.FullPath);
             }
+
+            [Test]
+            public void ShouldSetProviderIfGivenOnlyScheme()
+            {
+                // Given, When
+                TestPath path = new TestPath("foo", "/a/b");
+
+                // Then
+                Assert.AreEqual(new Uri("foo:"), path.Provider);
+            }
+
+            [Test]
+            public void ShouldSetNullProviderForFirstCharDelimiter()
+            {
+                // Given, When
+                TestPath path = new TestPath("|foo://a/b/c");
+
+                // Then
+                Assert.AreEqual(null, path.Provider);
+                Assert.AreEqual("foo://a/b/c", path.FullPath);
+            }
+
+            [Test]
+            public void ShouldSplitUriPathWithDelimiter()
+            {
+                // Given, When
+                TestPath path = new TestPath(new Uri("foo:///a/b|c/d/e"));
+
+                // Then
+                Assert.AreEqual(new Uri("foo:///a/b"), path.Provider);
+                Assert.AreEqual("c/d/e", path.FullPath);
+                Assert.IsTrue(path.IsAbsolute);
+            }
+
+            [TestCase("a/b/c")]
+            [TestCase("/a/b/c")]
+            public void ShouldSetUriAsRelativePathIfNoLeftPart(string path)
+            {
+                // Given, When
+                TestPath testPath = new TestPath(new Uri(path, UriKind.Relative));
+
+                // Then
+                Assert.AreEqual(null, testPath.Provider);
+                Assert.AreEqual(path, testPath.FullPath);
+                Assert.IsTrue(testPath.IsRelative);
+            }
+
+            [Test]
+            public void ExplicitNullProviderShouldStayNull()
+            {
+                // Given, When
+                TestPath testPath = new TestPath((Uri)null, "/a/b/c", PathKind.Absolute);
+
+                // Then
+                Assert.IsNull(testPath.Provider);
+            }
+
+            [Test]
+            public void UnspecifiedProviderShouldUseDefault()
+            {
+                // Given, When
+                TestPath testPath = new TestPath("/a/b/c", PathKind.Absolute);
+
+                // Then
+                Assert.AreEqual(new Uri("file:///"), testPath.Provider);
+            }
+        }
+
+        public class GetProviderUriTests : NormalizedPathTests
+        {
+            [TestCase(null)]
+            [TestCase("")]
+            public void ShouldReturnNullForNullOrEmptyPath(string provider)
+            {
+                // Given, When
+                Uri uri = NormalizedPath.GetProviderUri(provider);
+
+                // Then
+                Assert.IsNull(uri);
+            }
+
+            [Test]
+            public void ShouldReturnUriWithSchemeForScheme()
+            {
+                // Given, When
+                Uri uri = NormalizedPath.GetProviderUri("foo");
+
+                // Then
+                Assert.AreEqual(new Uri("foo:"), uri);
+            }
+
+            [TestCase("foo:")]
+            [TestCase("foo:///")]
+            [TestCase("foo:///a/b/c")]
+            [TestCase("foo:///a/b/c?x#y")]
+            public void ShouldReturnUriGivenUri(string provider)
+            {
+                // Given, When
+                Uri uri = NormalizedPath.GetProviderUri(provider);
+
+                // Then
+                Assert.AreEqual(new Uri(provider), uri);
+            }
+
+            [TestCase("a/b/c")]
+            [TestCase("c:/a/b/c")]
+            [TestCase(@"c:\a\b\c")]
+            [TestCase(":")]
+            public void ThrowsExceptionForInvalidUri(string provider)
+            {
+                // Given, When, Then
+                Assert.Throws<ArgumentException>(() => NormalizedPath.GetProviderUri(provider));
+            }
         }
 
         public class ProviderPropertyTests : NormalizedPathTests
         {
-            [TestCase("foo", "/Hello/World", "foo")]
-            [TestCase("", "/Hello/World", "")]
-            [TestCase(null, "/Hello/World", "")]
+            [TestCase("foo", "/Hello/World", "foo:")]
+            [TestCase("foo:///", "/Hello/World", "foo:///")]
+            [TestCase("foo://x/y", "/Hello/World", "foo://x/y")]
+            [TestCase("", "/Hello/World", null)]
+            [TestCase(null, "/Hello/World", null)]
             [TestCase(null, "Hello/World", null)]
             [TestCase("", "Hello/World", null)]
             public void ShouldReturnProvider(string provider, string pathName, string expectedProvider)
@@ -169,8 +292,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath path = new TestPath(provider, pathName);
 
                 // Then
-                Assert.AreEqual(expectedProvider, path.Provider);
-
+                Assert.AreEqual(expectedProvider == null ? null : new Uri(expectedProvider), path.Provider);
             }
         }
 
@@ -286,14 +408,21 @@ namespace Wyam.Common.Tests.IO
         
         public class ToStringMethodTests : NormalizedPathTests
         {
-            [Test]
-            public void Should_Return_The_Full_Path()
+            [TestCase(null, "temp/hello", "temp/hello")]
+            [TestCase("foo://a/b/c", "/temp/hello", "foo://a/b/c|/temp/hello")]
+            [TestCase("foo:///", "/temp/hello", "foo:///temp/hello")]
+            [TestCase("foo:///", "c:/temp/hello", "foo:///c:/temp/hello")]
+            [TestCase("foo:", "/temp/hello", "foo:/temp/hello")]
+            [TestCase("foo:", "c:/temp/hello", "foo:c:/temp/hello")]
+            [TestCase(null, "/temp/hello", "/temp/hello")]
+            [TestCase(null, "c:/temp/hello", "c:/temp/hello")]
+            public void ShouldReturnStringRepresentation(string provider, string path, string expected)
             {
                 // Given, When
-                TestPath path = new TestPath("temp/hello");
+                TestPath testPath = new TestPath(provider == null ? null : new Uri(provider), path);
 
                 // Then
-                Assert.AreEqual("temp/hello", path.ToString());
+                Assert.AreEqual(expected, testPath.ToString());
             }
         }
 
@@ -359,17 +488,22 @@ namespace Wyam.Common.Tests.IO
         {
             [TestCase("C:/a/b", null, "C:/a/b")]
             [TestCase(@"C:\a\b", null, @"C:\a\b")]
-            [TestCase(@"::C::\a\b", null, @"C::\a\b")]
-            [TestCase(@"provider::C::\a\b", "provider", @"C::\a\b")]
+            [TestCase(@"|C|\a\b", null, @"C|\a\b")]
+            [TestCase(@"provider|C|\a\b", "provider:", @"C|\a\b")]
+            [TestCase(@"provider:///|C|\a\b", "provider:///", @"C|\a\b")]
             [TestCase("/a/b", null, "/a/b")]
-            [TestCase("provider::/a/b", "provider", "/a/b")]
-            public void ShouldParseProvider(string fullPath, Uri provider, string path)
+            [TestCase("provider|/a/b", "provider:", "/a/b")]
+            [TestCase("provider:///|/a/b", "provider:///", "/a/b")]
+            [TestCase("provider://x/y/z|/a/b", "provider://x/y/z", "/a/b")]
+            [TestCase("|provider://x/y/z|/a/b", null, "provider://x/y/z|/a/b")]
+            [TestCase("foo::/A/B?x#c", "foo:", ":/A/B?x#c")]
+            public void ShouldParseProvider(string fullPath, string provider, string path)
             {
                 // Given, When
                 Tuple<Uri, string> result = NormalizedPath.GetProviderAndPath(fullPath);
 
                 // Then
-                Assert.AreEqual(provider, result.Item1);
+                Assert.AreEqual(provider == null ? null : new Uri(provider), result.Item1);
                 Assert.AreEqual(path, result.Item2);
             }
         }
@@ -439,8 +573,8 @@ namespace Wyam.Common.Tests.IO
             public void SamePathsWithDifferentProvidersAreNotConsideredEqual()
             {
                 // Given, When
-                FilePath first = new FilePath("foo", "/shaders/basic.vert");
-                FilePath second = new FilePath("bar", "/shaders/basic.vert");
+                FilePath first = new FilePath(new Uri("foo:///"), "/shaders/basic.vert");
+                FilePath second = new FilePath(new Uri("bar:///"), "/shaders/basic.vert");
 
                 // Then
                 Assert.False(first.Equals(second));

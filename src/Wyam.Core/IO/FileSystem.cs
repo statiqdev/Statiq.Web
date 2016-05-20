@@ -242,10 +242,14 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentException("The path must be absolute");
             }
+            if (path.Provider == null)
+            {
+                throw new ArgumentException("The path has no provider");
+            }
             IFileProvider fileProvider;
             if (!FileProviders.TryGet(path.Provider.Scheme, out fileProvider))
             {
-                throw new KeyNotFoundException($"Provider {path.Provider} could not be found");
+                throw new KeyNotFoundException($"A provider for the scheme {path.Provider} could not be found");
             }
             return fileProvider;
         }
