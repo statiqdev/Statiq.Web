@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void SetUp()
         {
             Engine = new Engine();
-            Engine.FileSystem.FileProviders.Add(string.Empty, GetFileProvider());
+            Engine.FileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
             Engine.FileSystem.RootPath = "/";
             Engine.FileSystem.InputPaths.Clear();
             Engine.FileSystem.InputPaths.Add("/TestFiles/Input");

@@ -123,7 +123,7 @@ namespace Wyam.Modules.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>C:/Temp/temp.txt</p>");
+                context.Received().GetDocument(document, @"<p>file:///C:/Temp/temp.txt</p>");
             }
 
             [Test]
@@ -140,7 +140,7 @@ namespace Wyam.Modules.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>/C:/Temp/temp.txt</p>");  // The slash prefix is just added by our dumb mock
+                context.Received().GetDocument(document, @"<p>file:///C:/Temp/temp.txt</p>");  // The slash prefix is just added by our dumb mock
             }
 
             [Test]

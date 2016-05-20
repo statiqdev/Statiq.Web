@@ -9,14 +9,6 @@ using Wyam.Testing;
 
 namespace Wyam.Common.Tests.IO
 {
-    // TODO: Test ctor with provider as string but just scheme
-    // TODO: Test string-only path prefixed by delimeter
-    // TODO: Test URI path with delimiter prefix in path component
-    // TODO: Test GetProviderUri()
-    // TODO: Test ctor with absolute path and explicit null provider stay null
-    // TODO: Test ctor with absolute path and implicit null provider becomes default
-
-
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class NormalizedPathTests : BaseFixture
@@ -227,6 +219,48 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual(new Uri("file:///"), testPath.Provider);
+            }
+
+            [TestCase("foo:///")]
+            [TestCase("foo://")]
+            public void ShouldSetRootPathIfOnlyRootInString(string path)
+            {
+                // Given, When
+                TestPath testPath = new TestPath(path);
+
+                // Then
+                Assert.AreEqual(new Uri(path), testPath.Provider);
+                Assert.AreEqual("/", testPath.FullPath);
+            }
+
+            [TestCase("foo:///")]
+            [TestCase("foo://")]
+            public void ShouldSetRootPathIfOnlyRootInUri(string path)
+            {
+                // Given, When
+                TestPath testPath = new TestPath(new Uri(path));
+
+                // Then
+                Assert.AreEqual(new Uri(path), testPath.Provider);
+                Assert.AreEqual("/", testPath.FullPath);
+            }
+
+            [Test]
+            public void ShouldUsePathAsFullPathIfNoPathInString()
+            {
+                // Given, When
+                TestPath testPath = new TestPath("foo:");
+
+                // Then
+                Assert.AreEqual(null, testPath.Provider);
+                Assert.AreEqual("foo:/", testPath.FullPath); // The slash is appended w/ assumption this is a file path
+            }
+
+            [Test]
+            public void ShouldThrowIfPathInUri()
+            {
+                // Given, When, Then
+                Assert.Throws<ArgumentNullException>(() => new TestPath(new Uri("foo:")));
             }
         }
 
@@ -497,10 +531,10 @@ namespace Wyam.Common.Tests.IO
             [TestCase("provider://x/y/z|/a/b", "provider://x/y/z", "/a/b")]
             [TestCase("|provider://x/y/z|/a/b", null, "provider://x/y/z|/a/b")]
             [TestCase("foo::/A/B?x#c", "foo:", ":/A/B?x#c")]
-            public void ShouldParseProvider(string fullPath, string provider, string path)
+            public void ShouldParseProviderFromString(string fullPath, string provider, string path)
             {
                 // Given, When
-                Tuple<Uri, string> result = NormalizedPath.GetProviderAndPath(fullPath);
+                Tuple<Uri, string> result = NormalizedPath.GetProviderAndPath(null, fullPath);
 
                 // Then
                 Assert.AreEqual(provider == null ? null : new Uri(provider), result.Item1);

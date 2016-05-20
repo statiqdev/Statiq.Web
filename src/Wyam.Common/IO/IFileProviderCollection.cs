@@ -13,9 +13,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="scheme">The scheme the file provider supports.</param>
         /// <param name="provider">The file provider.</param>
-        /// <returns><c>true</c> if the provider already existed and was overwritten, 
-        /// <c>false</c> if no provider with the specified name existed.</returns>
-        bool Add(string scheme, IFileProvider provider);
+        void Add(string scheme, IFileProvider provider);
 
         /// <summary>
         /// Removes a file provider by scheme.

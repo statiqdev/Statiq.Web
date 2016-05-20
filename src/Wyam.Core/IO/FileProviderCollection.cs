@@ -25,17 +25,8 @@ namespace Wyam.Core.IO
         }
 
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();
-
-        /// <summary>
-        /// Adds the specified provider.
-        /// </summary>
-        /// <param name="scheme">The scheme the provider supports.</param>
-        /// <param name="provider">The provider.</param>
-        /// <returns>
-        /// <c>true</c> if the scheme was new and the provider was added, 
-        /// <c>false</c> if a provider already existed with the specified scheme and it was replaced.
-        /// </returns>
-        public bool Add(string scheme, IFileProvider provider)
+        
+        public void Add(string scheme, IFileProvider provider)
         {
             if (scheme == null)
             {
@@ -45,13 +36,7 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentNullException(nameof(provider));
             }
-            bool updated = false;
-            _fileProviders.AddOrUpdate(scheme, provider, (k, v) =>
-            {
-                updated = true;
-                return provider;
-            });
-            return !updated;
+            _fileProviders.AddOrUpdate(scheme, provider, (k, v) => provider);
         }
 
         public bool Remove(string scheme)

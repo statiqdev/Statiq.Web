@@ -27,7 +27,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
         protected NormalizedPath(string path, PathKind pathKind)
-            : this(GetProviderAndPath(path), false, pathKind)
+            : this(GetProviderAndPath(null, path), false, pathKind)
         {
         }
 
@@ -61,7 +61,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path as a URI.</param>
         protected NormalizedPath(Uri path)
-            : this(GetProviderAndPath(path), false, path.IsAbsoluteUri ? PathKind.Absolute : PathKind.Relative)
+            : this(GetProviderAndPath(path, null), false, path.IsAbsoluteUri ? PathKind.Absolute : PathKind.Relative)
         {
         }
 
@@ -166,29 +166,36 @@ namespace Wyam.Common.IO
             return uri;
         }
 
-        private static Tuple<Uri, string> GetProviderAndPath(Uri path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            return GetProviderAndPath(path.ToString());
-        }
-
         /// <summary>
         /// Gets the provider and path from a path string. Implemented as a static
-        /// so it can be used in a constructor chain.
+        /// so it can be used in a constructor chain. Internal for testing.
         /// </summary>
-        /// <param name="path">The path.</param>
+        /// <param name="uriPath">The URI-based path.</param>
+        /// <param name="stringPath">The string-based path.</param>
         /// <returns>The provider (item 1) and path (item 2).</returns>
-        internal static Tuple<Uri, string> GetProviderAndPath(string path)
+        internal static Tuple<Uri, string> GetProviderAndPath(Uri uriPath, string stringPath)
         {
-            if (path == null)
+            if (uriPath != null && stringPath != null)
             {
-                throw new ArgumentNullException(nameof(path));
+                throw new ArgumentException($"{nameof(uriPath)} and {nameof(stringPath)} can not both have values");
+            }
+
+            // If we got a relative URI, then just use that as the path
+            if (uriPath != null && !uriPath.IsAbsoluteUri)
+            {
+                return new Tuple<Uri, string>(null, uriPath.ToString());
             }
 
             // Did we get a delimiter?
+            string path = stringPath;
+            if (uriPath != null)
+            {
+                path = uriPath.ToString();
+            }
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
             int delimiterIndex = path.IndexOf(ProviderDelimiter, StringComparison.Ordinal);
             if (delimiterIndex != -1)
             {
@@ -198,17 +205,23 @@ namespace Wyam.Common.IO
                     path.Length == delimiterIndex + 1 ? string.Empty : path.Substring(delimiterIndex + 1));
             }
 
+            // See if the path is a URI and attempt to split it into left (provider) and right (path) parts
             // The use of IsWellFormedOriginalString() weeds out cases where a file system path was implicitly converted to a URI
-            Uri provider;
-            if (Uri.TryCreate(path, UriKind.Absolute, out provider) && provider.IsWellFormedOriginalString())
+            Uri provider = uriPath;
+            if (provider != null || (Uri.TryCreate(stringPath, UriKind.Absolute, out provider) && provider.IsWellFormedOriginalString()))
             {
                 // No delimiter, but the path itself is a URI
-                return Tuple.Create(
-                    new Uri(GetLeftPart(provider), UriKind.Absolute),
-                    GetRightPart(provider));
+                // However, if there is no "right part" go back to treating the whole thing as a path
+                string rightPart = GetRightPart(provider);
+                if (!string.IsNullOrEmpty(rightPart))
+                {
+                    return Tuple.Create(
+                        new Uri(GetLeftPart(provider), UriKind.Absolute),
+                        rightPart);
+                }
             }
 
-            return Tuple.Create((Uri)null, path);
+            return Tuple.Create(uriPath, stringPath);
         }
 
         private static string GetLeftPart(Uri uri) => 

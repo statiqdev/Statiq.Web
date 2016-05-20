@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, defaultProvider }
+                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -50,13 +50,12 @@ namespace Wyam.Core.Tests.IO
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
-                bool result = collection.Add("foo", newProvider);
+                collection.Add("foo", newProvider);
 
                 // Then
-                Assert.IsFalse(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, defaultProvider },
+                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider },
                     { "foo", newProvider }
                 }, collection.Providers);
             }
@@ -72,19 +71,18 @@ namespace Wyam.Core.Tests.IO
 
                 // When
                 collection.Add("foo", oldProvider);
-                bool result = collection.Add("foo", newProvider);
+                collection.Add("foo", newProvider);
 
                 // Then
-                Assert.IsTrue(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, defaultProvider },
+                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider },
                     { "foo", newProvider }
                 }, collection.Providers);
             }
 
             [Test]
-            public void AddsDefaultProvider()
+            public void AddsNewDefaultProvider()
             {
                 // Given
                 IFileProvider defaultProvider = Substitute.For<IFileProvider>();
@@ -92,13 +90,12 @@ namespace Wyam.Core.Tests.IO
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
-                bool result = collection.Add(string.Empty, newProvider);
+                collection.Add(NormalizedPath.DefaultProvider.Scheme, newProvider);
 
                 // Then
-                Assert.IsTrue(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, newProvider }
+                    { NormalizedPath.DefaultProvider.Scheme, newProvider }
                 }, collection.Providers);
             }
 
@@ -144,7 +141,7 @@ namespace Wyam.Core.Tests.IO
                 Assert.IsTrue(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, defaultProvider }
+                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -162,7 +159,7 @@ namespace Wyam.Core.Tests.IO
                 Assert.IsFalse(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { string.Empty, defaultProvider }
+                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -219,7 +216,7 @@ namespace Wyam.Core.Tests.IO
                 collection.Add("foo", newProvider);
 
                 // When
-                IFileProvider result = collection.Get(string.Empty);
+                IFileProvider result = collection.Get(NormalizedPath.DefaultProvider.Scheme);
 
                 // Then
                 Assert.AreEqual(defaultProvider, result);
@@ -279,7 +276,7 @@ namespace Wyam.Core.Tests.IO
 
                 // When
                 IFileProvider providerResult;
-                bool result = collection.TryGet(string.Empty, out providerResult);
+                bool result = collection.TryGet(NormalizedPath.DefaultProvider.Scheme, out providerResult);
 
                 // Then
                 Assert.AreEqual(defaultProvider, providerResult);
