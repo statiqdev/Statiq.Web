@@ -229,10 +229,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
-        public static implicit operator DirectoryPath(string path)
-        {
-            return FromString(path);
-        }
+        public static implicit operator DirectoryPath(string path) => FromString(path);
 
         /// <summary>
         /// Performs a conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.
@@ -241,5 +238,20 @@ namespace Wyam.Common.IO
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
         public static DirectoryPath FromString(string path) => 
             string.IsNullOrWhiteSpace(path) ? null : new DirectoryPath(path);
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Uri"/> to <see cref="DirectoryPath"/>.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>A <see cref="DirectoryPath"/>.</returns>
+        public static implicit operator DirectoryPath(Uri path) => FromUri(path);
+
+        /// <summary>
+        /// Performs a conversion from <see cref="Uri"/> to <see cref="DirectoryPath"/>.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>A <see cref="DirectoryPath"/>.</returns>
+        public static DirectoryPath FromUri(Uri path) =>
+            path == null ? null : new DirectoryPath(path);
     }
 }

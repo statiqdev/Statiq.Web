@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace Wyam.Core.IO
 {
     internal class FileProviderCollection : IFileProviderCollection
     {
-        private readonly Dictionary<string, IFileProvider> _fileProviders
-            = new Dictionary<string, IFileProvider>();
+        private readonly ConcurrentDictionary<string, IFileProvider> _fileProviders
+            = new ConcurrentDictionary<string, IFileProvider>();
 
         public FileProviderCollection(IFileProvider defaultFileProvider)
         {
@@ -20,57 +21,61 @@ namespace Wyam.Core.IO
                 throw new ArgumentNullException(nameof(defaultFileProvider));
             }
 
-            _fileProviders[string.Empty] = defaultFileProvider;
+            _fileProviders[NormalizedPath.DefaultProvider.Scheme] = defaultFileProvider;
         }
 
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();
 
-        public bool Add(string name, IFileProvider provider)
+        /// <summary>
+        /// Adds the specified provider.
+        /// </summary>
+        /// <param name="scheme">The scheme the provider supports.</param>
+        /// <param name="provider">The provider.</param>
+        /// <returns>
+        /// <c>true</c> if the scheme was new and the provider was added, 
+        /// <c>false</c> if a provider already existed with the specified scheme and it was replaced.
+        /// </returns>
+        public bool Add(string scheme, IFileProvider provider)
         {
-            if (name == null)
+            if (scheme == null)
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentNullException(nameof(scheme));
             }
             if (provider == null)
             {
                 throw new ArgumentNullException(nameof(provider));
             }
-            if (name == NormalizedPath.AbstractProvider)
+            bool updated = false;
+            _fileProviders.AddOrUpdate(scheme, provider, (k, v) =>
             {
-                throw new ArgumentException($"Can not register a provider with the reserved abstract provider name \"{NormalizedPath.AbstractProvider}\"");
-            }
-            
-            if (_fileProviders.ContainsKey(name))
-            {
-                _fileProviders[name] = provider;
-                return true;
-            }
-            _fileProviders.Add(name, provider);
-            return false;
+                updated = true;
+                return provider;
+            });
+            return !updated;
         }
 
-        public bool Remove(string name)
+        public bool Remove(string scheme)
         {
-            if (name == null)
+            if (scheme == null)
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentNullException(nameof(scheme));
             }
-            if (name == string.Empty)
+            if (scheme == string.Empty)
             {
-                throw new ArgumentException("Can not remove the default provider", nameof(name));
+                throw new ArgumentException("Can not remove the default provider", nameof(scheme));
             }
-
-            return _fileProviders.Remove(name);
+            IFileProvider removed;
+            return _fileProviders.TryRemove(scheme, out removed);
         }
 
-        public IFileProvider Get(string name)
+        public IFileProvider Get(string scheme)
         {
-            return _fileProviders[name];
+            return _fileProviders[scheme];
         }
 
-        public bool TryGet(string name, out IFileProvider fileProvider)
+        public bool TryGet(string scheme, out IFileProvider fileProvider)
         {
-            return _fileProviders.TryGetValue(name, out fileProvider);
+            return _fileProviders.TryGetValue(scheme, out fileProvider);
         }
     }
 }

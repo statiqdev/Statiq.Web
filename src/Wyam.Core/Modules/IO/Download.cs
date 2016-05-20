@@ -104,7 +104,7 @@ namespace Wyam.Core.Modules.IO
                 DownloadResult result = t.Result;
 
                 string uri = result.Uri.ToString();
-                doc = context.GetDocument(new FilePath(NormalizedPath.AbstractProvider, uri, true), result.Stream, new MetadataItems
+                doc = context.GetDocument(new FilePath((Uri)null, uri, PathKind.Absolute), result.Stream, new MetadataItems
                 {
                     { Keys.SourceUri, uri },
                     { Keys.SourceHeaders, result.Headers }

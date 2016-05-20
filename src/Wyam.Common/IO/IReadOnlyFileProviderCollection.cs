@@ -1,22 +1,31 @@
-﻿namespace Wyam.Common.IO
+﻿using System.Collections.Generic;
+
+namespace Wyam.Common.IO
 {
     public interface IReadOnlyFileProviderCollection
     {
         /// <summary>
-        /// Adds a file provider.
+        /// Gets the current file providers.
         /// </summary>
-        /// <param name="name">The name of the file provider.</param>
-        /// <param name="provider">The file provider.</param>
-        /// <returns><c>true</c> if the provider already existed and was overwritten, 
-        /// <c>false</c> if no provider with the specified name existed.</returns>
-        bool Add(string name, IFileProvider provider);
+        /// <value>
+        /// The current file providers.
+        /// </value>
+        IReadOnlyDictionary<string, IFileProvider> Providers { get; }
 
         /// <summary>
-        /// Removes a file provider.
+        /// Gets the requested file provider. Throws <see cref="KeyNotFoundException"/>
+        /// if the provider couldn't be found.
         /// </summary>
-        /// <param name="name">The name of the file provider.</param>
-        /// <returns><c>true</c> if the provider was found and removed, 
-        /// <c>false</c> if the provider was not found.</returns>
-        bool Remove(string name);
+        /// <param name="scheme">The scheme the provider supports.</param>
+        /// <returns>The requested <see cref="IFileProvider"/>.</returns>
+        IFileProvider Get(string scheme);
+
+        /// <summary>
+        /// Tries to get the requested file provider.
+        /// </summary>
+        /// <param name="scheme">The scheme the provider supports.</param>
+        /// <param name="fileProvider">The file provider.</param>
+        /// <returns><c>true</c> if the provider was found, otherwise <c>false</c>.</returns>
+        bool TryGet(string scheme, out IFileProvider fileProvider);
     }
 }

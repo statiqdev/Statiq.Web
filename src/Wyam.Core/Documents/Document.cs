@@ -116,14 +116,7 @@ namespace Wyam.Core.Documents
 
         public FilePath Source { get; }
 
-        public string SourceString()
-        {
-            if (Source == null)
-            {
-                return "[unknown source]";
-            }
-            return (string.IsNullOrWhiteSpace(Source.Provider) ? string.Empty : Source.Provider + "::") + Source.FullPath;
-        }
+        public string SourceString() => Source?.ToString() ?? "[unknown source]";
 
         public string Id { get; }
 
