@@ -14,21 +14,13 @@ namespace Wyam.Common.IO
     public sealed class FilePath : NormalizedPath
     {
         /// <summary>
-        /// Gets a value indicating whether this path has a file extension.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this file path has a file extension; otherwise, <c>false</c>.
-        /// </value>
-        public bool HasExtension => System.IO.Path.HasExtension(FullPath);
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="FilePath"/> class.
         /// The path will be considered absolute if the underlying OS file system
         /// considers it absolute.
         /// </summary>
         /// <param name="path">The path.</param>
         public FilePath(string path)
-            : base(path, null)
+            : base(path, PathKind.RelativeOrAbsolute)
         {
         }
 
@@ -36,9 +28,9 @@ namespace Wyam.Common.IO
         /// Initializes a new instance of the <see cref="FilePath"/> class..
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
-        public FilePath(string path, bool absolute)
-            : base(path, absolute)
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public FilePath(string path, PathKind pathKind)
+            : base(path, pathKind)
         {
         }
 
@@ -51,7 +43,7 @@ namespace Wyam.Common.IO
         /// <param name="provider">The provider.</param>
         /// <param name="path">The path.</param>
         public FilePath(string provider, string path)
-            : base(provider, path, null)
+            : base(provider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
@@ -61,11 +53,54 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <param name="path">The path.</param>
-        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
-        public FilePath(string provider, string path, bool absolute)
-            : base(provider, path, absolute)
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public FilePath(string provider, string path, PathKind pathKind)
+            : base(provider, path, pathKind)
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilePath" /> class
+        /// with the specified provider.
+        /// The path will be considered absolute if the underlying OS file system
+        /// considers it absolute.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        public FilePath(Uri provider, string path)
+            : base(provider, path, PathKind.RelativeOrAbsolute)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilePath" /> class
+        /// with the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public FilePath(Uri provider, string path, PathKind pathKind)
+            : base(provider, path, pathKind)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilePath" /> class
+        /// with the specified provider and/or path.
+        /// </summary>
+        /// <param name="path">The path (and provider if this is an absolute URI).</param>
+        public FilePath(Uri path)
+            : base(path)
+        {
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this path has a file extension.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this file path has a file extension; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasExtension => System.IO.Path.HasExtension(FullPath);
 
         /// <summary>
         /// Gets the directory part of the path.
@@ -95,7 +130,7 @@ namespace Wyam.Common.IO
                 DirectoryPath root = Root;
                 return root.FullPath == "." 
                     ? this 
-                    : new FilePath(FullPath.Substring(root.FullPath.Length), false);
+                    : new FilePath(FullPath.Substring(root.FullPath.Length), PathKind.Relative);
             }
         }
 

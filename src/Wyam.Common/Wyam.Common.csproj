@@ -56,6 +56,7 @@
     <Compile Include="IO\IFileSystemEntry.cs" />
     <Compile Include="IO\NormalizedPath.cs" />
     <Compile Include="IO\PathEqualityComparer.cs" />
+    <Compile Include="IO\PathKind.cs" />
     <Compile Include="IO\RelativePathResolver.cs" />
     <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
     <Compile Include="Meta\IMetadataDictionary.cs" />

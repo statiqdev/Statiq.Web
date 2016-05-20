@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         public DirectoryPath(string path)
-            : base(path, null)
+            : base(path, PathKind.RelativeOrAbsolute)
         {
         }
 
@@ -29,9 +30,9 @@ namespace Wyam.Common.IO
         /// Initializes a new instance of the <see cref="DirectoryPath"/> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
-        public DirectoryPath(string path, bool absolute)
-            : base(path, absolute)
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public DirectoryPath(string path, PathKind pathKind)
+            : base(path, pathKind)
         {
         }
 
@@ -44,7 +45,7 @@ namespace Wyam.Common.IO
         /// <param name="provider">The provider.</param>
         /// <param name="path">The path.</param>
         public DirectoryPath(string provider, string path)
-            : base(provider, path, null)
+            : base(provider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
@@ -54,9 +55,44 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <param name="path">The path.</param>
-        /// <param name="absolute">Explicitly sets this path as absolute (or not).</param>
-        public DirectoryPath(string provider, string path, bool absolute)
-            : base(provider, path, absolute)
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public DirectoryPath(string provider, string path, PathKind pathKind)
+            : base(provider, path, pathKind)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath" /> class
+        /// with the specified provider.
+        /// The path will be considered absolute if the underlying OS file system
+        /// considers it absolute.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        public DirectoryPath(Uri provider, string path)
+            : base(provider, path, PathKind.RelativeOrAbsolute)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath" /> class
+        /// with the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
+        public DirectoryPath(Uri provider, string path, PathKind pathKind)
+            : base(provider, path, pathKind)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DirectoryPath" /> class
+        /// with the specified provider and/or path.
+        /// </summary>
+        /// <param name="path">The path (and provider if this is an absolute URI).</param>
+        public DirectoryPath(Uri path)
+            : base(path)
         {
         }
 
@@ -109,7 +145,7 @@ namespace Wyam.Common.IO
                 DirectoryPath root = Root;
                 return root.FullPath == "."
                     ? this
-                    : new DirectoryPath(FullPath.Substring(root.FullPath.Length), false);
+                    : new DirectoryPath(FullPath.Substring(root.FullPath.Length), PathKind.Relative);
             }
         }
 

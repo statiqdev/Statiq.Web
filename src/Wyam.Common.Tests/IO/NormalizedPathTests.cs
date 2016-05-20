@@ -9,17 +9,32 @@ using Wyam.Testing;
 
 namespace Wyam.Common.Tests.IO
 {
+    // TODO: ToString() tests:
+    // Provder|Path if absolute and provider contains path information in the URI
+    // Provider/Path if absolute and provider does not contain path info (I.e., looks like a URI)
+    // Path if absolute and provider is null
+    // Path if relative
+
+
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class NormalizedPathTests : BaseFixture
     {
         private class TestPath : NormalizedPath
         {
-            public TestPath(string path, bool? absolute = null) : base(path, absolute)
+            public TestPath(string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(path, pathKind)
             {
             }
 
-            public TestPath(string provider, string path, bool? absolute = null) : base(provider, path, absolute)
+            public TestPath(string provider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(provider, path, pathKind)
+            {
+            }
+
+            public TestPath(Uri provider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(provider, path, pathKind)
+            {
+            }
+
+            public TestPath(Uri path) : base(path)
             {
             }
         }
@@ -228,7 +243,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnDottedRootForExplicitRelativePath(string fullPath)
             {
                 // Given
-                TestPath path = new TestPath(fullPath, false);
+                TestPath path = new TestPath(fullPath, PathKind.Relative);
 
                 // When
                 DirectoryPath root = path.Root;
@@ -348,10 +363,10 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"provider::C::\a\b", "provider", @"C::\a\b")]
             [TestCase("/a/b", null, "/a/b")]
             [TestCase("provider::/a/b", "provider", "/a/b")]
-            public void ShouldParseProvider(string fullPath, string provider, string path)
+            public void ShouldParseProvider(string fullPath, Uri provider, string path)
             {
                 // Given, When
-                Tuple<string, string> result = NormalizedPath.GetProviderAndPath(fullPath);
+                Tuple<Uri, string> result = NormalizedPath.GetProviderAndPath(fullPath);
 
                 // Then
                 Assert.AreEqual(provider, result.Item1);
