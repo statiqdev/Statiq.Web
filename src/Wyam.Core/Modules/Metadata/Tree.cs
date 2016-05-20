@@ -12,6 +12,10 @@ using Wyam.Common.Modules;
 
 namespace Wyam.Core.Modules.Metadata
 {
+    /// <summary>
+    /// Add Metadata to the Documents that describes the position of
+    /// the Document in a tree structure. 
+    /// </summary>
     public class Tree : IModule
     {
         private DocumentConfig isRoot;
