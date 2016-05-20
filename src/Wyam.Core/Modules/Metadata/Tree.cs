@@ -70,6 +70,17 @@ namespace Wyam.Core.Modules.Metadata
         }
 
 
+        public Tree WithMetadataNames(string parentMetadata = "Parent", string childrenMetadata = "Children", string previousSilblingMetadata = "PreviosSilbling", string nextSilblingMetadata = "NextSilbling", string nextNodeMetadata = "Next", string previousNodeMetadata = "Previous")
+        {
+            this.parentMetadata = parentMetadata;
+            this.childrenMetadata = childrenMetadata;
+            this.previousSilblingMetadata = previousSilblingMetadata;
+            this.nextSilblingMetadata = nextSilblingMetadata;
+            this.nextNodeMetadata = nextNodeMetadata;
+            this.previousNodeMetadata = previousNodeMetadata;
+            return this;
+        }
+
 
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
