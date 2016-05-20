@@ -21,7 +21,7 @@ namespace Wyam.Core.Documents
         private readonly object _streamLock;
         private bool _disposeStream;
         private bool _disposed;
-        
+
         internal Document(MetadataDictionary initialMetadata, string content = null)
             : this(initialMetadata, null, null, content, null, true)
         {
@@ -31,7 +31,7 @@ namespace Wyam.Core.Documents
             : this(Guid.NewGuid().ToString(), new MetadataStack(initialMetadata), source, stream, null, content, items, disposeStream)
         {
         }
-        
+
         private Document(string id, MetadataStack metadata, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items)
             : this(id, metadata, source, null, null, content, items, true)
         {
@@ -204,21 +204,25 @@ namespace Wyam.Core.Documents
             }
 
             // Otherwise, use the stream
-            Monitor.Enter(_streamLock);
-            try
+            if (_stream != null)
             {
-                _stream.Position = 0;
-                using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+                Monitor.Enter(_streamLock);
+                try
                 {
-                    char[] buffer = new char[128];
-                    int count = reader.Read(buffer, 0, 128);
-                    return new string(buffer, 0, count);
+                    _stream.Position = 0;
+                    using (StreamReader reader = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
+                    {
+                        char[] buffer = new char[128];
+                        int count = reader.Read(buffer, 0, 128);
+                        return new string(buffer, 0, count);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(_streamLock);
                 }
             }
-            finally
-            {
-                Monitor.Exit(_streamLock);
-            }
+            return string.Empty;
         }
 
         public void Dispose()
