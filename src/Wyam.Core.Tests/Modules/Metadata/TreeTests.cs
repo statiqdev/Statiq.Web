@@ -409,7 +409,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             }
 
             [Test]
-            public void TestCorrectPreviousSilbling()
+            public void TestCorrectPreviousSibling()
             {
                 // Given
                 IExecutionContext context;
@@ -437,7 +437,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
-                const string metadataToLookup = "PreviosSilbling";
+                const string metadataToLookup = "PreviousSibling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
 
@@ -467,7 +467,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             }
 
             [Test]
-            public void TestCorrectNextSilbling()
+            public void TestCorrectNextSibling()
             {
                 // Given
                 IExecutionContext context;
@@ -495,7 +495,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
-                const string metadataToLookup = "NextSilbling";
+                const string metadataToLookup = "NextSibling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
 
@@ -658,14 +658,6 @@ namespace Wyam.Core.Tests.Modules.Metadata
         private IEnumerable<KeyValuePair<string, object>> GenerateMetadata(int index, int numberOfDocuments)
         {
             yield break;
-            int currentPotenz = (int)Math.Pow(2, index);
-            for (int i = 0; i < Math.Pow(2, numberOfDocuments) - 1; i++)
-            {
-                if ((i & currentPotenz) == currentPotenz)
-                {
-                    yield return new KeyValuePair<string, object>($"m{i}", index);
-                }
-            }
         }
 
         private static IExecutionContext GetContext()

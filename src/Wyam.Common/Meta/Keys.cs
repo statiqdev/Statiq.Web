@@ -90,8 +90,8 @@ namespace Wyam.Common.Meta
         // Tree
         public const string Parent = "Parent";
         public const string Children = "Children";
-        public const string PreviousSibling = "PreviousSilbling";
-        public const string NextSibling = "NextSilbling";
+        public const string PreviousSibling = "PreviousSibling";
+        public const string NextSibling = "NextSibling";
         public const string Next = "Next";
         public const string Previous = "Previous";
     }
