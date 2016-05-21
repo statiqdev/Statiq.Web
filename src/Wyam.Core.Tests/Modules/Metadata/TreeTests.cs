@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     @"\root",
                     @"\root\a",
@@ -39,15 +39,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     @"\root\c\2",
                     @"\root\d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(inputPathes.Length, outputDocuments.Count);
+                Assert.AreEqual(inputPaths.Length, outputDocuments.Count);
             }
 
             [Test]
@@ -58,7 +58,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     @"\root",
                     @"\root\a\1",
@@ -67,15 +67,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     @"\root\c\2",
                     @"\root\d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
                 
                 // Then
-                Assert.AreEqual(inputPathes.Length + 3, outputDocuments.Count);
+                Assert.AreEqual(inputPaths.Length + 3, outputDocuments.Count);
             }
 
             [Test]
@@ -86,7 +86,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -98,15 +98,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
                 const string metadatakey = "Parent";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadatakey]);
@@ -136,7 +136,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -148,15 +148,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree().WithRoots((doc, config) => doc.Source.Directory.Name == "root");
+                Tree tree = new Tree().WithRoots((doc, config) => doc.Source.Directory.Name == "root");
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
 
                 Assert.AreEqual(0,
                     ((IReadOnlyCollection<IDocument>) outputLookup[@"/root"]["Children"]).Count);
@@ -199,7 +199,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -211,9 +211,9 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree().WithOrder((doc, config) =>
+                Tree tree = new Tree().WithOrder((doc, config) =>
                 {
                     switch (doc.Source.FileName.ToString())
                     {
@@ -231,9 +231,9 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 });
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
 
                 // Then
                 Assert.AreEqual(outputLookup[@"/root/d"],
@@ -257,7 +257,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -269,14 +269,14 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
 
                 // Then
                 Assert.AreEqual(outputLookup[@"/root/a"],
@@ -300,7 +300,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -312,15 +312,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
                 const string metadataToLookup = "Next";
                 Assert.AreEqual(outputLookup[@"/root/a"],
                     outputLookup[@"/root"][metadataToLookup]);
@@ -358,7 +358,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -370,15 +370,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
                 const string metadataToLookup = "Previous";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -416,7 +416,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -428,15 +428,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
                 const string metadataToLookup = "PreviousSibling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -474,7 +474,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 IDictionary<string, IDocument> documents;
                 IDictionary<IDocument, int> documentsIndex;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                String[] inputPathes = new String[]
+                String[] inputPaths = new String[]
                 {
                     "/root",
                     "/root/a",
@@ -486,15 +486,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "/root/c/2",
                     "/root/d"
                 };
-                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
+                Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPaths);
 
-                Tree directoryMetadata = new Tree();
+                Tree tree = new Tree();
 
                 // When
-                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = tree.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.FullPath.ToString());
                 const string metadataToLookup = "NextSibling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -715,7 +715,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             metadataObject.Keys.Returns(metadata.Select(x => x.Key));
             metadataObject.Values.Returns(metadata.Select(x => x.Value));
 
-            document.Source.Returns(relativePath == null ? null : Path.Combine(Root, "input", relativePath));
+            document.Source.Returns(relativePath);
             document.Metadata.Returns(metadataObject);
             document.GetEnumerator().Returns(x => metadata.OfType<KeyValuePair<string, object>>().GetEnumerator());
             document.Keys.Returns(metadata.Select(x => x.Key));

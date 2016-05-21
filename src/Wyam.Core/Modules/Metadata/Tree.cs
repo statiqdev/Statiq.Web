@@ -110,12 +110,12 @@ namespace Wyam.Core.Modules.Metadata
 
                 for (int i = 1; i <= splitedPath.Length; i++)
                 {
-                    string id = System.IO.Path.Combine(splitedPath.Take(i).ToArray());
+                    string id = string.Join("/", splitedPath.Take(i));
                     if (treeElementLookup.ContainsKey(id))
                     {
                         continue;
                     }
-                    string parent = System.IO.Path.Combine(splitedPath.Take(i - 1).ToArray());
+                    string parent = string.Join("/", splitedPath.Take(i - 1));
                     TreeNode<IDocument> treeNode = new TreeNode<IDocument>(id, parent);
                     if (i == splitedPath.Length)
                     {
@@ -132,16 +132,14 @@ namespace Wyam.Core.Modules.Metadata
                     ? null
                     : treeElementLookup[treeElement.ParentId];
             }
+
+            // Get (and order) children
             foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
-                treeElement.Childrean = treeElementLookup.Values.Where(x => x.ParentId == treeElement.Id).ToList();
-            }
-
-
-            // Order Children
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
-            {
-                treeElement.Childrean = treeElement.Childrean.OrderBy(x => x.Value != null ? documentOrder[x.Value] : -1).ToList();
+                treeElement.Children = treeElementLookup.Values
+                    .Where(x => x.ParentId == treeElement.Id)
+                    .OrderBy(x => x.Value != null ? documentOrder[x.Value] : -1)
+                    .ToList();
             }
 
             // Split up Trees
@@ -149,7 +147,7 @@ namespace Wyam.Core.Modules.Metadata
             {
                 if ((bool)_isRoot(treeElement.Value, context))
                 {
-                    treeElement.Parent.Childrean.Remove(treeElement);
+                    treeElement.Parent.Children.Remove(treeElement);
                     treeElement.Parent = null;
                 }
             }
@@ -163,34 +161,34 @@ namespace Wyam.Core.Modules.Metadata
             // Adding Metadata
             foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
-                treeElement.Value = context.GetDocument(treeElement.Value, new KeyValuePair<string, object>[]
+                treeElement.Value = context.GetDocument(treeElement.Value, new MetadataItems
                 {
-                    new KeyValuePair<string, object>(this._childrenKey,
+                    new MetadataItem(_childrenKey,
                         new CachedDelegateMetadataValue((str, meta)=>
-                            new ReadOnlyCollection<IDocument> (treeElement.Childrean.Select(x=>x.Value).ToArray())
+                            new ReadOnlyCollection<IDocument> (treeElement.Children.Select(x=>x.Value).ToArray())
                         )
-                    ),
-                    new KeyValuePair<string,object>(this._parentKey,
+                    ), 
+                    new MetadataItem(_parentKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             treeElement.Parent?.Value
                         )
                     ),
-                    new KeyValuePair<string,object>(this._nextSiblingKey,
+                    new MetadataItem(_nextSiblingKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetNextSilbling(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this._previousSiblingKey,
+                    new MetadataItem(_previousSiblingKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetPreviousSilbling(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this._nextKey,
+                    new MetadataItem(_nextKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetNextNodeMetadata(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this._previousKey,
+                    new MetadataItem(_previousKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetPreviousNode(treeElement)
                         )
@@ -204,9 +202,9 @@ namespace Wyam.Core.Modules.Metadata
         private IDocument GetPreviousNode(TreeNode<IDocument> treeElement)
         {
             TreeNode<IDocument> previoussilbling = GetPreviousSilblingTree(treeElement);
-            while (previoussilbling != null && previoussilbling.Childrean.Any())
+            while (previoussilbling != null && previoussilbling.Children.Any())
             {
-                previoussilbling = previoussilbling.Childrean.Last();
+                previoussilbling = previoussilbling.Children.Last();
             }
             if (previoussilbling != null)
             {
@@ -219,9 +217,9 @@ namespace Wyam.Core.Modules.Metadata
         private IDocument GetNextNodeMetadata(TreeNode<IDocument> treeElement)
         {
             // Calculate the next node using a depth-first search
-            if (treeElement.Childrean.Any())
+            if (treeElement.Children.Any())
             {
-                return treeElement.Childrean[0].Value;
+                return treeElement.Children[0].Value;
             }
 
             IDocument nextSilbling = GetNextSilbling(treeElement);
@@ -250,12 +248,12 @@ namespace Wyam.Core.Modules.Metadata
             {
                 return null;
             }
-            int indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
+            int indexInParent = treeElement.Parent.Children.IndexOf(treeElement);
             if (indexInParent == 0)
             {
                 return null;
             }
-            return treeElement.Parent.Childrean[indexInParent - 1];
+            return treeElement.Parent.Children[indexInParent - 1];
         }
 
         private IDocument GetPreviousSilbling(TreeNode<IDocument> treeElement) => 
@@ -267,12 +265,12 @@ namespace Wyam.Core.Modules.Metadata
             {
                 return null;
             }
-            int indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
-            if (indexInParent == treeElement.Parent.Childrean.Count - 1)
+            int indexInParent = treeElement.Parent.Children.IndexOf(treeElement);
+            if (indexInParent == treeElement.Parent.Children.Count - 1)
             {
                 return null;
             }
-            return treeElement.Parent.Childrean[indexInParent + 1].Value;
+            return treeElement.Parent.Children[indexInParent + 1].Value;
         }
 
         [System.Diagnostics.DebuggerDisplay("TreeElement {Id}")]
@@ -287,7 +285,7 @@ namespace Wyam.Core.Modules.Metadata
             public string ParentId { get; }
             public T Value { get; set; }
             public TreeNode<T> Parent { get; set; }
-            public List<TreeNode<T>> Childrean { get; set; }
+            public List<TreeNode<T>> Children { get; set; }
         }
     }
 }
