@@ -15,11 +15,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class TreeMetaTests : BaseFixture
+    public class TreeTests : BaseFixture
     {
-        public class ExecuteMethodTests : TreeMetaTests
+        public class ExecuteMethodTests : TreeTests
         {
-
             [Test]
             public void TestNumberOfInputiEquealsOutput()
             {
@@ -45,8 +44,9 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
+                // Then
                 Assert.AreEqual(inputPathes.Length, outputDocuments.Count);
             }
 
@@ -72,8 +72,9 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
-
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                
+                // Then
                 Assert.AreEqual(inputPathes.Length + 3, outputDocuments.Count);
             }
 
@@ -102,9 +103,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
                 const string metadatakey = "Parent";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadatakey]);
@@ -148,18 +150,16 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 };
                 Setup(out context, out documents, out documentsIndex, out cloneDictionary, inputPathes);
 
-                Tree directoryMetadata = new Tree().WithRoots((doc, config) =>
-                {
-                    return doc.Source.Directory.Name == "root";
-                });
+                Tree directoryMetadata = new Tree().WithRoots((doc, config) => doc.Source.Directory.Name == "root");
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
 
                 Assert.AreEqual(0,
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyCollection<IDocument>).Count);
+                    ((IReadOnlyCollection<IDocument>) outputLookup[@"/root"]["Children"]).Count);
 
 
                 const string metadatakey = "Parent";
@@ -190,7 +190,6 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Assert.AreEqual(null,
                     outputLookup[@"/root/d"][metadatakey]);
             }
-
 
             [Test]
             public void TestCustomOrder()
@@ -232,25 +231,23 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 });
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
 
+                // Then
                 Assert.AreEqual(outputLookup[@"/root/d"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/c"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/b"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/a"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
-
-
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
             }
-
 
             [Test]
             public void TestDefaultOrder()
@@ -277,26 +274,23 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
 
+                // Then
                 Assert.AreEqual(outputLookup[@"/root/a"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/b"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/c"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
 
                 Assert.AreEqual(outputLookup[@"/root/d"],
-                    (outputLookup[@"/root"]["Children"] as IReadOnlyList<IDocument>)[0]);
-
-
+                    ((IReadOnlyList<IDocument>) outputLookup[@"/root"]["Children"])[0]);
             }
-
-
 
             [Test]
             public void TestCorrectNext()
@@ -323,9 +317,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
                 const string metadataToLookup = "Next";
                 Assert.AreEqual(outputLookup[@"/root/a"],
                     outputLookup[@"/root"][metadataToLookup]);
@@ -354,6 +349,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Assert.AreEqual(null,
                     outputLookup[@"/root/d"][metadataToLookup]);
             }
+
             [Test]
             public void TestCorrectPreview()
             {
@@ -379,9 +375,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
                 const string metadataToLookup = "Previous";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -411,6 +408,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     outputLookup[@"/root/d"][metadataToLookup]);
             }
 
+            [Test]
             public void TestCorrectPreviousSilbling()
             {
                 // Given
@@ -435,9 +433,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
                 const string metadataToLookup = "PreviosSilbling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -467,7 +466,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     outputLookup[@"/root/d"][metadataToLookup]);
             }
 
-
+            [Test]
             public void TestCorrectNextSilbling()
             {
                 // Given
@@ -492,9 +491,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Tree directoryMetadata = new Tree();
 
                 // When
-                var outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> outputDocuments = directoryMetadata.Execute(new List<IDocument>(documents.Values), context).ToList();  // Make sure to materialize the result list
 
-                var outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
+                // Then
+                Dictionary<string, IDocument> outputLookup = outputDocuments.ToDictionary(x => x.Source.ToString());
                 const string metadataToLookup = "NextSilbling";
                 Assert.AreEqual(null,
                     outputLookup[@"/root"][metadataToLookup]);
@@ -523,12 +523,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Assert.AreEqual(null,
                     outputLookup[@"/root/d"][metadataToLookup]);
             }
-
-
-
-
         }
-
 
         #region TestHelper
 
@@ -541,15 +536,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
         private const string Site = @"site.md";
 
         /// <summary>
-        /// This Method Helps to Create many Stubs that are used for all tests.
+        /// This method helps to create many stubs that are used for all tests.
         /// </summary>
         /// <param name="context">This is the context that can be used by the test.</param>
         /// <param name="documents">A dictionary with (relativePath, document)</param>
         /// <param name="documentsIndexLookup">A directory that has maps an index to every document.</param>
         /// <param name="cloneDictionary">For every Document that was cloned the new Metadata is stored.</param>
         /// <param name="pathArray">
-        ///     The Pathes for wich documents will be generated.
-        ///     If empty 6 default documents will be genreated.
+        ///     The paths for which documents will be generated.
+        ///     If empty, 6 default documents will be generated.
         /// </param>
         /// <remarks>
         /// Each document will be generated with metadata.
@@ -615,24 +610,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                     return newDocument;
                 });
-            //.Do(x =>
-            //{
-            //    IDocument document = x.Arg<IDocument>();
-            //    IEnumerable<KeyValuePair<string, object>> newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
-            //    Dictionary<string, object> oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
-            //    foreach (KeyValuePair<string, object> m in newMetadata) // overriding the old metadata like Document would do it.
-            //    {
-            //        oldMetadata[m.Key] = m.Value;
-            //    }
-            //    tempDictionary[document] = oldMetadata;
-            //});
         }
 
         /// <summary>
         /// Returns the Key of the Metadata that is exactly set in all submitted documents.
         /// </summary>
-        /// <param name="whereHas">The Documents represented by ther index.</param>
-        /// <returns>The keyword that is only available on the reqired documents.</returns>
+        /// <param name="whereHas">The Documents represented by their index.</param>
+        /// <returns>The keyword that is only available on the required documents.</returns>
         private string ListMetadata(params int[] whereHas)
         {
             return ListAllMetadata(whereHas.Max() + 1, whereHas as IEnumerable<int>).Single();
@@ -695,7 +679,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         }
 
         /// <summary>
-        /// Add's convert functionalaty to the ExecutionContext.
+        /// Adds convert functionality to the ExecutionContext.
         /// </summary>
         /// <typeparam name="T">The Type that should be converted.</typeparam>
         /// <param name="context">The Context that will convert.</param>
@@ -727,7 +711,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
             for (int i = 0; i < metadata.Length; i++)
             {
-                var provider = metadata[i].Value as IMetadataValue;
+                IMetadataValue provider = metadata[i].Value as IMetadataValue;
                 if (provider != null)
                     metadata[i] = new KeyValuePair<string, object>(metadata[i].Key, provider.Get(metadata[i].Key, null));
             }
@@ -745,7 +729,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             document.Keys.Returns(metadata.Select(x => x.Key));
             document.Values.Returns(metadata.Select(x => x.Value));
 
-            foreach (var m in metadata)
+            foreach (KeyValuePair<string, object> m in metadata)
             {
                 metadataObject[m.Key].Returns(m.Value);
                 metadataObject.ContainsKey(Arg.Any<string>()).Returns((x => metadata.Any(y => y.Key == (string)x[0])));

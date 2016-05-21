@@ -13,144 +13,141 @@ using Wyam.Common.Modules;
 namespace Wyam.Core.Modules.Metadata
 {
     /// <summary>
-    /// Add Metadata to the Documents that describes the position of
-    /// the Document in a tree structure. 
-    /// Following keys will be set:
-    /// * Parent (<see cref="IDocument"/>) The parent of this node. <c>null</c> if it is a root
-    /// * Children (<see cref="ReadOnlyCollection{IDocument}"/>) All children of this node.
-    /// * PreviosSilbling (<see cref="IDocument"/>) The previous sibling, that is the previous node in the Children collection of the parent. <c>null</c> if this is the first node in the collection or parent is null.
-    /// * NextSilbling (<see cref="IDocument"/>) The next sibling, that is the next node in the Children collection of the parent. <c>null</c> if this is the last node in the collection or parent is null. 
-    /// * Next (<see cref="IDocument"/>) The next node using a Depth-First-Search. <c>null</c> if this was the last node.
-    /// * Previous (<see cref="IDocument"/>) The previous node using a Depth-First-Search. <c>null</c> if this was the first node.
+    /// Adds metadata to the input documents that describes the position of each one in a tree structure. 
     /// </summary>
+    /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata> 
+    /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata> 
+    /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children 
+    /// collection of the parent or <c>null</c> if this is the first node in the collection or the parent is null.</metadata>
+    /// <metadata name="NextSibling" type="IDocument">The next sibling, that is the next node in the children collection 
+    /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.</metadata> 
+    /// <metadata name="Next" type="IDocument">The next node in the tree using a depth-first 
+    /// search or <c>null</c> if this was the last node.</metadata> 
+    /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first 
+    /// search or <c>null</c> if this was the first node.</metadata>
     public class Tree : IModule
     {
-        private DocumentConfig isRoot;
-        private DocumentConfig getPath;
-        private DocumentConfig getOrder;
+        private DocumentConfig _isRoot;
+        private DocumentConfig _getPath;
+        private DocumentConfig _getOrder;
 
-        private string parentMetadata = "Parent";
-        private string childrenMetadata = "Children";
-        private string previousSilblingMetadata = "PreviosSilbling";
-        private string nextSilblingMetadata = "NextSilbling";
-
-        private string nextNodeMetadata = "Next";
-        private string previousNodeMetadata = "Previous";
+        private string _parentKey = Keys.Parent;
+        private string _childrenKey = Keys.Children;
+        private string _previousSiblingKey = Keys.PreviousSibling;
+        private string _nextSiblingKey = Keys.NextSibling;
+        private string _nextKey = Keys.Next;
+        private string _previousKey = Keys.Previous;
 
 
         public Tree()
         {
-            isRoot = (ctx, doc) => false;
-            getPath = (doc, ctx) => doc.Source.Segments;
+            _isRoot = (ctx, doc) => false;
+            _getPath = (doc, ctx) => doc.Source.Segments;
         }
 
         /// <summary>
-        /// Specifying for each Document if it is a root of a Tree. This Results in splitting the generated tree in multiple smaller ones.
+        /// Specifies for each document if it is a root of a tree. This results in splitting the generated tree into multiple smaller ones.
         /// </summary>
-        /// <param name="config">A Predicate (must return <c>bool</c>) that specifies if the current Document is treated as the root of a new tree.</param>
-        /// <returns></returns>
+        /// <param name="config">A predicate (must return <c>bool</c>) that specifies if the current document is treated as the root of a new tree.</param>
         public Tree WithRoots(DocumentConfig config)
         {
-            isRoot = config;
+            _isRoot = config;
             return this;
         }
         /// <summary>
-        /// Specifies the order of the Children in the Tree
+        /// Specifies the order of the children in the tree.
         /// </summary>
-        /// <param name="config">The DocumentConfig must return an <c>int</c>.</param>
-        /// <returns></returns>
+        /// <param name="config">A predicate that must return an <c>int</c>.</param>
         public Tree WithOrder(DocumentConfig config)
         {
-            getOrder = config;
+            _getOrder = config;
             return this;
         }
 
         /// <summary>
-        /// Defines the structure of the Tree
+        /// Defines the structure of the tree.
         /// </summary>
-        /// <param name="config">Must return <c>string[]</c></param>
-        /// <returns></returns>
+        /// <param name="config">A predicate that must return a <c>string[]</c>.</param>
         public Tree WithPath(DocumentConfig config)
         {
-            getPath = config;
+            _getPath = config;
             return this;
         }
 
         /// <summary>
-        /// Changes the standard Metadata keys.
+        /// Changes the standard metadata keys used by this module.
         /// </summary>
-        /// <param name="parentMetadata"></param>
-        /// <param name="childrenMetadata"></param>
-        /// <param name="previousSilblingMetadata"></param>
-        /// <param name="nextSilblingMetadata"></param>
-        /// <param name="nextNodeMetadata"></param>
-        /// <param name="previousNodeMetadata"></param>
-        /// <returns></returns>
-        public Tree WithMetadataNames(string parentMetadata = "Parent", string childrenMetadata = "Children", string previousSilblingMetadata = "PreviosSilbling", string nextSilblingMetadata = "NextSilbling", string nextNodeMetadata = "Next", string previousNodeMetadata = "Previous")
+        public Tree WithMetadataNames(
+            string parentKey = Keys.Parent, 
+            string childrenKey = Keys.Children, 
+            string previousSiblingKey = Keys.PreviousSibling, 
+            string nextSiblingKey = Keys.NextSibling, 
+            string nextKey = Keys.Next, 
+            string previousKey = Keys.Previous)
         {
-            this.parentMetadata = parentMetadata;
-            this.childrenMetadata = childrenMetadata;
-            this.previousSilblingMetadata = previousSilblingMetadata;
-            this.nextSilblingMetadata = nextSilblingMetadata;
-            this.nextNodeMetadata = nextNodeMetadata;
-            this.previousNodeMetadata = previousNodeMetadata;
+            _parentKey = parentKey;
+            _childrenKey = childrenKey;
+            _previousSiblingKey = previousSiblingKey;
+            _nextSiblingKey = nextSiblingKey;
+            _nextKey = nextKey;
+            _previousKey = previousKey;
             return this;
         }
-
-
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            Dictionary<string, TreeNode<IDocument>> treeElementLookup = new Dictionary<string, TreeNode<IDocument>>();
 
-
-            var treeElementLookup = new Dictionary<string, TreeNode<IDocument>>();
-
-            var documentOrder = getOrder != null
-                ? inputs.ToDictionary(x => x, x => (int)getOrder(x, context))
+            Dictionary<IDocument, int> documentOrder = _getOrder != null
+                ? inputs.ToDictionary(x => x, x => (int)_getOrder(x, context))
                 : inputs.Select((value, index) => new { Index = index, Document = value }).ToDictionary(x => x.Document, x => x.Index);
 
             // Generate TreeNodes
-            foreach (var keypair in inputs.Select(x => new { Key = x, Value = (string[])getPath(x, context) }))
+            foreach (var keypair in inputs.Select(x => new { Key = x, Value = (string[])_getPath(x, context) }))
             {
-                var splitedPath = keypair.Value;
-                var document = keypair.Key;
+                string[] splitedPath = keypair.Value;
+                IDocument document = keypair.Key;
 
                 for (int i = 1; i <= splitedPath.Length; i++)
                 {
                     string id = System.IO.Path.Combine(splitedPath.Take(i).ToArray());
                     if (treeElementLookup.ContainsKey(id))
+                    {
                         continue;
+                    }
                     string parent = System.IO.Path.Combine(splitedPath.Take(i - 1).ToArray());
-                    var treeNode = new TreeNode<IDocument>(id, parent);
+                    TreeNode<IDocument> treeNode = new TreeNode<IDocument>(id, parent);
                     if (i == splitedPath.Length)
+                    {
                         treeNode.Value = document;
+                    }
                     treeElementLookup.Add(id, treeNode);
                 }
             }
 
             // Concatenating TreeNodes
-            foreach (var treeElement in treeElementLookup.Values)
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
                 treeElement.Parent = treeElement.ParentId == ""
                     ? null
                     : treeElementLookup[treeElement.ParentId];
             }
-            foreach (var treeElement in treeElementLookup.Values)
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
                 treeElement.Childrean = treeElementLookup.Values.Where(x => x.ParentId == treeElement.Id).ToList();
             }
 
 
             // Order Children
-            foreach (var treeElement in treeElementLookup.Values)
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
                 treeElement.Childrean = treeElement.Childrean.OrderBy(x => x.Value != null ? documentOrder[x.Value] : -1).ToList();
             }
 
             // Split up Trees
-            foreach (var treeElement in treeElementLookup.Values.Where(x => x.Value != null))
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values.Where(x => x.Value != null))
             {
-                if ((bool)isRoot(treeElement.Value, context))
+                if ((bool)_isRoot(treeElement.Value, context))
                 {
                     treeElement.Parent.Childrean.Remove(treeElement);
                     treeElement.Parent = null;
@@ -158,42 +155,42 @@ namespace Wyam.Core.Modules.Metadata
             }
 
             // Adding Empty Documents
-            foreach (var treeElement in treeElementLookup.Values.Where(x => x.Value == null))
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values.Where(x => x.Value == null))
             {
                 treeElement.Value = context.GetDocument();
             }
 
             // Adding Metadata
-            foreach (var treeElement in treeElementLookup.Values)
+            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
                 treeElement.Value = context.GetDocument(treeElement.Value, new KeyValuePair<string, object>[]
                 {
-                    new KeyValuePair<string, object>(this.childrenMetadata,
+                    new KeyValuePair<string, object>(this._childrenKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             new ReadOnlyCollection<IDocument> (treeElement.Childrean.Select(x=>x.Value).ToArray())
                         )
                     ),
-                    new KeyValuePair<string,object>(this.parentMetadata,
+                    new KeyValuePair<string,object>(this._parentKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             treeElement.Parent?.Value
                         )
                     ),
-                    new KeyValuePair<string,object>(this.nextSilblingMetadata,
+                    new KeyValuePair<string,object>(this._nextSiblingKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetNextSilbling(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this.previousSilblingMetadata,
+                    new KeyValuePair<string,object>(this._previousSiblingKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetPreviousSilbling(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this.nextNodeMetadata,
+                    new KeyValuePair<string,object>(this._nextKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetNextNodeMetadata(treeElement)
                         )
                     ),
-                    new KeyValuePair<string,object>(this.previousNodeMetadata,
+                    new KeyValuePair<string,object>(this._previousKey,
                         new CachedDelegateMetadataValue((str, meta)=>
                             GetPreviousNode(treeElement)
                         )
@@ -221,21 +218,27 @@ namespace Wyam.Core.Modules.Metadata
 
         private IDocument GetNextNodeMetadata(TreeNode<IDocument> treeElement)
         {
-            // Calculate the next node using Depth-first search
+            // Calculate the next node using a depth-first search
             if (treeElement.Childrean.Any())
+            {
                 return treeElement.Childrean[0].Value;
+            }
 
-            var nextSilbling = GetNextSilbling(treeElement);
+            IDocument nextSilbling = GetNextSilbling(treeElement);
             if (nextSilbling != null)
+            {
                 return nextSilbling;
+            }
 
-            var currentElement = treeElement;
+            TreeNode<IDocument> currentElement = treeElement;
 
             while (currentElement.Parent != null)
             {
-                var parrentSilbling = GetNextSilbling(currentElement);
+                IDocument parrentSilbling = GetNextSilbling(currentElement);
                 if (parrentSilbling != null)
+                {
                     return parrentSilbling;
+                }
                 currentElement = currentElement.Parent;
             }
             return null;
@@ -244,23 +247,31 @@ namespace Wyam.Core.Modules.Metadata
         private TreeNode<IDocument> GetPreviousSilblingTree(TreeNode<IDocument> treeElement)
         {
             if (treeElement.Parent == null)
+            {
                 return null;
-            var indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
+            }
+            int indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
             if (indexInParent == 0)
+            {
                 return null;
+            }
             return treeElement.Parent.Childrean[indexInParent - 1];
         }
 
-        private IDocument GetPreviousSilbling(TreeNode<IDocument> treeElement)
-        => GetPreviousSilblingTree(treeElement)?.Value;
+        private IDocument GetPreviousSilbling(TreeNode<IDocument> treeElement) => 
+            GetPreviousSilblingTree(treeElement)?.Value;
 
         private IDocument GetNextSilbling(TreeNode<IDocument> treeElement)
         {
             if (treeElement.Parent == null)
+            {
                 return null;
-            var indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
+            }
+            int indexInParent = treeElement.Parent.Childrean.IndexOf(treeElement);
             if (indexInParent == treeElement.Parent.Childrean.Count - 1)
+            {
                 return null;
+            }
             return treeElement.Parent.Childrean[indexInParent + 1].Value;
         }
 

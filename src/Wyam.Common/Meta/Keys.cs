@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 namespace Wyam.Common.Meta
 {
     /// <summary>
-    /// Common metadata keys for modules in Wyam.Core. The keys available in this class
-    /// might lag behind to full set of available keys since Wyam.Common doesn't update
-    /// as often. This set of keys will be updated whenever a new version of Wyam.Common
-    /// is released for other reasons.
+    /// Common metadata keys for modules in Wyam.Core.
     /// </summary>
     public static class Keys
     {
@@ -87,7 +84,15 @@ namespace Wyam.Common.Meta
         public const string SitemapItem = "SitemapItem";
 
         // Download
-        public static string SourceUri = "SourceUri";
-        public static string SourceHeaders = "SourceHeaders";
+        public const string SourceUri = "SourceUri";
+        public const string SourceHeaders = "SourceHeaders";
+
+        // Tree
+        public const string Parent = "Parent";
+        public const string Children = "Children";
+        public const string PreviousSibling = "PreviousSilbling";
+        public const string NextSibling = "NextSilbling";
+        public const string Next = "Next";
+        public const string Previous = "Previous";
     }
 }
