@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.FileProvider
+namespace Wyam.Core.IO.FileProviders.File
 {
-    public class File : IFileProvider
+    public class FileProvider : IFileProvider
     {
         public IFile GetFile(FilePath path)
         {

@@ -75,9 +75,9 @@
     <Compile Include="IO\Globbing\DirectoryInfo.cs" />
     <Compile Include="IO\Globbing\FileInfo.cs" />
     <Compile Include="IO\Globbing\Globber.cs" />
-    <Compile Include="IO\FileProviders\FileProvider\FileDirectory.cs" />
-    <Compile Include="IO\FileProviders\FileProvider\FileFile.cs" />
-    <Compile Include="IO\FileProviders\FileProvider\File.cs" />
+    <Compile Include="IO\FileProviders\File\FileDirectory.cs" />
+    <Compile Include="IO\FileProviders\File\FileFile.cs" />
+    <Compile Include="IO\FileProviders\File\FileProvider.cs" />
     <Compile Include="IO\VirtualInputDirectory.cs" />
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />

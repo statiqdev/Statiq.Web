@@ -2,7 +2,7 @@
 using System.IO;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.FileProvider
+namespace Wyam.Core.IO.FileProviders.File
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class FileFile : IFile
@@ -51,7 +51,7 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             // Use the file system APIs if destination is also in the file system
             if (destination is FileFile)
             {
-                File.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
+                File.FileProvider.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
             }
             else
             {
@@ -76,7 +76,7 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             // Use the file system APIs if destination is also in the file system
             if (destination is FileFile)
             {
-                File.Retry(() => _file.MoveTo(destination.Path.FullPath));
+                File.FileProvider.Retry(() => _file.MoveTo(destination.Path.FullPath));
             }
             else
             {
@@ -92,13 +92,13 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             }
         }
 
-        public void Delete() => File.Retry(() => _file.Delete());
+        public void Delete() => File.FileProvider.Retry(() => _file.Delete());
 
         public string ReadAllText() =>
-            File.Retry(() => System.IO.File.ReadAllText(_file.FullName));
+            File.FileProvider.Retry(() => System.IO.File.ReadAllText(_file.FullName));
 
         public Stream OpenRead() =>
-            File.Retry(() => _file.OpenRead());
+            File.FileProvider.Retry(() => _file.OpenRead());
 
         public void WriteAllText(string contents, bool createDirectory = true)
         {
@@ -106,7 +106,7 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             {
                 Directory.Create();
             }
-            File.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
+            File.FileProvider.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
         }
 
         public Stream OpenWrite(bool createDirectory = true)
@@ -115,7 +115,7 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             {
                 Directory.Create();
             }
-            return File.Retry(() => _file.OpenWrite());
+            return File.FileProvider.Retry(() => _file.OpenWrite());
         }
 
         public Stream OpenAppend(bool createDirectory = true)
@@ -124,7 +124,7 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             {
                 Directory.Create();
             }
-            return File.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
+            return File.FileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
         }
     }
 }

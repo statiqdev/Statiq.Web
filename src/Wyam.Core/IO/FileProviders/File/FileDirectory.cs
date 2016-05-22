@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.FileProvider
+namespace Wyam.Core.IO.FileProviders.File
 {
     // Initially based on code from Cake (http://cakebuild.net/)
     internal class FileDirectory : IDirectory
@@ -33,15 +33,15 @@ namespace Wyam.Core.IO.FileProviders.FileProvider
             _directory = new DirectoryInfo(_path.Collapse().FullPath);
         }
 
-        public void Create() => File.Retry(() => _directory.Create());
+        public void Create() => File.FileProvider.Retry(() => _directory.Create());
 
-        public void Delete(bool recursive) => File.Retry(() => _directory.Delete(recursive));
+        public void Delete(bool recursive) => File.FileProvider.Retry(() => _directory.Delete(recursive));
 
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            File.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new FileDirectory(directory.FullName)));
+            File.FileProvider.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new FileDirectory(directory.FullName)));
 
         public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            File.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new FileFile(file.FullName)));
+            File.FileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new FileFile(file.FullName)));
 
         public IDirectory GetDirectory(DirectoryPath path)
         {
