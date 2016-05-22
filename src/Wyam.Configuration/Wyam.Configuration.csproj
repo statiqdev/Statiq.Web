@@ -178,7 +178,7 @@
     <Compile Include="Assemblies\AssemblyDirective.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
     <Compile Include="Assemblies\AssemblyNameDirective.cs" />
-    <Compile Include="Assemblies\TypeFinder.cs" />
+    <Compile Include="Assemblies\ClassCatalog.cs" />
     <Compile Include="ConfigScript\ConfigCompilation.cs" />
     <Compile Include="ConfigScript\ConfigCompiler.cs" />
     <Compile Include="ConfigScript\ConfigParser.cs" />

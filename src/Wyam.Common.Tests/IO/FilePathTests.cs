@@ -212,7 +212,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.FileName;
 
                 // Then
-                Assert.AreEqual(null, result.Provider);
+                Assert.AreEqual(null, result.FileProvider);
             }
         }
 
@@ -244,7 +244,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.FileNameWithoutExtension;
 
                 // Then
-                Assert.AreEqual(null, result.Provider);
+                Assert.AreEqual(null, result.FileProvider);
             }
 
             [TestCase("/input/.test")]
@@ -292,7 +292,7 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual("/a/c/bar.txt", path.FullPath);
-                Assert.AreEqual(new Uri("foo:///"), path.Provider);
+                Assert.AreEqual(new Uri("foo:///"), path.FileProvider);
             }
         }
     }

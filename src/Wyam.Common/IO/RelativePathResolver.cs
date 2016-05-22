@@ -41,7 +41,7 @@ namespace Wyam.Common.IO
             target = target.Collapse();
 
             // Check if they share the same provider
-            if (source.Provider != target.Provider)
+            if (source.FileProvider != target.FileProvider)
             {
                 return target;
             }

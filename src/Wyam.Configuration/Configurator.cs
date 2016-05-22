@@ -25,7 +25,7 @@ namespace Wyam.Configuration
 
         public AssemblyLoader AssemblyLoader { get; }
 
-        public TypeFinder TypeFinder { get; }
+        public ClassCatalog ClassCatalog { get; }
 
         public bool OutputScript { get; set; }
 
@@ -39,9 +39,9 @@ namespace Wyam.Configuration
         public Configurator(Engine engine, Preprocessor preprocessor)
         {
             _engine = engine;
-            PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             AssemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies);
-            TypeFinder = new TypeFinder(engine.Namespaces);
+            PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
+            ClassCatalog = new ClassCatalog();
             _preprocessor = preprocessor;
 
             // Add the config namespace and assembly
@@ -89,17 +89,14 @@ namespace Wyam.Configuration
 
             // Initialize and evaluate the script
             Initialize();
+            AddNamespaces();
+            AddFileProviders();
             Evaluate(parserResult);
         }
 
         // Initialize the assembly manager (includes searching for module types)
         private void Initialize()
         {
-            // Include all Wyam.Common namespaces
-            _engine.Namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
-                .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                .Select(x => x.Namespace));
-
             // Install packages
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
@@ -107,15 +104,34 @@ namespace Wyam.Configuration
             }
 
             // Scan assemblies
-            using (Trace.WithIndent().Information("Loading assemblies"))
+            using (Trace.WithIndent().Information("Recursively loading assemblies"))
             {
                 AssemblyLoader.LoadAssemblies();
             }
 
             // Load types
-            using (Trace.WithIndent().Information("Finding types"))
+            using (Trace.WithIndent().Information("Cataloging types"))
             {
-                TypeFinder.FindTypes(AssemblyLoader.DirectAssemblies);
+                ClassCatalog.CatalogTypes(AssemblyLoader.DirectAssemblies);
+            }
+        }
+
+        private void AddNamespaces()
+        {
+            // Add all Wyam.Common namespaces
+            _engine.Namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
+                .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
+                .Select(x => x.Namespace));
+
+            // Add all module namespaces
+            _engine.Namespaces.AddRange(ClassCatalog.GetClasses<IModule>().Select(x => x.Namespace));
+        }
+
+        private void AddFileProviders()
+        {
+            foreach (IFileProvider fileProvider in ClassCatalog.GetInstances<IFileProvider>())
+            {
+                _engine.FileSystem.FileProviders.Add(fileProvider.GetType().Name.ToLowerInvariant(), fileProvider);
             }
         }
 
@@ -124,7 +140,7 @@ namespace Wyam.Configuration
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
                 _compilation.Generate(parserResult.Declarations, parserResult.Body,
-                    TypeFinder.GetImplementations<IModule>(), _engine.Namespaces);
+                    ClassCatalog.GetClasses<IModule>(), _engine.Namespaces);
                 WriteScript(ConfigCompilation.AssemblyName, _compilation.Code);
                 _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
                 _compilation.Invoke(_engine);

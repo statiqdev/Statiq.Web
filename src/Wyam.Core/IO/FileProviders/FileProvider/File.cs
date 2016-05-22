@@ -3,21 +3,21 @@ using System.IO;
 using System.Threading;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.Local
+namespace Wyam.Core.IO.FileProviders.FileProvider
 {
-    public class LocalFileProvider : IFileProvider
+    public class File : IFileProvider
     {
         public IFile GetFile(FilePath path)
         {
-            return new LocalFile(path);
+            return new FileFile(path);
         }
 
         public IDirectory GetDirectory(DirectoryPath path)
         {
-            return new LocalDirectory(path);
+            return new FileDirectory(path);
         }
 
-        // *** Retry logic (used by LocalFile and LocalDirectory)
+        // *** Retry logic (used by file and directory implementation)
 
         private static readonly TimeSpan InitialInterval = TimeSpan.FromMilliseconds(100);
         private static readonly TimeSpan IntervalDelta = TimeSpan.FromMilliseconds(100);

@@ -19,11 +19,11 @@ namespace Wyam.Common.Tests.IO
             {
             }
 
-            public TestPath(string provider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(provider, path, pathKind)
+            public TestPath(string fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(fileProvider, path, pathKind)
             {
             }
 
-            public TestPath(Uri provider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(provider, path, pathKind)
+            public TestPath(Uri fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(fileProvider, path, pathKind)
             {
             }
 
@@ -162,7 +162,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath path = new TestPath("foo", "/a/b");
 
                 // Then
-                Assert.AreEqual(new Uri("foo:"), path.Provider);
+                Assert.AreEqual(new Uri("foo:"), path.FileProvider);
             }
 
             [Test]
@@ -172,7 +172,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath path = new TestPath("|foo://a/b/c");
 
                 // Then
-                Assert.AreEqual(null, path.Provider);
+                Assert.AreEqual(null, path.FileProvider);
                 Assert.AreEqual("foo://a/b/c", path.FullPath);
             }
 
@@ -183,7 +183,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath path = new TestPath(new Uri("foo:///a/b|c/d/e"));
 
                 // Then
-                Assert.AreEqual(new Uri("foo:///a/b"), path.Provider);
+                Assert.AreEqual(new Uri("foo:///a/b"), path.FileProvider);
                 Assert.AreEqual("c/d/e", path.FullPath);
                 Assert.IsTrue(path.IsAbsolute);
             }
@@ -196,7 +196,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath(new Uri(path, UriKind.Relative));
 
                 // Then
-                Assert.AreEqual(null, testPath.Provider);
+                Assert.AreEqual(null, testPath.FileProvider);
                 Assert.AreEqual(path, testPath.FullPath);
                 Assert.IsTrue(testPath.IsRelative);
             }
@@ -208,7 +208,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath((Uri)null, "/a/b/c", PathKind.Absolute);
 
                 // Then
-                Assert.IsNull(testPath.Provider);
+                Assert.IsNull(testPath.FileProvider);
             }
 
             [Test]
@@ -218,7 +218,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath("/a/b/c", PathKind.Absolute);
 
                 // Then
-                Assert.AreEqual(new Uri("file:///"), testPath.Provider);
+                Assert.AreEqual(new Uri("file:///"), testPath.FileProvider);
             }
 
             [TestCase("foo:///")]
@@ -229,7 +229,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath(path);
 
                 // Then
-                Assert.AreEqual(new Uri(path), testPath.Provider);
+                Assert.AreEqual(new Uri(path), testPath.FileProvider);
                 Assert.AreEqual("/", testPath.FullPath);
             }
 
@@ -241,7 +241,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath(new Uri(path));
 
                 // Then
-                Assert.AreEqual(new Uri(path), testPath.Provider);
+                Assert.AreEqual(new Uri(path), testPath.FileProvider);
                 Assert.AreEqual("/", testPath.FullPath);
             }
 
@@ -252,7 +252,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath testPath = new TestPath("foo:");
 
                 // Then
-                Assert.AreEqual(null, testPath.Provider);
+                Assert.AreEqual(null, testPath.FileProvider);
                 Assert.AreEqual("foo:/", testPath.FullPath); // The slash is appended w/ assumption this is a file path
             }
 
@@ -264,14 +264,14 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
-        public class GetProviderUriTests : NormalizedPathTests
+        public class GetFileProviderUriTests : NormalizedPathTests
         {
             [TestCase(null)]
             [TestCase("")]
             public void ShouldReturnNullForNullOrEmptyPath(string provider)
             {
                 // Given, When
-                Uri uri = NormalizedPath.GetProviderUri(provider);
+                Uri uri = NormalizedPath.GetFileProviderUri(provider);
 
                 // Then
                 Assert.IsNull(uri);
@@ -281,7 +281,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnUriWithSchemeForScheme()
             {
                 // Given, When
-                Uri uri = NormalizedPath.GetProviderUri("foo");
+                Uri uri = NormalizedPath.GetFileProviderUri("foo");
 
                 // Then
                 Assert.AreEqual(new Uri("foo:"), uri);
@@ -294,7 +294,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnUriGivenUri(string provider)
             {
                 // Given, When
-                Uri uri = NormalizedPath.GetProviderUri(provider);
+                Uri uri = NormalizedPath.GetFileProviderUri(provider);
 
                 // Then
                 Assert.AreEqual(new Uri(provider), uri);
@@ -307,11 +307,11 @@ namespace Wyam.Common.Tests.IO
             public void ThrowsExceptionForInvalidUri(string provider)
             {
                 // Given, When, Then
-                Assert.Throws<ArgumentException>(() => NormalizedPath.GetProviderUri(provider));
+                Assert.Throws<ArgumentException>(() => NormalizedPath.GetFileProviderUri(provider));
             }
         }
 
-        public class ProviderPropertyTests : NormalizedPathTests
+        public class FileProviderPropertyTests : NormalizedPathTests
         {
             [TestCase("foo", "/Hello/World", "foo:")]
             [TestCase("foo:///", "/Hello/World", "foo:///")]
@@ -326,7 +326,7 @@ namespace Wyam.Common.Tests.IO
                 TestPath path = new TestPath(provider, pathName);
 
                 // Then
-                Assert.AreEqual(expectedProvider == null ? null : new Uri(expectedProvider), path.Provider);
+                Assert.AreEqual(expectedProvider == null ? null : new Uri(expectedProvider), path.FileProvider);
             }
         }
 
@@ -518,7 +518,7 @@ namespace Wyam.Common.Tests.IO
             }
         }
 
-        public class GetProviderAndPathMethodTests : NormalizedPathTests
+        public class GetFileProviderAndPathMethodTests : NormalizedPathTests
         {
             [TestCase("C:/a/b", null, "C:/a/b")]
             [TestCase(@"C:\a\b", null, @"C:\a\b")]
@@ -534,7 +534,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldParseProviderFromString(string fullPath, string provider, string path)
             {
                 // Given, When
-                Tuple<Uri, string> result = NormalizedPath.GetProviderAndPath(null, fullPath);
+                Tuple<Uri, string> result = NormalizedPath.GetFileProviderAndPath(null, fullPath);
 
                 // Then
                 Assert.AreEqual(provider == null ? null : new Uri(provider), result.Item1);

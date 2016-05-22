@@ -82,7 +82,7 @@ namespace Wyam.Common.Util
 
         // ICollection<T>
 
-        void ICollection<T>.Add(T item) => ((IDictionary<Item, byte>) _dictionary).Add(new Item(item), Byte.MinValue);
+        void ICollection<T>.Add(T item) => _dictionary.TryAdd(new Item(item), Byte.MinValue);
 
         public void Clear() => _dictionary.Clear();
 

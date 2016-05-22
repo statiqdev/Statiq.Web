@@ -127,7 +127,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.RootPath = "/a";
                 fileSystem.InputPaths.Add("b/d");
                 fileSystem.InputPaths.Add("alt:///foo");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProviderA());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProviderA());
                 fileSystem.FileProviders.Add("alt", GetFileProviderB());
                 VirtualInputDirectory directory = new VirtualInputDirectory(fileSystem, ".");
 
@@ -268,7 +268,7 @@ namespace Wyam.Core.Tests.IO
             fileSystem.RootPath = "/a";
             fileSystem.InputPaths.Add("b");
             fileSystem.InputPaths.Add("alt:///foo");
-            fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProviderA());
+            fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProviderA());
             fileSystem.FileProviders.Add("alt", GetFileProviderB());
             return new VirtualInputDirectory(fileSystem, path);
         }

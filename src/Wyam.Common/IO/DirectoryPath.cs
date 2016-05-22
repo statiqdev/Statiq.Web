@@ -38,59 +38,59 @@ namespace Wyam.Common.IO
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// The path will be considered absolute if the underlying OS file system
         /// considers it absolute.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
-        public DirectoryPath(string provider, string path)
-            : base(provider, path, PathKind.RelativeOrAbsolute)
+        public DirectoryPath(string fileProvider, string path)
+            : base(fileProvider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
-        public DirectoryPath(string provider, string path, PathKind pathKind)
-            : base(provider, path, pathKind)
+        public DirectoryPath(string fileProvider, string path, PathKind pathKind)
+            : base(fileProvider, path, pathKind)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// The path will be considered absolute if the underlying OS file system
         /// considers it absolute.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
-        public DirectoryPath(Uri provider, string path)
-            : base(provider, path, PathKind.RelativeOrAbsolute)
+        public DirectoryPath(Uri fileProvider, string path)
+            : base(fileProvider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
-        public DirectoryPath(Uri provider, string path, PathKind pathKind)
-            : base(provider, path, pathKind)
+        public DirectoryPath(Uri fileProvider, string path, PathKind pathKind)
+            : base(fileProvider, path, pathKind)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath" /> class
-        /// with the specified provider and/or path.
+        /// with the specified file provider and/or path.
         /// </summary>
-        /// <param name="path">The path (and provider if this is an absolute URI).</param>
+        /// <param name="path">The path (and file provider if this is an absolute URI).</param>
         public DirectoryPath(Uri path)
             : base(path)
         {
@@ -123,7 +123,7 @@ namespace Wyam.Common.IO
                 {
                     return null;
                 }
-                return new DirectoryPath(Provider, directory);
+                return new DirectoryPath(FileProvider, directory);
             }
         }
 
@@ -161,12 +161,12 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return new FilePath(Provider, System.IO.Path.Combine(FullPath, path.FileName.FullPath));
+            return new FilePath(FileProvider, System.IO.Path.Combine(FullPath, path.FileName.FullPath));
         }
 
         /// <summary>
         /// Get the relative path to another directory. If this path and the target path
-        /// do not share the same provider, the target path is returned.
+        /// do not share the same file provider, the target path is returned.
         /// </summary>
         /// <param name="target">The target directory path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
@@ -177,7 +177,7 @@ namespace Wyam.Common.IO
 
         /// <summary>
         /// Get the relative path to another file. If this path and the target path
-        /// do not share the same provider, the target path is returned.
+        /// do not share the same file provider, the target path is returned.
         /// </summary>
         /// <param name="target">The target file path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>
@@ -199,7 +199,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return !path.IsRelative ? path : new FilePath(Provider, System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new FilePath(FileProvider, System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
@@ -215,14 +215,14 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentNullException(nameof(path));
             }
-            return !path.IsRelative ? path : new DirectoryPath(Provider, System.IO.Path.Combine(FullPath, path.FullPath));
+            return !path.IsRelative ? path : new DirectoryPath(FileProvider, System.IO.Path.Combine(FullPath, path.FullPath));
         }
 
         /// <summary>
         /// Collapses a <see cref="DirectoryPath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="DirectoryPath"/>.</returns>
-        public DirectoryPath Collapse() => new DirectoryPath(Provider, Collapse(this));
+        public DirectoryPath Collapse() => new DirectoryPath(FileProvider, Collapse(this));
         
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.

@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
+                    { NormalizedPath.DefaultFileProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -55,7 +55,7 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider },
+                    { NormalizedPath.DefaultFileProvider.Scheme, defaultProvider },
                     { "foo", newProvider }
                 }, collection.Providers);
             }
@@ -76,7 +76,7 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider },
+                    { NormalizedPath.DefaultFileProvider.Scheme, defaultProvider },
                     { "foo", newProvider }
                 }, collection.Providers);
             }
@@ -90,12 +90,12 @@ namespace Wyam.Core.Tests.IO
                 FileProviderCollection collection = new FileProviderCollection(defaultProvider);
 
                 // When
-                collection.Add(NormalizedPath.DefaultProvider.Scheme, newProvider);
+                collection.Add(NormalizedPath.DefaultFileProvider.Scheme, newProvider);
 
                 // Then
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, newProvider }
+                    { NormalizedPath.DefaultFileProvider.Scheme, newProvider }
                 }, collection.Providers);
             }
 
@@ -141,7 +141,7 @@ namespace Wyam.Core.Tests.IO
                 Assert.IsTrue(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
+                    { NormalizedPath.DefaultFileProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -159,7 +159,7 @@ namespace Wyam.Core.Tests.IO
                 Assert.IsFalse(result);
                 CollectionAssert.AreEquivalent(new Dictionary<string, IFileProvider>
                 {
-                    { NormalizedPath.DefaultProvider.Scheme, defaultProvider }
+                    { NormalizedPath.DefaultFileProvider.Scheme, defaultProvider }
                 }, collection.Providers);
             }
 
@@ -216,7 +216,7 @@ namespace Wyam.Core.Tests.IO
                 collection.Add("foo", newProvider);
 
                 // When
-                IFileProvider result = collection.Get(NormalizedPath.DefaultProvider.Scheme);
+                IFileProvider result = collection.Get(NormalizedPath.DefaultFileProvider.Scheme);
 
                 // Then
                 Assert.AreEqual(defaultProvider, result);
@@ -276,7 +276,7 @@ namespace Wyam.Core.Tests.IO
 
                 // When
                 IFileProvider providerResult;
-                bool result = collection.TryGet(NormalizedPath.DefaultProvider.Scheme, out providerResult);
+                bool result = collection.TryGet(NormalizedPath.DefaultFileProvider.Scheme, out providerResult);
 
                 // Then
                 Assert.AreEqual(defaultProvider, providerResult);

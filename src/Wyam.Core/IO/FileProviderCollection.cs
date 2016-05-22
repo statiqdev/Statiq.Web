@@ -21,7 +21,7 @@ namespace Wyam.Core.IO
                 throw new ArgumentNullException(nameof(defaultFileProvider));
             }
 
-            _fileProviders[NormalizedPath.DefaultProvider.Scheme] = defaultFileProvider;
+            _fileProviders[NormalizedPath.DefaultFileProvider.Scheme] = defaultFileProvider;
         }
 
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();

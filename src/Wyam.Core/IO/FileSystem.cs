@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
 using Wyam.Core.IO.Globbing;
-using Wyam.Core.IO.Local;
+using File = Wyam.Core.IO.FileProviders.FileProvider.File;
 
 namespace Wyam.Core.IO
 {
@@ -20,7 +20,7 @@ namespace Wyam.Core.IO
 
         public FileSystem()
         {
-            FileProviders = new FileProviderCollection(new LocalFileProvider());
+            FileProviders = new FileProviderCollection(new File());
             InputPaths = new PathCollection<DirectoryPath>(new[] {  DirectoryPath.FromString("input") });
         }
         
@@ -122,7 +122,7 @@ namespace Wyam.Core.IO
                 return InputPaths
                     .Reverse()
                     .Select(x => RootPath.Combine(x))
-                    .FirstOrDefault(x => x.Provider == path.Provider 
+                    .FirstOrDefault(x => x.FileProvider == path.FileProvider 
                         && path.FullPath.StartsWith(x.Collapse().FullPath));
             }
             FilePath filePath = path as FilePath;
@@ -242,14 +242,14 @@ namespace Wyam.Core.IO
             {
                 throw new ArgumentException("The path must be absolute");
             }
-            if (path.Provider == null)
+            if (path.FileProvider == null)
             {
                 throw new ArgumentException("The path has no provider");
             }
             IFileProvider fileProvider;
-            if (!FileProviders.TryGet(path.Provider.Scheme, out fileProvider))
+            if (!FileProviders.TryGet(path.FileProvider.Scheme, out fileProvider))
             {
-                throw new KeyNotFoundException($"A provider for the scheme {path.Provider} could not be found");
+                throw new KeyNotFoundException($"A provider for the scheme {path.FileProvider} could not be found");
             }
             return fileProvider;
         }

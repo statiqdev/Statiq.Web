@@ -147,7 +147,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.GetFilePath(new FilePath(secondProvider == null ? null : new Uri(secondProvider), secondPath));
 
                 // Then
-                Assert.AreEqual(firstProvider == null ? null : new Uri(firstProvider), result.Provider);
+                Assert.AreEqual(firstProvider == null ? null : new Uri(firstProvider), result.FileProvider);
             }
         }
 
@@ -257,7 +257,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.CombineFile(new FilePath(second));
 
                 // Then
-                Assert.AreEqual(new Uri("foo:///"), result.Provider);
+                Assert.AreEqual(new Uri("foo:///"), result.FileProvider);
             }
 
             [Test]
@@ -274,7 +274,7 @@ namespace Wyam.Common.Tests.IO
                 FilePath result = path.CombineFile(new FilePath(new Uri("second:///"), second));
 
                 // Then
-                Assert.AreEqual(new Uri("second:///"), result.Provider);
+                Assert.AreEqual(new Uri("second:///"), result.FileProvider);
             }
         }
 
@@ -316,7 +316,7 @@ namespace Wyam.Common.Tests.IO
                 DirectoryPath result = path.Combine(new DirectoryPath(second));
 
                 // Then
-                Assert.AreEqual(new Uri("foo:///"), result.Provider);
+                Assert.AreEqual(new Uri("foo:///"), result.FileProvider);
             }
 
             [Test]
@@ -333,7 +333,7 @@ namespace Wyam.Common.Tests.IO
                 DirectoryPath result = path.Combine(new DirectoryPath(new Uri("second:///"), second));
 
                 // Then
-                Assert.AreEqual(new Uri("second:///"), result.Provider);
+                Assert.AreEqual(new Uri("second:///"), result.FileProvider);
             }
 
             [Test]
@@ -380,7 +380,7 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.AreEqual("/a/c", path.FullPath);
-                Assert.AreEqual(new Uri("foo:///"), path.Provider);
+                Assert.AreEqual(new Uri("foo:///"), path.FileProvider);
             }
         }
     }

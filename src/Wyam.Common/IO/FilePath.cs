@@ -36,59 +36,59 @@ namespace Wyam.Common.IO
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// The path will be considered absolute if the underlying OS file system
         /// considers it absolute.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
-        public FilePath(string provider, string path)
-            : base(provider, path, PathKind.RelativeOrAbsolute)
+        public FilePath(string fileProvider, string path)
+            : base(fileProvider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
-        public FilePath(string provider, string path, PathKind pathKind)
-            : base(provider, path, pathKind)
+        public FilePath(string fileProvider, string path, PathKind pathKind)
+            : base(fileProvider, path, pathKind)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// The path will be considered absolute if the underlying OS file system
         /// considers it absolute.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
-        public FilePath(Uri provider, string path)
-            : base(provider, path, PathKind.RelativeOrAbsolute)
+        public FilePath(Uri fileProvider, string path)
+            : base(fileProvider, path, PathKind.RelativeOrAbsolute)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath" /> class
-        /// with the specified provider.
+        /// with the specified file provider.
         /// </summary>
-        /// <param name="provider">The provider.</param>
+        /// <param name="fileProvider">The file provider.</param>
         /// <param name="path">The path.</param>
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
-        public FilePath(Uri provider, string path, PathKind pathKind)
-            : base(provider, path, pathKind)
+        public FilePath(Uri fileProvider, string path, PathKind pathKind)
+            : base(fileProvider, path, pathKind)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath" /> class
-        /// with the specified provider and/or path.
+        /// with the specified file provider and/or path.
         /// </summary>
-        /// <param name="path">The path (and provider if this is an absolute URI).</param>
+        /// <param name="path">The path (and file provider if this is an absolute URI).</param>
         public FilePath(Uri path)
             : base(path)
         {
@@ -115,7 +115,7 @@ namespace Wyam.Common.IO
                 {
                     directory = ".";
                 }
-                return new DirectoryPath(Provider, directory);
+                return new DirectoryPath(FileProvider, directory);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Wyam.Common.IO
         /// <param name="extension">The new extension.</param>
         /// <returns>A new <see cref="FilePath"/> with a new extension.</returns>
         public FilePath ChangeExtension(string extension) => 
-            new FilePath(Provider, System.IO.Path.ChangeExtension(FullPath, extension));
+            new FilePath(FileProvider, System.IO.Path.ChangeExtension(FullPath, extension));
 
         /// <summary>
         /// Appends a file extension to the path.
@@ -191,14 +191,14 @@ namespace Wyam.Common.IO
             {
                 extension = string.Concat(".", extension);
             }
-            return new FilePath(Provider, string.Concat(FullPath, extension));
+            return new FilePath(FileProvider, string.Concat(FullPath, extension));
         }
 
         /// <summary>
         /// Collapses a <see cref="FilePath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="FilePath"/>.</returns>
-        public FilePath Collapse() => new FilePath(Provider, Collapse(this));
+        public FilePath Collapse() => new FilePath(FileProvider, Collapse(this));
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FilePath"/>.

@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void SetUp()
         {
             Engine = new Engine();
-            Engine.FileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+            Engine.FileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
             Engine.FileSystem.RootPath = "/";
             Pipeline = new Pipeline("Pipeline", null);
             Context = new ExecutionContext(Engine, Pipeline);

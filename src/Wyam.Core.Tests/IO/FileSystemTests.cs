@@ -113,7 +113,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.InputPaths.Add("b/d");
                 fileSystem.InputPaths.Add("x");
                 fileSystem.InputPaths.Add("y");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 IFile result = fileSystem.GetInputFile(input);
@@ -129,7 +129,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.RootPath = "/a";
                 fileSystem.InputPaths.Add("x/t");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 IFile result = fileSystem.GetInputFile("../bar.txt");
@@ -145,7 +145,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.RootPath = "/a/b";
                 fileSystem.InputPaths.Add("../x");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 IFile result = fileSystem.GetInputFile("bar.txt");
@@ -161,7 +161,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 fileSystem.RootPath = "/a/b";
                 fileSystem.InputPaths.Add("../x/y");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 IFile result = fileSystem.GetInputFile("../bar.txt");
@@ -242,7 +242,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.InputPaths.Add("x");
                 fileSystem.InputPaths.Add("y");
                 fileSystem.InputPaths.Add("../z");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 IEnumerable<IDirectory> result = fileSystem.GetInputDirectories();
@@ -333,7 +333,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.RootPath = "/a";
                 fileSystem.InputPaths.Add("b");
                 fileSystem.InputPaths.Add("x");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 DirectoryPath inputPath = fileSystem.GetContainingInputPath(new FilePath(path));
@@ -353,7 +353,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.RootPath = "/a";
                 fileSystem.InputPaths.Add("b");
                 fileSystem.InputPaths.Add("y");
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When
                 DirectoryPath inputPath = fileSystem.GetContainingInputPath(new DirectoryPath(path));
@@ -404,7 +404,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 IFileProvider defaultProvider = Substitute.For<IFileProvider>();
                 IFileProvider fooProvider = Substitute.For<IFileProvider>();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, defaultProvider);
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 DirectoryPath path = new DirectoryPath("/a/b/c");
 
@@ -422,7 +422,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 IFileProvider defaultProvider = Substitute.For<IFileProvider>();
                 IFileProvider fooProvider = Substitute.For<IFileProvider>();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, defaultProvider);
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 FilePath path = new FilePath("/a/b/c.txt");
 
@@ -440,7 +440,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 IFileProvider defaultProvider = Substitute.For<IFileProvider>();
                 IFileProvider fooProvider = Substitute.For<IFileProvider>();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, defaultProvider);
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 DirectoryPath path = new DirectoryPath("foo", "/a/b/c");
 
@@ -458,7 +458,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
                 IFileProvider defaultProvider = Substitute.For<IFileProvider>();
                 IFileProvider fooProvider = Substitute.For<IFileProvider>();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, defaultProvider);
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, defaultProvider);
                 fileSystem.FileProviders.Add("foo", fooProvider);
                 FilePath path = new FilePath("foo", "/a/b/c.txt");
 
@@ -499,7 +499,7 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When, Then
                 Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(null, "/"));
@@ -510,7 +510,7 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
                 IDirectory dir = fileSystem.GetDirectory("/");
 
                 // When, Then
@@ -522,7 +522,7 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
                 IDirectory dir = fileSystem.GetDirectory("/");
 
                 // When
@@ -567,7 +567,7 @@ namespace Wyam.Core.Tests.IO
 
                 // Given
                 FileSystem fileSystem = new FileSystem();
-                fileSystem.FileProviders.Add(NormalizedPath.DefaultProvider.Scheme, GetFileProvider());
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
                 TestFileProvider alternateProvider = new TestFileProvider();
                 alternateProvider.AddDirectory("/");
                 alternateProvider.AddDirectory("/q");
