@@ -56,8 +56,8 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="ConfigCompilationTests.cs" />
-    <Compile Include="ConfigParserTests.cs" />
+    <Compile Include="ConfigScript\ConfigCompilationTests.cs" />
+    <Compile Include="ConfigScript\ConfigParserTests.cs" />
     <Compile Include="ConfiguratorTests.cs" />
     <Compile Include="Preprocessing\ArgumentSplitterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     // Adds qualifiers to module constructor methods
     // Also replaces @docXYZ and @ctxXYZ with lambda expressions

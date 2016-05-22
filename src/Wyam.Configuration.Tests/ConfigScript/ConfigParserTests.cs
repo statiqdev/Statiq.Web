@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Wyam.Configuration.ConfigScript;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Testing;
 
-namespace Wyam.Configuration.Tests
+namespace Wyam.Configuration.Tests.ConfigScript
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

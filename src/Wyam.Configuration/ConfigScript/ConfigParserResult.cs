@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Wyam.Configuration.Preprocessing;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     internal class ConfigParserResult
     {

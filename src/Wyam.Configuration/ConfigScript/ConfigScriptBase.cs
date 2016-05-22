@@ -3,11 +3,10 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Core;
 using Wyam.Core.Documents;
 using Wyam.Core.Execution;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     /// <summary>
     /// This is the base class used for the generated configuration script. Put any properties or

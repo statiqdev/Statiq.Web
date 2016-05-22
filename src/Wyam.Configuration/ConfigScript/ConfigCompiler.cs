@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     internal static class ConfigCompiler
     {

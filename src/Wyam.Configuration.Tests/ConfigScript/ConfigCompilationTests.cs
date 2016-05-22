@@ -4,10 +4,11 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
+using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Modules.Contents;
 using Wyam.Testing;
 
-namespace Wyam.Configuration.Tests
+namespace Wyam.Configuration.Tests.ConfigScript
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

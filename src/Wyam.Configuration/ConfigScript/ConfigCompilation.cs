@@ -5,11 +5,9 @@ using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Wyam.Core;
-using Wyam.Core.Configuration;
 using Wyam.Core.Execution;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     internal class ConfigCompilation
     {

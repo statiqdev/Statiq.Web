@@ -7,6 +7,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Configuration;
 using Wyam.Core.Execution;
 
@@ -16,25 +17,27 @@ namespace Wyam.Configuration.Assemblies
     {
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _names = new ConcurrentHashSet<string>();
-        private readonly List<Assembly> _moduleAssemblies = new List<Assembly>();
-        private readonly HashSet<Type> _moduleTypes = new HashSet<Type>();
 
         private readonly ConfigCompilation _compilation;
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly IAssemblyCollection _assemblies;
-        private readonly INamespacesCollection _namespaces;
 
+        private bool _loaded;
         private bool _disposed;
 
-        internal AssemblyLoader(ConfigCompilation compilation, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies, INamespacesCollection namespaces)
+        /// <summary>
+        /// Gets the assemblies that were directly referenced (as opposed to all recursively referenced assemblies).
+        /// </summary>
+        public HashSet<Assembly> DirectAssemblies { get; } = new HashSet<Assembly>();
+
+        internal AssemblyLoader(ConfigCompilation compilation, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies)
         {
             _compilation = compilation;
             _fileSystem = fileSystem;
             _assemblies = assemblies;
-            _namespaces = namespaces;
 
             // Add the Core modules
-            _moduleAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
+            DirectAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
 
             // Manually resolve included assemblies
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
@@ -52,8 +55,6 @@ namespace Wyam.Configuration.Assemblies
             _disposed = true;
         }
 
-        internal IEnumerable<Type> ModuleTypes => _moduleTypes;
-
         public void AddPattern(string pattern)
         {
             _patterns.Add(pattern);
@@ -67,19 +68,14 @@ namespace Wyam.Configuration.Assemblies
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
         internal void LoadAssemblies()
         {
-            // Add all module namespaces from Wyam.Core
-            _namespaces.AddRange(typeof(Engine).Assembly.GetTypes()
-                .Where(x => typeof(IModule).IsAssignableFrom(x))
-                .Select(x => x.Namespace));
-
-            // Also include all Wyam.Common namespaces
-            _namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
-                .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                .Select(x => x.Namespace));
+            if (_loaded)
+            {
+                throw new InvalidOperationException("Assemblies have already been loaded");
+            }
+            _loaded = true;
 
             LoadAssembliesByPath();
             LoadAssembliesByName();
-            FindModuleTypes();
         }
 
         private void LoadAssembliesByPath()
@@ -117,7 +113,7 @@ namespace Wyam.Configuration.Assemblies
                         }
                         else
                         {
-                            _moduleAssemblies.Add(assembly);
+                            DirectAssemblies.Add(assembly);
                             LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                         }
                     }
@@ -144,7 +140,7 @@ namespace Wyam.Configuration.Assemblies
                         }
                         else
                         {
-                            _moduleAssemblies.Add(assembly);
+                            DirectAssemblies.Add(assembly);
                             LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                         }
                     }
@@ -174,39 +170,6 @@ namespace Wyam.Configuration.Assemblies
                 {
                     Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
-            }
-        }
-
-        private void FindModuleTypes()
-        {
-            foreach (Assembly assembly in _moduleAssemblies)
-            {
-                using (Trace.WithIndent().Verbose("Searching for modules in assembly {0}", assembly.FullName))
-                {
-                    foreach (Type moduleType in GetLoadableTypes(assembly).Where(x => typeof(IModule).IsAssignableFrom(x)
-                        && x.IsPublic && !x.IsAbstract && x.IsClass))
-                    {
-                        Trace.Verbose("Found module {0} in assembly {1}", moduleType.Name, assembly.FullName);
-                        _moduleTypes.Add(moduleType);
-                        _namespaces.Add(moduleType.Namespace);
-                    }
-                }
-            }
-        }
-
-        private static Type[] GetLoadableTypes(Assembly assembly)
-        {
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                foreach (Exception loaderException in ex.LoaderExceptions)
-                {
-                    Trace.Verbose("Loader Exception: {0}", loaderException.Message);
-                }
-                return ex.Types.Where(t => t != null).ToArray();
             }
         }
 

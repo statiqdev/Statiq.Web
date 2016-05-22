@@ -11,7 +11,7 @@ namespace Wyam.Core.Configuration
 {
     internal class NamespaceCollection : INamespacesCollection
     {
-        private readonly HashSet<string> _namespaces = new HashSet<string>();
+        private readonly ConcurrentHashSet<string> _namespaces = new ConcurrentHashSet<string>();
 
         public NamespaceCollection()
         {

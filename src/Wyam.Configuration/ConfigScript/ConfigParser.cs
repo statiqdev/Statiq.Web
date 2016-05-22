@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Configuration.Preprocessing;
-using Wyam.Core.Configuration;
 
-namespace Wyam.Configuration
+namespace Wyam.Configuration.ConfigScript
 {
     // Splits the configuration file into declaration and body sections and finds any directives
     internal static class ConfigParser
