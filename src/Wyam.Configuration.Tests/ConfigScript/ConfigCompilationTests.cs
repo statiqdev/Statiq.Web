@@ -128,13 +128,13 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 // Given
                 Dictionary<string, string> memberNames = new Dictionary<string, string>();
                 string expected = $@"
-                        public static Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T> GenericModule<T>(T input)
+                        public static Wyam.Configuration.Tests.ConfigScript.ConfigCompilationTests.GenericModule<T> GenericModule<T>(T input)
                         {{
-                            return new Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T>(input);  
+                            return new Wyam.Configuration.Tests.ConfigScript.ConfigCompilationTests.GenericModule<T>(input);  
                         }}
-                        public static Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T> GenericModule<T>(System.Action<T> input)
+                        public static Wyam.Configuration.Tests.ConfigScript.ConfigCompilationTests.GenericModule<T> GenericModule<T>(System.Action<T> input)
                         {{
-                            return new Wyam.Configuration.Tests.ConfigCompilationTests.GenericModule<T>(input);  
+                            return new Wyam.Configuration.Tests.ConfigScript.ConfigCompilationTests.GenericModule<T>(input);  
                         }}";
 
                 // When

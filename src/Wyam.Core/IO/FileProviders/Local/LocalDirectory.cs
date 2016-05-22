@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.File
+namespace Wyam.Core.IO.FileProviders.Local
 {
     // Initially based on code from Cake (http://cakebuild.net/)
-    internal class FileDirectory : IDirectory
+    internal class LocalDirectory : IDirectory
     {
         private readonly DirectoryInfo _directory;
         private readonly DirectoryPath _path;
@@ -18,7 +18,7 @@ namespace Wyam.Core.IO.FileProviders.File
 
         public bool Exists => _directory.Exists;
 
-        public FileDirectory(DirectoryPath path)
+        public LocalDirectory(DirectoryPath path)
         {
             if (path == null)
             {
@@ -33,15 +33,15 @@ namespace Wyam.Core.IO.FileProviders.File
             _directory = new DirectoryInfo(_path.Collapse().FullPath);
         }
 
-        public void Create() => File.FileProvider.Retry(() => _directory.Create());
+        public void Create() => LocalFileProvider.Retry(() => _directory.Create());
 
-        public void Delete(bool recursive) => File.FileProvider.Retry(() => _directory.Delete(recursive));
+        public void Delete(bool recursive) => LocalFileProvider.Retry(() => _directory.Delete(recursive));
 
         public IEnumerable<IDirectory> GetDirectories(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            File.FileProvider.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new FileDirectory(directory.FullName)));
+            LocalFileProvider.Retry(() => _directory.GetDirectories("*", searchOption).Select(directory => new LocalDirectory(directory.FullName)));
 
         public IEnumerable<IFile> GetFiles(SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
-            File.FileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new FileFile(file.FullName)));
+            LocalFileProvider.Retry(() => _directory.GetFiles("*", searchOption).Select(file => new LocalFile(file.FullName)));
 
         public IDirectory GetDirectory(DirectoryPath path)
         {
@@ -54,7 +54,7 @@ namespace Wyam.Core.IO.FileProviders.File
                 throw new ArgumentException("Path must be relative", nameof(path));
             }
 
-            return new FileDirectory(_path.Combine(path));
+            return new LocalDirectory(_path.Combine(path));
         }
 
         public IFile GetFile(FilePath path)
@@ -68,7 +68,7 @@ namespace Wyam.Core.IO.FileProviders.File
                 throw new ArgumentException("Path must be relative", nameof(path));
             }
 
-            return new FileFile(_path.CombineFile(path));
+            return new LocalFile(_path.CombineFile(path));
         }
     }
 }

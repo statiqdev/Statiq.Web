@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
-using Wyam.Core.IO.FileProviders.File;
+using Wyam.Core.IO.FileProviders.Local;
 using Wyam.Core.IO.Globbing;
 
 namespace Wyam.Core.IO
@@ -20,7 +20,7 @@ namespace Wyam.Core.IO
 
         public FileSystem()
         {
-            FileProviders = new FileProviderCollection(new FileProvider());
+            FileProviders = new FileProviderCollection(new LocalFileProvider());
             InputPaths = new PathCollection<DirectoryPath>(new[] {  DirectoryPath.FromString("input") });
         }
         

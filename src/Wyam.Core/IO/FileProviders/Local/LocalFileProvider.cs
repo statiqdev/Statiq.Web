@@ -3,18 +3,18 @@ using System.IO;
 using System.Threading;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.File
+namespace Wyam.Core.IO.FileProviders.Local
 {
-    public class FileProvider : IFileProvider
+    public class LocalFileProvider : IFileProvider
     {
         public IFile GetFile(FilePath path)
         {
-            return new FileFile(path);
+            return new LocalFile(path);
         }
 
         public IDirectory GetDirectory(DirectoryPath path)
         {
-            return new FileDirectory(path);
+            return new LocalDirectory(path);
         }
 
         // *** Retry logic (used by file and directory implementation)

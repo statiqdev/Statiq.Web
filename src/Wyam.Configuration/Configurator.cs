@@ -134,8 +134,6 @@ namespace Wyam.Configuration
                 string scheme = fileProvider.GetType().Name.ToLowerInvariant();
                 if (scheme.EndsWith("fileprovider"))
                 {
-                    // This will clear the scheme for the FileProvider provider, but that's
-                    // okay since it's the default and gets added automatically
                     scheme = scheme.Substring(0, scheme.Length - 12);
                 }
                 if (scheme.EndsWith("provider"))

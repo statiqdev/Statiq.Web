@@ -2,10 +2,10 @@
 using System.IO;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.IO.FileProviders.File
+namespace Wyam.Core.IO.FileProviders.Local
 {
     // Initially based on code from Cake (http://cakebuild.net/)
-    internal class FileFile : IFile
+    internal class LocalFile : IFile
     {
         private readonly FileInfo _file;
         private readonly FilePath _path;
@@ -14,13 +14,13 @@ namespace Wyam.Core.IO.FileProviders.File
 
         NormalizedPath IFileSystemEntry.Path => _path;
 
-        public IDirectory Directory => new FileDirectory(_path.Directory);
+        public IDirectory Directory => new LocalDirectory(_path.Directory);
 
         public bool Exists => _file.Exists;
 
         public long Length => _file.Length;
 
-        public FileFile(FilePath path)
+        public LocalFile(FilePath path)
         {
             if (path == null)
             {
@@ -49,9 +49,9 @@ namespace Wyam.Core.IO.FileProviders.File
             }
             
             // Use the file system APIs if destination is also in the file system
-            if (destination is FileFile)
+            if (destination is LocalFile)
             {
-                File.FileProvider.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
+                LocalFileProvider.Retry(() => _file.CopyTo(destination.Path.FullPath, overwrite));
             }
             else
             {
@@ -74,9 +74,9 @@ namespace Wyam.Core.IO.FileProviders.File
             }
 
             // Use the file system APIs if destination is also in the file system
-            if (destination is FileFile)
+            if (destination is LocalFile)
             {
-                File.FileProvider.Retry(() => _file.MoveTo(destination.Path.FullPath));
+                LocalFileProvider.Retry(() => _file.MoveTo(destination.Path.FullPath));
             }
             else
             {
@@ -92,13 +92,13 @@ namespace Wyam.Core.IO.FileProviders.File
             }
         }
 
-        public void Delete() => File.FileProvider.Retry(() => _file.Delete());
+        public void Delete() => LocalFileProvider.Retry(() => _file.Delete());
 
         public string ReadAllText() =>
-            File.FileProvider.Retry(() => System.IO.File.ReadAllText(_file.FullName));
+            LocalFileProvider.Retry(() => System.IO.File.ReadAllText(_file.FullName));
 
         public Stream OpenRead() =>
-            File.FileProvider.Retry(() => _file.OpenRead());
+            LocalFileProvider.Retry(() => _file.OpenRead());
 
         public void WriteAllText(string contents, bool createDirectory = true)
         {
@@ -106,7 +106,7 @@ namespace Wyam.Core.IO.FileProviders.File
             {
                 Directory.Create();
             }
-            File.FileProvider.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
+            LocalFileProvider.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
         }
 
         public Stream OpenWrite(bool createDirectory = true)
@@ -115,7 +115,7 @@ namespace Wyam.Core.IO.FileProviders.File
             {
                 Directory.Create();
             }
-            return File.FileProvider.Retry(() => _file.OpenWrite());
+            return LocalFileProvider.Retry(() => _file.OpenWrite());
         }
 
         public Stream OpenAppend(bool createDirectory = true)
@@ -124,7 +124,7 @@ namespace Wyam.Core.IO.FileProviders.File
             {
                 Directory.Create();
             }
-            return File.FileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
+            return LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write));
         }
     }
 }
