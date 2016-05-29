@@ -153,14 +153,7 @@ Task("Zip-Files")
 Task("Create-Library-Packages")
     .IsDependentOn("Build")
     .Does(() =>
-    {
-        var nugetExe = GetFiles("./tools/**/nuget.exe").FirstOrDefault()
-            ?? (isRunningOnAppVeyor ? GetFiles("C:\\Tools\\NuGet3\\nuget.exe").FirstOrDefault() : null);
-        if (nugetExe == null)
-        {            
-            throw new InvalidOperationException("Could not find nuget.exe.");
-        }
-        
+    {        
         // Get the set of nuspecs to package
         List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/Wyam.*/*.nuspec"));
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Modules.All");

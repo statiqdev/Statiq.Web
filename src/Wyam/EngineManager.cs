@@ -56,7 +56,8 @@ namespace Wyam
 
             // Set NuGet settings
             Configurator.PackageInstaller.UpdatePackages = _settings.UpdatePackages;
-            Configurator.PackageInstaller.UseLocal = _settings.UseLocalPackages;
+            Configurator.PackageInstaller.UseLocalPackagesFolder = _settings.UseLocalPackages;
+            Configurator.PackageInstaller.UseGlobalPackageSources = _settings.UseGlobalSources;
             if (_settings.PackagesPath != null)
             {
                 Configurator.PackageInstaller.PackagesPath = _settings.PackagesPath;

@@ -1,3 +1,9 @@
+# 0.12.4
+
+- Feature - **Breaking change**: The NuGet package version now takes a *version range*, so you must use `[x.y.z]` instead of `x.y.z` to specify a specific version
+- Feature - Added a `use-global-source` flag to trigger the use of globally configured NuGet package sources
+ 
+
 # 0.12.3
 
 - Fix - Fixed a bug where execution could hang in some enviornments that open stdin and leave it open like Azure CI or VS Code task execution (#287)

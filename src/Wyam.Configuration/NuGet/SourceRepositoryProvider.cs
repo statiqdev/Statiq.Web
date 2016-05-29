@@ -1,0 +1,83 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NuGet.Configuration;
+using NuGet.Protocol.Core.Types;
+
+namespace Wyam.Configuration.NuGet
+{
+    /// <summary>
+    /// Creates and caches SourceRepository objects, which are
+    /// the combination of PackageSource instances with a set
+    /// of supported resource providers. It also manages the set
+    /// of default source repositories.
+    /// </summary>
+    internal class SourceRepositoryProvider : ISourceRepositoryProvider
+    {
+        private static readonly string[] DefaultSources =
+        {
+            "https://api.nuget.org/v3/index.json"
+        };
+
+        private readonly List<SourceRepository> _defaultRepositories = new List<SourceRepository>();
+        private readonly ConcurrentDictionary<PackageSource, SourceRepository> _repositoryCache
+            = new ConcurrentDictionary<PackageSource, SourceRepository>();
+
+        private readonly List<Lazy<INuGetResourceProvider>> _resourceProviders;
+
+        public SourceRepositoryProvider(ISettings settings)
+        {
+            // Create the package source provider (needed primarily to get default sources)
+            PackageSourceProvider = new PackageSourceProvider(settings);
+
+            // Create the set of default v2 and v3 resource providers
+            _resourceProviders = new List<Lazy<INuGetResourceProvider>>();
+            _resourceProviders.AddRange(global::NuGet.Protocol.Core.v2.FactoryExtensionsV2.GetCoreV2(Repository.Provider));
+            _resourceProviders.AddRange(global::NuGet.Protocol.Core.v3.FactoryExtensionsV2.GetCoreV3(Repository.Provider));
+
+            // Add the default sources
+            foreach (string defaultSource in DefaultSources)
+            {
+                AddDefaultRepository(defaultSource);
+            }
+        }
+        
+        /// <summary>
+        /// Add the global sources to the default repositories.
+        /// </summary>
+        public void AddGlobalDefaults()
+        {
+            _defaultRepositories.AddRange(PackageSourceProvider.LoadPackageSources()
+                .Where(x => x.IsEnabled)
+                .Select(x => new SourceRepository(x, _resourceProviders)));
+        }
+        
+        /// <summary>
+        /// Adds a default source repository to the front of the list.
+        /// </summary>
+        public void AddDefaultRepository(string packageSource) => _defaultRepositories.Insert(0, CreateRepository(packageSource));
+
+        public IReadOnlyList<SourceRepository> GetDefaultRepositories() => _defaultRepositories;
+        
+        /// <summary>
+        /// Creates or gets a non-default source repository.
+        /// </summary>
+        public SourceRepository CreateRepository(string packageSource) => CreateRepository(new PackageSource(packageSource));
+        
+        /// <summary>
+        /// Creates or gets a non-default source repository by PackageSource.
+        /// </summary>
+        public SourceRepository CreateRepository(PackageSource packageSource) =>
+                    _repositoryCache.GetOrAdd(packageSource, x => new SourceRepository(packageSource, _resourceProviders));
+        
+        /// <summary>
+        /// Gets all cached repositories.
+        /// </summary>
+        public IEnumerable<SourceRepository> GetRepositories() => _repositoryCache.Values;
+
+        public IPackageSourceProvider PackageSourceProvider { get; }
+    }
+}

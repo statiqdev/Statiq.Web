@@ -21,21 +21,16 @@ namespace Wyam.Configuration.NuGet
     internal class WyamFolderNuGetProject : FolderNuGetProject
     {
         private readonly FrameworkReducer _reducer = new FrameworkReducer();
+        private readonly ConcurrentHashSet<PackageIdentity> _packageIdentities = new ConcurrentHashSet<PackageIdentity>();
         private readonly IFileSystem _fileSystem;
         private readonly AssemblyLoader _assemblyLoader;
         private readonly NuGetFramework _currentFramework;
-        private readonly ConcurrentHashSet<PackageIdentity> _packageIdentities = new ConcurrentHashSet<PackageIdentity>();
 
         public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, string root) : base(root)
         {
             _fileSystem = fileSystem;
             _assemblyLoader = assemblyLoader;
             _currentFramework = currentFramework;
-        }
-
-        public void StartPackageInstall()
-        {
-            _packageIdentities.Clear();
         }
 
         // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances

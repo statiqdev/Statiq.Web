@@ -10,7 +10,7 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.Configuration.NuGet
 {
-    internal class WyamProjectContext : INuGetProjectContext
+    internal class NuGetProjectContext : INuGetProjectContext
     {
         public void Log(MessageLevel level, string message, params object[] args)
         {

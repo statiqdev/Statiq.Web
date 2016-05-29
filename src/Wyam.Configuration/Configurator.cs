@@ -97,22 +97,32 @@ namespace Wyam.Configuration
         // Initialize the assembly manager (includes searching for module types)
         private void Initialize()
         {
+
             // Install packages
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
                 PackageInstaller.InstallPackages();
+                stopwatch.Stop();
+                Trace.Information($"NuGet packages installed in {stopwatch.ElapsedMilliseconds} ms");
             }
 
             // Scan assemblies
+            stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Recursively loading assemblies"))
             {
                 AssemblyLoader.LoadAssemblies();
+                stopwatch.Stop();
+                Trace.Information($"Assemblies loaded in {stopwatch.ElapsedMilliseconds} ms");
             }
 
             // Load types
+            stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Cataloging types"))
             {
                 ClassCatalog.CatalogTypes(AssemblyLoader.DirectAssemblies);
+                stopwatch.Stop();
+                Trace.Information($"Types cataloged in {stopwatch.ElapsedMilliseconds} ms");
             }
         }
 

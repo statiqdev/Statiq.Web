@@ -24,6 +24,7 @@ namespace Wyam
         public bool Attach = false;
         public bool UpdatePackages = false;
         public bool UseLocalPackages = false;
+        public bool UseGlobalSources = false;
         public DirectoryPath PackagesPath = null;
         public bool OutputScript = false;
         public bool VerifyConfig = false;
@@ -62,6 +63,7 @@ namespace Wyam
                 syntax.DefineOption("c|config", ref ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
                 syntax.DefineOption("u|update-packages", ref UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
                 syntax.DefineOption("use-local-packages", ref UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
+                syntax.DefineOption("use-global-sources", ref UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
                 syntax.DefineOption("packages-path", ref PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
                 syntax.DefineOption("output-script", ref OutputScript, "Outputs the config script after it's been processed for further debugging.");
                 syntax.DefineOption("verify-config", ref VerifyConfig, false, "Compile the configuration but do not execute.");
