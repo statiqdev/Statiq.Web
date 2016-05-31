@@ -22,9 +22,9 @@ namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class SideCarTests : BaseFixture
+    public class SidecarTests : BaseFixture
     {
-        public class ExecuteMethodTests : FrontMatterTests
+        public class ExecuteMethodTests : SidecarTests
         {
             [Test]
             public void LoadsSidecarFile()
@@ -32,10 +32,6 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-
-                string documentContent = "File a1";
-                string sidecarContent = "data: a1";
-
                 IDocument[] inputs =
                 {
                     GetDocument("a/1.md", "File a1")
@@ -44,16 +40,15 @@ namespace Wyam.Core.Tests.Modules.Control
                 Sidecar sidecar = new Sidecar(new Execute((x, ctx) =>
                 {
                     lodedSidecarContent = x.Content;
-                    return new IDocument[] { x };
+                    return new [] { x };
                 }));
 
                 // When
                 IEnumerable<IDocument> documents = sidecar.Execute(inputs, context).ToArray();
 
                 // Then
-
-                Assert.AreEqual(sidecarContent, lodedSidecarContent);
-                Assert.AreEqual(documentContent, documents.Single().Content);
+                Assert.AreEqual("data: a1", lodedSidecarContent);
+                Assert.AreEqual("File a1", documents.Single().Content);
             }
 
             [Test]
@@ -62,10 +57,6 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-
-                string documentContent = "File a1";
-                string sidecarContent = "data: other";
-
                 IDocument[] inputs =
                 {
                     GetDocument("a/1.md", "File a1")
@@ -74,16 +65,40 @@ namespace Wyam.Core.Tests.Modules.Control
                 Sidecar sidecar = new Sidecar(".other", new Execute((x, ctx) =>
                  {
                      lodedSidecarContent = x.Content;
-                     return new IDocument[] { x };
+                     return new [] { x };
                  }));
 
                 // When
                 IEnumerable<IDocument> documents = sidecar.Execute(inputs, context).ToArray();
 
                 // Then
+                Assert.AreEqual("data: other", lodedSidecarContent);
+                Assert.AreEqual("File a1", documents.Single().Content);
+            }
 
-                Assert.AreEqual(sidecarContent, lodedSidecarContent);
-                Assert.AreEqual(documentContent, documents.Single().Content);
+            [Test]
+            public void ReturnsOriginalDocumentForMissingSidecarFile()
+            {
+                // Given
+                Engine engine = new Engine();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument[] inputs =
+                {
+                    GetDocument("a/1.md", "File a1")
+                };
+                bool executedSidecarModules = false;
+                Sidecar sidecar = new Sidecar(".foo", new Execute((x, ctx) =>
+                {
+                    executedSidecarModules = true;
+                    return new [] { x };
+                }));
+
+                // When
+                IEnumerable<IDocument> documents = sidecar.Execute(inputs, context).ToArray();
+
+                // Then
+                Assert.IsFalse(executedSidecarModules);
+                Assert.AreEqual(inputs.First(), documents.First());
             }
 
             private IDocument GetDocument(string source, string content)
@@ -136,11 +151,10 @@ namespace Wyam.Core.Tests.Modules.Control
                     IModule[] modules = ((IEnumerable<IModule>)x[0]).ToArray();
                     IEnumerable<IDocument> documents = (IEnumerable<IDocument>)x[1];
 
-                    for (int i = 0; i < modules.Length; i++)
+                    foreach (IModule module in modules)
                     {
-                        documents = modules[i].Execute(new ReadOnlyCollection<IDocument>(documents.ToList()), context);
+                        documents = module.Execute(new ReadOnlyCollection<IDocument>(documents.ToList()), context);
                     }
-
 
                     return new ReadOnlyCollection<IDocument>(documents.ToArray());
                 });
@@ -188,8 +202,6 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 return fileProvider;
             }
-
-
         }
     }
 }
