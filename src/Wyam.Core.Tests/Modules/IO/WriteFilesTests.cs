@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -97,7 +98,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 WriteFiles writeFiles = new WriteFiles((x, y) => ".dotfile");
 
                 // When
-                IDocument document = writeFiles.Execute(inputs, Context).ToList().First();
+                writeFiles.Execute(inputs, Context).ToList();
 
                 // Then
                 IFile outputFile = Engine.FileSystem.GetOutputFile(".dotfile");
@@ -133,6 +134,90 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // Then
                 Assert.AreEqual("Test", output.Content);
+            }
+
+            [Test]
+            public void ShouldReturnOriginalDocumentForFailedPredicate()
+            {
+                // Given
+                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                WriteFiles writeFiles = new WriteFiles((x, y) => null).Where((x, y) => false);
+
+                // When
+                IDocument output = writeFiles.Execute(inputs, Context).ToList().First();
+
+                // Then
+                Assert.AreEqual("Test", output.Content);
+            }
+
+            [Test]
+            public void InputDocumentsAreEvaluatedInOrderWhenOverwritting()
+            {
+                // Given
+                ThrowOnTraceEventType(TraceEventType.Error);
+                IDocument[] inputs = new[]
+                {
+                    Context.GetDocument("A"),
+                    Context.GetDocument("B"),
+                    Context.GetDocument("C"),
+                    Context.GetDocument("D"),
+                    Context.GetDocument("E"),
+                };
+                WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt");
+
+                // When
+                writeFiles.Execute(inputs, Context).ToList();
+
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile("output.txt");
+                Assert.IsTrue(outputFile.Exists);
+                Assert.AreEqual("E", outputFile.ReadAllText());
+            }
+
+            [Test]
+            public void DocumentsWithSameOutputGeneratesWarning()
+            {
+                // Given
+                IDocument[] inputs = new[]
+                {
+                    Context.GetDocument(new FilePath("/a.txt"), "A"),
+                    Context.GetDocument(new FilePath("/b.txt"), "B"),
+                    Context.GetDocument(new FilePath("/c.txt"), "C"),
+                    Context.GetDocument(new FilePath("/d.txt"), "D"),
+                    Context.GetDocument(new FilePath("/e.txt"), "E"),
+                };
+                WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt");
+
+                // When, Then
+                Assert.Throws<Exception>(() => writeFiles.Execute(inputs, Context).ToList(), @"Multiple documents output to output.txt (this probably wasn't intended):
+  /a.txt
+  /b.txt
+  /c.txt
+  /d.txt
+  /e.txt");
+            }
+
+            [Test]
+            public void InputDocumentsAreEvaluatedInOrderWhenAppending()
+            {
+                // Given
+                IDocument[] inputs = new[]
+                {
+                    Context.GetDocument("A"),
+                    Context.GetDocument("B"),
+                    Context.GetDocument("C"),
+                    Context.GetDocument("D"),
+                    Context.GetDocument("E"),
+                };
+                WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt").Append();
+
+                // When
+                writeFiles.Execute(inputs, Context).ToList();
+
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile("output.txt");
+                Assert.IsTrue(outputFile.Exists);
+                Assert.AreEqual("ABCDE", outputFile.ReadAllText());
             }
 
             [TestCase(Keys.DestinationFileBase, "write-test")]

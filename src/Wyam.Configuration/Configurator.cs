@@ -159,6 +159,7 @@ namespace Wyam.Configuration
 
         private void Evaluate(ConfigParserResult parserResult)
         {
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
                 _compilation.Generate(parserResult.Declarations, parserResult.Body,
@@ -166,6 +167,8 @@ namespace Wyam.Configuration
                 WriteScript(ConfigCompilation.AssemblyName, _compilation.Code);
                 _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
                 _compilation.Invoke(_engine);
+                stopwatch.Stop();
+                Trace.Information($"Evaluated configuration script in {stopwatch.ElapsedMilliseconds} ms");
             }
         }
 

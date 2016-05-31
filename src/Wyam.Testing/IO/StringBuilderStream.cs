@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Wyam.Testing.IO
@@ -11,6 +12,7 @@ namespace Wyam.Testing.IO
     // Initially based on code from Simple.Web (https://github.com/markrendle/Simple.Web) 
     public class StringBuilderStream : Stream
     {
+        private readonly Random _random = new Random();
         private readonly MemoryStream _buffer;
         private readonly StreamReader _bufferReader;
         private readonly StringBuilder _resultBuilder;
@@ -56,6 +58,7 @@ namespace Wyam.Testing.IO
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            Thread.Sleep(_random.Next(200)); // Sleep for a random amount to simulate realistic file operations
             _buffer.Write(buffer, offset, count);
         }
 
@@ -67,6 +70,7 @@ namespace Wyam.Testing.IO
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
+            Thread.Sleep(_random.Next(200)); // Sleep for a random amount to simulate realistic file operations
             return _buffer.BeginWrite(buffer, offset, count, callback, state);
         }
 

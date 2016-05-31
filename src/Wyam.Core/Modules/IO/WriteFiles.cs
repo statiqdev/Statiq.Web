@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -52,6 +54,7 @@ namespace Wyam.Core.Modules.IO
         private readonly bool _warnOnWriteMetadata;
         private bool _useWriteMetadata = true;
         private bool _ignoreEmptyContent = true;
+        private bool _append;
         private Func<IDocument, IExecutionContext, bool> _predicate = null;
 
         /// <summary>
@@ -125,6 +128,17 @@ namespace Wyam.Core.Modules.IO
         }
 
         /// <summary>
+        /// Appends content to each file instead of overwriting them.
+        /// </summary>
+        /// <param name="append">Appends to existing files if set to <c>true</c>.</param>
+        /// <returns></returns>
+        public WriteFiles Append(bool append = true)
+        {
+            _append = true;
+            return this;
+        }
+
+        /// <summary>
         /// Specifies a predicate that must be satisfied for the file to be written.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the file should be written.</param>
@@ -142,7 +156,7 @@ namespace Wyam.Core.Modules.IO
             return _predicate == null || _predicate(input, context);
         }
 
-        protected IFile GetOutputFile(IDocument input, IExecutionContext context)
+        protected FilePath GetOutputPath(IDocument input, IExecutionContext context)
         {
             FilePath path = null;
 
@@ -182,63 +196,109 @@ namespace Wyam.Core.Modules.IO
                 // Warn if needed
                 if (metadataKey != null && _warnOnWriteMetadata)
                 {
-                    Trace.Warning("An extension or delegate was specified for the WriteFiles module, but the metadata key {0} took precedence for the document with source {1}."
-                        + " Call UseWriteMetadata(false) to prevent the special write metadata keys from overriding WriteFiles constructor values.",
-                        metadataKey, input.SourceString());
+                    Trace.Warning($"An extension or delegate was specified for the WriteFiles module, but the metadata key {metadataKey} took precedence for the document with source {input.SourceString()}"
+                        + $" resulting in an output path of {path}. Call UseWriteMetadata(false) to prevent the special write metadata keys from overriding WriteFiles constructor values.");
                 }
             }
 
-            // Func
-            if (path == null)
-            {
-                path = _path.Invoke<FilePath>(input, context);
-            }
-
-            return path != null ? context.FileSystem.GetOutputFile(path) : null;
+            // Fallback to the default behavior function
+            return path ?? _path.Invoke<FilePath>(input, context);
         }
 
         public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs
-                .AsParallel()
-                .Where(input => ShouldProcess(input, context))
-                .Select(input =>
+            // Get the output file path for each file in sequence and set up action chains
+            // Value = input source string(s) (for reporting a warning if not appending), write action
+            ConcurrentBag<IDocument> outputs = new ConcurrentBag<IDocument>();
+            Dictionary<FilePath, Tuple<List<string>, Action>> writesBySource = new Dictionary<FilePath, Tuple<List<string>, Action>>();
+            foreach (IDocument input in inputs)
+            {
+                FilePath outputPath = ShouldProcess(input, context) ? GetOutputPath(input, context) : null;
+                if (outputPath == null)
                 {
-                    IFile output = GetOutputFile(input, context);
-                    if (output != null)
+                    // No output path or failed the predicate so just pass the input document through
+                    outputs.Add(input);
+                }
+                else
+                {
+                    Tuple<List<string>, Action> value;
+                    if (writesBySource.TryGetValue(outputPath, out value))
                     {
-                        using (Stream inputStream = input.GetStream())
-                        {
-                            if (_ignoreEmptyContent && inputStream.Length == 0)
+                        // This output source was already seen so nest the previous write action in a new one
+                        value.Item1.Add(input.SourceString());
+                        Action previousWrite = value.Item2;
+                        value = new Tuple<List<string>, Action>(
+                            value.Item1,
+                            () =>
                             {
-                                return input;
-                            }
-                            using (Stream outputStream = output.OpenWrite())
-                            {
-                                inputStream.CopyTo(outputStream);
-                            }
-                        }
-                        Trace.Verbose("Wrote file {0}", output.Path.FullPath);
-                        FilePath relativePath = context.FileSystem.GetOutputPath().GetRelativePath(output.Path) ?? output.Path.FileName;
-                        FilePath fileNameWithoutExtension = output.Path.FileNameWithoutExtension;
-                        return context.GetDocument(input, output.OpenRead(), new MetadataItems
-                        {
-                            { Keys.DestinationFileBase, fileNameWithoutExtension },
-                            { Keys.DestinationFileExt, output.Path.Extension },
-                            { Keys.DestinationFileName, output.Path.FileName },
-                            { Keys.DestinationFileDir, output.Path.Directory },
-                            { Keys.DestinationFilePath, output.Path },
-                            { Keys.DestinationFilePathBase, fileNameWithoutExtension == null
-                                ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
-                            { Keys.RelativeFilePath, relativePath },
-                            { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
-                                ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
-                            { Keys.RelativeFileDir, relativePath.Directory }
-                        });
+                                // Complete the previous write, then do the next one
+                                previousWrite();
+                                outputs.Add(Write(input, context, outputPath));
+                            });
                     }
-                    return input;
-                })
-                .Where(x => x != null);
+                    else
+                    {
+                        value = new Tuple<List<string>, Action>(
+                            new List<string> {input.SourceString()},
+                            () => outputs.Add(Write(input, context, outputPath)));
+                    }
+                    writesBySource[outputPath] = value;
+                }
+            }
+
+            // Display a warning for any duplicated outputs if not appending
+            if (!_append)
+            {
+                foreach (KeyValuePair<FilePath, Tuple<List<string>, Action>> kvp in writesBySource.Where(x => x.Value.Item1.Count > 1))
+                {
+                    string inputSources = Environment.NewLine + "  " + string.Join(Environment.NewLine + "  ", kvp.Value.Item1);
+                    Trace.Warning($"Multiple documents output to {kvp.Key} (this probably wasn't intended):{inputSources}");
+                }
+            }
+
+            // Run the write actions in parallel
+            Parallel.Invoke(writesBySource.Values.Select(x => x.Item2).ToArray());
+
+            // Aggregate and return the results
+            return outputs;
+        }
+
+        private IDocument Write(IDocument input, IExecutionContext context, FilePath outputPath)
+        {
+            IFile output = context.FileSystem.GetOutputFile(outputPath);
+            if (output != null)
+            {
+                using (Stream inputStream = input.GetStream())
+                {
+                    if (_ignoreEmptyContent && inputStream.Length == 0)
+                    {
+                        return input;
+                    }
+                    using (Stream outputStream = _append ? output.OpenAppend() : output.OpenWrite())
+                    {
+                        inputStream.CopyTo(outputStream);
+                    }
+                }
+                Trace.Verbose($"Wrote file {output.Path.FullPath} from {input.SourceString()}");
+                FilePath relativePath = context.FileSystem.GetOutputPath().GetRelativePath(output.Path) ?? output.Path.FileName;
+                FilePath fileNameWithoutExtension = output.Path.FileNameWithoutExtension;
+                return context.GetDocument(input, output.OpenRead(), 
+                    new MetadataItems
+                    {
+                        { Keys.DestinationFileBase, fileNameWithoutExtension },
+                        { Keys.DestinationFileExt, output.Path.Extension },
+                        { Keys.DestinationFileName, output.Path.FileName },
+                        { Keys.DestinationFileDir, output.Path.Directory },
+                        { Keys.DestinationFilePath, output.Path },
+                        { Keys.DestinationFilePathBase, fileNameWithoutExtension == null
+                            ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                        { Keys.RelativeFilePath, relativePath },
+                        { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                            ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                        { Keys.RelativeFileDir, relativePath.Directory }
+                    });
+            }
+            return input;
         }
     }
 }

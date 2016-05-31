@@ -64,7 +64,8 @@ namespace Wyam.Core.Modules.IO
                 {
                     if (ShouldProcess(input, context))
                     {
-                        IFile output = GetOutputFile(input, context);
+                        FilePath outputPath = GetOutputPath(input, context);
+                        IFile output = outputPath != null ? context.FileSystem.GetOutputFile(outputPath) : null;
                         if (output != null)
                         {
                             IDirectory outputDirectory = output.Directory;
