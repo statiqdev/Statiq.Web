@@ -8,6 +8,6 @@ namespace Wyam.Modules.SearchIndex
 {
     public static class SearchIndexKeys
     {
-        public const string SearchIndexItem = "SearchIndexItem";
+        public const string SearchIndexItem = nameof(SearchIndexItem);
     }
 }

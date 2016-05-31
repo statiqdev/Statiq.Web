@@ -15,84 +15,84 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The absulute Path to the folder of the original file.
         /// </summary>
-        public const string SourceFileRoot = "SourceFileRoot";
+        public const string SourceFileRoot = nameof(SourceFileRoot);
         /// <summary>
         /// The name of the orignal file without extension.
         /// </summary>
-        public const string SourceFileBase = "SourceFileBase";
+        public const string SourceFileBase = nameof(SourceFileBase);
         /// <summary>
         /// The extension of the original file (including the .).
         /// </summary>
-        public const string SourceFileExt = "SourceFileExt";
+        public const string SourceFileExt = nameof(SourceFileExt);
         /// <summary>
         /// The file name of the original file with extenion.
         /// </summary>
-        public const string SourceFileName = "SourceFileName";
+        public const string SourceFileName = nameof(SourceFileName);
         /// <summary>
         /// The absulute Path to the folder of the original file.
         /// </summary>
-        public const string SourceFileDir = "SourceFileDir";
+        public const string SourceFileDir = nameof(SourceFileDir);
         /// <summary>
         /// The absolute path to the original file.
         /// </summary>
-        public const string SourceFilePath = "SourceFilePath";
+        public const string SourceFilePath = nameof(SourceFilePath);
         /// <summary>
         /// The absolute path to the original file without the file extension.
         /// </summary>
-        public const string SourceFilePathBase = "SourceFilePathBase";
+        public const string SourceFilePathBase = nameof(SourceFilePathBase);
         /// <summary>
         /// The path to the original file relative to the input folder.
         /// </summary>
-        public const string RelativeFilePath = "RelativeFilePath";
+        public const string RelativeFilePath = nameof(RelativeFilePath);
         /// <summary>
         /// The path to the original file relative to the input folder without extension.
         /// </summary>
-        public const string RelativeFilePathBase = "RelativeFilePathBase";
+        public const string RelativeFilePathBase = nameof(RelativeFilePathBase);
         /// <summary>
         /// The path to the original files folder relative to the input folder.
         /// </summary>
-        public const string RelativeFileDir = "RelativeFileDir";
-        public const string DestinationFileBase = "DestinationFileBase";
-        public const string DestinationFileExt = "DestinationFileExt";
-        public const string DestinationFileName = "DestinationFileName";
-        public const string DestinationFileDir = "DestinationFileDir";
-        public const string DestinationFilePath = "DestinationFilePath";
-        public const string DestinationFilePathBase = "DestinationFilePathBase";
-        public const string WriteExtension = "WriteExtension";
-        public const string WriteFileName = "WriteFileName";
-        public const string WritePath = "WritePath";
+        public const string RelativeFileDir = nameof(RelativeFileDir);
+        public const string DestinationFileBase = nameof(DestinationFileBase);
+        public const string DestinationFileExt = nameof(DestinationFileExt);
+        public const string DestinationFileName = nameof(DestinationFileName);
+        public const string DestinationFileDir = nameof(DestinationFileDir);
+        public const string DestinationFilePath = nameof(DestinationFilePath);
+        public const string DestinationFilePathBase = nameof(DestinationFilePathBase);
+        public const string WriteExtension = nameof(WriteExtension);
+        public const string WriteFileName = nameof(WriteFileName);
+        public const string WritePath = nameof(WritePath);
 
         // Paginate
-        public const string PageDocuments = "PageDocuments";
-        public const string CurrentPage = "CurrentPage";
-        public const string TotalPages = "TotalPages";
-        public const string HasNextPage = "HasNextPage";
-        public const string HasPreviousPage = "HasPreviousPage";
+        public const string PageDocuments = nameof(PageDocuments);
+        public const string CurrentPage = nameof(CurrentPage);
+        public const string TotalPages = nameof(TotalPages);
+        public const string HasNextPage = nameof(HasNextPage);
+        public const string HasPreviousPage = nameof(HasPreviousPage);
 
         // GroupBy
-        public const string GroupDocuments = "GroupDocuments";
-        public const string GroupKey = "GroupKey";
+        public const string GroupDocuments = nameof(GroupDocuments);
+        public const string GroupKey = nameof(GroupKey);
 
         // Index
-        public const string Index = "Index";
+        public const string Index = nameof(Index);
 
         // Rss
-        public const string RssItemUrl = "RssItemUrl";
-        public const string IsRssFeed = "IsRssFeed";
+        public const string RssItemUrl = nameof(RssItemUrl);
+        public const string IsRssFeed = nameof(IsRssFeed);
 
         // Sitemap
-        public const string SitemapItem = "SitemapItem";
+        public const string SitemapItem = nameof(SitemapItem);
 
         // Download
-        public const string SourceUri = "SourceUri";
-        public const string SourceHeaders = "SourceHeaders";
+        public const string SourceUri = nameof(SourceUri);
+        public const string SourceHeaders = nameof(SourceHeaders);
 
         // Tree
-        public const string Parent = "Parent";
-        public const string Children = "Children";
-        public const string PreviousSibling = "PreviousSibling";
-        public const string NextSibling = "NextSibling";
-        public const string Next = "Next";
-        public const string Previous = "Previous";
+        public const string Parent = nameof(Parent);
+        public const string Children = nameof(Children);
+        public const string PreviousSibling = nameof(PreviousSibling);
+        public const string NextSibling = nameof(NextSibling);
+        public const string Next = nameof(Next);
+        public const string Previous = nameof(Previous);
     }
 }
