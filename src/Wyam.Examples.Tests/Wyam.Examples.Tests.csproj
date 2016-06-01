@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -67,41 +67,41 @@
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.CodeAnalysis\Wyam.Modules.CodeAnalysis.csproj">
+    <ProjectReference Include="..\Wyam.CodeAnalysis\Wyam.CodeAnalysis.csproj">
       <Project>{f4c0c025-5e08-4ed2-a089-67c41702ae7b}</Project>
-      <Name>Wyam.Modules.CodeAnalysis</Name>
+      <Name>Wyam.CodeAnalysis</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Html\Wyam.Modules.Html.csproj">
+    <ProjectReference Include="..\Wyam.Html\Wyam.Html.csproj">
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
-      <Name>Wyam.Modules.Html</Name>
+      <Name>Wyam.Html</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Images\Wyam.Modules.Images.csproj">
+    <ProjectReference Include="..\Wyam.Images\Wyam.Images.csproj">
       <Project>{d6ad32c7-3b15-4f1c-8a2d-403d97f0cd41}</Project>
-      <Name>Wyam.Modules.Images</Name>
+      <Name>Wyam.Images</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Less\Wyam.Modules.Less.csproj">
+    <ProjectReference Include="..\Wyam.Less\Wyam.Less.csproj">
       <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
-      <Name>Wyam.Modules.Less</Name>
+      <Name>Wyam.Less</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Markdown\Wyam.Modules.Markdown.csproj">
+    <ProjectReference Include="..\Wyam.Markdown\Wyam.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
-      <Name>Wyam.Modules.Markdown</Name>
+      <Name>Wyam.Markdown</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Razor\Wyam.Modules.Razor.csproj">
+    <ProjectReference Include="..\Wyam.Razor\Wyam.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
-      <Name>Wyam.Modules.Razor</Name>
+      <Name>Wyam.Razor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.SearchIndex\Wyam.Modules.SearchIndex.csproj">
+    <ProjectReference Include="..\Wyam.SearchIndex\Wyam.SearchIndex.csproj">
       <Project>{957fe3a0-7ce0-48a1-9767-d122b9f43907}</Project>
-      <Name>Wyam.Modules.SearchIndex</Name>
+      <Name>Wyam.SearchIndex</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.TextGeneration\Wyam.Modules.TextGeneration.csproj">
+    <ProjectReference Include="..\Wyam.TextGeneration\Wyam.TextGeneration.csproj">
       <Project>{0d7f4902-c048-46aa-bdd1-b87b657003ff}</Project>
-      <Name>Wyam.Modules.TextGeneration</Name>
+      <Name>Wyam.TextGeneration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Modules.Yaml\Wyam.Modules.Yaml.csproj">
+    <ProjectReference Include="..\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
-      <Name>Wyam.Modules.Yaml</Name>
+      <Name>Wyam.Yaml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Wyam\Wyam.csproj">
       <Project>{9cadde07-290f-4958-b0d4-2e613b8f127f}</Project>

@@ -155,10 +155,10 @@ Task("Create-Library-Packages")
     .Does(() =>
     {        
         // Get the set of nuspecs to package
-        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/Wyam.*/*.nuspec"));
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Modules.All");
+        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/Wyam.*/*.nuspec"));
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
-        nuspecs.AddRange(GetFiles("./src/**/Cake.Wyam/*.nuspec"));
+        nuspecs.AddRange(GetFiles("./src/Cake.Wyam/*.nuspec"));
         
         // Package all nuspecs
         foreach (var nuspec in nuspecs)
@@ -181,16 +181,18 @@ Task("Create-AllModules-Package")
     .IsDependentOn("Build")
     .Does(() =>
     {        
-        var nuspec = GetFiles("./src/Wyam.Modules.All/*.nuspec").FirstOrDefault();
+        var nuspec = GetFiles("./src/Wyam.All/*.nuspec").FirstOrDefault();
         if (nuspec == null)
         {            
             throw new InvalidOperationException("Could not find all modules nuspec.");
         }
         
         // Add dependencies for all module libraries
+        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/Wyam.*/*.nuspec"));
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
         List<NuSpecDependency> dependencies = new List<NuSpecDependency>(
-            GetFiles("./src/**/Wyam.Modules.*/*.nuspec")
-                .Where(x => x.GetDirectory().GetDirectoryName() != "Wyam.Modules.All")
+            nuspecs
                 .Select(x => new NuSpecDependency
                     {
                         Id = x.GetDirectory().GetDirectoryName(),

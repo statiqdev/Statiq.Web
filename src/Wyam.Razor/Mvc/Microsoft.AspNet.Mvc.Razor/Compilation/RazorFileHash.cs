@@ -1,0 +1,34 @@
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
+using System.Globalization;
+using System.IO;
+using Microsoft.AspNet.FileProviders;
+using Wyam.Common;
+using Wyam.Common.Caching;
+using Wyam.Common.Documents;
+using Wyam.Razor.Microsoft.Framework.Internal;
+
+namespace Wyam.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
+{
+    public static class RazorFileHash
+    {
+        public static string GetHash([NotNull] IFileInfo file)
+        {
+            try
+            {
+                using (var stream = file.CreateReadStreamWithRetry())
+                {
+                    return Crc32.Calculate(stream).ToString(CultureInfo.InvariantCulture);
+                }
+            }
+            catch (IOException)
+            {
+                // Don't throw if reading the file fails.
+            }
+
+            return string.Empty;
+        }
+    }
+}

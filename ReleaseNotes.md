@@ -1,12 +1,25 @@
 # 0.12.4
 
+- Refactoring - **Breaking change**: Extension NuGet packages have been renamed from `Wyam.*` to `Wyam.*` to better represent other non-module extension points (#295)
 - Feature - **Breaking change**: The NuGet package version now takes a *version range*, so you must use `[x.y.z]` instead of `x.y.z` to specify a specific version
 - Feature - Added a `use-global-source` flag to trigger the use of globally configured NuGet package sources
- 
+- Feature - WriteFiles now supports an `Append()` method to trigger appending to existing file instead of overwritting them (#304)
+- Refactoring - WriteFiles now has better handling of outputting multiple documents to the same file (#303)
+- Feature - New **Sidecar** module to pull metadata for a document from a sidecar file (#306, thanks @LokiMidgard)
+- Refactoring - Additional documentation for Cake alias (#302, thanks @gep13)
+- Refactoring - New assembly type scanning algorithm will make future extension points easier to support (#281)
+- Refactoring - File providers are now specified as a URI (#277)
+- Feature - New **Tree** module to construct a hierarchy from a set of documents (#292, thanks @LokiMidgard)
+- Fix - Output directory is now created on demand instead of automatically at execution (#293)
+- Fix - Check for null stream if null content on `Document.ToString()` (#294, thanks @LokiMidgard)
+- Refactoring - Renamed CLI flag `--pause` to `--attach` and changed behavior to wait for a debugger to attach instead of requiring key press
+- Fix - Fixed some bugs with the Cake.Wyam NuGet package dependencies (#291)
+- Fix - Fixed some problems with the handling of dotfiles (#289)
+- Fix - Documentation fixes for `IDocument` (#288, thanks @LokiMidgard)
 
 # 0.12.3
 
-- Fix - Fixed a bug where execution could hang in some enviornments that open stdin and leave it open like Azure CI or VS Code task execution (#287)
+- Fix - Fixed a bug where execution could hang in some environments that open stdin and leave it open like Azure CI or VS Code task execution (#287)
 - Feature - Added a `--latest` flag to the `#nuget` preprocessor directive to indicate that the latest available package version should always be installed
 - **Breaking changes in 0.12.x**: Please see http://wyam.io/knowledgebase/migrating-to-0.12.x for more information
 

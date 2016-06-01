@@ -28,3 +28,4 @@ ipch
 /*.~vsd
 *UpgradeWizard*
 .vs/*
+TestResult.xml
