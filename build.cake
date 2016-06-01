@@ -193,6 +193,7 @@ Task("Create-AllModules-Package")
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Common");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Configuration");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Core");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Testing");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
         List<NuSpecDependency> dependencies = new List<NuSpecDependency>(
             nuspecs
