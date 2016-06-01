@@ -190,6 +190,9 @@ Task("Create-AllModules-Package")
         // Add dependencies for all module libraries
         List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/Wyam.*/*.nuspec"));
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Common");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Configuration");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Core");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
         List<NuSpecDependency> dependencies = new List<NuSpecDependency>(
             nuspecs
