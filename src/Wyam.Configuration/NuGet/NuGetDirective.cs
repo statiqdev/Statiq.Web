@@ -29,8 +29,8 @@ namespace Wyam.Configuration.NuGet
         {
             syntax.DefineOption("p|prerelease", ref settings.Prerelease, "Specifies that prerelease packages are allowed.");
             syntax.DefineOption("u|unlisted", ref settings.Unlisted, "Specifies that unlisted packages are allowed.");
-            syntax.DefineOption("v|version", ref settings.Version, "Specifies the version of the package to use.");
-            if (syntax.DefineOption("l|latest", ref settings.Latest, "Specifies that the latest available version of the package should always be used.").IsSpecified 
+            syntax.DefineOption("v|version", ref settings.Version, "Specifies the version range of the package to use.");
+            if (syntax.DefineOption("l|latest", ref settings.Latest, "Specifies that the latest available version of the package should be used (this will always trigger a request to the sources).").IsSpecified 
                 && !string.IsNullOrEmpty(settings.Version))
             {
                 syntax.ReportError("latest cannot be specified if a version is specified.");

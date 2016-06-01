@@ -25,6 +25,7 @@ namespace Wyam.Core.Modules.Metadata
     /// search or <c>null</c> if this was the last node.</metadata> 
     /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first 
     /// search or <c>null</c> if this was the first node.</metadata>
+    /// <category>Metadata</category>
     public class Tree : IModule
     {
         private DocumentConfig _isRoot;
