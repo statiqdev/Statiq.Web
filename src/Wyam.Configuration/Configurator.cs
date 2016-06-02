@@ -12,6 +12,9 @@ using Wyam.Core.Execution;
 
 namespace Wyam.Configuration
 {
+    /// <summary>
+    /// Manages configuration of an engine and coordinates configuration script processing.
+    /// </summary>
     public class Configurator : IDisposable
     {
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
@@ -20,7 +23,7 @@ namespace Wyam.Configuration
 
         private bool _disposed;
         private bool _configured;
-        
+
         public PackageInstaller PackageInstaller { get; }
 
         public AssemblyLoader AssemblyLoader { get; }
@@ -31,11 +34,24 @@ namespace Wyam.Configuration
 
         public FilePath OutputScriptPath { get; set; }
 
+        public string Recipe { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configurator"/> class.
+        /// </summary>
+        /// <param name="engine">The engine to configure.</param>
         public Configurator(Engine engine)
             : this(engine, new Preprocessor())
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configurator"/> class. This overload
+        /// allows passing in a <see cref="Preprocessor"/> that can be reused and pre-configured
+        /// with directives not sourced from the script.
+        /// </summary>
+        /// <param name="engine">The engine to configure.</param>
+        /// <param name="preprocessor">The preprocessor.</param>
         public Configurator(Engine engine, Preprocessor preprocessor)
         {
             _engine = engine;
@@ -44,7 +60,7 @@ namespace Wyam.Configuration
             ClassCatalog = new ClassCatalog();
             _preprocessor = preprocessor;
 
-            // Add the config namespace and assembly
+            // Add this namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
             engine.Assemblies.Add(typeof(ConfigScriptBase).Assembly);
         }
@@ -68,8 +84,10 @@ namespace Wyam.Configuration
             }
         }
 
-        // Setup is separated from config by a line with only '-' characters
-        // If no such line exists, then the entire script is treated as config
+        /// <summary>
+        /// Configures the engine using the specified script.
+        /// </summary>
+        /// <param name="script">The script.</param>
         public void Configure(string script)
         {
             CheckDisposed();
@@ -93,8 +111,10 @@ namespace Wyam.Configuration
             AddFileProviders();
             Evaluate(parserResult);
         }
-
-        // Initialize the assembly manager (includes searching for module types)
+        
+        /// <summary>
+        /// Initialize the assembly manager (includes searching for module types).
+        /// </summary>
         private void Initialize()
         {
 
@@ -116,7 +136,7 @@ namespace Wyam.Configuration
                 Trace.Information($"Assemblies loaded in {stopwatch.ElapsedMilliseconds} ms");
             }
 
-            // Load types
+            // Catalog types
             stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Cataloging types"))
             {

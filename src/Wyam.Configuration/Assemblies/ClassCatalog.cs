@@ -20,22 +20,49 @@ namespace Wyam.Configuration.Assemblies
     /// </summary>
     public class ClassCatalog
     {
-        private readonly ConcurrentDictionary<Assembly, List<Type>> _classes
-            = new ConcurrentDictionary<Assembly, List<Type>>();
+        private readonly ConcurrentBag<Type> _types = new ConcurrentBag<Type>();
 
+        /// <summary>
+        /// Gets all classes of a specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of classes to get.</typeparam>
+        /// <returns>All classes of type <see cref="T"/>.</returns>
         public IEnumerable<Type> GetClasses<T>() =>
-            _classes.Values.SelectMany(x => x).Where(x => typeof(T).IsAssignableFrom(x));
+                    _types.Where(x => typeof(T).IsAssignableFrom(x));
 
+        /// <summary>
+        /// Gets instances for all classes of a specified type..
+        /// </summary>
+        /// <typeparam name="T">The type of instances to get.</typeparam>
+        /// <returns>Instances for all classes of type <see cref="T"/>.</returns>
         public IEnumerable<T> GetInstances<T>() =>
-            GetClasses<T>().Select(x => (T) Activator.CreateInstance(x));
-        
+                    GetClasses<T>().Select(x => (T)Activator.CreateInstance(x));
+
+        /// <summary>
+        /// Gets an instance for a class of a specified type and name.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to get.</typeparam>
+        /// <param name="typeName">The name of the type.</param>
+        /// <param name="ignoreCase">if set to <c>true</c> ignore the case of the type name.</param>
+        /// <returns>
+        /// An instance of the first class that matches the specified type and name.
+        /// </returns>
+        public T GetInstance<T>(string typeName, bool ignoreCase = false)
+        {
+            Type type = GetClasses<T>().FirstOrDefault(x => x.Name.Equals(typeName, 
+                ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
+            return type == null ? default(T) : (T)Activator.CreateInstance(type);
+        }
+
         public void CatalogTypes(HashSet<Assembly> assemblies)
         {
             Parallel.ForEach(assemblies, assembly =>
             {
                 Trace.Verbose($"Cataloging types in assembly {assembly.FullName}");
-                _classes.TryAdd(assembly,
-                    GetLoadableTypes(assembly).Where(x => x.IsPublic && !x.IsAbstract && x.IsClass).ToList());
+                foreach (Type type in GetLoadableTypes(assembly).Where(x => x.IsPublic && !x.IsAbstract && x.IsClass))
+                {
+                    _types.Add(type);
+                }
             });
         }
 

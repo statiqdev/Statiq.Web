@@ -9,9 +9,14 @@ namespace Wyam.Configuration.Preprocessing
     public interface IDirective
     {
         /// <summary>
-        /// Gets the directive name(s) for use in configuration files.
+        /// Gets the directive name.
         /// </summary>
-        IEnumerable<string> DirectiveNames { get; }
+        string Name { get; }
+
+        /// <summary>
+        /// Gets the short directive name.
+        /// </summary>
+        string ShortName { get; }
 
         /// <summary>
         /// Indicates whether the directive should be supported in command
@@ -19,6 +24,11 @@ namespace Wyam.Configuration.Preprocessing
         /// for the CLI option.
         /// </summary>
         bool SupportsCli { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the directive supports multiple values.
+        /// </summary>
+        bool SupportsMultiple { get; }
 
         /// <summary>
         /// Gets a description of the directive.

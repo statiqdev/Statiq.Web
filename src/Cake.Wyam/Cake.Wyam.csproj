@@ -54,10 +54,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyNameSettings.cs" />
-    <Compile Include="AssemblySettings.cs" />
     <Compile Include="NuGetSettings.cs" />
-    <Compile Include="NuGetSourceSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WyamAliases.cs" />
     <Compile Include="WyamRunner.cs" />

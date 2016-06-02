@@ -106,6 +106,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />
     <Compile Include="SimpleFileTraceListener.cs" />
+    <Compile Include="StandardInputReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

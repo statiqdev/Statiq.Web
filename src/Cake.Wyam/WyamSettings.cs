@@ -124,16 +124,21 @@ namespace Cake.Wyam
         /// <summary>
         /// Specifies additional package sources to use.
         /// </summary>
-        public IEnumerable<NuGetSourceSettings> NuGetSources { get; set; }
+        public IEnumerable<string> NuGetSources { get; set; }
 
         /// <summary>
         /// Adds references to an assemblies by name.
         /// </summary>
-        public IEnumerable<AssemblyNameSettings> AssemblyNames { get; set; }
+        public IEnumerable<string> AssemblyNames { get; set; }
 
         /// <summary>
         /// Adds references to assemblies by file name or globbing pattern.
         /// </summary>
-        public IEnumerable<AssemblySettings> Assemblies { get; set; }
+        public IEnumerable<string> Assemblies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the recipe.
+        /// </summary>
+        public string Recipe { get; set; }
     }
 }

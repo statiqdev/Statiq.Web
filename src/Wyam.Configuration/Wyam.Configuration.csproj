@@ -175,9 +175,9 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Assemblies\AssemblyDirective.cs" />
+    <Compile Include="Directives\AssemblyDirective.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
-    <Compile Include="Assemblies\AssemblyNameDirective.cs" />
+    <Compile Include="Directives\AssemblyNameDirective.cs" />
     <Compile Include="Assemblies\ClassCatalog.cs" />
     <Compile Include="ConfigScript\ConfigCompilation.cs" />
     <Compile Include="ConfigScript\ConfigCompiler.cs" />
@@ -188,7 +188,7 @@
     <Compile Include="Configurator.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
-    <Compile Include="Preprocessing\ArgumentSyntaxDirective.cs" />
+    <Compile Include="Directives\ArgumentSyntaxDirective.cs" />
     <Compile Include="Preprocessing\CliSupport.cs" />
     <Compile Include="Preprocessing\DirectiveValue.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
@@ -199,10 +199,11 @@
     <Compile Include="Preprocessing\ArgumentSplitter.cs" />
     <Compile Include="Preprocessing\IDirective.cs" />
     <Compile Include="Preprocessing\IPreprocessor.cs" />
-    <Compile Include="NuGet\NuGetDirective.cs" />
-    <Compile Include="NuGet\NuGetSourceDirective.cs" />
+    <Compile Include="Directives\NuGetDirective.cs" />
+    <Compile Include="Directives\NuGetSourceDirective.cs" />
     <Compile Include="Preprocessing\Preprocessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Directives\RecipeDirective.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

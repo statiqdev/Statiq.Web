@@ -75,9 +75,13 @@ namespace Wyam
                     foreach (IDirective directive in _preprocessor.Directives)
                     {
                         Console.WriteLine();
-                        Console.WriteLine($"{directive.Description}:");
-                        Console.WriteLine(string.Join(", ", directive.DirectiveNames.Select(x => "#" + x)));
-                        Console.WriteLine(directive.GetHelpText());
+                        Console.WriteLine("#" + directive.Name + (string.IsNullOrEmpty(directive.ShortName) ? string.Empty : ", #" + directive.ShortName));
+                        string helpText = directive.GetHelpText();
+                        if (!string.IsNullOrEmpty(helpText))
+                        {
+                            Console.WriteLine(helpText);
+                        }
+                        Console.WriteLine($"{directive.Description}");
                     }
                     return (int) ExitCode.Normal;
                 }
@@ -124,8 +128,10 @@ namespace Wyam
                 catch (MetadataParseException ex)
                 {
                     Trace.Error("Error while parsing metadata: {0}", ex.Message);
-                    if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                    if (Trace.Level == SourceLevels.Verbose)
+                    {
                         Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
+                    }
 
                     return (int)ExitCode.CommandLineError;
                 }

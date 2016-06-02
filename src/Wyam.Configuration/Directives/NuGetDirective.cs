@@ -1,16 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using Wyam.Configuration.Preprocessing;
 
-namespace Wyam.Configuration.NuGet
+namespace Wyam.Configuration.Directives
 {
     internal class NuGetDirective : ArgumentSyntaxDirective<NuGetDirective.Settings>
     {
-        public override IEnumerable<string> DirectiveNames { get; } = new[] { "nuget", "n" };
+        public override string Name => "nuget";
+
+        public override string ShortName => "n";
 
         public override bool SupportsCli => true;
-        
+
+        public override bool SupportsMultiple => true;
+
         public override string Description => "Adds a NuGet package (downloading and installing it if needed).";
 
         // Any changes to settings should also be made in Cake.Wyam

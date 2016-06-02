@@ -2,15 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using Wyam.Configuration.Preprocessing;
 
-namespace Wyam.Configuration.Preprocessing
+namespace Wyam.Configuration.Directives
 {
     internal abstract class ArgumentSyntaxDirective<TSettings> : IDirective
         where TSettings : new()
     {
-        public abstract IEnumerable<string> DirectiveNames { get; }
+        public abstract string Name { get; }
+
+        public virtual string ShortName => null;
 
         public abstract bool SupportsCli { get; }
+
+        public abstract bool SupportsMultiple { get; }
 
         public void Process(Configurator configurator, string value)
         {

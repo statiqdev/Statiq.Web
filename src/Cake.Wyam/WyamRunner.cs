@@ -219,29 +219,35 @@ namespace Cake.Wyam
 
             if (settings.NuGetSources != null)
             {
-                foreach (NuGetSourceSettings childSettings in settings.NuGetSources)
+                foreach (string nugetSource in settings.NuGetSources)
                 {
                     builder.Append("--nuget-source");
-                    builder.Append(childSettings.Source);
+                    builder.Append(nugetSource);
                 }
             }
 
             if (settings.AssemblyNames != null)
             {
-                foreach (AssemblyNameSettings childSettings in settings.AssemblyNames)
+                foreach (string assemblyName in settings.AssemblyNames)
                 {
                     builder.Append("--assembly-name");
-                    builder.Append(childSettings.Assembly);
+                    builder.Append(assemblyName);
                 }
             }
 
             if (settings.Assemblies != null)
             {
-                foreach (AssemblySettings childSettings in settings.Assemblies)
+                foreach (string assembly in settings.Assemblies)
                 {
                     builder.Append("--assembly");
-                    builder.Append(childSettings.Assembly);
+                    builder.Append(assembly);
                 }
+            }
+
+            if (settings.Recipe != null)
+            {
+                builder.Append("--recipe");
+                builder.Append(settings.Recipe);
             }
             
             if (settings.RootPath != null)

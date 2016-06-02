@@ -81,13 +81,30 @@ namespace Wyam
 
                 foreach (IDirective directive in preprocessor.Directives.Where(x => x.SupportsCli))
                 {
-                    IReadOnlyList<string> directiveValues = null;
-                    syntax.DefineOptionList(directive.DirectiveNames.First(), ref directiveValues, $"{directive.Description} See below for syntax details.");
-                    if (directiveValues != null)
+                    // Get the option name and help text
+                    string optionName = (string.IsNullOrEmpty(directive.ShortName) ? string.Empty : directive.ShortName + "|") + directive.Name;
+                    string optionHelp = $"{directive.Description}{(string.IsNullOrEmpty(directive.GetHelpText()) ? string.Empty : " See below for syntax details.")}";
+
+                    // Single or multiple?
+                    if (directive.SupportsMultiple)
                     {
-                        foreach (string directiveValue in directiveValues)
+                        IReadOnlyList<string> directiveValues = null;
+                        syntax.DefineOptionList(optionName, ref directiveValues, optionHelp);
+                        if (directiveValues != null)
                         {
-                            preprocessor.AddValue(new DirectiveValue(directive.DirectiveNames.First(), directiveValue));
+                            foreach (string directiveValue in directiveValues)
+                            {
+                                preprocessor.AddValue(new DirectiveValue(directive.Name, directiveValue));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        string directiveValue = null;
+                        syntax.DefineOption(optionName, ref directiveValue, optionHelp);
+                        if (directiveValue != null)
+                        {
+                            preprocessor.AddValue(new DirectiveValue(directive.Name, directiveValue));
                         }
                     }
                 }
@@ -121,70 +138,20 @@ namespace Wyam
                 Trace.Level = System.Diagnostics.SourceLevels.Verbose;
             }
 
-            // Capture any stdin, but we have to be very careful because the calling process might have
-            // opened stdin and just left it open, in which case it would register as redirected but the
-            // stream won't ever return because it's just waiting for input
-            if (Console.IsInputRedirected)
-            {
-                Trace.Verbose("Input is redirected, attempting to read...");
-                using (Stream stream = Console.OpenStandardInput())
-                {
-                    byte[] buffer = new byte[1000];
-                    StringBuilder stdin = new StringBuilder();
-                    int totalRead = 0;
-                    int read = -1;
-                    while (true)
-                    {
-                        AutoResetEvent gotInput = new AutoResetEvent(false);
-                        Thread inputThread = new Thread(() =>
-                        {
-                            try
-                            {
-                                read = stream.Read(buffer, 0, buffer.Length);
-                                gotInput.Set();
-                            }
-                            catch (ThreadAbortException)
-                            {
-                                Thread.ResetAbort();
-                            }
-                        })
-                        {
-                            IsBackground = true
-                        };
-
-                        inputThread.Start();
-
-                        // Timeout expired?
-                        if (!gotInput.WaitOne(100))
-                        {
-                            inputThread.Abort();
-                            Trace.Verbose("Timeout expired while reading from input");
-                            break;
-                        }
-
-                        // End of stream?
-                        if (read == 0)
-                        {
-                            Stdin = stdin.ToString();
-                            Trace.Verbose($"Read {totalRead} bytes ({Stdin.Length} characters) from input");
-                            break;
-                        }
-
-                        // Got data
-                        stdin.Append(Console.InputEncoding.GetString(buffer, 0, read));
-                        totalRead += read;
-                    }
-                }
-            }
-
+            Stdin = StandardInputReader.Read();
+            
             if (parsed.IsHelpRequested())
             {
                 foreach (IDirective directive in preprocessor.Directives.Where(x => x.SupportsCli))
                 {
-                    Console.WriteLine($"--{directive.DirectiveNames.First()} usage:");
-                    Console.WriteLine();
-                    Console.WriteLine(directive.GetHelpText());
-                    Console.WriteLine();
+                    string helpText = directive.GetHelpText();
+                    if(!string.IsNullOrEmpty(helpText))
+                    {
+                        Console.WriteLine($"--{directive.Name} usage:");
+                        Console.WriteLine();
+                        Console.WriteLine(directive.GetHelpText());
+                        Console.WriteLine();
+                    }
                 }
             }
 

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Wyam.Configuration.Assemblies;
+using Wyam.Configuration.Directives;
 using Wyam.Configuration.NuGet;
 
 namespace Wyam.Configuration.Preprocessing
@@ -20,13 +21,24 @@ namespace Wyam.Configuration.Preprocessing
             AddDirective(new NuGetSourceDirective());
             AddDirective(new AssemblyDirective());
             AddDirective(new AssemblyNameDirective());
+            AddDirective(new RecipeDirective());
         }
 
         private static void AddDirective(IDirective directive)
         {
-            foreach (string name in directive.DirectiveNames)
+            if (string.IsNullOrEmpty(directive.Name))
             {
-                AllDirectives.TryAdd(name, directive);
+                throw new ArgumentException($"The directive {directive.GetType().Name} must have a name");
+            }
+            if (string.IsNullOrEmpty(directive.Description))
+            {
+                throw new ArgumentException($"The directive {directive.GetType().Name} must have a description");
+            }
+
+            AllDirectives.TryAdd(directive.Name, directive);
+            if (!string.IsNullOrEmpty(directive.ShortName))
+            {
+                AllDirectives.TryAdd(directive.ShortName, directive);
             }
         }
         
@@ -44,11 +56,21 @@ namespace Wyam.Configuration.Preprocessing
         /// </summary>
         internal void ProcessDirectives(Configurator configurator, IEnumerable<DirectiveValue> additionalValues)
         {
+            HashSet<string> singleValueNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (DirectiveValue value in _values.Concat(additionalValues))
             {
                 IDirective directive;
                 if (AllDirectives.TryGetValue(value.Name, out directive))
                 {
+                    // Make sure this isn't an extra value for a single-value directive
+                    if (!directive.SupportsMultiple && !singleValueNames.Add(value.Name))
+                    {
+                        string line = value.Line.HasValue ? (" on line " + value.Line.Value) : string.Empty;
+                        throw new Exception($"Error while processing directive{line}: #{value.Name} {value.Value}{Environment.NewLine}"
+                            + "Directive was previously specified and only one value is allowed");
+                    }
+
+                    // Process the directive
                     try
                     {
                         directive.Process(configurator, value.Value);
