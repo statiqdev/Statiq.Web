@@ -101,8 +101,8 @@ namespace Wyam
                 }
                 else
                 {
-                    Trace.Information("Could not find configuration file {0}, using default configuration", _settings.ConfigFilePath);
-                    Configurator.Configure(GetDefaultConfigScript());
+                    Trace.Information("Could not find configuration file at {0}", _settings.ConfigFilePath);
+                    Configurator.Configure(null);
                 }
             }
             catch (Exception ex)
@@ -126,28 +126,6 @@ namespace Wyam
             }
 
             return true;
-        }
-
-        // This is a hack until recipes are implemented, at which point it should be removed
-        private string GetDefaultConfigScript()
-        {
-            return @"
-                Pipelines.Add(""Content"",
-	                ReadFiles(""*.md""),
-	                FrontMatter(Yaml()),
-	                Markdown(),
-	                Concat(
-		                ReadFiles(""*.cshtml"").Where(x => Path.GetFileName(x)[0] != '_'),
-		                FrontMatter(Yaml())		
-	                ),
-	                Razor(),
-	                WriteFiles("".html"")
-                );
-
-                Pipelines.Add(""Resources"",
-	                CopyFiles(""*"").Where(x => Path.GetExtension(x) != "".cshtml"" && Path.GetExtension(x) != "".md"")
-                );
-            ";
         }
     }
 }

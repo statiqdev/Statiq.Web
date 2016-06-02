@@ -18,7 +18,7 @@ namespace Wyam.Configuration.NuGet
 {
     public class PackageInstaller
     {
-        private readonly List<Package> _packages = new List<Package>();
+        private readonly Dictionary<string, Package> _packages = new Dictionary<string, Package>();
         private readonly NuGetLogger _logger = new NuGetLogger();
         private readonly IFileSystem _fileSystem;
         private readonly AssemblyLoader _assemblyLoader;
@@ -48,15 +48,39 @@ namespace Wyam.Configuration.NuGet
                 : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
         }
         
-        // Note that sources are searched first at index 0, then index 1, and so on until a match is found
+        /// <summary>
+        /// Adds the specified package source. Sources added this way will be searched before any global sources.
+        /// </summary>
+        /// <param name="packageSource">The package source to add.</param>
         public void AddPackageSource(string packageSource) => _sourceRepositories.AddDefaultRepository(packageSource);
 
-        public void AddPackage(string packageId, IEnumerable<string> packageSources, string versionRange,
-            bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
+        /// <summary>
+        /// Adds a package.
+        /// </summary>
+        /// <param name="packageId">The package identifier.</param>
+        /// <param name="packageSources">The package sources.</param>
+        /// <param name="versionRange">The version range.</param>
+        /// <param name="getLatest">If set to <c>true</c>, the latest version of the package will always be downloaded.</param>
+        /// <param name="allowPrereleaseVersions">If set to <c>true</c>, allow prerelease versions.</param>
+        /// <param name="allowUnlisted">If set to <c>true</c>, allow unlisted versions.</param>
+        /// <param name="exclusive">If set to <c>true</c>, only use the package sources defined for this package.</param>
+        public void AddPackage(string packageId, IEnumerable<string> packageSources = null, string versionRange = null,
+            bool getLatest = false, bool allowPrereleaseVersions = true, bool allowUnlisted = false, bool exclusive = false)
         {
-            _packages.Add(new Package(_currentFramework, packageId, packageSources?.Select(_sourceRepositories.CreateRepository).ToList(),
+            if (_packages.ContainsKey(packageId))
+            {
+                throw new ArgumentException($"A package with the ID {packageId} has already been added");
+            }
+            _packages.Add(packageId, new Package(_currentFramework, packageId,
+                packageSources?.Select(_sourceRepositories.CreateRepository).ToList(),
                 versionRange, getLatest, allowPrereleaseVersions, allowUnlisted, exclusive));
         }
+
+        /// <summary>
+        /// Determines whether the specified package has already been added.
+        /// </summary>
+        /// <param name="packageId">The package identifier.</param>
+        public bool ContainsPackage(string packageId) => _packages.ContainsKey(packageId);
 
         public bool UpdatePackages { get; set; }
 
@@ -111,7 +135,7 @@ namespace Wyam.Configuration.NuGet
             {
                 PackagesFolderNuGetProject = nuGetProject
             };
-            Task.WaitAll(_packages.Select(x => x.Install(localRepository, _sourceRepositories.GetDefaultRepositories(), UpdatePackages, packageManager, _logger)).ToArray());
+            Task.WaitAll(_packages.Values.Select(x => x.Install(localRepository, _sourceRepositories.GetDefaultRepositories(), UpdatePackages, packageManager, _logger)).ToArray());
 
             // Process the package (do this after all packages have been installed)
             nuGetProject.ProcessAssembliesAndContent();

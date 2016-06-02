@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -17,6 +19,12 @@ namespace Wyam.Configuration
     /// </summary>
     public class Configurator : IDisposable
     {
+        private static readonly Dictionary<string, string> KnownRecipePackageIds
+            = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"Blog", "Wyam.Blog"}
+            };
+
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
         private readonly Engine _engine;
         private readonly Preprocessor _preprocessor;
@@ -105,20 +113,37 @@ namespace Wyam.Configuration
             // Process preprocessor directives
             _preprocessor.ProcessDirectives(this, parserResult.DirectiveValues);
 
-            // Initialize and evaluate the script
-            Initialize();
+            // Add the recipe package if it's known
+            string recipePackageId;
+            if (!string.IsNullOrEmpty(Recipe) && KnownRecipePackageIds.TryGetValue(Recipe, out recipePackageId))
+            {
+                PackageInstaller.AddPackage(recipePackageId);
+            }
+
+            // Initialize everything (order here is very important)
+            InstallPackages();
+            LoadAssemblies();
+            CatalogClasses();
             AddNamespaces();
             AddFileProviders();
+
+            // Apply the recipe if one was specified and can be found
+            if (!string.IsNullOrEmpty(Recipe))
+            {
+                IRecipe recipe = ClassCatalog.GetInstance<IRecipe>(Recipe, true);
+                if (recipe == null)
+                {
+                    throw new Exception($"The recipe \"{Recipe}\" could not be found");
+                }
+                recipe.Apply(_engine);
+            }
+
+            // Finally evaluate the script
             Evaluate(parserResult);
         }
-        
-        /// <summary>
-        /// Initialize the assembly manager (includes searching for module types).
-        /// </summary>
-        private void Initialize()
-        {
 
-            // Install packages
+        private void InstallPackages()
+        {
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
@@ -126,23 +151,27 @@ namespace Wyam.Configuration
                 stopwatch.Stop();
                 Trace.Information($"NuGet packages installed in {stopwatch.ElapsedMilliseconds} ms");
             }
+        }
 
-            // Scan assemblies
-            stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        private void LoadAssemblies()
+        {
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Recursively loading assemblies"))
             {
                 AssemblyLoader.LoadAssemblies();
                 stopwatch.Stop();
                 Trace.Information($"Assemblies loaded in {stopwatch.ElapsedMilliseconds} ms");
             }
+        }
 
-            // Catalog types
-            stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            using (Trace.WithIndent().Information("Cataloging types"))
+        private void CatalogClasses()
+        {
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            using (Trace.WithIndent().Information("Cataloging classes"))
             {
                 ClassCatalog.CatalogTypes(AssemblyLoader.DirectAssemblies);
                 stopwatch.Stop();
-                Trace.Information($"Types cataloged in {stopwatch.ElapsedMilliseconds} ms");
+                Trace.Information($"Classes cataloged in {stopwatch.ElapsedMilliseconds} ms");
             }
         }
 
