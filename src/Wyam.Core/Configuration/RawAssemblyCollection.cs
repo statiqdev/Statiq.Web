@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Wyam.Common.Configuration;
 
 namespace Wyam.Core.Configuration
 {

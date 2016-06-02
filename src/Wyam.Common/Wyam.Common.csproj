@@ -40,7 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\IAssemblyCollection.cs" />
+    <Compile Include="Configuration\INamespacesCollection.cs" />
+    <Compile Include="Configuration\IRawAssemblyCollection.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
+    <Compile Include="Execution\IEngine.cs" />
+    <Compile Include="Execution\IRecipe.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
     <Compile Include="IO\FileEqualityComparer.cs" />

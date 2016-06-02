@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Common.Configuration
 {
     public interface IRawAssemblyCollection : IEnumerable<byte[]>
     {

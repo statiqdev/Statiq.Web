@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Common.Configuration
 {
     public interface INamespacesCollection : IEnumerable<string>
     {

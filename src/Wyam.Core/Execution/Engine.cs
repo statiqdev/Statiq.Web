@@ -17,7 +17,10 @@ using Wyam.Core.Tracing;
 
 namespace Wyam.Core.Execution
 {
-    public class Engine : IDisposable
+    /// <summary>
+    /// The engine is the primary entry point for the generation process.
+    /// </summary>
+    public class Engine : IEngine, IDisposable
     {
         private readonly FileSystem _fileSystem = new FileSystem();
         private readonly Settings _settings = new Settings();
@@ -26,16 +29,34 @@ namespace Wyam.Core.Execution
         private readonly MetadataDictionary _initialMetadata = new MetadataDictionary();
         private bool _disposed;
 
+        /// <summary>
+        /// Gets the file system.
+        /// </summary>
         public IFileSystem FileSystem => _fileSystem;
 
+        /// <summary>
+        /// Gets the settings.
+        /// </summary>
         public ISettings Settings => _settings;
 
+        /// <summary>
+        /// Gets the pipelines.
+        /// </summary>
         public IPipelineCollection Pipelines => _pipelines;
 
+        /// <summary>
+        /// Gets the initial metadata.
+        /// </summary>
         public IMetadataDictionary InitialMetadata => _initialMetadata;
-        
+
+        /// <summary>
+        /// Gets the global metadata.
+        /// </summary>
         public IMetadataDictionary GlobalMetadata { get; } = new MetadataDictionary();
 
+        /// <summary>
+        /// Gets the documents.
+        /// </summary>
         public IDocumentCollection Documents => DocumentCollection;
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
@@ -57,11 +78,17 @@ namespace Wyam.Core.Execution
         public IRawAssemblyCollection RawAssemblies { get; } = new RawAssemblyCollection();
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
-        
+
+        /// <summary>
+        /// Gets or sets the application input.
+        /// </summary>
         public string ApplicationInput { get; set; }
 
         private IDocumentFactory _documentFactory;
 
+        /// <summary>
+        /// Gets or sets the document factory.
+        /// </summary>
         public IDocumentFactory DocumentFactory
         {
             get { return _documentFactory; }

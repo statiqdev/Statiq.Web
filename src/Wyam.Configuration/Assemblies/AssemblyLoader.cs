@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;

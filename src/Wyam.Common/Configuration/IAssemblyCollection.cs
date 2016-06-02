@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Common.Configuration
 {
     public interface IAssemblyCollection : IEnumerable<Assembly>
     {
