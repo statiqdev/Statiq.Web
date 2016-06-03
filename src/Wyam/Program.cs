@@ -98,12 +98,20 @@ namespace Wyam
             // Attach
             if (_settings.Attach)
             {
-                Trace.Information("Waiting for a debugger to attach...");
-                while (!Debugger.IsAttached)
+                Trace.Information("Waiting for a debugger to attach (or press a key to continue)...");
+                while (!Debugger.IsAttached && !Console.KeyAvailable)
                 {
                     Thread.Sleep(100);
                 }
-                Trace.Information("Debugger attached, continuing execution");
+                if (Console.KeyAvailable)
+                {
+                    Console.ReadKey(true);
+                    Trace.Information("Key pressed, continuing execution");
+                }
+                else
+                {
+                    Trace.Information("Debugger attached, continuing execution");
+                }
             }
 
             // Fix the root folder and other files

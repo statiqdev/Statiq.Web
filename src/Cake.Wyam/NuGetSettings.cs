@@ -2,6 +2,9 @@
 
 namespace Cake.Wyam
 {
+    /// <summary>
+    /// Settings for specifying NuGet packages.
+    /// </summary>
     public class NuGetSettings
     {
         /// <summary>
