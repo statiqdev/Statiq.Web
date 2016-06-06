@@ -54,7 +54,7 @@ var zipFile = "Wyam-v" + semVersion + ".zip";
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 
-Setup(() =>
+Setup(context =>
 {
     Information("Building version {0} of Wyam.", semVersion);
 });

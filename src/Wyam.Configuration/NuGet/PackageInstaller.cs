@@ -65,7 +65,7 @@ namespace Wyam.Configuration.NuGet
         /// <param name="allowUnlisted">If set to <c>true</c>, allow unlisted versions.</param>
         /// <param name="exclusive">If set to <c>true</c>, only use the package sources defined for this package.</param>
         public void AddPackage(string packageId, IEnumerable<string> packageSources = null, string versionRange = null,
-            bool getLatest = false, bool allowPrereleaseVersions = true, bool allowUnlisted = false, bool exclusive = false)
+            bool getLatest = false, bool allowPrereleaseVersions = false, bool allowUnlisted = false, bool exclusive = false)
         {
             if (_packages.ContainsKey(packageId))
             {

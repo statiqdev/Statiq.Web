@@ -117,7 +117,7 @@ namespace Wyam.Configuration
             string recipePackageId;
             if (!string.IsNullOrEmpty(Recipe) && KnownRecipePackageIds.TryGetValue(Recipe, out recipePackageId))
             {
-                PackageInstaller.AddPackage(recipePackageId);
+                PackageInstaller.AddPackage(recipePackageId, allowPrereleaseVersions: true);
             }
 
             // Initialize everything (order here is very important)
