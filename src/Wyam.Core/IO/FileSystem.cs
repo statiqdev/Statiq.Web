@@ -21,7 +21,11 @@ namespace Wyam.Core.IO
         public FileSystem()
         {
             FileProviders = new FileProviderCollection(new LocalFileProvider());
-            InputPaths = new PathCollection<DirectoryPath>(new[] {  DirectoryPath.FromString("input") });
+            InputPaths = new PathCollection<DirectoryPath>(new[]
+            {
+                new DirectoryPath("theme"), 
+                new DirectoryPath("input")
+            });
         }
         
         public IFileProviderCollection FileProviders { get; }
