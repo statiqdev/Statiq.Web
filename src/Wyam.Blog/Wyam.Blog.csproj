@@ -51,6 +51,10 @@
       <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
+      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
+      <Name>Wyam.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Html\Wyam.Html.csproj">
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
       <Name>Wyam.Html</Name>

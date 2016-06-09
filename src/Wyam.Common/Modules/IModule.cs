@@ -6,7 +6,9 @@ namespace Wyam.Common.Modules
 {
     public interface IModule
     {
-        // This should not be called directly, instead call IExecutionContext.Execute() if you need to execute a module from within another module
+        /// <summary>
+        /// This should not be called directly, instead call <c>IExecutionContext.Execute()</c> if you need to execute a module from within another module.
+        /// </summary>
         IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context);
     }
 }
