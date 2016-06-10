@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
 
                 // Then
-                CollectionAssert.AreEquivalent(new [] { "input" }, fileSystem.InputPaths.Select(x => x.FullPath));
+                CollectionAssert.AreEquivalent(new [] { "theme", "input" }, fileSystem.InputPaths.Select(x => x.FullPath));
             }     
         }
 
@@ -250,6 +250,7 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(new []
                 {
+                    "/a/theme",
                     "/a/input",
                     "/a/b/c",
                     "/a/b/d",

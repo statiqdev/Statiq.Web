@@ -180,7 +180,8 @@ namespace Wyam.Configuration
             // Add all Wyam.Common namespaces
             _engine.Namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
                 .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
-                .Select(x => x.Namespace));
+                .Select(x => x.Namespace)
+                .Distinct());
 
             // Add all module namespaces
             _engine.Namespaces.AddRange(ClassCatalog.GetClasses<IModule>().Select(x => x.Namespace));

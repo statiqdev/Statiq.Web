@@ -2,12 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Core.Documents;
-using Wyam.Core.Meta;
 
-namespace Wyam.Core
+namespace Wyam.Core.Meta
 {
     public static class TypeHelper
     {
@@ -27,10 +23,29 @@ namespace Wyam.Core
                 return true;
             }
 
+            // Special case if value is an enumerable that hasn't overridden .ToString() and T is a string
+            // Otherwise we'd end up doing a .ToString() on the enumerable
+            IEnumerable enumerableValue = value is string ? null : value as IEnumerable;
+            if (typeof(T) == typeof(string) && enumerableValue != null 
+                && value.GetType().GetMethod("ToString").DeclaringType == typeof(object))
+            {
+                if (TryGetFirstConvertibleItem(enumerableValue, out result))
+                {
+                    return true;
+                }
+                enumerableValue = null;  // Don't try getting the first item again for the more general case below
+            }
+
             // Check a normal conversion (in case it's a special type that implements a cast, IConvertible, or something)
             if (MetadataTypeConverter<T>.TryConvert(value, out result))
             {
                 return true;
+            }
+
+            // If value is an enumerable but the result type is not, return the first convertible item
+            if (enumerableValue != null && !typeof(IEnumerable).IsAssignableFrom(typeof(T)))
+            {
+                return TryGetFirstConvertibleItem(enumerableValue, out result);
             }
 
             // IReadOnlyList<>
@@ -63,8 +78,21 @@ namespace Wyam.Core
             return false;
         }
 
+        private static bool TryGetFirstConvertibleItem<T>(IEnumerable value, out T result)
+        {
+            MetadataTypeConverter<T> converter = new MetadataTypeConverter<T>();
+            bool gotResult = true;
+            result = ((IEnumerable<T>)converter.ToEnumerable(value))
+                .Select(x =>
+                {
+                    gotResult = true;
+                    return x;
+                }).FirstOrDefault();
+            return gotResult;
+        }
+
         private static bool TryConvertEnumerable<T>(object value, Func<Type, Type> elementTypeFunc,
-            Func<MetadataTypeConverter, IEnumerable, object> conversionFunc, out T result)
+            Func<MetadataTypeConverter, IEnumerable, IEnumerable> conversionFunc, out T result)
         {
             Type elementType = elementTypeFunc(typeof (T));
             IEnumerable enumerable = value is string ? null : value as IEnumerable;

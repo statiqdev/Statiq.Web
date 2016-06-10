@@ -43,6 +43,8 @@
     <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\IRawAssemblyCollection.cs" />
+    <Compile Include="Documents\GroupByExtensions.cs" />
+    <Compile Include="Documents\ToLookupExtensions.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="Execution\IEngine.cs" />
     <Compile Include="Configuration\IRecipe.cs" />
@@ -72,7 +74,7 @@
     <Compile Include="Configuration\ConfigExtensions.cs" />
     <Compile Include="Caching\Crc32.cs" />
     <Compile Include="Meta\DelegateMetadataValue.cs" />
-    <Compile Include="Documents\DocumentCollectionExtensions.cs" />
+    <Compile Include="Documents\CollectionExtensions.cs" />
     <Compile Include="Configuration\DocumentConfig.cs" />
     <Compile Include="Documents\IDocumentCollection.cs" />
     <Compile Include="Modules\IAsNewDocuments.cs" />
@@ -99,6 +101,8 @@
     <Compile Include="Tracing\Trace.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="Util\ConcurrentHashSet.cs" />
+    <Compile Include="Util\GroupByExtensions.cs" />
+    <Compile Include="Util\ToLookupExtensions.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

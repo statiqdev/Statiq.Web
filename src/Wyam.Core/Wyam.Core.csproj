@@ -139,7 +139,7 @@
     <Compile Include="Meta\MetadataStack.cs" />
     <Compile Include="Execution\Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />
-    <Compile Include="TypeHelper.cs" />
+    <Compile Include="Meta\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

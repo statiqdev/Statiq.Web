@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
+using Wyam.Core.Meta;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests
+namespace Wyam.Core.Tests.Meta
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
@@ -219,6 +217,90 @@ namespace Wyam.Core.Tests
                 CollectionAssert.AreEquivalent(new [] { value }, result);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(0), result[0][0]);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(1), result[0][1]);
+            }
+
+            [Test]
+            public void ConvertsArrayOfStringsToFirstString()
+            {
+                // Given
+                Array value = new[] {"Red", "Green", "Blue"};
+
+                // When
+                string result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual("Red", result);
+            }
+
+            [Test]
+            public void ConvertsArrayOfIntsToFirstInt()
+            {
+                // Given
+                Array value = new[] { 1, 2, 3 };
+
+                // When
+                int result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual(1, result);
+            }
+
+            [Test]
+            public void ConvertsArrayOfIntsToFirstString()
+            {
+                // Given
+                Array value = new[] { 1, 2, 3 };
+
+                // When
+                string result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual("1", result);
+            }
+
+            [Test]
+            public void ConvertsArrayOfStringsToFirstInt()
+            {
+                // Given
+                Array value = new[] { "1", "2", "3" };
+
+                // When
+                int result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual(1, result);
+            }
+
+            [Test]
+            public void ConvertsArrayOfObjectsToFirstInt()
+            {
+                // Given
+                Array value = new object[] { "1", 2, 3.0 };
+
+                // When
+                int result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual(1, result);
+            }
+
+            [Test]
+            public void ConvertsArrayOfObjectsToFirstIntWhenFirstItemNotConvertible()
+            {
+                // Given
+                Array value = new object[] { "a", 2, 3.0 };
+
+                // When
+                int result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.AreEqual(2, result);
             }
         }
     }

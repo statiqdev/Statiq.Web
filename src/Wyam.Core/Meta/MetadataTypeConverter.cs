@@ -9,30 +9,30 @@ namespace Wyam.Core.Meta
     // These are used by MetadataAs for enumerable conversions, but must be declared outside for easier reflection instantiation
     internal abstract class MetadataTypeConverter
     {
-        public abstract object ToReadOnlyList(IEnumerable enumerable);
-        public abstract object ToList(IEnumerable enumerable);
-        public abstract object ToArray(IEnumerable enumerable);
-        public abstract object ToEnumerable(IEnumerable enumerable);
+        public abstract IEnumerable ToReadOnlyList(IEnumerable enumerable);
+        public abstract IEnumerable ToList(IEnumerable enumerable);
+        public abstract IEnumerable ToArray(IEnumerable enumerable);
+        public abstract IEnumerable ToEnumerable(IEnumerable enumerable);
     }
 
     internal class MetadataTypeConverter<T> : MetadataTypeConverter
     {
-        public override object ToReadOnlyList(IEnumerable enumerable)
+        public override IEnumerable ToReadOnlyList(IEnumerable enumerable)
         {
             return ConvertEnumerable(enumerable).ToImmutableArray();
         }
 
-        public override object ToList(IEnumerable enumerable)
+        public override IEnumerable ToList(IEnumerable enumerable)
         {
             return ConvertEnumerable(enumerable).ToList();
         }
 
-        public override object ToArray(IEnumerable enumerable)
+        public override IEnumerable ToArray(IEnumerable enumerable)
         {
             return ConvertEnumerable(enumerable).ToArray();
         }
 
-        public override object ToEnumerable(IEnumerable enumerable)
+        public override IEnumerable ToEnumerable(IEnumerable enumerable)
         {
             return ConvertEnumerable(enumerable);
         }

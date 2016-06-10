@@ -1,20 +1,12 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Core;
-using Wyam.Core.Modules;
-using Wyam.Core.Modules.Extensibility;
-using Wyam.Core.Modules.Metadata;
+using NUnit.Framework;
 using Wyam.Core.Execution;
+using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
 using Wyam.Testing.Modules;
 
-
-namespace Wyam.Core.Tests
+namespace Wyam.Core.Tests.Execution
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

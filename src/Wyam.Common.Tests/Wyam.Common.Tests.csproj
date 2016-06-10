@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocumentCollectionExtensionsTests.cs" />
+    <Compile Include="Documents\ToLookupExtensionsTests.cs" />
     <Compile Include="IO\DirectoryPathTests.cs" />
     <Compile Include="IO\FilePathTests.cs" />
     <Compile Include="IO\NormalizedPathTests.cs" />

@@ -11,6 +11,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Core.Meta;
 
 namespace Wyam.Core.Execution
 {
