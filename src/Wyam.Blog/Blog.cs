@@ -12,6 +12,7 @@ using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
+using Wyam.Core.Modules.Metadata;
 using Wyam.Html;
 
 namespace Wyam.Blog
@@ -20,9 +21,12 @@ namespace Wyam.Blog
     {
         public void Apply(IEngine engine)
         {
+            // TODO: RSS feed
+
             engine.Pipelines.Add("Posts",
                 new ReadFiles("posts/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
+                new Where((doc, ctx) => doc.ContainsKey("Published") && doc.Get<DateTime>("Published") <= DateTime.Today),
                 new Markdown.Markdown(),
                 new Concat(
                     // Add any posts written in Razor
@@ -35,8 +39,26 @@ namespace Wyam.Blog
                     .GetOuterHtml(false),
                 new WriteFiles(".html"));
 
-            // TODO: RSS feed
+            engine.Pipelines.Add("Tags",
+                new ReadFiles("tags/tag.cshtml"),
+                new FrontMatter(new Yaml.Yaml()),
+                new GroupByMany("Tags", new Documents("Posts")),
+                new Meta("Tag", (doc, ctx) => doc.String(Keys.GroupKey)),
+                new Meta("Posts", (doc, ctx) => doc.List<IDocument>(Keys.GroupDocuments)),
+                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                {
+                    string tag = doc.String(Keys.GroupKey);
+                    return $"tags/{(tag.StartsWith(".") ? tag.Substring(1) : tag).ToLowerInvariant().Replace(' ', '-')}.html";
+                }),
+                new Razor.Razor(),
+                new WriteFiles());
 
+            engine.Pipelines.Add("TagIndex",
+                new ReadFiles("tags/index.cshtml"),
+                new FrontMatter(new Yaml.Yaml()),
+                new Razor.Razor(),
+                new WriteFiles(".html"));
+            
             engine.Pipelines.Add("Content",
                 new ReadFiles("{!posts,**}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
@@ -51,22 +73,6 @@ namespace Wyam.Blog
                     new FrontMatter(new Yaml.Yaml())),
                 new Razor.Razor(),
                 new WriteFiles(".html"));
-
-            engine.Pipelines.Add("Tags",
-                new ReadFiles(@"tags/index.cshtml"),
-                new FrontMatter(new Yaml.Yaml()),
-                new Execute((doc, ctx) => ctx.Documents
-                    .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today && x.ContainsKey("Tags"))
-                    .SelectMany(x => x.List<string>("Tags"))
-                    .Distinct()
-                    .Select(x => ctx.GetDocument(doc, new MetadataItems
-                    {
-                        {"Title", x},
-                        {"Tag", x},
-                        {"Link", $"tags/{(x.StartsWith(".") ? x.Substring(1) : x).ToLowerInvariant().Replace(' ', '-')}"}
-                    }))),
-                new Razor.Razor(),
-                new WriteFiles((doc, ctx) => $"{doc.String("Link")}.html"));
 
             engine.Pipelines.Add("Resources",
                 new CopyFiles("**/*{!.cshtml,!.md,}"));
