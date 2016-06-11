@@ -154,20 +154,6 @@ namespace Wyam.Core.Tests.Meta
             }
 
             [Test]
-            public void ConvertsSingleEnumerableToItemOfArrayClass()
-            {
-                // Given
-                List<int> value = new List<int> { 1, 2, 3 };
-
-                // When
-                Array result;
-                TypeHelper.TryConvert(value, out result);
-
-                // Then
-                CollectionAssert.AreEquivalent(new[] { value }, result);
-            }
-
-            [Test]
             public void ConvertsSingleEnumerableToItemOfIEnumerable()
             {
                 // Given
@@ -301,6 +287,34 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.AreEqual(2, result);
+            }
+
+            [Test]
+            public void ArrayOfIntConvertsToEnumerableOfString()
+            {
+                // Given
+                Array value = new[] { 1, 2, 3 };
+
+                // When
+                IEnumerable<string> result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                CollectionAssert.AreEqual(new [] { "1", "2", "3" }, result);
+            }
+
+            [Test]
+            public void ArrayOfIntConvertsToEnumerableOfObject()
+            {
+                // Given
+                Array value = new[] { 1, 2, 3 };
+
+                // When
+                IEnumerable<object> result;
+                TypeHelper.TryConvert(value, out result);
+
+                // Then
+                CollectionAssert.AreEqual(value, result);
             }
         }
     }

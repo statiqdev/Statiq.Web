@@ -16,9 +16,9 @@ namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class GroupByTests : BaseFixture
+    public class GroupByManyTests : BaseFixture
     {
-        public class ExecuteMethodTests : GroupByTests
+        public class ExecuteMethodTests : GroupByManyTests
         {
             [Test]
             public void SetsCorrectMetadata()
@@ -30,19 +30,19 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A")%3, count);
+                GroupByMany groupByMany = new GroupByMany((d, c) => new [] { d.Get<int>("A")%3, 3 }, count);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
-                    return null;
+                    return d;
                 });
-                engine.Pipelines.Add(groupBy, gatherData);
+                engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] {0, 1, 2}, groupKey);
+                CollectionAssert.AreEquivalent(new[] {0, 1, 2, 3}, groupKey);
             }
 
             [Test]
@@ -55,23 +55,24 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A")%3, count);
+                GroupByMany groupByMany = new GroupByMany((d, c) => new[] { d.Get<int>("A") % 3, 3 }, count);
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>(Keys.GroupKey));
                 Execute gatherData = new Execute((d, c) =>
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.GroupDocuments).Select(x => x.Content).ToList());
                     return null;
                 });
-                engine.Pipelines.Add(groupBy, orderBy, gatherData);
+                engine.Pipelines.Add(groupByMany, orderBy, gatherData);
 
                 // When
                 engine.Execute();
 
                 // Then
-                Assert.AreEqual(3, content.Count);
+                Assert.AreEqual(4, content.Count);
                 CollectionAssert.AreEquivalent(new[] {"3", "6"}, content[0]);
                 CollectionAssert.AreEquivalent(new[] {"1", "4", "7"}, content[1]);
                 CollectionAssert.AreEquivalent(new[] {"2", "5", "8"}, content[2]);
+                CollectionAssert.AreEquivalent(new[] { "1", "2", "3", "4", "5", "6", "7", "8" }, content[3]);
             }
 
             [Test]
@@ -84,20 +85,20 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                Core.Modules.Metadata.Meta meta = new Core.Modules.Metadata.Meta("GroupMetadata", (d, c) => d.Get<int>("A") % 3);
-                GroupBy groupBy = new GroupBy("GroupMetadata", count, meta);
+                Core.Modules.Metadata.Meta meta = new Core.Modules.Metadata.Meta("GroupMetadata", (d, c) => new[] { d.Get<int>("A") % 3, 3 });
+                GroupByMany groupByMany = new GroupByMany("GroupMetadata", count, meta);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
                 });
-                engine.Pipelines.Add(groupBy, gatherData);
+                engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { 0, 1, 2 }, groupKey);
+                CollectionAssert.AreEquivalent(new[] { 0, 1, 2, 3 }, groupKey);
             }
 
             [Test]
@@ -113,21 +114,21 @@ namespace Wyam.Core.Tests.Modules.Control
                 Execute meta = new Execute((d, c) =>
                 {
                     int groupMetadata = d.Get<int>("A") % 3;
-                    return groupMetadata == 0 ? d : c.GetDocument(d, new MetadataItems { {"GroupMetadata", groupMetadata} });
+                    return groupMetadata == 0 ? d : c.GetDocument(d, new MetadataItems { {"GroupMetadata", new[] { groupMetadata, 3 } } });
                 });
-                GroupBy groupBy = new GroupBy("GroupMetadata", count, meta);
+                GroupByMany groupByMany = new GroupByMany("GroupMetadata", count, meta);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
                 });
-                engine.Pipelines.Add(groupBy, gatherData);
+                engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { 1, 2 }, groupKey);
+                CollectionAssert.AreEquivalent(new[] { 1, 2, 3 }, groupKey);
             }
 
             [Test]
@@ -140,20 +141,20 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count)
+                GroupByMany groupByMany = new GroupByMany((d, c) => new[] { d.Get<int>("A") % 3, 3 }, count)
                     .Where((d, c) => d.Get<int>("A") % 3 != 0);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
                 });
-                engine.Pipelines.Add(groupBy, gatherData);
+                engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { 1, 2 }, groupKey);
+                CollectionAssert.AreEquivalent(new[] { 1, 2, 3 }, groupKey);
             }
         }
     }

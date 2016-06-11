@@ -64,6 +64,7 @@
     <Compile Include="Execution\EngineTests.cs" />
     <Compile Include="Meta\MetadataStackTests.cs" />
     <Compile Include="Modules\Control\BranchTests.cs" />
+    <Compile Include="Modules\Control\GroupByManyTests.cs" />
     <Compile Include="Modules\Control\SidecarTests.cs" />
     <Compile Include="Modules\Control\MergeTests.cs" />
     <Compile Include="Modules\Control\ModuleCollectionTests.cs" />

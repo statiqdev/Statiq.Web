@@ -82,6 +82,7 @@
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
+    <Compile Include="Modules\Control\GroupByMany.cs" />
     <Compile Include="Modules\Control\Sidecar.cs" />
     <Compile Include="Modules\Control\Merge.cs" />
     <Compile Include="Modules\Control\ModuleCollection.cs" />

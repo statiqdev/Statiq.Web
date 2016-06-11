@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,16 +8,22 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
 namespace Wyam.Core.Modules.Control
 {
     /// <summary>
-    /// Splits a sequence of documents into groups based on a specified function or metadata key.
+    /// Splits a sequence of documents into groups based on a specified function or metadata key
+    /// that returns or contains a sequence of group keys.
     /// </summary>
     /// <remarks>
     /// This module forms groups from the output documents of the specified modules.
+    /// If the function or metadata key returns or contains an enumerable, each item in the enumerable
+    /// will become one of the grouping keys. If a document contains multiple group keys, it will
+    /// be included in multiple groups. A good example is a tag engine where each document can contain
+    /// any number of tags and you want to make groups for each tag including all the documents with that tag.
     /// Each input document is cloned for each group and metadata related 
     /// to the groups, including the sequence of documents for each group, 
     /// is added to each clone. For example, if you have 2 input documents
@@ -25,7 +32,7 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="GroupDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current group.</metadata>
     /// <metadata name="GroupKey" type="object">The key for the current group.</metadata>
     /// <category>Control</category>
-    public class GroupBy : IModule
+    public class GroupByMany : IModule
     {
         private readonly DocumentConfig _key;
         private readonly IModule[] _modules;
@@ -33,13 +40,13 @@ namespace Wyam.Core.Modules.Control
 
         /// <summary>
         /// Partitions the result of the specified modules into groups with matching keys 
-        /// based on the key delegate. 
+        /// based on the key delegate.
         /// The input documents to GroupBy are used as 
         /// the initial input documents to the specified modules.
         /// </summary>
-        /// <param name="key">A delegate that returns the group key.</param>
+        /// <param name="key">A delegate that returns the group keys.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
-        public GroupBy(DocumentConfig key, params IModule[] modules)
+        public GroupByMany(DocumentConfig key, params IModule[] modules)
         {
             if (key == null)
             {
@@ -59,7 +66,7 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="keyMetadataKey">The key metadata key.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
-        public GroupBy(string keyMetadataKey, params IModule[] modules)
+        public GroupByMany(string keyMetadataKey, params IModule[] modules)
         {
             if (keyMetadataKey == null)
             {
@@ -75,7 +82,7 @@ namespace Wyam.Core.Modules.Control
         /// Limits the documents to be grouped to those that satisfy the supplied predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
-        public GroupBy Where(DocumentConfig predicate)
+        public GroupByMany Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null
@@ -88,7 +95,7 @@ namespace Wyam.Core.Modules.Control
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(_modules, inputs)
                 .Where(x => _predicate?.Invoke(x, context) ?? true)    
-                .GroupBy(x => _key(x, context))
+                .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context))
                 .ToImmutableArray();
             if (groupings.Length == 0)
             {

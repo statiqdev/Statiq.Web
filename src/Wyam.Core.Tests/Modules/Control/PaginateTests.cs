@@ -80,6 +80,34 @@ namespace Wyam.Core.Tests.Modules.Control
                 CollectionAssert.AreEqual(new[] {"4", "5", "6"}, content[1]);
                 CollectionAssert.AreEqual(new[] {"7", "8"}, content[2]);
             }
+
+            [Test]
+            public void ExcludesDocumentsThatFailPredicate()
+            {
+                // Given
+                List<IList<string>> content = new List<IList<string>>();
+                Engine engine = new Engine();
+                CountModule count = new CountModule("A")
+                {
+                    AdditionalOutputs = 7
+                };
+                Paginate paginate = new Paginate(3, count).Where((doc, ctx) => doc.Content != "5");
+                Execute gatherData = new Execute((d, c) =>
+                {
+                    content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
+                    return null;
+                });
+                engine.Pipelines.Add(paginate, gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(3, content.Count);
+                CollectionAssert.AreEqual(new[] { "1", "2", "3" }, content[0]);
+                CollectionAssert.AreEqual(new[] { "4", "6", "7" }, content[1]);
+                CollectionAssert.AreEqual(new[] { "8" }, content[2]);
+            }
         }
     }
 }

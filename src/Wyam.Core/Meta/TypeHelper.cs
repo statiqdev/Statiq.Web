@@ -96,7 +96,7 @@ namespace Wyam.Core.Meta
         {
             Type elementType = elementTypeFunc(typeof (T));
             IEnumerable enumerable = value is string ? null : value as IEnumerable;
-            if (enumerable == null || elementType.IsInstanceOfType(value))
+            if (enumerable == null || (elementType.IsInstanceOfType(value) && elementType != typeof(object)))
             {
                 enumerable = new[] { value };
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
@@ -15,9 +16,11 @@ namespace Wyam.Core.Modules.Control
     /// Splits a sequence of documents into multiple pages.
     /// </summary>
     /// <remarks>
-    /// Each input document is then cloned for each page and metadata related 
+    /// This module forms pages from the output documents of the specified modules.
+    /// Each input document is cloned for each page and metadata related 
     /// to the pages, including the sequence of documents for each page, 
-    /// is added to each clone.
+    /// is added to each clone. For example, if you have 2 input documents
+    /// and the result of paging is 3 pages, this module will output 6 documents.
     /// </remarks>
     /// <example>
     /// If your input document is a Razor template for a blog archive, you can use 
@@ -51,6 +54,7 @@ namespace Wyam.Core.Modules.Control
     {
         private readonly int _pageSize;
         private readonly IModule[] _modules;
+        private Func<IDocument, IExecutionContext, bool> _predicate;
 
         /// <summary>
         /// Partitions the result of the specified modules into the specified number of pages. The 
@@ -65,14 +69,31 @@ namespace Wyam.Core.Modules.Control
             {
                 throw new ArgumentException(nameof(pageSize));
             }
+
             _pageSize = pageSize;
             _modules = modules;
+        }
+
+        /// <summary>
+        /// Limits the documents to be paged to those that satisfy the supplied predicate.
+        /// </summary>
+        /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
+        public Paginate Where(DocumentConfig predicate)
+        {
+            Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null
+                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
+            return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<ImmutableArray<IDocument>> partitions 
-                = Partition(context.Execute(_modules, inputs), _pageSize).ToImmutableArray();
+                = Partition(
+                    context.Execute(_modules, inputs).Where(x => _predicate?.Invoke(x, context) ?? true).ToList(),
+                    _pageSize)
+                    .ToImmutableArray();
             if (partitions.Length == 0)
             {
                 return inputs;
