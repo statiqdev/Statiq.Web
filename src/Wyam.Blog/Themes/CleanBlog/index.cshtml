@@ -1,0 +1,84 @@
+@section Header {
+    <div class="site-heading">
+        <h1>Welcome!</h1>
+        <hr class="small">
+        <span class="subheading">My name is Dave Glick. By day, I'm a .NET and open source enthusiast and a Microsoft Visual Studio and Development Technologies MVP. By night, I'm a husband and father. Somewhere in between the two I write stuff here.</span>
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-8 right-border">
+        @{
+            bool first = true;
+            foreach(IDocument doc in Documents
+                .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today)
+                .OrderByDescending(x => x.Get<DateTime>("Published"))
+                .Take(3))
+            {                
+                if (!first)
+                {
+                    <hr /> 
+                }
+                first = false;
+                string lead = doc.String("Lead");
+                <div class="post-preview">
+                    <a href="@Context.GetLink(doc)">
+                        <h2 class="post-title">@doc.String("Title")</h2>
+                        @if(!string.IsNullOrWhiteSpace(lead))
+                        {
+                            <h3 class="post-subtitle">@lead</h3>
+                        }
+                    </a>
+                    <p class="post-meta">Posted on @(doc.Get<DateTime>("Published").ToLongDateString())</p>
+                    @Html.Raw(doc.String("Excerpt"))             
+                </div>       
+            }
+        }
+    </div>
+    <div class="col-sm-4 sidebar">
+        <hr class="visible-xs-block" />
+        <h5>Tags</h5>
+        <div>
+            @{                
+            	List<KeyValuePair<string, int>> Tags = Documents
+                    .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today && x.ContainsKey("Tags"))
+                    .SelectMany(x => x.Get<string[]>("Tags"))
+                    .GroupBy(x => x)
+                    .Select(x => new KeyValuePair<string, int>(x.Key, x.Count()))
+                    .OrderByDescending(x => x.Value)
+                    .Take(10)
+                    .ToList();
+                foreach (KeyValuePair<string, int> tag in Tags)
+                { 
+                    string tagLink = $"tags/{(tag.Key.StartsWith(".") ? tag.Key.Substring(1) : tag.Key).ToLowerInvariant().Replace(' ', '-')}";
+                    <a role="button" href="@tagLink" class="btn btn-default btn-sm"> @tag.Key (@tag.Value)</a><br>
+                }
+            }
+        </div>
+        <ul class="pager">
+            <li class="next">
+                <a href="/tags">View All Tags &rarr;</a>
+            </li>
+        </ul>
+        <hr />
+        <h5>On The Interwebs</h5>
+        @Html.Partial("_SocialLinks")
+        <hr />
+        <h5>Older Posts</h5>
+        <ul class="list-unstyled">
+            @foreach(IDocument doc in Documents
+                .Where(x => x.ContainsKey("Published"))
+                .OrderByDescending(x => x.Get<DateTime>("Published"))
+                .Skip(3)
+                .Take(4))
+            {        
+                <li><a href="@Context.GetLink(doc)">@doc.String("Title")</a></li>
+            }
+        </ul>
+        <ul class="pager">
+            <li class="next">
+                <a href="/posts">Archive &rarr;</a>
+            </li>
+        </ul>
+    </div> 
+</div>

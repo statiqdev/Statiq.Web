@@ -1,0 +1,14 @@
+Title: All Tags
+---
+<div class="container-sm-height">
+    <div class="row row-sm-height">		
+        <div class="col-sm-12 col-sm-height">            
+            @foreach (var tagDocument in Documents["Tags"].OrderBy(x => x.String("Tag")))
+            {
+                string tag = tagDocument.String("Tag");
+                string postCount = tagDocument.Documents("Posts").Count().ToString();
+                <a role="button" href="@Context.GetLink(tagDocument)" class="btn btn-default btn-sm"> @tag (@postCount)</a>
+            }
+        </div>
+    </div>
+</div>

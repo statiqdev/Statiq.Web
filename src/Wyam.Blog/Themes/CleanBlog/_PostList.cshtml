@@ -1,0 +1,18 @@
+@{
+    var docs = (IEnumerable<IDocument>)ViewData["PostListDocuments"];
+    foreach (IDocument doc in docs)
+    {
+        string lead = doc.String("Lead");
+        
+        <div class="post-list">
+            <a href="@Context.GetLink(doc)">
+                <h3 class="post-title">@doc.String("Title")</h3>
+                @if(!string.IsNullOrWhiteSpace(lead))
+                {
+                    <h4 class="post-subtitle">@lead</h4>
+                }
+            </a>
+            <p class="post-meta">Posted on @(doc.Get<DateTime>("Published").ToLongDateString())</p>            
+        </div>   
+    }
+}
