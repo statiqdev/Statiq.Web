@@ -22,6 +22,7 @@ namespace Wyam.Configuration.Preprocessing
             AddDirective(new AssemblyDirective());
             AddDirective(new AssemblyNameDirective());
             AddDirective(new RecipeDirective());
+            AddDirective(new ThemeDirective());
         }
 
         private static void AddDirective(IDirective directive)

@@ -140,5 +140,10 @@ namespace Cake.Wyam
         /// Gets or sets the recipe.
         /// </summary>
         public string Recipe { get; set; }
+
+        /// <summary>
+        /// Gets or sets the theme.
+        /// </summary>
+        public string Theme { get; set; }
     }
 }

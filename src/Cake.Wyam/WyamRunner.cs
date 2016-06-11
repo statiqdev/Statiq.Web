@@ -249,7 +249,13 @@ namespace Cake.Wyam
                 builder.Append("--recipe");
                 builder.Append(settings.Recipe);
             }
-            
+
+            if (settings.Theme != null)
+            {
+                builder.Append("--theme");
+                builder.Append(settings.Theme);
+            }
+
             if (settings.RootPath != null)
             {
                 builder.AppendQuoted(settings.RootPath.MakeAbsolute(_environment).FullPath);

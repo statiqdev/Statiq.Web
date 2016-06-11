@@ -19,10 +19,19 @@ namespace Wyam.Configuration
     /// </summary>
     public class Configurator : IDisposable
     {
-        private static readonly Dictionary<string, string> KnownRecipePackageIds
+        private static readonly Dictionary<string, string> KnownRecipes
             = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 {"Blog", "Wyam.Blog"}
+            };
+
+        // Item1: Path to insert into input paths, Item2: List of NuGet packages needed for this theme
+        // If the theme is just a NuGet content package, the content folder will be automatically included and Item1 can be null
+        // If the theme uses a non-core file provider for the provided path, the NuGet package(s) containing the provider should be in Item2
+        private static readonly Dictionary<string, Tuple<string, string[]>> KnownThemes
+            = new Dictionary<string, Tuple<string, string[]>>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"CleanBlog", Tuple.Create((string) null, new[] {"Wyam.Blog.CleanBlog"})}
             };
 
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
@@ -43,6 +52,8 @@ namespace Wyam.Configuration
         public FilePath OutputScriptPath { get; set; }
 
         public string Recipe { get; set; }
+
+        public string Theme { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Configurator"/> class.
@@ -112,34 +123,53 @@ namespace Wyam.Configuration
 
             // Process preprocessor directives
             _preprocessor.ProcessDirectives(this, parserResult.DirectiveValues);
-
-            // Add the recipe package if it's known
-            string recipePackageId;
-            if (!string.IsNullOrEmpty(Recipe) && KnownRecipePackageIds.TryGetValue(Recipe, out recipePackageId))
-            {
-                PackageInstaller.AddPackage(recipePackageId, allowPrereleaseVersions: true);
-            }
-
+            
             // Initialize everything (order here is very important)
+            AddRecipePackage();
+            AddThemePackagesAndPath();
             InstallPackages();
             LoadAssemblies();
             CatalogClasses();
             AddNamespaces();
             AddFileProviders();
-
-            // Apply the recipe if one was specified and can be found
-            if (!string.IsNullOrEmpty(Recipe))
-            {
-                IRecipe recipe = ClassCatalog.GetInstance<IRecipe>(Recipe, true);
-                if (recipe == null)
-                {
-                    throw new Exception($"The recipe \"{Recipe}\" could not be found");
-                }
-                recipe.Apply(_engine);
-            }
+            ApplyRecipe();
 
             // Finally evaluate the script
             Evaluate(parserResult);
+        }
+
+        private void AddRecipePackage()
+        {
+            string recipePackageId;
+            if (!string.IsNullOrEmpty(Recipe) && KnownRecipes.TryGetValue(Recipe, out recipePackageId))
+            {
+                PackageInstaller.AddPackage(recipePackageId, allowPrereleaseVersions: true);
+            }
+        }
+
+        private void AddThemePackagesAndPath()
+        {
+            string themePath = Theme;
+            Tuple<string, string[]> theme;
+            if (!string.IsNullOrEmpty(Theme) && KnownThemes.TryGetValue(Theme, out theme))
+            {
+                themePath = theme.Item1;
+
+                // Add any packages needed for the theme
+                if (theme.Item2 != null)
+                {
+                    foreach (string themePackageId in theme.Item2)
+                    {
+                        PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
+                    }
+                }
+            }
+
+            // Insert the theme path
+            if (!string.IsNullOrEmpty(themePath))
+            {
+                _engine.FileSystem.InputPaths.Insert(0, new DirectoryPath(themePath));
+            }
         }
 
         private void InstallPackages()
@@ -204,6 +234,19 @@ namespace Wyam.Configuration
                 {
                     _engine.FileSystem.FileProviders.Add(scheme, fileProvider);
                 }
+            }
+        }
+
+        private void ApplyRecipe()
+        {
+            if (!string.IsNullOrEmpty(Recipe))
+            {
+                IRecipe recipe = ClassCatalog.GetInstance<IRecipe>(Recipe, true);
+                if (recipe == null)
+                {
+                    throw new Exception($"The recipe \"{Recipe}\" could not be found");
+                }
+                recipe.Apply(_engine);
             }
         }
 
