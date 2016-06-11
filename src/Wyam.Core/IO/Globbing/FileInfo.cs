@@ -22,9 +22,9 @@ namespace Wyam.Core.IO.Globbing
             _file = file;
         }
 
-        public override string Name => _file.Path.FileName.FullPath;
+        public override string Name => _file.Path.Collapse().FileName.FullPath;
 
-        public override string FullName => _file.Path.FullPath;
+        public override string FullName => _file.Path.Collapse().FullPath;
 
         public override DirectoryInfoBase ParentDirectory => new DirectoryInfo(_file.Directory);
     }

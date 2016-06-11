@@ -503,7 +503,7 @@ namespace Wyam.Core.Tests.IO
                 fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
 
                 // When, Then
-                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles(null, "/"));
+                Assert.Throws<ArgumentNullException>(() => fileSystem.GetFiles((IDirectory)null, "/"));
             }
 
             [Test]

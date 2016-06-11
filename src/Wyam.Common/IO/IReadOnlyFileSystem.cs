@@ -199,6 +199,24 @@ namespace Wyam.Common.IO
         IDirectory GetDirectory(DirectoryPath path);
 
         /// <summary>
+        /// Gets matching files based on globbing patterns from the root path or absolute paths.
+        /// </summary>
+        /// <param name="patterns">The globbing patterns and/or absolute paths.</param>
+        /// <returns>
+        /// All files in the specified directory that match the globbing patterns and/or absolute paths.
+        /// </returns>
+        IEnumerable<IFile> GetFiles(string[] patterns);
+
+        /// <summary>
+        /// Gets matching files based on globbing patterns from the root path or absolute paths.
+        /// </summary>
+        /// <param name="patterns">The globbing patterns and/or absolute paths.</param>
+        /// <returns>
+        /// All files in the specified directory that match the globbing patterns and/or absolute paths.
+        /// </returns>
+        IEnumerable<IFile> GetFiles(IEnumerable<string> patterns);
+
+        /// <summary>
         /// Gets matching files based on globbing patterns and/or absolute paths. If any absolute paths
         /// are provided, only those that actually exist are returned.
         /// </summary>

@@ -29,8 +29,8 @@ namespace Wyam.Core.IO.FileProviders.Local
                 throw new ArgumentException("Path must be absolute", nameof(path));
             }
 
-            _path = path;
-            _directory = new DirectoryInfo(_path.Collapse().FullPath);
+            _path = path.Collapse();
+            _directory = new DirectoryInfo(_path.FullPath);
         }
 
         public void Create() => LocalFileProvider.Retry(() => _directory.Create());

@@ -204,10 +204,14 @@ namespace Wyam.Core.IO
             return GetFileProvider(path).GetDirectory(path);
         }
 
-        public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns)
-        {
-            return GetFiles(directory, (IEnumerable<string>) patterns);
-        }
+        public IEnumerable<IFile> GetFiles(params string[] patterns) =>
+            GetFiles(GetRootDirectory(), patterns);
+
+        public IEnumerable<IFile> GetFiles(IEnumerable<string> patterns) =>
+            GetFiles(GetRootDirectory(), patterns);
+
+        public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) => 
+            GetFiles(directory, (IEnumerable<string>) patterns);
 
         public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns)
         {

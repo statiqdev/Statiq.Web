@@ -46,16 +46,16 @@ namespace Wyam.Core.IO.Globbing
                 return ParentDirectory;
             }
             return _directory.GetDirectories()
-                .Where(x => x.Path.Name == name)
+                .Where(x => x.Path.Collapse().Name == name)
                 .Select(x => new DirectoryInfo(x))
                 .FirstOrDefault();
         }
 
         public override FileInfoBase GetFile(string path) => new FileInfo(_directory.GetFile(path));
 
-        public override string Name => _isParentPath ? ".." : _directory.Path.Name;
+        public override string Name => _isParentPath ? ".." : _directory.Path.Collapse().Name;
 
-        public override string FullName => _directory.Path.FullPath;
+        public override string FullName => _directory.Path.Collapse().FullPath;
 
         public override DirectoryInfoBase ParentDirectory => new DirectoryInfo(_directory.GetDirectory(".."), true);
     }

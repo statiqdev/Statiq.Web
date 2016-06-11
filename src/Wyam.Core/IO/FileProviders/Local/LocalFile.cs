@@ -31,8 +31,8 @@ namespace Wyam.Core.IO.FileProviders.Local
                 throw new ArgumentException("Path must be absolute", nameof(path));
             }
 
-            _path = path;
-            _file = new FileInfo(path.Collapse().FullPath);
+            _path = path.Collapse();
+            _file = new FileInfo(_path.FullPath);
         }
 
         public void CopyTo(IFile destination, bool overwrite = true, bool createDirectory = true)

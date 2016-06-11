@@ -87,11 +87,19 @@ namespace Wyam.Configuration.Assemblies
                 ? new DirectoryPath(Environment.CurrentDirectory)
                 : new FilePath(entryAssemblyLocation).Directory; 
             IDirectory entryAssemblyDirectory = _fileSystem.GetDirectory(entryAssemblyPath);
+
+            // Get the assemblies local to the entry assembly
             List<FilePath> assemblyPaths = _fileSystem
                 .GetFiles(entryAssemblyDirectory, _patterns)
                 .Where(x => x.Path.Extension == ".dll" || x.Path.Extension == ".exe")
                 .Select(x => x.Path)
                 .ToList();
+
+            // Get requested assemblies from the build root
+            assemblyPaths.AddRange(_fileSystem
+                .GetFiles(_patterns)
+                .Where(x => x.Path.Extension == ".dll" || x.Path.Extension == ".exe")
+                .Select(x => x.Path));
 
             // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
