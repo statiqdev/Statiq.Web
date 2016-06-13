@@ -43,48 +43,26 @@ namespace Wyam.Razor.Microsoft.AspNet.Mvc.Razor
         /// <inheritdoc />
         public bool IsPartial { get; set; }
 
-        public IMetadata Metadata
-        {
-            get { return ViewContext.Document; }
-        }
+        public IMetadata Metadata => ViewContext.Document;
 
-        public IDocument Document
-        {
-            get { return ViewContext.Document; }
-        }
+        public IDocument Document => ViewContext.Document;
 
         // Expose a Model property to better match existing conventions
-        public IDocument Model
-        {
-            get { return ViewContext.Document; }
-        }
+        public IDocument Model => ViewContext.Document;
 
         // In ASP.NET MVC these kinds of properties are injected with InjectChunk in MvcRazorHost, but this is easier
-        public HtmlHelper Html
-        {
-            get { return new HtmlHelper(ViewContext); }
-        }
+        public HtmlHelper Html => new HtmlHelper(ViewContext);
 
-        public IExecutionContext Context
-        {
-            get { return ViewContext.ExecutionContext; }
-        }
+        public IExecutionContext Context => ViewContext.ExecutionContext;
 
-        public IExecutionContext ExecutionContext
-        {
-            get { return ViewContext.ExecutionContext; }
-        }
+        public IExecutionContext ExecutionContext => ViewContext.ExecutionContext;
 
-        public IDocumentCollection Documents
-        {
-            get { return ExecutionContext.Documents; }
-        }
+        public IDocumentCollection Documents => ExecutionContext.Documents;
+
+        public IMetadata GlobalMetadata => Context.GlobalMetadata;
 
         // Define Trace as a property so it's not ambiguous with System.Diagnostics.Trace
-        public ITrace Trace
-        {
-            get { return Wyam.Common.Tracing.Trace.Current; }
-        }
+        public ITrace Trace => Common.Tracing.Trace.Current;
 
         /// <summary>
         /// Gets the TextWriter that the page is writing output to.
