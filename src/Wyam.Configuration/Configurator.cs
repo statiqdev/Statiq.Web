@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Wyam.Common.Configuration;
@@ -19,21 +18,6 @@ namespace Wyam.Configuration
     /// </summary>
     public class Configurator : IDisposable
     {
-        private static readonly Dictionary<string, string> KnownRecipes
-            = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                {"Blog", "Wyam.Blog"}
-            };
-
-        // Item1: Path to insert into input paths, Item2: List of NuGet packages needed for this theme
-        // If the theme is just a NuGet content package, the content folder will be automatically included and Item1 can be null
-        // If the theme uses a non-core file provider for the provided path, the NuGet package(s) containing the provider should be in Item2
-        private static readonly Dictionary<string, Tuple<string, string[]>> KnownThemes
-            = new Dictionary<string, Tuple<string, string[]>>(StringComparer.OrdinalIgnoreCase)
-            {
-                {"CleanBlog", Tuple.Create((string) null, new[] {"Wyam.Blog.CleanBlog"})}
-            };
-
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
         private readonly Engine _engine;
         private readonly Preprocessor _preprocessor;
@@ -125,7 +109,7 @@ namespace Wyam.Configuration
             _preprocessor.ProcessDirectives(this, parserResult.DirectiveValues);
             
             // Initialize everything (order here is very important)
-            AddRecipePackage();
+            AddRecipePackageAndSetTheme();
             AddThemePackagesAndPath();
             InstallPackages();
             LoadAssemblies();
@@ -138,37 +122,73 @@ namespace Wyam.Configuration
             Evaluate(parserResult);
         }
 
-        private void AddRecipePackage()
+        // Internal for testing
+        internal void AddRecipePackageAndSetTheme()
         {
-            string recipePackageId;
-            if (!string.IsNullOrEmpty(Recipe) && KnownRecipes.TryGetValue(Recipe, out recipePackageId))
+            if (!string.IsNullOrEmpty(Recipe))
             {
-                PackageInstaller.AddPackage(recipePackageId, allowPrereleaseVersions: true);
+                KnownRecipe knownRecipe;
+                if (KnownRecipe.Lookup.TryGetValue(Recipe, out knownRecipe))
+                {
+                    Trace.Verbose($"Recipe {Recipe} was in the lookup of known recipes");
+
+                    // Add the package, but only if it wasn't added manually
+                    if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
+                    {
+                        PackageInstaller.AddPackage(knownRecipe.PackageId, allowPrereleaseVersions: true);
+                    }
+
+                    // Set the theme if we don't already have one
+                    if (string.IsNullOrEmpty(Theme))
+                    {
+                        Theme = knownRecipe.DefaultTheme;
+                    }
+                }
+                else
+                {
+                    Trace.Verbose($"Recipe {Recipe} is not in the lookup of known recipes");
+                }
             }
         }
 
-        private void AddThemePackagesAndPath()
+        // Internal for testing
+        internal void AddThemePackagesAndPath()
         {
-            string themePath = Theme;
-            Tuple<string, string[]> theme;
-            if (!string.IsNullOrEmpty(Theme) && KnownThemes.TryGetValue(Theme, out theme))
+            string inputPath = Theme;
+            if (!string.IsNullOrEmpty(Theme))
             {
-                themePath = theme.Item1;
-
-                // Add any packages needed for the theme
-                if (theme.Item2 != null)
+                KnownTheme knownTheme;
+                if(KnownTheme.Lookup.TryGetValue(Theme, out knownTheme))
                 {
-                    foreach (string themePackageId in theme.Item2)
+                    Trace.Verbose($"Theme {Theme} was in the lookup of known themes");
+                    inputPath = knownTheme.InputPath;
+
+                    // Do a sanity check against the recipe
+                    if (!string.IsNullOrEmpty(Recipe) && !string.IsNullOrEmpty(knownTheme.Recipe)
+                        && !string.Equals(Recipe, knownTheme.Recipe, StringComparison.OrdinalIgnoreCase))
                     {
-                        PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
+                        Trace.Warning($"Theme {Theme} is designed for recipe {knownTheme.Recipe} but is being used with recipe {Recipe}, results may be unexpected");
                     }
+
+                    // Add any packages needed for the theme
+                    if (knownTheme.PackageIds != null)
+                    {
+                        foreach (string themePackageId in knownTheme.PackageIds.Where(x => !PackageInstaller.ContainsPackage(x)))
+                        {
+                            PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
+                        }
+                    }
+                }
+                else
+                {
+                    Trace.Verbose($"Theme {Theme} is not in the lookup of known themes, assuming it's an input path");
                 }
             }
 
             // Insert the theme path
-            if (!string.IsNullOrEmpty(themePath))
+            if (!string.IsNullOrEmpty(inputPath))
             {
-                _engine.FileSystem.InputPaths.Insert(0, new DirectoryPath(themePath));
+                _engine.FileSystem.InputPaths.Insert(0, new DirectoryPath(inputPath));
             }
         }
 

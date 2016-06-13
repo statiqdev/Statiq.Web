@@ -187,6 +187,8 @@
     <Compile Include="ConfigScript\ConfigScriptBase.cs" />
     <Compile Include="Configurator.cs" />
     <Compile Include="Directives\ThemeDirective.cs" />
+    <Compile Include="KnownRecipe.cs" />
+    <Compile Include="KnownTheme.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
     <Compile Include="Directives\ArgumentSyntaxDirective.cs" />

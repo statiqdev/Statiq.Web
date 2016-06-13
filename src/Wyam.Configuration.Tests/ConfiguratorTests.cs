@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using Wyam.Common.IO;
 using Wyam.Core.Execution;
 using Wyam.Testing;
 
@@ -382,6 +383,173 @@ SetCustomDocumentType<MyDocument>();
                 // Then
                 Assert.AreEqual(1, engine.Pipelines.Count);
                 Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
+            }
+        }
+
+        public class AddRecipePackageAndSetThemeMethodTests : ConfiguratorTests
+        {
+            [Test]
+            public void AddsRecipePackage()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.PackageInstaller.AddPackage("Foobar");
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+
+                // Then
+                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+            }
+
+            [Test]
+            public void DoesNotAddRecipePackageIfAlreadyAdded()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.PackageInstaller.AddPackage(KnownRecipe.Blog.PackageId);
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+
+                // Then
+                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+            }
+
+            [Test]
+            public void SetsDefaultTheme()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = nameof(KnownRecipe.Blog);
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+
+                // Then
+                Assert.AreEqual(KnownRecipe.Blog.DefaultTheme, configurator.Theme);
+            }
+
+            [Test]
+            public void DoesNotSetThemeIfThemeAlreadySet()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.Theme = "Foo";
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+
+                // Then
+                Assert.AreEqual("Foo", configurator.Theme);
+            }
+
+            [Test]
+            public void DoesNotFailIfRecipeNotSet()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+            }
+
+            [Test]
+            public void DoesNotFailIfRecipeNotFound()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = "Foo";
+
+                // When
+                configurator.AddRecipePackageAndSetTheme();
+            }
+        }
+
+        public class AddThemePackagesAndPathMethodTests : ConfiguratorTests
+        {
+            [Test]
+            public void AddsThemePackage()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Theme = nameof(KnownTheme.CleanBlog);
+                configurator.PackageInstaller.AddPackage("Foobar");
+
+                // When
+                configurator.AddThemePackagesAndPath();
+
+                // Then
+                Assert.AreEqual(2, configurator.PackageInstaller.PackageIds.Count);
+            }
+
+            [Test]
+            public void DoesNotAddThemePackageIfAlreadyAdded()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Theme = nameof(KnownTheme.CleanBlog);
+                configurator.PackageInstaller.AddPackage(KnownTheme.CleanBlog.PackageIds.First());
+
+                // When
+                configurator.AddThemePackagesAndPath();
+
+                // Then
+                Assert.AreEqual(1, configurator.PackageInstaller.PackageIds.Count);
+            }
+
+            [Test]
+            public void OutputsWarningIfRecipeAndThemeDoNotMatch()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = "Foo";
+                configurator.Theme = nameof(KnownTheme.CleanBlog);
+
+                // When
+                Assert.Throws<Exception>(() => configurator.AddThemePackagesAndPath());
+            }
+
+            [Test]
+            public void DoesNotOutputWarningIfRecipeAndThemeDoMatch()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = KnownTheme.CleanBlog.Recipe;
+                configurator.Theme = nameof(KnownTheme.CleanBlog);
+
+                // When
+                configurator.AddThemePackagesAndPath();
+            }
+
+            [Test]
+            public void DoesNotOutputWarningIfRecipeAndThemeCaseDoNotMatch()
+            {
+                // Given
+                Configurator configurator = GetConfigurator();
+                configurator.Recipe = KnownTheme.CleanBlog.Recipe.ToUpper();
+                configurator.Theme = nameof(KnownTheme.CleanBlog);
+
+                // When
+                configurator.AddThemePackagesAndPath();
+            }
+
+            [Test]
+            public void UnknownThemeInsertsInputPath()
+            {
+                // Given
+                Engine engine = new Engine();
+                Configurator configurator = GetConfigurator(engine);
+                configurator.Theme = "../MyTheme";
+
+                // When
+                configurator.AddThemePackagesAndPath();
+
+                // Then
+                Assert.AreEqual(engine.FileSystem.InputPaths.First().FullPath, "../MyTheme");
             }
         }
 

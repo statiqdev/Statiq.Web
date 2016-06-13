@@ -82,6 +82,8 @@ namespace Wyam.Configuration.NuGet
         /// <param name="packageId">The package identifier.</param>
         public bool ContainsPackage(string packageId) => _packages.ContainsKey(packageId);
 
+        public ICollection<string> PackageIds => _packages.Keys;
+
         public bool UpdatePackages { get; set; }
 
         public bool UseLocalPackagesFolder { get; set; }

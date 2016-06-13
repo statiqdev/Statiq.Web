@@ -19,6 +19,8 @@ namespace Wyam.Blog
 {
     public class Blog : IRecipe
     {
+        public string DefaultTheme => "CleanBlog";
+
         public void Apply(IEngine engine)
         {
             // TODO: RSS feed
