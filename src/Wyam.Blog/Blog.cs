@@ -19,10 +19,13 @@ namespace Wyam.Blog
 {
     public class Blog : IRecipe
     {
-        public string DefaultTheme => "CleanBlog";
-
         public void Apply(IEngine engine)
         {
+            // Settings defaults
+            engine.GlobalMetadata["Site"] = "My Blog";
+            engine.GlobalMetadata["Greeting"] = "Welcome!";
+
+
             // TODO: RSS feed
 
             engine.Pipelines.Add("Posts",
