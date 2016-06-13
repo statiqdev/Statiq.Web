@@ -176,6 +176,46 @@ Task("Create-Library-Packages")
             });
         }
     });
+
+Task("Create-Theme-Packages")
+    .Does(() =>
+    {        
+        // All themes must be under the themes folder in a NameOfRecipe/NameOfTheme subfolder
+        var themeDirectories = GetDirectories("./themes/*/*");
+        
+        // Package all themes
+        foreach (var themeDirectory in themeDirectories)
+        {
+            string[] segments = themeDirectory.Segments;
+            string id = "Wyam." + segments[segments.Length - 2] + "." + segments[segments.Length - 1];
+            NuGetPack(new NuGetPackSettings
+            {
+                Id = id,
+                Version = semVersion,
+                Title = id,
+                Authors = new [] { "Dave Glick" },
+                Owners = new [] { "Dave Glick" },
+                Description = "A theme for the Wyam " + segments[segments.Length - 2] + " recipe.",
+                ProjectUrl = new Uri("http://wyam.io"),
+                IconUrl = new Uri("http://wyam.io/Content/images/logo-square-64.png"),
+                LicenseUrl = new Uri("https://github.com/Wyamio/Wyam/blob/master/LICENSE"),
+                Copyright = "Copyright 2016",
+                Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
+                RequireLicenseAcceptance = false,
+                Symbols = false,
+                Files = new []
+                {
+                    new NuSpecContent 
+                    { 
+                        Source = "**/*",
+                        Target = "content"
+                    }                     
+                },
+                BasePath = themeDirectory,
+                OutputDirectory = nugetRoot
+            });
+        }
+    });
     
 Task("Create-AllModules-Package")
     .IsDependentOn("Build")
@@ -394,7 +434,8 @@ Task("Upload-AppVeyor-Artifacts")
 //////////////////////////////////////////////////////////////////////
 
 Task("Create-Packages")
-    .IsDependentOn("Create-Library-Packages")   
+    .IsDependentOn("Create-Library-Packages")
+    .IsDependentOn("Create-Theme-Packages")   
     .IsDependentOn("Create-AllModules-Package")    
     .IsDependentOn("Create-Tools-Package");
     

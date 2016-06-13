@@ -72,32 +72,6 @@
       <Name>Wyam.Yaml</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Themes\CleanBlog\Content\fonts\glyphicons-halflings-regular.eot" />
-    <None Include="Themes\CleanBlog\Content\fonts\glyphicons-halflings-regular.ttf" />
-    <None Include="Themes\CleanBlog\Content\fonts\glyphicons-halflings-regular.woff" />
-    <None Include="Themes\CleanBlog\Content\fonts\glyphicons-halflings-regular.woff2" />
-    <None Include="Themes\CleanBlog\index.cshtml" />
-    <None Include="Themes\CleanBlog\posts\index.cshtml" />
-    <None Include="Themes\CleanBlog\tags\index.cshtml" />
-    <None Include="Themes\CleanBlog\tags\tag.cshtml" />
-    <None Include="Themes\CleanBlog\_Layout.cshtml" />
-    <None Include="Themes\CleanBlog\_PostList.cshtml" />
-    <None Include="Themes\CleanBlog\_SocialLinks.cshtml" />
-    <None Include="Themes\CleanBlog\_ViewStart.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Themes\CleanBlog\Content\bootstrap\bootstrap.css" />
-    <None Include="Themes\CleanBlog\Content\clean-blog.css" />
-    <None Include="Themes\CleanBlog\Content\fonts\glyphicons-halflings-regular.svg" />
-    <None Include="Themes\CleanBlog\Content\github.css" />
-    <None Include="Themes\CleanBlog\Content\master.css" />
-    <None Include="Themes\CleanBlog\Content\prettify.css" />
-    <None Include="Themes\CleanBlog\Scripts\clean-blog.js" />
-    <None Include="Themes\CleanBlog\Scripts\Please-compressed.js" />
-    <None Include="Themes\CleanBlog\Scripts\prettify.js" />
-    <None Include="Themes\CleanBlog\Scripts\trianglify.min.js" />
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
