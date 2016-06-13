@@ -89,9 +89,10 @@ namespace Wyam
             catch (Exception ex)
             {
                 Trace.Error("Error while parsing command line: {0}", ex.Message);
-                if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
+                if (Trace.Level == SourceLevels.Verbose)
+                {
                     Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
-
+                }
                 return (int)ExitCode.CommandLineError;
             }
 

@@ -16,11 +16,11 @@ namespace Wyam
 
         public ActionFileSystemWatcher(DirectoryPath outputDirectory, IEnumerable<DirectoryPath> inputDirectories, bool includeSubdirectories, string filter, Action<string> callback)
         {
-            foreach (DirectoryPath inputDirectory in inputDirectories)
+            foreach (string inputDirectory in inputDirectories.Select(x => x.Collapse().FullPath).Where(Directory.Exists))
             {
                 FileSystemWatcher watcher = new FileSystemWatcher
                 {
-                    Path = inputDirectory.FullPath,
+                    Path = inputDirectory,
                     IncludeSubdirectories = includeSubdirectories,
                     Filter = filter,
                     EnableRaisingEvents = true
@@ -29,7 +29,7 @@ namespace Wyam
                 watcher.Created += OnChanged;
                 _watchers.Add(watcher);
             }
-            _outputPath = outputDirectory.FullPath;
+            _outputPath = outputDirectory.Collapse().FullPath;
             _callback = callback;
         }
 
