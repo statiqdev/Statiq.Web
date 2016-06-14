@@ -68,6 +68,23 @@ namespace Wyam.Core.Tests.Meta
                 // Then
                 Assert.AreEqual("a", value);
             }
+
+            [Test]
+            public void ReturnsCorrectResultForKeysWithDifferentCase()
+            {
+                // Given
+                MetadataDictionary initialMetadata = new MetadataDictionary
+                {
+                    ["A"] = new SimpleMetadataValue { Value = "a" }
+                };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
+
+                // When
+                object value = metadata["a"];
+
+                // Then
+                Assert.AreEqual("a", value);
+            }
         }
 
         public class ContainsKeyMethodTests : MetadataStackTests
@@ -98,6 +115,20 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsFalse(contains);
+            }
+
+            [Test]
+            public void ReturnsTrueForSameKeysWithDifferentCase()
+            {
+                // Given
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
+                MetadataStack metadata = new MetadataStack(initialMetadata);
+
+                // When
+                bool contains = metadata.ContainsKey("a");
+
+                // Then
+                Assert.IsTrue(contains);
             }
         }
 
@@ -703,7 +734,7 @@ namespace Wyam.Core.Tests.Meta
             public object Value { get; set; }
             public int Calls { get; set; }
 
-            object IMetadataValue.Get(string key, IMetadata metadata)
+            object IMetadataValue.Get(IMetadata metadata)
             {
                 Calls++;
                 return Value;
@@ -714,7 +745,7 @@ namespace Wyam.Core.Tests.Meta
         {
             public string Key { get; set; }
 
-            object IMetadataValue.Get(string key, IMetadata metadata)
+            object IMetadataValue.Get(IMetadata metadata)
             {
                 return metadata[Key];
             }

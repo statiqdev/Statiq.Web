@@ -11,7 +11,7 @@ namespace Wyam.Core.Meta
     {
         public MetadataDictionary()
         {
-            Stack.Push(new Dictionary<string, object>());
+            Stack.Push(new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
         }
 
         public void Add(KeyValuePair<string, object> item) => Stack.Peek().Add(item);

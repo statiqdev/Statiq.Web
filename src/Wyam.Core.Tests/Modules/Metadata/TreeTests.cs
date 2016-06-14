@@ -705,7 +705,9 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 IMetadataValue provider = metadata[i].Value as IMetadataValue;
                 if (provider != null)
-                    metadata[i] = new KeyValuePair<string, object>(metadata[i].Key, provider.Get(metadata[i].Key, null));
+                {
+                    metadata[i] = new KeyValuePair<string, object>(metadata[i].Key, provider.Get(null));
+                }
             }
 
             IDocument document = Substitute.For<IDocument>();

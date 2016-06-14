@@ -64,7 +64,7 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocument(symbol, true, new MetadataItems
                 {
-                    { CodeAnalysisKeys.SpecificKind, (k, m) => symbol.Kind.ToString() },
+                    { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
                     { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers()) },
                     { CodeAnalysisKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()) }
                 });
@@ -83,7 +83,7 @@ namespace Wyam.CodeAnalysis
             {
                 MetadataItems metadata = new MetadataItems
                 {
-                    { CodeAnalysisKeys.SpecificKind, (k, m) => symbol.TypeKind.ToString() },
+                    { CodeAnalysisKeys.SpecificKind, _ => symbol.TypeKind.ToString() },
                     { CodeAnalysisKeys.ContainingType, DocumentFor(symbol.ContainingType) },
                     { CodeAnalysisKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()) },
                     { CodeAnalysisKeys.BaseType, DocumentFor(symbol.BaseType) },
@@ -92,14 +92,14 @@ namespace Wyam.CodeAnalysis
                     { CodeAnalysisKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
-                    { CodeAnalysisKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString() }
+                    { CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString() }
                 };
                 if (!_finished)
                 {
                     metadata.AddRange(new []
                     {
-                        new MetadataItem(CodeAnalysisKeys.DerivedTypes, (k, m) => GetDerivedTypes(symbol), true),
-                        new MetadataItem(CodeAnalysisKeys.ImplementingTypes, (k, m) => GetImplementingTypes(symbol), true)
+                        new MetadataItem(CodeAnalysisKeys.DerivedTypes, _ => GetDerivedTypes(symbol), true),
+                        new MetadataItem(CodeAnalysisKeys.ImplementingTypes, _ => GetImplementingTypes(symbol), true)
                     });
                 }
                 AddDocument(symbol, true, metadata);
@@ -121,7 +121,7 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocumentForMember(symbol, false, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind, (k, m) => symbol.TypeParameterKind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.TypeParameterKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
                 });
             }
@@ -133,7 +133,7 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocumentForMember(symbol, false, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type))
                 });
             }
@@ -146,12 +146,12 @@ namespace Wyam.CodeAnalysis
                 AddDocumentForMember(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind,
-                        (k, m) => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
+                        _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -162,9 +162,9 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocumentForMember(symbol, true, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -175,10 +175,10 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocumentForMember(symbol, true, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenEvent)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -189,11 +189,11 @@ namespace Wyam.CodeAnalysis
             {
                 AddDocumentForMember(symbol, true, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind, (k, m) => symbol.Kind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, (k, m) => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
             }
         }
@@ -227,15 +227,15 @@ namespace Wyam.CodeAnalysis
             {
                 // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
                 new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
-                new MetadataItem(CodeAnalysisKeys.SymbolId, (k, m) => GetId(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.SymbolId, _ => GetId(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.Symbol, symbol),
-                new MetadataItem(CodeAnalysisKeys.Name, (k, m) => symbol.Name),
-                new MetadataItem(CodeAnalysisKeys.FullName, (k, m) => GetFullName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.DisplayName, (k, m) => GetDisplayName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.QualifiedName, (k, m) => GetQualifiedName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.Kind, (k, m) => symbol.Kind.ToString()),
+                new MetadataItem(CodeAnalysisKeys.Name, _ => symbol.Name),
+                new MetadataItem(CodeAnalysisKeys.FullName, _ => GetFullName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.DisplayName, _ => GetDisplayName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.QualifiedName, _ => GetQualifiedName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.Kind, _ => symbol.Kind.ToString()),
                 new MetadataItem(CodeAnalysisKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
-                new MetadataItem(CodeAnalysisKeys.Syntax, (k, m) => GetSyntax(symbol), true)
+                new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true)
             });
 
             // Add metadata that's specific to initially-processed symbols
@@ -243,14 +243,14 @@ namespace Wyam.CodeAnalysis
             {
                 items.AddRange(new[]
                 {
-                    new MetadataItem(Keys.WritePath, (k, m) => _writePath(m), true),
-                    new MetadataItem(Keys.RelativeFilePath, (k, m) => m.FilePath(Keys.WritePath)),
-                    new MetadataItem(Keys.RelativeFilePathBase, (k, m) =>
+                    new MetadataItem(Keys.WritePath, x => _writePath(x), true),
+                    new MetadataItem(Keys.RelativeFilePath, x => x.FilePath(Keys.WritePath)),
+                    new MetadataItem(Keys.RelativeFilePathBase, x =>
                     {
-                        FilePath writePath = m.FilePath(Keys.WritePath);
+                        FilePath writePath = x.FilePath(Keys.WritePath);
                         return writePath.Directory.CombineFile(writePath.FileNameWithoutExtension);
                     }),
-                    new MetadataItem(Keys.RelativeFileDir, (k, m) => m.FilePath(Keys.WritePath).Directory)
+                    new MetadataItem(Keys.RelativeFileDir, x => x.FilePath(Keys.WritePath).Directory)
                 });
             }
 
@@ -286,22 +286,22 @@ namespace Wyam.CodeAnalysis
             metadata.AddRange(new []
             {
                 new MetadataItem(CodeAnalysisKeys.CommentXml, documentationCommentXml),
-                new MetadataItem(CodeAnalysisKeys.Example, (k, m) => xmlDocumentationParser.Process().Example),
-                new MetadataItem(CodeAnalysisKeys.Remarks, (k, m) => xmlDocumentationParser.Process().Remarks),
-                new MetadataItem(CodeAnalysisKeys.Summary, (k, m) => xmlDocumentationParser.Process().Summary),
-                new MetadataItem(CodeAnalysisKeys.Returns, (k, m) => xmlDocumentationParser.Process().Returns),
-                new MetadataItem(CodeAnalysisKeys.Value, (k, m) => xmlDocumentationParser.Process().Value),
-                new MetadataItem(CodeAnalysisKeys.Exceptions, (k, m) => xmlDocumentationParser.Process().Exceptions),
-                new MetadataItem(CodeAnalysisKeys.Permissions, (k, m) => xmlDocumentationParser.Process().Permissions),
-                new MetadataItem(CodeAnalysisKeys.Params, (k, m) => xmlDocumentationParser.Process().Params),
-                new MetadataItem(CodeAnalysisKeys.TypeParams, (k, m) => xmlDocumentationParser.Process().TypeParams),
-                new MetadataItem(CodeAnalysisKeys.SeeAlso, (k, m) => xmlDocumentationParser.Process().SeeAlso)
+                new MetadataItem(CodeAnalysisKeys.Example, _ => xmlDocumentationParser.Process().Example),
+                new MetadataItem(CodeAnalysisKeys.Remarks, _ => xmlDocumentationParser.Process().Remarks),
+                new MetadataItem(CodeAnalysisKeys.Summary, _ => xmlDocumentationParser.Process().Summary),
+                new MetadataItem(CodeAnalysisKeys.Returns, _ => xmlDocumentationParser.Process().Returns),
+                new MetadataItem(CodeAnalysisKeys.Value, _ => xmlDocumentationParser.Process().Value),
+                new MetadataItem(CodeAnalysisKeys.Exceptions, _ => xmlDocumentationParser.Process().Exceptions),
+                new MetadataItem(CodeAnalysisKeys.Permissions, _ => xmlDocumentationParser.Process().Permissions),
+                new MetadataItem(CodeAnalysisKeys.Params, _ => xmlDocumentationParser.Process().Params),
+                new MetadataItem(CodeAnalysisKeys.TypeParams, _ => xmlDocumentationParser.Process().TypeParams),
+                new MetadataItem(CodeAnalysisKeys.SeeAlso, _ => xmlDocumentationParser.Process().SeeAlso)
             });
 
             // Add other HTML elements with keys of [ElementName]Html
             metadata.AddRange(otherHtmlElementNames.Select(x => 
                 new MetadataItem(FirstLetterToUpper(x) + "Comments",
-                    (k, m) => xmlDocumentationParser.Process().OtherComments[x])));
+                    _ => xmlDocumentationParser.Process().OtherComments[x])));
         }
 
         public static string FirstLetterToUpper(string str)

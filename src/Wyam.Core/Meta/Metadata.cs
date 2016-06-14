@@ -50,7 +50,7 @@ namespace Wyam.Core.Meta
             {
                 return false;
             }
-            value = GetValue(key, meta[key]);
+            value = GetValue(meta[key]);
             return true;
         }
 
@@ -97,7 +97,7 @@ namespace Wyam.Core.Meta
 
         public IEnumerable<string> Keys => Stack.SelectMany(x => x.Keys);
 
-        public IEnumerable<object> Values => Stack.SelectMany(x => x.Select(y => GetValue(y.Key, y.Value)));
+        public IEnumerable<object> Values => Stack.SelectMany(x => x.Select(y => GetValue(y.Value)));
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() =>
             Stack.SelectMany(x => x.Select(GetItem)).GetEnumerator();
@@ -105,20 +105,23 @@ namespace Wyam.Core.Meta
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public int Count => Stack.Sum(x => x.Count);
-
-        // This resolves the metadata value by expanding IMetadataValue
-        private object GetValue(string key, object value)
+        
+        /// <summary>
+        /// This resolves the metadata value by expanding IMetadataValue.
+        /// </summary>
+        private object GetValue(object originalValue)
         {
-            IMetadataValue metadataValue = value as IMetadataValue;
-            return metadataValue != null ? metadataValue.Get(key, this) : value;
+            IMetadataValue metadataValue = originalValue as IMetadataValue;
+            return metadataValue != null ? metadataValue.Get(this) : originalValue;
         }
-
-        // This resolves the metadata value by expanding IMetadataValue
-        // To reduce allocations, it returns the input KeyValuePair if value is not IMetadataValue
+        
+        /// <summary>
+        /// This resolves the metadata value by expanding IMetadataValue.
+        /// </summary>
         private KeyValuePair<string, object> GetItem(KeyValuePair<string, object> item)
         {
             IMetadataValue metadataValue = item.Value as IMetadataValue;
-            return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(item.Key, this)) : item;
+            return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(this)) : item;
         }
     }
 }

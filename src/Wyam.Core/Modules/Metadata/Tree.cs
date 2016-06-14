@@ -165,38 +165,20 @@ namespace Wyam.Core.Modules.Metadata
                 treeElement.Value = context.GetDocument(treeElement.Value, new MetadataItems
                 {
                     new MetadataItem(_childrenKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            new ReadOnlyCollection<IDocument> (treeElement.Children.Select(x=>x.Value).ToArray())
-                        )
-                    ), 
+                        new CachedDelegateMetadataValue(_ => new ReadOnlyCollection<IDocument> (treeElement.Children.Select(x=>x.Value).ToArray()))), 
                     new MetadataItem(_parentKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            treeElement.Parent?.Value
-                        )
-                    ),
+                        new CachedDelegateMetadataValue(_ => treeElement.Parent?.Value)),
                     new MetadataItem(_nextSiblingKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            GetNextSilbling(treeElement)
-                        )
-                    ),
+                        new CachedDelegateMetadataValue(_ => GetNextSilbling(treeElement))),
                     new MetadataItem(_previousSiblingKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            GetPreviousSilbling(treeElement)
-                        )
-                    ),
+                        new CachedDelegateMetadataValue(_ => GetPreviousSilbling(treeElement))),
                     new MetadataItem(_nextKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            GetNextNodeMetadata(treeElement)
-                        )
-                    ),
+                        new CachedDelegateMetadataValue(_ => GetNextNodeMetadata(treeElement))),
                     new MetadataItem(_previousKey,
-                        new CachedDelegateMetadataValue((str, meta)=>
-                            GetPreviousNode(treeElement)
-                        )
-                    )
+                        new CachedDelegateMetadataValue(_ => GetPreviousNode(treeElement)))
                 });
             }
-
+            
             return treeElementLookup.Values.Select(x => x.Value);
         }
 

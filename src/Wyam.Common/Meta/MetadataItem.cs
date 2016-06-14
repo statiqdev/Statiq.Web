@@ -25,10 +25,15 @@ namespace Wyam.Common.Meta
         {
             Pair = new KeyValuePair<string, object>(key, value);
         }
-
-        // This creates a new DelegateMetadataValue that will get evaluated on every value request
-        // Note that the delegate function should be thread-safe
-        public MetadataItem(string key, Func<string, IMetadata, object> value, bool cacheValue = false)
+        
+        /// <summary>
+        /// This creates a new metadata value based on the specified delegate that will get 
+        /// evaluated on every value request. Note that the delegate function should be thread-safe.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value delegate.</param>
+        /// <param name="cacheValue">if set to <c>true</c>, cache the value after the first request.</param>
+        public MetadataItem(string key, Func<IMetadata, object> value, bool cacheValue = false)
         {
             Pair = new KeyValuePair<string, object>(key,
                 cacheValue ? new CachedDelegateMetadataValue(value) : new DelegateMetadataValue(value));

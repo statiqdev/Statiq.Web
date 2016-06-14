@@ -31,7 +31,7 @@ namespace Wyam.Common.Meta
             _items.Add(new MetadataItem(pair));
         }
 
-        public void Add(string key, Func<string, IMetadata, object> value, bool cacheValue = false)
+        public void Add(string key, Func<IMetadata, object> value, bool cacheValue = false)
         {
             _items.Add(new MetadataItem(key, value, cacheValue));
         }

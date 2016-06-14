@@ -6,7 +6,7 @@ using Wyam.Common.IO;
 namespace Wyam.Common.Meta
 {
     /// <summary>
-    /// Contains a set of metadata with flexible runtime conversion methods.
+    /// Contains a set of metadata with flexible runtime conversion methods. Metadata keys are case-insensitive.
     /// </summary>
     public interface IMetadata : IReadOnlyDictionary<string, object>
     {

@@ -23,7 +23,7 @@ namespace Wyam.CodeAnalysis
             _visitor = visitor;
         }
 
-        public object Get(string key, IMetadata metadata)
+        public object Get(IMetadata metadata)
         {
             if (!_cached)
             {
