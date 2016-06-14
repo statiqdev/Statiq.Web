@@ -4,7 +4,7 @@ Title: All Tags
     <div class="row row-sm-height">
         <div class="col-sm-8 right-border col-sm-height">
             @{ 
-                ViewData["PostListDocuments"] = Model.Documents("Posts").OrderByDescending(x => x.Get<DateTime>("Published"));
+                ViewData["PostListDocuments"] = Model.DocumentList("Posts").OrderByDescending(x => x.Get<DateTime>("Published"));
             }     
             @Html.Partial("_PostList")
             <hr class="visible-xs-block" />
@@ -14,7 +14,7 @@ Title: All Tags
             @foreach (var tagDocument in Documents["Tags"].OrderBy(x => x.String("Tag")))
             {
                 string tag = tagDocument.String("Tag");
-                string postCount = tagDocument.Documents("Posts").Count().ToString();
+                string postCount = tagDocument.DocumentList("Posts").Count().ToString();
                 string buttonStyle = tag == Model.String("Tag") ? "btn-primary" : "btn-default";
                 <a role="button" href="@Context.GetLink(tagDocument)" class="btn @buttonStyle btn-xs"> @tag (@postCount)</a>
             }

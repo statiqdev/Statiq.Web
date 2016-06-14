@@ -21,17 +21,17 @@ namespace Wyam.Blog
     {
         public void Apply(IEngine engine)
         {
-            // Settings defaults
-            engine.GlobalMetadata["Site"] = "My Blog";
-            engine.GlobalMetadata["Greeting"] = "Welcome!";
+            // Global metadata defaults
+            engine.GlobalMetadata[BlogKeys.SiteName] = "My Blog";
+            engine.GlobalMetadata[BlogKeys.Greeting] = "Welcome!";
 
 
             // TODO: RSS feed
 
-            engine.Pipelines.Add("Posts",
+            engine.Pipelines.Add(BlogPipelines.Posts,
                 new ReadFiles("posts/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Where((doc, ctx) => doc.ContainsKey("Published") && doc.Get<DateTime>("Published") <= DateTime.Today),
+                new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
                 new Markdown.Markdown(),
                 new Concat(
                     // Add any posts written in Razor
@@ -40,16 +40,17 @@ namespace Wyam.Blog
                 new Razor.Razor(),
                 new Excerpt(),
                 new Excerpt("div#content")
-                    .SetMetadataKey("Content")
+                    .SetMetadataKey(BlogKeys.Content)
                     .GetOuterHtml(false),
-                new WriteFiles(".html"));
+                new WriteFiles(".html"),
+                new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending());
 
-            engine.Pipelines.Add("Tags",
+            engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),
                 new FrontMatter(new Yaml.Yaml()),
-                new GroupByMany("Tags", new Documents("Posts")),
-                new Meta("Tag", (doc, ctx) => doc.String(Keys.GroupKey)),
-                new Meta("Posts", (doc, ctx) => doc.List<IDocument>(Keys.GroupDocuments)),
+                new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.Posts)),
+                new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
+                new Meta(BlogKeys.Posts, (doc, ctx) => doc.List<IDocument>(Keys.GroupDocuments)),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     string tag = doc.String(Keys.GroupKey);
@@ -58,13 +59,13 @@ namespace Wyam.Blog
                 new Razor.Razor(),
                 new WriteFiles());
 
-            engine.Pipelines.Add("TagIndex",
+            engine.Pipelines.Add(BlogPipelines.TagIndex,
                 new ReadFiles("tags/index.cshtml"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Razor.Razor(),
                 new WriteFiles(".html"));
             
-            engine.Pipelines.Add("Content",
+            engine.Pipelines.Add(BlogPipelines.Content,
                 new ReadFiles("{!posts,**}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Markdown.Markdown(),
@@ -79,7 +80,7 @@ namespace Wyam.Blog
                 new Razor.Razor(),
                 new WriteFiles(".html"));
 
-            engine.Pipelines.Add("Resources",
+            engine.Pipelines.Add(BlogPipelines.Resources,
                 new CopyFiles("**/*{!.cshtml,!.md,}"));
         }
 

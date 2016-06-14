@@ -272,6 +272,7 @@ namespace Wyam.Configuration
                 {
                     throw new Exception($"The recipe \"{Recipe}\" could not be found");
                 }
+                _engine.Namespaces.Add(recipe.GetType().Namespace);  // Add the recipe namespace so it's available to modules
                 recipe.Apply(_engine);
             }
         }

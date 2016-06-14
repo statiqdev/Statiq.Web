@@ -8,7 +8,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
-	<title>@(GlobalMetadata.String("Site"))@(string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title)</title>
+	<title>@(Context.String("Site"))@(string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title)</title>
         <meta name="description" content="The personal blog of Dave Glick" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">        
 
@@ -69,7 +69,7 @@
                                         <span class="icon-bar"></span>
                                         <span class="icon-bar"></span>
                                         </button>
-                                        <a class="navbar-brand" href="/">@GlobalMetadata.String("Site")</a>
+                                        <a class="navbar-brand" href="/">@Context.String("Site")</a>
                                 </div>
                         
                                 <!-- Collect the nav links, forms, and other content for toggling -->

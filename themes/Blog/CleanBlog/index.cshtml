@@ -1,16 +1,16 @@
 @section Header {
     <div class="site-heading">
-        @if(GlobalMetadata.String("Greeting") != null)
+        @if(Context.String(BlogKeys.Greeting) != null)
         {
-            <h1>@GlobalMetadata.String("Greeting")</h1>
+            <h1>@Context.String(BlogKeys.Greeting)</h1>
         }
-        @if(GlobalMetadata.String("Blurb") != null)
+        @if(Context.String(BlogKeys.Blurb) != null)
         {            
-            @if(GlobalMetadata.String("Greeting") != null)
+            @if(Context.String(BlogKeys.Greeting) != null)
             {
                 <hr class="small">
             }
-            <span class="subheading">@GlobalMetadata.String("Blurb")</span>
+            <span class="subheading">@Context.String(BlogKeys.Blurb)</span>
         }
     </div>
 }
@@ -19,7 +19,7 @@
     <div class="col-sm-8 right-border">
         @{
             bool first = true;
-            foreach(IDocument doc in Documents
+            foreach(IDocument doc in Documents["Posts"]
                 .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today)
                 .OrderByDescending(x => x.Get<DateTime>("Published"))
                 .Take(3))
