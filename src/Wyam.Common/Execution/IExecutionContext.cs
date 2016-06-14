@@ -12,7 +12,11 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.Common.Execution
 {
-    public interface IExecutionContext
+    /// <summary>
+    /// All of the information that represents a given build. Also implements
+    /// <see cref="IMetadata"/> to expose the global metadata.
+    /// </summary>
+    public interface IExecutionContext : IMetadata
     {
         IEnumerable<byte[]> RawAssemblies { get; }
         IEnumerable<Assembly> Assemblies { get; }
@@ -151,10 +155,10 @@ namespace Wyam.Common.Execution
         /// <param name="items">The metadata items.</param>
         /// <returns>The new document.</returns>
         IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items);
-        
+
         /// <summary>
         /// Clones the specified source document with a new source, new content, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="sourceDocument">The source document.</param>
         /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
@@ -165,7 +169,7 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="sourceDocument">The source document.</param>
         /// <param name="content">The content.</param>
@@ -175,7 +179,7 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
         /// document takes ownership of the <see cref="Stream"/>).
@@ -190,7 +194,7 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
         /// document takes ownership of the <see cref="Stream"/>).
@@ -204,7 +208,7 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Clones the specified source document with identical content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <see cref="ModuleExtensions.AsNewDocuments{TModule}(TModule)"/> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="sourceDocument">The source document.</param>
         /// <param name="items">The metadata items.</param>

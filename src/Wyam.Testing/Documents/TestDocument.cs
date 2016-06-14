@@ -85,7 +85,7 @@ namespace Wyam.Testing.Documents
 
         public IDocument Document(string key) => Get<IDocument>(key);
 
-        public IReadOnlyList<IDocument> Documents(string key) => Get<IReadOnlyList<IDocument>>(key);
+        public IReadOnlyList<IDocument> DocumentList(string key) => Get<IReadOnlyList<IDocument>>(key);
 
         public dynamic Dynamic(string key, object defaultValue = null) => Get(key, defaultValue) ?? defaultValue;
 

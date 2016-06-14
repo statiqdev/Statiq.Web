@@ -58,9 +58,7 @@ namespace Wyam.Razor.Microsoft.AspNet.Mvc.Razor
         public IExecutionContext ExecutionContext => ViewContext.ExecutionContext;
 
         public IDocumentCollection Documents => ExecutionContext.Documents;
-
-        public IMetadata GlobalMetadata => Context.GlobalMetadata;
-
+        
         // Define Trace as a property so it's not ambiguous with System.Diagnostics.Trace
         public ITrace Trace => Common.Tracing.Trace.Current;
 

@@ -274,7 +274,7 @@ namespace Wyam.Core.Documents
 
         IDocument IMetadata.Document(string key) => _metadata.Document(key);
 
-        public IReadOnlyList<IDocument> Documents(string key) => _metadata.Documents(key);
+        public IReadOnlyList<IDocument> DocumentList(string key) => _metadata.DocumentList(key);
 
         public dynamic Dynamic(string key, object defaultValue = null) => _metadata.Dynamic(key, defaultValue);
 

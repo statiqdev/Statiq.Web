@@ -376,7 +376,7 @@ namespace Wyam.Core.Tests.Meta
             }
         }
 
-        public class DocumentsMethodTests : MetadataStackTests
+        public class DocumentListMethodTests : MetadataStackTests
         {
             [Test]
             public void ReturnsNullWhenKeyNotFound()
@@ -386,7 +386,7 @@ namespace Wyam.Core.Tests.Meta
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                IReadOnlyList<IDocument> result = metadata.Documents("A");
+                IReadOnlyList<IDocument> result = metadata.DocumentList("A");
 
                 // Then
                 Assert.IsNull(result);
@@ -400,7 +400,7 @@ namespace Wyam.Core.Tests.Meta
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                IReadOnlyList<IDocument> result = metadata.Documents("A");
+                IReadOnlyList<IDocument> result = metadata.DocumentList("A");
 
                 // Then
                 Assert.IsNotNull(result);
@@ -415,7 +415,7 @@ namespace Wyam.Core.Tests.Meta
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                IReadOnlyList<IDocument> result = metadata.Documents("A");
+                IReadOnlyList<IDocument> result = metadata.DocumentList("A");
 
                 // Then
                 Assert.IsNotNull(result);
@@ -433,7 +433,7 @@ namespace Wyam.Core.Tests.Meta
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                IReadOnlyList<IDocument> result = metadata.Documents("A");
+                IReadOnlyList<IDocument> result = metadata.DocumentList("A");
 
                 // Then
                 Assert.IsNotNull(result);
@@ -449,7 +449,7 @@ namespace Wyam.Core.Tests.Meta
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                IReadOnlyList<IDocument> result = metadata.Documents("A");
+                IReadOnlyList<IDocument> result = metadata.DocumentList("A");
 
                 // Then
                 Assert.IsNotNull(result);

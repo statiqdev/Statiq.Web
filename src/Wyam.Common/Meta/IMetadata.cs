@@ -94,7 +94,7 @@ namespace Wyam.Common.Meta
         /// </summary>
         /// <param name="key">The key of the documents to get.</param>
         /// <returns>The value for the specified key converted to a list or null.</returns>
-        IReadOnlyList<IDocument> Documents(string key);
+        IReadOnlyList<IDocument> DocumentList(string key);
 
         /// <summary>
         /// Gets the value associated with the specified key as a dynamic object. This is equivalent

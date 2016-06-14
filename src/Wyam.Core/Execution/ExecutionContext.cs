@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -18,7 +19,7 @@ namespace Wyam.Core.Execution
     internal class ExecutionContext : IExecutionContext
     {
         private readonly Pipeline _pipeline;
-
+        
         public Engine Engine { get; }
 
         public IEnumerable<byte[]> RawAssemblies => Engine.RawAssemblies;
@@ -70,7 +71,7 @@ namespace Wyam.Core.Execution
 
         public string GetLink(IMetadata metadata, bool includeHost = false)
         {
-            return GetLink(metadata, Keys.RelativeFilePath, includeHost);
+            return GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
         }
 
         public string GetLink(IMetadata metadata, string key, bool includeHost = false)
@@ -201,5 +202,45 @@ namespace Wyam.Core.Execution
             Engine.DocumentCollection.Set(_pipeline.Name, originalDocuments);
             return results;
         }
+
+        // IMetadata
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => GlobalMetadata.GetEnumerator();
+
+        public int Count => GlobalMetadata.Count;
+
+        public bool ContainsKey(string key) => GlobalMetadata.ContainsKey(key);
+
+        public bool TryGetValue(string key, out object value) => GlobalMetadata.TryGetValue(key, out value);
+
+        public object this[string key] => GlobalMetadata[key];
+
+        public IEnumerable<string> Keys => GlobalMetadata.Keys;
+
+        public IEnumerable<object> Values => GlobalMetadata.Values;
+
+        public IMetadata<T> MetadataAs<T>() => GlobalMetadata.MetadataAs<T>();
+
+        public object Get(string key, object defaultValue = null) => GlobalMetadata.Get(key, defaultValue);
+
+        public T Get<T>(string key) => GlobalMetadata.Get<T>(key);
+
+        public T Get<T>(string key, T defaultValue) => GlobalMetadata.Get(key, defaultValue);
+
+        public string String(string key, string defaultValue = null) => GlobalMetadata.String(key, defaultValue);
+
+        public FilePath FilePath(string key, FilePath defaultValue = null) => GlobalMetadata.FilePath(key, defaultValue);
+
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => GlobalMetadata.DirectoryPath(key, defaultValue);
+
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => GlobalMetadata.List(key, defaultValue);
+
+        public IDocument Document(string key) => GlobalMetadata.Document(key);
+
+        public IReadOnlyList<IDocument> DocumentList(string key) => GlobalMetadata.DocumentList(key);
+
+        public dynamic Dynamic(string key, object defaultValue = null) => GlobalMetadata.Dynamic(key, defaultValue);
     }
 }
