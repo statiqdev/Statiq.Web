@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Wyam.Common.Configuration;
@@ -34,6 +35,10 @@ namespace Wyam.Configuration
         public bool OutputScript { get; set; }
 
         public FilePath OutputScriptPath { get; set; }
+
+        public IReadOnlyDictionary<string, object> GlobalMetadata { get; set; }
+
+        public IReadOnlyDictionary<string, object> InitialMetadata { get; set; }
 
         public string Recipe { get; set; }
 
@@ -117,6 +122,7 @@ namespace Wyam.Configuration
             AddNamespaces();
             AddFileProviders();
             ApplyRecipe();
+            SetMetadata();
 
             // Finally evaluate the script
             Evaluate(parserResult);
@@ -267,6 +273,25 @@ namespace Wyam.Configuration
                     throw new Exception($"The recipe \"{Recipe}\" could not be found");
                 }
                 recipe.Apply(_engine);
+            }
+        }
+
+        private void SetMetadata()
+        {
+            // Set the global and initial metadata after applying the recipe in case the recipe sets default values
+            if (GlobalMetadata != null)
+            {
+                foreach (KeyValuePair<string, object> kvp in GlobalMetadata)
+                {
+                    _engine.GlobalMetadata[kvp.Key] = kvp.Value;
+                }
+            }
+            if (InitialMetadata != null)
+            {
+                foreach (KeyValuePair<string, object> kvp in InitialMetadata)
+                {
+                    _engine.InitialMetadata[kvp.Key] = kvp.Value;
+                }
             }
         }
 

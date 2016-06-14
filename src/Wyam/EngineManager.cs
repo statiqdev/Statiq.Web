@@ -63,6 +63,10 @@ namespace Wyam
                 Configurator.PackageInstaller.PackagesPath = _settings.PackagesPath;
             }
 
+            // Metadata
+            Configurator.GlobalMetadata = settings.GlobalMetadata;
+            Configurator.InitialMetadata = settings.InitialMetadata;
+
             // Script output
             Configurator.OutputScript = _settings.OutputScript;
 

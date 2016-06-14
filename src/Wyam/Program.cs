@@ -127,27 +127,6 @@ namespace Wyam
                 Trace.AddListener(new SimpleFileTraceListener(_settings.LogFilePath.FullPath));
             }
 
-            // Prepare engine metadata
-            if (!_settings.VerifyConfig && _settings.GlobalMetadataArgs != null && _settings.GlobalMetadataArgs.Count > 0)
-            {
-                try
-                {
-                    _settings.GlobalMetadata = GlobalMetadataParser.Parse(_settings.GlobalMetadataArgs);
-                }
-                catch (MetadataParseException ex)
-                {
-                    Trace.Error("Error while parsing metadata: {0}", ex.Message);
-                    if (Trace.Level == SourceLevels.Verbose)
-                    {
-                        Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
-                    }
-
-                    return (int)ExitCode.CommandLineError;
-                }
-                // Not used anymore, release resources.
-                _settings.GlobalMetadataArgs = null;
-            }
-
             // Get the engine and configurator
             EngineManager engineManager = GetEngineManager();
             if (engineManager == null)

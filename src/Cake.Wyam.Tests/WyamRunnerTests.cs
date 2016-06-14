@@ -411,7 +411,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--meta A=a --meta B=C \"/Working\"", result.Args);
+                Assert.AreEqual("--global \"A=a\" --global \"B=C\" \"/Working\"", result.Args);
             }
 
             [Test]

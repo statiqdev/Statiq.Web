@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
+using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Core.Execution;
 using Wyam.Testing;
@@ -384,6 +388,26 @@ SetCustomDocumentType<MyDocument>();
                 Assert.AreEqual(1, engine.Pipelines.Count);
                 Assert.AreEqual(2, engine.Pipelines.Values.First().Count);
             }
+
+            [Test]
+            public void AppliesRecipeBeforeMetadata()
+            {
+                // Given
+                Engine engine = new Engine();
+                Configurator configurator = GetConfigurator(engine);
+                configurator.AssemblyLoader.AddName(Assembly.GetExecutingAssembly().FullName);
+                configurator.Recipe = nameof(MetadataTestRecipe);
+                configurator.GlobalMetadata = new Dictionary<string, object>
+                {
+                    { "Foo", "Baz" }
+                };
+
+                // When 
+                configurator.Configure(string.Empty);
+
+                // Then
+                Assert.AreEqual("Baz", engine.GlobalMetadata["Foo"]);
+            }
         }
 
         public class AddRecipePackageAndSetThemeMethodTests : ConfiguratorTests
@@ -563,6 +587,19 @@ SetCustomDocumentType<MyDocument>();
         {
             Configurator configurator = new Configurator(engine);
             return configurator;
+        }
+    }
+
+    public class MetadataTestRecipe : IRecipe
+    {
+        public void Apply(IEngine engine)
+        {
+            engine.GlobalMetadata["Foo"] = "Bar";
+        }
+
+        public void Scaffold(IDirectory directory)
+        {
+            throw new NotImplementedException();
         }
     }
 }

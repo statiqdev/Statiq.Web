@@ -1,13 +1,14 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Wyam.Testing;
 
 namespace Wyam.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class GlobalMetadataParserTests : BaseFixture
+    public class MetadataParserTests : BaseFixture
     {
-        public class ParseMethodTests : GlobalMetadataParserTests
+        public class ParseMethodTests : MetadataParserTests
         {
             [Test]
             public void TestKeyOnlyParse()
@@ -16,7 +17,7 @@ namespace Wyam.Tests
                 var excepted = new string[] {"hi", "=hello", "\\=abcd", "key\\=val", "     bjorn  \\=   dad"};
 
                 // When
-                var args = GlobalMetadataParser.Parse(excepted);
+                var args = MetadataParser.Parse(excepted);
 
                 // Then
                 Assert.AreEqual(excepted.Length, args.Count);
@@ -37,7 +38,7 @@ namespace Wyam.Tests
                 {"key=value", "k=v", "except=bro", "awesome====123123", "   keytrimmed    =    value trimmed   "};
 
                 // When
-                var args = GlobalMetadataParser.Parse(pairs);
+                var args = MetadataParser.Parse(pairs);
 
                 // Then
                 Assert.AreEqual(pairs.Length, args.Count);
@@ -58,8 +59,8 @@ namespace Wyam.Tests
             public void TestMetadataKeyCollision()
             {
                 // Given, When, Then
-                Assert.Throws<MetadataParseException>(
-                    () => GlobalMetadataParser.Parse(new string[] {"hello=world", "hello=exception"}));
+                Assert.Throws<ArgumentException>(
+                    () => MetadataParser.Parse(new string[] {"hello=world", "hello=exception"}));
             }
         }
     }

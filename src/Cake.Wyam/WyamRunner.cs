@@ -160,8 +160,17 @@ namespace Cake.Wyam
             {
                 foreach (KeyValuePair<string, string> metadata in settings.GlobalMetadata)
                 {
-                    builder.Append("--meta");
-                    builder.Append($"{metadata.Key}={metadata.Value}");
+                    builder.Append("--global");
+                    builder.Append($"\"{EscapeMetadata(metadata.Key)}={EscapeMetadata(metadata.Value)}\"");
+                }
+            }
+
+            if (settings.InitialMetadata != null)
+            {
+                foreach (KeyValuePair<string, string> metadata in settings.InitialMetadata)
+                {
+                    builder.Append("--initial");
+                    builder.Append($"\"{EscapeMetadata(metadata.Key)}={EscapeMetadata(metadata.Value)}\"");
                 }
             }
 
@@ -265,9 +274,10 @@ namespace Cake.Wyam
                 builder.AppendQuoted(_environment.WorkingDirectory.FullPath);
             }
 
-
-
             return builder;
         }
+
+        private static string EscapeMetadata(string s) => 
+            s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("=", "\\=");
     }
 }

@@ -34,8 +34,8 @@ namespace Wyam
         public DirectoryPath OutputPath = null;
         public DirectoryPath PreviewRoot = null;
         public FilePath ConfigFilePath = null;
-        public IReadOnlyList<string> GlobalMetadataArgs = null;
         public IReadOnlyDictionary<string, object> GlobalMetadata = null;
+        public IReadOnlyDictionary<string, object> InitialMetadata = null;
 
         public bool ParseArgs(string[] args, Preprocessor preprocessor, out bool hasErrors)
         {
@@ -71,7 +71,6 @@ namespace Wyam
                 syntax.DefineOption("nocache", ref NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
                 syntax.DefineOption("v|verbose", ref Verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("attach", ref Attach, "Pause execution at the start of the program until a debugger is attached.");
-                syntax.DefineOptionList("meta", ref GlobalMetadataArgs, "Specifies global metadata which can be accessed from the engine or config file (--meta key=value).");
 
                 LogFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
                 if (!syntax.DefineOption("l|log", ref LogFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
@@ -79,6 +78,19 @@ namespace Wyam
                     LogFilePath = null;
                 }
 
+                // Metadata
+                IReadOnlyList<string> globalMetadata = null;
+                if (syntax.DefineOptionList("g|global", ref globalMetadata, "Specifies global metadata as a sequence of key=value pairs.").IsSpecified)
+                {
+                    GlobalMetadata = MetadataParser.Parse(globalMetadata);
+                }
+                IReadOnlyList<string> initialMetadata = null;
+                if (syntax.DefineOptionList("initial", ref initialMetadata, "Specifies initial document metadata as a sequence of key=value pairs.").IsSpecified)
+                {
+                    InitialMetadata = MetadataParser.Parse(initialMetadata);
+                }
+
+                // Directives
                 foreach (IDirective directive in preprocessor.Directives.Where(x => x.SupportsCli))
                 {
                     // Get the option name and help text
@@ -109,6 +121,7 @@ namespace Wyam
                     }
                 }
 
+                // Root
                 if (syntax.DefineParameter("root", ref RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
                 {
                     // If a root folder was defined, but it actually points to a file, set the root folder to the directory

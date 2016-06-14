@@ -106,6 +106,11 @@ namespace Cake.Wyam
         public IDictionary<string, string> GlobalMetadata { get; set; }
 
         /// <summary>
+        /// Gets or sets the initial document metadata.
+        /// </summary>
+        public IDictionary<string, string> InitialMetadata { get; set; }
+
+        /// <summary>
         /// Gets or sets the path to the Wyam log file.
         /// </summary>
         public FilePath LogFilePath { get; set; }
