@@ -10,7 +10,7 @@ namespace Wyam.Core.Execution
 {
     internal class PipelineCollection : IPipelineCollection
     {
-        private readonly Dictionary<string, Pipeline> _pipelines = new Dictionary<string, Pipeline>();
+        private readonly Dictionary<string, Pipeline> _pipelines = new Dictionary<string, Pipeline>(StringComparer.OrdinalIgnoreCase);
 
         public IPipeline Add(params IModule[] modules)
         {
