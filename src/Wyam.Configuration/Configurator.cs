@@ -40,7 +40,9 @@ namespace Wyam.Configuration
 
         public IReadOnlyDictionary<string, object> InitialMetadata { get; set; }
 
-        public string Recipe { get; set; }
+        public string RecipeName { get; set; }
+
+        public IRecipe Recipe { get; set; }
 
         public string Theme { get; set; }
 
@@ -131,12 +133,12 @@ namespace Wyam.Configuration
         // Internal for testing
         internal void AddRecipePackageAndSetTheme()
         {
-            if (!string.IsNullOrEmpty(Recipe))
+            if (Recipe == null && !string.IsNullOrEmpty(RecipeName))
             {
                 KnownRecipe knownRecipe;
-                if (KnownRecipe.Lookup.TryGetValue(Recipe, out knownRecipe))
+                if (KnownRecipe.Lookup.TryGetValue(RecipeName, out knownRecipe))
                 {
-                    Trace.Verbose($"Recipe {Recipe} was in the lookup of known recipes");
+                    Trace.Verbose($"Recipe {RecipeName} was in the lookup of known recipes");
 
                     // Add the package, but only if it wasn't added manually
                     if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
@@ -152,7 +154,7 @@ namespace Wyam.Configuration
                 }
                 else
                 {
-                    Trace.Verbose($"Recipe {Recipe} is not in the lookup of known recipes");
+                    Trace.Verbose($"Recipe {RecipeName} is not in the lookup of known recipes");
                 }
             }
         }
@@ -169,11 +171,11 @@ namespace Wyam.Configuration
                     Trace.Verbose($"Theme {Theme} was in the lookup of known themes");
                     inputPath = knownTheme.InputPath;
 
-                    // Do a sanity check against the recipe
-                    if (!string.IsNullOrEmpty(Recipe) && !string.IsNullOrEmpty(knownTheme.Recipe)
-                        && !string.Equals(Recipe, knownTheme.Recipe, StringComparison.OrdinalIgnoreCase))
+                    // Do a sanity check against the recipe (but only if we didn't explicitly specify one)
+                    if (Recipe == null && !string.IsNullOrEmpty(RecipeName) && !string.IsNullOrEmpty(knownTheme.Recipe)
+                        && !string.Equals(RecipeName, knownTheme.Recipe, StringComparison.OrdinalIgnoreCase))
                     {
-                        Trace.Warning($"Theme {Theme} is designed for recipe {knownTheme.Recipe} but is being used with recipe {Recipe}, results may be unexpected");
+                        Trace.Warning($"Theme {Theme} is designed for recipe {knownTheme.Recipe} but is being used with recipe {RecipeName}, results may be unexpected");
                     }
 
                     // Add any packages needed for the theme
@@ -265,15 +267,18 @@ namespace Wyam.Configuration
 
         private void ApplyRecipe()
         {
-            if (!string.IsNullOrEmpty(Recipe))
+            if (Recipe == null && !string.IsNullOrEmpty(RecipeName))
             {
-                IRecipe recipe = ClassCatalog.GetInstance<IRecipe>(Recipe, true);
-                if (recipe == null)
+                Recipe = ClassCatalog.GetInstance<IRecipe>(RecipeName, true);
+                if (Recipe == null)
                 {
-                    throw new Exception($"The recipe \"{Recipe}\" could not be found");
+                    throw new Exception($"The recipe \"{RecipeName}\" could not be found");
                 }
-                _engine.Namespaces.Add(recipe.GetType().Namespace);  // Add the recipe namespace so it's available to modules
-                recipe.Apply(_engine);
+            }
+            if (Recipe != null)
+            {
+                _engine.Namespaces.Add(Recipe.GetType().Namespace);  // Add the recipe namespace so it's available to modules
+                Recipe.Apply(_engine);
             }
         }
 
@@ -298,6 +303,12 @@ namespace Wyam.Configuration
 
         private void Evaluate(ConfigParserResult parserResult)
         {
+            if (string.IsNullOrEmpty(parserResult.Declarations)
+                && string.IsNullOrEmpty(parserResult.Body))
+            {
+                return;
+            }
+
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {

@@ -20,7 +20,7 @@ namespace Wyam.Configuration.ConfigScript
         public string AssemblyFullName { get; private set; }
 
         // Internal for testing
-        internal void Generate(string declarations, string config, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
+        internal void Generate(string declarations, string body, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Start the script, adding all requested namespaces
             StringBuilder scriptBuilder = new StringBuilder();
@@ -35,7 +35,7 @@ namespace Wyam.Configuration.ConfigScript
                     public ConfigScript(Engine engine) : base(engine) { }
 
                     public override void Run()
-                    {" + Environment.NewLine + config + @"
+                    {" + Environment.NewLine + (body ?? string.Empty) + @"
                     }");
 
             // Add static methods to construct each module

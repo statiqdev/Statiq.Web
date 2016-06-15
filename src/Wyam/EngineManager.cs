@@ -12,67 +12,80 @@ namespace Wyam
 {
     internal class EngineManager : IDisposable
     {
-        private readonly BuildCommand _buildCommand;
+        private readonly ConfigOptions _configOptions;
         private bool _disposed;
 
         public Engine Engine { get; }
         public Configurator Configurator { get; }
-
-        public EngineManager(Preprocessor preprocessor, BuildCommand buildCommand)
+        
+        public static EngineManager Get(Preprocessor preprocessor, ConfigOptions configOptions)
         {
-            _buildCommand = buildCommand;
+            try
+            {
+                return new EngineManager(preprocessor, configOptions);
+            }
+            catch (Exception ex)
+            {
+                Trace.Critical("Error while instantiating engine: {0}", ex.Message);
+                return null;
+            }
+        }
+
+        public EngineManager(Preprocessor preprocessor, ConfigOptions configOptions)
+        {
+            _configOptions = configOptions;
             Engine = new Engine();
             Configurator = new Configurator(Engine, preprocessor);
             
             // Set no cache if requested
-            if (_buildCommand.NoCache)
+            if (_configOptions.NoCache)
             {
                 Engine.Settings.UseCache = false;
             }
 
             // Set folders
-            Engine.FileSystem.RootPath = _buildCommand.RootPath;
-            if (_buildCommand.InputPaths != null && _buildCommand.InputPaths.Count > 0)
+            Engine.FileSystem.RootPath = _configOptions.RootPath;
+            if (_configOptions.InputPaths != null && _configOptions.InputPaths.Count > 0)
             {
                 // Clear existing default paths if new ones are set
                 // and reverse the inputs so the last one is first to match the semantics of multiple occurrence single options
                 Engine.FileSystem.InputPaths.Clear();
-                Engine.FileSystem.InputPaths.AddRange(_buildCommand.InputPaths.Reverse());
+                Engine.FileSystem.InputPaths.AddRange(_configOptions.InputPaths.Reverse());
             }
-            if (_buildCommand.OutputPath != null)
+            if (_configOptions.OutputPath != null)
             {
-                Engine.FileSystem.OutputPath = _buildCommand.OutputPath;
+                Engine.FileSystem.OutputPath = _configOptions.OutputPath;
             }
-            if (_buildCommand.NoClean)
+            if (_configOptions.NoClean)
             {
                 Engine.Settings.CleanOutputPath = false;
             }
-            if (_buildCommand.GlobalMetadata != null)
+            if (_configOptions.GlobalMetadata != null)
             {
-                foreach (KeyValuePair<string, object> item in _buildCommand.GlobalMetadata)
+                foreach (KeyValuePair<string, object> item in _configOptions.GlobalMetadata)
                 {
                     Engine.GlobalMetadata.Add(item);
                 }
             }
 
             // Set NuGet settings
-            Configurator.PackageInstaller.UpdatePackages = _buildCommand.UpdatePackages;
-            Configurator.PackageInstaller.UseLocalPackagesFolder = _buildCommand.UseLocalPackages;
-            Configurator.PackageInstaller.UseGlobalPackageSources = _buildCommand.UseGlobalSources;
-            if (_buildCommand.PackagesPath != null)
+            Configurator.PackageInstaller.UpdatePackages = _configOptions.UpdatePackages;
+            Configurator.PackageInstaller.UseLocalPackagesFolder = _configOptions.UseLocalPackages;
+            Configurator.PackageInstaller.UseGlobalPackageSources = _configOptions.UseGlobalSources;
+            if (_configOptions.PackagesPath != null)
             {
-                Configurator.PackageInstaller.PackagesPath = _buildCommand.PackagesPath;
+                Configurator.PackageInstaller.PackagesPath = _configOptions.PackagesPath;
             }
 
             // Metadata
-            Configurator.GlobalMetadata = buildCommand.GlobalMetadata;
-            Configurator.InitialMetadata = buildCommand.InitialMetadata;
+            Configurator.GlobalMetadata = configOptions.GlobalMetadata;
+            Configurator.InitialMetadata = configOptions.InitialMetadata;
 
             // Script output
-            Configurator.OutputScript = _buildCommand.OutputScript;
+            Configurator.OutputScript = _configOptions.OutputScript;
 
             // Application input
-            Engine.ApplicationInput = _buildCommand.Stdin;
+            Engine.ApplicationInput = _configOptions.Stdin;
         }
 
         public void Dispose()
@@ -97,7 +110,7 @@ namespace Wyam
                 }
 
                 // If we have a configuration file use it, otherwise configure with defaults  
-                IFile configFile = Engine.FileSystem.GetRootFile(_buildCommand.ConfigFilePath);
+                IFile configFile = Engine.FileSystem.GetRootFile(_configOptions.ConfigFilePath);
                 if (configFile.Exists)
                 {
                     Trace.Information("Loading configuration from {0}", configFile.Path);
@@ -106,7 +119,7 @@ namespace Wyam
                 }
                 else
                 {
-                    Trace.Information("Could not find configuration file at {0}", _buildCommand.ConfigFilePath);
+                    Trace.Information("Could not find configuration file at {0}", _configOptions.ConfigFilePath);
                     Configurator.Configure(null);
                 }
             }

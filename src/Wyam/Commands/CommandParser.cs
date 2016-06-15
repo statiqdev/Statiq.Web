@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Commands
@@ -12,6 +13,8 @@ namespace Wyam.Commands
         private static readonly Command[] Commands =
         {
             new BuildCommand(),
+            new ScaffoldCommand(), 
+            new PreviewCommand(), 
             new HelpCommand()
         };
 
@@ -84,7 +87,12 @@ namespace Wyam.Commands
                 }
             }
 
-            return parsed.IsHelpRequested() || hasErrors ? null : command;
+            if (parsed.IsHelpRequested() || hasErrors)
+            {
+                return null;
+            }
+            Trace.Information($"**{commands.First(x => x.Item2 == command).Item1.ToUpperInvariant()}**");
+            return command;
         }
     }
 }

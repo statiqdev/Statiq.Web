@@ -36,6 +36,7 @@ namespace Wyam
             if (exception != null)
             {
                 Trace.Critical(exception.Message);
+                Trace.Verbose(exception.ToString());
             }
             Environment.Exit((int)ExitCode.UnhandledError);
         }

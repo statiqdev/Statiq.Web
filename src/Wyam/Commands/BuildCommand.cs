@@ -2,19 +2,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Hosting;
-using Microsoft.Owin.Hosting.Tracing;
-using Microsoft.Owin.StaticFiles;
-using Owin;
 using Wyam.Common.IO;
 using Wyam.Configuration.Preprocessing;
-using Wyam.Owin;
 using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Commands
@@ -25,6 +17,7 @@ namespace Wyam.Commands
         private readonly AutoResetEvent _messageEvent = new AutoResetEvent(false);
         private readonly InterlockedBool _exit = new InterlockedBool(false);
         private readonly InterlockedBool _newEngine = new InterlockedBool(false);
+        private readonly ConfigOptions _configOptions = new ConfigOptions();
         
         private bool _preview = false;
         private int _previewPort = 5080;
@@ -33,22 +26,7 @@ namespace Wyam.Commands
         private bool _verifyConfig = false;
         private DirectoryPath _previewRoot = null;
         private bool _watch = false;
-
-        public bool NoClean = false;
-        public bool NoCache = false;
-        public bool UpdatePackages = false;
-        public bool UseLocalPackages = false;
-        public bool UseGlobalSources = false;
-        public DirectoryPath PackagesPath = null;
-        public bool OutputScript = false;
-        public string Stdin = null;
-        public DirectoryPath RootPath = null;
-        public IReadOnlyList<DirectoryPath> InputPaths = null;
-        public DirectoryPath OutputPath = null;
-        public FilePath ConfigFilePath = null;
-        public IReadOnlyDictionary<string, object> GlobalMetadata = null;
-        public IReadOnlyDictionary<string, object> InitialMetadata = null;
-
+        
         public override string Description => "Runs the build process (this is the default command).";
 
         public override string[] SupportedDirectives => new[]
@@ -73,17 +51,17 @@ namespace Wyam.Commands
             {
                 syntax.ReportError("preview-root can only be specified if the preview server is running.");
             }
-            syntax.DefineOptionList("i|input", ref InputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
-            syntax.DefineOption("o|output", ref OutputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
-            syntax.DefineOption("c|config", ref ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
-            syntax.DefineOption("u|update-packages", ref UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
-            syntax.DefineOption("use-local-packages", ref UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
-            syntax.DefineOption("use-global-sources", ref UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
-            syntax.DefineOption("packages-path", ref PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
-            syntax.DefineOption("output-script", ref OutputScript, "Outputs the config script after it's been processed for further debugging.");
+            syntax.DefineOptionList("i|input", ref _configOptions.InputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
+            syntax.DefineOption("o|output", ref _configOptions.OutputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
+            syntax.DefineOption("c|config", ref _configOptions.ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
+            syntax.DefineOption("u|update-packages", ref _configOptions.UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
+            syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
+            syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
+            syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
+            syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging.");
             syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
-            syntax.DefineOption("noclean", ref NoClean, "Prevents cleaning of the output path on each execution.");
-            syntax.DefineOption("nocache", ref NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
+            syntax.DefineOption("noclean", ref _configOptions.NoClean, "Prevents cleaning of the output path on each execution.");
+            syntax.DefineOption("nocache", ref _configOptions.NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
 
             _logFilePath = $"wyam-{DateTime.Now:yyyyMMddHHmmssfff}.txt";
             if (!syntax.DefineOption("l|log", ref _logFilePath, FilePath.FromString, false, "Log all trace messages to the specified log file (by default, wyam-[datetime].txt).").IsSpecified)
@@ -95,34 +73,34 @@ namespace Wyam.Commands
             IReadOnlyList<string> globalMetadata = null;
             if (syntax.DefineOptionList("g|global", ref globalMetadata, "Specifies global metadata as a sequence of key=value pairs.").IsSpecified)
             {
-                GlobalMetadata = MetadataParser.Parse(globalMetadata);
+                _configOptions.GlobalMetadata = MetadataParser.Parse(globalMetadata);
             }
             IReadOnlyList<string> initialMetadata = null;
             if (syntax.DefineOptionList("initial", ref initialMetadata, "Specifies initial document metadata as a sequence of key=value pairs.").IsSpecified)
             {
-                InitialMetadata = MetadataParser.Parse(initialMetadata);
+                _configOptions.InitialMetadata = MetadataParser.Parse(initialMetadata);
             }
         }
 
         protected override void ParseParameters(ArgumentSyntax syntax)
         {
             // Root
-            if (syntax.DefineParameter("root", ref RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
+            if (syntax.DefineParameter("root", ref _configOptions.RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
             {
                 // If a root folder was defined, but it actually points to a file, set the root folder to the directory
                 // and use the specified file as the config file (if a config file was already specified, it's an error)
-                FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(RootPath.FullPath);
+                FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(_configOptions.RootPath.FullPath);
                 if (File.Exists(rootDirectoryPathAsConfigFile.FullPath))
                 {
                     // The specified root actually points to a file...
-                    if (ConfigFilePath != null)
+                    if (_configOptions.ConfigFilePath != null)
                     {
                         syntax.ReportError("A config file was both explicitly specified and specified in the root folder.");
                     }
                     else
                     {
-                        ConfigFilePath = rootDirectoryPathAsConfigFile.FileName;
-                        RootPath = rootDirectoryPathAsConfigFile.Directory;
+                        _configOptions.ConfigFilePath = rootDirectoryPathAsConfigFile.FileName;
+                        _configOptions.RootPath = rootDirectoryPathAsConfigFile.Directory;
                     }
                 }
             }
@@ -131,13 +109,13 @@ namespace Wyam.Commands
         protected override ExitCode RunCommand(Preprocessor preprocessor)
         {
             // Get the standard input stream
-            Stdin = StandardInputReader.Read();
+            _configOptions.Stdin = StandardInputReader.Read();
             
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
-            RootPath = RootPath == null ? currentDirectory : currentDirectory.Combine(RootPath);
-            _logFilePath = _logFilePath == null ? null : RootPath.CombineFile(_logFilePath);
-            ConfigFilePath = RootPath.CombineFile(ConfigFilePath ?? "config.wyam");
+            _configOptions.RootPath = _configOptions.RootPath == null ? currentDirectory : currentDirectory.Combine(_configOptions.RootPath);
+            _logFilePath = _logFilePath == null ? null : _configOptions.RootPath.CombineFile(_logFilePath);
+            _configOptions.ConfigFilePath = _configOptions.RootPath.CombineFile(_configOptions.ConfigFilePath ?? "config.wyam");
 
             // Set up the log file         
             if (_logFilePath != null)
@@ -146,7 +124,7 @@ namespace Wyam.Commands
             }
 
             // Get the engine and configurator
-            EngineManager engineManager = GetEngineManager(preprocessor);
+            EngineManager engineManager = EngineManager.Get(preprocessor, _configOptions);
             if (engineManager == null)
             {
                 return ExitCode.CommandLineError;
@@ -179,18 +157,10 @@ namespace Wyam.Commands
             if (_preview)
             {
                 messagePump = true;
-                try
-                {
-                    DirectoryPath previewPath = _previewRoot == null
-                        ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
-                        : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                    Trace.Information("Preview server listening on port {0} and serving from path {1}", _previewPort, previewPath);
-                    previewServer = GetPreviewServer(previewPath);
-                }
-                catch (Exception ex)
-                {
-                    Trace.Critical("Error while running preview server: {0}", ex.Message);
-                }
+                DirectoryPath previewPath = _previewRoot == null
+                    ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
+                    : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
+                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension);
             }
 
             // Start the watchers
@@ -208,14 +178,14 @@ namespace Wyam.Commands
                         _messageEvent.Set();
                     });
 
-                if (ConfigFilePath != null)
+                if (_configOptions.ConfigFilePath != null)
                 {
-                    Trace.Information("Watching configuration file {0}", ConfigFilePath);
+                    Trace.Information("Watching configuration file {0}", _configOptions.ConfigFilePath);
                     configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                        new[] { ConfigFilePath.Directory }, false, ConfigFilePath.FileName.FullPath, path =>
+                        new[] { _configOptions.ConfigFilePath.Directory }, false, _configOptions.ConfigFilePath.FileName.FullPath, path =>
                         {
                             FilePath filePath = new FilePath(path);
-                            if (ConfigFilePath.Equals(filePath))
+                            if (_configOptions.ConfigFilePath.Equals(filePath))
                             {
                                 _newEngine.Set();
                                 _messageEvent.Set();
@@ -258,9 +228,9 @@ namespace Wyam.Commands
                     if (_newEngine)
                     {
                         // Get a new engine
-                        Trace.Information("Configuration file {0} has changed, re-running", ConfigFilePath);
+                        Trace.Information("Configuration file {0} has changed, re-running", _configOptions.ConfigFilePath);
                         engineManager.Dispose();
-                        engineManager = GetEngineManager(preprocessor);
+                        engineManager = EngineManager.Get(preprocessor, _configOptions);
 
                         // Configure and execute
                         if (!engineManager.Configure())
@@ -326,73 +296,6 @@ namespace Wyam.Commands
             }
 
             return exitCode;
-        }
-
-        private EngineManager GetEngineManager(Preprocessor preprocessor)
-        {
-            try
-            {
-                return new EngineManager(preprocessor, this);
-            }
-            catch (Exception ex)
-            {
-                Trace.Critical("Error while instantiating engine: {0}", ex.Message);
-                return null;
-            }
-        }
-
-        private IDisposable GetPreviewServer(DirectoryPath root)
-        {
-            StartOptions options = new StartOptions("http://localhost:" + _previewPort);
-
-            // Disable built-in owin tracing by using a null trace output
-            // http://stackoverflow.com/questions/17948363/tracelistener-in-owin-self-hosting
-            options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
-
-            return WebApp.Start(options, app =>
-            {
-                Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(root.FullPath);
-
-                // Disable caching
-                app.Use((c, t) =>
-                {
-                    c.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-                    c.Response.Headers.Append("Pragma", "no-cache");
-                    c.Response.Headers.Append("Expires", "0");
-                    return t();
-                });
-
-                // Support for extensionless URLs
-                if (!_previewForceExtension)
-                {
-                    app.UseExtensionlessUrls(new ExtensionlessUrlsOptions
-                    {
-                        FileSystem = outputFolder
-                    });
-                }
-
-                // Serve up all static files
-                app.UseDefaultFiles(new DefaultFilesOptions
-                {
-                    RequestPath = PathString.Empty,
-                    FileSystem = outputFolder,
-                    DefaultFileNames = new List<string> { "index.html", "index.htm", "home.html", "home.htm", "default.html", "default.html" }
-                });
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = PathString.Empty,
-                    FileSystem = outputFolder,
-                    ServeUnknownFileTypes = true
-                });
-            });
-        }
-
-        private class NullTraceOutputFactory : ITraceOutputFactory
-        {
-            public TextWriter Create(string outputFile)
-            {
-                return StreamWriter.Null;
-            }
         }
     }
 }

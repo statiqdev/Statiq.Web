@@ -53,6 +53,11 @@ namespace Wyam.Configuration.Preprocessing
         public void AddValue(DirectiveValue value) => _values.Add(value);
 
         /// <summary>
+        /// Gets the current directive values.
+        /// </summary>
+        public IReadOnlyList<DirectiveValue> Values => _values;
+
+        /// <summary>
         /// Processes both directives that were added to the preprocessor plus any additional ones passed in.
         /// </summary>
         internal void ProcessDirectives(Configurator configurator, IEnumerable<DirectiveValue> additionalValues)

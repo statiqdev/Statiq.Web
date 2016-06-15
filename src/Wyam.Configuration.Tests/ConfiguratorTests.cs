@@ -396,7 +396,7 @@ SetCustomDocumentType<MyDocument>();
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
                 configurator.AssemblyLoader.AddName(Assembly.GetExecutingAssembly().FullName);
-                configurator.Recipe = nameof(MetadataTestRecipe);
+                configurator.RecipeName = nameof(MetadataTestRecipe);
                 configurator.GlobalMetadata = new Dictionary<string, object>
                 {
                     { "Foo", "Baz" }
@@ -417,7 +417,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.RecipeName = nameof(KnownRecipe.Blog);
                 configurator.PackageInstaller.AddPackage("Foobar");
 
                 // When
@@ -432,7 +432,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.RecipeName = nameof(KnownRecipe.Blog);
                 configurator.PackageInstaller.AddPackage(KnownRecipe.Blog.PackageId);
 
                 // When
@@ -447,7 +447,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.RecipeName = nameof(KnownRecipe.Blog);
 
                 // When
                 configurator.AddRecipePackageAndSetTheme();
@@ -461,7 +461,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = nameof(KnownRecipe.Blog);
+                configurator.RecipeName = nameof(KnownRecipe.Blog);
                 configurator.Theme = "Foo";
 
                 // When
@@ -486,7 +486,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = "Foo";
+                configurator.RecipeName = "Foo";
 
                 // When
                 configurator.AddRecipePackageAndSetTheme();
@@ -530,7 +530,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = "Foo";
+                configurator.RecipeName = "Foo";
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
 
                 // When
@@ -542,7 +542,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = KnownTheme.CleanBlog.Recipe;
+                configurator.RecipeName = KnownTheme.CleanBlog.Recipe;
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
 
                 // When
@@ -554,7 +554,7 @@ SetCustomDocumentType<MyDocument>();
             {
                 // Given
                 Configurator configurator = GetConfigurator();
-                configurator.Recipe = KnownTheme.CleanBlog.Recipe.ToUpper();
+                configurator.RecipeName = KnownTheme.CleanBlog.Recipe.ToUpper();
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
 
                 // When
