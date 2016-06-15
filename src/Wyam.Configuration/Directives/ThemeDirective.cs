@@ -9,8 +9,6 @@ namespace Wyam.Configuration.Directives
 
         public string ShortName => "t";
 
-        public bool SupportsCli => true;
-
         public bool SupportsMultiple => false;
 
         public string Description => "Specifies a theme to use.";

@@ -9,8 +9,6 @@ namespace Wyam.Configuration.Directives
 
         public string ShortName => "a";
 
-        public bool SupportsCli => true;
-
         public bool SupportsMultiple => true;
 
         public string Description => "Adds a reference to an assembly by file name or globbing pattern.";

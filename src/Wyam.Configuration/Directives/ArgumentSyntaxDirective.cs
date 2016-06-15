@@ -13,8 +13,6 @@ namespace Wyam.Configuration.Directives
 
         public virtual string ShortName => null;
 
-        public abstract bool SupportsCli { get; }
-
         public abstract bool SupportsMultiple { get; }
 
         public void Process(Configurator configurator, string value)

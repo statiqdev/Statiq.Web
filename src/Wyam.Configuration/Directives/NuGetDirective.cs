@@ -9,8 +9,6 @@ namespace Wyam.Configuration.Directives
 
         public override string ShortName => "n";
 
-        public override bool SupportsCli => true;
-
         public override bool SupportsMultiple => true;
 
         public override string Description => "Adds a NuGet package (downloading and installing it if needed).";

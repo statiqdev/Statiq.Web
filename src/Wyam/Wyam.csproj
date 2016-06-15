@@ -95,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionFileSystemWatcher.cs" />
+    <Compile Include="Commands\BuildCommand.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="EngineManager.cs" />
     <Compile Include="ExitCode.cs" />
     <Compile Include="MetadataParser.cs" />
@@ -107,7 +110,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Settings.cs" />
+    <Compile Include="Commands\CommandParser.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />
     <Compile Include="SimpleFileTraceListener.cs" />
     <Compile Include="StandardInputReader.cs" />

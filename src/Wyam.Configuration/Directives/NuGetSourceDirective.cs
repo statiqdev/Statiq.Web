@@ -9,8 +9,6 @@ namespace Wyam.Configuration.Directives
 
         public string ShortName => "ns";
 
-        public bool SupportsCli => true;
-
         public bool SupportsMultiple => true;
 
         public string Description => "Specifies an additional package source to use.";

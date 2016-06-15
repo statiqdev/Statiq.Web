@@ -192,7 +192,6 @@
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
     <Compile Include="Directives\ArgumentSyntaxDirective.cs" />
-    <Compile Include="Preprocessing\CliSupport.cs" />
     <Compile Include="Preprocessing\DirectiveValue.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
     <Compile Include="NuGet\NuGetLogger.cs" />

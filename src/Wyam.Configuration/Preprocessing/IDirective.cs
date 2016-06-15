@@ -19,13 +19,6 @@ namespace Wyam.Configuration.Preprocessing
         string ShortName { get; }
 
         /// <summary>
-        /// Indicates whether the directive should be supported in command
-        /// line interfaces. If <c>true</c>, the first name will be used
-        /// for the CLI option.
-        /// </summary>
-        bool SupportsCli { get; }
-
-        /// <summary>
         /// Gets a value indicating whether the directive supports multiple values.
         /// </summary>
         bool SupportsMultiple { get; }

@@ -9,8 +9,6 @@ namespace Wyam.Configuration.Directives
 
         public string ShortName => "r";
 
-        public bool SupportsCli => true;
-
         public bool SupportsMultiple => false;
 
         public string Description => "Specifies a recipe to use.";
