@@ -38,7 +38,8 @@ namespace Wyam.Blog
                     new ReadFiles("posts/{!_,!index,}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
                 new Razor.Razor(),
-                new Excerpt(),
+                new Excerpt()
+                    .SetMetadataKey(BlogKeys.Excerpt),
                 new Excerpt("div#content")
                     .SetMetadataKey(BlogKeys.Content)
                     .GetOuterHtml(false),

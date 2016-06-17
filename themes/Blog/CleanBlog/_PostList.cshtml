@@ -1,18 +1,18 @@
 @{
-    var docs = (IEnumerable<IDocument>)ViewData["PostListDocuments"];
+    var docs = (IEnumerable<IDocument>)ViewData[BlogKeys.PostListDocuments];
     foreach (IDocument doc in docs)
     {
-        string lead = doc.String("Lead");
+        string lead = doc.String(BlogKeys.Lead);
         
         <div class="post-list">
             <a href="@Context.GetLink(doc)">
-                <h3 class="post-title">@doc.String("Title")</h3>
+                <h3 class="post-title">@doc.String(BlogKeys.Title)</h3>
                 @if(!string.IsNullOrWhiteSpace(lead))
                 {
                     <h4 class="post-subtitle">@lead</h4>
                 }
             </a>
-            <p class="post-meta">Posted on @(doc.Get<DateTime>("Published").ToLongDateString())</p>            
+            <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>            
         </div>   
     }
 }

@@ -1,19 +1,20 @@
 @{
-        var Title = Model.Get<string>("Title", null);
+        string Title = Model.String(BlogKeys.Title);
+        string PageTitle = Context.String(BlogKeys.SiteName) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
 }
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+        <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
-	<title>@(Context.String("Site"))@(string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title)</title>
-        <meta name="description" content="The personal blog of Dave Glick" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">        
+        <title>@PageTitle</title>
+        <meta name="description" content="The personal blog of @Context.String(BlogKeys.SiteName)" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">        
 
-        <link type="application/rss+xml" rel="alternate" title="Dave Glick" href="/feed.rss" />
-        <link type="application/atom+xml" rel="alternate" title="Dave Glick" href="/feed.atom" />
+        <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.SiteName)" href="/feed.rss" />
+        <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.SiteName)" href="/feed.atom" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
@@ -29,11 +30,11 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
 
-        <meta name="application-name" content="Dave Glick" />
-        <meta name="msapplication-tooltip" content="Dave Glick" />
+        <meta name="application-name" content="@Context.String(BlogKeys.SiteName)" />
+        <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.SiteName)" />
         <meta name="msapplication-starturl" content="/" />
 
-        <meta property="og:title" content="Dave Glick@(string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title)" />
+        <meta property="og:title" content="@PageTitle" />
         @* <meta property="og:image" content="@Blog.Image" /> *@
         <meta property="og:type" content="website" />
         <meta property="og:url" content="@Context.GetLink(Model, true)" />
@@ -47,16 +48,16 @@
         <script src="/Scripts/trianglify.min.js"></script>
         <script src="/Scripts/Please-compressed.js"></script>
         </script>
-            
+                
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
                 <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
                 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
-    
-	</head>
-	<body onload="prettyPrint()">
+
+        </head>
+        <body onload="prettyPrint()">
                 
                 <!-- Navigation -->
                 <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -69,18 +70,13 @@
                                         <span class="icon-bar"></span>
                                         <span class="icon-bar"></span>
                                         </button>
-                                        <a class="navbar-brand" href="/">@Context.String("Site")</a>
+                                        <a class="navbar-brand" href="/">@Context.String(BlogKeys.SiteName)</a>
                                 </div>
                         
                                 <!-- Collect the nav links, forms, and other content for toggling -->
                                 <div class="collapse navbar-collapse" id="navbar-collapse">
                                         <ul class="nav navbar-nav navbar-right">
-                                                <li><a href="http://wyam.io/">Wyam</a></li>
-                                                <li><a href="http://fluentbootstrap.com/">FluentBootstrap</a></li>
-                                                <li><a class="hidden-xs">|</a><a class="visible-xs-block">-</a></li>
-                                                <li><a href="/about">About</a></li>
-                                                <li><a href="/posts">Archive</a></li>
-                                                <li><a href="/tags">Tags</a></li>
+                                                @Html.Partial("_Navbar") 
                                         </ul>
                                 </div>
                                 <!-- /.navbar-collapse -->
@@ -99,9 +95,7 @@
                                                 }
                                                 else
                                                 {
-                                                        <div class="site-heading">
-                                                                <h1>@Title</h1>
-                                                        </div>                                                
+                                                        @Html.Partial("_Header")                                            
                                                 }
                                         </div>
                                 </div>
@@ -123,31 +117,11 @@
                 <footer>
                         @Html.Partial("_Footer")
                 </footer> 
-        
-                <script type="text/javascript">
-                        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-                        var disqus_shortname = 'somedave'; // required: replace example with your forum shortname
-                
-                        /* * * DON'T EDIT BELOW THIS LINE * * */
-                        (function () {
-                                var s = document.createElement('script'); s.async = true;
-                                s.type = 'text/javascript';
-                                s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-                                (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-                        }());
-                
-                        // Google Analytics
-                        (function (i, s, o, g, r, a, m) {
-                                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                                (i[r].q = i[r].q || []).push(arguments)
-                                }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-                        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-                
-                        ga('create', 'UA-54470483-1', 'auto');
-                        ga('send', 'pageview');
-                
-                        // Background                        
+
+                @Html.Partial("_Scripts")
+
+                <script type="text/javascript">                
+                        // Header background                        
                         var colors = Please.make_color({
                                 colors_returned: 3,
                                 saturation: .6

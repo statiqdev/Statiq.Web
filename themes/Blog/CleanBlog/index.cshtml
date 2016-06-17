@@ -1,45 +1,29 @@
 @section Header {
-    <div class="site-heading">
-        @if(Context.String(BlogKeys.Greeting) != null)
-        {
-            <h1>@Context.String(BlogKeys.Greeting)</h1>
-        }
-        @if(Context.String(BlogKeys.Blurb) != null)
-        {            
-            @if(Context.String(BlogKeys.Greeting) != null)
-            {
-                <hr class="small">
-            }
-            <span class="subheading">@Context.String(BlogKeys.Blurb)</span>
-        }
-    </div>
+    @Html.Partial("_IndexHeader")
 }
 
 <div class="row">
     <div class="col-sm-8 right-border">
         @{
             bool first = true;
-            foreach(IDocument doc in Documents["Posts"]
-                .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today)
-                .OrderByDescending(x => x.Get<DateTime>("Published"))
-                .Take(3))
+            foreach(IDocument doc in Documents[BlogKeys.Posts].Take(3))
             {                
                 if (!first)
                 {
                     <hr /> 
                 }
                 first = false;
-                string lead = doc.String("Lead");
+                string lead = doc.String(BlogKeys.Lead);
                 <div class="post-preview">
                     <a href="@Context.GetLink(doc)">
-                        <h2 class="post-title">@doc.String("Title")</h2>
+                        <h2 class="post-title">@doc.String(BlogKeys.Title)</h2>
                         @if(!string.IsNullOrWhiteSpace(lead))
                         {
                             <h3 class="post-subtitle">@lead</h3>
                         }
                     </a>
-                    <p class="post-meta">Posted on @(doc.Get<DateTime>("Published").ToLongDateString())</p>
-                    @Html.Raw(doc.String("Excerpt"))             
+                    <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>
+                    @Html.Raw(doc.String(BlogKeys.Excerpt))             
                 </div>       
             }
         }
@@ -48,20 +32,11 @@
         <hr class="visible-xs-block" />
         <h5>Tags</h5>
         <div>
-            @{                
-            	List<KeyValuePair<string, int>> Tags = Documents
-                    .Where(x => x.ContainsKey("Published") && x.Get<DateTime>("Published") <= DateTime.Today && x.ContainsKey("Tags"))
-                    .SelectMany(x => x.Get<string[]>("Tags"))
-                    .GroupBy(x => x)
-                    .Select(x => new KeyValuePair<string, int>(x.Key, x.Count()))
-                    .OrderByDescending(x => x.Value)
-                    .Take(10)
-                    .ToList();
-                foreach (KeyValuePair<string, int> tag in Tags)
-                { 
-                    string tagLink = $"tags/{(tag.Key.StartsWith(".") ? tag.Key.Substring(1) : tag.Key).ToLowerInvariant().Replace(' ', '-')}";
-                    <a role="button" href="@tagLink" class="btn btn-default btn-sm"> @tag.Key (@tag.Value)</a><br>
-                }
+            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderBy(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
+            { 
+                string tag = tagDocument.String(BlogKeys.Tag);
+                string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
+                <a role="button" href="@Context.GetLink(tagDocument)" class="btn btn-default btn-sm"> @tag (@postCount)</a>
             }
         </div>
         <ul class="pager">
@@ -70,18 +45,11 @@
             </li>
         </ul>
         <hr />
-        <h5>On The Interwebs</h5>
-        @Html.Partial("_SocialLinks")
-        <hr />
         <h5>Older Posts</h5>
         <ul class="list-unstyled">
-            @foreach(IDocument doc in Documents
-                .Where(x => x.ContainsKey("Published"))
-                .OrderByDescending(x => x.Get<DateTime>("Published"))
-                .Skip(3)
-                .Take(4))
+            @foreach(IDocument doc in Documents[BlogKeys.Posts].Skip(3).Take(4))
             {        
-                <li><a href="@Context.GetLink(doc)">@doc.String("Title")</a></li>
+                <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
             }
         </ul>
         <ul class="pager">
@@ -89,5 +57,7 @@
                 <a href="/posts">Archive &rarr;</a>
             </li>
         </ul>
+
+        @Html.Partial("_Sidebar")
     </div> 
 </div>
