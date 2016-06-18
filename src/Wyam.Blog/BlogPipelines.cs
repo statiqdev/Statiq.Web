@@ -10,8 +10,8 @@ namespace Wyam.Blog
     {
         public const string Posts = nameof(Posts);
         public const string Tags = nameof(Tags);
-        public const string TagIndex = nameof(TagIndex);
-        public const string Content = nameof(Content);
+        public const string Pages = nameof(Pages);
+        public const string RenderPages = nameof(RenderPages);
         public const string Resources = nameof(Resources);
     }
 }

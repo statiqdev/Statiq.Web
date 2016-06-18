@@ -56,6 +56,7 @@ namespace Wyam.Core.Modules.IO
         private bool _ignoreEmptyContent = true;
         private bool _append;
         private Func<IDocument, IExecutionContext, bool> _predicate = null;
+        private bool _onlyMetadata = false;
 
         /// <summary>
         /// Uses a delegate to describe where to write the content of each document. 
@@ -104,7 +105,25 @@ namespace Wyam.Core.Modules.IO
         {
             _path = (x, y) => x.FilePath(Keys.RelativeFilePath);
         }
-        
+
+        /// <summary>
+        /// Indicates that only metadata should be added to the document and a file should not
+        /// actually be written to the file system. This is useful for preprocessing documents
+        /// so they appear in a pipeline with the correct write metadata, while actually
+        /// writing them later with a second <see cref="WriteFiles"/> module invocation.
+        /// Only the following metadata values are written when this flag is turned on:
+        /// <c>WritePath</c>, <c>RelativeFilePath</c>, <c>RelativeFilePathBase</c>,
+        /// and <c>RelativeFileDir</c>. The <c>Destination...</c> metadata values are
+        /// not added to the document when only setting metadata..
+        /// </summary>
+        /// <param name="onlyMetadata">If set to <c>true</c>, metadata will be added
+        /// to the input document(s) without actually writing them to the file system.</param>
+        public WriteFiles OnlyMetadata(bool onlyMetadata = true)
+        {
+            _onlyMetadata = onlyMetadata;
+            return this;
+        }
+
         /// <summary>
         /// By default the metadata values for <c>WritePath</c>, <c>WriteFileName</c>, and <c>WriteExtension</c> 
         /// are checked and used first, even if a delegate is specified in the constructor. This method can be used 
@@ -262,7 +281,7 @@ namespace Wyam.Core.Modules.IO
             // Aggregate and return the results
             return outputs;
         }
-
+        
         private IDocument Write(IDocument input, IExecutionContext context, FilePath outputPath)
         {
             IFile output = context.FileSystem.GetOutputFile(outputPath);
@@ -274,16 +293,31 @@ namespace Wyam.Core.Modules.IO
                     {
                         return input;
                     }
-                    using (Stream outputStream = _append ? output.OpenAppend() : output.OpenWrite())
+                    if (!_onlyMetadata)
                     {
-                        inputStream.CopyTo(outputStream);
+                        using (Stream outputStream = _append ? output.OpenAppend() : output.OpenWrite())
+                        {
+                            inputStream.CopyTo(outputStream);
+                        }
                     }
                 }
-                Trace.Verbose($"Wrote file {output.Path.FullPath} from {input.SourceString()}");
+                Trace.Verbose($"{(_onlyMetadata ? "Set metadata for" : "Wrote")} file {output.Path.FullPath} from {input.SourceString()}");
                 FilePath relativePath = context.FileSystem.GetOutputPath().GetRelativePath(output.Path) ?? output.Path.FileName;
                 FilePath fileNameWithoutExtension = output.Path.FileNameWithoutExtension;
-                return context.GetDocument(input, output.OpenRead(), 
-                    new MetadataItems
+                MetadataItems metadata = new MetadataItems
+                {
+                    { Keys.RelativeFilePath, relativePath },
+                    { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
+                        ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
+                    { Keys.RelativeFileDir, relativePath.Directory }
+                };
+                if (_onlyMetadata)
+                {
+                    metadata.Add(Keys.WritePath, outputPath);
+                }
+                else
+                {
+                    metadata.AddRange(new MetadataItems
                     {
                         { Keys.DestinationFileBase, fileNameWithoutExtension },
                         { Keys.DestinationFileExt, output.Path.Extension },
@@ -292,11 +326,11 @@ namespace Wyam.Core.Modules.IO
                         { Keys.DestinationFilePath, output.Path },
                         { Keys.DestinationFilePathBase, fileNameWithoutExtension == null
                             ? null : output.Path.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
-                        { Keys.RelativeFilePath, relativePath },
-                        { Keys.RelativeFilePathBase, fileNameWithoutExtension == null
-                            ? null : relativePath.Directory.CombineFile(output.Path.FileNameWithoutExtension) },
-                        { Keys.RelativeFileDir, relativePath.Directory }
                     });
+                }
+                return _onlyMetadata
+                    ? context.GetDocument(input, metadata)
+                    : context.GetDocument(input, output.OpenRead(), metadata);
             }
             return input;
         }
