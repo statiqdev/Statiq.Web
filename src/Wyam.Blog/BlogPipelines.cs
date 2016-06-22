@@ -13,5 +13,6 @@ namespace Wyam.Blog
         public const string Pages = nameof(Pages);
         public const string RenderPages = nameof(RenderPages);
         public const string Resources = nameof(Resources);
+        public const string Feed = nameof(Feed);
     }
 }

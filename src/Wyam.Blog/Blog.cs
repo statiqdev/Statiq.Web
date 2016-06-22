@@ -9,6 +9,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
@@ -23,7 +24,7 @@ namespace Wyam.Blog
         {
             // Global metadata defaults
             engine.GlobalMetadata[BlogKeys.SiteName] = "My Blog";
-            engine.GlobalMetadata[BlogKeys.Greeting] = "Welcome!";
+            engine.GlobalMetadata[BlogKeys.SiteDescription] = "Welcome!";
             
             // TODO: RSS feed
 
@@ -66,6 +67,15 @@ namespace Wyam.Blog
                 new WriteFiles(".html"),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending()
             );
+
+            engine.Pipelines.Add(BlogPipelines.Feed,
+                new Documents(BlogPipelines.Posts),
+                new Rss(_ => "feed.rss",
+                    ctx => ctx.GlobalMetadata.String(BlogKeys.SiteName),
+                    ctx => ctx.GlobalMetadata.String(BlogKeys.SiteIntro) ?? "RSS feed for " + ctx.GlobalMetadata.String(BlogKeys.SiteName))
+                    .WithTitleMetaKey(BlogKeys.Title)
+                    .WithDescriptionMetaKey(BlogKeys.Excerpt),
+                new WriteFiles());
 
             engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),

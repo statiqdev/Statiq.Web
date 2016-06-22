@@ -12,6 +12,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Core.Modules.Control;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -22,13 +23,13 @@ namespace Wyam.Core.Modules.Contents
     /// <para>
     /// Implements RSS and Atom feeds. All input documents should have <c>RssTitle</c> and <c>RssDescription</c> metadata
     /// because they are required by RSS. You can override these metadata keys via <c>WithTitleMetaKey(string key)</c>
-    /// and <c>WithDescriptionMetaKey(string key)</c>.
+    /// and <c>WithDescriptionMetaKey(string key)</c>. It's also important to make sure you've set the <see cref="ISettings.Host"/>
+    /// property (and the <see cref="ISettings.LinkRoot"/> if appropriate) when using RSS feeds as that will be used to generate 
+    /// the absolute links to articles.
     /// </para>
     /// <para>
-    /// This module outputs input files without changes and one another file: the RSS feed.
-    /// The RSS feed contains <c>RelativeFilePath</c> and <c>IsRssFeed: true</c> metadata keys.
-    /// Use <c>WriteFiles</c> module inside <c>Branch</c> module without parameters to place file 
-    /// in appropriate file system location. See example.
+    /// This module outputs a single document containing the RSS content and <c>RelativeFilePath</c>,
+    /// <c>WritePath</c>, and <c>IsRssFeed</c> metadata keys.
     /// </para>
     /// <para>
     /// Options:
@@ -74,8 +75,7 @@ namespace Wyam.Core.Modules.Contents
     ///     FrontMatter(Yaml()),
     ///     Markdown(),
     ///     WriteFiles(".html"),
-    ///     Rss(siteRoot: "http://example.org",
-    ///         outputRssFilePath: "posts/feed.rss",
+    ///     Rss(outputRssFilePath: "posts/feed.rss",
     ///         feedTitle: "My awesome blog",
     ///         feedDescription: "Blog about something"
     ///     ),
@@ -104,24 +104,19 @@ namespace Wyam.Core.Modules.Contents
     /// &lt;/rss&gt;
     /// </code>
     /// </example>
+    /// <metadata name="IsRssFeed" type="bool">A flag to indicate that this document contains an RSS feed.</metadata>
     /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output RSS file.</metadata>
     /// <metadata name="WritePath" type="FilePath">Relative path to the output RSS file (primarily to support the WriteFiles module).</metadata>
     /// <category>Content</category>
     public class Rss : IModule
     {
-        /// <summary>
-        /// RSS feed title. Required.
-        /// </summary>
-        private readonly string _feedTitle = string.Empty;
+        private static readonly XNamespace AtomNamespace = XNamespace.Get(@"http://www.w3.org/2005/Atom");
 
-        /// <summary>
-        /// RSS feed description. Required.
-        /// </summary>
-        private readonly string _feedDescription = string.Empty;
+        private readonly ContextConfig _rssPath;
 
-        private readonly Uri _siteUri;
-
-        private readonly FilePath _rssPath;
+        private readonly ContextConfig _feedTitle;
+        
+        private readonly ContextConfig _feedDescription;
 
         // Default meta keys
         private string _pubDateMetaKey = "RssPubDate";
@@ -141,25 +136,14 @@ namespace Wyam.Core.Modules.Contents
 
         private Func<FilePath, FilePath> _linkCustomizerDelegate = null;
 
-        private static readonly XNamespace AtomNamespace = XNamespace.Get(@"http://www.w3.org/2005/Atom");
-
         /// <summary>
-        /// Creates RSS feed from input documents.
+        /// Creates a RSS feed from input documents.
         /// </summary>
-        /// <param name="siteUri">The full URI of the site, including hostname (example: "http://mysite.com/blog/").</param>
         /// <param name="rssPath">Relative output location where generated RSS feed will be placed on server. (example: "feeds/feed.rss").</param>
         /// <param name="feedTitle">Title of the RSS feed.</param>
         /// <param name="feedDescription">Description of the RSS feed.</param>
-        public Rss(Uri siteUri, FilePath rssPath, string feedTitle, string feedDescription)
+        public Rss(FilePath rssPath, string feedTitle, string feedDescription)
         {
-            if (siteUri == null)
-            {
-                throw new ArgumentNullException(nameof(siteUri));
-            }
-            if (!siteUri.IsAbsoluteUri)
-            {
-                throw new ArgumentException("The site URI must be absolute", nameof(siteUri));
-            }
             if (rssPath == null)
             {
                 throw new ArgumentNullException(nameof(rssPath));
@@ -177,22 +161,36 @@ namespace Wyam.Core.Modules.Contents
                 throw new ArgumentException(nameof(feedDescription));
             }
 
-            _siteUri = siteUri;
-            _rssPath = rssPath;
-            _feedDescription = feedDescription;
-            _feedTitle = feedTitle;
+            _rssPath = _ => rssPath;
+            _feedDescription = _ => feedDescription;
+            _feedTitle = _ => feedTitle;
         }
 
         /// <summary>
-        /// Creates RSS feed from input documents.
+        /// Creates a RSS feed from input documents.
         /// </summary>
-        /// <param name="siteUri">The full URI of the site, including hostname (example: "http://mysite.com/blog/").</param>
-        /// <param name="rssPath">Relative output location where generated RSS feed will be placed on server. (example: "feeds/feed.rss").</param>
-        /// <param name="feedTitle">Title of the RSS feed.</param>
-        /// <param name="feedDescription">Description of the RSS feed.</param>
-        public Rss(string siteUri, FilePath rssPath, string feedTitle, string feedDescription)
-            : this(new Uri(siteUri), rssPath, feedTitle, feedDescription)
+        /// <param name="rssPath">Delegate that should return a <see cref="FilePath"/> with the relative output 
+        /// location where generated RSS feed will be placed on server. (example: "feeds/feed.rss").</param>
+        /// <param name="feedTitle">Delegate that should return a string with the title of the RSS feed.</param>
+        /// <param name="feedDescription">Delegate that should return a string with the description of the RSS feed.</param>
+        public Rss(ContextConfig rssPath, ContextConfig feedTitle, ContextConfig feedDescription)
         {
+            if (rssPath == null)
+            {
+                throw new ArgumentNullException(nameof(rssPath));
+            }
+            if (feedTitle == null)
+            {
+                throw new ArgumentNullException(nameof(feedTitle));
+            }
+            if (feedDescription == null)
+            {
+                throw new ArgumentNullException(nameof(feedDescription));
+            }
+
+            _rssPath = rssPath;
+            _feedTitle = feedTitle;
+            _feedDescription = feedDescription;
         }
 
         /// <summary>
@@ -306,8 +304,36 @@ namespace Wyam.Core.Modules.Contents
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            // Get the site root
+            if (string.IsNullOrEmpty(context.Settings.Host))
+            {
+                throw new Exception("A host must be specified in settings to use the " + nameof(Rss) + " module");
+            }
+            string siteLink = context.GetLink();
+
+            // Get and verify the settings
+            FilePath rssPath = _rssPath.Invoke<FilePath>(context);
+            string feedTitle = _feedTitle.Invoke<string>(context);
+            string feedDescription = _feedDescription.Invoke<string>(context);
+            if (rssPath == null)
+            {
+                throw new ArgumentNullException(nameof(rssPath));
+            }
+            if (!rssPath.IsRelative)
+            {
+                throw new ArgumentException("The RSS path must be relative", nameof(rssPath));
+            }
+            if (string.IsNullOrEmpty(feedTitle))
+            {
+                throw new ArgumentException(nameof(feedTitle));
+            }
+            if (string.IsNullOrEmpty(feedDescription))
+            {
+                throw new ArgumentException(nameof(feedDescription));
+            }
+
             XDocument rss = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-            FilePath rssPath = new DirectoryPath(_siteUri.ToString()).CombineFile(_rssPath);
+            string rssLink = new DirectoryPath((string)null, siteLink).CombineFile(rssPath).Collapse().FullPath;
 
             XElement rssRoot = new XElement("rss",
                 new XAttribute("version", "2.0"),
@@ -315,11 +341,11 @@ namespace Wyam.Core.Modules.Contents
             );
 
             XElement channel = new XElement("channel",
-                new XElement("title", _feedTitle),
-                new XElement("description", _feedDescription),
-                new XElement("link", _siteUri.ToString()),
+                new XElement("title", feedTitle),
+                new XElement("description", feedDescription),
+                new XElement("link", siteLink),
                 new XElement(AtomNamespace + "link",
-                    new XAttribute("href", rssPath.FullPath),
+                    new XAttribute("href", rssLink),
                     new XAttribute("rel", "self")
                 ),
                 new XElement("lastBuildDate", DateTimeHelper.ToRssDate(DateTime.Now))
@@ -362,9 +388,8 @@ namespace Wyam.Core.Modules.Contents
                 {
                     throw new Exception($"Required metadata keys {Keys.RssItemUrl} or {Keys.RelativeFilePath} were not found in the document {input.SourceString()}");
                 }
-            
-                FilePath itemLink = new DirectoryPath(_siteUri.ToString()).CombineFile(link);
-                item.Add(new XElement("link", itemLink.FullPath));
+                
+                item.Add(new XElement("link", context.GetLink(link, true)));
 
                 object description = null;
                 bool hasDescription = input.TryGetValue(_descriptionMetaKey, out description);
@@ -414,11 +439,11 @@ namespace Wyam.Core.Modules.Contents
             {
                 rss.Save(stream);
             }
-
-            return new IDocument[] { context.GetDocument(outText.ToString(), new KeyValuePair<string, object>[] {
-                new KeyValuePair<string, object>(Keys.IsRssFeed, true),
-                new KeyValuePair<string, object>(Keys.RelativeFilePath, _rssPath),
-                new KeyValuePair<string, object>(Keys.WritePath, _rssPath)
+            
+            return new [] { context.GetDocument(outText.ToString(), new MetadataItems {
+                new MetadataItem(Keys.IsRssFeed, true),
+                new MetadataItem(Keys.RelativeFilePath, rssPath),
+                new MetadataItem(Keys.WritePath, rssPath)
             })};
         }
     }

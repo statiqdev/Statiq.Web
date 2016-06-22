@@ -10,8 +10,8 @@ namespace Wyam.Blog
     {
         // Global
         public const string SiteName = nameof(SiteName);
-        public const string Greeting = nameof(Greeting);
-        public const string Blurb = nameof(Blurb);
+        public const string SiteDescription = nameof(SiteDescription);
+        public const string SiteIntro = nameof(SiteIntro);
         public const string Navbar = nameof(Navbar);
 
         // Document
