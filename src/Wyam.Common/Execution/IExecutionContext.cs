@@ -38,6 +38,12 @@ namespace Wyam.Common.Execution
         string ApplicationInput { get; }
 
         /// <summary>
+        /// Gets a link for the root of the site using the host and root path specified in the settings.
+        /// </summary>
+        /// <returns>A link for the root of the site.</returns>
+        string GetLink();
+
+        /// <summary>
         /// Gets a link for the specified metadata (typically a document) using the 
         /// "RelativeFilePath" metadata value and the default settings from the
         /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure

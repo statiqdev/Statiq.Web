@@ -57,65 +57,43 @@ namespace Wyam.Core.Execution
             Module = module;
         }
 
-        internal ExecutionContext Clone(IModule module)
-        {
-            return new ExecutionContext(this, module);
-        }
+        internal ExecutionContext Clone(IModule module) => new ExecutionContext(this, module);
 
-        public bool TryConvert<T>(object value, out T result)
-        {
-            return TypeHelper.TryConvert(value, out result);
-        }
+        public bool TryConvert<T>(object value, out T result) => TypeHelper.TryConvert(value, out result);
 
         // GetLink
 
-        public string GetLink(IMetadata metadata, bool includeHost = false)
-        {
-            return GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
-        }
+        public string GetLink() => 
+            GetLink(null, Settings.Host, Settings.LinkRoot, false, false);
 
-        public string GetLink(IMetadata metadata, string key, bool includeHost = false)
-        {
-            return GetLink(metadata.FilePath(key), includeHost);
-        }
+        public string GetLink(IMetadata metadata, bool includeHost = false) => 
+            GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
 
-        public string GetLink(NormalizedPath path, bool includeHost = false)
-        {
-            return GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, 
-                Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
-        }
+        public string GetLink(IMetadata metadata, string key, bool includeHost = false) => 
+            GetLink(metadata?.FilePath(key), includeHost);
 
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions)
-        {
-            return LinkGenerator.GetLink(path, host, root, hideIndexPages, hideExtensions);
-        }
+        public string GetLink(NormalizedPath path, bool includeHost = false) => 
+            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions) => 
+            LinkGenerator.GetLink(path, host, root, hideIndexPages, hideExtensions);
 
         // GetDocument
 
-        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            return GetDocument((IDocument)null, source, content, items);
-        }
+        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null) => 
+            GetDocument((IDocument)null, source, content, items);
 
-        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            return GetDocument((IDocument)null, content, items);
-        }
+        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null) => 
+            GetDocument((IDocument)null, content, items);
 
-        public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-        {
-            return GetDocument((IDocument)null, source, stream, items, disposeStream);
-        }
+        public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
+            GetDocument((IDocument)null, source, stream, items, disposeStream);
 
-        public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-        {
-            return GetDocument((IDocument)null, stream, items, disposeStream);
-        }
+        public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
+            GetDocument((IDocument)null, stream, items, disposeStream);
 
-        public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items)
-        {
-            return GetDocument((IDocument)null, items);
-        }
+        public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items) => 
+            GetDocument((IDocument)null, items);
 
         // IDocumentFactory
 
@@ -177,15 +155,11 @@ namespace Wyam.Core.Execution
         }
 
         // Executes the module with an empty document containing the specified metadata items
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            return Execute(modules, null, items);
-        }
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) => 
+            Execute(modules, null, items);
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items)
-        {
-            return Execute(modules, items?.Select(x => x.Pair));
-        }
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items) => 
+            Execute(modules, items?.Select(x => x.Pair));
 
         private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)
         {
