@@ -115,14 +115,22 @@ namespace Wyam.Configuration.NuGet
 
         private async Task<NuGetVersion> GetLatestMatchingVersion(SourceRepository sourceRepository, ILogger logger)
         {
-            DependencyInfoResource dependencyInfoResource = await sourceRepository.GetResourceAsync<DependencyInfoResource>();
-            IEnumerable<SourcePackageDependencyInfo> dependencyInfo = await dependencyInfoResource.ResolvePackages(
-                _packageId, _currentFramework, logger, CancellationToken.None);
-            return dependencyInfo
-                .Select(x => x.Version)
-                .Where(x => x != null && (_versionRange == null || _versionRange.Satisfies(x)))
-                .DefaultIfEmpty()
-                .Max();
+            try
+            {
+                DependencyInfoResource dependencyInfoResource = await sourceRepository.GetResourceAsync<DependencyInfoResource>();
+                IEnumerable<SourcePackageDependencyInfo> dependencyInfo = await dependencyInfoResource.ResolvePackages(
+                    _packageId, _currentFramework, logger, CancellationToken.None);
+                return dependencyInfo
+                    .Select(x => x.Version)
+                    .Where(x => x != null && (_versionRange == null || _versionRange.Satisfies(x)))
+                    .DefaultIfEmpty()
+                    .Max();
+            }
+            catch (Exception ex)
+            {
+                Trace.Warning($"Could not get latest version for package {_packageId} from source {sourceRepository}: {ex.Message}");
+                return null;
+            }
         }
     }
 }
