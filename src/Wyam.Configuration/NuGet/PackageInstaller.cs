@@ -137,7 +137,11 @@ namespace Wyam.Configuration.NuGet
             {
                 PackagesFolderNuGetProject = nuGetProject
             };
-            Task.WaitAll(_packages.Values.Select(x => x.Install(localRepository, _sourceRepositories.GetDefaultRepositories(), UpdatePackages, packageManager, _logger)).ToArray());
+            Parallel.ForEach(_packages.Values, package =>
+            {
+                // Note we're doing this in a TPL foreach instead of Task.WaitAll() because the latter causes odd file locking issues on a clean system
+                package.Install(localRepository, _sourceRepositories.GetDefaultRepositories(), UpdatePackages, packageManager, _logger);
+            });
 
             // Process the package (do this after all packages have been installed)
             nuGetProject.ProcessAssembliesAndContent();

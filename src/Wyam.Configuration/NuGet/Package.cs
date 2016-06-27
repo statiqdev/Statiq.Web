@@ -57,7 +57,7 @@ namespace Wyam.Configuration.NuGet
             _exclusive = exclusive;
         }
 
-        public async Task Install(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories, 
+        public void Install(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories, 
             bool updatePackages, NuGetPackageManager packageManager, ILogger logger)
         {
             string versionRangeString = _versionRange == null ? string.Empty : " " + _versionRange;
@@ -72,7 +72,7 @@ namespace Wyam.Configuration.NuGet
             if (!_getLatest && !updatePackages)
             {
                 // Get the latest matching version in the local repository
-                versionMatch = await GetLatestMatchingVersion(localRepository, logger);
+                versionMatch = GetLatestMatchingVersion(localRepository, logger).Result;
             }
             if (versionMatch != null)
             {
@@ -84,7 +84,7 @@ namespace Wyam.Configuration.NuGet
                 // Get the latest remote version, but only if we actually have remote repositories
                 if (sourceRepositories != null && sourceRepositories.Count > 0)
                 {
-                    versionMatch = await GetLatestMatchingVersion(sourceRepositories, logger);
+                    versionMatch = GetLatestMatchingVersion(sourceRepositories, logger).Result;
                 }
                 if (versionMatch == null)
                 {
@@ -98,9 +98,9 @@ namespace Wyam.Configuration.NuGet
             ResolutionContext resolutionContext = new ResolutionContext(
                 DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
             INuGetProjectContext projectContext = new NuGetProjectContext();
-            await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
+            packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
                 new PackageIdentity(_packageId, versionMatch), resolutionContext, projectContext, sourceRepositories,
-                Array.Empty<SourceRepository>(), CancellationToken.None);
+                Array.Empty<SourceRepository>(), CancellationToken.None).Wait();
             Trace.Verbose($"Installed package {_packageId} {versionMatch.Version}");
         }
 

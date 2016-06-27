@@ -28,10 +28,7 @@ namespace Wyam.Configuration.NuGet
             }
         }
 
-        public FileConflictAction ResolveFileConflict(string message)
-        {
-            return FileConflictAction.Ignore;
-        }
+        public FileConflictAction ResolveFileConflict(string message) => FileConflictAction.Ignore;
 
         public PackageExtractionContext PackageExtractionContext { get; set; }
 
