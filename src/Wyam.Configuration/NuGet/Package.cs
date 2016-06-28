@@ -28,6 +28,8 @@ namespace Wyam.Configuration.NuGet
         private readonly bool _allowUnlisted;
         private readonly bool _exclusive;  // Only the specified package sources should be used to find the package
 
+        private NuGetVersion _versionMatch;
+
         public Package(NuGetFramework currentFramework, string packageId, IReadOnlyList<SourceRepository> sourceRepositories, 
             string versionRange, bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
@@ -57,22 +59,17 @@ namespace Wyam.Configuration.NuGet
             _exclusive = exclusive;
         }
 
-        public void Install(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories, 
-            bool updatePackages, NuGetPackageManager packageManager, ILogger logger)
+        public async Task ResolveVersion(SourceRepository localRepository, 
+            IReadOnlyList<SourceRepository> remoteRepositories, bool updatePackages, ILogger logger)
         {
             string versionRangeString = _versionRange == null ? string.Empty : " " + _versionRange;
-            Trace.Verbose($"Installing package {_packageId}{versionRangeString} (with dependencies)");
-
-            // Get the full set of source repositories
-            IReadOnlyList<SourceRepository> sourceRepositories = _exclusive
-                ? _sourceRepositories
-                : _sourceRepositories?.Concat(remoteRepositories).Distinct().ToList() ?? remoteRepositories;
-
+            Trace.Verbose($"Resolving package version for {_packageId}{versionRangeString} (with dependencies)");
+            IReadOnlyList<SourceRepository> sourceRepositories = GetSourceRepositories(remoteRepositories);
             NuGetVersion versionMatch = null;
             if (!_getLatest && !updatePackages)
             {
                 // Get the latest matching version in the local repository
-                versionMatch = GetLatestMatchingVersion(localRepository, logger).Result;
+                versionMatch = await GetLatestMatchingVersion(localRepository, logger);
             }
             if (versionMatch != null)
             {
@@ -84,24 +81,38 @@ namespace Wyam.Configuration.NuGet
                 // Get the latest remote version, but only if we actually have remote repositories
                 if (sourceRepositories != null && sourceRepositories.Count > 0)
                 {
-                    versionMatch = GetLatestMatchingVersion(sourceRepositories, logger).Result;
+                    versionMatch = await GetLatestMatchingVersion(sourceRepositories, logger);
                 }
                 if (versionMatch == null)
                 {
                     Trace.Verbose($"Package {_packageId}{versionRangeString} was not found on any remote source repositories");
-                    return;
                 }
             }
+            _versionMatch = versionMatch;
+        }
 
-            // If we got here then we need to install the package (do even if we're up to date to ensure dependencies are installed and referenced)
-            Trace.Verbose($"Installing package {_packageId} {versionMatch.Version}");
+        public async Task Install(IReadOnlyList<SourceRepository> remoteRepositories, NuGetPackageManager packageManager)
+        {
+            if (_versionMatch == null)
+            {
+                return;
+            }
+            IReadOnlyList<SourceRepository> sourceRepositories = GetSourceRepositories(remoteRepositories);
+            Trace.Verbose($"Installing package {_packageId} {_versionMatch.Version}");
             ResolutionContext resolutionContext = new ResolutionContext(
                 DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
             INuGetProjectContext projectContext = new NuGetProjectContext();
-            packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
-                new PackageIdentity(_packageId, versionMatch), resolutionContext, projectContext, sourceRepositories,
-                Array.Empty<SourceRepository>(), CancellationToken.None).Wait();
-            Trace.Verbose($"Installed package {_packageId} {versionMatch.Version}");
+            await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
+                new PackageIdentity(_packageId, _versionMatch), resolutionContext, projectContext, sourceRepositories,
+                Array.Empty<SourceRepository>(), CancellationToken.None);
+            Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+        }
+
+        private IReadOnlyList<SourceRepository> GetSourceRepositories(IReadOnlyList<SourceRepository> remoteRepositories)
+        {
+            return _exclusive
+                ? _sourceRepositories
+                : _sourceRepositories?.Concat(remoteRepositories).Distinct().ToList() ?? remoteRepositories;
         }
 
         private async Task<NuGetVersion> GetLatestMatchingVersion(IEnumerable<SourceRepository> sourceRepositories, ILogger logger)

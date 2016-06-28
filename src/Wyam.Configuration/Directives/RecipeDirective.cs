@@ -19,7 +19,7 @@ namespace Wyam.Configuration.Directives
             {
                 throw new Exception("Recipe directive must have a value");
             }
-            configurator.RecipeName = value.Trim();
+            configurator.RecipeName = value.Trim('"');
         }
 
         public string GetHelpText() => null;

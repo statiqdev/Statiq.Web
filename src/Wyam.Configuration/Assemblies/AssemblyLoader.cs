@@ -138,26 +138,33 @@ namespace Wyam.Configuration.Assemblies
         {
             foreach (string assemblyName in _names)
             {
-                try
-                {
                     using (Trace.WithIndent().Verbose("Loading assembly {0}", assemblyName))
                     {
-                        Assembly assembly = Assembly.Load(assemblyName);
-                        if (!_assemblies.Add(assembly))
+                        // Load the assembly
+                        Assembly assembly = null;
+                        try
                         {
-                            Trace.Verbose("Skipping assembly {0} because it was already added", assemblyName);
+                            assembly = Assembly.Load(assemblyName);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            DirectAssemblies.Add(assembly);
-                            LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                            Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
+                        }
+
+                        // Add the assembly and load references
+                        if (assembly != null)
+                        {
+                            if (!_assemblies.Add(assembly))
+                            {
+                                Trace.Verbose("Skipping assembly {0} because it was already added", assemblyName);
+                            }
+                            else
+                            {
+                                DirectAssemblies.Add(assembly);
+                                LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
-                }
             }
         }
 

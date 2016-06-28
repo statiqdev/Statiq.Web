@@ -19,7 +19,7 @@ namespace Wyam.Configuration.Directives
             {
                 throw new Exception("Theme directive must have a value");
             }
-            configurator.Theme = value.Trim();
+            configurator.Theme = value.Trim().Trim('"');
         }
 
         public string GetHelpText() => null;

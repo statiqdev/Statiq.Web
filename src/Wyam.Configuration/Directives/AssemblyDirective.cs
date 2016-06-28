@@ -19,7 +19,7 @@ namespace Wyam.Configuration.Directives
             {
                 throw new Exception("Assembly directive must have a value");
             }
-            configurator.AssemblyLoader.AddPattern(value.Trim());
+            configurator.AssemblyLoader.AddPattern(value.Trim().Trim('"'));
         }
 
         public string GetHelpText() => null;

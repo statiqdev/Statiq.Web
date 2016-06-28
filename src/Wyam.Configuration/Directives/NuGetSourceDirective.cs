@@ -19,7 +19,7 @@ namespace Wyam.Configuration.Directives
             {
                 throw new Exception("NuGet source directive must have a value");
             }
-            configurator.PackageInstaller.AddPackageSource(value.Trim());
+            configurator.PackageInstaller.AddPackageSource(value.Trim().Trim('"'));
         }
 
         public string GetHelpText() => null;

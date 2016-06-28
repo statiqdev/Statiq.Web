@@ -131,17 +131,22 @@ namespace Wyam.Configuration.NuGet
             // Get the local repository
             SourceRepository localRepository = _sourceRepositories.CreateRepository(packagesPath.FullPath);
 
-            // Install the packages
+            // Get the package manager and repositories
             WyamFolderNuGetProject nuGetProject = new WyamFolderNuGetProject(_fileSystem, _assemblyLoader, _currentFramework, packagesPath.FullPath);
             NuGetPackageManager packageManager = new NuGetPackageManager(_sourceRepositories, _settings, packagesPath.FullPath)
             {
                 PackagesFolderNuGetProject = nuGetProject
             };
-            Parallel.ForEach(_packages.Values, package =>
+            IReadOnlyList<SourceRepository> remoteRepositories = _sourceRepositories.GetDefaultRepositories();
+
+            // Resolve all the versions
+            Task.WaitAll(_packages.Values.Select(x => x.ResolveVersion(localRepository, remoteRepositories, UpdatePackages, _logger)).ToArray());
+
+            // Install the packages (doing this synchronously since doing it in parallel triggers file lock errors in NuGet on a clean system)
+            foreach (Package package in _packages.Values)
             {
-                // Note we're doing this in a TPL foreach instead of Task.WaitAll() because the latter causes odd file locking issues on a clean system
-                package.Install(localRepository, _sourceRepositories.GetDefaultRepositories(), UpdatePackages, packageManager, _logger);
-            });
+                package.Install(remoteRepositories, packageManager).Wait();
+            }
 
             // Process the package (do this after all packages have been installed)
             nuGetProject.ProcessAssembliesAndContent();
