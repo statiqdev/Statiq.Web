@@ -23,3 +23,9 @@ Hit any key to exit...
 ```
 
 For more information see [Wyam.io](http://wyam.io).
+
+## Acknowledgements
+
+* Portions of the IO support were originally inspired from [Cake](http://cakebuild.net) under an MIT license.
+* The RSS/Atom support was originally ported from [WebFeeds](https://github.com/mckamey/web-feeds.net) under an MIT license.
+* Many other fantastic OSS libraries are used directly as NuGet packages, thanks to all the OSS authors out there!
