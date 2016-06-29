@@ -34,7 +34,11 @@ namespace Wyam.Core.Syndication.Rdf
 			set { _description = string.IsNullOrEmpty(value) ? string.Empty : value; }
 		}
 
-		protected internal string Copyright => DublinCore[DublinCore.TermName.Rights];
+	    protected internal string Copyright
+	    {
+	        get { return DublinCore[DublinCore.TermName.Rights]; }
+	        set { DublinCore[DublinCore.TermName.Rights] = value; }
+	    }
 
 	    /// <summary>
 		/// Gets and sets the encoded content for this item

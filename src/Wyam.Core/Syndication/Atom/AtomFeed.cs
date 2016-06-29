@@ -35,46 +35,21 @@ namespace Wyam.Core.Syndication.Atom
 			set { }
 		}
 
-	    string IFeed.MimeType
+	    string IFeed.MimeType => MimeType;
+
+	    string IFeed.Copyright
 		{
-			get { return MimeType; }
+			get { return Rights?.StringValue; }
+            set { Rights = new AtomText(value); }
 		}
 
-		string IFeed.Copyright
-		{
-			get
-			{
-				if (!RightsSpecified)
-				{
-					return null;
-				}
-				return Rights.StringValue;
-			}
-		}
+		IList<IFeedItem> IFeed.Items => Entries.ToArray();
 
-		IList<IFeedItem> IFeed.Items
-		{
-			get { return Entries.ToArray(); }
-		}
+	    Uri IFeedMetadata.ID => ((IUriProvider)this).Uri;
 
-	    Uri IFeedMetadata.ID
-		{
-			get { return ((IUriProvider)this).Uri; }
-		}
+	    string IFeedMetadata.Title => Title?.StringValue;
 
-		string IFeedMetadata.Title
-		{
-			get
-			{
-				if (Title == null)
-				{
-					return null;
-				}
-				return Title.StringValue;
-			}
-		}
-
-		string IFeedMetadata.Description
+	    string IFeedMetadata.Description
 		{
 			get
 			{
@@ -125,12 +100,9 @@ namespace Wyam.Core.Syndication.Atom
 			}
 		}
 
-		DateTime? IFeedMetadata.Published
-		{
-			get { return ((IFeedMetadata)this).Updated; }
-		}
+		DateTime? IFeedMetadata.Published => ((IFeedMetadata)this).Updated;
 
-		DateTime? IFeedMetadata.Updated
+	    DateTime? IFeedMetadata.Updated
 		{
 			get
 			{

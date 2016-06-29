@@ -15,7 +15,7 @@ namespace Wyam.Core.Syndication
 		/// <summary>
 		/// Gets the copyright
 		/// </summary>
-		string Copyright { get; }
+		string Copyright { get; set; }
 
 		/// <summary>
 		/// Gets a list of feed items

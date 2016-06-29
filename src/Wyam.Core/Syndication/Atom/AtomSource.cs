@@ -39,10 +39,7 @@ namespace Wyam.Core.Syndication.Atom
         }
 
         [XmlIgnore]
-        protected Uri IconUri
-        {
-            get { return _icon; }
-        }
+        protected Uri IconUri => _icon;
 
         [DefaultValue(null)]
         [XmlElement("logo")]
@@ -53,10 +50,7 @@ namespace Wyam.Core.Syndication.Atom
         }
 
         [XmlIgnore]
-        protected Uri LogoUri
-        {
-            get { return _logo; }
-        }
+        protected Uri LogoUri => _logo;
 
         [DefaultValue(null)]
         [XmlElement("subtitle")]

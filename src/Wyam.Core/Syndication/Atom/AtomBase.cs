@@ -103,14 +103,6 @@ namespace Wyam.Core.Syndication.Atom
 			set { _rights = value; }
 		}
 
-		[XmlIgnore]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public virtual bool RightsSpecified
-		{
-			get { return (_rights != null); }
-			set { }
-		}
-
 		/// <remarks>
 		/// Required even if empty.
 		/// </remarks>
@@ -149,9 +141,6 @@ namespace Wyam.Core.Syndication.Atom
 			base.AddNamespaces(namespaces);
 		}
 
-	    Uri IUriProvider.Uri
-		{
-			get { return _id; }
-		}
+	    Uri IUriProvider.Uri => _id;
 	}
 }

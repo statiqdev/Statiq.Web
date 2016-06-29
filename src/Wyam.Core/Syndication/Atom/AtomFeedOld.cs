@@ -96,46 +96,23 @@ namespace Wyam.Core.Syndication.Atom
 
         [XmlIgnore]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool RightsSpecified
-        {
-            get { return false; }
-            set { }
-        }
-
-        [XmlIgnore]
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool UpdatedSpecified
         {
             get { return false; }
             set { }
         }
 
-        string IFeed.MimeType
-        {
-            get { return MimeType; }
-        }
+        string IFeed.MimeType => MimeType;
 
         string IFeed.Copyright
         {
-            get
-            {
-                if (!RightsSpecified)
-                {
-                    return null;
-                }
-                return Rights.StringValue;
-            }
+            get { return Rights?.StringValue; }
+            set { Rights = new AtomText(value); }
         }
 
-        IList<IFeedItem> IFeed.Items
-        {
-            get { return Entries.ToArray(); }
-        }
+        IList<IFeedItem> IFeed.Items => Entries.ToArray();
 
-        Uri IFeedMetadata.ID
-        {
-            get { return ((IUriProvider)this).Uri; }
-        }
+        Uri IFeedMetadata.ID => ((IUriProvider)this).Uri;
 
         string IFeedMetadata.Title
         {
@@ -200,10 +177,7 @@ namespace Wyam.Core.Syndication.Atom
             }
         }
 
-        DateTime? IFeedMetadata.Published
-        {
-            get { return ((IFeedMetadata)this).Updated; }
-        }
+        DateTime? IFeedMetadata.Published => ((IFeedMetadata)this).Updated;
 
         DateTime? IFeedMetadata.Updated
         {

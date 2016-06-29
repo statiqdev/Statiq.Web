@@ -60,10 +60,7 @@ namespace Wyam.Core.Syndication.Atom
             set { base.Value = value; }
         }
 
-        Uri IUriProvider.Uri
-        {
-            get { return _src; }
-        }
+        Uri IUriProvider.Uri => _src;
 
         public static implicit operator AtomContent(string value)
         {

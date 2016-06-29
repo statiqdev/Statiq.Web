@@ -47,8 +47,11 @@ namespace Wyam.Core.Syndication
 				return serializer.Deserialize(reader) as IFeed;
 			}
 		}
-        
-		public static void SerializeXml(IFeed feed, Stream output, string xsltUrl) => 
+
+        public static void SerializeXml(IFeed feed, Stream output) =>
+            FeedSerializer.SerializeXml(feed, output, null);
+
+        public static void SerializeXml(IFeed feed, Stream output, string xsltUrl) => 
             FeedSerializer.SerializeXml(feed, output, xsltUrl, true);
 
 	    public static void SerializeXml(IFeed feed, Stream output, string xsltUrl, bool prettyPrint)

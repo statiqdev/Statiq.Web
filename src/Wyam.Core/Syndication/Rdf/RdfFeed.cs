@@ -38,7 +38,11 @@ namespace Wyam.Core.Syndication.Rdf
 
 	    string IFeed.MimeType => MimeType;
 
-        string IFeed.Copyright => Channel.Copyright;
+        string IFeed.Copyright
+        {
+            get { return Channel.Copyright; }
+            set { Channel.Copyright = value; }
+        }
 
         IList<IFeedItem> IFeed.Items => Items.ToArray();
 

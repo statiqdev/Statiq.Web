@@ -48,10 +48,7 @@ namespace Wyam.Core.Syndication.Atom
             set { _type = string.IsNullOrEmpty(value) ? null : value; }
         }
 
-        Uri IUriProvider.Uri
-        {
-            get { return _refId; }
-        }
+        Uri IUriProvider.Uri => _refId;
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
         {

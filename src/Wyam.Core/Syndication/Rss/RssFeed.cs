@@ -23,28 +23,24 @@ namespace Wyam.Core.Syndication.Rss
 	    [XmlElement("channel")]
 		public RssChannel Channel
 		{
-			get
-			{
-				if (_channel == null)
-				{
-					_channel = new RssChannel();
-				}
-
-				return _channel;
-			}
-			set { _channel = value; }
+			get { return _channel ?? (_channel = new RssChannel()); }
+	        set { _channel = value; }
 		}
 
 		[XmlAttribute("version")]
 		public string Version
 		{
-			get { return (_version == null) ? null : _version.ToString(); }
+			get { return _version?.ToString(); }
 			set { _version = string.IsNullOrEmpty(value) ? null : new Version(value); }
 		}
 
 	    string IFeed.MimeType => MimeType;
 
-	    string IFeed.Copyright => Channel.Copyright;
+	    string IFeed.Copyright
+	    {
+	        get { return Channel.Copyright; }
+	        set { Channel.Copyright = value; }
+	    }
 
 	    IList<IFeedItem> IFeed.Items => Channel.Items.ToArray();
 

@@ -79,6 +79,7 @@
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
+    <Compile Include="Modules\Contents\Feed.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Contents\Rss.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
@@ -128,7 +129,10 @@
     <Compile Include="Syndication\Extensions\DublinCore.cs" />
     <Compile Include="Syndication\Extensions\ExtensibleBase.cs" />
     <Compile Include="Syndication\Extensions\IExtensionAdapter.cs" />
+    <Compile Include="Syndication\Feed.cs" />
+    <Compile Include="Syndication\FeedItem.cs" />
     <Compile Include="Syndication\FeedSerializer.cs" />
+    <Compile Include="Syndication\FeedType.cs" />
     <Compile Include="Syndication\INamespaceProvider.cs" />
     <Compile Include="Syndication\IUriProvider.cs" />
     <Compile Include="Syndication\IFeed.cs" />
@@ -138,10 +142,10 @@
     <Compile Include="Syndication\Rdf\RdfChannel.cs" />
     <Compile Include="Syndication\Rdf\RdfFeed.cs" />
     <Compile Include="Syndication\Rdf\RdfFeedBase.cs" />
+    <Compile Include="Syndication\Rdf\RdfImage.cs" />
     <Compile Include="Syndication\Rdf\RdfItem.cs" />
     <Compile Include="Syndication\Rdf\RdfResource.cs" />
     <Compile Include="Syndication\Rdf\RdfSequence.cs" />
-    <Compile Include="Syndication\Rdf\RdfImage.cs" />
     <Compile Include="Syndication\Rdf\RdfTextInput.cs" />
     <Compile Include="Syndication\Rss\RssBase.cs" />
     <Compile Include="Syndication\Rss\RssChannel.cs" />

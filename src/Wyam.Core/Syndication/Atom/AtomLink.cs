@@ -205,10 +205,7 @@ namespace Wyam.Core.Syndication.Atom
             set { }
         }
 
-        Uri IUriProvider.Uri
-        {
-            get { return _href; }
-        }
+        Uri IUriProvider.Uri => _href;
 
         public override string ToString()
         {

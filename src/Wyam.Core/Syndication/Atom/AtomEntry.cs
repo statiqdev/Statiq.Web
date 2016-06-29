@@ -110,12 +110,9 @@ namespace Wyam.Core.Syndication.Atom
 			set { }
 		}
 
-	    Uri IFeedMetadata.ID
-		{
-			get { return ((IUriProvider)this).Uri; }
-		}
+	    Uri IFeedMetadata.ID => ((IUriProvider)this).Uri;
 
-		string IFeedMetadata.Title
+	    string IFeedMetadata.Title
 		{
 			get
 			{

@@ -36,10 +36,7 @@ namespace Wyam.Core.Syndication.Atom
         }
 
         [XmlIgnore]
-        public bool HasValue
-        {
-            get { return _value.HasValue; }
-        }
+        public bool HasValue => _value.HasValue;
 
         /// <summary>
         /// Gets and sets the DateTime using ISO-8601 date format.

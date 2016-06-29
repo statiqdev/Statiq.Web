@@ -123,10 +123,7 @@ namespace Wyam.Core.Syndication.Atom
         }
 
         [XmlIgnore]
-        public string StringValue
-        {
-            get { return _value; }
-        }
+        public string StringValue => _value;
 
         public override string ToString()
         {
