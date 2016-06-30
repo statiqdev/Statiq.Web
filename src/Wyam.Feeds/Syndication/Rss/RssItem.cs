@@ -345,20 +345,9 @@ namespace Wyam.Feeds.Syndication.Rss
 			}
 		}
 
-		Uri IFeedMetadata.ID
-		{
-			get
-			{
-				if (_guid == null)
-				{
-					return null;
-				}
+		Uri IFeedMetadata.ID => ((IUriProvider) _guid)?.Uri;
 
-				return ((IUriProvider)_guid).Uri;
-			}
-		}
-
-		string IFeedMetadata.Title
+	    string IFeedMetadata.Title
 		{
 			get
 			{

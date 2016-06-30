@@ -316,6 +316,20 @@ namespace Wyam.Core.Tests.Meta
                 // Then
                 CollectionAssert.AreEqual(value, result);
             }
+
+            [Test]
+            public void StringConvertsToUri()
+            {
+                // Given
+                string value = "http://google.com/";
+
+                // When
+                Uri uri;
+                TypeHelper.TryConvert(value, out uri);
+
+                // Then
+                Assert.AreEqual(value, uri.ToString());
+            }
         }
     }
 }

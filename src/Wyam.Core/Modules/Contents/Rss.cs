@@ -365,7 +365,7 @@ namespace Wyam.Core.Modules.Contents
                 item.Add(new XElement("title", hasTitle ? title : "Untitled"));
                 
                 // Get the item link
-                FilePath link = input.FilePath(Keys.RssItemUrl) 
+                FilePath link = input.FilePath("" /*Keys.RssItemUrl*/) 
                     ?? input.FilePath(Keys.RelativeFilePath);
                 if(link != null)
                 {
@@ -386,7 +386,7 @@ namespace Wyam.Core.Modules.Contents
                 }
                 if (link == null)
                 {
-                    throw new Exception($"Required metadata keys {Keys.RssItemUrl} or {Keys.RelativeFilePath} were not found in the document {input.SourceString()}");
+                    throw new Exception($"Required metadata keys {"" /*Keys.RssItemUrl*/} or {Keys.RelativeFilePath} were not found in the document {input.SourceString()}");
                 }
                 
                 item.Add(new XElement("link", context.GetLink(link, true)));
@@ -441,7 +441,7 @@ namespace Wyam.Core.Modules.Contents
             }
             
             return new [] { context.GetDocument(outText.ToString(), new MetadataItems {
-                new MetadataItem(Keys.IsRssFeed, true),
+                //new MetadataItem(Keys.IsRssFeed, true),
                 new MetadataItem(Keys.RelativeFilePath, rssPath),
                 new MetadataItem(Keys.WritePath, rssPath)
             })};

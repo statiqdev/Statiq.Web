@@ -50,8 +50,14 @@ namespace Wyam.Feeds.Syndication
         public static void SerializeXml(IFeed feed, Stream output) =>
             SerializeXml(feed, output, null);
 
+        public static void SerializeXml(FeedType feedType, IFeed feed, Stream output) =>
+            SerializeXml(feedType, feed, output, null);
+
         public static void SerializeXml(IFeed feed, Stream output, string xsltUrl) => 
             SerializeXml(feed, output, xsltUrl, true);
+
+        public static void SerializeXml(FeedType feedType, IFeed feed, Stream output, string xsltUrl) => 
+            SerializeXml(feedType, feed, output, xsltUrl, true);
 
         public static void SerializeXml(IFeed feed, Stream output, string xsltUrl, bool prettyPrint) =>
             SerializeXml(feed.FeedType, feed, output, xsltUrl, prettyPrint);
