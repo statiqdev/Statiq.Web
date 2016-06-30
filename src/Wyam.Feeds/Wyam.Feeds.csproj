@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BD7F456D-2576-43CC-B554-C03EB02BE8B7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Wyam.Feeds</RootNamespace>
+    <AssemblyName>Wyam.Feeds</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Feed.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Syndication\Atom\AtomBase.cs" />
+    <Compile Include="Syndication\Atom\AtomCategory.cs" />
+    <Compile Include="Syndication\Atom\AtomCommonAttributes.cs" />
+    <Compile Include="Syndication\Atom\AtomContent.cs" />
+    <Compile Include="Syndication\Atom\AtomDate.cs" />
+    <Compile Include="Syndication\Atom\AtomEntry.cs" />
+    <Compile Include="Syndication\Atom\AtomEntryOld.cs" />
+    <Compile Include="Syndication\Atom\AtomFeed.cs" />
+    <Compile Include="Syndication\Atom\AtomFeedOld.cs" />
+    <Compile Include="Syndication\Atom\AtomGenerator.cs" />
+    <Compile Include="Syndication\Atom\AtomInReplyTo.cs" />
+    <Compile Include="Syndication\Atom\AtomLink.cs" />
+    <Compile Include="Syndication\Atom\AtomLinkRelation.cs" />
+    <Compile Include="Syndication\Atom\AtomPerson.cs" />
+    <Compile Include="Syndication\Atom\AtomSource.cs" />
+    <Compile Include="Syndication\Atom\AtomText.cs" />
+    <Compile Include="Syndication\Atom\AtomTextType.cs" />
+    <Compile Include="Syndication\Extensions\DublinCore.cs" />
+    <Compile Include="Syndication\Extensions\ExtensibleBase.cs" />
+    <Compile Include="Syndication\Extensions\IExtensionAdapter.cs" />
+    <Compile Include="Syndication\Feed.cs" />
+    <Compile Include="Syndication\FeedItem.cs" />
+    <Compile Include="Syndication\FeedMetadata.cs" />
+    <Compile Include="Syndication\FeedSerializer.cs" />
+    <Compile Include="Syndication\FeedType.cs" />
+    <Compile Include="Syndication\IFeed.cs" />
+    <Compile Include="Syndication\IFeedItem.cs" />
+    <Compile Include="Syndication\IFeedMetadata.cs" />
+    <Compile Include="Syndication\INamespaceProvider.cs" />
+    <Compile Include="Syndication\IUriProvider.cs" />
+    <Compile Include="Syndication\Rdf\RdfBase.cs" />
+    <Compile Include="Syndication\Rdf\RdfChannel.cs" />
+    <Compile Include="Syndication\Rdf\RdfFeed.cs" />
+    <Compile Include="Syndication\Rdf\RdfFeedBase.cs" />
+    <Compile Include="Syndication\Rdf\RdfImage.cs" />
+    <Compile Include="Syndication\Rdf\RdfItem.cs" />
+    <Compile Include="Syndication\Rdf\RdfResource.cs" />
+    <Compile Include="Syndication\Rdf\RdfSequence.cs" />
+    <Compile Include="Syndication\Rdf\RdfTextInput.cs" />
+    <Compile Include="Syndication\Rss\RssBase.cs" />
+    <Compile Include="Syndication\Rss\RssCategory.cs" />
+    <Compile Include="Syndication\Rss\RssChannel.cs" />
+    <Compile Include="Syndication\Rss\RssChannelBase.cs" />
+    <Compile Include="Syndication\Rss\RssCloud.cs" />
+    <Compile Include="Syndication\Rss\RssDate.cs" />
+    <Compile Include="Syndication\Rss\RssEnclosure.cs" />
+    <Compile Include="Syndication\Rss\RssFeed.cs" />
+    <Compile Include="Syndication\Rss\RssGuid.cs" />
+    <Compile Include="Syndication\Rss\RssImage.cs" />
+    <Compile Include="Syndication\Rss\RssItem.cs" />
+    <Compile Include="Syndication\Rss\RssPerson.cs" />
+    <Compile Include="Syndication\Rss\RssSkipDays.cs" />
+    <Compile Include="Syndication\Rss\RssSkipHours.cs" />
+    <Compile Include="Syndication\Rss\RssSource.cs" />
+    <Compile Include="Syndication\Rss\RssTextInput.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
+      <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
+      <Name>Wyam.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
