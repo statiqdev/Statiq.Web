@@ -94,6 +94,13 @@ namespace Wyam.Feeds.Syndication.Atom
 
             // ** IFeedItem
 
+            // Content
+	        string content = source.Content;
+	        if (!string.IsNullOrEmpty(content))
+	        {
+	            Content = new AtomContent(content);
+	        }
+
             // ThreadLink
 	        Uri threadLink = source.ThreadLink;
 	        AtomLink replies = null;
@@ -219,23 +226,10 @@ namespace Wyam.Feeds.Syndication.Atom
 			}
 		}
 
-		string IFeedMetadata.Description
-		{
-			get
-			{
-				if (_summary == null)
-				{
-					if (_content == null)
-					{
-						return null;
-					}
-					return _content.StringValue;
-				}
-				return _summary.StringValue;
-			}
-		}
+		string IFeedMetadata.Description => 
+            _summary == null ? _content?.StringValue : _summary.StringValue;
 
-		string IFeedMetadata.Author
+	    string IFeedMetadata.Author
 		{
 			get
 			{
@@ -369,7 +363,9 @@ namespace Wyam.Feeds.Syndication.Atom
 			}
 		}
 
-		Uri IFeedItem.ThreadLink
+	    string IFeedItem.Content => _content?.StringValue;
+
+	    Uri IFeedItem.ThreadLink
 		{
 			get
 			{

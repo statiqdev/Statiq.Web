@@ -106,6 +106,13 @@ namespace Wyam.Feeds.Syndication.Rss
 
             // ** IFeedItem
 
+            // Content
+            string content = source.Content;
+            if (!string.IsNullOrEmpty(content))
+            {
+                ContentEncoded = content;
+            }
+
             // ThreadLink
             Uri threadLink = source.ThreadLink;
             if (threadLink != null)
@@ -444,6 +451,8 @@ namespace Wyam.Feeds.Syndication.Rss
 				return ((IUriProvider)_enclosure).Uri;
 			}
 		}
+
+	    string IFeedItem.Content => ContentEncoded;
 
 		Uri IFeedItem.ThreadLink
 		{

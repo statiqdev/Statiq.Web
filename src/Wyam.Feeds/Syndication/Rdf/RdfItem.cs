@@ -78,6 +78,13 @@ namespace Wyam.Feeds.Syndication.Rdf
 
             // ** IFeedItem
 
+            // Content
+            string content = source.Content;
+            if (!string.IsNullOrEmpty(content))
+            {
+                ContentEncoded = content;
+            }
+
             // ThreadLink
             Uri threadLink = source.ThreadLink;
             if (threadLink != null)
@@ -279,6 +286,8 @@ namespace Wyam.Feeds.Syndication.Rdf
 		Uri IFeedMetadata.Link => ((IUriProvider)this).Uri;
 
 	    Uri IFeedMetadata.ImageLink => null;
+
+        string IFeedItem.Content => ContentEncoded;
 
 	    Uri IFeedItem.ThreadLink => _wfwCommentRss;
 
