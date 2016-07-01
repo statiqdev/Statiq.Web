@@ -8,13 +8,9 @@ namespace Wyam.Blog
 {
     public static class BlogKeys
     {
-        // Global
-        public const string SiteName = nameof(SiteName);
-        public const string SiteDescription = nameof(SiteDescription);
-        public const string SiteIntro = nameof(SiteIntro);
+        public const string Description = nameof(Description);
+        public const string Intro = nameof(Intro);
         public const string Navbar = nameof(Navbar);
-
-        // Document
         public const string Title = nameof(Title);
         public const string Lead = nameof(Lead);
         public const string Published = nameof(Published);

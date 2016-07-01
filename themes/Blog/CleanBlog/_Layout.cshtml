@@ -1,6 +1,6 @@
 @{
         string Title = Model.String(BlogKeys.Title);
-        string PageTitle = Context.String(BlogKeys.SiteName) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+        string PageTitle = Context.String(BlogKeys.Title) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
 }
 
 <!DOCTYPE html>
@@ -10,11 +10,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
         <title>@PageTitle</title>
-        <meta name="description" content="The personal blog of @Context.String(BlogKeys.SiteName)" />
+        <meta name="description" content="The personal blog of @Context.String(BlogKeys.Title)" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">        
 
-        <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.SiteName)" href="/feed.rss" />
-        <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.SiteName)" href="/feed.atom" />
+        <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="/feed.rss" />
+        <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="/feed.atom" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
@@ -28,8 +28,8 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
 
-        <meta name="application-name" content="@Context.String(BlogKeys.SiteName)" />
-        <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.SiteName)" />
+        <meta name="application-name" content="@Context.String(BlogKeys.Title)" />
+        <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
         <meta name="msapplication-starturl" content="/" />
 
         <meta property="og:title" content="@PageTitle" />
@@ -68,7 +68,7 @@
                                         <span class="icon-bar"></span>
                                         <span class="icon-bar"></span>
                                         </button>
-                                        <a class="navbar-brand" href="/">@Context.String(BlogKeys.SiteName)</a>
+                                        <a class="navbar-brand" href="/">@Context.String(BlogKeys.Title)</a>
                                 </div>
                         
                                 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -103,7 +103,7 @@
                 <!-- Main Content -->
                 <div class="container">
                         <div class="row">
-                                <div class="col-md-12">
+                                <div id="content" class="col-md-12">
                                         @RenderBody()
                                 </div>
                         </div>

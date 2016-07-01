@@ -1,14 +1,14 @@
 <div class="site-heading">
-    @if(Context.String(BlogKeys.SiteDescription) != null)
+    @if(Context.String(BlogKeys.Description) != null)
     {
-        <h1>@Context.String(BlogKeys.SiteDescription)</h1>
+        <h1>@Context.String(BlogKeys.Description)</h1>
     }
-    @if(Context.String(BlogKeys.SiteIntro) != null)
+    @if(Context.String(BlogKeys.Intro) != null)
     {            
-        @if(Context.String(BlogKeys.SiteDescription) != null)
+        @if(Context.String(BlogKeys.Description) != null)
         {
             <hr class="small">
         }
-        <span class="subheading">@Context.String(BlogKeys.SiteIntro)</span>
+        <span class="subheading">@Context.String(BlogKeys.Intro)</span>
     }
 </div>

@@ -13,7 +13,7 @@ namespace Wyam.Common.Configuration
             if (!context.TryConvert(value, out result))
             {
                 throw new InvalidOperationException(
-                    string.Format("Could not convert from type {0} to type {1}", value?.GetType().Name ?? "null", typeof(T).Name));
+                    $"Could not convert from type {value?.GetType().Name ?? "null"} to type {typeof(T).Name}");
             }
             return result;
         }
@@ -32,7 +32,7 @@ namespace Wyam.Common.Configuration
             if (!context.TryConvert(value, out result))
             {
                 throw new InvalidOperationException(
-                    string.Format("Could not convert from type {0} to type {1}", value?.GetType().Name ?? "null", typeof(T).Name));
+                    $"Could not convert from type {value?.GetType().Name ?? "null"} to type {typeof(T).Name}");
             }
             return result;
         }

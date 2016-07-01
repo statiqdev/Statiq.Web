@@ -14,6 +14,7 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
+using Wyam.Feeds;
 using Wyam.Html;
 
 namespace Wyam.Blog
@@ -23,11 +24,9 @@ namespace Wyam.Blog
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.GlobalMetadata[BlogKeys.SiteName] = "My Blog";
-            engine.GlobalMetadata[BlogKeys.SiteDescription] = "Welcome!";
+            engine.GlobalMetadata[BlogKeys.Title] = "My Blog";
+            engine.GlobalMetadata[BlogKeys.Description] = "Welcome!";
             
-            // TODO: RSS feed
-
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
                 new ReadFiles("{!posts,**}/*.md"),
@@ -70,11 +69,7 @@ namespace Wyam.Blog
 
             engine.Pipelines.Add(BlogPipelines.Feed,
                 new Documents(BlogPipelines.Posts),
-                new Rss(_ => "feed.rss",
-                    ctx => ctx.GlobalMetadata.String(BlogKeys.SiteName),
-                    ctx => ctx.GlobalMetadata.String(BlogKeys.SiteIntro) ?? "RSS feed for " + ctx.GlobalMetadata.String(BlogKeys.SiteName))
-                    .WithTitleMetaKey(BlogKeys.Title)
-                    .WithDescriptionMetaKey(BlogKeys.Excerpt),
+                new GenerateFeeds(),
                 new WriteFiles());
 
             engine.Pipelines.Add(BlogPipelines.Tags,

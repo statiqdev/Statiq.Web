@@ -39,6 +39,7 @@ namespace Wyam.Feeds
         private ContextConfig _feedAuthor = ctx => ctx.GlobalMetadata.String("Author");
         private ContextConfig _feedPublished = _ => DateTime.UtcNow;
         private ContextConfig _feedUpdated = _ => DateTime.UtcNow;
+        private ContextConfig _feedLink = ctx => ctx.GetLink();
         private ContextConfig _feedImageLink = ctx => ctx.GetLink(ctx.GlobalMetadata, "Image", true);
         private ContextConfig _feedCopyright = ctx => ctx.GlobalMetadata.String("Copyright") ?? DateTime.UtcNow.Year.ToString();
 
@@ -50,7 +51,7 @@ namespace Wyam.Feeds
         private DocumentConfig _itemUpdated = (doc, ctx) => doc.String("Updated");
         private DocumentConfig _itemLink = (doc, ctx) => ctx.GetLink(doc, true);
         private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, "Image", true);
-        private DocumentConfig _itemContent = (doc, ctx) => doc.Content;
+        private DocumentConfig _itemContent = (doc, ctx) => doc.String("Content");
         private DocumentConfig _itemThreadLink = null;
         private DocumentConfig _itemThreadCount = null;
         private DocumentConfig _itemThreadUpdated = null;
@@ -173,6 +174,17 @@ namespace Wyam.Feeds
         }
 
         /// <summary>
+        /// Sets the feed image link. The default value is the site link.
+        /// </summary>
+        /// <param name="feedLink">A delegate that should return a <c>Uri</c> with
+        /// the feed link.</param>
+        public GenerateFeeds WithFeedLink(ContextConfig feedLink)
+        {
+            _feedLink = feedLink;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the feed image link. The default value is the value for the "Image" key
         /// in the global metadata.
         /// </summary>
@@ -291,7 +303,10 @@ namespace Wyam.Feeds
         }
 
         /// <summary>
-        /// Sets the content of the item. The default value is the content of the input document.
+        /// Sets the content of the item. The default value is the value for the "Content" key
+        /// in the input document. Note that the entire document content is not used because
+        /// it will most likely contain layout, scripts, and other code that shouldn't be part
+        /// of the feed item.
         /// </summary>
         /// <param name="itemContent">A delegate that should return a <c>string</c> with
         /// the content of the item.</param>
@@ -345,6 +360,7 @@ namespace Wyam.Feeds
                 Author = _feedAuthor?.Invoke<string>(context),
                 Published = _feedPublished?.Invoke<DateTime?>(context),
                 Updated = _feedUpdated?.Invoke<DateTime?>(context),
+                Link = _feedLink?.Invoke<Uri>(context),
                 ImageLink = _feedImageLink?.Invoke<Uri>(context),
                 Copyright = _feedCopyright?.Invoke<string>(context)
             };
@@ -390,9 +406,6 @@ namespace Wyam.Feeds
             {
                 throw new ArgumentException("The feed output path must be relative");
             }
-
-            // Reset the feed link based on the output path
-            feed.Link = new Uri(context.GetLink(outputPath, true));
 
             // Generate the feed and document
             MemoryStream stream = new MemoryStream();
