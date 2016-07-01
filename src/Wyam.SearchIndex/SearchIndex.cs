@@ -169,7 +169,7 @@ this.field('description', { boost: 5})
 this.field('tags', { boost: 50})
 this.ref('id')
 
-this.pipeline.remove(lunr.stopWordFilter);" + (_enableStemming ? "this.pipeline.remove(lunr.stemmer);" : "") + @"
+this.pipeline.remove(lunr.stopWordFilter);" + (_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);") + @"
 })
 function a(e){idx.add(e);}
 
