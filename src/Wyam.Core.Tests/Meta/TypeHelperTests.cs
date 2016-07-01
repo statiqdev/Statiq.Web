@@ -21,9 +21,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 Array result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -35,9 +36,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IReadOnlyList<int> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -49,9 +51,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IList<int> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -63,9 +66,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 List<int> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
         
@@ -77,9 +81,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 int[] result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -91,9 +96,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IEnumerable<int> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -105,9 +111,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IReadOnlyList<Array> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new[] { value }, result);
             }
 
@@ -119,9 +126,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IList<Array> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new[] { value }, result);
             }
 
@@ -133,9 +141,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 List<Array> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new[] { value }, result);
             }
 
@@ -147,9 +156,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 List<int>[] result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new[] { value }, result);
             }
 
@@ -161,9 +171,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IEnumerable<Array> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new [] { value }, result);
             }
 
@@ -179,9 +190,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IList<IEnumerable<int>> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(value, result);
             }
 
@@ -197,9 +209,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IList<IList<IEnumerable<int>>> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEquivalent(new [] { value }, result);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(0), result[0][0]);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(1), result[0][1]);
@@ -213,9 +226,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 string result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual("Red", result);
             }
 
@@ -227,9 +241,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 int result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual(1, result);
             }
 
@@ -241,9 +256,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 string result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual("1", result);
             }
 
@@ -255,9 +271,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 int result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual(1, result);
             }
 
@@ -269,9 +286,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 int result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual(1, result);
             }
 
@@ -283,9 +301,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 int result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual(2, result);
             }
 
@@ -297,9 +316,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IEnumerable<string> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(new [] { "1", "2", "3" }, result);
             }
 
@@ -311,9 +331,10 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 IEnumerable<object> result;
-                TypeHelper.TryConvert(value, out result);
+                bool convert = TypeHelper.TryConvert(value, out result);
 
                 // Then
+                Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
 
@@ -325,10 +346,71 @@ namespace Wyam.Core.Tests.Meta
 
                 // When
                 Uri uri;
-                TypeHelper.TryConvert(value, out uri);
+                bool convert = TypeHelper.TryConvert(value, out uri);
 
                 // Then
+                Assert.IsTrue(convert);
                 Assert.AreEqual(value, uri.ToString());
+            }
+
+            [Test]
+            public void NullConvertsToNullable()
+            {
+                // Given
+                object value = null;
+
+                // When
+                DateTime? result;
+                bool convert = TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.IsTrue(convert);
+                Assert.IsNull(result);
+            }
+
+            [Test]
+            public void NullDoesNotConvertToValueType()
+            {
+                // Given
+                object value = null;
+
+                // When
+                int result;
+                bool convert = TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.IsFalse(convert);
+            }
+
+            [Test]
+            public void NullConvertsToReferenceType()
+            {
+                // Given
+                object value = null;
+
+                // When
+                object result;
+                bool convert = TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.IsTrue(convert);
+                Assert.IsNull(result);
+            }
+
+            [Test]
+            public void DateTimeConvertstoNullable()
+            {
+                // Given
+                DateTime value = new DateTime(2015, 1, 1);
+
+                // When
+                DateTime? result;
+                bool convert = TypeHelper.TryConvert(value, out result);
+
+                // Then
+                Assert.IsTrue(convert);
+                Assert.IsTrue(result.HasValue);
+                Assert.AreEqual(value, result.Value);
             }
         }
     }

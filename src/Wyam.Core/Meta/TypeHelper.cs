@@ -13,7 +13,8 @@ namespace Wyam.Core.Meta
             if (value == null)
             {
                 result = default(T);
-                return !typeof (T).IsValueType;
+                return !typeof (T).IsValueType 
+                    || (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>));
             }
 
             // Just return if they're the same type
