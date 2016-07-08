@@ -35,8 +35,7 @@ namespace Wyam.Configuration.Assemblies
         /// </summary>
         /// <typeparam name="T">The type of instances to get.</typeparam>
         /// <returns>Instances for all classes of type <see cref="T"/>.</returns>
-        public IEnumerable<T> GetInstances<T>() =>
-                    GetClasses<T>().Select(x => (T)Activator.CreateInstance(x));
+        public IEnumerable<T> GetInstances<T>() => GetClasses<T>().Select(x => (T)Activator.CreateInstance(x));
 
         /// <summary>
         /// Gets an instance for a class of a specified type and name.
@@ -54,7 +53,7 @@ namespace Wyam.Configuration.Assemblies
             return type == null ? default(T) : (T)Activator.CreateInstance(type);
         }
 
-        public void CatalogTypes(HashSet<Assembly> assemblies)
+        public void CatalogTypes(IEnumerable<Assembly> assemblies)
         {
             Parallel.ForEach(assemblies, assembly =>
             {

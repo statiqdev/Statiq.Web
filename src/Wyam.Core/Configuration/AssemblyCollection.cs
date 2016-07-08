@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Wyam.Core.Configuration
 {
     internal class AssemblyCollection : IAssemblyCollection
     {
-        private readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
+        private readonly ConcurrentDictionary<string, Assembly> _assemblies = new ConcurrentDictionary<string, Assembly>();
 
         public AssemblyCollection()
         {
@@ -32,15 +33,7 @@ namespace Wyam.Core.Configuration
             Add(Assembly.GetAssembly(typeof(IModule))); // Wyam.Common
         }
 
-        public bool Add(Assembly assembly)
-        {
-            if (_assemblies.ContainsKey(assembly.FullName))
-            {
-                return false;
-            }
-            _assemblies.Add(assembly.FullName, assembly);
-            return true;
-        }
+        public bool Add(Assembly assembly) => _assemblies.TryAdd(assembly.FullName, assembly);
 
         public bool ContainsFullName(string fullName) => _assemblies.ContainsKey(fullName);
 

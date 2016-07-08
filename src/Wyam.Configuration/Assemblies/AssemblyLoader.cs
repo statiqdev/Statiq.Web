@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
@@ -18,6 +20,7 @@ namespace Wyam.Configuration.Assemblies
     {
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _names = new ConcurrentHashSet<string>();
+        private readonly ConcurrentHashSet<string> _loadedAssemblyNames = new ConcurrentHashSet<string>();
 
         private readonly ConfigCompilation _compilation;
         private readonly IReadOnlyFileSystem _fileSystem;
@@ -29,7 +32,7 @@ namespace Wyam.Configuration.Assemblies
         /// <summary>
         /// Gets the assemblies that were directly referenced (as opposed to all recursively referenced assemblies).
         /// </summary>
-        public HashSet<Assembly> DirectAssemblies { get; } = new HashSet<Assembly>();
+        public ConcurrentHashSet<Assembly> DirectAssemblies { get; } = new ConcurrentHashSet<Assembly>();
 
         internal AssemblyLoader(ConfigCompilation compilation, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies)
         {
@@ -41,10 +44,11 @@ namespace Wyam.Configuration.Assemblies
             DirectAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
 
             // Manually resolve included assemblies
+            AppDomain.CurrentDomain.AssemblyLoad += OnAssemblyLoad;
             AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
         }
-
+        
         public void Dispose()
         {
             if (_disposed)
@@ -52,19 +56,14 @@ namespace Wyam.Configuration.Assemblies
                 return;
             }
 
+            AppDomain.CurrentDomain.AssemblyLoad -= OnAssemblyLoad;
             AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
             _disposed = true;
         }
 
-        public void AddPattern(string pattern)
-        {
-            _patterns.Add(pattern);
-        }
+        public void AddPattern(string pattern) => _patterns.Add(pattern);
 
-        public void AddName(string name)
-        {
-            _names.Add(name);
-        }
+        public void AddName(string name) => _names.Add(name);
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
         internal void LoadAssemblies()
@@ -108,77 +107,75 @@ namespace Wyam.Configuration.Assemblies
                     .Concat(assemblyPaths.Select(x => x.Directory.FullPath).Distinct())
                     .Distinct());
 
-            foreach (string assemblyPath in assemblyPaths.Select(x => x.FullPath).Distinct())
+            // Load the assemblies by path
+            Parallel.ForEach(assemblyPaths.Select(x => x.FullPath).Distinct(), assemblyPath =>
             {
-                try
+                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+                if (_loadedAssemblyNames.Add(assemblyName.ToString()))
                 {
-                    using (Trace.WithIndent().Verbose("Loading assembly file {0}", assemblyPath))
+                    Trace.Verbose("Loading assembly file {0}", assemblyPath);
+
+                    // Load the assembly
+                    Assembly assembly = null;
+                    try
                     {
-                        AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-                        Assembly assembly = Assembly.Load(assemblyName);
-                        if (!_assemblies.Add(assembly))
-                        {
-                            Trace.Verbose("Skipping assembly file {0} because it was already added", assemblyPath);
-                        }
-                        else
-                        {
-                            DirectAssemblies.Add(assembly);
-                            LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
-                        }
+                        assembly = Assembly.Load(assemblyName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.Verbose("{0} exception while loading assembly file {1}: {2}", ex.GetType().Name, assemblyPath, ex.Message);
+                    }
+
+                    // Add the assembly and load references
+                    if (assembly != null)
+                    {
+                        DirectAssemblies.Add(assembly);
+                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                     }
                 }
-                catch (Exception ex)
-                {
-                    Trace.Verbose("{0} exception while loading assembly file {1}: {2}", ex.GetType().Name, assemblyPath, ex.Message);
-                }
-            }
+            });
         }
 
         private void LoadAssembliesByName()
         {
-            foreach (string assemblyName in _names)
+            Parallel.ForEach(_names, assemblyName =>
             {
-                    using (Trace.WithIndent().Verbose("Loading assembly {0}", assemblyName))
-                    {
-                        // Load the assembly
-                        Assembly assembly = null;
-                        try
-                        {
-                            assembly = Assembly.Load(assemblyName);
-                        }
-                        catch (Exception ex)
-                        {
-                            Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
-                        }
+                if (_loadedAssemblyNames.Add(assemblyName))
+                {
+                    Trace.Verbose("Loading assembly {0}", assemblyName);
 
-                        // Add the assembly and load references
-                        if (assembly != null)
-                        {
-                            if (!_assemblies.Add(assembly))
-                            {
-                                Trace.Verbose("Skipping assembly {0} because it was already added", assemblyName);
-                            }
-                            else
-                            {
-                                DirectAssemblies.Add(assembly);
-                                LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
-                            }
-                        }
+                    // Load the assembly
+                    Assembly assembly = null;
+                    try
+                    {
+                        assembly = Assembly.Load(assemblyName);
                     }
-            }
+                    catch (Exception ex)
+                    {
+                        Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
+                    }
+
+                    // Add the assembly and load references
+                    if (assembly != null)
+                    {
+                        DirectAssemblies.Add(assembly);
+                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                    }
+                }
+            });
         }
 
         // We need to go ahead and load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
         private void LoadReferencedAssemblies(IEnumerable<AssemblyName> assemblyNames)
         {
-            foreach (AssemblyName assemblyName in assemblyNames.Where(x => !_assemblies.ContainsFullName(x.FullName)))
+            Parallel.ForEach(assemblyNames.Where(x => !_assemblies.ContainsFullName(x.FullName)), assemblyName =>
             {
                 try
                 {
-                    using (Trace.WithIndent().Verbose("Loading referenced assembly {0}", assemblyName))
+                    if (_loadedAssemblyNames.Add(assemblyName.ToString()))
                     {
+                        Trace.Verbose("Loading referenced assembly {0}", assemblyName);
                         Assembly assembly = Assembly.Load(assemblyName);
-                        _assemblies.Add(assembly);
                         LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
                     }
                 }
@@ -186,28 +183,23 @@ namespace Wyam.Configuration.Assemblies
                 {
                     Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
-            }
+            });
         }
+
+        private void OnAssemblyLoad(object sender, AssemblyLoadEventArgs args) => _assemblies.Add(args.LoadedAssembly);
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
             // Only start resolving after we've generated the config assembly
-            if (_compilation.Assembly != null)
+            if (_compilation.Assembly != null && args.Name == _compilation.AssemblyFullName)
             {
                 // Return the dynamically compiled config assembly if given it's name
-                if (args.Name == _compilation.AssemblyFullName)
-                {
-                    return _compilation.Assembly;
-                }
-
-                // Return an assembly from the cache
-                Assembly assembly;
-                if (_assemblies.TryGetAssembly(args.Name, out assembly))
-                {
-                    return assembly;
-                }
+                return _compilation.Assembly;
             }
-            return null;
+
+            // Return an assembly from the cache
+            Assembly assembly;
+            return _assemblies.TryGetAssembly(args.Name, out assembly) ? assembly : null;
         }
     }
 }
