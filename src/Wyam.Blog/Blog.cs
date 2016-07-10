@@ -100,7 +100,13 @@ namespace Wyam.Blog
 
         public void Scaffold(IDirectory directory)
         {
-            throw new NotImplementedException();
+            IDirectory postsDirectory = directory.GetDirectory("posts");
+            IFile postFile = postsDirectory.GetFile("first-post.md");
+            postFile.WriteAllText(@"Title: First Post
+Published: 1/1/2016
+Tags: Introduction
+---
+This is my first post!");
         }
     }
 }
