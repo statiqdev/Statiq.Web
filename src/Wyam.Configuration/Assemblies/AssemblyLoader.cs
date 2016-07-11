@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _names = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _loadedAssemblyNames = new ConcurrentHashSet<string>();
+        private readonly ConcurrentQueue<string> _referencedAssemblyNames = new ConcurrentQueue<string>();
 
         private readonly ConfigCompilation _compilation;
         private readonly IReadOnlyFileSystem _fileSystem;
@@ -76,6 +78,7 @@ namespace Wyam.Configuration.Assemblies
 
             LoadAssembliesByPath();
             LoadAssembliesByName();
+            LoadReferencedAssemblies();
         }
 
         private void LoadAssembliesByPath()
@@ -130,7 +133,7 @@ namespace Wyam.Configuration.Assemblies
                     if (assembly != null)
                     {
                         DirectAssemblies.Add(assembly);
-                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                        EnqueReferencedAssemblies(assembly);
                     }
                 }
             });
@@ -159,31 +162,42 @@ namespace Wyam.Configuration.Assemblies
                     if (assembly != null)
                     {
                         DirectAssemblies.Add(assembly);
-                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                        EnqueReferencedAssemblies(assembly);
                     }
                 }
             });
         }
 
-        // We need to go ahead and load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
-        private void LoadReferencedAssemblies(IEnumerable<AssemblyName> assemblyNames)
+        private void EnqueReferencedAssemblies(Assembly assembly)
         {
-            Parallel.ForEach(assemblyNames.Where(x => !_assemblies.ContainsFullName(x.FullName)), assemblyName =>
+            foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+            {
+                _referencedAssemblyNames.Enqueue(referencedAssemblyName.ToString());
+            }
+        }
+
+        // We need to go ahead and load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
+        private void LoadReferencedAssemblies()
+        {
+            string assemblyName;
+            while (_referencedAssemblyNames.TryDequeue(out assemblyName))
             {
                 try
                 {
-                    if (_loadedAssemblyNames.Add(assemblyName.ToString()))
+                    if (!_assemblies.ContainsFullName(assemblyName) 
+                        && _loadedAssemblyNames.Add(assemblyName))
                     {
                         Trace.Verbose("Loading referenced assembly {0}", assemblyName);
                         Assembly assembly = Assembly.Load(assemblyName);
-                        LoadReferencedAssemblies(assembly.GetReferencedAssemblies());
+                        EnqueReferencedAssemblies(assembly);
                     }
                 }
                 catch (Exception ex)
                 {
                     Trace.Verbose("{0} exception while loading referenced assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                 }
-            });
+
+            }
         }
 
         private void OnAssemblyLoad(object sender, AssemblyLoadEventArgs args) => _assemblies.Add(args.LoadedAssembly);

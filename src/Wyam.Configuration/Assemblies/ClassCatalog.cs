@@ -20,7 +20,7 @@ namespace Wyam.Configuration.Assemblies
     /// </summary>
     public class ClassCatalog
     {
-        private readonly ConcurrentBag<Type> _types = new ConcurrentBag<Type>();
+        private readonly ConcurrentHashSet<Type> _types = new ConcurrentHashSet<Type>();
 
         /// <summary>
         /// Gets all classes of a specified type.
