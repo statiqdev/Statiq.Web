@@ -101,7 +101,7 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
     <Compile Include="Commands\PreviewServer.cs" />
-    <Compile Include="Commands\ScaffoldCommand.cs" />
+    <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="EngineManager.cs" />
     <Compile Include="ExitCode.cs" />
     <Compile Include="MetadataParser.cs" />

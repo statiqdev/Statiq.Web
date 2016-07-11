@@ -7,7 +7,7 @@ using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Commands
 {
-    internal class ScaffoldCommand : Command
+    internal class NewCommand : Command
     {
         private readonly ConfigOptions _configOptions = new ConfigOptions();
 
