@@ -21,7 +21,6 @@ namespace Wyam.Core.Configuration
                 "System",
                 "System.Collections.Generic",
                 "System.Linq",
-                "System.IO",
                 "Wyam.Core.Execution",
                 "Wyam.Core.Configuration",
                 "Wyam.Core.Documents"  // For custom document type support
