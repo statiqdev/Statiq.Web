@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<link rel="self" href="http://example.com/" />
+	<id>http://example.com/</id>
+	<title />
+	<rights>2016</rights>
+	<updated>2016-07-11T17:59:08Z</updated>
+	<entry>
+		<link href="http://example.com/posts/hello" />
+		<id>http://example.com/posts/hello</id>
+		<title>Hello, world!</title>
+		<updated>2016-02-01T00:00:00Z</updated>
+	</entry>
+	<entry>
+		<link href="http://example.com/posts/flex" />
+		<id>http://example.com/posts/flex</id>
+		<title>New Year must be awesome</title>
+		<updated>2016-01-01T00:00:00Z</updated>
+		<summary>(surely)</summary>
+	</entry>
+</feed>
