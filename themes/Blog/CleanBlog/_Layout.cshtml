@@ -10,7 +10,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 
         <title>@PageTitle</title>
-        <meta name="description" content="The personal blog of @Context.String(BlogKeys.Title)" />
+        <meta name="description" content="@Context.String(BlogKeys.Description)" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">        
 
         <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="/feed.rss" />
@@ -45,7 +45,6 @@
         <script src="http://d3js.org/d3.v3.min.js"></script>
         <script src="/assets/js/trianglify.min.js"></script>
         <script src="/assets/js/Please-compressed.js"></script>
-        </script>
                 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -83,7 +82,14 @@
                 </nav>
                 
                 <!-- Page Header -->
-                <header class="intro-header" id="intro-header">
+                @{
+                        string backgroundImage = null;
+                        if(Model.String(BlogKeys.Image) != null)
+                        {
+                                backgroundImage = $"background-image: url(\"{Model.String(BlogKeys.Image)}\")";
+                        }
+                }
+                <header class="intro-header" id="intro-header" style="@backgroundImage">
                         <div class="container">
                                 <div class="row">
                                         <div class="col-md-12">
@@ -118,20 +124,23 @@
 
                 @Html.Partial("_Scripts")
 
-                <script type="text/javascript">                
-                        // Header background                        
-                        var colors = Please.make_color({
-                                colors_returned: 3,
-                                saturation: .6
-                        });
-                        var t = new Trianglify({
-                                x_gradient: colors,
-                                y_gradient: ["#FFFFFF"]
-                        });
-                        var header = document.getElementById("intro-header");
-                        var pattern = t.generate(header.clientWidth, header.clientHeight);
-                        header.setAttribute('style', 'background-image: ' + pattern.dataUrl);                        
-                </script>
+                @if(Model.String(BlogKeys.Image) == null)
+                {
+                        <script type="text/javascript">                
+                                // Header background                        
+                                var colors = Please.make_color({
+                                        colors_returned: 3,
+                                        saturation: .6
+                                });
+                                var t = new Trianglify({
+                                        x_gradient: colors,
+                                        y_gradient: ["#FFFFFF"]
+                                });
+                                var header = document.getElementById("intro-header");
+                                var pattern = t.generate(header.clientWidth, header.clientHeight);
+                                header.setAttribute('style', 'background-image: ' + pattern.dataUrl);                        
+                        </script>
+                }
         </body>
 </html>
 
