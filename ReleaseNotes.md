@@ -1,3 +1,7 @@
+# 0.13.2
+
+- [Fix] Added a NuGet dependency to the Wyam.Feeds package in the Wyam.Blog recipe package
+
 # 0.13.1
 
 - [Fix] Fix for scaffolding a recipe to a non-existing directory

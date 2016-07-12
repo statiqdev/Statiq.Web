@@ -21,6 +21,7 @@
       <dependency id="Wyam.Markdown" version="$version$" />
       <dependency id="Wyam.Razor" version="$version$" />
       <dependency id="Wyam.Yaml" version="$version$" />
+      <dependency id="Wyam.Feeds" version="$version$" />
     </dependencies>
   </metadata>
   <files></files>
