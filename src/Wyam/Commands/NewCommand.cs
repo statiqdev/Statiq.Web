@@ -80,6 +80,9 @@ namespace Wyam.Commands
                 }
                 scaffoldDirectory.Create();
 
+                // We can ignore theme packages since we don't care about the theme for scaffolding
+                engineManager.Configurator.IgnoreKnownThemePackages = true;
+
                 // Configure everything (primarily to get the recipe)
                 try
                 {

@@ -1,27 +1,39 @@
 ﻿using System;
+using System.CommandLine;
 using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Directives
 {
-    internal class RecipeDirective : IDirective
+    internal class RecipeDirective : ArgumentSyntaxDirective<RecipeDirective.Settings>
     {
-        public string Name => "recipe";
+        public override string Name => "recipe";
 
-        public string ShortName => "r";
+        public override string ShortName => "r";
 
-        public bool SupportsMultiple => false;
+        public override bool SupportsMultiple => false;
 
-        public string Description => "Specifies a recipe to use.";
+        public override string Description => "Specifies a recipe to use.";
 
-        public void Process(Configurator configurator, string value)
+        // Any changes to settings should also be made in Cake.Wyam
+        public class Settings
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new Exception("Recipe directive must have a value");
-            }
-            configurator.RecipeName = value.Trim('"');
+            public bool IgnoreKnownPackages;
+            public string Recipe;
         }
 
-        public string GetHelpText() => null;
+        protected override void Define(ArgumentSyntax syntax, Settings settings)
+        {
+            syntax.DefineOption("i|ignore-known-packages", ref settings.IgnoreKnownPackages, "Ignores (does not add) packages for known recipes.");
+            if (!syntax.DefineParameter("recipe", ref settings.Recipe, "The recipe to use.").IsSpecified)
+            {
+                syntax.ReportError("a recipe must be specified.");
+            }
+        }
+
+        protected override void Process(Configurator configurator, Settings settings)
+        {
+            configurator.RecipeName = settings.Recipe;
+            configurator.IgnoreKnownRecipePackages = settings.IgnoreKnownPackages;
+        }
     }
 }

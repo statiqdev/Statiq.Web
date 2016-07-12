@@ -1,27 +1,39 @@
 ﻿using System;
+using System.CommandLine;
 using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Directives
 {
-    internal class ThemeDirective : IDirective
+    internal class ThemeDirective : ArgumentSyntaxDirective<ThemeDirective.Settings>
     {
-        public string Name => "theme";
+        public override string Name => "theme";
 
-        public string ShortName => "t";
+        public override string ShortName => "t";
 
-        public bool SupportsMultiple => false;
+        public override bool SupportsMultiple => false;
 
-        public string Description => "Specifies a theme to use.";
+        public override string Description => "Specifies a theme to use.";
 
-        public void Process(Configurator configurator, string value)
+        // Any changes to settings should also be made in Cake.Wyam
+        public class Settings
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new Exception("Theme directive must have a value");
-            }
-            configurator.Theme = value.Trim().Trim('"');
+            public bool IgnoreKnownPackages;
+            public string Theme;
         }
 
-        public string GetHelpText() => null;
+        protected override void Define(ArgumentSyntax syntax, Settings settings)
+        {
+            syntax.DefineOption("i|ignore-known-packages", ref settings.IgnoreKnownPackages, "Ignores (does not add) packages for known themes.");
+            if (!syntax.DefineParameter("theme", ref settings.Theme, "The theme to use.").IsSpecified)
+            {
+                syntax.ReportError("a theme must be specified.");
+            }
+        }
+
+        protected override void Process(Configurator configurator, Settings settings)
+        {
+            configurator.Theme = settings.Theme;
+            configurator.IgnoreKnownThemePackages = settings.IgnoreKnownPackages;
+        }
     }
 }

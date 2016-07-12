@@ -46,6 +46,10 @@ namespace Wyam.Configuration
 
         public string Theme { get; set; }
 
+        public bool IgnoreKnownRecipePackages { get; set; }
+
+        public bool IgnoreKnownThemePackages { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Configurator"/> class.
         /// </summary>
@@ -140,10 +144,18 @@ namespace Wyam.Configuration
                 {
                     Trace.Verbose($"Recipe {RecipeName} was in the lookup of known recipes");
 
-                    // Add the package, but only if it wasn't added manually
-                    if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
+                    // Make sure we're not ignoring packages
+                    if (!IgnoreKnownRecipePackages)
                     {
-                        PackageInstaller.AddPackage(knownRecipe.PackageId, allowPrereleaseVersions: true);
+                        // Add the package, but only if it wasn't added manually
+                        if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
+                        {
+                            PackageInstaller.AddPackage(knownRecipe.PackageId, allowPrereleaseVersions: true);
+                        }
+                    }
+                    else
+                    {
+                        Trace.Verbose("Ignoring known recipe packages");
                     }
 
                     // Set the theme if we don't already have one
@@ -178,13 +190,21 @@ namespace Wyam.Configuration
                         Trace.Warning($"Theme {Theme} is designed for recipe {knownTheme.Recipe} but is being used with recipe {RecipeName}, results may be unexpected");
                     }
 
-                    // Add any packages needed for the theme
-                    if (knownTheme.PackageIds != null)
+                    // Make sure we're not ignoring theme packages
+                    if(!IgnoreKnownThemePackages)
                     {
-                        foreach (string themePackageId in knownTheme.PackageIds.Where(x => !PackageInstaller.ContainsPackage(x)))
+                        // Add any packages needed for the theme
+                        if (knownTheme.PackageIds != null)
                         {
-                            PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
+                            foreach (string themePackageId in knownTheme.PackageIds.Where(x => !PackageInstaller.ContainsPackage(x)))
+                            {
+                                PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
+                            }
                         }
+                    }
+                    else
+                    {
+                        Trace.Verbose("Ignoring known theme packages");
                     }
                 }
                 else
