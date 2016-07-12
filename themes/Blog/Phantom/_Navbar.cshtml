@@ -1,0 +1,11 @@
+@{
+    var pages = Documents[BlogPipelines.Pages]
+        .Where(x => x.Get<bool>(BlogKeys.ShowInNavbar, true))
+        .Select(x => Tuple.Create(x.String(BlogKeys.Title), Context.GetLink(x)))
+        .Where(x => !string.IsNullOrEmpty(x.Item1))
+        .OrderBy(x => x.Item1);
+    foreach(var page in pages)
+    {
+        <li><a href="@page.Item2">@page.Item1</a></li>
+    }
+}

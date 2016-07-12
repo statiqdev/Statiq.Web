@@ -1,0 +1,18 @@
+@{
+    var docs = (IEnumerable<IDocument>)ViewData[BlogKeys.PostListDocuments];
+    foreach (IDocument doc in docs)
+    {
+        string lead = doc.String(BlogKeys.Lead);
+        
+        <div>
+            <a href="@Context.GetLink(doc)">
+                <h3>@doc.String(BlogKeys.Title)</h3>
+                @if(!string.IsNullOrWhiteSpace(lead))
+                {
+                    <p>@lead</p>
+                }
+            </a>
+            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</em></p>            
+        </div>   
+    }
+}

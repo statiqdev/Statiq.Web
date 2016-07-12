@@ -1,0 +1,22 @@
+Title: All Tags
+---
+<div class="row">
+    <div class="8u 12u$(medium)">
+        @{ 
+            ViewData["PostListDocuments"] = Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published));
+        }     
+        @Html.Partial("_PostList")
+    </div>
+    
+    <div class="4u 12u$(medium)">
+        <ul class="actions small">
+            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
+            {
+                string tag = tagDocument.String(BlogKeys.Tag);
+                string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
+                string buttonStyle = tag == Model.String(BlogKeys.Tag) ? "special" : string.Empty;
+                <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small @buttonStyle">@tag (@postCount)</a></li>
+            }
+        </ul>
+    </div>
+</div>
