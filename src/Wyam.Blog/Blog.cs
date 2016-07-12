@@ -57,20 +57,8 @@ namespace Wyam.Blog
                     // Add any posts written in Razor
                     new ReadFiles("posts/{!_,!index,}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
-                new Razor.Razor(),
-                new Excerpt()
-                    .SetMetadataKey(BlogKeys.Excerpt),
-                new Excerpt("div#content")
-                    .SetMetadataKey(BlogKeys.Content)
-                    .GetOuterHtml(false),
-                new WriteFiles(".html"),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending()
             );
-
-            engine.Pipelines.Add(BlogPipelines.Feed,
-                new Documents(BlogPipelines.Posts),
-                new GenerateFeeds(),
-                new WriteFiles());
 
             engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),
@@ -78,6 +66,7 @@ namespace Wyam.Blog
                 new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.Posts)),
                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                 new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
+                new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
                 new Meta(BlogKeys.Posts, (doc, ctx) => doc.List<IDocument>(Keys.GroupDocuments)),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
@@ -87,7 +76,23 @@ namespace Wyam.Blog
                 new Razor.Razor(),
                 new WriteFiles()
             );
-            
+
+            engine.Pipelines.Add(BlogPipelines.RenderPosts,
+                new Documents(BlogPipelines.Posts),
+                new Razor.Razor(),
+                new Excerpt()
+                    .SetMetadataKey(BlogKeys.Excerpt),
+                new Excerpt("div#content")
+                    .SetMetadataKey(BlogKeys.Content)
+                    .GetOuterHtml(false),
+                new WriteFiles(".html"));
+
+
+            engine.Pipelines.Add(BlogPipelines.Feed,
+                new Documents(BlogPipelines.RenderPosts),
+                new GenerateFeeds(),
+                new WriteFiles());
+
             engine.Pipelines.Add(BlogPipelines.RenderPages,
                 new Documents(BlogPipelines.Pages),
                 new Razor.Razor(),
