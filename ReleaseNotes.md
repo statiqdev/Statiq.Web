@@ -1,3 +1,7 @@
+# 0.13.1
+
+- [Fix] Fix for scaffolding a recipe to a non-existing directory
+
 # 0.13.0
 
 - [Feature] Implemented general support for recipies (#1)

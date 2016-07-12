@@ -74,7 +74,10 @@ namespace Wyam.Commands
                 {
                     Trace.Information($"Scaffold directory {scaffoldDirectory.Path.FullPath} does not exist and will be created");
                 }
-                scaffoldDirectory.Delete(true);
+                if (scaffoldDirectory.Exists)
+                {
+                    scaffoldDirectory.Delete(true);
+                }
                 scaffoldDirectory.Create();
 
                 // Configure everything (primarily to get the recipe)
