@@ -117,8 +117,6 @@ namespace Wyam.Configuration.Assemblies
                 if (_loadedAssemblyNames.Add(assemblyName.ToString()))
                 {
                     Trace.Verbose("Loading assembly file {0}", assemblyPath);
-
-                    // Load the assembly
                     Assembly assembly = null;
                     try
                     {
@@ -128,13 +126,7 @@ namespace Wyam.Configuration.Assemblies
                     {
                         Trace.Verbose("{0} exception while loading assembly file {1}: {2}", ex.GetType().Name, assemblyPath, ex.Message);
                     }
-
-                    // Add the assembly and load references
-                    if (assembly != null)
-                    {
-                        DirectAssemblies.Add(assembly);
-                        EnqueReferencedAssemblies(assembly);
-                    }
+                    ProcessLoadedAssembly(assembly, true);
                 }
             });
         }
@@ -146,8 +138,6 @@ namespace Wyam.Configuration.Assemblies
                 if (_loadedAssemblyNames.Add(assemblyName))
                 {
                     Trace.Verbose("Loading assembly {0}", assemblyName);
-
-                    // Load the assembly
                     Assembly assembly = null;
                     try
                     {
@@ -157,22 +147,30 @@ namespace Wyam.Configuration.Assemblies
                     {
                         Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
                     }
-
-                    // Add the assembly and load references
-                    if (assembly != null)
-                    {
-                        DirectAssemblies.Add(assembly);
-                        EnqueReferencedAssemblies(assembly);
-                    }
+                    ProcessLoadedAssembly(assembly, true);
                 }
             });
         }
 
-        private void EnqueReferencedAssemblies(Assembly assembly)
+        private void ProcessLoadedAssembly(Assembly assembly, bool direct)
         {
-            foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+            if (assembly != null)
             {
-                _referencedAssemblyNames.Enqueue(referencedAssemblyName.ToString());
+                // Even though the assembly may have gotten added to the collection in the OnAssemblyLoad handler,
+                // some assemblies (like system.* ones) are already loaded and don't fire the event so try again
+                _assemblies.Add(assembly);
+
+                // Keep track of assemblies we directly asked for so we can scan them for the class catalog
+                if (direct)
+                {
+                    DirectAssemblies.Add(assembly);
+                }
+
+                // Enqueue all referenced assemblies
+                foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+                {
+                    _referencedAssemblyNames.Enqueue(referencedAssemblyName.ToString());
+                }
             }
         }
 
@@ -189,7 +187,7 @@ namespace Wyam.Configuration.Assemblies
                     {
                         Trace.Verbose("Loading referenced assembly {0}", assemblyName);
                         Assembly assembly = Assembly.Load(assemblyName);
-                        EnqueReferencedAssemblies(assembly);
+                        ProcessLoadedAssembly(assembly, false);
                     }
                 }
                 catch (Exception ex)
