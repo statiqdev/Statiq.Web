@@ -22,6 +22,7 @@ namespace Wyam.Configuration
         private readonly ConfigCompilation _compilation = new ConfigCompilation();
         private readonly Engine _engine;
         private readonly Preprocessor _preprocessor;
+        private readonly AssemblyResolver _assemblyResolver;
 
         private bool _disposed;
         private bool _configured;
@@ -69,10 +70,11 @@ namespace Wyam.Configuration
         public Configurator(Engine engine, Preprocessor preprocessor)
         {
             _engine = engine;
-            AssemblyLoader = new AssemblyLoader(_compilation, engine.FileSystem, engine.Assemblies);
+            _preprocessor = preprocessor;
+            _assemblyResolver = new AssemblyResolver(_compilation); 
+            AssemblyLoader = new AssemblyLoader(engine.FileSystem, engine.Assemblies);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             ClassCatalog = new ClassCatalog();
-            _preprocessor = preprocessor;
 
             // Add this namespace and assembly
             engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
@@ -85,8 +87,7 @@ namespace Wyam.Configuration
             {
                 return;
             }
-
-            AssemblyLoader.Dispose();
+            _assemblyResolver.Dispose();
             _disposed = true;
         }
 
@@ -236,7 +237,7 @@ namespace Wyam.Configuration
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Recursively loading assemblies"))
             {
-                AssemblyLoader.LoadAssemblies();
+                AssemblyLoader.Load();
                 stopwatch.Stop();
                 Trace.Information($"Assemblies loaded in {stopwatch.ElapsedMilliseconds} ms");
             }

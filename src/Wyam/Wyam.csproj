@@ -100,7 +100,7 @@
     <Compile Include="Commands\ConfigOptions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
-    <Compile Include="Commands\PreviewServer.cs" />
+    <Compile Include="PreviewServer.cs" />
     <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="EngineManager.cs" />
     <Compile Include="ExitCode.cs" />

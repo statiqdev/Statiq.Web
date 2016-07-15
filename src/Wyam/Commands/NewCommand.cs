@@ -19,8 +19,8 @@ namespace Wyam.Commands
         {
             "nuget",
             "nuget-source",
-            "assembly",
-            "assembly-name",
+            "reference",
+            "assemblies",
             "recipe"
         };
 

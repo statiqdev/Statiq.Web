@@ -11,7 +11,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Owin;
 
-namespace Wyam.Commands
+namespace Wyam
 {
     internal static class PreviewServer
     {

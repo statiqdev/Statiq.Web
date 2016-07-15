@@ -395,7 +395,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
-                configurator.AssemblyLoader.AddName(Assembly.GetExecutingAssembly().FullName);
+                configurator.AssemblyLoader.AddReference(Assembly.GetExecutingAssembly().FullName);
                 configurator.RecipeName = nameof(MetadataTestRecipe);
                 configurator.GlobalMetadata = new Dictionary<string, object>
                 {

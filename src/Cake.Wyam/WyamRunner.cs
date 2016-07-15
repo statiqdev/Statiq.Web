@@ -235,21 +235,21 @@ namespace Cake.Wyam
                 }
             }
 
-            if (settings.AssemblyNames != null)
+            if (settings.References != null)
             {
-                foreach (string assemblyName in settings.AssemblyNames)
+                foreach (string reference in settings.References)
                 {
-                    builder.Append("--assembly-name");
-                    builder.Append(assemblyName);
+                    builder.Append("--reference");
+                    builder.Append(reference);
                 }
             }
 
             if (settings.Assemblies != null)
             {
-                foreach (string assembly in settings.Assemblies)
+                foreach (string assemblies in settings.Assemblies)
                 {
-                    builder.Append("--assembly");
-                    builder.Append(assembly);
+                    builder.Append("--assemblies");
+                    builder.Append(assemblies);
                 }
             }
 

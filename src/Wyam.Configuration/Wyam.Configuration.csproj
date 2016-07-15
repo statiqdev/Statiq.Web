@@ -175,9 +175,10 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Directives\AssemblyDirective.cs" />
+    <Compile Include="Assemblies\AssemblyResolver.cs" />
+    <Compile Include="Directives\AssembliesDirective.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
-    <Compile Include="Directives\AssemblyNameDirective.cs" />
+    <Compile Include="Directives\ReferenceDirective.cs" />
     <Compile Include="Assemblies\ClassCatalog.cs" />
     <Compile Include="ConfigScript\ConfigCompilation.cs" />
     <Compile Include="ConfigScript\ConfigCompiler.cs" />

@@ -17,58 +17,62 @@ using Wyam.Core.Execution;
 
 namespace Wyam.Configuration.Assemblies
 {
-    public class AssemblyLoader : IDisposable
+    public class AssemblyLoader
     {
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
-        private readonly ConcurrentHashSet<string> _names = new ConcurrentHashSet<string>();
-        private readonly ConcurrentHashSet<string> _loadedAssemblyNames = new ConcurrentHashSet<string>();
+        private readonly ConcurrentHashSet<string> _assemblies = new ConcurrentHashSet<string>();
         private readonly ConcurrentQueue<string> _referencedAssemblyNames = new ConcurrentQueue<string>();
-
-        private readonly ConfigCompilation _compilation;
+        
         private readonly IReadOnlyFileSystem _fileSystem;
-        private readonly IAssemblyCollection _assemblies;
+        private readonly IAssemblyCollection _assemblyCollection;
+        private readonly IDirectory _entryAssemblyDirectory;
 
         private bool _loaded;
-        private bool _disposed;
 
         /// <summary>
         /// Gets the assemblies that were directly referenced (as opposed to all recursively referenced assemblies).
         /// </summary>
         public ConcurrentHashSet<Assembly> DirectAssemblies { get; } = new ConcurrentHashSet<Assembly>();
 
-        internal AssemblyLoader(ConfigCompilation compilation, IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblies)
+        internal AssemblyLoader(IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblyCollection)
         {
-            _compilation = compilation;
             _fileSystem = fileSystem;
-            _assemblies = assemblies;
+            _assemblyCollection = assemblyCollection;
+
+            // Get the location of the entry assembly
+            string entryAssemblyLocation = Assembly.GetEntryAssembly()?.Location;
+            DirectoryPath entryAssemblyPath = entryAssemblyLocation == null
+                ? new DirectoryPath(Environment.CurrentDirectory)
+                : new FilePath(entryAssemblyLocation).Directory;
+            _entryAssemblyDirectory = _fileSystem.GetDirectory(entryAssemblyPath);
 
             // Add the Core modules
             DirectAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
 
             // Manually resolve included assemblies
-            AppDomain.CurrentDomain.AssemblyLoad += OnAssemblyLoad;
-            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
             AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
         }
-        
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
 
-            AppDomain.CurrentDomain.AssemblyLoad -= OnAssemblyLoad;
-            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
-            _disposed = true;
+        public void AddPattern(string pattern)
+        {
+            if (_loaded)
+            {
+                throw new InvalidOperationException("Assemblies have already been loaded");
+            }
+            _patterns.Add(pattern);
         }
 
-        public void AddPattern(string pattern) => _patterns.Add(pattern);
-
-        public void AddName(string name) => _names.Add(name);
+        public void AddReference(string name)
+        {
+            if (_loaded)
+            {
+                throw new InvalidOperationException("Assemblies have already been loaded");
+            }
+            _assemblies.Add(name);
+        }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
-        internal void LoadAssemblies()
+        internal void Load()
         {
             if (_loaded)
             {
@@ -76,89 +80,111 @@ namespace Wyam.Configuration.Assemblies
             }
             _loaded = true;
 
-            LoadAssembliesByPath();
-            LoadAssembliesByName();
+            ProcessPatterns();
+            LoadAssemblies();
             LoadReferencedAssemblies();
         }
 
-        private void LoadAssembliesByPath()
+        private void ProcessPatterns()
         {
-            // Get path to all assemblies (except those specified by name)
-            string entryAssemblyLocation = Assembly.GetEntryAssembly()?.Location;
-            DirectoryPath entryAssemblyPath = entryAssemblyLocation == null
-                ? new DirectoryPath(Environment.CurrentDirectory)
-                : new FilePath(entryAssemblyLocation).Directory; 
-            IDirectory entryAssemblyDirectory = _fileSystem.GetDirectory(entryAssemblyPath);
-
             // Get the assemblies local to the entry assembly
-            List<FilePath> assemblyPaths = _fileSystem
-                .GetFiles(entryAssemblyDirectory, _patterns)
+            _assemblies.AddRange(_fileSystem
+                .GetFiles(_entryAssemblyDirectory, _patterns)
                 .Where(x => x.Path.Extension == ".dll" || x.Path.Extension == ".exe")
-                .Select(x => x.Path)
-                .ToList();
+                .Select(x => x.Path.FullPath));
 
             // Get requested assemblies from the build root
-            assemblyPaths.AddRange(_fileSystem
+            _assemblies.AddRange(_fileSystem
                 .GetFiles(_patterns)
                 .Where(x => x.Path.Extension == ".dll" || x.Path.Extension == ".exe")
-                .Select(x => x.Path));
+                .Select(x => x.Path.FullPath));
+        }
 
-            // Add all paths to the PrivateBinPath search location (to ensure they load in the default context)
-            AppDomain.CurrentDomain.SetupInformation.PrivateBinPath =
-                string.Join(";",
-                    new[] { AppDomain.CurrentDomain.SetupInformation.PrivateBinPath }
-                    .Concat(assemblyPaths.Select(x => x.Directory.FullPath).Distinct())
-                    .Distinct());
-
-            // Load the assemblies by path
-            Parallel.ForEach(assemblyPaths.Select(x => x.FullPath).Distinct(), assemblyPath =>
+        private void LoadAssemblies()
+        {
+            Parallel.ForEach(_assemblies, assembly =>
             {
-                AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-                if (_loadedAssemblyNames.Add(assemblyName.ToString()))
+                assembly = assembly.Trim().Trim('"');
+                if (assembly.EndsWith(".dll") || assembly.EndsWith(".exe"))
                 {
-                    Trace.Verbose("Loading assembly file {0}", assemblyPath);
-                    Assembly assembly = null;
-                    try
+                    // If the path ends with .dll or .exe, attempt to load it as a path
+                    LoadAssemblyFromPath(assembly);
+                }
+                else
+                {
+                    // Attempt to load as a full name first
+                    if (!LoadAssemblyFromFullName(assembly))
                     {
-                        assembly = Assembly.Load(assemblyName);
+                        LoadAssemblyFromSimpleName(assembly);
                     }
-                    catch (Exception ex)
-                    {
-                        Trace.Verbose("{0} exception while loading assembly file {1}: {2}", ex.GetType().Name, assemblyPath, ex.Message);
-                    }
-                    ProcessLoadedAssembly(assembly, true);
                 }
             });
         }
 
-        private void LoadAssembliesByName()
+        private void LoadAssemblyFromPath(string path)
         {
-            Parallel.ForEach(_names, assemblyName =>
+            FilePath filePath = new FilePath(path);
+
+            // Get the assembly from the entry assembly path (or directly if absolute)
+            FilePath loadPath = _entryAssemblyDirectory.Path.CombineFile(filePath);
+            Assembly assembly = null;
+            try
             {
-                if (_loadedAssemblyNames.Add(assemblyName))
+                assembly = Assembly.LoadFrom(loadPath.FullPath);
+            }
+            catch (Exception ex)
+            {
+                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from {loadPath.FullPath}: {ex.Message}");
+            }
+
+            // If we didn't get an assembly, and the original path wasn't absolute, try from the build root
+            if (assembly == null && filePath.IsRelative)
+            {
+                loadPath = _fileSystem.RootPath.CombineFile(filePath);
+                try
                 {
-                    Trace.Verbose("Loading assembly {0}", assemblyName);
-                    Assembly assembly = null;
-                    try
-                    {
-                        assembly = Assembly.Load(assemblyName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.Verbose("{0} exception while loading assembly {1}: {2}", ex.GetType().Name, assemblyName, ex.Message);
-                    }
-                    ProcessLoadedAssembly(assembly, true);
+                    assembly = Assembly.LoadFrom(loadPath.FullPath);
                 }
-            });
+                catch (Exception ex)
+                {
+                    Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from {loadPath.FullPath}: {ex.Message}");
+                }
+            }
+
+            ProcessLoadedAssembly(assembly, true);
+        }
+
+        private bool LoadAssemblyFromFullName(string name)
+        {
+            if (!_assemblyCollection.ContainsFullName(name))
+            {
+                Trace.Verbose($"Loading assembly {name} by full name");
+                Assembly assembly = null;
+                try
+                {
+                    assembly = Assembly.Load(name);
+                }
+                catch (Exception ex)
+                {
+                    Trace.Verbose($"{ex.GetType().Name} exception while loading assembly {name} by full name: {ex.Message}");
+                    return false;
+                }
+                ProcessLoadedAssembly(assembly, true);
+            }
+            return true;
+        }
+
+        private void LoadAssemblyFromSimpleName(string name)
+        {
+
         }
 
         private void ProcessLoadedAssembly(Assembly assembly, bool direct)
         {
             if (assembly != null)
             {
-                // Even though the assembly may have gotten added to the collection in the OnAssemblyLoad handler,
-                // some assemblies (like system.* ones) are already loaded and don't fire the event so try again
-                _assemblies.Add(assembly);
+                // Even though we probably already checked, be sure the assembly is in the collection
+                _assemblyCollection.Add(assembly);
 
                 // Keep track of assemblies we directly asked for so we can scan them for the class catalog
                 if (direct)
@@ -182,8 +208,7 @@ namespace Wyam.Configuration.Assemblies
             {
                 try
                 {
-                    if (!_assemblies.ContainsFullName(assemblyName) 
-                        && _loadedAssemblyNames.Add(assemblyName))
+                    if (!_assemblyCollection.ContainsFullName(assemblyName))
                     {
                         Trace.Verbose("Loading referenced assembly {0}", assemblyName);
                         Assembly assembly = Assembly.Load(assemblyName);
@@ -196,22 +221,6 @@ namespace Wyam.Configuration.Assemblies
                 }
 
             }
-        }
-
-        private void OnAssemblyLoad(object sender, AssemblyLoadEventArgs args) => _assemblies.Add(args.LoadedAssembly);
-
-        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            // Only start resolving after we've generated the config assembly
-            if (_compilation.Assembly != null && args.Name == _compilation.AssemblyFullName)
-            {
-                // Return the dynamically compiled config assembly if given it's name
-                return _compilation.Assembly;
-            }
-
-            // Return an assembly from the cache
-            Assembly assembly;
-            return _assemblies.TryGetAssembly(args.Name, out assembly) ? assembly : null;
         }
     }
 }
