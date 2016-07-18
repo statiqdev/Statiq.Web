@@ -132,12 +132,7 @@ namespace Cake.Wyam
         public IEnumerable<string> NuGetSources { get; set; }
 
         /// <summary>
-        /// Adds references to an assemblies.
-        /// </summary>
-        public IEnumerable<string> References { get; set; }
-
-        /// <summary>
-        /// Adds references to multiple assemblies by globbing patterns.
+        /// Adds references to multiple assemblies by name, file name, or globbing patterns.
         /// </summary>
         public IEnumerable<string> Assemblies { get; set; }
 

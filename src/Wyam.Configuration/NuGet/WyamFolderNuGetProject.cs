@@ -66,7 +66,7 @@ namespace Wyam.Configuration.NuGet
                     .Where(x => x.FileName.Extension == ".dll" || x.FileName.Extension == ".exe"))
                 {
                     FilePath assemblyPath = installedPath.CombineFile(itemPath);
-                    _assemblyLoader.AddPattern(assemblyPath.FullPath);
+                    _assemblyLoader.Add(assemblyPath.FullPath);
                     Trace.Verbose($"Added NuGet reference {assemblyPath} for loading");
                 }
             }

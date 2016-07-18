@@ -19,8 +19,7 @@ namespace Wyam.Configuration.Preprocessing
         {
             AddDirective(new NuGetDirective());
             AddDirective(new NuGetSourceDirective());
-            AddDirective(new AssembliesDirective());
-            AddDirective(new ReferenceDirective());
+            AddDirective(new AssemblyDirective());
             AddDirective(new RecipeDirective());
             AddDirective(new ThemeDirective());
         }

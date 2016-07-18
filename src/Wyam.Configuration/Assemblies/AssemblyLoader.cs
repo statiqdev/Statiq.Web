@@ -48,27 +48,24 @@ namespace Wyam.Configuration.Assemblies
 
             // Add the Core modules
             DirectAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
-
-            // Manually resolve included assemblies
-            AppDomain.CurrentDomain.SetupInformation.PrivateBinPathProbe = string.Empty; // non-null means exclude application base path
         }
 
-        public void AddPattern(string pattern)
+        public void Add(string assembly)
         {
             if (_loaded)
             {
                 throw new InvalidOperationException("Assemblies have already been loaded");
             }
-            _patterns.Add(pattern);
-        }
 
-        public void AddReference(string name)
-        {
-            if (_loaded)
+            // Consider it a pattern if it contains a wildcard
+            if (assembly.Contains("*"))
             {
-                throw new InvalidOperationException("Assemblies have already been loaded");
+                _patterns.Add(assembly);
             }
-            _assemblies.Add(name);
+            else
+            {
+                _assemblies.Add(assembly);
+            }
         }
 
         // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
@@ -125,33 +122,36 @@ namespace Wyam.Configuration.Assemblies
         {
             FilePath filePath = new FilePath(path);
 
-            // Get the assembly from the entry assembly path (or directly if absolute)
-            FilePath loadPath = _entryAssemblyDirectory.Path.CombineFile(filePath);
+            // Attempt to load directly, and we're done if it's absolute regardless
+            if (LoadAssemblyFromFile(filePath.FullPath) || filePath.IsAbsolute)
+            {
+                return;
+            }
+
+            // Attempt to load from the entry assembly path
+            if (LoadAssemblyFromFile(_entryAssemblyDirectory.Path.CombineFile(filePath).FullPath))
+            {
+                return;
+            }
+
+            // Attempt to load from the build root
+            LoadAssemblyFromFile(_fileSystem.RootPath.CombineFile(filePath).FullPath);
+        }
+
+        private bool LoadAssemblyFromFile(string assemblyFile)
+        {
+            Trace.Verbose($"Loading assembly file {assemblyFile}");
             Assembly assembly = null;
             try
             {
-                assembly = Assembly.LoadFrom(loadPath.FullPath);
+                assembly = Assembly.LoadFrom(assemblyFile);
             }
             catch (Exception ex)
             {
-                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from {loadPath.FullPath}: {ex.Message}");
+                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyFile}: {ex.Message}");
             }
-
-            // If we didn't get an assembly, and the original path wasn't absolute, try from the build root
-            if (assembly == null && filePath.IsRelative)
-            {
-                loadPath = _fileSystem.RootPath.CombineFile(filePath);
-                try
-                {
-                    assembly = Assembly.LoadFrom(loadPath.FullPath);
-                }
-                catch (Exception ex)
-                {
-                    Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from {loadPath.FullPath}: {ex.Message}");
-                }
-            }
-
             ProcessLoadedAssembly(assembly, true);
+            return assembly != null;
         }
 
         private bool LoadAssemblyFromFullName(string name)
@@ -176,7 +176,15 @@ namespace Wyam.Configuration.Assemblies
 
         private void LoadAssemblyFromSimpleName(string name)
         {
-
+            // Current algorithm is pretty hacky, take the assembly simple name and use the same version, etc. as a known framework library
+            string fullName = typeof(object).Assembly.FullName;
+            int firstSpace = fullName.IndexOf(",", StringComparison.Ordinal);  // a comma follows the short name
+            if (firstSpace != -1)
+            {
+                fullName = name + fullName.Substring(firstSpace);
+                Trace.Verbose($"Loading assembly {name} as full name {fullName}");
+                LoadAssemblyFromFullName(fullName);
+            }
         }
 
         private void ProcessLoadedAssembly(Assembly assembly, bool direct)
