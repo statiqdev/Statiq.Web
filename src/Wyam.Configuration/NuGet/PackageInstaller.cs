@@ -122,34 +122,70 @@ namespace Wyam.Configuration.NuGet
             DirectoryPath packagesPath = GetAbsolutePackagesPath();
             Trace.Verbose($"Installing packages to {packagesPath.FullPath} (using {(UseLocalPackagesFolder ? "local" : "global")} packages folder)");
 
-            // Add the global default sources if requested
-            if (UseGlobalPackageSources)
+            try
             {
-                _sourceRepositories.AddGlobalDefaults();
+                // Add the global default sources if requested
+                if (UseGlobalPackageSources)
+                {
+                    _sourceRepositories.AddGlobalDefaults();
+                }
+
+                // Get the local repository
+                SourceRepository localRepository = _sourceRepositories.CreateRepository(packagesPath.FullPath);
+
+                // Get the package manager and repositories
+                WyamFolderNuGetProject nuGetProject = new WyamFolderNuGetProject(_fileSystem, _assemblyLoader, _currentFramework, packagesPath.FullPath);
+                NuGetPackageManager packageManager = new NuGetPackageManager(_sourceRepositories, _settings, packagesPath.FullPath)
+                {
+                    PackagesFolderNuGetProject = nuGetProject
+                };
+                IReadOnlyList<SourceRepository> remoteRepositories = _sourceRepositories.GetDefaultRepositories();
+
+                // Resolve all the versions
+                IReadOnlyList<SourceRepository> installationRepositories = remoteRepositories;
+                try
+                {
+                    ResolveVersions(localRepository, remoteRepositories);
+                }
+                catch (Exception ex)
+                {
+                    Trace.Warning("Exception while resolving package versions, attempting without remote repositories");
+                    Trace.Verbose($"Exception while resolving package versions: {ex.Message}");
+                    installationRepositories = new[] {localRepository};
+                    ResolveVersions(localRepository, Array.Empty<SourceRepository>());
+                }
+
+                // Install the packages (doing this synchronously since doing it in parallel triggers file lock errors in NuGet on a clean system)
+                try
+                {
+                    InstallPackages(packageManager, installationRepositories);
+                }
+                catch (Exception ex)
+                {
+                    Trace.Warning("Exception while installing packages, attempting without remote repositories");
+                    Trace.Verbose($"Exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
+                    InstallPackages(packageManager, new[] { localRepository });
+                }
+
+                // Process the package (do this after all packages have been installed)
+                nuGetProject.ProcessAssembliesAndContent();
             }
-
-            // Get the local repository
-            SourceRepository localRepository = _sourceRepositories.CreateRepository(packagesPath.FullPath);
-
-            // Get the package manager and repositories
-            WyamFolderNuGetProject nuGetProject = new WyamFolderNuGetProject(_fileSystem, _assemblyLoader, _currentFramework, packagesPath.FullPath);
-            NuGetPackageManager packageManager = new NuGetPackageManager(_sourceRepositories, _settings, packagesPath.FullPath)
+            catch (Exception ex)
             {
-                PackagesFolderNuGetProject = nuGetProject
-            };
-            IReadOnlyList<SourceRepository> remoteRepositories = _sourceRepositories.GetDefaultRepositories();
+                Trace.Warning("Unexpected exception while installing packages, attempting to continue anyway");
+                Trace.Verbose($"Unexpected exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
+            }
+        }
 
-            // Resolve all the versions
+        private void ResolveVersions(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories) =>
             Task.WaitAll(_packages.Values.Select(x => x.ResolveVersion(localRepository, remoteRepositories, UpdatePackages, _logger)).ToArray());
 
-            // Install the packages (doing this synchronously since doing it in parallel triggers file lock errors in NuGet on a clean system)
+        private void InstallPackages(NuGetPackageManager packageManager, IReadOnlyList<SourceRepository> installationRepositories)
+        {
             foreach (Package package in _packages.Values)
             {
-                package.Install(remoteRepositories, packageManager).Wait();
+                package.Install(installationRepositories, packageManager).Wait();
             }
-
-            // Process the package (do this after all packages have been installed)
-            nuGetProject.ProcessAssembliesAndContent();
         }
     }
 }
