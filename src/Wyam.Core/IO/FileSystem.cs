@@ -222,6 +222,7 @@ namespace Wyam.Core.IO
 
             return patterns
                 .Where(x => x != null)
+                .Select(x => x.Replace("\\", "/"))  // Normalize slashes in patterns
                 .Select(x =>
                 {
                     bool negated = x[0] == '!';

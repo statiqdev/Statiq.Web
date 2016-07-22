@@ -24,6 +24,7 @@ namespace Wyam.Core.IO.Globbing
 
             // Expand braces
             IEnumerable<string> expandedPatterns = patterns
+                .Select(x => x.Replace("\\", "/"))
                 .SelectMany(ExpandBraces)
                 .Select(f => f.Replace("\\{", "{").Replace("\\}", "}")); // Unescape braces
 

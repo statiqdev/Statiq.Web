@@ -35,13 +35,13 @@ namespace Wyam.Testing.IO
                     ? _path.FullPath.Substring(0, _path.FullPath.Length - 1)
                     : _path.FullPath;
                 return _fileProvider.Directories
-                    .Where(x => x.StartsWith(adjustedPath) 
+                    .Where(x => x.StartsWith(adjustedPath + "/") 
                         && adjustedPath.Count(c => c == '/') == x.Count(c => c == '/') - 1
                         && _path.FullPath != x)
                     .Select(x => new TestDirectory(_fileProvider, x));
             }
             return _fileProvider.Directories
-                .Where(x => x.StartsWith(_path.FullPath) && _path.FullPath != x)
+                .Where(x => x.StartsWith(_path.FullPath + "/") && _path.FullPath != x)
                 .Select(x => new TestDirectory(_fileProvider, x));
         }
 

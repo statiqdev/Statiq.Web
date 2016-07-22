@@ -28,9 +28,9 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a", new[] { "**/foo.txt", "**/baz.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt", "/a/b/d/baz.txt" })]
             [TestCase("/a", new[] { "**/foo.txt", "**/c/baz.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt" })]
             [TestCase("/a", new[] { "**/baz.txt", "!**/d/*" }, new[] { "/a/b/c/baz.txt" })]
-            [TestCase("/a", new[] { "**/*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt", "/a/b/c/1/2.txt", "/a/b/d/baz.txt", "/a/x/bar.txt" })]
+            [TestCase("/a", new[] { "**/*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt", "/a/b/c/1/2.txt", "/a/b/d/baz.txt", "/a/x/bar.txt", "/a/foo/bar/a.txt", "/a/foo/baz/b.txt" })]
             [TestCase("/a/b/c", new[] { "*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/baz.txt" })]
-            [TestCase("/a", new[] { "**/*.txt", "!**/b*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt" })]
+            [TestCase("/a", new[] { "**/*.txt", "!**/b*.txt" }, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt", "/a/foo/bar/a.txt" })]
             [TestCase("/a", new[] { "x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a", new[] { "x/*.\\{xml,txt\\}" }, new string[] { })]
             [TestCase("/a", new[] { "x/*", "!x/*.{xml,txt}" }, new[] { "/a/x/foo.doc" })]
@@ -38,6 +38,8 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a", new[] { "x/*.{*,!doc}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a", new[] { "x/*{!doc,}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a/b/c", new[] { "../d/*.txt" }, new[] { "/a/b/d/baz.txt" })]
+            [TestCase("/a", new[] { "foo/*/*.txt" }, new[] { "/a/foo/bar/a.txt", "/a/foo/baz/b.txt" })]
+            [TestCase("/a", new[] { "foo/*{!r,}/*.txt"}, new [] { "/a/foo/baz/b.txt" } )]
             public void ShouldReturnMatchedFiles(string directoryPath, string[] patterns, string[] resultPaths)
             {
                 // Given
@@ -46,9 +48,35 @@ namespace Wyam.Core.Tests.IO.Globbing
 
                 // When
                 IEnumerable<IFile> matches = Globber.GetFiles(directory, patterns);
+                IEnumerable<IFile> matchesReversedSlash = Globber.GetFiles(directory, patterns.Select(x => x.Replace("/", "\\")));
 
                 // Then
                 CollectionAssert.AreEquivalent(resultPaths, matches.Select(x => x.Path.FullPath));
+                CollectionAssert.AreEquivalent(resultPaths, matchesReversedSlash.Select(x => x.Path.FullPath));
+            }
+
+            // Addresses a specific problem with nested folders in a wildcard search
+            // due to an incorrect TestDirectory.GetDirectories() implementation
+            // (it was returning non-existing "/a/b/foo/y.txt" as a match)
+            [Test]
+            public void NestedFoldersWilcard()
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/a");
+                fileProvider.AddDirectory("/a/b");
+                fileProvider.AddDirectory("/a/b/c");
+                fileProvider.AddDirectory("/a/bar");
+                fileProvider.AddDirectory("/a/bar/foo");
+                fileProvider.AddFile("/a/b/c/x.txt");
+                fileProvider.AddFile("/a/bar/foo/y.txt");
+                IDirectory directory = fileProvider.GetDirectory("/a");
+
+                // When
+                IEnumerable<IFile> matches = Globber.GetFiles(directory, "**/*.txt");
+
+                // Then
+                CollectionAssert.AreEquivalent(new[] { "/a/b/c/x.txt", "/a/bar/foo/y.txt" }, matches.Select(x => x.Path.FullPath));
             }
 
             [Test]
@@ -121,6 +149,9 @@ namespace Wyam.Core.Tests.IO.Globbing
             fileProvider.AddDirectory("/a/x");
             fileProvider.AddDirectory("/a/y");
             fileProvider.AddDirectory("/a/y/z");
+            fileProvider.AddDirectory("/a/foo");
+            fileProvider.AddDirectory("/a/foo/bar");
+            fileProvider.AddDirectory("/a/foo/baz");
 
             fileProvider.AddFile("/a/b/c/foo.txt");
             fileProvider.AddFile("/a/b/c/baz.txt");
@@ -129,6 +160,8 @@ namespace Wyam.Core.Tests.IO.Globbing
             fileProvider.AddFile("/a/x/bar.txt");
             fileProvider.AddFile("/a/x/foo.xml");
             fileProvider.AddFile("/a/x/foo.doc");
+            fileProvider.AddFile("/a/foo/bar/a.txt");
+            fileProvider.AddFile("/a/foo/baz/b.txt");
 
             return fileProvider;
         }
