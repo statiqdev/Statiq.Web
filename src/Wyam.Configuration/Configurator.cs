@@ -72,7 +72,7 @@ namespace Wyam.Configuration
             _engine = engine;
             _preprocessor = preprocessor;
             _assemblyResolver = new AssemblyResolver(_compilation); 
-            AssemblyLoader = new AssemblyLoader(engine.FileSystem, engine.Assemblies);
+            AssemblyLoader = new AssemblyLoader(engine.FileSystem, engine.Assemblies, _assemblyResolver);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             ClassCatalog = new ClassCatalog();
 

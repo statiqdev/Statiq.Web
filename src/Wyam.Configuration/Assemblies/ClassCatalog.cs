@@ -20,7 +20,7 @@ namespace Wyam.Configuration.Assemblies
     /// </summary>
     public class ClassCatalog
     {
-        private readonly ConcurrentHashSet<Type> _types = new ConcurrentHashSet<Type>();
+        private readonly ConcurrentDictionary<string, Type> _types = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// Gets all classes of a specified type.
@@ -28,7 +28,7 @@ namespace Wyam.Configuration.Assemblies
         /// <typeparam name="T">The type of classes to get.</typeparam>
         /// <returns>All classes of type <see cref="T"/>.</returns>
         public IEnumerable<Type> GetClasses<T>() =>
-                    _types.Where(x => typeof(T).IsAssignableFrom(x));
+                    _types.Values.Where(x => typeof(T).IsAssignableFrom(x));
 
         /// <summary>
         /// Gets instances for all classes of a specified type..
@@ -60,7 +60,7 @@ namespace Wyam.Configuration.Assemblies
                 Trace.Verbose($"Cataloging types in assembly {assembly.FullName}");
                 foreach (Type type in GetLoadableTypes(assembly).Where(x => x.IsPublic && !x.IsAbstract && x.IsClass))
                 {
-                    _types.Add(type);
+                    _types.TryAdd(type.FullName, type);
                 }
             });
         }
