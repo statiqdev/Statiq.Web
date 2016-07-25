@@ -38,21 +38,7 @@ namespace Wyam.Core.Caching
             object rawValue;
             bool result = base.TryGetValue(key, out rawValue);
             value = (TValue) rawValue;
-            Trace.Verbose("Cache {0} for key: {1}", result ? "hit" : "miss", key);
             return result;
-        }
-
-        public override bool TryGetValue(string key, out object value)
-        {
-            bool result = base.TryGetValue(key, out value);
-            Trace.Verbose("Cache {0} for key: {1}", result ? "hit" : "miss", key);
-            return result;
-        }
-
-        public override void Set(string key, object value)
-        {
-            base.Set(key, value);
-            Trace.Verbose("Cache set for key: {0}", key);
         }
     }
 }
