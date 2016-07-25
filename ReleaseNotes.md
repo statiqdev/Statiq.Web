@@ -1,3 +1,15 @@
+# 0.13.3
+
+- [Refactoring] Removed cache hit/miss messages from the verbose log due to excessive noise
+- [Fix] NuGet no longer crashes for lack of network access (#326)
+- **[Breaking Change]** [Refactoring] Removed the `an` directive and command line argument, all assemblies should now be loaded with the `a` directive/argument regardless of if a full name, simple name, globbing pattern, or file path is specified
+- [Feature] Will now attempt to load assemblies from a simple name like `System.Xml` with the same version as the current framework
+- [Refactoring] Lots of refactoring related to assembly loading (#324)
+- [Feature] Added new Phantom theme for the Blog recipe
+- [Feature] Added support for hero images to the Blog recipe
+- [Feature] Added an argument to recipe and theme directives to indicate any known recipe/theme packages should be ignored (mainly for debugging new recipe/themes)
+- [Feature] Added an "about" page to the Blog recipe scaffolding
+
 # 0.13.2
 
 - [Fix] Added a NuGet dependency to the Wyam.Feeds package in the Wyam.Blog recipe package
