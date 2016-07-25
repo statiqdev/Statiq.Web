@@ -24,7 +24,6 @@ namespace Wyam.Core.IO.Globbing
 
             // Expand braces
             IEnumerable<string> expandedPatterns = patterns
-                .Select(x => x.Replace("\\", "/"))
                 .SelectMany(ExpandBraces)
                 .Select(f => f.Replace("\\{", "{").Replace("\\}", "}")); // Unescape braces
 
@@ -33,7 +32,9 @@ namespace Wyam.Core.IO.Globbing
             {
                 bool isExclude = expandedPattern[0] == '!';
                 string finalPattern = isExclude ? expandedPattern.Substring(1) : expandedPattern;
-                finalPattern = finalPattern.Replace("\\!", "!");  // Unescape negation
+                finalPattern = finalPattern
+                    .Replace("\\!", "!") // Unescape negation
+                    .Replace("\\", "/"); // Normalize slashes
 
                 // No support for absolute paths
                 if (System.IO.Path.IsPathRooted(finalPattern))
@@ -117,6 +118,10 @@ namespace Wyam.Core.IO.Globbing
                         prefix = pattern.Substring(0, i);
                         break;
                     }
+                    else
+                    {
+                        escaping = false;
+                    }
                 }
 
                 // actually no sets, all { were escaped.
@@ -175,6 +180,7 @@ namespace Wyam.Core.IO.Globbing
             int depth = 1;
             List<string> set = new List<string>();
             string member = "";
+            escaping = false;
 
             for (i = 1 /* skip the \{ */ ; i < pattern.Length && depth > 0; i++) 
             {

@@ -533,36 +533,36 @@ namespace Wyam.Core.Tests.IO
                 CollectionAssert.AreEquivalent(new[] { "/a/b/c/foo.txt" }, results.Select(x => x.Path.FullPath));
             }
 
-            [TestCase("/", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/a", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/a", new[] { "a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/", new[] { "!/a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/a", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/", new[] { "**/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "**/foo.txt", "/a/x/bar.txt" }, new[] { "/a/b/c/foo.txt", "/a/x/bar.txt" })]
-            [TestCase("/", new[] { "**/foo.txt", "/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "**/foo.txt", "!/a/b/c/foo.txt" }, new string[] { })]
-            [TestCase("/", new[] { "**/foo.txt", "!/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "**/foo.txt", "!**/foo.txt" }, new string[] { })]
-            [TestCase("/", new[] { "**/foo.txt", "!**/bar.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "/**/foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/", new[] { "/a/b/c/d/../foo.txt" }, new[] { "/a/b/c/foo.txt" })]
-            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/d/../foo.txt" }, new string[] { })]
-            [TestCase("/", new[] { "qwerty:///**/*.txt" }, new[] { "/q/werty.txt" })]
-            [TestCase("/", new[] { "qwerty|/**/*.txt" }, new[] { "/q/werty.txt" })]
-            [TestCase("/", new[] { "qwerty:///|/**/*.txt" }, new[] { "/q/werty.txt" })]
-            [TestCase("/", new[] { "/q/werty.txt" }, new string[] { })]
-            [TestCase("qwerty|/", new[] { "/q/werty.txt" }, new string[] { })]
-            [TestCase("qwerty:///|/", new[] { "/q/werty.txt" }, new string[] { })]
-            [TestCase("qwerty:///", new[] { "/q/werty.txt" }, new string[] { })]
-            [TestCase("/", new[] { "qwerty|/q/werty.txt" }, new[] { "/q/werty.txt" })]
-            [TestCase("/", new[] { "qwerty:///|/q/werty.txt" }, new[] { "/q/werty.txt" })]
-            [TestCase("/", new[] { "qwerty:///q/werty.txt" }, new[] { "/q/werty.txt" })]
-            public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected)
+            [TestCase("/", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/a", new[] { "/a/b/c/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/a", new[] { "a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "!/a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/foo.txt", "!/a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "**/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "/a/x/bar.txt" }, new[] { "/a/b/c/foo.txt", "/a/x/bar.txt" }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "!/a/b/c/foo.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "!/a/x/baz.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "!**/foo.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "**/foo.txt", "!**/bar.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "/**/foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/", new[] { "/a/b/c/d/../foo.txt" }, new[] { "/a/b/c/foo.txt" }, true)]
+            [TestCase("/a", new[] { "a/b/c/foo.txt", "!/a/b/c/d/../foo.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "qwerty:///**/*.txt" }, new[] { "/q/werty.txt" }, false)]
+            [TestCase("/", new[] { "qwerty|/**/*.txt" }, new[] { "/q/werty.txt" }, true)]
+            [TestCase("/", new[] { "qwerty:///|/**/*.txt" }, new[] { "/q/werty.txt" }, false)]
+            [TestCase("/", new[] { "/q/werty.txt" }, new string[] { }, true)]
+            [TestCase("qwerty|/", new[] { "/q/werty.txt" }, new string[] { }, true)]
+            [TestCase("qwerty:///|/", new[] { "/q/werty.txt" }, new string[] { }, true)]
+            [TestCase("qwerty:///", new[] { "/q/werty.txt" }, new string[] { }, true)]
+            [TestCase("/", new[] { "qwerty|/q/werty.txt" }, new[] { "/q/werty.txt" }, true)]
+            [TestCase("/", new[] { "qwerty:///|/q/werty.txt" }, new[] { "/q/werty.txt" }, false)]
+            [TestCase("/", new[] { "qwerty:///q/werty.txt" }, new[] { "/q/werty.txt" }, false)]
+            public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected, bool reverseSlashes)
             {
                 //TestContext.Out.WriteLine($"Patterns: {string.Join(",", patterns)}");
 
@@ -578,11 +578,18 @@ namespace Wyam.Core.Tests.IO
 
                 // When
                 IEnumerable<IFile> results = fileSystem.GetFiles(dir, patterns);
-                IEnumerable<IFile> resultsReversedSlash = fileSystem.GetFiles(dir, patterns.Select(x => x.Replace("/", "\\")));
 
                 // Then
                 CollectionAssert.AreEquivalent(expected, results.Select(x => x.Path.FullPath));
-                CollectionAssert.AreEquivalent(expected, resultsReversedSlash.Select(x => x.Path.FullPath));
+
+                if (reverseSlashes)
+                {
+                    //When
+                    results = fileSystem.GetFiles(dir, patterns.Select(x => x.Replace("/", "\\")));
+
+                    // Then
+                    CollectionAssert.AreEquivalent(expected, results.Select(x => x.Path.FullPath));
+                }
             }
         }
 
