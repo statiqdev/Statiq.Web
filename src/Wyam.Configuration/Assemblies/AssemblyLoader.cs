@@ -112,7 +112,7 @@ namespace Wyam.Configuration.Assemblies
                 else
                 {
                     // Attempt to load as a full name first
-                    if (!LoadAssemblyFromFullName(assembly))
+                    if (LoadAssemblyFromFullName(assembly) == null)
                     {
                         LoadAssemblyFromSimpleName(assembly);
                     }
@@ -125,13 +125,13 @@ namespace Wyam.Configuration.Assemblies
             FilePath filePath = new FilePath(path);
 
             // Attempt to load directly, and we're done if it's absolute regardless
-            if (LoadAssemblyFromFile(filePath.FullPath) || filePath.IsAbsolute)
+            if (LoadAssemblyFromFile(filePath.FullPath) != null || filePath.IsAbsolute)
             {
                 return;
             }
 
             // Attempt to load from the entry assembly path
-            if (LoadAssemblyFromFile(_entryAssemblyDirectory.Path.CombineFile(filePath).FullPath))
+            if (LoadAssemblyFromFile(_entryAssemblyDirectory.Path.CombineFile(filePath).FullPath) != null)
             {
                 return;
             }
@@ -140,7 +140,7 @@ namespace Wyam.Configuration.Assemblies
             LoadAssemblyFromFile(_fileSystem.RootPath.CombineFile(filePath).FullPath);
         }
 
-        private bool LoadAssemblyFromFile(string assemblyFile)
+        private Assembly LoadAssemblyFromFile(string assemblyFile)
         {
             using (Trace.WithIndent().Verbose($"Loading assembly file {assemblyFile}"))
             { 
@@ -159,11 +159,22 @@ namespace Wyam.Configuration.Assemblies
                 // If we didn't get a name, then it's not a valid assembly file
                 if (assemblyName == null)
                 {
-                    return false;
+                    return null;
                 }
 
+                // Attempt to load by name first
+                Assembly assembly = LoadAssemblyFromFullName(assemblyName.FullName);
+                if (assembly != null)
+                {
+                    if (assembly.FullName != assemblyName.FullName)
+                    {
+                        Trace.Verbose($"Assembly {assemblyName} redirected to {assembly.FullName}");
+                    }
+                    return assembly;
+                }
+                Trace.Verbose($"Assembly {assemblyName.FullName} could not be loaded by full name, attempting to load by file");
+
                 // Check if the assembly has already been loaded, then attempt to load it if it hasn't
-                Assembly assembly = null;
                 if (_assemblyResolver.TryGet(assemblyName.FullName, out assembly))
                 {
                     Trace.Verbose($"Assembly {assemblyName.FullName} has already been loaded from {assembly.Location}");
@@ -181,11 +192,11 @@ namespace Wyam.Configuration.Assemblies
                 }
 
                 ProcessLoadedAssembly(assembly, true);
-                return assembly != null;
+                return assembly;
             }
         }
 
-        private bool LoadAssemblyFromFullName(string name)
+        private Assembly LoadAssemblyFromFullName(string name)
         {
             using (Trace.WithIndent().Verbose($"Loading assembly {name} by full name"))
             { 
@@ -203,11 +214,11 @@ namespace Wyam.Configuration.Assemblies
                     catch (Exception ex)
                     {
                         Trace.Verbose($"{ex.GetType().Name} exception while loading assembly {name} by full name: {ex.Message}");
-                        return false;
+                        return null;
                     }
                     ProcessLoadedAssembly(assembly, true);
                 }
-                return true;
+                return assembly;
             }
         }
 
