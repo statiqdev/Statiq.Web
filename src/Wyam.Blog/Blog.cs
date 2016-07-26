@@ -87,7 +87,6 @@ namespace Wyam.Blog
                     .GetOuterHtml(false),
                 new WriteFiles(".html"));
 
-
             engine.Pipelines.Add(BlogPipelines.Feed,
                 new Documents(BlogPipelines.RenderPosts),
                 new GenerateFeeds(),

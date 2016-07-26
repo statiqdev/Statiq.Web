@@ -5,7 +5,7 @@ Title: Archive
 }
 
 @{
-    foreach(IGrouping<int, IDocument> year in Documents
+    foreach(IGrouping<int, IDocument> year in Documents[BlogKeys.Posts]
         .Where(x => x.ContainsKey("Published"))
         .OrderByDescending(x => x.Get<DateTime>("Published"))
         .GroupBy(x => x.Get<DateTime>("Published").Year)
