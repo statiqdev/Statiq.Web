@@ -24,7 +24,7 @@ namespace Wyam.Configuration.ConfigScript
 
         public string AssemblyFullName { get; private set; }
 
-        public MetadataReference MetadataReference { get; private set; }
+        public byte[] RawAssembly { get; private set; }
         
         internal void Create(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IList<Assembly> referenceAssemblies)
         {
@@ -151,7 +151,6 @@ namespace Wyam.Configuration.ConfigScript
             Compilation compilation = _script.GetCompilation().WithOptions(compilationOptions);
 
             // Emit the assembly
-            byte[] rawAssembly;
             using (var ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
@@ -187,11 +186,10 @@ namespace Wyam.Configuration.ConfigScript
                 }
 
                 ms.Seek(0, SeekOrigin.Begin);
-                rawAssembly = ms.ToArray();
+                RawAssembly = ms.ToArray();
             }
-            Assembly = Assembly.Load(rawAssembly);
+            Assembly = Assembly.Load(RawAssembly);
             AssemblyFullName = Assembly.FullName;
-            MetadataReference = compilation.ToMetadataReference();
         }
 
         private static string GetCompilationErrorMessage(Diagnostic diagnostic)

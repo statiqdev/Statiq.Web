@@ -19,10 +19,9 @@ namespace Wyam.Common.Execution
     public interface IExecutionContext : IMetadata
     {
         /// <summary>
-        /// Gets the Roslyn metadata references representing dynamically
-        /// compiled assemblies (such as the configuration script).
+        /// Gets the raw bytes for dynamically compiled assemblies (such as the configuration script).
         /// </summary>
-        IReadOnlyCollection<object> MetadataReferences { get; }
+        IReadOnlyCollection<byte[]> DynamicAssemblies { get; }
 
         IReadOnlyCollection<Assembly> Assemblies { get; }
         IReadOnlyCollection<string> Namespaces { get; }

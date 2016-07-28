@@ -111,9 +111,9 @@ namespace Wyam.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                     _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Core.dll"), x => MetadataReference.CreateFromFile(x)),
                     _metadataReferences.GetOrAdd(Path.Combine(assemblyPath, "System.Runtime.dll"), x => MetadataReference.CreateFromFile(x))
                 );
-            if (_executionContext.MetadataReferences.Count > 0)
+            if(_executionContext.DynamicAssemblies.Count > 0)
             {
-                compilation = compilation.AddReferences(_executionContext.MetadataReferences.Cast<MetadataReference>());
+                compilation = compilation.AddReferences(_executionContext.DynamicAssemblies.Select(x => MetadataReference.CreateFromImage(x)));
             }
 
             using (var ms = new MemoryStream())
@@ -129,10 +129,7 @@ namespace Wyam.Razor.Microsoft.AspNet.Mvc.Razor.Compilation
                 ms.Seek(0, SeekOrigin.Begin);
                 byte[] assemblyBytes = ms.ToArray();
                 Assembly assembly = Assembly.Load(assemblyBytes);
-
-                var type = assembly.GetExportedTypes()
-                                    .First(t => t.Name.StartsWith(_razorHost.MainClassNamePrefix, StringComparison.Ordinal));
-
+                var type = assembly.GetExportedTypes().First(t => t.Name.StartsWith(_razorHost.MainClassNamePrefix, StringComparison.Ordinal));
                 return type;
             }
         }

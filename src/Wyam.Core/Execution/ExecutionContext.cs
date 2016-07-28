@@ -22,7 +22,7 @@ namespace Wyam.Core.Execution
         
         public Engine Engine { get; }
 
-        public IReadOnlyCollection<object> MetadataReferences => Engine.MetadataReferences;
+        public IReadOnlyCollection<byte[]> DynamicAssemblies => Engine.DynamicAssemblies;
 
         public IReadOnlyCollection<Assembly> Assemblies => Engine.Assemblies;
 

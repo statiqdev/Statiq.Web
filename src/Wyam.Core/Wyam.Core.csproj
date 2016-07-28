@@ -61,7 +61,7 @@
     <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Configuration\NamespaceCollection.cs" />
-    <Compile Include="Configuration\MetadataReferenceCollection.cs" />
+    <Compile Include="Configuration\RawAssemblyCollection.cs" />
     <Compile Include="Documents\BlockingStream.cs" />
     <Compile Include="Documents\CustomDocument.cs" />
     <Compile Include="Documents\CustomDocumentFactory.cs" />
