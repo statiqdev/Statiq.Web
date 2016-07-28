@@ -15,12 +15,12 @@ using Wyam.Testing;
 namespace Wyam.Git.Tests
 {
     [TestFixture]
-    [Ignore("Too slow")]
     public class GitCommitsTests : BaseFixture
     {
         public class ExecuteMethodTests : GitCommitsTests
         {
             [Test]
+            [Ignore("Too slow")]
             public void GetAllCommitsFromInputPath()
             {
                 // Given
@@ -46,6 +46,7 @@ namespace Wyam.Git.Tests
             }
 
             [Test]
+            [Ignore("Too slow")]
             public void GetCommitsForInputDocument()
             {
                 // Given

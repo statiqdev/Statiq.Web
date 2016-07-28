@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Execution;
 using Wyam.Testing;
 
@@ -18,137 +19,7 @@ namespace Wyam.Configuration.Tests
         public class ConfigureMethodTests : ConfiguratorTests
         {
             [Test]
-            public void ErrorInDeclarationsContainsCorrectLineNumbers()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-class Y { };
-foo bar;
----
-int z = 0;
-";
-
-                // When
-                AggregateException exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.AreEqual(2, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 3", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 3", exception.InnerExceptions[0].Message);
-            }
-
-            [Test]
-            public void ErrorInDeclarationsWithEmptyLinesContainsCorrectLineNumbers()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-class Y { };
-
-foo bar;
-
----
-
-int z = 0;
-";
-
-                // When
-                AggregateException exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.AreEqual(2, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 4", exception.InnerExceptions[1].Message);
-            }
-
-            [Test]
-            public void ErrorInDeclarationsWithoutSetupContainsCorrectLineNumbers()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-class Y { };
-
-foo bar;
-
----
-
-int z = 0;
-";
-
-                // When
-                AggregateException exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.AreEqual(2, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
-                StringAssert.StartsWith("Line 4", exception.InnerExceptions[1].Message);
-            }
-
-            [Test]
-            public void ErrorInConfigContainsCorrectLineNumbers()
-            {
-                // Given
-                RemoveListener();
-                Configurator configurator = GetConfigurator();
-                string configScript = @"
-
-class Y { };
-class X { };
-
----
-
-int z = 0;
-
-foo bar;
-";
-
-                // When
-                AggregateException exception = null;
-                try
-                {
-                    configurator.Configure(configScript);
-                }
-                catch (AggregateException ex)
-                {
-                    exception = ex;
-                }
-
-                // Then
-                Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 10", exception.InnerExceptions[0].Message);
-            }
-
-            [Test]
-            public void ErrorInConfigWithoutDeclarationsContainsCorrectLineNumbers()
+            public void ErrorContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
@@ -160,23 +31,23 @@ foo bar;
 ";
 
                 // When
-                AggregateException exception = null;
+                ScriptCompilationException exception = null;
                 try
                 {
                     configurator.Configure(configScript);
                 }
-                catch (AggregateException ex)
+                catch (ScriptCompilationException ex)
                 {
                     exception = ex;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 4", exception.InnerExceptions[0].Message);
+                Assert.AreEqual(1, exception.ErrorMessages.Count);
+                StringAssert.StartsWith("Line 4", exception.ErrorMessages[0]);
             }
 
             [Test]
-            public void ErrorInConfigAfterLambdaExpansionContainsCorrectLineNumbers()
+            public void ErrorAfterLambdaExpansionContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
@@ -192,23 +63,23 @@ foo bar;
 ";
 
                 // When
-                AggregateException exception = null;
+                ScriptCompilationException exception = null;
                 try
                 {
                     configurator.Configure(configScript);
                 }
-                catch (AggregateException ex)
+                catch (ScriptCompilationException ex)
                 {
                     exception = ex;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
+                Assert.AreEqual(1, exception.ErrorMessages.Count);
+                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
             }
 
             [Test]
-            public void ErrorInConfigAfterLambdaExpansionOnNewLineContainsCorrectLineNumbers()
+            public void ErrorAfterLambdaExpansionOnNewLineContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
@@ -224,23 +95,23 @@ foo bar;
 ";
 
                 // When
-                AggregateException exception = null;
+                ScriptCompilationException exception = null;
                 try
                 {
                     configurator.Configure(configScript);
                 }
-                catch (AggregateException ex)
+                catch (ScriptCompilationException ex)
                 {
                     exception = ex;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 8", exception.InnerExceptions[0].Message);
+                Assert.AreEqual(1, exception.ErrorMessages.Count);
+                StringAssert.StartsWith("Line 8", exception.ErrorMessages[0]);
             }
 
             [Test]
-            public void ErrorInConfigAfterLambdaExpansionWithArgumentSeparatorNewLinesContainsCorrectLineNumbers()
+            public void ErrorAfterLambdaExpansionWithArgumentSeparatorNewLinesContainsCorrectLineNumbers()
             {
                 // Given
                 RemoveListener();
@@ -257,19 +128,19 @@ foo bar;
 ";
 
                 // When
-                AggregateException exception = null;
+                ScriptCompilationException exception = null;
                 try
                 {
                     configurator.Configure(configScript);
                 }
-                catch (AggregateException ex)
+                catch (ScriptCompilationException ex)
                 {
                     exception = ex;
                 }
 
                 // Then
-                Assert.AreEqual(1, exception.InnerExceptions.Count);
-                StringAssert.StartsWith("Line 9", exception.InnerExceptions[0].Message);
+                Assert.AreEqual(1, exception.ErrorMessages.Count);
+                StringAssert.StartsWith("Line 9", exception.ErrorMessages[0]);
             }
 
             [Test]
@@ -281,14 +152,12 @@ foo bar;
                 string configScript = @"
 public class MyDocument : CustomDocument
 {
-    public int Count { get; set; }
-
     protected override CustomDocument Clone()
     {
         return new MyDocument();
     }
 }
----
+
 DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
 ";
 
@@ -308,14 +177,12 @@ DocumentFactory = new CustomDocumentFactory<MyDocument>(DocumentFactory);
                 string configScript = @"
 public class MyDocument : CustomDocument
 {
-    public int Count { get; set; }
-
     protected override CustomDocument Clone()
     {
         return new MyDocument();
     }
 }
----
+
 SetCustomDocumentType<MyDocument>();
 ";
 

@@ -201,6 +201,7 @@
     </Compile>
     <Compile Include="Assemblies\AssemblyResolver.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
+    <Compile Include="ConfigScript\ScriptCompilationException.cs" />
     <Compile Include="Directives\AssemblyDirective.cs" />
     <Compile Include="Assemblies\ClassCatalog.cs" />
     <Compile Include="ConfigScript\ScriptManager.cs" />

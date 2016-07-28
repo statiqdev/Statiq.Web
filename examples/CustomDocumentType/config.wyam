@@ -23,7 +23,6 @@ public class MyDocument : CustomDocument
     }
 }
 
----
 SetCustomDocumentType<MyDocument>();
 
 Pipelines.Add("Posts",

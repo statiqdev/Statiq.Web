@@ -18,17 +18,29 @@ namespace Wyam.Configuration.ConfigScript
     {
         private Script<object> _script;
 
+        public string Code { get; private set; }
+
         public Assembly Assembly { get; private set; }
 
         public string AssemblyFullName { get; private set; }
+        
+        internal void Create(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IList<Assembly> referenceAssemblies)
+        {
+            Code = Preprocess(code, moduleTypes, namespaces, referenceAssemblies);
+            _script = CSharpScript.Create(Code, ScriptOptions.Default
+                .WithReferences(referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location))),
+                typeof(Globals));
+        }
 
         // Internal for testing
-        internal void Create(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IEnumerable<Assembly> referenceAssemblies)
+        internal string Preprocess(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IEnumerable<Assembly> referenceAssemblies)
         {
             StringBuilder codeBuilder = new StringBuilder();
 
             // Add the using statements
+            codeBuilder.AppendLine("// Generated: bring all module namespaces in scope");
             codeBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
+            codeBuilder.AppendLine();
 
             // Add the actual user code
             codeBuilder.AppendLine("#line 1");
@@ -36,7 +48,7 @@ namespace Wyam.Configuration.ConfigScript
 
             // Add methods to instantiate each module
             codeBuilder.AppendLine();
-            codeBuilder.AppendLine("// Generated methods for module instantiation");
+            codeBuilder.Append("// Generated: methods for module instantiation");  // A new line is prepended before each method
             Dictionary<string, string> moduleNames = new Dictionary<string, string>();
             HashSet<string> moduleTypeNames = new HashSet<string>();
             foreach (Type moduleType in moduleTypes)
@@ -48,12 +60,7 @@ namespace Wyam.Configuration.ConfigScript
             // Rewrite the lambda shorthand expressions
             SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(codeBuilder.ToString(), new CSharpParseOptions(kind: SourceCodeKind.Script));
             LambdaRewriter lambdaRewriter = new LambdaRewriter(moduleTypeNames);
-            code = lambdaRewriter.Visit(scriptTree.GetRoot()).ToFullString();
-
-            // Create the script
-            _script = CSharpScript.Create(code, ScriptOptions.Default
-                .WithReferences(referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location))),
-                typeof(Globals));
+            return lambdaRewriter.Visit(scriptTree.GetRoot()).ToFullString();
         }
 
         // Internal for testing
@@ -146,16 +153,37 @@ namespace Wyam.Configuration.ConfigScript
             using (var ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
-                if (!result.Success)
+
+                // Trace warnings
+                List<string> warningMessages = result.Diagnostics
+                    .Where(x => x.Severity == DiagnosticSeverity.Warning)
+                    .Select(GetCompilationErrorMessage)
+                    .ToList();
+                if (warningMessages.Count > 0)
                 {
-                    List<string> diagnosticMessages = result.Diagnostics
-                        .Where(x => x.Severity == DiagnosticSeverity.Error)
-                        .Select(GetCompilationErrorMessage)
-                        .ToList();
-                    Trace.Error("{0} errors compiling configuration:{1}{2}", result.Diagnostics.Length, Environment.NewLine,
-                        string.Join(Environment.NewLine, diagnosticMessages));
-                    throw new Exception("Script compilation failed");
+                    Trace.Warning("{0} warnings compiling configuration:{1}{2}", warningMessages.Count,
+                        Environment.NewLine,
+                        string.Join(Environment.NewLine, warningMessages));
                 }
+
+                // Trace errors
+                List<string> errorMessages = result.Diagnostics
+                    .Where(x => x.Severity == DiagnosticSeverity.Error)
+                    .Select(GetCompilationErrorMessage)
+                    .ToList();
+                if (errorMessages.Count > 0)
+                {
+                    Trace.Error("{0} errors compiling configuration:{1}{2}", errorMessages.Count,
+                        Environment.NewLine,
+                        string.Join(Environment.NewLine, errorMessages));
+                }
+
+                // Throw for errors or not success
+                if (!result.Success || errorMessages.Count > 0)
+                {
+                    throw new ScriptCompilationException(errorMessages);
+                }
+
                 ms.Seek(0, SeekOrigin.Begin);
                 rawAssembly = ms.ToArray();
             }

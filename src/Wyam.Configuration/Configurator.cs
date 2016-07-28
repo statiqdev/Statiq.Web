@@ -334,8 +334,8 @@ namespace Wyam.Configuration
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>(), _engine.Namespaces, _engine.Assemblies);
-                //WriteScript(ConfigScriptManager.AssemblyName, _scriptManager.Code);
+                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>(), _engine.Namespaces, _engine.Assemblies.ToList());
+                WriteScript(_scriptManager.Code);
                 _engine.RawAssemblies.Add(_scriptManager.Compile());
                 _scriptManager.Evaluate(_engine);
                 stopwatch.Stop();
@@ -343,12 +343,12 @@ namespace Wyam.Configuration
             }
         }
 
-        private void WriteScript(string assemblyName, string code)
+        private void WriteScript(string code)
         {
             // Output only if requested
             if (OutputScript)
             {
-                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath(assemblyName + ".cs"));
+                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath("WyamConfig.cs"));
                 _engine.FileSystem.GetFile(outputPath)?.WriteAllText(code);
             }
         }

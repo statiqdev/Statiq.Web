@@ -5,6 +5,7 @@ using Wyam.Commands;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration;
+using Wyam.Configuration.ConfigScript;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
 
@@ -106,7 +107,8 @@ namespace Wyam
                 // Make sure the root path exists
                 if (!Engine.FileSystem.GetRootDirectory().Exists)
                 {
-                    throw new InvalidOperationException($"The root path {Engine.FileSystem.RootPath.FullPath} does not exist.");
+                    throw new InvalidOperationException(
+                        $"The root path {Engine.FileSystem.RootPath.FullPath} does not exist.");
                 }
 
                 // If we have a configuration file use it, otherwise configure with defaults  
@@ -122,6 +124,12 @@ namespace Wyam
                     Trace.Information("Could not find configuration file at {0}", _configOptions.ConfigFilePath);
                     Configurator.Configure(null);
                 }
+            }
+            catch (ScriptCompilationException)
+            {
+                // Don't need to show exception message since it was already reported via trace
+                Trace.Critical("Error while compiling configuration");
+                return false;
             }
             catch (Exception ex)
             {

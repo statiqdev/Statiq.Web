@@ -14,12 +14,12 @@ using Wyam.Testing;
 namespace Wyam.Git.Tests
 {
     [TestFixture]
-    [Ignore("Too slow")]
     public class GitContributorsTests : BaseFixture
     {
         public class ExecuteMethodTests : GitContributorsTests
         {
             [Test]
+            [Ignore("Too slow")]
             public void GetAllContributorsFromInputPath()
             {
                 // Given
@@ -53,6 +53,7 @@ namespace Wyam.Git.Tests
             }
 
             [Test]
+            [Ignore("Too slow")]
             public void GetCommittersFromInputPath()
             {
                 // Given
@@ -86,6 +87,7 @@ namespace Wyam.Git.Tests
             }
 
             [Test]
+            [Ignore("Too slow")]
             public void GetAuthorsFromInputPath()
             {
                 // Given
@@ -119,6 +121,7 @@ namespace Wyam.Git.Tests
             }
 
             [Test]
+            [Ignore("Too slow")]
             public void GetCommittersForInputDocument()
             {
                 // Given
