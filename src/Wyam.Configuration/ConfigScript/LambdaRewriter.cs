@@ -6,27 +6,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Wyam.Configuration.ConfigScript
 {
-    // Adds qualifiers to module constructor methods
     // Also replaces @docXYZ and @ctxXYZ with lambda expressions
-    internal class ConfigRewriter : CSharpSyntaxRewriter
+    internal class LambdaRewriter : CSharpSyntaxRewriter
     {
         private readonly HashSet<string> _moduleTypeNames;
 
-        public ConfigRewriter(HashSet<string> moduleTypeNames)
+        public LambdaRewriter(HashSet<string> moduleTypeNames)
         {
             _moduleTypeNames = moduleTypeNames;
         }
 
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            // Replace the module method name with a qualified one if this is a module ctor
-            bool nodeChanged = IsInvocationAModuleCtor(node);
-            ExpressionSyntax nodeExpression = nodeChanged
-                ? ((IdentifierNameSyntax)node.Expression).WithIdentifier(
-                    SyntaxFactory.Identifier("ConfigScript." + ((IdentifierNameSyntax)node.Expression).Identifier.Text)
-                        .WithTriviaFrom(((IdentifierNameSyntax)node.Expression).Identifier))
-                : node.Expression;
-
             // Get a hash of all the previous @doc and @ctx lambda parameters and don't replace the same
             HashSet<string> currentScopeLambdaParameters = new HashSet<string>(
                 node.Ancestors().OfType<LambdaExpressionSyntax>().SelectMany(
@@ -34,7 +25,8 @@ namespace Wyam.Configuration.ConfigScript
 
             // Only do the replacement if this is a module ctor or a module fluent method
             ArgumentListSyntax argumentList = node.ArgumentList;
-            if(nodeChanged || IsInvocationAFluentMethod(node))
+            bool nodeChanged = false;
+            if(IsInvocationAModuleCtorOrFluentMethod(node))
             {
                 // Replace @doc and @ctx argument expressions with the appropriate lambda expressions, and stop descending if we hit another module ctor
                 foreach (ArgumentSyntax argument in node.ArgumentList.Arguments)
@@ -75,8 +67,11 @@ namespace Wyam.Configuration.ConfigScript
             }
 
             // Build and return the result node (or just return the original node)
-            return base.VisitInvocationExpression(nodeChanged ? node.WithExpression(nodeExpression).WithArgumentList(argumentList) : node);
+            return base.VisitInvocationExpression(nodeChanged ? node.WithArgumentList(argumentList) : node);
         }
+
+        private bool IsInvocationAModuleCtorOrFluentMethod(InvocationExpressionSyntax invocation) => 
+            IsInvocationAModuleCtor(invocation) || IsInvocationAFluentMethod(invocation);
 
         private bool IsInvocationAModuleCtor(InvocationExpressionSyntax invocation)
         {
@@ -88,17 +83,10 @@ namespace Wyam.Configuration.ConfigScript
             return name != null && _moduleTypeNames.Contains(name.Identifier.Text);
         }
 
-        private bool IsInvocationAFluentMethod(InvocationExpressionSyntax invocation)
-        {
-            return IsInvocationAModuleCtor(invocation?.DescendantNodes()
+        private bool IsInvocationAFluentMethod(InvocationExpressionSyntax invocation) => 
+            IsInvocationAModuleCtor(invocation?.DescendantNodes()
                 .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
                 .OfType<InvocationExpressionSyntax>()
                 .LastOrDefault());
-        }
-
-        private bool IsInvocationAModuleCtorOrFluentMethod(InvocationExpressionSyntax invocation)
-        {
-            return IsInvocationAModuleCtor(invocation) || IsInvocationAFluentMethod(invocation);
-        }
     }
 }

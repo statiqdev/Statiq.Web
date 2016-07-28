@@ -19,7 +19,7 @@ namespace Wyam.Configuration
     /// </summary>
     public class Configurator : IDisposable
     {
-        private readonly ConfigCompilation _compilation = new ConfigCompilation();
+        private readonly ScriptManager _scriptManager = new ScriptManager();
         private readonly Engine _engine;
         private readonly Preprocessor _preprocessor;
         private readonly AssemblyResolver _assemblyResolver;
@@ -71,14 +71,14 @@ namespace Wyam.Configuration
         {
             _engine = engine;
             _preprocessor = preprocessor;
-            _assemblyResolver = new AssemblyResolver(_compilation); 
+            _assemblyResolver = new AssemblyResolver(_scriptManager); 
             AssemblyLoader = new AssemblyLoader(engine.FileSystem, engine.Assemblies, _assemblyResolver);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             ClassCatalog = new ClassCatalog();
 
             // Add this namespace and assembly
-            engine.Namespaces.Add(typeof(ConfigScriptBase).Namespace);
-            engine.Assemblies.Add(typeof(ConfigScriptBase).Assembly);
+            engine.Namespaces.Add(typeof(Globals).Namespace);
+            engine.Assemblies.Add(typeof(Globals).Assembly);
         }
 
         public void Dispose()
@@ -113,12 +113,14 @@ namespace Wyam.Configuration
             _configured = true;
 
             // Parse the script (or use an empty result if no script)
-            ConfigParserResult parserResult = string.IsNullOrWhiteSpace(script)
-                ? new ConfigParserResult()
-                : ConfigParser.Parse(script, _preprocessor);
+            ScriptPreparser scriptPreparser = new ScriptPreparser(_preprocessor);
+            if (script != null)
+            {
+                scriptPreparser.Parse(script);
+            }
 
             // Process preprocessor directives
-            _preprocessor.ProcessDirectives(this, parserResult.DirectiveValues);
+            _preprocessor.ProcessDirectives(this, scriptPreparser.DirectiveValues);
             
             // Initialize everything (order here is very important)
             AddRecipePackageAndSetTheme();
@@ -132,7 +134,7 @@ namespace Wyam.Configuration
             SetMetadata();
 
             // Finally evaluate the script
-            Evaluate(parserResult);
+            Evaluate(scriptPreparser.Code);
         }
 
         // Internal for testing
@@ -322,10 +324,9 @@ namespace Wyam.Configuration
             }
         }
 
-        private void Evaluate(ConfigParserResult parserResult)
+        private void Evaluate(string code)
         {
-            if (string.IsNullOrEmpty(parserResult.Declarations)
-                && string.IsNullOrEmpty(parserResult.Body))
+            if (string.IsNullOrEmpty(code))
             {
                 return;
             }
@@ -333,11 +334,10 @@ namespace Wyam.Configuration
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                _compilation.Generate(parserResult.Declarations, parserResult.Body,
-                    ClassCatalog.GetClasses<IModule>(), _engine.Namespaces);
-                WriteScript(ConfigCompilation.AssemblyName, _compilation.Code);
-                _engine.RawAssemblies.Add(_compilation.Compile(_engine.Assemblies));
-                _compilation.Invoke(_engine);
+                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>(), _engine.Namespaces, _engine.Assemblies);
+                //WriteScript(ConfigScriptManager.AssemblyName, _scriptManager.Code);
+                _engine.RawAssemblies.Add(_scriptManager.Compile());
+                _scriptManager.Evaluate(_engine);
                 stopwatch.Stop();
                 Trace.Information($"Evaluated configuration script in {stopwatch.ElapsedMilliseconds} ms");
             }

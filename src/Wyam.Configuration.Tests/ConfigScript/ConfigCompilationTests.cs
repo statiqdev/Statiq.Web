@@ -52,7 +52,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
             public void GeneratesCorrectScript(string input, string output)
             {
                 // Given
-                ConfigCompilation compilation = new ConfigCompilation();
+                ConfigScriptManager scriptManager = new ConfigScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = Array.Empty<string>();
                 string expected = $@"
@@ -83,10 +83,10 @@ namespace Wyam.Configuration.Tests.ConfigScript
                         }}}}";
 
                 // When
-                compilation.Generate(null, input, moduleTypes, namespaces);
+                scriptManager.Create(null, input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, compilation.Code);
+                Assert.AreEqual(expected, scriptManager.Code);
             }
         }
 
@@ -116,7 +116,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                         }}";
 
                 // When
-                string generated = ConfigCompilation.GenerateModuleConstructorMethods(typeof(Content), memberNames);
+                string generated = ConfigScriptManager.GenerateModuleConstructorMethods(typeof(Content), memberNames);
 
                 // Then
                 Assert.AreEqual(expected, generated);
@@ -138,7 +138,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                         }}";
 
                 // When
-                string generated = ConfigCompilation.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
+                string generated = ConfigScriptManager.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
 
                 // Then
                 Assert.AreEqual(expected, generated);
