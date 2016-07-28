@@ -23,6 +23,8 @@ namespace Wyam.Configuration.ConfigScript
         public Assembly Assembly { get; private set; }
 
         public string AssemblyFullName { get; private set; }
+
+        public MetadataReference MetadataReference { get; private set; }
         
         internal void Create(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IList<Assembly> referenceAssemblies)
         {
@@ -142,7 +144,7 @@ namespace Wyam.Configuration.ConfigScript
             return stringBuilder.ToString();
         }
 
-        public byte[] Compile()
+        public void Compile()
         {
             // Get the compilation
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
@@ -189,7 +191,7 @@ namespace Wyam.Configuration.ConfigScript
             }
             Assembly = Assembly.Load(rawAssembly);
             AssemblyFullName = Assembly.FullName;
-            return rawAssembly;
+            MetadataReference = compilation.ToMetadataReference();
         }
 
         private static string GetCompilationErrorMessage(Diagnostic diagnostic)

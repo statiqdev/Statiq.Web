@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Wyam.Common.Configuration
 {
-    public interface IAssemblyCollection : IEnumerable<Assembly>
+    public interface IAssemblyCollection : IReadOnlyCollection<Assembly>
     {
         bool Add(Assembly assembly);
         bool ContainsFullName(string fullName);

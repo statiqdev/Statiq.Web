@@ -75,7 +75,7 @@ namespace Wyam.Core.Execution
         /// Gets a collection of all the raw assemblies that should be referenced by modules 
         /// that support dynamic compilation (such as configuration assemblies).
         /// </summary>
-        public IRawAssemblyCollection RawAssemblies { get; } = new RawAssemblyCollection();
+        public IMetadataReferenceCollection MetadataReferences { get; } = new MetadataReferenceCollection();
 
         internal ExecutionCacheManager ExecutionCacheManager { get; } = new ExecutionCacheManager();
 

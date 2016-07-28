@@ -18,9 +18,14 @@ namespace Wyam.Common.Execution
     /// </summary>
     public interface IExecutionContext : IMetadata
     {
-        IEnumerable<byte[]> RawAssemblies { get; }
-        IEnumerable<Assembly> Assemblies { get; }
-        IEnumerable<string> Namespaces { get; }
+        /// <summary>
+        /// Gets the Roslyn metadata references representing dynamically
+        /// compiled assemblies (such as the configuration script).
+        /// </summary>
+        IReadOnlyCollection<object> MetadataReferences { get; }
+
+        IReadOnlyCollection<Assembly> Assemblies { get; }
+        IReadOnlyCollection<string> Namespaces { get; }
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }
         IExecutionCache ExecutionCache { get; }

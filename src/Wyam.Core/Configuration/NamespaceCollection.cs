@@ -31,6 +31,8 @@ namespace Wyam.Core.Configuration
 
         public void AddRange(IEnumerable<string> namespaces) => _namespaces.AddRange(namespaces);
 
+        public int Count => _namespaces.Count;
+
         public IEnumerator<string> GetEnumerator() => _namespaces.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

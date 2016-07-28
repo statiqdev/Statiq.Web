@@ -22,11 +22,11 @@ namespace Wyam.Core.Execution
         
         public Engine Engine { get; }
 
-        public IEnumerable<byte[]> RawAssemblies => Engine.RawAssemblies;
+        public IReadOnlyCollection<object> MetadataReferences => Engine.MetadataReferences;
 
-        public IEnumerable<Assembly> Assemblies => Engine.Assemblies;
+        public IReadOnlyCollection<Assembly> Assemblies => Engine.Assemblies;
 
-        public IEnumerable<string> Namespaces => Engine.Namespaces;
+        public IReadOnlyCollection<string> Namespaces => Engine.Namespaces;
 
         public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);
 

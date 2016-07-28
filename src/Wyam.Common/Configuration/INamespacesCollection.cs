@@ -2,7 +2,7 @@
 
 namespace Wyam.Common.Configuration
 {
-    public interface INamespacesCollection : IEnumerable<string>
+    public interface INamespacesCollection : IReadOnlyCollection<string>
     {
         bool Add(string ns);
         void AddRange(IEnumerable<string> namespaces);

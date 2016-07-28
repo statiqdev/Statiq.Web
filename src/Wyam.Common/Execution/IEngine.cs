@@ -59,7 +59,7 @@ namespace Wyam.Common.Execution
         /// Gets a collection of all the raw assemblies that should be referenced by modules 
         /// that support dynamic compilation (such as configuration assemblies).
         /// </summary>
-        IRawAssemblyCollection RawAssemblies { get; }
+        IMetadataReferenceCollection MetadataReferences { get; }
 
         /// <summary>
         /// Gets or sets the application input.

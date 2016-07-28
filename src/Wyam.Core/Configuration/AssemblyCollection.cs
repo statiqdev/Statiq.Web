@@ -40,6 +40,8 @@ namespace Wyam.Core.Configuration
         public bool TryGetAssembly(string fullName, out Assembly assembly)
             => _assemblies.TryGetValue(fullName, out assembly);
 
+        public int Count => _assemblies.Count;
+
         public IEnumerator<Assembly> GetEnumerator() => _assemblies.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

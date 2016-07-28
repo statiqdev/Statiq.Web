@@ -336,7 +336,8 @@ namespace Wyam.Configuration
             {
                 _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>(), _engine.Namespaces, _engine.Assemblies.ToList());
                 WriteScript(_scriptManager.Code);
-                _engine.RawAssemblies.Add(_scriptManager.Compile());
+                _scriptManager.Compile();
+                _engine.MetadataReferences.Add(_scriptManager.MetadataReference);
                 _scriptManager.Evaluate(_engine);
                 stopwatch.Stop();
                 Trace.Information($"Evaluated configuration script in {stopwatch.ElapsedMilliseconds} ms");
