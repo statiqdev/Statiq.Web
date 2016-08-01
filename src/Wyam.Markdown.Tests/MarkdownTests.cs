@@ -1,14 +1,11 @@
-﻿using System;
+﻿using NSubstitute;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using NSubstitute;
-using System.IO;
 using Wyam.Common.Documents;
-using Wyam.Common.Meta;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Testing;
 
 namespace Wyam.Markdown.Tests
@@ -29,8 +26,7 @@ namespace Wyam.Markdown.Tests
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-
-";
+".Replace(Environment.NewLine, "\n");
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -50,8 +46,7 @@ namespace Wyam.Markdown.Tests
                 // Given
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking &#64;Good, Man!</p>
-
-";
+".Replace(Environment.NewLine, "\n");
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -71,8 +66,7 @@ namespace Wyam.Markdown.Tests
                 // Given
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking @Good, Man!</p>
-
-";
+".Replace(Environment.NewLine, "\n");
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns(input);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
@@ -96,8 +90,7 @@ namespace Wyam.Markdown.Tests
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-
-";
+".Replace(Environment.NewLine, "\n");
 
                 IDocument document = Substitute.For<IDocument>();
                 document.ContainsKey("meta").Returns(true);
@@ -127,8 +120,7 @@ namespace Wyam.Markdown.Tests
                 string output = @"<p>Line 1
 <em>Line 2</em></p>
 <h1>Line 3</h1>
-
-";
+".Replace(Environment.NewLine, "\n");
 
                 IDocument document = Substitute.For<IDocument>();
                 document.ContainsKey("meta").Returns(true);
