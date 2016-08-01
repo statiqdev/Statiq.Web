@@ -2,7 +2,7 @@
 <hr/>
 <p>Hi, this paragraph has a little bit about me.</p>
 <h2>Posts</h2>
-@foreach(Script.MyDocument doc in Documents["Posts"].Cast<Script.MyDocument>().OrderBy(x => x.Title))
+@foreach(MyDocument doc in Documents["Posts"].Cast<MyDocument>().OrderBy(x => x.Title))
 {
 	<ul>
 		<li><a href="@Context.GetLink(doc.FilePath("RelativeFilePath"))">@doc.Title</a> - @doc.Published</li>
