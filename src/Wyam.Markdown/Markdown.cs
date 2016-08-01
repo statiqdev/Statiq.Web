@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Markdig;
+using Markdig.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
@@ -22,6 +24,8 @@ namespace Wyam.Markdown
     {
         private readonly string _sourceKey;
         private readonly string _destinationKey;
+        private readonly OrderedList<IMarkdownExtension> _extensions = new OrderedList<IMarkdownExtension>();
+        private string _configuration = "common";
         private bool _escapeAt = true;
 
         /// <summary>
@@ -55,6 +59,38 @@ namespace Wyam.Markdown
             return this;
         }
 
+        /// <summary>
+        /// Includes a set of useful advanced extensions, e.g., citations, footers, footnotes, math,
+        /// grid-tables, pipe-tables, and tasks, in the Markdown processing pipeline.
+        /// </summary>
+        public Markdown UseExtensions()
+        {
+            _configuration = "advanced";
+            return this;
+        }
+
+        /// <summary>
+        /// Includes a set of extensions defined as a string, e.g., "pipetables", "citations",
+        /// "mathematics", or "abbreviations". Separate different extensions with a '+'.
+        /// </summary>
+        public Markdown UseConfiguration(string extensions)
+        {
+            _configuration = extensions;
+            return this;
+        }
+
+        /// <summary>
+        /// Includes a custom extension in the markdown processing given by a class implementing
+        /// the IMarkdownExtension interface.
+        /// </summary>
+        /// <typeparam name="TExtension">The type of the extension to use.</typeparam>
+        public Markdown UseExtension<TExtension>()
+            where TExtension : class, IMarkdownExtension, new()
+        {
+            _extensions.AddIfNotAlready<TExtension>();
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(input =>
@@ -68,16 +104,18 @@ namespace Wyam.Markdown
                 {
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        result = Markdig.Markdown.ToHtml(input.Content);
+                        var pipeline = CreatePipeline();
+                        result = Markdig.Markdown.ToHtml(input.Content, pipeline);
                     }
-                    else if (!input.ContainsKey(_sourceKey))
+                    else if (input.ContainsKey(_sourceKey))
                     {
-                        // Don't do anything if the key doesn't exist
-                        return input;
+                        var pipeline = CreatePipeline();
+                        result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty, pipeline);
                     }
                     else
                     {
-                        result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty);
+                        // Don't do anything if the key doesn't exist
+                        return input;
                     }
 
                     if (_escapeAt)
@@ -95,6 +133,14 @@ namespace Wyam.Markdown
                         { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }
                     });
             });
+        }
+
+        private MarkdownPipeline CreatePipeline()
+        {
+            var pipelineBuilder = new MarkdownPipelineBuilder();
+            pipelineBuilder.Configure(_configuration);
+            pipelineBuilder.Extensions.AddRange(_extensions);
+            return pipelineBuilder.Build();
         }
     }
 }
