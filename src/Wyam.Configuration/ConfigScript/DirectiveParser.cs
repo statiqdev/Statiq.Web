@@ -6,11 +6,11 @@ using Wyam.Configuration.Preprocessing;
 namespace Wyam.Configuration.ConfigScript
 {
     // Finds and comments out any directives
-    internal class ScriptPreparser
+    internal class DirectiveParser
     {
         private readonly IPreprocessor _preprocessor;
 
-        public ScriptPreparser(IPreprocessor preprocessor)
+        public DirectiveParser(IPreprocessor preprocessor)
         {
             _preprocessor = preprocessor;
         }
@@ -36,8 +36,8 @@ namespace Wyam.Configuration.ConfigScript
                         if (_preprocessor.ContainsDirective(directive))
                         {
                             DirectiveValues.Add(new DirectiveValue(c + 1, directive, lines[c].Substring(firstSpace + 1).Trim()));
+                            lines[c] = "//" + lines[c];  // Just comment out the directive so it still shows in script code exports and influences the line number
                         }
-                        lines[c] = "//" + lines[c];  // Just comment out the directive so it still shows in script code exports and influences the line number
                     }
                 }
             }

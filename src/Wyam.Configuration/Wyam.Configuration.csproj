@@ -201,13 +201,14 @@
     </Compile>
     <Compile Include="Assemblies\AssemblyResolver.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
+    <Compile Include="ConfigScript\LiftingVisitor.cs" />
     <Compile Include="ConfigScript\ScriptCompilationException.cs" />
     <Compile Include="Directives\AssemblyDirective.cs" />
     <Compile Include="Assemblies\ClassCatalog.cs" />
     <Compile Include="ConfigScript\ScriptManager.cs" />
-    <Compile Include="ConfigScript\ScriptPreparser.cs" />
+    <Compile Include="ConfigScript\DirectiveParser.cs" />
     <Compile Include="ConfigScript\LambdaRewriter.cs" />
-    <Compile Include="ConfigScript\Globals.cs" />
+    <Compile Include="ConfigScript\ScriptBase.cs" />
     <Compile Include="Configurator.cs" />
     <Compile Include="Directives\ThemeDirective.cs" />
     <Compile Include="KnownRecipe.cs" />

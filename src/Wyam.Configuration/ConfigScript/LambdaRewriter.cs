@@ -11,9 +11,9 @@ namespace Wyam.Configuration.ConfigScript
     {
         private readonly HashSet<string> _moduleTypeNames;
 
-        public LambdaRewriter(HashSet<string> moduleTypeNames)
+        public LambdaRewriter(IEnumerable<string> moduleTypeNames)
         {
-            _moduleTypeNames = moduleTypeNames;
+            _moduleTypeNames = new HashSet<string>(moduleTypeNames);
         }
 
         public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)

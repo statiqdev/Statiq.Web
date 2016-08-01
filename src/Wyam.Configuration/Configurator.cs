@@ -77,8 +77,8 @@ namespace Wyam.Configuration
             ClassCatalog = new ClassCatalog();
 
             // Add this namespace and assembly
-            engine.Namespaces.Add(typeof(Globals).Namespace);
-            engine.Assemblies.Add(typeof(Globals).Assembly);
+            engine.Namespaces.Add(typeof(ScriptBase).Namespace);
+            engine.Assemblies.Add(typeof(ScriptBase).Assembly);
         }
 
         public void Dispose()
@@ -113,14 +113,14 @@ namespace Wyam.Configuration
             _configured = true;
 
             // Parse the script (or use an empty result if no script)
-            ScriptPreparser scriptPreparser = new ScriptPreparser(_preprocessor);
+            DirectiveParser directiveParser = new DirectiveParser(_preprocessor);
             if (script != null)
             {
-                scriptPreparser.Parse(script);
+                directiveParser.Parse(script);
             }
 
             // Process preprocessor directives
-            _preprocessor.ProcessDirectives(this, scriptPreparser.DirectiveValues);
+            _preprocessor.ProcessDirectives(this, directiveParser.DirectiveValues);
             
             // Initialize everything (order here is very important)
             AddRecipePackageAndSetTheme();
@@ -134,7 +134,7 @@ namespace Wyam.Configuration
             SetMetadata();
 
             // Finally evaluate the script
-            Evaluate(scriptPreparser.Code);
+            Evaluate(directiveParser.Code);
         }
 
         // Internal for testing
@@ -334,9 +334,9 @@ namespace Wyam.Configuration
             System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>(), _engine.Namespaces, _engine.Assemblies.ToList());
+                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>().ToList(), _engine.Namespaces);
                 WriteScript(_scriptManager.Code);
-                _scriptManager.Compile();
+                _scriptManager.Compile(_engine.Assemblies);
                 _engine.DynamicAssemblies.Add(_scriptManager.RawAssembly);
                 _scriptManager.Evaluate(_engine);
                 stopwatch.Stop();
@@ -349,7 +349,7 @@ namespace Wyam.Configuration
             // Output only if requested
             if (OutputScript)
             {
-                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath("WyamConfig.cs"));
+                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath($"{ScriptManager.AssemblyName}.cs"));
                 _engine.FileSystem.GetFile(outputPath)?.WriteAllText(code);
             }
         }

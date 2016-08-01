@@ -10,7 +10,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class ScriptPreparserTests : BaseFixture
+    public class DirectiveParserTests : BaseFixture
     {
         public class ParseMethodTests : ScriptManagerTests
         {
@@ -19,27 +19,27 @@ namespace Wyam.Configuration.Tests.ConfigScript
             {
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
-                ScriptPreparser scriptPreparser = new ScriptPreparser(preprocessor);
+                DirectiveParser directiveParser = new DirectiveParser(preprocessor);
                 string configScript = @"A
 B
 C";
 
                 // When
-                scriptPreparser.Parse(configScript);
+                directiveParser.Parse(configScript);
 
                 // Then
-                CollectionAssert.IsEmpty(scriptPreparser.DirectiveValues);
+                CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
                 Assert.AreEqual(@"A
 B
-C", scriptPreparser.Code);
+C", directiveParser.Code);
             }
 
             [Test]
-            public void ReturnsValidDirectivesAndCommentsAllDirectives()
+            public void ReturnsAndCommentsValidDirectives()
             {
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
-                ScriptPreparser scriptPreparser = new ScriptPreparser(preprocessor);
+                DirectiveParser directiveParser = new DirectiveParser(preprocessor);
                 string configScript = @"#valid a b c
 #invalid a b c
 #validx y z
@@ -49,21 +49,21 @@ A=
 C";
 
                 // When
-                scriptPreparser.Parse(configScript);
+                directiveParser.Parse(configScript);
 
                 // Then
                 Assert.AreEqual(@"//#valid a b c
-//#invalid a b c
-//#validx y z
+#invalid a b c
+#validx y z
 A=
 =B
 //#valid   x y z  
-C", scriptPreparser.Code);
+C", directiveParser.Code);
                 CollectionAssert.AreEqual(new[]
                 {
                     Tuple.Create((int?)1, "valid", "a b c"),
                     Tuple.Create((int?)6, "valid", "x y z")
-                }, scriptPreparser.DirectiveValues.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
+                }, directiveParser.DirectiveValues.Select(x => Tuple.Create(x.Line, x.Name, x.Value)));
             }
 
             [Test]
@@ -71,17 +71,17 @@ C", scriptPreparser.Code);
             {
                 // Given
                 IPreprocessor preprocessor = new TestPreprocessor();
-                ScriptPreparser scriptPreparser = new ScriptPreparser(preprocessor);
+                DirectiveParser directiveParser = new DirectiveParser(preprocessor);
                 string configScript = @"# valid a b c
             A";
 
                 // When
-                scriptPreparser.Parse(configScript);
+                directiveParser.Parse(configScript);
 
                 // Then
-                Assert.AreEqual(@"//# valid a b c
-            A", scriptPreparser.Code);
-                CollectionAssert.IsEmpty(scriptPreparser.DirectiveValues);
+                Assert.AreEqual(@"# valid a b c
+            A", directiveParser.Code);
+                CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
             }
         }
 

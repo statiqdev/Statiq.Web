@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Tracing;
 using Wyam.Core.Execution;
 
@@ -16,8 +17,9 @@ namespace Wyam.Configuration.ConfigScript
 {
     internal class ScriptManager
     {
-        private Script<object> _script;
-
+        public const string AssemblyName = "WyamConfig";
+        public const string ScriptClassName = "Script";
+         
         public string Code { get; private set; }
 
         public Assembly Assembly { get; private set; }
@@ -26,43 +28,61 @@ namespace Wyam.Configuration.ConfigScript
 
         public byte[] RawAssembly { get; private set; }
         
-        internal void Create(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IList<Assembly> referenceAssemblies)
+        internal void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
-            Code = Preprocess(code, moduleTypes, namespaces, referenceAssemblies);
-            _script = CSharpScript.Create(Code, ScriptOptions.Default
-                .WithReferences(referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location))),
-                typeof(Globals));
+            Code = Parse(code, moduleTypes, namespaces);
         }
 
         // Internal for testing
-        internal string Preprocess(string code, IEnumerable<Type> moduleTypes, IEnumerable<string> namespaces, IEnumerable<Assembly> referenceAssemblies)
+        internal string Parse(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
-            StringBuilder codeBuilder = new StringBuilder();
-
-            // Add the using statements
-            codeBuilder.AppendLine("// Generated: bring all module namespaces in scope");
-            codeBuilder.AppendLine(string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";")));
-            codeBuilder.AppendLine();
-
-            // Add the actual user code
-            codeBuilder.AppendLine("#line 1");
-            codeBuilder.AppendLine(code);
-
-            // Add methods to instantiate each module
-            codeBuilder.AppendLine();
-            codeBuilder.Append("// Generated: methods for module instantiation");  // A new line is prepended before each method
-            Dictionary<string, string> moduleNames = new Dictionary<string, string>();
-            HashSet<string> moduleTypeNames = new HashSet<string>();
-            foreach (Type moduleType in moduleTypes)
-            {
-                codeBuilder.Append(GenerateModuleConstructorMethods(moduleType, moduleNames));
-                moduleTypeNames.Add(moduleType.Name);
-            }
-
             // Rewrite the lambda shorthand expressions
-            SyntaxTree scriptTree = CSharpSyntaxTree.ParseText(codeBuilder.ToString(), new CSharpParseOptions(kind: SourceCodeKind.Script));
-            LambdaRewriter lambdaRewriter = new LambdaRewriter(moduleTypeNames);
-            return lambdaRewriter.Visit(scriptTree.GetRoot()).ToFullString();
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
+            LambdaRewriter lambdaRewriter = new LambdaRewriter(moduleTypes.Select(x => x.Name));
+            SyntaxNode syntaxNode = lambdaRewriter.Visit(syntaxTree.GetRoot());
+
+            // "Lift" class and method declarations
+            LiftingWalker liftingWalker = new LiftingWalker();
+            liftingWalker.Visit(syntaxNode);
+
+            // Get the using statements
+            string usingStatements = string.Join(Environment.NewLine, namespaces.Select(x => "using " + x + ";"));
+
+            // Get the methods to instantiate each module
+            Dictionary<string, string> moduleNames = new Dictionary<string, string>();
+            string moduleMethods = string.Join(Environment.NewLine,
+                moduleTypes.Select(x => GenerateModuleConstructorMethods(x, moduleNames)));
+
+            // Return the fully parsed script
+            return 
+                $@"// Generated: bring all module namespaces in scope
+                {usingStatements}
+
+                public class {ScriptClassName} : ScriptBase
+                {{
+                    public {ScriptClassName}(Engine engine) : base(engine) {{ }}
+
+                    public override void Run()
+                    {{
+                        // Input: script code
+{liftingWalker.ScriptCode}
+                    }}
+
+                    // Input: lifted methods
+{liftingWalker.MethodDeclarations}
+
+                    // Generated: methods for module instantiation
+                    {moduleMethods} 
+                }}
+
+                // Input: lifted object declarations
+{liftingWalker.TypeDeclarations}
+
+                public static class ScriptExtensionMethods
+                {{
+                    // Input: lifted extension methods
+{liftingWalker.ExtensionMethodDeclarations}
+                }}";
         }
 
         // Internal for testing
@@ -119,10 +139,10 @@ namespace Wyam.Configuration.ConfigScript
                                       | SymbolDisplayParameterOptions.IncludeParamsRefOut,
                     memberOptions: SymbolDisplayMemberOptions.IncludeParameters));
                 stringBuilder.AppendFormat(@"
-{0} {1}{2}
-{{
-    return new {0}{3};  
-}}",
+                    {0} {1}{2}
+                    {{
+                        return new {0}{3};  
+                    }}",
                     moduleFullName,
                     moduleName,
                     ctorDisplayString.Substring(ctorDisplayString.IndexOf("(", StringComparison.Ordinal)),
@@ -133,10 +153,10 @@ namespace Wyam.Configuration.ConfigScript
             if (!foundInstanceConstructor)
             {
                 stringBuilder.AppendFormat(@"
-{0} {1}()
-{{
-    return new {0}();  
-}}",
+                    {0} {1}()
+                    {{
+                        return new {0}();  
+                    }}",
                     moduleType.FullName,
                     moduleType.Name);
             }
@@ -144,11 +164,23 @@ namespace Wyam.Configuration.ConfigScript
             return stringBuilder.ToString();
         }
 
-        public void Compile()
+        public void Compile(IReadOnlyCollection<Assembly> referenceAssemblies)
         {
             // Get the compilation
+            var parseOptions = new CSharpParseOptions();
+            var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(Code, Encoding.UTF8), parseOptions, AssemblyName);
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            Compilation compilation = _script.GetCompilation().WithOptions(compilationOptions);
+            var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
+                referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                    .AddReferences(
+                        // For some reason, Roslyn really wants these added by filename
+                        // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
+                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
+            );
 
             // Emit the assembly
             using (var ms = new MemoryStream())
@@ -200,8 +232,9 @@ namespace Wyam.Configuration.ConfigScript
 
         public void Evaluate(Engine engine)
         {
-            Globals globals = new Globals(engine);
-            _script.RunAsync(globals).Wait();
+            Type scriptType = Assembly.GetExportedTypes().First(t => t.Name == ScriptClassName);
+            ScriptBase script = (ScriptBase)Activator.CreateInstance(scriptType, engine);
+            script.Run();
         }
     }
 }

@@ -12,15 +12,17 @@ namespace Wyam.Configuration.ConfigScript
     /// This is the base class used for the generated configuration script. Put any properties or
     /// methods you want the configuration script to have access to in here.
     /// </summary>
-    public class Globals
+    public abstract class ScriptBase
     {
         private readonly Engine _engine;
 
-        internal Globals(Engine engine)
+        protected ScriptBase(Engine engine)
         {
             _engine = engine;
         }
-        
+
+        public abstract void Run();
+
         public IPipelineCollection Pipelines => _engine.Pipelines;
 
         public IFileSystem FileSystem => _engine.FileSystem;

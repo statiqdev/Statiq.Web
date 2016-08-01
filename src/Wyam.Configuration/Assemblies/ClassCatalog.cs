@@ -27,8 +27,7 @@ namespace Wyam.Configuration.Assemblies
         /// </summary>
         /// <typeparam name="T">The type of classes to get.</typeparam>
         /// <returns>All classes of type <see cref="T"/>.</returns>
-        public IEnumerable<Type> GetClasses<T>() =>
-                    _types.Values.Where(x => typeof(T).IsAssignableFrom(x));
+        public IEnumerable<Type> GetClasses<T>() => _types.Values.Where(x => typeof(T).IsAssignableFrom(x));
 
         /// <summary>
         /// Gets instances for all classes of a specified type..
