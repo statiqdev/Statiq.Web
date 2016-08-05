@@ -41,6 +41,96 @@ namespace Wyam.Markdown.Tests
             }
 
             [Test]
+            public void DoesNotRenderSpecialAttributesByDefault()
+            {
+                // Given
+                string input = @"[link](url){#id .class}";
+                string output = @"<p><a href=""url"">link</a>{#id .class}</p>
+".Replace(Environment.NewLine, "\n");
+                IDocument document = Substitute.For<IDocument>();
+                document.Content.Returns(input);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Markdown markdown = new Markdown();
+
+                // When
+                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
+            }
+
+            [Test]
+            public void DoesRenderSpecialAttributesIfExtensionsActive()
+            {
+                // Given
+                string input = @"[link](url){#id .class}";
+                string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
+".Replace(Environment.NewLine, "\n");
+                IDocument document = Substitute.For<IDocument>();
+                document.Content.Returns(input);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Markdown markdown = new Markdown().UseExtensions();
+
+                // When
+                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
+            }
+
+            [Test]
+            public void DoesNotRenderDefinitionListWithoutExtensions()
+            {
+                // Given
+                string input = @"Apple
+:   Pomaceous fruit of plants of the genus Malus in 
+    the family Rosaceae.";
+                string output = @"<p>Apple
+:   Pomaceous fruit of plants of the genus Malus in
+the family Rosaceae.</p>
+".Replace(Environment.NewLine, "\n");
+                IDocument document = Substitute.For<IDocument>();
+                document.Content.Returns(input);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Markdown markdown = new Markdown();
+
+                // When
+                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
+            }
+
+            [Test]
+            public void DoesRenderDefintionListWithSpecificConfiguration()
+            {
+                // Given
+                string input = @"Apple
+:   Pomaceous fruit of plants of the genus Malus in 
+    the family Rosaceae.";
+                string output = @"<dl>
+<dt>Apple</dt>
+<dd>Pomaceous fruit of plants of the genus Malus in
+the family Rosaceae.</dd>
+</dl>
+".Replace(Environment.NewLine, "\n");
+                IDocument document = Substitute.For<IDocument>();
+                document.Content.Returns(input);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Markdown markdown = new Markdown().UseConfiguration("definitionlists");
+
+                // When
+                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output);
+            }
+
+            [Test]
             public void EscapesAtByDefault()
             {
                 // Given
