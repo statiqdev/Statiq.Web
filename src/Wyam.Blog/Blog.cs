@@ -32,6 +32,7 @@ namespace Wyam.Blog
                 new ReadFiles("{!posts,**}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Markdown.Markdown(),
+                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles("{!posts,!tags,**}/*.cshtml"),
@@ -53,6 +54,7 @@ namespace Wyam.Blog
                 new FrontMatter(new Yaml.Yaml()),
                 new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
                 new Markdown.Markdown(),
+                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
                 new Concat(
                     // Add any posts written in Razor
                     new ReadFiles("posts/{!_,!index,}*.cshtml"),
