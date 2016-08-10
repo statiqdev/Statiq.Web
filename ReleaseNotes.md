@@ -1,3 +1,12 @@
+# 0.13.4
+
+- [Fix] Fixed duplicate posts in archive for CleanBlog and Phantom Blog themes
+- [Feature] Added support for post footers in Blog themes
+- [Refactoring] Changed Markdown processor to Markdig (#328, #165, thanks @FlorianRappl)
+- **[Breaking Change]** [Refactoring] Removed declarations section of config file, any global classes are now automatically "lifted" out of the config method (#316)
+- [Refactoring] Switched to a CDN for Bootstrap and jQuery resources in CleanBlog theme
+- [Feature] Pretty print CSS class now automatically added to Blog recipe posts 
+
 # 0.13.3
 
 - [Refactoring] Removed cache hit/miss messages from the verbose log due to excessive noise
