@@ -1,3 +1,7 @@
+# 0.13.5
+
+- [Fix] Fixed lifting of using directives in the configuration file
+
 # 0.13.4
 
 - [Fix] Fixed duplicate posts in archive for CleanBlog and Phantom Blog themes
