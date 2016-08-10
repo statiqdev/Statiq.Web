@@ -1,14 +1,12 @@
-﻿using System;
+﻿using Markdig;
+using Markdig.Helpers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
 namespace Wyam.Markdown
@@ -26,8 +24,9 @@ namespace Wyam.Markdown
     {
         private readonly string _sourceKey;
         private readonly string _destinationKey;
+        private readonly OrderedList<IMarkdownExtension> _extensions = new OrderedList<IMarkdownExtension>();
+        private string _configuration = "common";
         private bool _escapeAt = true;
-
 
         /// <summary>
         /// Processes Markdown in the content of the document.
@@ -60,35 +59,73 @@ namespace Wyam.Markdown
             return this;
         }
 
+        /// <summary>
+        /// Includes a set of useful advanced extensions, e.g., citations, footers, footnotes, math,
+        /// grid-tables, pipe-tables, and tasks, in the Markdown processing pipeline.
+        /// </summary>
+        public Markdown UseExtensions()
+        {
+            _configuration = "advanced";
+            return this;
+        }
+
+        /// <summary>
+        /// Includes a set of extensions defined as a string, e.g., "pipetables", "citations",
+        /// "mathematics", or "abbreviations". Separate different extensions with a '+'.
+        /// </summary>
+        public Markdown UseConfiguration(string extensions)
+        {
+            _configuration = extensions;
+            return this;
+        }
+
+        /// <summary>
+        /// Includes a custom extension in the markdown processing given by a class implementing
+        /// the IMarkdownExtension interface.
+        /// </summary>
+        /// <typeparam name="TExtension">The type of the extension to use.</typeparam>
+        public Markdown UseExtension<TExtension>()
+            where TExtension : class, IMarkdownExtension, new()
+        {
+            _extensions.AddIfNotAlready<TExtension>();
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(input =>
             {
-                Trace.Verbose("Processing Markdown {0}for {1}", 
+                Trace.Verbose("Processing Markdown {0} for {1}", 
                     string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.SourceString());
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;
+
                 if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
                 {
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        result = CommonMark.CommonMarkConverter.Convert(input.Content);
+                        var pipeline = CreatePipeline();
+                        result = Markdig.Markdown.ToHtml(input.Content, pipeline);
+                    }
+                    else if (input.ContainsKey(_sourceKey))
+                    {
+                        var pipeline = CreatePipeline();
+                        result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty, pipeline);
                     }
                     else
                     {
-                        if (!input.ContainsKey(_sourceKey))
-                        {
-                            // Don't do anything if the key doesn't exist
-                            return input;
-                        }
-                        result = CommonMark.CommonMarkConverter.Convert(input.String(_sourceKey) ?? string.Empty);
+                        // Don't do anything if the key doesn't exist
+                        return input;
                     }
+
                     if (_escapeAt)
                     {
                         result = result.Replace("@", "&#64;");
                     }
+
                     executionCache.Set(input, _sourceKey, result);
                 }
+
                 return string.IsNullOrEmpty(_sourceKey)
                     ? context.GetDocument(input, result)
                     : context.GetDocument(input, new MetadataItems
@@ -96,6 +133,14 @@ namespace Wyam.Markdown
                         { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }
                     });
             });
+        }
+
+        private MarkdownPipeline CreatePipeline()
+        {
+            var pipelineBuilder = new MarkdownPipelineBuilder();
+            pipelineBuilder.Configure(_configuration);
+            pipelineBuilder.Extensions.AddRange(_extensions);
+            return pipelineBuilder.Build();
         }
     }
 }
