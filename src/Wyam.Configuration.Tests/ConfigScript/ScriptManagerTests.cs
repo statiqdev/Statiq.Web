@@ -60,7 +60,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 string scriptCode = 
 $@"#line 1
 {output}";
-                string expected = GetExpected(usingStatements, scriptCode, string.Empty, string.Empty, string.Empty);
+                string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, string.Empty, string.Empty);
 
                 // When
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
@@ -122,7 +122,63 @@ public class Bar : Foo
 public class Baz
 {
 }";
-                string expected = GetExpected(usingStatements, scriptCode, string.Empty, typeDeclarations, string.Empty);
+                string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, typeDeclarations, string.Empty);
+
+                // When
+                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+
+                // Then
+                Assert.AreEqual(expected, actual);
+            }
+
+            [Test]
+            public void LiftsUsingDirectives()
+            {
+                // Given
+                ScriptManager scriptManager = new ScriptManager();
+                HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
+                string[] namespaces = { "Foo.Bar" };
+                string input =
+@"using Red.Blue;
+using Yellow;
+
+public static class Foo
+{
+    public static string Bar(this string x) => x;
+}
+
+Pipelines.Add(Content());
+
+public string Self(string x)
+{
+    return x.ToLower();
+}";
+                string usingStatements = "using Foo.Bar;";
+                string usingDirectives = @"using Red.Blue;
+using Yellow;
+";
+
+                string scriptCode =
+@"#line 8
+
+Pipelines.Add(Content());
+";
+                string typeDeclarations =
+@"#line 3
+
+public static class Foo
+{
+    public static string Bar(this string x) => x;
+}
+";
+                string methodDeclarations =
+@"#line 10
+
+public string Self(string x)
+{
+    return x.ToLower();
+}";
+                string expected = GetExpected(usingStatements, usingDirectives, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
@@ -170,7 +226,7 @@ public string Self(string x)
 {
     return x.ToLower();
 }";
-                string expected = GetExpected(usingStatements, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
+                string expected = GetExpected(usingStatements, string.Empty, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
@@ -218,7 +274,7 @@ public static string Self(this string x)
 {
     return x.ToLower();
 }";
-                string expected = GetExpected(usingStatements, scriptCode, string.Empty, typeDeclarations, extensionMethodDeclarations);
+                string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, typeDeclarations, extensionMethodDeclarations);
 
                 // When
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
@@ -276,7 +332,7 @@ public string Self(string x)
     // RTY
     return x.ToLower();
 }";
-                string expected = GetExpected(usingStatements, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
+                string expected = GetExpected(usingStatements, string.Empty, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
@@ -286,11 +342,14 @@ public string Self(string x)
             }
             
             // Assumes just the Content module is used
-            private string GetExpected(string usingStatements, string scriptCode, string methodDeclarations, string typeDeclarations, string extensionMethodDeclarations)
+            private string GetExpected(string usingStatements, string usingDirectives, string scriptCode, string methodDeclarations, string typeDeclarations, string extensionMethodDeclarations)
             {
                 return
                 $@"// Generated: bring all module namespaces in scope
                 {usingStatements}
+
+                // Input: using directives
+                {usingDirectives}
 
                 public class {ScriptManager.ScriptClassName} : ScriptBase
                 {{

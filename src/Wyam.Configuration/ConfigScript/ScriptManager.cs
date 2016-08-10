@@ -56,6 +56,9 @@ namespace Wyam.Configuration.ConfigScript
                 $@"// Generated: bring all module namespaces in scope
                 {usingStatements}
 
+                // Input: using directives
+                {liftingWalker.UsingDirectives}
+
                 public class {ScriptClassName} : ScriptBase
                 {{
                     public {ScriptClassName}(Engine engine) : base(engine) {{ }}

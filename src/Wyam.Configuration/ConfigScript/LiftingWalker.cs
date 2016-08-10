@@ -9,6 +9,7 @@ namespace Wyam.Configuration.ConfigScript
     internal class LiftingWalker : CSharpSyntaxWalker
     {
         private readonly StringBuilder _scriptCode = new StringBuilder();
+        private readonly StringBuilder _usingDirectives = new StringBuilder();
         private readonly StringBuilder _typeDeclarations = new StringBuilder();
         private readonly StringBuilder _methodDeclarations = new StringBuilder();
         private readonly StringBuilder _extensionMethodDeclarations = new StringBuilder();
@@ -17,6 +18,7 @@ namespace Wyam.Configuration.ConfigScript
         private StringBuilder _lastBuilder = null;
 
         public string ScriptCode => _scriptCode.ToString();
+        public string UsingDirectives => _usingDirectives.ToString();
         public string TypeDeclarations => _typeDeclarations.ToString();
         public string MethodDeclarations => _methodDeclarations.ToString();
         public string ExtensionMethodDeclarations => _extensionMethodDeclarations.ToString();
@@ -28,6 +30,11 @@ namespace Wyam.Configuration.ConfigScript
             {
                 // Top-level compilation unit
                 base.Visit(node);
+            }
+            else if (node is UsingDirectiveSyntax)
+            {
+                // Using directive
+                Add(node.ToFullString(), _usingDirectives, false);
             }
             else if (node is BaseTypeDeclarationSyntax)
             {
@@ -58,11 +65,11 @@ namespace Wyam.Configuration.ConfigScript
 
         public override void VisitToken(SyntaxToken token) => Add(token.ToFullString(), _scriptCode);
 
-        private void Add(string code, StringBuilder builder)
+        private void Add(string code, StringBuilder builder, bool insertLineDirective = true)
         {
             if (code != null)
             {
-                if (builder != _lastBuilder)
+                if (builder != _lastBuilder && insertLineDirective)
                 {
                     builder.AppendLine("#line " + _lineNumber);
                 }
