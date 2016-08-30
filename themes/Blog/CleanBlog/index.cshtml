@@ -32,7 +32,7 @@
         <hr class="visible-xs-block" />
         <h5>Tags</h5>
         <div>
-            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderBy(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
+            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderByDescending(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
             { 
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
