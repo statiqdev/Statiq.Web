@@ -114,7 +114,8 @@ namespace Wyam.Core.Modules.Contents
                     // Apply the hostname if defined (and the location formatter didn't already set a hostname)
                     if (!string.IsNullOrWhiteSpace(location))
                     {
-                        if (!location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
+                        if (!location.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
+                            && !location.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
                         {
                             location = context.GetLink(new FilePath(location), true);
                         }
