@@ -49,7 +49,7 @@ namespace Wyam.Blog
                     .OnlyMetadata()
             );
 
-            engine.Pipelines.Add(BlogPipelines.Posts,
+            engine.Pipelines.Add(BlogPipelines.RawPosts,
                 new ReadFiles("posts/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
@@ -65,7 +65,7 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),
                 new FrontMatter(new Yaml.Yaml()),
-                new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.Posts)),
+                new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts)),
                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                 new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
                 new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
@@ -79,18 +79,21 @@ namespace Wyam.Blog
                 new WriteFiles()
             );
 
-            engine.Pipelines.Add(BlogPipelines.RenderPosts,
-                new Documents(BlogPipelines.Posts),
+            // Defer rendering the posts until after the tags have been generated
+            engine.Pipelines.Add(BlogPipelines.Posts,
+                new Documents(BlogPipelines.RawPosts),
                 new Razor.Razor(),
                 new Excerpt()
                     .SetMetadataKey(BlogKeys.Excerpt),
                 new Excerpt("div#content")
                     .SetMetadataKey(BlogKeys.Content)
                     .GetOuterHtml(false),
-                new WriteFiles(".html"));
+                new WriteFiles(".html"),
+                // Order them again since the order would have gotten messed up by the concurrent Razor rendering
+                new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending());
 
             engine.Pipelines.Add(BlogPipelines.Feed,
-                new Documents(BlogPipelines.RenderPosts),
+                new Documents(BlogPipelines.Posts),
                 new GenerateFeeds(),
                 new WriteFiles());
 

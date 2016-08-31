@@ -8,8 +8,8 @@ namespace Wyam.Blog
 {
     public static class BlogPipelines
     {
+        public const string RawPosts = nameof(RawPosts);
         public const string Posts = nameof(Posts);
-        public const string RenderPosts = nameof(RenderPosts);
         public const string Tags = nameof(Tags);
         public const string Pages = nameof(Pages);
         public const string RenderPages = nameof(RenderPages);
