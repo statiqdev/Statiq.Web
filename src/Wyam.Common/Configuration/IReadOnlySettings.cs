@@ -15,6 +15,15 @@ namespace Wyam.Common.Configuration
         string Host { get; }
 
         /// <summary>
+        /// Indicates if generated links should use HTTPS
+        /// instead of HTTP as the scheme.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if HTTPS should be used.
+        /// </value>
+        bool LinksUseHttps { get; }
+
+        /// <summary>
         /// Gets the default root path to use when generating links 
         /// with <see cref="NormalizedPath.ToLink"/>
         /// </summary>

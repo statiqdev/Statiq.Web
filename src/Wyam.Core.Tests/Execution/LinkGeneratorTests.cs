@@ -35,7 +35,7 @@ namespace Wyam.Core.Tests.Execution
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, false, false);
+                string link = LinkGenerator.GetLink(filePath, null, null, false, false, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -58,7 +58,7 @@ namespace Wyam.Core.Tests.Execution
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), false, false);
+                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), false, false, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Execution
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, true, false);
+                string link = LinkGenerator.GetLink(filePath, null, null, false, true, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -100,7 +100,7 @@ namespace Wyam.Core.Tests.Execution
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, false, true);
+                string link = LinkGenerator.GetLink(filePath, null, null, false, false, true);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -127,10 +127,23 @@ namespace Wyam.Core.Tests.Execution
                 DirectoryPath directoryPath = path == null ? null : new DirectoryPath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), false, false);
+                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), false, false, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
+            }
+
+            [Test]
+            public void ShouldUseHttpsAsScheme()
+            {
+                // Given
+                DirectoryPath directoryPath = new DirectoryPath("/foo/bar");
+
+                // When
+                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, true, false, false);
+                
+                // Then
+                Assert.AreEqual("https://www.google.com/foo/bar", link);
             }
         }
     }

@@ -9,7 +9,7 @@ namespace Wyam.Core.Execution
 {
     internal static class LinkGenerator
     {
-        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions)
+        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions)
         {
             // Remove index pages and extensions if a file path
             FilePath filePath = path as FilePath;
@@ -50,7 +50,8 @@ namespace Wyam.Core.Execution
             // Add the host and convert to URI for escaping
             UriBuilder builder = new UriBuilder
             {
-                Path = rootLink + link
+                Path = rootLink + link,
+                Scheme = useHttps ? "https" : "http"
             };
             bool hasHost = false;
             if (!string.IsNullOrWhiteSpace(host))

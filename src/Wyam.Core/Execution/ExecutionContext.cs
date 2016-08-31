@@ -64,7 +64,7 @@ namespace Wyam.Core.Execution
         // GetLink
 
         public string GetLink() => 
-            GetLink(null, Settings.Host, Settings.LinkRoot, false, false);
+            GetLink(null, Settings.Host, Settings.LinkRoot, Settings.LinksUseHttps, false, false);
 
         public string GetLink(IMetadata metadata, bool includeHost = false) => 
             GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
@@ -76,10 +76,10 @@ namespace Wyam.Core.Execution
         }
 
         public string GetLink(NormalizedPath path, bool includeHost = false) => 
-            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
 
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool hideIndexPages, bool hideExtensions) => 
-            LinkGenerator.GetLink(path, host, root, hideIndexPages, hideExtensions);
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) => 
+            LinkGenerator.GetLink(path, host, root, useHttps, hideIndexPages, hideExtensions);
 
         // GetDocument
 

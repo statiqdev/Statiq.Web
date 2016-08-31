@@ -34,6 +34,8 @@ namespace Wyam.Core.Configuration
             }
         }
 
+        public bool LinksUseHttps { get; set; }
+
         public DirectoryPath LinkRoot { get; set; }
 
         public bool LinkHideIndexPages { get; set; }
