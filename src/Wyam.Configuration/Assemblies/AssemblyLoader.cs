@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;

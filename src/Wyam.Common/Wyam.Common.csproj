@@ -100,7 +100,6 @@
     <Compile Include="Tracing\ITrace.cs" />
     <Compile Include="Tracing\Trace.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
-    <Compile Include="Util\ConcurrentHashSet.cs" />
     <Compile Include="Util\GroupByExtensions.cs" />
     <Compile Include="Util\ToLookupExtensions.cs" />
   </ItemGroup>
