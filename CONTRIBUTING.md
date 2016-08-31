@@ -14,6 +14,8 @@ Here are a few ways you could get involved:
 
 If you need help with any of these things, **please don't hesitate to ask**. Wyam is a beginner-friendly project and we want to help anyone contribute who would like to.
 
+Build instructions are in the `BUILDING.md` file at the root of the repository.
+
 ## Submitting Code
 
 If you would like to submit code to Wyam, please follow the guidelines below. If your change is small, go ahead and submit a pull request and any questions can be discussed in the request. If it's a larger change, you should probably open an issue first so that it can be discussed before you start spending time coding.
