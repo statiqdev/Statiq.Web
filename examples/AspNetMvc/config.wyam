@@ -1,0 +1,30 @@
+// This config file is used by the examples test runner, use "aspnet-config.wyam" if running Wyam from the CLI
+
+#a **/*
+
+FileSystem.InputPaths.Add("AspNetMvc/Posts");
+FileSystem.OutputPath = "AspNetMvc/Blog";
+
+Pipelines.Add("Posts",
+	// Read all Markdown files under the "Posts" directory
+	ReadFiles("*.md"),
+	// Load any frontmatter and parse it as YAML markup
+	FrontMatter(Yaml()),
+	// Render the Markdown content
+	Markdown(),
+	// Compile and render the page layout template
+	Razor(),
+	// Write the files as HTML
+	WriteFiles(".html"),
+	// Order the files by publish date
+	OrderBy(@doc.Get<DateTime>("Published")).Descending()
+);
+
+Pipelines.Add("Index",
+	// Read all non-layout Razor files under the "Posts" directory
+	ReadFiles("**/{!_,}*.cshtml"),
+	// Evaluate the Razor page(s)
+	Razor(),
+	// Write the file(s) as HTML
+	WriteFiles(".html")
+);
