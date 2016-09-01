@@ -6,6 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -14,9 +19,6 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
-using Wyam.Razor.Microsoft.AspNet.Mvc;
-using Wyam.Razor.Microsoft.AspNet.Mvc.Razor;
-using Wyam.Razor.Microsoft.AspNet.Mvc.Rendering;
 
 namespace Wyam.Razor
 {
@@ -117,20 +119,16 @@ namespace Wyam.Razor
                 .ToList();
 
             // Compile the pages in parallel
-            ConcurrentDictionary<IDocument, Tuple<ViewContext, ViewEngineResult>> compilationResults
-                = new ConcurrentDictionary<IDocument, Tuple<ViewContext, ViewEngineResult>>();
+            ConcurrentDictionary<IDocument, Tuple<WyamViewContext, ViewEngineResult>> compilationResults
+                = new ConcurrentDictionary<IDocument, Tuple<WyamViewContext, ViewEngineResult>>();
             Parallel.ForEach(validInputs, x =>
             {
                 Trace.Verbose("Compiling Razor for {0}", x.SourceString());
                 IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
                 IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
                 IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
-                ViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x, context, viewEngine);
-                ViewEngineResult viewEngineResult;
-                using (Stream stream = x.GetStream())
-                {
-                    viewEngineResult = viewEngine.GetView(viewContext, GetRelativePath(x), stream).EnsureSuccessful();
-                }
+                WyamViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x, context, viewEngine);
+                ViewEngineResult viewEngineResult = viewEngine.GetView("/", GetRelativePath(x), true).EnsureSuccessful(null);
                 compilationResults[x] = new Tuple<ViewContext, ViewEngineResult>(viewContext, viewEngineResult);
             });
 
@@ -142,7 +140,7 @@ namespace Wyam.Razor
                 {
                     using (Trace.WithIndent().Verbose("Processing Razor for {0}", input.SourceString()))
                     {
-                        Tuple<ViewContext, ViewEngineResult> compilationResult;
+                        Tuple<WyamViewContext, ViewEngineResult> compilationResult;
                         if (compilationResults.TryGetValue(input, out compilationResult))
                         {
                             using (StringWriter writer = new StringWriter())
@@ -160,6 +158,13 @@ namespace Wyam.Razor
                 });
         }
 
+        private ViewContext GetViewContext(IDocument document, IExecutionContext executionContext)
+        {
+            // Create ActionContext
+            // Create ViewDataDictionary
+            // Create ViewContext
+        }
+
         private string GetRelativePath(IDocument document)
         {
             string relativePath = "/";
@@ -169,5 +174,23 @@ namespace Wyam.Razor
             }
             return relativePath;
         }
+    }
+
+    public class WyamViewContext : ViewContext
+    {
+        public WyamViewContext(ActionContext actionContext, IView view, ViewDataDictionary viewData, 
+            ITempDataDictionary tempData, TextWriter writer, HtmlHelperOptions htmlHelperOptions,
+            IDocument document, IExecutionContext executionContext) 
+            : base(actionContext, view, viewData, tempData, writer, htmlHelperOptions)
+        {
+            viewData[ViewDataDictionaryKeys.WyamDocument] = document;
+            viewData[ViewDataDictionaryKeys.WyamExecutionContext] = executionContext;
+        }
+    }
+
+    public static class ViewDataDictionaryKeys
+    {
+        public const string WyamDocument = nameof(WyamDocument);
+        public const string WyamExecutionContext = nameof(WyamExecutionContext);
     }
 }
