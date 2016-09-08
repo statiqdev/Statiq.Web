@@ -6,11 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -54,6 +62,7 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
+        private readonly IServiceProvider _services;
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private string _ignorePrefix = "_";
@@ -65,11 +74,20 @@ namespace Wyam.Razor
         /// <param name="basePageType">Type of the base Razor page class, or <c>null</c> for the default base class.</param>
         public Razor(Type basePageType = null)
         {
-            if (basePageType != null && !typeof(BaseRazorPage).IsAssignableFrom(basePageType))
-            {
-                throw new ArgumentException("The Razor base page type must derive from BaseRazorPage.");
-            }
+            //if (basePageType != null && !typeof(BaseRazorPage).IsAssignableFrom(basePageType))
+            //{
+            //    throw new ArgumentException("The Razor base page type must derive from BaseRazorPage.");
+            //}
             _basePageType = basePageType;
+
+            // Register all the MVC and Razor services
+            IServiceCollection serviceCollection = new ServiceCollection();
+            IMvcCoreBuilder builder = serviceCollection.AddMvcCore();
+            builder.AddRazorViewEngine();
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+            });
+            _services = serviceCollection.BuildServiceProvider();
         }
 
         /// <summary>
@@ -111,7 +129,7 @@ namespace Wyam.Razor
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
+            //IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
             List<IDocument> validInputs = inputs
                 .Where(x => _ignorePrefix == null 
                     || !x.ContainsKey(Keys.SourceFileName) 
@@ -119,17 +137,17 @@ namespace Wyam.Razor
                 .ToList();
 
             // Compile the pages in parallel
-            ConcurrentDictionary<IDocument, Tuple<WyamViewContext, ViewEngineResult>> compilationResults
-                = new ConcurrentDictionary<IDocument, Tuple<WyamViewContext, ViewEngineResult>>();
+            ConcurrentDictionary<IDocument, ViewContext> compilationResults
+                = new ConcurrentDictionary<IDocument, ViewContext>();
             Parallel.ForEach(validInputs, x =>
             {
                 Trace.Verbose("Compiling Razor for {0}", x.SourceString());
-                IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
-                IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
-                IRazorViewEngine viewEngine = new RazorViewEngine(pageFactory, viewFactory);
-                WyamViewContext viewContext = new ViewContext(null, new ViewDataDictionary(), null, x, context, viewEngine);
+                //IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
+                //IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
+                IRazorViewEngine viewEngine = GetRazorViewEngine();
                 ViewEngineResult viewEngineResult = viewEngine.GetView("/", GetRelativePath(x), true).EnsureSuccessful(null);
-                compilationResults[x] = new Tuple<ViewContext, ViewEngineResult>(viewContext, viewEngineResult);
+                ViewContext viewContext = GetViewContext(viewEngineResult, x, context);
+                compilationResults[x] = viewContext;
             });
 
             // Now evaluate them in sequence - have to do this because BufferedHtmlContent doesn't appear to work well in multi-threaded parallel execution
@@ -140,17 +158,13 @@ namespace Wyam.Razor
                 {
                     using (Trace.WithIndent().Verbose("Processing Razor for {0}", input.SourceString()))
                     {
-                        Tuple<WyamViewContext, ViewEngineResult> compilationResult;
-                        if (compilationResults.TryGetValue(input, out compilationResult))
+                        ViewContext viewContext;
+                        if (compilationResults.TryGetValue(input, out viewContext))
                         {
-                            using (StringWriter writer = new StringWriter())
-                            {
-                                compilationResult.Item1.View = compilationResult.Item2.View;
-                                compilationResult.Item1.Writer = writer;
-                                Task.Factory.StartNew(() => compilationResult.Item2.View.RenderAsync(compilationResult.Item1),
-                                    cancellationToken, TaskCreationOptions.None, exclusiveScheduler).Unwrap().GetAwaiter().GetResult();
-                                return context.GetDocument(input, writer.ToString());
-                            }
+                            Task.Factory.StartNew(() => viewContext.View.RenderAsync(viewContext),
+                                cancellationToken, TaskCreationOptions.None, exclusiveScheduler)
+                                    .Unwrap().GetAwaiter().GetResult();
+                            return context.GetDocument(input, viewContext.Writer.ToString());
                         }
                         Trace.Warning("Could not find compilation result for {0}", input.SourceString());
                         return null;
@@ -158,11 +172,23 @@ namespace Wyam.Razor
                 });
         }
 
-        private ViewContext GetViewContext(IDocument document, IExecutionContext executionContext)
+        private ViewContext GetViewContext(ViewEngineResult viewEngineResult, IDocument document, IExecutionContext executionContext)
         {
-            // Create ActionContext
-            // Create ViewDataDictionary
-            // Create ViewContext
+            ActionContext actionContext = new ActionContext(
+                new DefaultHttpContext(), new RouteData(), new ActionDescriptor());
+            ViewDataDictionary viewData = new ViewDataDictionary(
+                new EmptyModelMetadataProvider(), actionContext.ModelState);
+            ITempDataDictionary tempData = new TempDataDictionary(
+                actionContext.HttpContext, new SessionStateTempDataProvider());
+            WyamViewContext viewContext = new WyamViewContext(
+                actionContext, viewEngineResult.View, viewData, tempData, new StringWriter(),
+                new HtmlHelperOptions(), document, executionContext);
+            return viewContext;
+        }
+
+        private IRazorViewEngine GetRazorViewEngine()
+        {
+            return _services.GetService<IRazorViewEngine>();
         }
 
         private string GetRelativePath(IDocument document)
@@ -175,8 +201,8 @@ namespace Wyam.Razor
             return relativePath;
         }
     }
-
-    public class WyamViewContext : ViewContext
+    
+    internal class WyamViewContext : ViewContext
     {
         public WyamViewContext(ActionContext actionContext, IView view, ViewDataDictionary viewData, 
             ITempDataDictionary tempData, TextWriter writer, HtmlHelperOptions htmlHelperOptions,
@@ -188,7 +214,7 @@ namespace Wyam.Razor
         }
     }
 
-    public static class ViewDataDictionaryKeys
+    internal static class ViewDataDictionaryKeys
     {
         public const string WyamDocument = nameof(WyamDocument);
         public const string WyamExecutionContext = nameof(WyamExecutionContext);

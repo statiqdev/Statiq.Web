@@ -167,6 +167,10 @@
       <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.0.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>True</Private>
@@ -342,45 +346,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseRazorPage.cs" />
-    <Compile Include="Common\Microsoft.Framework.NotNullAttribute.Sources\NotNullAttribute.cs" />
     <Compile Include="WyamStreamFileProvider.cs" />
     <Compile Include="FileInfoExtensions.cs" />
-    <Compile Include="HtmlHelper.cs" />
-    <Compile Include="HttpAbstractions\Microsoft.AspNet.Html.Abstractions\IHtmlContent.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\BufferedHtmlContent.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\DynamicViewData.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\HtmlHelperPartialExtensions.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\HtmlString.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\StringCollectionTextWriter.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\ViewEngine\IView.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\ViewEngine\IViewEngine.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\Rendering\ViewEngine\ViewEngineResult.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\ViewContext.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.ViewFeatures\ViewDataDictionary.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\IMvcRazorHost.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\MvcRazorHost.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor.Host\ViewHierarchyUtility.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\AttributeValue.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\IRazorCompilationService.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RazorCompilationService.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RazorFileHash.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\Compilation\RelativeFileInfo.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\HelperResult.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPage.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorPageFactory.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorViewEngine.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IRazorViewFactory.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\IViewStartProvider.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\PositionTagged.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorPage.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorPageResult.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorView.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorViewEngine.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RazorViewFactory.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\RenderAsyncDelegate.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\ViewStartProvider.cs" />
-    <Compile Include="Mvc\Microsoft.AspNet.Mvc.Razor\VirtualPathRazorPageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
