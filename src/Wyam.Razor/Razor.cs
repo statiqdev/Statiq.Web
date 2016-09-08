@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -19,6 +21,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Wyam.Common;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -26,7 +29,8 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
-using Wyam.Common.Tracing;
+using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
+using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Razor
 {
@@ -82,6 +86,9 @@ namespace Wyam.Razor
 
             // Register all the MVC and Razor services
             IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IHostingEnvironment, WyamHostingEnvironment>();
+            serviceCollection.AddSingleton<ILoggerFactory, WyamLoggerFactory>();
+            serviceCollection.AddSingleton<DiagnosticSource>(new WyamDiagnosticSource());
             IMvcCoreBuilder builder = serviceCollection.AddMvcCore();
             builder.AddRazorViewEngine();
             serviceCollection.Configure<RazorViewEngineOptions>(options =>
@@ -218,5 +225,90 @@ namespace Wyam.Razor
     {
         public const string WyamDocument = nameof(WyamDocument);
         public const string WyamExecutionContext = nameof(WyamExecutionContext);
+    }
+
+    internal class WyamHostingEnvironment : IHostingEnvironment
+    {
+        public WyamHostingEnvironment()
+        {
+            EnvironmentName = "Wyam";
+            ApplicationName = "Wyam";
+        }
+
+        public string EnvironmentName { get; set; }
+        public string ApplicationName { get; set; }
+        public string WebRootPath { get; set; }
+        public IFileProvider WebRootFileProvider { get; set; }
+        public string ContentRootPath { get; set; }
+        public IFileProvider ContentRootFileProvider { get; set; }
+    }
+
+    internal class WyamLoggerFactory : ILoggerFactory
+    {
+        public void Dispose()
+        {
+        }
+
+        public ILogger CreateLogger(string categoryName) => new WyamLogger(categoryName);
+
+        public void AddProvider(ILoggerProvider provider)
+        {
+        }
+    }
+
+    internal class WyamLogger : ILogger
+    {
+        private readonly string _categoryName;
+
+        private static readonly Dictionary<LogLevel, SourceLevels> LevelMapping = new Dictionary<LogLevel, SourceLevels>
+        {
+            {LogLevel.Trace, SourceLevels.Verbose},
+            {LogLevel.Debug, SourceLevels.Verbose},
+            {LogLevel.Information, SourceLevels.Information},
+            {LogLevel.Warning, SourceLevels.Warning},
+            {LogLevel.Error, SourceLevels.Error},
+            {LogLevel.Critical, SourceLevels.Critical},
+            {LogLevel.None, SourceLevels.Off}
+        };
+
+        private static readonly Dictionary<LogLevel, TraceEventType> TraceMapping = new Dictionary<LogLevel, TraceEventType>
+        {
+            {LogLevel.Trace, TraceEventType.Verbose},
+            {LogLevel.Debug, TraceEventType.Verbose},
+            {LogLevel.Information, TraceEventType.Information},
+            {LogLevel.Warning, TraceEventType.Warning},
+            {LogLevel.Error, TraceEventType.Error},
+            {LogLevel.Critical, TraceEventType.Critical},
+            {LogLevel.None, TraceEventType.Verbose}
+        };
+
+        public WyamLogger(string categoryName)
+        {
+            _categoryName = categoryName;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
+            Exception exception, Func<TState, Exception, string> formatter) => 
+            Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
+
+        public bool IsEnabled(LogLevel logLevel) => Trace.Level.HasFlag(LevelMapping[logLevel]);
+
+        public IDisposable BeginScope<TState>(TState state) => new ScopeDisposable();
+
+        private class ScopeDisposable : IDisposable
+        {
+            public void Dispose()
+            {
+                // Do nothing for now
+            }
+        }
+    }
+
+    public class WyamDiagnosticSource : DiagnosticSource
+    {
+        public override void Write(string name, object value) => 
+            Trace.Verbose($"Diagnostic: {name} {value}");
+
+        public override bool IsEnabled(string name) => true;
     }
 }
