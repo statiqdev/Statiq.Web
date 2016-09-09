@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Framework.Expiration.Interfaces;
+using Wyam.Common.IO;
+using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
 namespace Wyam.Razor
 {
@@ -24,21 +27,13 @@ namespace Wyam.Razor
             _stream = stream;
         }
 
-        public IFileInfo GetFileInfo(string subpath)
-        {
-            IFileInfo fileInfo = _wyamFileProvider.GetFileInfo(subpath);
-            return new DocumentFileInfo(fileInfo, _stream);
-        }
+        public IFileInfo GetFileInfo(string subpath) => 
+            new DocumentFileInfo(_wyamFileProvider.GetFileInfo(subpath), _stream);
 
-        public IDirectoryContents GetDirectoryContents(string subpath)
-        {
-            return _wyamFileProvider.GetDirectoryContents(subpath);
-        }
+        public IDirectoryContents GetDirectoryContents(string subpath) => 
+            _wyamFileProvider.GetDirectoryContents(subpath);
 
-        public IExpirationTrigger Watch(string filter)
-        {
-            throw new NotSupportedException();
-        }
+        IChangeToken IFileProvider.Watch(string filter) => new EmptyChangeToken();
 
         private class DocumentFileInfo : IFileInfo
         {

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +22,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wyam.Common;
@@ -31,6 +36,8 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 using Trace = Wyam.Common.Tracing.Trace;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
 
 namespace Wyam.Razor
 {
@@ -66,7 +73,6 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
-        private readonly IServiceProvider _services;
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private string _ignorePrefix = "_";
@@ -83,18 +89,6 @@ namespace Wyam.Razor
             //    throw new ArgumentException("The Razor base page type must derive from BaseRazorPage.");
             //}
             _basePageType = basePageType;
-
-            // Register all the MVC and Razor services
-            IServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IHostingEnvironment, WyamHostingEnvironment>();
-            serviceCollection.AddSingleton<ILoggerFactory, WyamLoggerFactory>();
-            serviceCollection.AddSingleton<DiagnosticSource>(new WyamDiagnosticSource());
-            IMvcCoreBuilder builder = serviceCollection.AddMvcCore();
-            builder.AddRazorViewEngine();
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
-            {
-            });
-            _services = serviceCollection.BuildServiceProvider();
         }
 
         /// <summary>
@@ -136,6 +130,21 @@ namespace Wyam.Razor
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            // Register all the MVC and Razor services
+            // In the future, if DI is implemented for all Wyam, the IExecutionContext would be registered as a service
+            // and the IHostingEnviornment would be registered as transient with the execution context provided in ctor
+            IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<ILoggerFactory, WyamLoggerFactory>();
+            serviceCollection.AddSingleton<DiagnosticSource>(new WyamDiagnosticSource());
+            IMvcCoreBuilder builder = serviceCollection.AddMvcCore();
+            builder.AddRazorViewEngine();
+            builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(context));
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+            });
+            serviceCollection.AddSingleton<IHostingEnvironment>(new WyamHostingEnvironment(context));
+            IServiceProvider services = serviceCollection.BuildServiceProvider();
+
             //IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
             List<IDocument> validInputs = inputs
                 .Where(x => _ignorePrefix == null 
@@ -151,8 +160,9 @@ namespace Wyam.Razor
                 Trace.Verbose("Compiling Razor for {0}", x.SourceString());
                 //IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
                 //IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
-                IRazorViewEngine viewEngine = GetRazorViewEngine();
-                ViewEngineResult viewEngineResult = viewEngine.GetView("/", GetRelativePath(x), true).EnsureSuccessful(null);
+                IRazorViewEngine viewEngine = services.GetService<IRazorViewEngine>();
+                ViewEngineResult viewEngineResult = viewEngine.GetView(
+                    context.FileSystem.RootPath.ToString(), GetRelativePath(x), true).EnsureSuccessful(null);
                 ViewContext viewContext = GetViewContext(viewEngineResult, x, context);
                 compilationResults[x] = viewContext;
             });
@@ -193,11 +203,6 @@ namespace Wyam.Razor
             return viewContext;
         }
 
-        private IRazorViewEngine GetRazorViewEngine()
-        {
-            return _services.GetService<IRazorViewEngine>();
-        }
-
         private string GetRelativePath(IDocument document)
         {
             string relativePath = "/";
@@ -229,10 +234,16 @@ namespace Wyam.Razor
 
     internal class WyamHostingEnvironment : IHostingEnvironment
     {
-        public WyamHostingEnvironment()
+        public WyamHostingEnvironment(IExecutionContext context)
         {
+            // TODO - figure out how these paths/file providers relate to old VirtualPathRazorPageFactory
+            // specifically, how to know when to use WyamFileProvider vs WyamStreamFileProvider
             EnvironmentName = "Wyam";
             ApplicationName = "Wyam";
+            WebRootPath = context.FileSystem.RootPath.ToString();
+            WebRootFileProvider = new WyamFileProvider(context.FileSystem);
+            ContentRootPath = WebRootPath;
+            ContentRootFileProvider = WebRootFileProvider;
         }
 
         public string EnvironmentName { get; set; }
@@ -293,22 +304,77 @@ namespace Wyam.Razor
 
         public bool IsEnabled(LogLevel logLevel) => Trace.Level.HasFlag(LevelMapping[logLevel]);
 
-        public IDisposable BeginScope<TState>(TState state) => new ScopeDisposable();
+        public IDisposable BeginScope<TState>(TState state) => new EmptyDisposable();
 
-        private class ScopeDisposable : IDisposable
+    }
+
+    internal class EmptyDisposable : IDisposable
+    {
+        public void Dispose()
         {
-            public void Dispose()
-            {
-                // Do nothing for now
-            }
+            // Do nothing
         }
     }
 
-    public class WyamDiagnosticSource : DiagnosticSource
+    internal class WyamDiagnosticSource : DiagnosticSource
     {
         public override void Write(string name, object value) => 
             Trace.Verbose($"Diagnostic: {name} {value}");
 
         public override bool IsEnabled(string name) => true;
+    }
+
+    internal class EmptyChangeToken : IChangeToken
+    {
+        public IDisposable RegisterChangeCallback(Action<object> callback, object state) =>
+            new EmptyDisposable();
+
+        public bool HasChanged => false;
+        public bool ActiveChangeCallbacks => false;
+    }
+
+    internal class MetadataReferenceFeatureProvider : IApplicationFeatureProvider<MetadataReferenceFeature>
+    {
+        private readonly IExecutionContext _executionContext;
+
+        public MetadataReferenceFeatureProvider(IExecutionContext executionContext)
+        {
+            _executionContext = executionContext;
+        }
+        
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
+        {
+            if (parts == null)
+            {
+                throw new ArgumentNullException(nameof(parts));
+            }
+
+            if (feature == null)
+            {
+                throw new ArgumentNullException(nameof(feature));
+            }
+
+            // Add all references from the execution context
+            foreach (Assembly assembly in _executionContext.Assemblies
+                .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location)))
+            {
+                feature.MetadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
+            }
+            foreach (byte[] image in _executionContext.DynamicAssemblies)
+            {
+                feature.MetadataReferences.Add(MetadataReference.CreateFromImage(image));
+            }
+        }
+
+        //private static MetadataReference CreateMetadataReference(string path)
+        //{
+        //    using (var stream = File.OpenRead(path))
+        //    {
+        //        var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
+        //        var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+
+        //        return assemblyMetadata.GetReference(filePath: path);
+        //    }
+        //}
     }
 }

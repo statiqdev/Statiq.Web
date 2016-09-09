@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Framework.Expiration.Interfaces;
 using Wyam.Common.IO;
-using IFileProvider = Microsoft.AspNet.FileProviders.IFileProvider;
+using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
 namespace Wyam.Razor
 {
@@ -54,9 +56,22 @@ namespace Wyam.Razor
             return new EnumerableDirectoryContents(fileInfos);
         }
 
-        public IExpirationTrigger Watch(string filter)
+        IChangeToken IFileProvider.Watch(string filter) => new EmptyChangeToken();
+
+        private class EnumerableDirectoryContents : IDirectoryContents
         {
-            throw new NotSupportedException();
+            private readonly IEnumerable<IFileInfo> _entries;
+
+            public bool Exists => true;
+
+            public EnumerableDirectoryContents(IEnumerable<IFileInfo> entries)
+            {
+                _entries = entries;
+            }
+
+            public IEnumerator<IFileInfo> GetEnumerator() => _entries.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => _entries.GetEnumerator();
         }
 
         private class WyamFileInfo : IFileInfo
