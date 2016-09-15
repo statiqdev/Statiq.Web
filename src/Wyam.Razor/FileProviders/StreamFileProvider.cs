@@ -1,37 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Microsoft.Framework.Expiration.Interfaces;
-using Wyam.Common.IO;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
-namespace Wyam.Razor
+namespace Wyam.Razor.FileProviders
 {
 
     /// <summary>
     /// A IFileProvider that provides files based on their stream for use with arbitrary documents.
     /// </summary>
-    public class WyamStreamFileProvider : IFileProvider
+    internal class StreamFileProvider : IFileProvider
     {
-        private readonly WyamFileProvider _wyamFileProvider;
+        private readonly FileProvider _fileProvider;
         private readonly Stream _stream;
 
-        public WyamStreamFileProvider(WyamFileProvider wyamFileProvider, Stream stream)
+        public StreamFileProvider(FileProvider fileProvider, Stream stream)
         {
-            _wyamFileProvider = wyamFileProvider;
+            _fileProvider = fileProvider;
             _stream = stream;
         }
 
         public IFileInfo GetFileInfo(string subpath) => 
-            new DocumentFileInfo(_wyamFileProvider.GetFileInfo(subpath), _stream);
+            new DocumentFileInfo(_fileProvider.GetFileInfo(subpath), _stream);
 
         public IDirectoryContents GetDirectoryContents(string subpath) => 
-            _wyamFileProvider.GetDirectoryContents(subpath);
+            _fileProvider.GetDirectoryContents(subpath);
 
         IChangeToken IFileProvider.Watch(string filter) => new EmptyChangeToken();
 

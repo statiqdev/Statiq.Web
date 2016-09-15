@@ -346,14 +346,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WyamStreamFileProvider.cs" />
-    <Compile Include="FileInfoExtensions.cs" />
+    <Compile Include="EmptyChangeToken.cs" />
+    <Compile Include="EmptyDisposable.cs" />
+    <Compile Include="MetadataReferenceFeatureProvider.cs" />
+    <Compile Include="ViewDataKeys.cs" />
+    <Compile Include="SilentDiagnosticSource.cs" />
+    <Compile Include="HostingEnvironment.cs" />
+    <Compile Include="TraceLogger.cs" />
+    <Compile Include="TraceLoggerFactory.cs" />
+    <Compile Include="RazorHost.cs" />
+    <Compile Include="RazorPage.cs" />
+    <Compile Include="FileProviders\StreamFileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Razor.cs" />
-    <Compile Include="WyamFileProvider.cs" />
+    <Compile Include="FileProviders\FileProvider.cs" />
+    <Compile Include="ViewContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">

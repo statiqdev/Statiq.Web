@@ -3,24 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Microsoft.Framework.Expiration.Interfaces;
 using Wyam.Common.IO;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
-namespace Wyam.Razor
+namespace Wyam.Razor.FileProviders
 {
     /// <summary>
     /// Looks up files using the Wyam virtual file system.
     /// </summary>
-    public class WyamFileProvider : IFileProvider
+    internal class FileProvider : IFileProvider
     {
         private readonly IReadOnlyFileSystem _fileSystem;
         
-        public WyamFileProvider(IReadOnlyFileSystem fileSystem)
+        public FileProvider(IReadOnlyFileSystem fileSystem)
         {
             if (fileSystem == null)
             {

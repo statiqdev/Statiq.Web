@@ -4,28 +4,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.Mvc.Razor.Directives;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.Chunks;
-using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,12 +31,9 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
-using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 using Trace = Wyam.Common.Tracing.Trace;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.ObjectPool;
-using Microsoft.Extensions.Primitives;
-using Wyam.Common.Tracing;
 
 // TODO: How to handle caching - should we continue to let Razor handle it, or stick it in our own cache - what about in between runs?
 
@@ -80,6 +71,7 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
+        // TODO: Figure out how to handle these settings (and test!)
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private string _ignorePrefix = "_";
@@ -146,64 +138,50 @@ namespace Wyam.Razor
                 .AddRazorViewEngine();
             builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(context));
             serviceCollection
-                .AddSingleton<ILoggerFactory, WyamLoggerFactory>()
-                .AddSingleton<DiagnosticSource>(new WyamDiagnosticSource())
-                .AddSingleton<IHostingEnvironment>(new WyamHostingEnvironment(context))
+                .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
+                .AddSingleton<DiagnosticSource, SilentDiagnosticSource>()
+                .AddSingleton<IHostingEnvironment, HostingEnvironment>()
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
-                .AddScoped(_ => context)
-                .AddScoped<IMvcRazorHost, WyamRazorHost>()
+                .AddSingleton<IRazorViewEngine, RazorViewEngine>()
+                .AddSingleton<IExecutionContext>(context)
+                .AddScoped<IMvcRazorHost, RazorHost>()
                 .Configure<RazorViewEngineOptions>(options =>
                 {
-                    // TODO: Add my file provider(s)
+                    // TODO: Add my file provider(s) - maybe not needed if custom RazorViewEngine
                     //options.FileProviders
                 });
             IServiceProvider services = serviceCollection.BuildServiceProvider();
-
-            //IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
+            
+            // Eliminate input documents that we shouldn't process
             List<IDocument> validInputs = inputs
                 .Where(x => _ignorePrefix == null 
                     || !x.ContainsKey(Keys.SourceFileName) 
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
 
-            // Compile the pages in parallel
-            ConcurrentDictionary<IDocument, ViewContext> compilationResults
-                = new ConcurrentDictionary<IDocument, ViewContext>();
-            Parallel.ForEach(validInputs, x =>
+            // Compile and evaluate the pages in parallel
+            return validInputs.AsParallel().Select(input =>
             {
-                Trace.Verbose("Compiling Razor for {0}", x.SourceString());
-                //IViewStartProvider viewStartProvider = new ViewStartProvider(pageFactory, _viewStartPath?.Invoke<FilePath>(x, context));
-                //IRazorViewFactory viewFactory = new RazorViewFactory(viewStartProvider);
+                Trace.Verbose("Compiling Razor for {0}", input.SourceString());
                 IRazorViewEngine viewEngine = services.GetService<IRazorViewEngine>();
-                ViewEngineResult viewEngineResult = viewEngine.GetView(
-                    context.FileSystem.RootPath.ToString(), GetRelativePath(x), true).EnsureSuccessful(null);
-                ViewContext viewContext = GetViewContext(services, viewEngineResult, x, context);
-                compilationResults[x] = viewContext;
-            });
+                ViewEngineResult viewEngineResult = viewEngine
+                    .GetView(context.FileSystem.RootPath.ToString(), GetRelativePath(input), true)
+                    .EnsureSuccessful(null);
 
-            // Now evaluate them in sequence - have to do this because BufferedHtmlContent doesn't appear to work well in multi-threaded parallel execution
-            TaskScheduler exclusiveScheduler = new ConcurrentExclusiveSchedulerPair().ExclusiveScheduler;
-            CancellationToken cancellationToken = new CancellationToken();
-            return validInputs
-                .Select(input =>
+                Trace.Verbose("Processing Razor for {0}", input.SourceString());
+                using (StringWriter output = new StringWriter())
                 {
-                    using (Trace.WithIndent().Verbose("Processing Razor for {0}", input.SourceString()))
-                    {
-                        ViewContext viewContext;
-                        if (compilationResults.TryGetValue(input, out viewContext))
-                        {
-                            Task.Factory.StartNew(() => viewContext.View.RenderAsync(viewContext),
-                                cancellationToken, TaskCreationOptions.None, exclusiveScheduler)
-                                    .Unwrap().GetAwaiter().GetResult();
-                            return context.GetDocument(input, viewContext.Writer.ToString());
-                        }
-                        Trace.Warning("Could not find compilation result for {0}", input.SourceString());
-                        return null;
-                    }
-                });
+                    Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = GetViewContext(
+                        services, viewEngineResult, input, context, output);
+                    viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
+                    return context.GetDocument(input, output.ToString());
+                }
+            });
         }
         
-        private ViewContext GetViewContext(IServiceProvider services, ViewEngineResult viewEngineResult, IDocument document, IExecutionContext executionContext)
+        private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(
+            IServiceProvider services, ViewEngineResult viewEngineResult, 
+            IDocument document, IExecutionContext executionContext, TextWriter output)
         {
             HttpContext httpContext = new DefaultHttpContext()
             {
@@ -217,9 +195,9 @@ namespace Wyam.Razor
                 Model = document
             };
             ITempDataDictionary tempData = new TempDataDictionary(
-                actionContext.HttpContext, new SessionStateTempDataProvider());
-            WyamViewContext viewContext = new WyamViewContext(
-                actionContext, viewEngineResult.View, viewData, tempData, new StringWriter(),
+                actionContext.HttpContext, services.GetRequiredService<ITempDataProvider>());
+            ViewContext viewContext = new ViewContext(
+                actionContext, viewEngineResult.View, viewData, tempData, output,
                 new HtmlHelperOptions(), document, executionContext);
             return viewContext;
         }
@@ -235,204 +213,63 @@ namespace Wyam.Razor
         }
     }
 
-    internal class WyamRazorHost : MvcRazorHost
+    internal class RazorViewEngine : IRazorViewEngine
     {
-        public WyamRazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver) : base(chunkTreeCache, resolver)
+        private const string ViewExtension = ".cshtml";
+
+        private static readonly IEnumerable<string> _viewLocationFormats = new[]
         {
-            DefaultBaseClass = "WyamRazorPage";
-            DefaultInheritedChunks.OfType<SetBaseTypeChunk>().First().TypeName = DefaultBaseClass;  // The chunk is actually what injects the base name into the view
-            EnableInstrumentation = false;
-
-            // Add additional default namespaces from the execution context
-            foreach (string ns in executionContext.Namespaces)
-            {
-                NamespaceImports.Add(ns);
-            }
-        }
-
-        public WyamRazorHost(string root) : base(root)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override string DefaultModel => "IDocument";
-    }
-
-    public abstract class WyamRazorPage : RazorPage<IDocument>
-    {
-        public IDocument Document => ViewData[ViewDataKeys.WyamDocument] as IDocument;
-        public IMetadata Metadata => Document;
-
-        public IExecutionContext ExecutionContext => ViewData[ViewDataKeys.WyamExecutionContext] as IExecutionContext;
-        public new IExecutionContext Context => ExecutionContext;
-        public HttpContext HttpContext => base.Context;
-
-        public IDocumentCollection Documents => ExecutionContext.Documents;
-
-        public ITrace Trace => Common.Tracing.Trace.Current;
-    }
-
-    internal class WyamViewContext : ViewContext
-    {
-        public WyamViewContext(ActionContext actionContext, IView view, ViewDataDictionary viewData, 
-            ITempDataDictionary tempData, TextWriter writer, HtmlHelperOptions htmlHelperOptions,
-            IDocument document, IExecutionContext executionContext) 
-            : base(actionContext, view, viewData, tempData, writer, htmlHelperOptions)
-        {
-            viewData[ViewDataKeys.WyamDocument] = document;
-            viewData[ViewDataKeys.WyamExecutionContext] = executionContext;
-        }
-    }
-
-    internal static class ViewDataKeys
-    {
-        public const string WyamDocument = nameof(WyamDocument);
-        public const string WyamExecutionContext = nameof(WyamExecutionContext);
-    }
-
-    internal class WyamHostingEnvironment : IHostingEnvironment
-    {
-        public WyamHostingEnvironment(IExecutionContext context)
-        {
-            // TODO - figure out how these paths/file providers relate to old VirtualPathRazorPageFactory
-            // specifically, how to know when to use WyamFileProvider vs WyamStreamFileProvider
-            EnvironmentName = "Wyam";
-            ApplicationName = "Wyam";
-            WebRootPath = context.FileSystem.RootPath.ToString();
-            WebRootFileProvider = new WyamFileProvider(context.FileSystem);
-            ContentRootPath = WebRootPath;
-            ContentRootFileProvider = WebRootFileProvider;
-        }
-
-        public string EnvironmentName { get; set; }
-        public string ApplicationName { get; set; }
-        public string WebRootPath { get; set; }
-        public IFileProvider WebRootFileProvider { get; set; }
-        public string ContentRootPath { get; set; }
-        public IFileProvider ContentRootFileProvider { get; set; }
-    }
-
-    internal class WyamLoggerFactory : ILoggerFactory
-    {
-        public void Dispose()
-        {
-        }
-
-        public ILogger CreateLogger(string categoryName) => new WyamLogger(categoryName);
-
-        public void AddProvider(ILoggerProvider provider)
-        {
-        }
-    }
-
-    internal class WyamLogger : ILogger
-    {
-        private readonly string _categoryName;
-
-        private static readonly Dictionary<LogLevel, SourceLevels> LevelMapping = new Dictionary<LogLevel, SourceLevels>
-        {
-            {LogLevel.Trace, SourceLevels.Verbose},
-            {LogLevel.Debug, SourceLevels.Verbose},
-            {LogLevel.Information, SourceLevels.Verbose},
-            {LogLevel.Warning, SourceLevels.Warning},
-            {LogLevel.Error, SourceLevels.Error},
-            {LogLevel.Critical, SourceLevels.Critical},
-            {LogLevel.None, SourceLevels.Off}
+            "/{0}",
+            "/Shared/{0}",
+            "/Views/{0}",
+            "/Views/Shared/{0}"
         };
 
-        private static readonly Dictionary<LogLevel, TraceEventType> TraceMapping = new Dictionary<LogLevel, TraceEventType>
-        {
-            {LogLevel.Trace, TraceEventType.Verbose},
-            {LogLevel.Debug, TraceEventType.Verbose},
-            {LogLevel.Information, TraceEventType.Verbose},
-            {LogLevel.Warning, TraceEventType.Warning},
-            {LogLevel.Error, TraceEventType.Error},
-            {LogLevel.Critical, TraceEventType.Critical},
-            {LogLevel.None, TraceEventType.Verbose}
-        };
+        private readonly IRazorPageFactoryProvider _pageFactory;
+        private readonly IRazorPageActivator _pageActivator;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public WyamLogger(string categoryName)
+        public RazorViewEngine(IRazorPageFactoryProvider pageFactory, 
+            IRazorPageActivator pageActivator, HtmlEncoder htmlEncoder)
         {
-            _categoryName = categoryName;
+            _pageFactory = pageFactory;
+            _pageActivator = pageActivator;
+            _htmlEncoder = htmlEncoder;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
-            Exception exception, Func<TState, Exception, string> formatter) => 
-            Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
-
-        public bool IsEnabled(LogLevel logLevel) => Trace.Level.HasFlag(LevelMapping[logLevel]);
-
-        public IDisposable BeginScope<TState>(TState state) => new EmptyDisposable();
-
-    }
-
-    internal class EmptyDisposable : IDisposable
-    {
-        public void Dispose()
+        public ViewEngineResult FindView(ActionContext context, string viewName, bool isMainPage)
         {
-            // Do nothing
-        }
-    }
-
-    internal class WyamDiagnosticSource : DiagnosticSource
-    {
-        public override void Write(string name, object value) => 
-            Trace.Verbose($"Diagnostic: {name} {value}");
-
-        public override bool IsEnabled(string name) => true;
-    }
-
-    internal class EmptyChangeToken : IChangeToken
-    {
-        public IDisposable RegisterChangeCallback(Action<object> callback, object state) =>
-            new EmptyDisposable();
-
-        public bool HasChanged => false;
-        public bool ActiveChangeCallbacks => false;
-    }
-
-    internal class MetadataReferenceFeatureProvider : IApplicationFeatureProvider<MetadataReferenceFeature>
-    {
-        private readonly IExecutionContext _executionContext;
-
-        public MetadataReferenceFeatureProvider(IExecutionContext executionContext)
-        {
-            _executionContext = executionContext;
-        }
-        
-        public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
-        {
-            if (parts == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(parts));
+                throw new ArgumentNullException(nameof(context));
             }
 
-            if (feature == null)
+            if (string.IsNullOrEmpty(viewName))
             {
-                throw new ArgumentNullException(nameof(feature));
+                throw new ArgumentException(nameof(viewName));
             }
 
-            // Add all references from the execution context
-            foreach (Assembly assembly in _executionContext.Assemblies
-                .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location)))
-            {
-                feature.MetadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
-            }
-            foreach (byte[] image in _executionContext.DynamicAssemblies)
-            {
-                feature.MetadataReferences.Add(MetadataReference.CreateFromImage(image));
-            }
+            throw new NotImplementedException();
         }
 
-        //private static MetadataReference CreateMetadataReference(string path)
-        //{
-        //    using (var stream = File.OpenRead(path))
-        //    {
-        //        var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
-        //        var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+        public ViewEngineResult GetView(string executingFilePath, string viewPath, bool isMainPage)
+        {
+            throw new NotImplementedException();
+        }
 
-        //        return assemblyMetadata.GetReference(filePath: path);
-        //    }
-        //}
+        public RazorPageResult FindPage(ActionContext context, string pageName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RazorPageResult GetPage(string executingFilePath, string pagePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetAbsolutePath(string executingFilePath, string pagePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
