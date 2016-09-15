@@ -17,10 +17,13 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Directives;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.Chunks;
+using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,7 +40,11 @@ using Wyam.Common.IO;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 using Trace = Wyam.Common.Tracing.Trace;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
+using Wyam.Common.Tracing;
+
+// TODO: How to handle caching - should we continue to let Razor handle it, or stick it in our own cache - what about in between runs?
 
 namespace Wyam.Razor
 {
@@ -134,15 +141,22 @@ namespace Wyam.Razor
             // In the future, if DI is implemented for all Wyam, the IExecutionContext would be registered as a service
             // and the IHostingEnviornment would be registered as transient with the execution context provided in ctor
             IServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<ILoggerFactory, WyamLoggerFactory>();
-            serviceCollection.AddSingleton<DiagnosticSource>(new WyamDiagnosticSource());
-            IMvcCoreBuilder builder = serviceCollection.AddMvcCore();
-            builder.AddRazorViewEngine();
+            IMvcCoreBuilder builder = serviceCollection
+                .AddMvcCore()
+                .AddRazorViewEngine();
             builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(context));
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
-            {
-            });
-            serviceCollection.AddSingleton<IHostingEnvironment>(new WyamHostingEnvironment(context));
+            serviceCollection
+                .AddSingleton<ILoggerFactory, WyamLoggerFactory>()
+                .AddSingleton<DiagnosticSource>(new WyamDiagnosticSource())
+                .AddSingleton<IHostingEnvironment>(new WyamHostingEnvironment(context))
+                .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
+                .AddScoped(_ => context)
+                .AddScoped<IMvcRazorHost, WyamRazorHost>()
+                .Configure<RazorViewEngineOptions>(options =>
+                {
+                    // TODO: Add my file provider(s)
+                    //options.FileProviders
+                });
             IServiceProvider services = serviceCollection.BuildServiceProvider();
 
             //IRazorPageFactory pageFactory = new VirtualPathRazorPageFactory(context, _basePageType);
@@ -163,7 +177,7 @@ namespace Wyam.Razor
                 IRazorViewEngine viewEngine = services.GetService<IRazorViewEngine>();
                 ViewEngineResult viewEngineResult = viewEngine.GetView(
                     context.FileSystem.RootPath.ToString(), GetRelativePath(x), true).EnsureSuccessful(null);
-                ViewContext viewContext = GetViewContext(viewEngineResult, x, context);
+                ViewContext viewContext = GetViewContext(services, viewEngineResult, x, context);
                 compilationResults[x] = viewContext;
             });
 
@@ -188,13 +202,20 @@ namespace Wyam.Razor
                     }
                 });
         }
-
-        private ViewContext GetViewContext(ViewEngineResult viewEngineResult, IDocument document, IExecutionContext executionContext)
+        
+        private ViewContext GetViewContext(IServiceProvider services, ViewEngineResult viewEngineResult, IDocument document, IExecutionContext executionContext)
         {
+            HttpContext httpContext = new DefaultHttpContext()
+            {
+                RequestServices = services
+            };
             ActionContext actionContext = new ActionContext(
-                new DefaultHttpContext(), new RouteData(), new ActionDescriptor());
+                httpContext, new RouteData(), new ActionDescriptor());
             ViewDataDictionary viewData = new ViewDataDictionary(
-                new EmptyModelMetadataProvider(), actionContext.ModelState);
+                new EmptyModelMetadataProvider(), actionContext.ModelState)
+            {
+                Model = document
+            };
             ITempDataDictionary tempData = new TempDataDictionary(
                 actionContext.HttpContext, new SessionStateTempDataProvider());
             WyamViewContext viewContext = new WyamViewContext(
@@ -213,7 +234,44 @@ namespace Wyam.Razor
             return relativePath;
         }
     }
-    
+
+    internal class WyamRazorHost : MvcRazorHost
+    {
+        public WyamRazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver) : base(chunkTreeCache, resolver)
+        {
+            DefaultBaseClass = "WyamRazorPage";
+            DefaultInheritedChunks.OfType<SetBaseTypeChunk>().First().TypeName = DefaultBaseClass;  // The chunk is actually what injects the base name into the view
+            EnableInstrumentation = false;
+
+            // Add additional default namespaces from the execution context
+            foreach (string ns in executionContext.Namespaces)
+            {
+                NamespaceImports.Add(ns);
+            }
+        }
+
+        public WyamRazorHost(string root) : base(root)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override string DefaultModel => "IDocument";
+    }
+
+    public abstract class WyamRazorPage : RazorPage<IDocument>
+    {
+        public IDocument Document => ViewData[ViewDataKeys.WyamDocument] as IDocument;
+        public IMetadata Metadata => Document;
+
+        public IExecutionContext ExecutionContext => ViewData[ViewDataKeys.WyamExecutionContext] as IExecutionContext;
+        public new IExecutionContext Context => ExecutionContext;
+        public HttpContext HttpContext => base.Context;
+
+        public IDocumentCollection Documents => ExecutionContext.Documents;
+
+        public ITrace Trace => Common.Tracing.Trace.Current;
+    }
+
     internal class WyamViewContext : ViewContext
     {
         public WyamViewContext(ActionContext actionContext, IView view, ViewDataDictionary viewData, 
@@ -221,12 +279,12 @@ namespace Wyam.Razor
             IDocument document, IExecutionContext executionContext) 
             : base(actionContext, view, viewData, tempData, writer, htmlHelperOptions)
         {
-            viewData[ViewDataDictionaryKeys.WyamDocument] = document;
-            viewData[ViewDataDictionaryKeys.WyamExecutionContext] = executionContext;
+            viewData[ViewDataKeys.WyamDocument] = document;
+            viewData[ViewDataKeys.WyamExecutionContext] = executionContext;
         }
     }
 
-    internal static class ViewDataDictionaryKeys
+    internal static class ViewDataKeys
     {
         public const string WyamDocument = nameof(WyamDocument);
         public const string WyamExecutionContext = nameof(WyamExecutionContext);
@@ -275,7 +333,7 @@ namespace Wyam.Razor
         {
             {LogLevel.Trace, SourceLevels.Verbose},
             {LogLevel.Debug, SourceLevels.Verbose},
-            {LogLevel.Information, SourceLevels.Information},
+            {LogLevel.Information, SourceLevels.Verbose},
             {LogLevel.Warning, SourceLevels.Warning},
             {LogLevel.Error, SourceLevels.Error},
             {LogLevel.Critical, SourceLevels.Critical},
@@ -286,7 +344,7 @@ namespace Wyam.Razor
         {
             {LogLevel.Trace, TraceEventType.Verbose},
             {LogLevel.Debug, TraceEventType.Verbose},
-            {LogLevel.Information, TraceEventType.Information},
+            {LogLevel.Information, TraceEventType.Verbose},
             {LogLevel.Warning, TraceEventType.Warning},
             {LogLevel.Error, TraceEventType.Error},
             {LogLevel.Critical, TraceEventType.Critical},
