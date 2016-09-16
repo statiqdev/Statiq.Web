@@ -63,7 +63,6 @@
     <Compile Include="Caching\CacheEntry.cs" />
     <Compile Include="Caching\ExecutionCacheManager.cs" />
     <Compile Include="Caching\NoCache.cs" />
-    <Compile Include="Configuration\AssemblyCollection.cs" />
     <Compile Include="Caching\ExecutionCache.cs" />
     <Compile Include="Configuration\NamespaceCollection.cs" />
     <Compile Include="Configuration\RawAssemblyCollection.cs" />

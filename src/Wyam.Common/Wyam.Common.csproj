@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\IAssemblyCollection.cs" />
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\IRawAssemblyCollection.cs" />
     <Compile Include="Documents\GroupByExtensions.cs" />

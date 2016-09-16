@@ -126,7 +126,6 @@ namespace Wyam.Core.Tests.Modules.Control
             private IExecutionContext GetExecutionContext(Engine engine)
             {
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.Assemblies.Returns(engine.Assemblies);
                 context.Namespaces.Returns(engine.Namespaces);
                 IReadOnlyFileSystem fileSystem = GetFileSystem();
                 context.FileSystem.Returns(fileSystem);

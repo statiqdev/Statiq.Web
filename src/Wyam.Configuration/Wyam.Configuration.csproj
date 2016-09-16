@@ -240,6 +240,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Assemblies\AssemblyCollection.cs" />
     <Compile Include="Assemblies\AssemblyResolver.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
     <Compile Include="ConfigScript\LiftingWalker.cs" />

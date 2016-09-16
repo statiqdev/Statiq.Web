@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using ConcurrentCollections;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
-using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Configuration.ConfigScript;
@@ -25,9 +24,10 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentQueue<string> _referencedAssemblyNames = new ConcurrentQueue<string>();
         
         private readonly IReadOnlyFileSystem _fileSystem;
-        private readonly IAssemblyCollection _assemblyCollection;
         private readonly AssemblyResolver _assemblyResolver;
         private readonly IDirectory _entryAssemblyDirectory;
+
+        private readonly AssemblyCollection _assemblyCollection = new AssemblyCollection();
 
         private bool _loaded;
 
@@ -36,10 +36,9 @@ namespace Wyam.Configuration.Assemblies
         /// </summary>
         public ConcurrentHashSet<Assembly> DirectAssemblies { get; } = new ConcurrentHashSet<Assembly>();
 
-        internal AssemblyLoader(IReadOnlyFileSystem fileSystem, IAssemblyCollection assemblyCollection, AssemblyResolver assemblyResolver)
+        internal AssemblyLoader(IReadOnlyFileSystem fileSystem, AssemblyResolver assemblyResolver)
         {
             _fileSystem = fileSystem;
-            _assemblyCollection = assemblyCollection;
             _assemblyResolver = assemblyResolver;
 
             // Get the location of the entry assembly

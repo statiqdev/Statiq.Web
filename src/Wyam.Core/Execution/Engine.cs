@@ -60,12 +60,7 @@ namespace Wyam.Core.Execution
         public IDocumentCollection Documents => DocumentCollection;
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
-
-        /// <summary>
-        /// Gets the assemblies that should be referenced by modules that support dynamic compilation.
-        /// </summary>
-        public IAssemblyCollection Assemblies { get; } = new AssemblyCollection();
-
+        
         /// <summary>
         /// Gets the namespaces that should be brought in scope by modules that support dynamic compilation.
         /// </summary>

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Util;
 
 namespace Wyam.Core.Configuration
@@ -26,6 +27,12 @@ namespace Wyam.Core.Configuration
                 "Wyam.Core.Configuration",
                 "Wyam.Core.Documents"  // For custom document type support
             });
+
+            // Add all public namespaces from Wyam.Common
+            _namespaces.AddRange(typeof(IEngine).Assembly.GetTypes()
+                .Where(x => x.IsPublic)
+                .Select(x => x.Namespace)
+                .Distinct());
         }
 
         public bool Add(string ns) => _namespaces.Add(ns);

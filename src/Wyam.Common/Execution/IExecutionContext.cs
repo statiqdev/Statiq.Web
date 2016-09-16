@@ -22,8 +22,7 @@ namespace Wyam.Common.Execution
         /// Gets the raw bytes for dynamically compiled assemblies (such as the configuration script).
         /// </summary>
         IReadOnlyCollection<byte[]> DynamicAssemblies { get; }
-
-        IReadOnlyCollection<Assembly> Assemblies { get; }
+        
         IReadOnlyCollection<string> Namespaces { get; }
         IReadOnlyPipeline Pipeline { get; }
         IModule Module { get; }

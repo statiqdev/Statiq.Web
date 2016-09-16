@@ -23,9 +23,7 @@ namespace Wyam.Core.Execution
         public Engine Engine { get; }
 
         public IReadOnlyCollection<byte[]> DynamicAssemblies => Engine.DynamicAssemblies;
-
-        public IReadOnlyCollection<Assembly> Assemblies => Engine.Assemblies;
-
+        
         public IReadOnlyCollection<string> Namespaces => Engine.Namespaces;
 
         public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);

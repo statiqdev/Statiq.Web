@@ -1,21 +1,13 @@
-﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common;
-using Wyam.Common.Configuration;
-using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Core.Execution;
 
-namespace Wyam.Core.Configuration
+namespace Wyam.Configuration.Assemblies
 {
-    internal class AssemblyCollection : IAssemblyCollection
+    internal class AssemblyCollection : IReadOnlyCollection<Assembly>
     {
         private readonly ConcurrentDictionary<string, Assembly> _assemblies = new ConcurrentDictionary<string, Assembly>();
 

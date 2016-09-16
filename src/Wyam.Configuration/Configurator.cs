@@ -72,13 +72,10 @@ namespace Wyam.Configuration
             _engine = engine;
             _preprocessor = preprocessor;
             _assemblyResolver = new AssemblyResolver(_scriptManager); 
-            AssemblyLoader = new AssemblyLoader(engine.FileSystem, engine.Assemblies, _assemblyResolver);
+            AssemblyLoader = new AssemblyLoader(engine.FileSystem, _assemblyResolver);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             ClassCatalog = new ClassCatalog();
-
-            // Add this namespace and assembly
             engine.Namespaces.Add(typeof(ScriptBase).Namespace);
-            engine.Assemblies.Add(typeof(ScriptBase).Assembly);
         }
 
         public void Dispose()
@@ -336,7 +333,7 @@ namespace Wyam.Configuration
             {
                 _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>().ToList(), _engine.Namespaces);
                 WriteScript(_scriptManager.Code);
-                _scriptManager.Compile(_engine.Assemblies);
+                _scriptManager.Compile(AppDomain.CurrentDomain.GetAssemblies());
                 _engine.DynamicAssemblies.Add(_scriptManager.RawAssembly);
                 _scriptManager.Evaluate(_engine);
                 stopwatch.Stop();

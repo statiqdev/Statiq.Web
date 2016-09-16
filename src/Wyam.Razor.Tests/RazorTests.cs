@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NSubstitute;
 using NUnit.Framework;
@@ -326,7 +327,6 @@ namespace Wyam.Razor.Tests
             private IExecutionContext GetExecutionContext(Engine engine)
             {
                 IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.Assemblies.Returns(engine.Assemblies);
                 context.Namespaces.Returns(engine.Namespaces);
                 IReadOnlyFileSystem fileSystem = GetFileSystem();
                 context.FileSystem.Returns(fileSystem);
@@ -353,6 +353,7 @@ namespace Wyam.Razor.Tests
                     return fileProvider.GetFile(path);
                 });
                 fileSystem.GetInputDirectory(Arg.Any<DirectoryPath>()).Returns(x => fileProvider.GetDirectory(x.ArgAt<DirectoryPath>(0)));
+                fileSystem.RootPath.Returns(new DirectoryPath("/"));
                 return fileSystem;
             }
 

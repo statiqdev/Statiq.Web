@@ -31,7 +31,7 @@ namespace Wyam.Razor
             }
 
             // Add all references from the execution context
-            foreach (Assembly assembly in _executionContext.Assemblies
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location)))
             {
                 feature.MetadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));

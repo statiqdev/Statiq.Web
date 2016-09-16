@@ -44,12 +44,7 @@ namespace Wyam.Common.Execution
         /// Gets the documents.
         /// </summary>
         IDocumentCollection Documents { get; }
-
-        /// <summary>
-        /// Gets the assemblies that should be referenced by modules that support dynamic compilation.
-        /// </summary>
-        IAssemblyCollection Assemblies { get; }
-
+        
         /// <summary>
         /// Gets the namespaces that should be brought in scope by modules that support dynamic compilation.
         /// </summary>
