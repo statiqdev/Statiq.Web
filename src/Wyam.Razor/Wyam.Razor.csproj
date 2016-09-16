@@ -346,8 +346,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasePageTypeProvider.cs" />
     <Compile Include="EmptyChangeToken.cs" />
     <Compile Include="EmptyDisposable.cs" />
+    <Compile Include="IBasePageTypeProvider.cs" />
     <Compile Include="MetadataReferenceFeatureProvider.cs" />
     <Compile Include="ViewDataKeys.cs" />
     <Compile Include="SilentDiagnosticSource.cs" />

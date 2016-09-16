@@ -39,10 +39,6 @@ using Microsoft.Extensions.Primitives;
 using Wyam.Razor.FileProviders;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
-// TODO: How to handle caching - should we continue to let Razor handle it, or stick it in our own cache - what about in between runs?
-// TODO: Test a document without any metadata (no relative path)
-// TODO: Test a document without any metadata but with a view start and layout from the file system root
-
 namespace Wyam.Razor
 {
     /// <summary>
@@ -53,15 +49,7 @@ namespace Wyam.Razor
     /// Razor is the templating language used by ASP.NET MVC. This module can parse and compile Razor 
     /// templates and then render them to HTML. While a bit 
     /// outdated, <a href="http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/">this guide</a> 
-    /// is a good quick reference for the Razor language syntax.
-    /// </para>
-    /// <para>
-    /// This module is based on the Razor code in the forthcoming ASP.NET 5 (vNext). 
-    /// It was written from the ground-up and doesn't use an intermediate library like RazorEngine 
-    /// (which is a great library, implementing directly just provides more control). Note that for 
-    /// now, TagHelpers are not implemented in Wyam. Their API is still changing and it would have 
-    /// been too difficult to keep up. Support for TagHelpers may be introduced 
-    /// once ASP.NET MVC 5 becomes more stable.
+    /// is a good quick reference for the Razor language syntax. This module uses the Razor engine from ASP.NET Core.
     /// </para>
     /// <para>
     /// Whenever possible, the same conventions as the Razor engine in ASP.NET MVC were used. It's 
@@ -77,22 +65,22 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
-        // TODO: Figure out how to handle these settings (and test!)
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private string _ignorePrefix = "_";
 
         /// <summary>
         /// Parses Razor templates in each input document and outputs documents with rendered HTML content. 
-        /// If <c>basePageType</c> is specified, it will be used as the base type for Razor pages.
+        /// If <c>basePageType</c> is specified, it will be used as the base type for Razor pages. The new base
+        /// type must derive from <see cref="RazorPage"/>.
         /// </summary>
         /// <param name="basePageType">Type of the base Razor page class, or <c>null</c> for the default base class.</param>
         public Razor(Type basePageType = null)
         {
-            //if (basePageType != null && !typeof(BaseRazorPage).IsAssignableFrom(basePageType))
-            //{
-            //    throw new ArgumentException("The Razor base page type must derive from BaseRazorPage.");
-            //}
+            if (basePageType != null && !typeof(RazorPage).IsAssignableFrom(basePageType))
+            {
+                throw new ArgumentException($"The Razor base page type must derive from {nameof(RazorPage)}.");
+            }
             _basePageType = basePageType;
         }
 
@@ -149,11 +137,8 @@ namespace Wyam.Razor
                 .AddSingleton<IHostingEnvironment, HostingEnvironment>()
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IExecutionContext>(context)
-                .AddScoped<IMvcRazorHost, RazorHost>()
-                .Configure<RazorViewEngineOptions>(options =>
-                {
-                    //options.FileProviders.Add(fileSystemFileProvider);
-                });
+                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(RazorPage)))
+                .AddScoped<IMvcRazorHost, RazorHost>();
             IServiceProvider services = serviceCollection.BuildServiceProvider();
             
             // Eliminate input documents that we shouldn't process
@@ -173,12 +158,13 @@ namespace Wyam.Razor
             return validInputs.AsParallel().Select(input =>
             {
                 Trace.Verbose("Compiling Razor for {0}", input.SourceString());
-                string relativePath = GetRelativePath(input);
+                string relativePath = GetRelativePath(input, context);
+                string viewStartLocation = _viewStartPath?.Invoke<FilePath>(input, context)?.FullPath;
                 IView view;
                 using (Stream stream = input.GetStream())
                 {
-                    view = GetViewFromStream(relativePath, stream, viewEngine, pageActivator, htmlEncoder, 
-                        pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
+                    view = GetViewFromStream(relativePath, stream, viewStartLocation, viewEngine, pageActivator,
+                        htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
                 }
 
                 Trace.Verbose("Processing Razor for {0}", input.SourceString());
@@ -218,19 +204,19 @@ namespace Wyam.Razor
         /// Gets the view for an input document (which is different than the view for a layout, partial, or
         /// other indirect view because it's not necessarily on disk or in the file system).
         /// </summary>
-        private IView GetViewFromStream(string relativePath, Stream stream, IRazorViewEngine viewEngine,
+        private IView GetViewFromStream(string relativePath, Stream stream, string viewStartLocation, IRazorViewEngine viewEngine,
             IRazorPageActivator pageActivator, HtmlEncoder htmlEncoder, IRazorPageFactoryProvider pageFactoryProvider,
             IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
         {
-            List<IRazorPage> viewStartPages = new List<IRazorPage>();
-            foreach (string viewStartLocation in ViewHierarchyUtility.GetViewStartLocations(relativePath))
-            {
-                RazorPageFactoryResult factoryResult = pageFactoryProvider.CreateFactory(viewStartLocation);
-                if (factoryResult.Success)
-                {
-                    viewStartPages.Insert(0, factoryResult.RazorPageFactory());
-                }
-            }
+            IEnumerable<string> viewStartLocations = viewStartLocation != null
+                ? new [] { viewStartLocation } 
+                : ViewHierarchyUtility.GetViewStartLocations(relativePath);
+            List<IRazorPage> viewStartPages = viewStartLocations
+                .Select(pageFactoryProvider.CreateFactory)
+                .Where(x => x.Success)
+                .Select(x => x.RazorPageFactory())
+                .Reverse()
+                .ToList();
             IRazorPage page = GetPageFromStream(relativePath, stream, rootFileProvider, razorCompilationService);
             return new RazorView(viewEngine, pageActivator, viewStartPages, page, htmlEncoder);
         }
@@ -264,13 +250,19 @@ namespace Wyam.Razor
             return compilerCacheResult.PageFactory();
         }
 
-        private string GetRelativePath(IDocument document)
+        private string GetRelativePath(IDocument document, IExecutionContext context)
         {
-            // TODO: Should I be using RelativeFilePath here or is there a better way to get the document location?
             string relativePath = "/";
             if (document.ContainsKey(Keys.RelativeFilePath))
             {
+                // Use the pre-calculated relative file path if available
                 relativePath += document.String(Keys.RelativeFilePath);
+            }
+            else if (document.Source != null)
+            {
+                // If not, attempt to calculate a relative path for the document using it's source
+                DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(document.Source);
+                relativePath += inputPath?.GetRelativePath(document.Source) ?? document.Source.FileName;
             }
             return relativePath;
         }

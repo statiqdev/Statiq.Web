@@ -58,11 +58,6 @@
         In the declarations section of your configuration file, add a static class (the name doesn't matter, but convention suggests you call it <c>HtmlHelperExtensions</c> or <c>HtmlExtensions</c>). Then 
         add static extension methods for <c>HtmlHelper</c>. For example:
         <code>
-// Setup code
-// ...
-===
-// Declaration code
-
 public static class HtmlHelperExtensions
 {
   public static string HelloWorld(this HtmlHelper helper)
@@ -70,9 +65,9 @@ public static class HtmlHelperExtensions
     return "Hello World!";
   }
 }
----
+
 // Configuration code
-// ...
+// Set up your pipelines here
         </code>
         Then you can use it from your Razor pages by calling <c>@Html.HelloWorld()</c>.
       </para>
@@ -80,22 +75,15 @@ public static class HtmlHelperExtensions
       <h2>Base Page</h2>
       <para>
         You can also specify a different base page for your Razor views. This lets you do things like define additional properties or behavior for every page. In the declarations section of your configuration file, 
-        add an abstract class that derives from <c>BaseRazorPage</c>. Then page the <c>Type</c> of your new base class to the <c>Razor</c> module.
+        add an abstract class that derives from <c>RazorPage</c>. Then page the <c>Type</c> of your new base class to the <c>Razor</c> module.
         <code>
-// Setup code
-// ...
-===
-// Declaration code
-
-public abstract class MyRazorPage : BaseRazorPage
+public abstract class MyRazorPage : RazorPage
 {
   public string HelloWorld
   {
     get { return "Hello World"; }
   }
 }
----
-// Configuration code
 
 Pipelines.Add("Content",
   ReadFiles("*.cshtml"),
