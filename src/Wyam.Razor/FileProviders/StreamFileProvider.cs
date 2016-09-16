@@ -12,29 +12,29 @@ namespace Wyam.Razor.FileProviders
     /// </summary>
     internal class StreamFileProvider : IFileProvider
     {
-        private readonly FileProvider _fileProvider;
+        private readonly IFileProvider _rootFileProvider;
         private readonly Stream _stream;
 
-        public StreamFileProvider(FileProvider fileProvider, Stream stream)
+        public StreamFileProvider(IFileProvider rootFileProvider, Stream stream)
         {
-            _fileProvider = fileProvider;
+            _rootFileProvider = rootFileProvider;
             _stream = stream;
         }
 
         public IFileInfo GetFileInfo(string subpath) => 
-            new DocumentFileInfo(_fileProvider.GetFileInfo(subpath), _stream);
+            new StreamFileInfo(_rootFileProvider.GetFileInfo(subpath), _stream);
 
         public IDirectoryContents GetDirectoryContents(string subpath) => 
-            _fileProvider.GetDirectoryContents(subpath);
+            _rootFileProvider.GetDirectoryContents(subpath);
 
         IChangeToken IFileProvider.Watch(string filter) => new EmptyChangeToken();
 
-        private class DocumentFileInfo : IFileInfo
+        private class StreamFileInfo : IFileInfo
         {
             private readonly IFileInfo _info;
             private readonly Stream _stream;
 
-            public DocumentFileInfo(IFileInfo info, Stream stream)
+            public StreamFileInfo(IFileInfo info, Stream stream)
             {
                 _info = info;
                 _stream = stream;
@@ -65,30 +65,20 @@ namespace Wyam.Razor.FileProviders
                 _stream = stream;
             }
 
-            public override void Flush()
-            {
+            public override void Flush() => 
                 _stream.Flush();
-            }
 
-            public override long Seek(long offset, SeekOrigin origin)
-            {
-                return _stream.Seek(offset, origin);
-            }
+            public override long Seek(long offset, SeekOrigin origin) => 
+                _stream.Seek(offset, origin);
 
-            public override void SetLength(long value)
-            {
+            public override void SetLength(long value) =>
                 _stream.SetLength(value);
-            }
 
-            public override int Read(byte[] buffer, int offset, int count)
-            {
-                return _stream.Read(buffer, offset, count);
-            }
+            public override int Read(byte[] buffer, int offset, int count) => 
+                _stream.Read(buffer, offset, count);
 
-            public override void Write(byte[] buffer, int offset, int count)
-            {
+            public override void Write(byte[] buffer, int offset, int count) => 
                 _stream.Write(buffer, offset, count);
-            }
 
             public override bool CanRead => _stream.CanRead;
             public override bool CanSeek => _stream.CanSeek;

@@ -13,11 +13,11 @@ namespace Wyam.Razor.FileProviders
     /// <summary>
     /// Looks up files using the Wyam virtual file system.
     /// </summary>
-    internal class FileProvider : IFileProvider
+    internal class FileSystemFileProvider : IFileProvider
     {
         private readonly IReadOnlyFileSystem _fileSystem;
         
-        public FileProvider(IReadOnlyFileSystem fileSystem)
+        public FileSystemFileProvider(IReadOnlyFileSystem fileSystem)
         {
             if (fileSystem == null)
             {

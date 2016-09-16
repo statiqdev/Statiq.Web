@@ -362,7 +362,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Razor.cs" />
-    <Compile Include="FileProviders\FileProvider.cs" />
+    <Compile Include="FileProviders\FileSystemFileProvider.cs" />
     <Compile Include="ViewContext.cs" />
   </ItemGroup>
   <ItemGroup>
