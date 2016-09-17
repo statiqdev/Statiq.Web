@@ -85,12 +85,13 @@ namespace Wyam.Razor
         }
 
         /// <summary>
-        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module.
+        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module. If the
+        /// provided path is relative, it will be combined with the file system root path to find the view start.
         /// </summary>
         /// <param name="path">The path to the alternate ViewStart file.</param>
         public Razor WithViewStart(FilePath path)
         {
-            _viewStartPath = (doc, ctx) => path;
+            _viewStartPath = (doc, ctx) => path.IsAbsolute ? path : ctx.FileSystem.RootPath.CombineFile(path);
             return this;
         }
 

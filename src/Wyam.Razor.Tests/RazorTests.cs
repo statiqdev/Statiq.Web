@@ -189,7 +189,47 @@ namespace Wyam.Razor.Tests
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
-                Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStart.cshtml");
+                Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStart.cshtml");
+
+                // When
+                razor.Execute(new[] { document }, context).ToList();
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT3
+<p>This is a test</p>");
+            }
+
+            [Test]
+            public void AlternateViewStartPathWithRelativeLayout()
+            {
+                // Given
+                Engine engine = new Engine();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+@"<p>This is a test</p>");
+                Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStartRelativeLayout.cshtml");
+
+                // When
+                razor.Execute(new[] { document }, context).ToList();
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT3
+<p>This is a test</p>");
+            }
+
+            [Test]
+            public void AlternateRelativeViewStartPathWithRelativeLayout()
+            {
+                // Given
+                Engine engine = new Engine();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+@"<p>This is a test</p>");
+                Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
                 // When
                 razor.Execute(new[] { document }, context).ToList();
@@ -383,7 +423,11 @@ namespace Wyam.Razor.Tests
 @RenderBody()");
                 fileProvider.AddFile("/AlternateViewStart/_ViewStart.cshtml",
 @"@{
-	Layout = @""AlternateViewStart\_Layout.cshtml"";
+	Layout = @""/AlternateViewStart/_Layout.cshtml"";
+}");
+                fileProvider.AddFile("/AlternateViewStart/_ViewStartRelativeLayout.cshtml",
+@"@{
+	Layout = @""_Layout.cshtml"";
 }");
                 fileProvider.AddFile("/AlternateViewStart/_Layout.cshtml",
 @"LAYOUT3
