@@ -92,7 +92,7 @@ namespace Wyam.Razor
         /// <param name="path">The path to the alternate ViewStart file.</param>
         public Razor WithViewStart(FilePath path)
         {
-            _viewStartPath = (doc, ctx) => path.IsAbsolute ? path : ctx.FileSystem.RootPath.CombineFile(path);
+            _viewStartPath = (doc, ctx) => path.IsAbsolute ? path : ctx.FileSystem.GetInputFile(path).Path;
             return this;
         }
 
@@ -162,7 +162,8 @@ namespace Wyam.Razor
             {
                 Trace.Verbose("Compiling Razor for {0}", input.SourceString());
                 string relativePath = GetRelativePath(input, context);
-                string viewStartLocation = _viewStartPath?.Invoke<FilePath>(input, context)?.FullPath;
+                FilePath viewStartLocationPath = _viewStartPath?.Invoke<FilePath>(input, context);
+                string viewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null;
                 IView view;
                 using (Stream stream = input.GetStream())
                 {
@@ -255,24 +256,22 @@ namespace Wyam.Razor
 
         private string GetRelativePath(IDocument document, IExecutionContext context)
         {
-            string relativePath = "/";
-            if (document.ContainsKey(Keys.RelativeFilePath))
+            // Use the pre-calculated relative file path if available
+            FilePath relativePath = document.FilePath(Keys.RelativeFilePath);
+            return relativePath != null ? $"/{relativePath.FullPath}" : GetRelativePath(document.Source, context);
+        }
+
+        private string GetRelativePath(FilePath path, IExecutionContext context)
+        {
+            // Calculate a relative path from the input path(s) (or root) to the provided path
+            if (path != null)
             {
-                // Use the pre-calculated relative file path if available
-                relativePath += document.String(Keys.RelativeFilePath);
+                DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(path) ?? new DirectoryPath("/");
+                return $"/{inputPath.GetRelativePath(path).FullPath}";
             }
-            else if (document.Source != null)
-            {
-                // If not, attempt to calculate a relative path for the document using it's source
-                DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(document.Source);
-                relativePath += inputPath?.GetRelativePath(document.Source) ?? document.Source.FileName;
-            }
-            else
-            {
-                // If there's no relative path and no source, give this document a placeholder name
-                relativePath += "document.cshtml";
-            }
-            return relativePath;
+
+            // If there's no path, give this document a placeholder name
+            return $"/{Path.GetRandomFileName()}.cshtml";
         }
     }
 }
