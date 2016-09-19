@@ -161,6 +161,26 @@ namespace Wyam.Razor.Tests
             }
 
             [Test]
+            public void RenderModuleDefinedLayoutFile()
+            {
+                // Given
+                Engine engine = new Engine();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument(@"Layout/Test.cshtml",
+@"<p>This is a test</p>");
+                Razor razor = new Razor().WithLayout("_Layout.cshtml");
+
+                // When
+                razor.Execute(new[] { document }, context).ToList();
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document,
+@"LAYOUT
+<p>This is a test</p>");
+            }
+
+            [Test]
             public void LoadViewStartAndLayoutFile()
             {
                 // Given

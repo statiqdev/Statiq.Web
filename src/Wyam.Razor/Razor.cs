@@ -68,6 +68,7 @@ namespace Wyam.Razor
     {
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
+        private DocumentConfig _layoutPath;
         private string _ignorePrefix = "_";
 
         /// <summary>
@@ -86,13 +87,12 @@ namespace Wyam.Razor
         }
 
         /// <summary>
-        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module. If the
-        /// provided path is relative, it will be combined with the file system root path to find the view start.
+        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module.
         /// </summary>
         /// <param name="path">The path to the alternate ViewStart file.</param>
         public Razor WithViewStart(FilePath path)
         {
-            _viewStartPath = (doc, ctx) => path.IsAbsolute ? path : ctx.FileSystem.GetInputFile(path).Path;
+            _viewStartPath = (doc, ctx) => path;
             return this;
         }
 
@@ -107,6 +107,27 @@ namespace Wyam.Razor
         public Razor WithViewStart(DocumentConfig path)
         {
             _viewStartPath = path;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a layout file to use for all Razor pages processed by this module.
+        /// </summary>
+        /// <param name="path">The path to the layout file.</param>
+        public Razor WithLayout(FilePath path)
+        {
+            _layoutPath = (doc, ctx) => path;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a layout file to use for all Razor pages processed by this module. This 
+        /// lets you specify a different layout file for each document.
+        /// </summary>
+        /// <param name="path">A delegate that should return the layout path as a <c>FilePath</c>.</param>
+        public Razor WithLayout(DocumentConfig path)
+        {
+            _layoutPath = path;
             return this;
         }
 
@@ -164,10 +185,11 @@ namespace Wyam.Razor
                 string relativePath = GetRelativePath(input, context);
                 FilePath viewStartLocationPath = _viewStartPath?.Invoke<FilePath>(input, context);
                 string viewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null;
+                string layoutLocation = _layoutPath?.Invoke<FilePath>(input, context)?.FullPath;
                 IView view;
                 using (Stream stream = input.GetStream())
                 {
-                    view = GetViewFromStream(relativePath, stream, viewStartLocation, viewEngine, pageActivator,
+                    view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
                         htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
                 }
 
@@ -208,9 +230,9 @@ namespace Wyam.Razor
         /// Gets the view for an input document (which is different than the view for a layout, partial, or
         /// other indirect view because it's not necessarily on disk or in the file system).
         /// </summary>
-        private IView GetViewFromStream(string relativePath, Stream stream, string viewStartLocation, IRazorViewEngine viewEngine,
-            IRazorPageActivator pageActivator, HtmlEncoder htmlEncoder, IRazorPageFactoryProvider pageFactoryProvider,
-            IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
+        private IView GetViewFromStream(string relativePath, Stream stream, string viewStartLocation, string layoutLocation,
+            IRazorViewEngine viewEngine, IRazorPageActivator pageActivator, HtmlEncoder htmlEncoder,
+            IRazorPageFactoryProvider pageFactoryProvider, IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
         {
             IEnumerable<string> viewStartLocations = viewStartLocation != null
                 ? new [] { viewStartLocation } 
@@ -222,6 +244,10 @@ namespace Wyam.Razor
                 .Reverse()
                 .ToList();
             IRazorPage page = GetPageFromStream(relativePath, stream, rootFileProvider, razorCompilationService);
+            if (layoutLocation != null)
+            {
+                page.Layout = layoutLocation;
+            }
             return new RazorView(viewEngine, pageActivator, viewStartPages, page, htmlEncoder);
         }
 
@@ -267,6 +293,11 @@ namespace Wyam.Razor
             if (path != null)
             {
                 DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(path) ?? new DirectoryPath("/");
+                if (path.IsRelative)
+                {
+                    // If the path is relative, combine it with the input path to make it absolute
+                    path = inputPath.CombineFile(path);
+                }
                 return $"/{inputPath.GetRelativePath(path).FullPath}";
             }
 
