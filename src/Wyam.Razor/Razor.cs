@@ -183,7 +183,7 @@ namespace Wyam.Razor
             IRazorPageFactoryProvider pageFactoryProvider = services.GetRequiredService<IRazorPageFactoryProvider>();
             IRazorCompilationService razorCompilationService = services.GetRequiredService<IRazorCompilationService>();
             IHostingEnvironment hostingEnviornment = services.GetRequiredService<IHostingEnvironment>();
-            return validInputs/*.AsParallel()*/.Select(input =>
+            return validInputs.AsParallel().Select(input =>
             {
                 Trace.Verbose("Compiling Razor for {0}", input.SourceString());
                 string relativePath = GetRelativePath(input, context);
