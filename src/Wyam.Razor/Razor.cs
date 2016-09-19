@@ -265,6 +265,11 @@ namespace Wyam.Razor
                 DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(document.Source);
                 relativePath += inputPath?.GetRelativePath(document.Source) ?? document.Source.FileName;
             }
+            else
+            {
+                // If there's no relative path and no source, give this document a placeholder name
+                relativePath += "document.cshtml";
+            }
             return relativePath;
         }
     }

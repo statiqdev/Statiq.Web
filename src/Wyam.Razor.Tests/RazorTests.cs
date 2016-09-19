@@ -157,7 +157,6 @@ namespace Wyam.Razor.Tests
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
                 context.Received().GetDocument(document, 
 @"LAYOUT
-
 <p>This is a test</p>");
             }
 
@@ -264,7 +263,6 @@ namespace Wyam.Razor.Tests
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
                 context.Received().GetDocument(document1,
 @"LAYOUT4
-
 <p>This is a test</p>");
             }
 
@@ -315,7 +313,6 @@ namespace Wyam.Razor.Tests
 
 <p>Section Content</p>
 
-
 <p>This is a test</p>");
             }
 
@@ -345,7 +342,6 @@ namespace Wyam.Razor.Tests
 @"LAYOUT5
 
 <p>Section Content</p>
-
 
 <p>This is a test</p>");
             }

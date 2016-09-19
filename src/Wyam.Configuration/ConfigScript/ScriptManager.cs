@@ -173,7 +173,9 @@ namespace Wyam.Configuration.ConfigScript
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
-                referenceAssemblies.Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
+                referenceAssemblies
+                    .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
+                    .Select(x => MetadataReference.CreateFromFile(x.Location)), compilationOptions)
                     .AddReferences(
                         // For some reason, Roslyn really wants these added by filename
                         // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
