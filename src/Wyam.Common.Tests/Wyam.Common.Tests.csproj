@@ -49,12 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Documents\ToLookupExtensionsTests.cs" />
-    <Compile Include="IO\DirectoryPathTests.cs" />
-    <Compile Include="IO\FilePathTests.cs" />
-    <Compile Include="IO\NormalizedPathTests.cs" />
-    <Compile Include="IO\PathCollectionTests.cs" />
-    <Compile Include="IO\RelativePathResolverTests.cs" />
+    <Compile Include="Documents\ToLookupExtensionsFixture.cs" />
+    <Compile Include="IO\DirectoryPathFixture.cs" />
+    <Compile Include="IO\FilePathFixture.cs" />
+    <Compile Include="IO\NormalizedPathFixture.cs" />
+    <Compile Include="IO\PathCollectionFixture.cs" />
+    <Compile Include="IO\RelativePathResolverFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>

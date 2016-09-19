@@ -134,10 +134,10 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="ConfigScript\ScriptManagerTests.cs" />
-    <Compile Include="ConfigScript\DirectiveParserTests.cs" />
-    <Compile Include="ConfiguratorTests.cs" />
-    <Compile Include="Preprocessing\ArgumentSplitterTests.cs" />
+    <Compile Include="ConfigScript\ScriptManagerFixture.cs" />
+    <Compile Include="ConfigScript\DirectiveParserFixture.cs" />
+    <Compile Include="ConfiguratorFixture.cs" />
+    <Compile Include="Preprocessing\ArgumentSplitterFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

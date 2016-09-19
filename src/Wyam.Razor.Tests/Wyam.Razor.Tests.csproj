@@ -341,7 +341,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="RazorTests.cs" />
+    <Compile Include="RazorFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
