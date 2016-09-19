@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
@@ -139,6 +140,7 @@ namespace Wyam.Razor
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IExecutionContext>(context)
                 .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(RazorPage)))
+                .AddScoped<IViewBufferScope, SafeMemoryPoolViewBufferScope>()
                 .AddScoped<IMvcRazorHost, RazorHost>();
             IServiceProvider services = serviceCollection.BuildServiceProvider();
             

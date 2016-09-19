@@ -351,6 +351,7 @@
     <Compile Include="EmptyDisposable.cs" />
     <Compile Include="IBasePageTypeProvider.cs" />
     <Compile Include="MetadataReferenceFeatureProvider.cs" />
+    <Compile Include="SafeMemoryPoolViewBufferScope.cs" />
     <Compile Include="ViewDataKeys.cs" />
     <Compile Include="SilentDiagnosticSource.cs" />
     <Compile Include="HostingEnvironment.cs" />
