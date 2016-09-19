@@ -47,7 +47,7 @@ namespace Wyam.Razor
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Razor is the templating language used by ASP.NET MVC. This module can parse and compile Razor 
+    /// Razor is the template language used by ASP.NET MVC. This module can parse and compile Razor 
     /// templates and then render them to HTML. While a bit 
     /// outdated, <a href="http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/">this guide</a> 
     /// is a good quick reference for the Razor language syntax. This module uses the Razor engine from ASP.NET Core.
@@ -154,6 +154,10 @@ namespace Wyam.Razor
                 .AddMvcCore()
                 .AddRazorViewEngine();
             builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(context));
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new ViewLocationExpander());
+            });
             serviceCollection
                 .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
                 .AddSingleton<DiagnosticSource, SilentDiagnosticSource>()
@@ -179,7 +183,7 @@ namespace Wyam.Razor
             IRazorPageFactoryProvider pageFactoryProvider = services.GetRequiredService<IRazorPageFactoryProvider>();
             IRazorCompilationService razorCompilationService = services.GetRequiredService<IRazorCompilationService>();
             IHostingEnvironment hostingEnviornment = services.GetRequiredService<IHostingEnvironment>();
-            return validInputs.AsParallel().Select(input =>
+            return validInputs/*.AsParallel()*/.Select(input =>
             {
                 Trace.Verbose("Compiling Razor for {0}", input.SourceString());
                 string relativePath = GetRelativePath(input, context);

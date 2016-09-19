@@ -367,6 +367,7 @@
     <Compile Include="Razor.cs" />
     <Compile Include="FileProviders\FileSystemFileProvider.cs" />
     <Compile Include="ViewContext.cs" />
+    <Compile Include="ViewLocationExpander.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
