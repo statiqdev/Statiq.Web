@@ -25,5 +25,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension TextGeneration = new KnownExtension("Wyam.TextGeneration");
 		public static readonly KnownExtension Xmp = new KnownExtension("Wyam.Xmp");
 		public static readonly KnownExtension Yaml = new KnownExtension("Wyam.Yaml");
+		public static readonly KnownExtension CleanBlogTheme = new KnownExtension("Wyam.Blog.CleanBlog");
+		public static readonly KnownExtension PhantomTheme = new KnownExtension("Wyam.Blog.Phantom");
     }
 }
