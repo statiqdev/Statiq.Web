@@ -387,7 +387,7 @@ Task("Publish-Release")
         {
             Credentials = new Credentials(githubToken)
         };
-        var release = github.Release.Create("Wyamio", "Wyam", new NewRelease("v" + semVersion) 
+        var release = github.Repository.Release.Create("Wyamio", "Wyam", new NewRelease("v" + semVersion) 
         {
             Name = semVersion,
             Body = string.Join(Environment.NewLine, releaseNotes.Notes) + Environment.NewLine + Environment.NewLine
@@ -399,7 +399,7 @@ Task("Publish-Release")
         var zipPath = buildResultDir + File(zipFile);
         using (var zipStream = System.IO.File.OpenRead(zipPath.Path.FullPath))
         {
-            var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
+            var releaseAsset = github.Repository.Release.UploadAsset(release, new ReleaseAssetUpload(zipFile, "application/zip", zipStream, null)).Result;
         }
         
         var windowsFiles = GetFiles(windowsDir.Path.FullPath + "/*");
@@ -408,7 +408,7 @@ Task("Publish-Release")
             using (var contentStream = System.IO.File.OpenRead(windowsFile.FullPath))
             {
                 var fileName = windowsFile.GetFilename().ToString();
-                var releaseAsset = github.Release.UploadAsset(release, new ReleaseAssetUpload(fileName, "application/binary", contentStream, null)).Result;
+                var releaseAsset = github.Repository.Release.UploadAsset(release, new ReleaseAssetUpload(fileName, "application/binary", contentStream, null)).Result;
             }
         }
     });

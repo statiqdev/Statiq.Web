@@ -1,3 +1,17 @@
+# 0.14.0
+
+- Note: this release introduces a new Razor engine and host based on ASP.NET Core MVC. It should be similar to the old one, but there might be some breaks, especially if using layouts and partial pages. Most of the differences have to do with stricter path handling by ASP.NET Core MVC than the previous implementation. If you find Razor pages aren't building correctly, try tweaking your layout and partial paths. 
+- [Refactoring] When specifying official Wyam extension packages the current Wyam version will be used if no version is specified, forcing package download if the matching version isn't already available (#338)
+- [Refactoring] Tweaked the naming scheme of test classes and methods (#329)
+- [Feature] Adds `.WithLayout()` fluent methods to the `Razor` module
+- **[Breaking Change]** [Refactoring] Totally rewrote the `Razor` module on top of ASP.NET Core MVC (#141)
+- [Fix] Fixed some spelling mistakes (#337, thanks @hyrmn)
+- [Feature] Added an example showing integration in ASP.NET web applications (with a fix in #335, thanks @jamiepollock)
+- [Refactoring] Moved to a higher-performance `ConcurrentHashSet` implementation (#325)
+- [Fix] Fixed excerpt rendering for posts in blog themes
+- [Fix] Fixes related to using and generating links for HTTPS (#332, #333, thanks @leekelleher)
+- [Fix] Inverted the order of tags in blog themes (#331, thanks @ibebbs)
+
 # 0.13.5
 
 - [Fix] Fixed lifting of using directives in the configuration file
