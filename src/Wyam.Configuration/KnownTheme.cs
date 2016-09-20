@@ -1,36 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
 namespace Wyam.Configuration
 {
     /// <summary>
     /// Lookup data for all known themes.
     /// </summary>
-    public class KnownTheme
+    public partial class KnownTheme : ClassEnum<KnownTheme>
     {
+        // Third-party theme field declarations would go here
+        
+        // Allows overriding a default theme for a recipe (I.e., set the theme to "none")
         public static readonly KnownTheme None = new KnownTheme(null, null, null);
-        public static readonly KnownTheme CleanBlog = new KnownTheme(nameof(KnownRecipe.Blog), null, new [] {"Wyam.Blog.CleanBlog"});
-        public static readonly KnownTheme Phantom = new KnownTheme(nameof(KnownRecipe.Blog), null, new [] {"Wyam.Blog.Phantom"});
-
-        /// <summary>
-        /// The lookup of all known themes, keyed by theme name.
-        /// </summary>
-        public static readonly Dictionary<string, KnownTheme> Lookup
-            = new Dictionary<string, KnownTheme>(StringComparer.OrdinalIgnoreCase)
-            {
-                {nameof(None), None },  // This allows overriding a default theme by specifying the "none" theme
-                {nameof(CleanBlog), CleanBlog},
-                {nameof(Phantom), Phantom}
-            };
 
         /// <summary>
         /// Gets the recipe that this theme supports. A null value indicates the theme
         /// is not recipe specific.
         /// </summary>
-        /// <value>
-        /// The recipe.
-        /// </value>
         public string Recipe { get; }
 
         /// <summary>
@@ -38,9 +21,6 @@ namespace Wyam.Configuration
         /// the content folder will be automatically included and this can be null. Useful
         /// if the theme exists somewhere else like a GitHub repository.
         /// </summary>
-        /// <value>
-        /// The input path.
-        /// </value>
         public string InputPath { get; }
 
         /// <summary>
@@ -48,9 +28,6 @@ namespace Wyam.Configuration
         /// If the theme uses a non-core file provider for the provided path, the NuGet package(s)
         /// containing the provider(s) should be in this value.
         /// </summary>
-        /// <value>
-        /// The packages.
-        /// </value>
         public string[] PackageIds { get; }
 
         private KnownTheme(string recipe, string inputPath, string[] packageIds)

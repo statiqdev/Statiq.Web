@@ -140,7 +140,7 @@ namespace Wyam.Configuration
             if (Recipe == null && !string.IsNullOrEmpty(RecipeName))
             {
                 KnownRecipe knownRecipe;
-                if (KnownRecipe.Lookup.TryGetValue(RecipeName, out knownRecipe))
+                if (KnownRecipe.Values.TryGetValue(RecipeName, out knownRecipe))
                 {
                     Trace.Verbose($"Recipe {RecipeName} was in the lookup of known recipes");
 
@@ -178,7 +178,7 @@ namespace Wyam.Configuration
             if (!string.IsNullOrEmpty(Theme))
             {
                 KnownTheme knownTheme;
-                if(KnownTheme.Lookup.TryGetValue(Theme, out knownTheme))
+                if(KnownTheme.Values.TryGetValue(Theme, out knownTheme))
                 {
                     Trace.Verbose($"Theme {Theme} was in the lookup of known themes");
                     inputPath = knownTheme.InputPath;
