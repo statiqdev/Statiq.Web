@@ -11,6 +11,7 @@ namespace Wyam.Configuration
     {
         public static readonly KnownTheme None = new KnownTheme(null, null, null);
         public static readonly KnownTheme CleanBlog = new KnownTheme(nameof(KnownRecipe.Blog), null, new [] {"Wyam.Blog.CleanBlog"});
+        public static readonly KnownTheme Phantom = new KnownTheme(nameof(KnownRecipe.Blog), null, new [] {"Wyam.Blog.Phantom"});
 
         /// <summary>
         /// The lookup of all known themes, keyed by theme name.
@@ -19,7 +20,8 @@ namespace Wyam.Configuration
             = new Dictionary<string, KnownTheme>(StringComparer.OrdinalIgnoreCase)
             {
                 {nameof(None), None },  // This allows overriding a default theme by specifying the "none" theme
-                {nameof(CleanBlog), CleanBlog}
+                {nameof(CleanBlog), CleanBlog},
+                {nameof(Phantom), Phantom}
             };
 
         /// <summary>
@@ -33,7 +35,8 @@ namespace Wyam.Configuration
 
         /// <summary>
         /// Path to insert into input paths. If the theme is just a NuGet content package,
-        /// the content folder will be automatically included and this can be null.
+        /// the content folder will be automatically included and this can be null. Useful
+        /// if the theme exists somewhere else like a GitHub repository.
         /// </summary>
         /// <value>
         /// The input path.
