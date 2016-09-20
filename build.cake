@@ -365,7 +365,8 @@ Task("Publish-Packages")
         {
             NuGetPush(nupkg, new NuGetPushSettings 
             {
-                ApiKey = apiKey
+                ApiKey = apiKey,
+                Source = "https://nuget.org/api/v2/package"
             });
         }
     });
