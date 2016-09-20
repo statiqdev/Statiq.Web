@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,9 +11,10 @@ using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Protocol.Core.Types;
 using Wyam.Common.IO;
-using Wyam.Common.Tracing;
 using Wyam.Configuration.Assemblies;
+using Wyam.Core.Execution;
 using IFileSystem = Wyam.Common.IO.IFileSystem;
+using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Configuration.NuGet
 {
@@ -71,6 +73,15 @@ namespace Wyam.Configuration.NuGet
             {
                 throw new ArgumentException($"A package with the ID {packageId} has already been added");
             }
+
+            // If this package is a known Wyam extension and no version is specified, set to the current version
+            if (KnownExtension.Values.Values.Any(x => x.PackageId == packageId) && versionRange == null)
+            {
+                versionRange = $"[{FileVersionInfo.GetVersionInfo(typeof(Engine).Assembly.Location).ProductVersion}]";
+                allowPrereleaseVersions = true;
+                Trace.Verbose($"Added known extension package {packageId} without version, setting version to {versionRange}");
+            }
+
             _packages.Add(packageId, new Package(_currentFramework, packageId,
                 packageSources?.Select(_sourceRepositories.CreateRepository).ToList(),
                 versionRange, getLatest, allowPrereleaseVersions, allowUnlisted, exclusive));
