@@ -15,12 +15,12 @@ namespace Wyam.Core.Modules.Control
     /// <remarks>
     /// All child modules will be executed as if they were inline. This enables you to specify
     /// a sequence of modules outside of a pipeline and then reuse that sequence of modules
-    /// in multiple pipelines. Note that this module is also handly for wrapping a single module
+    /// in multiple pipelines. Note that this module is also handy for wrapping a single module
     /// that has a complex configuration if you expect to use it in multiple places.
     /// </remarks>
     /// <example>
     /// <code>
-    /// Modules common = Modules(ModuleA(), ModuleB(), ModuleC());
+    /// ModuleCollection common = ModuleCollection(ModuleA(), ModuleB(), ModuleC());
     /// 
     /// Piplines.Add("A",
     ///     ModuleX(),
@@ -42,7 +42,7 @@ namespace Wyam.Core.Modules.Control
         private readonly IModule[] _modules;
 
         /// <summary>
-        /// Creates the Modules module with the specified child modules.
+        /// Creates a module collection with the specified child modules.
         /// </summary>
         /// <param name="modules">The child modules.</param>
         public ModuleCollection(params IModule[] modules)

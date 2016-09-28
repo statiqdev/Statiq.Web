@@ -12,46 +12,57 @@ namespace Wyam.Common.Meta
     public static class Keys
     {
         // ReadFile/WriteFiles/CopyFiles
+
         /// <summary>
-        /// The absulute Path to the folder of the original file.
+        /// The absolute Path to the folder of the original file.
         /// </summary>
         public const string SourceFileRoot = nameof(SourceFileRoot);
+
         /// <summary>
-        /// The name of the orignal file without extension.
+        /// The name of the original file without extension.
         /// </summary>
         public const string SourceFileBase = nameof(SourceFileBase);
+
         /// <summary>
         /// The extension of the original file (including the .).
         /// </summary>
         public const string SourceFileExt = nameof(SourceFileExt);
+
         /// <summary>
-        /// The file name of the original file with extenion.
+        /// The file name of the original file with extension.
         /// </summary>
         public const string SourceFileName = nameof(SourceFileName);
+
         /// <summary>
-        /// The absulute Path to the folder of the original file.
+        /// The absolute Path to the folder of the original file.
         /// </summary>
         public const string SourceFileDir = nameof(SourceFileDir);
+
         /// <summary>
         /// The absolute path to the original file.
         /// </summary>
         public const string SourceFilePath = nameof(SourceFilePath);
+
         /// <summary>
         /// The absolute path to the original file without the file extension.
         /// </summary>
         public const string SourceFilePathBase = nameof(SourceFilePathBase);
+
         /// <summary>
         /// The path to the original file relative to the input folder.
         /// </summary>
         public const string RelativeFilePath = nameof(RelativeFilePath);
+
         /// <summary>
         /// The path to the original file relative to the input folder without extension.
         /// </summary>
         public const string RelativeFilePathBase = nameof(RelativeFilePathBase);
+
         /// <summary>
         /// The path to the original files folder relative to the input folder.
         /// </summary>
         public const string RelativeFileDir = nameof(RelativeFileDir);
+
         public const string DestinationFileBase = nameof(DestinationFileBase);
         public const string DestinationFileExt = nameof(DestinationFileExt);
         public const string DestinationFileName = nameof(DestinationFileName);
