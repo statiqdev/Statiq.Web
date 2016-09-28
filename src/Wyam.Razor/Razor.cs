@@ -37,7 +37,6 @@ using Trace = Wyam.Common.Tracing.Trace;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
-using Wyam.Razor.FileProviders;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
 namespace Wyam.Razor
@@ -176,6 +175,7 @@ namespace Wyam.Razor
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
 
+            // TODO: Create scopes for each page and use those to get services - can also remove SafeMemoryPool... when we do
             // Compile and evaluate the pages in parallel
             IRazorViewEngine viewEngine = services.GetRequiredService<IRazorViewEngine>();
             IRazorPageActivator pageActivator = services.GetRequiredService<IRazorPageActivator>();
@@ -270,8 +270,7 @@ namespace Wyam.Razor
             }
 
             // Get the file info by combining the stream content with info found at the document's original location (if any)
-            IFileProvider fileProvider = new StreamFileProvider(rootFileProvider, stream);
-            IFileInfo fileInfo = fileProvider.GetFileInfo(relativePath);
+            IFileInfo fileInfo = new StreamFileInfo(rootFileProvider.GetFileInfo(relativePath), stream);
             RelativeFileInfo relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
 
             // Create the compilation

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Wyam.Common.Execution;
-using Wyam.Razor.FileProviders;
 
 namespace Wyam.Razor
 {

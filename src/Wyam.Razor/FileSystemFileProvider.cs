@@ -8,7 +8,7 @@ using Microsoft.Extensions.Primitives;
 using Wyam.Common.IO;
 using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
-namespace Wyam.Razor.FileProviders
+namespace Wyam.Razor
 {
     /// <summary>
     /// Looks up files using the Wyam virtual file system.

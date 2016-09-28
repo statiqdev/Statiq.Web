@@ -359,13 +359,13 @@
     <Compile Include="TraceLoggerFactory.cs" />
     <Compile Include="RazorHost.cs" />
     <Compile Include="RazorPage.cs" />
-    <Compile Include="FileProviders\StreamFileProvider.cs" />
+    <Compile Include="StreamFileInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Razor.cs" />
-    <Compile Include="FileProviders\FileSystemFileProvider.cs" />
+    <Compile Include="FileSystemFileProvider.cs" />
     <Compile Include="ViewContext.cs" />
     <Compile Include="ViewLocationExpander.cs" />
   </ItemGroup>
