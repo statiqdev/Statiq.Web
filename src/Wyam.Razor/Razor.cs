@@ -164,7 +164,6 @@ namespace Wyam.Razor
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IExecutionContext>(context)
                 .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(RazorPage)))
-                .AddScoped<IViewBufferScope, SafeMemoryPoolViewBufferScope>()
                 .AddScoped<IMvcRazorHost, RazorHost>();
             IServiceProvider services = serviceCollection.BuildServiceProvider();
             
@@ -174,36 +173,43 @@ namespace Wyam.Razor
                     || !x.ContainsKey(Keys.SourceFileName) 
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
-
-            // TODO: Create scopes for each page and use those to get services - can also remove SafeMemoryPool... when we do
+            
             // Compile and evaluate the pages in parallel
-            IRazorViewEngine viewEngine = services.GetRequiredService<IRazorViewEngine>();
-            IRazorPageActivator pageActivator = services.GetRequiredService<IRazorPageActivator>();
-            HtmlEncoder htmlEncoder = services.GetRequiredService<HtmlEncoder>();
-            IRazorPageFactoryProvider pageFactoryProvider = services.GetRequiredService<IRazorPageFactoryProvider>();
-            IRazorCompilationService razorCompilationService = services.GetRequiredService<IRazorCompilationService>();
-            IHostingEnvironment hostingEnviornment = services.GetRequiredService<IHostingEnvironment>();
+            IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
             return validInputs.AsParallel().Select(input =>
             {
                 Trace.Verbose("Compiling Razor for {0}", input.SourceString());
-                string relativePath = GetRelativePath(input, context);
-                FilePath viewStartLocationPath = _viewStartPath?.Invoke<FilePath>(input, context);
-                string viewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null;
-                string layoutLocation = _layoutPath?.Invoke<FilePath>(input, context)?.FullPath;
-                IView view;
-                using (Stream stream = input.GetStream())
+                using (var scope = scopeFactory.CreateScope())
                 {
-                    view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
-                        htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
-                }
+                    // Get services
+                    IRazorViewEngine viewEngine = services.GetRequiredService<IRazorViewEngine>();
+                    IRazorPageActivator pageActivator = services.GetRequiredService<IRazorPageActivator>();
+                    HtmlEncoder htmlEncoder = services.GetRequiredService<HtmlEncoder>();
+                    IRazorPageFactoryProvider pageFactoryProvider = services.GetRequiredService<IRazorPageFactoryProvider>();
+                    IRazorCompilationService razorCompilationService = services.GetRequiredService<IRazorCompilationService>();
+                    IHostingEnvironment hostingEnviornment = services.GetRequiredService<IHostingEnvironment>();
 
-                Trace.Verbose("Processing Razor for {0}", input.SourceString());
-                using (StringWriter output = new StringWriter())
-                {
-                    Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = 
-                        GetViewContext(services, view, input, context, output);
-                    viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
-                    return context.GetDocument(input, output.ToString());
+                    // Compile the view
+                    string relativePath = GetRelativePath(input, context);
+                    FilePath viewStartLocationPath = _viewStartPath?.Invoke<FilePath>(input, context);
+                    string viewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null;
+                    string layoutLocation = _layoutPath?.Invoke<FilePath>(input, context)?.FullPath;
+                    IView view;
+                    using (Stream stream = input.GetStream())
+                    {
+                        view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
+                            htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
+                    }
+
+                    // Render the view
+                    Trace.Verbose("Processing Razor for {0}", input.SourceString());
+                    using (StringWriter output = new StringWriter())
+                    {
+                        Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = 
+                            GetViewContext(scope.ServiceProvider, view, input, context, output);
+                        viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
+                        return context.GetDocument(input, output.ToString());
+                    }
                 }
             });
         }
