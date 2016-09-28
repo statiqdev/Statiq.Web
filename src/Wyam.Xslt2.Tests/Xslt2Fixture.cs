@@ -15,9 +15,9 @@ namespace Wyam.Xslt2.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class XsltFixture : BaseFixture
+    public class Xslt2Fixture : BaseFixture
     {
-        public class ExecuteTests : XsltFixture
+        public class ExecuteTests : Xslt2Fixture
         {
             [Test]
             public void TestTransform()
@@ -124,10 +124,10 @@ namespace Wyam.Xslt2.Tests
                 MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
                 xsltDocument.GetStream().Returns(xsltStream);
                 context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] { xsltDocument });
-                Xslt2 autoLink = new Xslt2(module);
+                Xslt2 xslt2 = new Xslt2(module);
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received().GetDocument(Arg.Is(document), output);
@@ -216,10 +216,10 @@ namespace Wyam.Xslt2.Tests
             MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
             xsltDocument.GetStream().Returns(xsltStream);
             context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] { xsltDocument });
-            Xslt2 autoLink = new Xslt2(module);
+            Xslt2 xslt2 = new Xslt2(module);
 
             // When
-            autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+            xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
             // Then
             context.Received().GetDocument(Arg.Is(document), output);

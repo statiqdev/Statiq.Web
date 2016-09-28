@@ -15,11 +15,13 @@ using Wyam.Common.Tracing;
 namespace Wyam.Xslt2
 {
     /// <summary>
-    /// Transforms input documents using a supplied XSLT template.
+    /// Transforms input documents using a supplied XSLT 2 template. Unlike the Xslt module,
+    /// this one uses a library to support XSLT 2 and therefore needs to be included as a
+    /// package.
     /// </summary>
     /// <remarks>
-    /// This module uses saxon with default settings. For more information 
-    /// see the <a href="http://www.saxonica.com">saxonica website</a>.
+    /// This module uses Saxon with default settings. For more information 
+    /// see the <a href="http://www.saxonica.com">Saxonica website</a>.
     /// </remarks>
     /// <category>Templates</category>
     public class Xslt2 : IModule
@@ -87,10 +89,14 @@ namespace Wyam.Xslt2
                                 }
                             }
                             else
-                                throw new FileNotFoundException("Couldn't find xslt.", file.ToString());
+                            {
+                                throw new FileNotFoundException("Couldn't find XSLT file", file.ToString());
+                            }
                         }
-                        throw new FileNotFoundException($"{typeof(DocumentConfig).Name} returned null or not an instance of {typeof(FilePath).Name}");
-
+                        else
+                        {
+                            throw new InvalidOperationException("Provided file path was not valid");
+                        }
                     }
                     else if (_xsltGeneration != null)
                     {
