@@ -55,18 +55,10 @@ namespace Wyam.Core.Modules.Contents
             _search = search;
         }
 
-
-        public Replace IsRegex(RegexOptions regexOptions = RegexOptions.None)
-        {
-            _isRegex = true;
-            _regexOptions = regexOptions;
-            return this;
-        }
-
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the results 
-        /// replace all occurrences of the search string in every input document (possibly 
-        /// creating more than one output document for each input document).
+        /// The specified modules are executed against an empty initial document and the resulting
+        /// document content replaces all occurrences of the search string in every input document
+        /// (possibly creating more than one output document for each input document).
         /// </summary>
         /// <param name="search">The string to search for.</param>
         /// <param name="modules">Modules that output the content to replace the search string with.</param>
@@ -76,15 +68,27 @@ namespace Wyam.Core.Modules.Contents
             _search = search;
         }
 
+        /// <summary>
+        /// Indicates that the search string(s) should be treated as a regular expression(s)
+        /// with the specified options.
+        /// </summary>
+        /// <param name="regexOptions">The options to use (if any).</param>
+        public Replace IsRegex(RegexOptions regexOptions = RegexOptions.None)
+        {
+            _isRegex = true;
+            _regexOptions = regexOptions;
+            return this;
+        }
+
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            if (string.IsNullOrEmpty(_search))
-            {
-                return new[] { input };
-            }
             if (content == null)
             {
                 content = string.Empty;
+            }
+            if (string.IsNullOrEmpty(_search))
+            {
+                return new[] { input };
             }
             return new[] {
                 context.GetDocument(input,

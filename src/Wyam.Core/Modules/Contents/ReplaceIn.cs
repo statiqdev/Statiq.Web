@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
@@ -17,6 +18,8 @@ namespace Wyam.Core.Modules.Contents
     public class ReplaceIn : ContentModule
     {
         private readonly string _search;
+        private bool _isRegex;
+        private RegexOptions _regexOptions = RegexOptions.None;
 
         /// <summary>
         /// Replaces all occurrences of the search string in the string value of the 
@@ -60,7 +63,7 @@ namespace Wyam.Core.Modules.Contents
 
         /// <summary>
         /// The specified modules are executed against an empty initial document and all 
-        /// occurrences of the search string in the result(s) are replaced by the content of 
+        /// occurrences of the search string in the resulting document content are replaced by the content of 
         /// each input document (possibly creating more than one output document for each input document).
         /// </summary>
         /// <param name="search">The string to search for.</param>
@@ -70,6 +73,18 @@ namespace Wyam.Core.Modules.Contents
             : base(modules)
         {
             _search = search;
+        }
+
+        /// <summary>
+        /// Indicates that the search string(s) should be treated as a regular expression(s)
+        /// with the specified options.
+        /// </summary>
+        /// <param name="regexOptions">The options to use (if any).</param>
+        public ReplaceIn IsRegex(RegexOptions regexOptions = RegexOptions.None)
+        {
+            _isRegex = true;
+            _regexOptions = regexOptions;
+            return this;
         }
 
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
@@ -82,7 +97,12 @@ namespace Wyam.Core.Modules.Contents
             {
                 return new[] { context.GetDocument(input, content.ToString()) };
             }
-            return new[] { context.GetDocument(input, content.ToString().Replace(_search, input.Content)) };
+            return new[] { context.GetDocument(input, 
+                _isRegex ?
+                    Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
+                    input.Content.Replace(_search, content.ToString())
+                )
+            };
         }
     }
 }
