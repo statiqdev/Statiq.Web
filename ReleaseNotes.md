@@ -1,3 +1,11 @@
+# 0.14.1
+
+- [Feature] `Execute` module now processes documents in parallel with a new option to fall back to sequential processing
+- [Feature] Adds support for executing modules and replacing content to the `Execute` module (this makes it much more powerful)
+- [Feature] Adds `IsRegex()` to `ReplaceIn` module
+- [Feature] New `Xslt2` module that uses Saxon to apply XSLT 2 transforms (#340, thanks @LokiMidgard)
+- [Fix] Add themes to the set of known extensions, ensuring they stay up to date
+
 # 0.14.0
 
 - Note: this release introduces a new Razor engine and host based on ASP.NET Core MVC. It should be similar to the old one, but there might be some breaks, especially if using layouts and partial pages. Most of the differences have to do with stricter path handling by ASP.NET Core MVC than the previous implementation. If you find Razor pages aren't building correctly, try tweaking your layout and partial paths. 
