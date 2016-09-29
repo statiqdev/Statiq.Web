@@ -35,7 +35,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return d;
-                });
+                }, false);
                 engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
@@ -61,7 +61,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.GroupDocuments).Select(x => x.Content).ToList());
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(groupByMany, orderBy, gatherData);
 
                 // When
@@ -91,7 +91,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
@@ -115,13 +115,13 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     int groupMetadata = d.Get<int>("A") % 3;
                     return groupMetadata == 0 ? d : c.GetDocument(d, new MetadataItems { {"GroupMetadata", new[] { groupMetadata, 3 } } });
-                });
+                }, false);
                 GroupByMany groupByMany = new GroupByMany("GroupMetadata", count, meta);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When
@@ -147,7 +147,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(groupByMany, gatherData);
 
                 // When

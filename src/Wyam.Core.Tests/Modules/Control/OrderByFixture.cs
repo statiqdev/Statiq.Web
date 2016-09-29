@@ -34,7 +34,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, concat, orderBy, gatherData);
 
                 // When
@@ -65,7 +65,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, concat, orderBy, gatherData);
 
                 // When
@@ -97,7 +97,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, count2, orderBy, gatherData);
 
                 // When
@@ -129,7 +129,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, count2, orderBy, gatherData);
 
                 // When
@@ -162,7 +162,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, count2, orderBy, gatherData);
 
                 // When
@@ -194,7 +194,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(count, count2, orderBy, gatherData);
 
                 // When

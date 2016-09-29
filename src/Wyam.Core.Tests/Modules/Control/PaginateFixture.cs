@@ -40,7 +40,7 @@ namespace Wyam.Core.Tests.Modules.Control
                     hasNextPage.Add(d.Get<bool>(Keys.HasNextPage));
                     hasPreviousPage.Add(d.Get<bool>(Keys.HasPreviousPage));
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(paginate, gatherData);
 
                 // When
@@ -68,7 +68,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(paginate, gatherData);
 
                 // When
@@ -96,7 +96,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(paginate, gatherData);
 
                 // When

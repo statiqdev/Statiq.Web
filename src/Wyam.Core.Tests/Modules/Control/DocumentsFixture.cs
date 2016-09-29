@@ -40,7 +40,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     content.Add(d.Content);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(documents, gatherData);
 
                 // When
@@ -65,7 +65,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     values.Add(d["Foo"]);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(documents, gatherData);
 
                 // When
@@ -92,7 +92,7 @@ namespace Wyam.Core.Tests.Modules.Control
                     content.Add(d.Content);
                     values.Add(d["Foo"]);
                     return null;
-                });
+                }, false);
                 engine.Pipelines.Add(documents, gatherData);
 
                 // When

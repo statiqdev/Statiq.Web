@@ -100,7 +100,7 @@ namespace Wyam.Core.Modules.Contents
             return new[] { context.GetDocument(input, 
                 _isRegex ?
                     Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
-                    input.Content.Replace(_search, content.ToString())
+                    content.ToString().Replace(_search, input.Content)
                 )
             };
         }

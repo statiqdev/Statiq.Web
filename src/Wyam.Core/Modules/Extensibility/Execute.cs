@@ -22,6 +22,7 @@ namespace Wyam.Core.Modules.Extensibility
     public class Execute : IModule
     {
         private readonly DocumentConfig _executeDocument;
+        private readonly bool _parallel;
         private readonly ContextConfig _executeContext;
 
         /// <summary>
@@ -35,9 +36,12 @@ namespace Wyam.Core.Modules.Extensibility
         /// </summary>
         /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>,
         /// <see cref="IDocument"/>, <see cref="IEnumerable{IModule}"/>, <see cref="IModule"/>, object, or null.</param>
-        public Execute(DocumentConfig execute)
+        /// <param name="parallel">The delegate is usually evaluated and each input document is processed in parallel.
+        /// Setting this to <c>false</c> runs evaluates and processes each document in their original input order.</param>
+        public Execute(DocumentConfig execute, bool parallel = true)
         {
             _executeDocument = execute;
+            _parallel = parallel;
         }
 
         /// <summary>
@@ -60,13 +64,16 @@ namespace Wyam.Core.Modules.Extensibility
         /// The output from this module will be the input documents.
         /// </summary>
         /// <param name="execute">An action to execute on each input document.</param>
-        public Execute(Action<IDocument, IExecutionContext> execute)
+        /// <param name="parallel">The delegate is usually evaluated and each input document is processed in parallel.
+        /// Setting this to <c>false</c> runs evaluates and processes each document in their original input order.</param>
+        public Execute(Action<IDocument, IExecutionContext> execute, bool parallel = true)
         {
             _executeDocument = (doc, ctx) =>
             {
                 execute(doc, ctx);
                 return null;
             };
+            _parallel = parallel;
         }
 
         /// <summary>
@@ -87,17 +94,20 @@ namespace Wyam.Core.Modules.Extensibility
         {
             if (_executeDocument != null)
             {
-                return inputs.AsParallel().SelectMany(input =>
+                Func<IDocument, IEnumerable<IDocument>> selectMany = input =>
                 {
                     object documentResult = _executeDocument(input, context);
                     if (documentResult == null)
                     {
                         return new[] {input};
                     }
-                    return GetDocuments(documentResult) 
-                        ?? ExecuteModules(documentResult, context, new [] {input}) 
-                        ?? ChangeContent(documentResult, context, input);
-                });
+                    return GetDocuments(documentResult)
+                           ?? ExecuteModules(documentResult, context, new[] {input})
+                           ?? ChangeContent(documentResult, context, input);
+                };
+                return _parallel 
+                    ? inputs.AsParallel().SelectMany(selectMany) 
+                    : inputs.SelectMany(selectMany);
             }
 
             object contextResult = _executeContext(context);
