@@ -5,14 +5,18 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Core.Modules.Contents;
 
 namespace Wyam.Core.Modules.Extensibility
 {
     /// <summary>
-    /// Executes custom code for each input document.
+    /// Executes custom code that returns documents, modules, or new content.
     /// </summary>
     /// <remarks>
     /// This module is very useful for customizing pipeline execution without having to write an entire module.
+    /// Returning modules from the delegate is also useful for customizing existing modules based on the
+    /// current set of documents. For example, you can use this module to execute the <see cref="Replace"/> module
+    /// with customized search strings based on the results of other pipelines.
     /// </remarks>
     /// <category>Extensibility</category>
     public class Execute : IModule
@@ -21,22 +25,31 @@ namespace Wyam.Core.Modules.Extensibility
         private readonly ContextConfig _executeContext;
 
         /// <summary>
-        /// Specifies a delegate that should be invoked once for each input document. The delegate
-        /// should return a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>. If null is returned, this
-        /// module will return the input documents. If anything else is returned, an exception will be thrown.
+        /// Specifies a delegate that should be invoked once for each input document. If the delegate
+        /// returns a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>, the document(s) will be the
+        /// output(s) of this module. If the delegate returns a <see cref="IEnumerable{IModule}"/> or
+        /// <see cref="IModule"/>, the module(s) will be executed with each input document as their input
+        /// and the results will be the output of this module. If the delegate returns null, 
+        /// this module will just output the input document. If anything else is returned, the input
+        /// document will be output with the string value of the delegate result as it's content.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>,
+        /// <see cref="IDocument"/>, <see cref="IEnumerable{IModule}"/>, <see cref="IModule"/>, object, or null.</param>
         public Execute(DocumentConfig execute)
         {
             _executeDocument = execute;
         }
 
         /// <summary>
-        /// Specifies a delegate that should be invoked once for all input documents. The delegate
-        /// should return a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>. If null is returned, this
-        /// module will return the input documents. If anything else is returned, an exception will be thrown.
+        /// Specifies a delegate that should be invoked once for all input documents. If the delegate
+        /// returns a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>, the document(s) will be the
+        /// output(s) of this module. If the delegate returns a <see cref="IEnumerable{IModule}"/> or
+        /// <see cref="IModule"/>, the module(s) will be executed with the input documents as their input
+        /// and the results will be the output of this module. If the delegate returns null, 
+        /// this module will just output the input documents. If anything else is returned, an exception will be thrown.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
+        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>,
+        /// <see cref="IDocument"/>, <see cref="IEnumerable{IModule}"/>, <see cref="IModule"/>, or null.</param>
         public Execute(ContextConfig execute)
         {
             _executeContext = execute;
@@ -44,9 +57,9 @@ namespace Wyam.Core.Modules.Extensibility
 
         /// <summary>
         /// Specifies a delegate that should be invoked once for each input document.
-        /// This will return the input documents.
+        /// The output from this module will be the input documents.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
+        /// <param name="execute">An action to execute on each input document.</param>
         public Execute(Action<IDocument, IExecutionContext> execute)
         {
             _executeDocument = (doc, ctx) =>
@@ -58,9 +71,9 @@ namespace Wyam.Core.Modules.Extensibility
 
         /// <summary>
         /// Specifies a delegate that should be invoked once for all input documents.
-        /// This will return the input documents.
+        /// The output from this module will be the input documents.
         /// </summary>
-        /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>.</param>
+        /// <param name="execute">An action to execute.</param>
         public Execute(Action<IExecutionContext> execute)
         {
             _executeContext = ctx =>
@@ -74,17 +87,32 @@ namespace Wyam.Core.Modules.Extensibility
         {
             if (_executeDocument != null)
             {
-                return inputs.SelectMany(input => GetDocuments(_executeDocument(input, context)) ?? new [] { input });
+                return inputs.AsParallel().SelectMany(input =>
+                {
+                    object documentResult = _executeDocument(input, context);
+                    if (documentResult == null)
+                    {
+                        return new[] {input};
+                    }
+                    return GetDocuments(documentResult) 
+                        ?? ExecuteModules(documentResult, context, new [] {input}) 
+                        ?? ChangeContent(documentResult, context, input);
+                });
             }
-            return GetDocuments(_executeContext(context)) ?? inputs;
+
+            object contextResult = _executeContext(context);
+            if (contextResult == null)
+            {
+                return inputs;
+            }
+            return GetDocuments(contextResult)
+                ?? ExecuteModules(contextResult, context, inputs)
+                ?? ThrowInvalidDelegateResult(contextResult);
         }
+
 
         private IEnumerable<IDocument> GetDocuments(object result)
         {
-            if (result == null)
-            {
-                return null;
-            }
             IEnumerable<IDocument> documents = result as IEnumerable<IDocument>;
             if (documents == null)
             {
@@ -94,11 +122,29 @@ namespace Wyam.Core.Modules.Extensibility
                     documents = new[] { document };
                 }
             }
-            if (documents != null)
+            return documents;
+        }
+
+        private IEnumerable<IDocument> ExecuteModules(object results, IExecutionContext context, IEnumerable<IDocument> inputs)
+        {
+            IEnumerable<IModule> modules = results as IEnumerable<IModule>;
+            if (modules == null)
             {
-                return documents;
+                IModule module = results as IModule;
+                if (module != null)
+                {
+                    modules = new[] {module};
+                }
             }
-            throw new Exception("Execute delegate must return IEnumerable<IDocument>, IDocument, or null");
-        } 
+            return modules != null ? context.Execute(modules, inputs) : null;
+        }
+
+        private IEnumerable<IDocument> ChangeContent(object result, IExecutionContext context, IDocument document) => 
+            new[] {context.GetDocument(document, result.ToString())};
+
+        private IEnumerable<IDocument> ThrowInvalidDelegateResult(object result)
+        {
+            throw new Exception($"Execute delegate must return IEnumerable<IDocument>, IDocument, IEnumerable<IModule>, IModule, or null; {result.GetType().Name} is an invalid return type");
+        }
     }
 }
