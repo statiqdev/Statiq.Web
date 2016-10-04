@@ -42,7 +42,7 @@ var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 var version = releaseNotes.Version.ToString();
 var semVersion = version + (isLocal ? "-beta" : string.Concat("-build-", buildNumber));
 
-var buildDir = Directory("./src/Wyam/bin") + Directory(configuration);
+var buildDir = Directory("./src/clients/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build") + Directory(semVersion);
 var nugetRoot = buildResultDir + Directory("nuget");
 var binDir = buildResultDir + Directory("bin");
@@ -73,10 +73,10 @@ Task("Restore-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
     {
-        NuGetRestore("./src/Wyam.sln");
+        NuGetRestore("./Wyam.sln");
         if (isRunningOnWindows)
         {
-            NuGetRestore("./src/Wyam.Windows.sln");
+            NuGetRestore("./Wyam.Windows.sln");
         }
     });
 
@@ -84,7 +84,7 @@ Task("Patch-Assembly-Info")
     .IsDependentOn("Restore-Packages")
     .Does(() =>
     {
-        var file = "./src/SolutionInfo.cs";
+        var file = "./SolutionInfo.cs";
         CreateAssemblyInfo(file, new AssemblyInfoSettings {
             Product = "Wyam",
             Copyright = "Copyright \xa9 Wyam Contributors",
@@ -100,18 +100,18 @@ Task("Build")
     {
         if (isRunningOnWindows)
         {
-            MSBuild("./src/Wyam.sln", new MSBuildSettings()
+            MSBuild("./Wyam.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
                 .SetVerbosity(Verbosity.Minimal)
             );
-            MSBuild("./src/Wyam.Windows.sln", new MSBuildSettings()
+            MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
                 .SetVerbosity(Verbosity.Minimal)
             );
         }
         else
         {
-            XBuild("./src/Wyam.sln", new XBuildSettings()
+            XBuild("./Wyam.sln", new XBuildSettings()
                 .SetConfiguration(configuration)
                 .SetVerbosity(Verbosity.Minimal)
             );
@@ -130,7 +130,7 @@ Task("Run-Unit-Tests")
         {
             settings.Where = "cat != ExcludeFromAppVeyor";
         }
-        NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", settings);
+        NUnit3("./tests/**/bin/" + configuration + "/*.Tests.dll", settings);
     });
 
 Task("Copy-Files")
@@ -155,10 +155,11 @@ Task("Create-Library-Packages")
     .Does(() =>
     {        
         // Get the set of nuspecs to package
-        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/Wyam.*/*.nuspec"));
+        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/*.nuspec"));
+
+        // The Wyam.All and Wyam.Windows are packaged specially
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
-        nuspecs.AddRange(GetFiles("./src/Cake.Wyam/*.nuspec"));
         
         // Package all nuspecs
         foreach (var nuspec in nuspecs)
@@ -221,20 +222,15 @@ Task("Create-AllModules-Package")
     .IsDependentOn("Build")
     .Does(() =>
     {        
-        var nuspec = GetFiles("./src/Wyam.All/*.nuspec").FirstOrDefault();
+        var nuspec = GetFiles("./src/extensions/Wyam.All/*.nuspec").FirstOrDefault();
         if (nuspec == null)
         {            
             throw new InvalidOperationException("Could not find all modules nuspec.");
         }
         
         // Add dependencies for all module libraries
-        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/Wyam.*/*.nuspec"));
+        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/extensions/**/*.nuspec"));
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Common");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Configuration");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Core");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Testing");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
         List<NuSpecDependency> dependencies = new List<NuSpecDependency>(
             nuspecs
                 .Select(x => new NuSpecDependency
@@ -259,7 +255,7 @@ Task("Create-Tools-Package")
     .IsDependentOn("Build")
     .Does(() =>
     {        
-        var nuspec = GetFiles("./src/Wyam/*.nuspec").FirstOrDefault();
+        var nuspec = GetFiles("./src/clients/Wyam/*.nuspec").FirstOrDefault();
         if (nuspec == null)
         {            
             throw new InvalidOperationException("Could not find tools nuspec.");
@@ -291,7 +287,7 @@ Task("Create-Windows")
     .Does(() => {        
         if(isRunningOnWindows)
         {
-            var nuspec = GetFiles("./src/Wyam.Windows/*.nuspec").FirstOrDefault();
+            var nuspec = GetFiles("./src/clients/Wyam.Windows/*.nuspec").FirstOrDefault();
             if (nuspec == null)
             {            
                 throw new InvalidOperationException("Could not find installer nuspec.");
@@ -320,7 +316,7 @@ Task("Create-Windows")
                 Silent = true,
                 NoMsi = true,
                 ReleaseDirectory = windowsDir,
-                SetupIcon = GetFiles("./src/Wyam.Windows/wyam.ico").First().FullPath
+                SetupIcon = GetFiles("./src/clients/Wyam.Windows/wyam.ico").First().FullPath
             });
             DeleteFile(package);
         }
