@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Wyam.Common</RootNamespace>
+    <AssemblyName>Wyam.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\INamespacesCollection.cs" />
+    <Compile Include="Configuration\IRawAssemblyCollection.cs" />
+    <Compile Include="Documents\GroupByExtensions.cs" />
+    <Compile Include="Documents\ToLookupExtensions.cs" />
+    <Compile Include="Documents\IDocumentFactory.cs" />
+    <Compile Include="Execution\IEngine.cs" />
+    <Compile Include="Configuration\IRecipe.cs" />
+    <Compile Include="IO\DirectoryEqualityComparer.cs" />
+    <Compile Include="IO\DirectoryPath.cs" />
+    <Compile Include="IO\FileEqualityComparer.cs" />
+    <Compile Include="IO\IFileProviderCollection.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
+    <Compile Include="IO\IFileProvider.cs" />
+    <Compile Include="IO\IReadOnlyFileProviderCollection.cs" />
+    <Compile Include="IO\PathCollection.cs" />
+    <Compile Include="IO\FilePath.cs" />
+    <Compile Include="IO\IDirectory.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IReadOnlyFileSystem.cs" />
+    <Compile Include="IO\IFileSystemEntry.cs" />
+    <Compile Include="IO\NormalizedPath.cs" />
+    <Compile Include="IO\PathEqualityComparer.cs" />
+    <Compile Include="IO\PathKind.cs" />
+    <Compile Include="IO\RelativePathResolver.cs" />
+    <Compile Include="Meta\CachedDelegateMetadataValue.cs" />
+    <Compile Include="Meta\IMetadataDictionary.cs" />
+    <Compile Include="Meta\MetadataItems.cs" />
+    <Compile Include="Meta\Keys.cs" />
+    <Compile Include="Modules\ContentModule.cs" />
+    <Compile Include="Configuration\ContextConfig.cs" />
+    <Compile Include="Configuration\ConfigExtensions.cs" />
+    <Compile Include="Caching\Crc32.cs" />
+    <Compile Include="Meta\DelegateMetadataValue.cs" />
+    <Compile Include="Documents\CollectionExtensions.cs" />
+    <Compile Include="Configuration\DocumentConfig.cs" />
+    <Compile Include="Documents\IDocumentCollection.cs" />
+    <Compile Include="Modules\IAsNewDocuments.cs" />
+    <Compile Include="Configuration\ISettings.cs" />
+    <Compile Include="Configuration\IReadOnlySettings.cs" />
+    <Compile Include="Tracing\IIndentedTraceEvent.cs" />
+    <Compile Include="Meta\IMetadata.cs" />
+    <Compile Include="Meta\IMetadataValue.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Documents\IDocument.cs" />
+    <Compile Include="Execution\IPipeline.cs" />
+    <Compile Include="Execution\IPipelineCollection.cs" />
+    <Compile Include="Execution\IExecutionContext.cs" />
+    <Compile Include="Execution\IReadOnlyPipeline.cs" />
+    <Compile Include="Caching\IExecutionCache.cs" />
+    <Compile Include="Configuration\ConfigHelper.cs" />
+    <Compile Include="Meta\MetadataItem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+    <Compile Include="Tracing\IndentedTraceEvent.cs" />
+    <Compile Include="Tracing\ITrace.cs" />
+    <Compile Include="Tracing\Trace.cs" />
+    <Compile Include="Util\CollectionExtensions.cs" />
+    <Compile Include="Util\GroupByExtensions.cs" />
+    <Compile Include="Util\ToLookupExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
