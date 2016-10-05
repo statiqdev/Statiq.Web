@@ -110,6 +110,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{C5AED397-4463-4DE7-8A7E-74A4C949E417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Docs", "src\extensions\Wyam.Docs\Wyam.Docs.csproj", "{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -288,6 +290,10 @@ Global
 		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -343,5 +349,6 @@ Global
 		{12931CA5-E734-4CD9-883D-27D897512183} = {596452BD-AE34-4989-A36F-88FF72B2DFD8}
 		{2E5842F3-4797-4BB5-9A55-F3A005B434F8} = {596452BD-AE34-4989-A36F-88FF72B2DFD8}
 		{C5AED397-4463-4DE7-8A7E-74A4C949E417} = {596452BD-AE34-4989-A36F-88FF72B2DFD8}
+		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 	EndGlobalSection
 EndGlobal
