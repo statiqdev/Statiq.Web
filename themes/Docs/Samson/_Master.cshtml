@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <meta name="description" content="Wyam is a simple to use, highly modular, and extremely configurable static content generator." />
+        <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <title>Wyam - @ViewData["Title"]</title>
+        <link href="/Content/bootstrap-less/bootstrap.css" rel="stylesheet" />
+        <link href="/Content/adminlte/AdminLTE.css" rel="stylesheet" />
+        <link href="/Content/adminlte/skins/wyam.css" rel="stylesheet" />
+        <link href="/Content/prettify.css" rel="stylesheet">
+        <link href="/Content/github.css" rel="stylesheet">
+        <link href="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.css" rel="stylesheet">
+        <link href="/Content/master.css" rel="stylesheet" />
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script src="/Scripts/jQuery-2.1.4.min.js"></script>
+        <script src="/Scripts/bootstrap.min.js"></script>        
+        <script src="/Scripts/app.min.js"></script>         
+        <script src="/Scripts/prettify.js"></script>   
+        <script src="/Scripts/jquery.slimscroll.min.js"></script>
+        <script src="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.min.js"></script>
+        <!--[if lt IE 9]>
+        <script src="/Scripts/html5shiv.min.js"></script>
+        <script src="/Scripts/respond.min.js"></script>
+        <![endif]-->  
+    </head>
+    @{
+        string layoutTopNav = Model.Get<bool>("NoSidebar", false) ? "layout-top-nav" : string.Empty;
+        string noGutter = Model.Get<bool>("NoGutter", false) ? "no-gutter" : string.Empty;
+    }
+    <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter" onload="prettyPrint()">    
+        <div class="top-banner"></div>
+        <div class="wrapper">
+            <!-- Header -->
+            <header class="main-header">   
+                     
+                <a href="/" class="logo">
+                    <!-- mini logo for sidebar mini 50x50 pixels -->
+                    <span class="logo-mini"><img src="/Content/images/nav-logo.png"></span>
+                    <!-- logo for regular state and mobile devices -->
+                    <span class="logo-lg"><img src="/Content/images/nav-logo.png"></span>
+                </a>   
+                         
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                    @if(!Model.Get<bool>("NoSidebar", false))
+                    {
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                    }
+                                        
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-down"></i>
+                        </button>
+                    </div>
+            
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                        <ul class="nav navbar-nav">                            
+                            @{
+                                string[] navs = new string[]
+                                {
+                                    "Getting Started",
+                                    "Recipes & Themes",
+                                    "Modules",
+                                    "API",
+                                    "Knowledgebase",
+                                    "Community"
+                                };
+                                foreach(string nav in navs)
+                                {
+                                    string navFolder = nav.ToLower().Replace(" & ", "-").Replace(' ', '-');
+                                    string active = Model.String("RelativeFilePath").StartsWith(navFolder) ? "active" : null;
+                                    <li class="@active"><a href="/@navFolder">@nav</a></li>
+                                }
+                            }
+                        </ul>       
+                    </div>
+                    <!-- /.navbar-collapse -->
+                
+                    <!-- Navbar Right Menu -->
+                    @*
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#">A Menu Item</a></li>
+                            <li><a href="#">Another Item</a></li>
+                            
+                            <!-- Control Sidebar Toggle Button -->
+                            <li>
+                                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    *@
+                </nav>
+            </header>
+            
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="main-sidebar @(Model.Get<bool>("NoSidebar", false) ? "hidden" : string.Empty)">
+                <section class="sidebar smaller">                    
+                    @RenderSection("Search", false)
+                    <!-- search form -->
+                    @*
+                    <form action="#" method="get" class="sidebar-form">
+                        <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+                        </span>
+                        </div>
+                    </form>
+                    *@
+                    
+                    <!-- sidebar menu: : style can be found in sidebar.less -->
+                    <ul class="sidebar-menu">
+                        @RenderSection("Sidebar", false)
+                    </ul>
+                </section>                
+            </aside>
+            
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                @RenderBody()                
+            </div>
+            
+            
+            <!-- Footer -->
+            <footer class="main-footer">
+            </footer>
+            
+            @*
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                
+            </aside>
+            <!-- Add the sidebar's background. This div must be placed
+                immediately after the control sidebar -->
+            <div class="control-sidebar-bg"></div>
+            *@
+        </div>
+        <div class="wrapper bottom-wrapper">
+            <footer class="bottom-footer"><small>Wyam is crafted by <a href="http://www.daveaglick.com">Dave Glick</a> and <a href="https://github.com/Wyamio/Wyam/graphs/contributors">other awesome contributors</a>. <a href="https://github.com/Wyamio/Wyam">Code on GitHub</a>. This site was entirely generated by Wyam. Check out <a href="https://github.com/Wyamio/Wyam.Web">the site code on GitHub</a>.</small></footer>
+        </div>
+        <div class="github-button">
+            <a href="https://github.com/Wyamio/Wyam"><i class="fa fa-github"></i> GitHub</a>
+        </div>
+        <script>
+            $(document).load(function() {
+                mermaid.initialize();
+            });
+        </script>
+        <script>
+            ((window.gitter = {}).chat = {}).options = {
+                room: 'wyamio/wyam'
+            };
+        </script>
+        <script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+        <script>            
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');            
+            ga('create', 'UA-54470483-4', 'auto');
+            ga('send', 'pageview');
+        </script>
+    </body>
+</html>

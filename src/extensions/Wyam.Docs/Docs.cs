@@ -36,7 +36,7 @@ namespace Wyam.Docs
                     .WithCssClasses("pre", "prettyprint")
                     .WithWritePathPrefix(ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix))),
                 new Razor.Razor()
-                    .WithLayout("_ApiLayout.cshtml"),
+                    .WithLayout("/_ApiLayout.cshtml"),
                 new WriteFiles()
             );
         }

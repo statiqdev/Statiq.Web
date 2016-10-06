@@ -4,17 +4,16 @@
 			.Where(x => x.Get<bool>("IsResult") && x["Kind"].Equals("NamedType"))
 			.GroupBy(x => x.String("SpecificKind")))
 	{
-		ViewData["DocsTable"] = new DocsTable
+		@Html.Partial("Section\\_DocsTable", new DocsTable
 		{
 			Docs = typeGroup.OrderBy(x => x["DisplayName"]).ToList(),
 			Title = typeGroup.Key + " Types",
 			Header = typeGroup.Key,
 			HasSummary = true
-		};
-		@Html.Partial("Section\\_DocsTable");		
+		});		
 	}
 	
-	ViewData["DocsTable"] = new DocsTable
+	@Html.Partial("Section\\_DocsTable", new DocsTable
 	{
 		Docs = Model.List<IDocument>("MemberNamespaces")
 			?.Where(x => x.Get<bool>("IsResult"))
@@ -22,6 +21,5 @@
 			.ToList(),
 		Title = "Namespaces",
 		Header = "Namespace"	
-	};
-	@Html.Partial("Section\\_DocsTable");
+	});
 }
