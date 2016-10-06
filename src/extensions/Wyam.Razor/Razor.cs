@@ -219,12 +219,12 @@ namespace Wyam.Razor
                 using (var scope = scopeFactory.CreateScope())
                 {
                     // Get services
-                    IRazorViewEngine viewEngine = services.GetRequiredService<IRazorViewEngine>();
-                    IRazorPageActivator pageActivator = services.GetRequiredService<IRazorPageActivator>();
-                    HtmlEncoder htmlEncoder = services.GetRequiredService<HtmlEncoder>();
-                    IRazorPageFactoryProvider pageFactoryProvider = services.GetRequiredService<IRazorPageFactoryProvider>();
-                    IRazorCompilationService razorCompilationService = services.GetRequiredService<IRazorCompilationService>();
-                    IHostingEnvironment hostingEnviornment = services.GetRequiredService<IHostingEnvironment>();
+                    IRazorViewEngine viewEngine = scope.ServiceProvider.GetRequiredService<IRazorViewEngine>();
+                    IRazorPageActivator pageActivator = scope.ServiceProvider.GetRequiredService<IRazorPageActivator>();
+                    HtmlEncoder htmlEncoder = scope.ServiceProvider.GetRequiredService<HtmlEncoder>();
+                    IRazorPageFactoryProvider pageFactoryProvider = scope.ServiceProvider.GetRequiredService<IRazorPageFactoryProvider>();
+                    IRazorCompilationService razorCompilationService = scope.ServiceProvider.GetRequiredService<IRazorCompilationService>();
+                    IHostingEnvironment hostingEnviornment = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
 
                     // Compile the view
                     string relativePath = GetRelativePath(input, context);
