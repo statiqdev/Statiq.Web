@@ -12,8 +12,8 @@ namespace Wyam.Razor
 
         private static readonly Dictionary<LogLevel, SourceLevels> LevelMapping = new Dictionary<LogLevel, SourceLevels>
         {
-            {LogLevel.Trace, SourceLevels.Verbose},
-            {LogLevel.Debug, SourceLevels.Verbose},
+            {LogLevel.Trace, SourceLevels.Off},
+            {LogLevel.Debug, SourceLevels.Off},
             {LogLevel.Information, SourceLevels.Verbose},
             {LogLevel.Warning, SourceLevels.Warning},
             {LogLevel.Error, SourceLevels.Error},
@@ -38,10 +38,15 @@ namespace Wyam.Razor
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
-                Exception exception, Func<TState, Exception, string> formatter) => 
-            Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
+                Exception exception, Func<TState, Exception, string> formatter)
+        {
+            if (IsEnabled(logLevel))
+            {
+                Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
+            }
+        }
 
-        public bool IsEnabled(LogLevel logLevel) => Trace.Level.HasFlag(LevelMapping[logLevel]);
+        public bool IsEnabled(LogLevel logLevel) => LevelMapping[logLevel].HasFlag(Trace.Level);
 
         public IDisposable BeginScope<TState>(TState state) => new EmptyDisposable();
 

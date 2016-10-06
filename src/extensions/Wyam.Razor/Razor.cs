@@ -215,7 +215,7 @@ namespace Wyam.Razor
             IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
             return validInputs.AsParallel().Select(input =>
             {
-                Trace.Verbose("Compiling Razor for {0}", input.SourceString());
+                Trace.Verbose("Processing Razor for {0}", input.SourceString());
                 using (var scope = scopeFactory.CreateScope())
                 {
                     // Get services
@@ -239,7 +239,6 @@ namespace Wyam.Razor
                     }
                     
                     // Render the view
-                    Trace.Verbose("Processing Razor for {0}", input.SourceString());
                     object model = _model == null ? input : _model.Invoke(input, context);
                     using (StringWriter output = new StringWriter())
                     {
