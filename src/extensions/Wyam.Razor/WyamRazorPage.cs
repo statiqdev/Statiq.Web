@@ -7,7 +7,7 @@ using Wyam.Common.Tracing;
 
 namespace Wyam.Razor
 {
-    public abstract class RazorPage : RazorPage<IDocument>
+    public abstract class WyamRazorPage<TModel> : RazorPage<TModel>
     {
         public IDocument Document => ViewData[ViewDataKeys.WyamDocument] as IDocument;
         public IMetadata Metadata => Document;

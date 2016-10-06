@@ -68,21 +68,37 @@ namespace Wyam.Razor
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private DocumentConfig _layoutPath;
+        private DocumentConfig _model;
         private string _ignorePrefix = "_";
 
         /// <summary>
         /// Parses Razor templates in each input document and outputs documents with rendered HTML content. 
         /// If <c>basePageType</c> is specified, it will be used as the base type for Razor pages. The new base
-        /// type must derive from <see cref="RazorPage"/>.
+        /// type must derive from <see cref="WyamRazorPage{TModel}"/>.
         /// </summary>
         /// <param name="basePageType">Type of the base Razor page class, or <c>null</c> for the default base class.</param>
         public Razor(Type basePageType = null)
         {
-            if (basePageType != null && !typeof(RazorPage).IsAssignableFrom(basePageType))
+            if (basePageType != null && !IsSubclassOfRawGeneric(typeof(WyamRazorPage<>), basePageType))
             {
-                throw new ArgumentException($"The Razor base page type must derive from {nameof(RazorPage)}.");
+                throw new ArgumentException($"The Razor base page type must derive from {nameof(WyamRazorPage<object>)}.");
             }
             _basePageType = basePageType;
+        }
+
+        // From http://stackoverflow.com/a/457708/807064
+        private static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                Type current = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == current)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
         }
 
         /// <summary>
@@ -131,6 +147,27 @@ namespace Wyam.Razor
         }
 
         /// <summary>
+        /// Specifies a model to use for each page.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public Razor WithModel(object model)
+        {
+            _model = (doc, ctx) => model;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a model to use for each page based on the current input
+        /// document and context.
+        /// </summary>
+        /// <param name="model">A delegate that returns the model.</param>
+        public Razor WithModel(DocumentConfig model)
+        {
+            _model = model;
+            return this;
+        }
+
+        /// <summary>
         /// Specifies a file prefix to ignore. If a document has a metadata value for <c>SourceFileName</c> and 
         /// that metadata value starts with the specified prefix, that document will not be processed or 
         /// output by the module. By default, the Razor module ignores all documents prefixed with 
@@ -163,7 +200,7 @@ namespace Wyam.Razor
                 .AddSingleton<IHostingEnvironment, HostingEnvironment>()
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IExecutionContext>(context)
-                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(RazorPage)))
+                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(WyamRazorPage<>)))
                 .AddScoped<IMvcRazorHost, RazorHost>();
             IServiceProvider services = serviceCollection.BuildServiceProvider();
             
@@ -200,13 +237,14 @@ namespace Wyam.Razor
                         view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
                             htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
                     }
-
+                    
                     // Render the view
                     Trace.Verbose("Processing Razor for {0}", input.SourceString());
+                    object model = _model == null ? input : _model.Invoke(input, context);
                     using (StringWriter output = new StringWriter())
                     {
                         Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = 
-                            GetViewContext(scope.ServiceProvider, view, input, context, output);
+                            GetViewContext(scope.ServiceProvider, view, model, input, context, output);
                         viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
                         return context.GetDocument(input, output.ToString());
                     }
@@ -215,7 +253,7 @@ namespace Wyam.Razor
         }
         
         private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(
-            IServiceProvider services, IView view, 
+            IServiceProvider services, IView view, object model,
             IDocument document, IExecutionContext executionContext, TextWriter output)
         {
             HttpContext httpContext = new DefaultHttpContext
@@ -227,7 +265,7 @@ namespace Wyam.Razor
             ViewDataDictionary viewData = new ViewDataDictionary(
                 new EmptyModelMetadataProvider(), actionContext.ModelState)
             {
-                Model = document
+                Model = model
             };
             ITempDataDictionary tempData = new TempDataDictionary(
                 actionContext.HttpContext, services.GetRequiredService<ITempDataProvider>());
