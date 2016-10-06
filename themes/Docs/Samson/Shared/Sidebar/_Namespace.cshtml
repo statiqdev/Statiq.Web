@@ -1,7 +1,7 @@
 <li class="header">Namespaces</li>   
 @{
 	IList<Tuple<string[], IDocument>> namespaces 
-		= Documents.FromPipeline("API")
+		= Documents.FromPipeline(DocsPipelines.Api)
 			.Where(x => x.String("Kind") == "Namespace")
 			.Select(x => Tuple.Create(x.String("DisplayName"), x))
 			.OrderBy(x => x.Item1)

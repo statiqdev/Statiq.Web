@@ -1,3 +1,22 @@
 @{
 	Layout = "/_Master.cshtml";
+	ViewData["Title"] = @Model.Get("Title", string.Empty);
+}
+
+@section Sidebar {
+	@RenderSection("Sidebar", false)
+}
+
+@if(Model.Get<bool>("NoContainer", false))
+{
+	@RenderBody()
+}
+else
+{
+	<section class="content-header">
+		<h1>@ViewData["Title"]</h1>
+	</section>
+	<section class="content">
+		@RenderBody()
+	</section>
 }

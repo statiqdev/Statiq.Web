@@ -1,5 +1,5 @@
 @{
-	ViewData["DocsTable"] = new DocsTable
+	@Html.Partial("Section\\_DocsTable", new DocsTable
 	{
 		Docs = Model.List<IDocument>("Constructors")
 			?.Where(x => x.Get<bool>("IsResult"))
@@ -8,6 +8,5 @@
 		Title = "Constructors",
 		Header = "Name",
 		HasSummary = true	
-	};
-	@Html.Partial("Section\\_DocsTable");
+	});
 }
