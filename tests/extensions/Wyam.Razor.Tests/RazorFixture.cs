@@ -138,6 +138,25 @@ namespace Wyam.Razor.Tests
             }
 
             [Test]
+            public void AlternateModel()
+            {
+                // Given
+                Engine engine = new Engine();
+                IExecutionContext context = GetExecutionContext(engine);
+                IDocument document = GetDocument("C:/Temp/temp.txt", @"@model IList<int>
+<p>@Model.Count</p>");
+                IList<int> model = new[] {1, 2, 3};
+                Razor razor = new Razor().WithModel(model);
+
+                // When
+                razor.Execute(new[] { document }, context).ToList();
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, @"<p>3</p>");
+            }
+
+            [Test]
             public void LoadLayoutFile()
             {
                 // Given

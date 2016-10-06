@@ -12,7 +12,15 @@ namespace Wyam.Razor
     {
         public RazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver, IBasePageTypeProvider basePageTypeProvider) : base(chunkTreeCache, resolver)
         {
-            DefaultBaseClass = basePageTypeProvider.BasePageType.FullName;
+            // Remove the backtick from generic class names
+            string baseClassName = basePageTypeProvider.BasePageType.FullName;
+            int tickIndex = baseClassName.IndexOf('`');
+            if (tickIndex > 0)
+            {
+                baseClassName = baseClassName.Substring(0, tickIndex);
+            }
+
+            DefaultBaseClass = basePageTypeProvider.BasePageType.IsGenericTypeDefinition ? $"{baseClassName}<{ChunkHelper.TModelToken}>" : baseClassName;
             DefaultInheritedChunks.OfType<SetBaseTypeChunk>().First().TypeName = DefaultBaseClass;  // The chunk is actually what injects the base name into the view
             EnableInstrumentation = false;
 
