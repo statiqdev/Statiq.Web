@@ -1,3 +1,33 @@
 @{
 	Layout = "/_Master.cshtml";
+	
+	IDocument containingType = Model.Get<IDocument>("ContainingType");
+	string containingTypeString = string.Empty;
+	while(containingType != null)
+	{
+		containingTypeString = containingTypeString + containingType.String("DisplayName") + ".";
+		containingType = containingType.Get<IDocument>("ContainingType");
+	}
+	ViewData["Title"] = "API - " + containingTypeString + Model["DisplayName"] + " " + Model["SpecificKind"];
 }
+
+@section Sidebar {
+	@Html.Partial("Sidebar\\_" + Model.String("Kind"))
+}
+
+<section class="content-header">
+	@{
+		containingType = Model.Get<IDocument>("ContainingType");
+		while(containingType != null)
+		{
+			<h3>@Context.GetTypeLink(containingType).</h3>
+			containingType = containingType.Get<IDocument>("ContainingType");
+		}
+	}
+	<h1>@Model.Name() <small>@Model["SpecificKind"]</small></h1>
+	<hr />
+</section>
+<section class="content smaller">
+	@RenderBody()  @* Empty, but needs to be here *@
+	@Html.Partial("Kind\\_" + Model.String("Kind"))
+</section>

@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Html;
+@{
+	IReadOnlyList<IDocument> typeParameters = Model.List<IDocument>("TypeParameters");
+	IReadOnlyList<ReferenceComment> typeParams = Model.List<ReferenceComment>("TypeParams");
+}
+@if(typeParameters != null && typeParameters.Count > 0)
+{
+	<h1>Type Parameters</h1>
+	<div class="box">
+		<div class="box-body no-padding">
+			<table class="table table-striped table-hover two-cols">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				@foreach(IDocument typeParam in typeParameters)
+				{
+					IDocument declaringType = typeParam.Get<IDocument>("DeclaringType");
+					<tr id="typeparam-@typeParam["Name"]">
+						<td>@(declaringType != null && declaringType["SymbolId"].Equals(Model["SymbolId"]) ? new HtmlString(typeParam.String("Name")) : Context.GetTypeLink(typeParam))</td>
+						<td>@Html.Raw(typeParams?.Where(x => x.Name.Equals(typeParam["Name"])).Select(x => x.Html).FirstOrDefault())</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>	
+}

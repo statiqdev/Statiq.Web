@@ -1,0 +1,29 @@
+@{
+	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
+	IDocument containingType = Model.Get<IDocument>("ContainingType");
+	if(containingNamespace != null 
+		|| containingType != null)
+	{
+		<dl class="dl-horizontal">		
+			@if(containingNamespace != null)
+			{		
+				<dt>Namespace</dt>
+				<dd>@Context.GetTypeLink(containingNamespace)</dd>
+			}
+			
+			@if(containingType != null)
+			{
+				<dt>Containing Type</dt>
+				<dd>@Context.GetTypeLink(containingType)</dd>		
+			}
+		</dl>
+		<hr />	
+	}
+}
+
+@Html.Partial("Section\\_Summary")
+@Html.Partial("Section\\_Syntax")
+@Html.Partial("Section\\_Value")
+@Html.Partial("Section\\_Remarks")
+@Html.Partial("Section\\_Examples")
+@Html.Partial("Section\\_SeeAlso")

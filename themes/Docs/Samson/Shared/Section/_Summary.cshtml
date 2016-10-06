@@ -1,0 +1,8 @@
+@{
+	string summary = Model.String("Summary");
+}
+@if(!string.IsNullOrWhiteSpace(summary))
+{
+	<h1>Summary</h1>
+	<div class="lead">@Html.Raw(summary)</div>
+}
