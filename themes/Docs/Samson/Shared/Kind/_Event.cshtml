@@ -1,0 +1,44 @@
+@{
+	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
+	IDocument containingType = Model.Get<IDocument>("ContainingType");
+	IDocument type = Model.Get<IDocument>("Type");
+	IDocument overridden = Model.Get<IDocument>("Overridden");
+	if(containingNamespace != null
+		|| containingType != null
+		|| type != null
+		|| overridden != null)
+	{
+		<dl class="dl-horizontal">
+			@if(containingNamespace != null)
+			{		
+				<dt>Namespace</dt>
+				<dd>@Context.GetTypeLink(containingNamespace)</dd>
+			}
+			
+			@if(containingType != null)
+			{
+				<dt>Containing Type</dt>
+				<dd>@Context.GetTypeLink(containingType)</dd>		
+			}
+			
+			@if(type != null)
+			{
+				<dt>Event Type</dt>
+				<dd>@Context.GetTypeLink(type)</dd>
+			}
+			
+			@if(overridden != null)
+			{
+				<dt>Overridden</dt>
+				<dd>@Context.GetTypeLink(overridden)</dd>
+			}
+		</dl>
+		<hr />	
+	}
+}	
+
+@Html.Partial("Section\\_Summary")
+@Html.Partial("Section\\_Syntax")
+@Html.Partial("Section\\_Remarks")
+@Html.Partial("Section\\_Examples")
+@Html.Partial("Section\\_SeeAlso")

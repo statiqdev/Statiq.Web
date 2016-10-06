@@ -1,0 +1,47 @@
+<li class="header">Namespaces</li>   
+@{
+	IList<Tuple<string[], IDocument>> namespaces 
+		= Documents.FromPipeline("API")
+			.Where(x => x.String("Kind") == "Namespace")
+			.Select(x => Tuple.Create(x.String("DisplayName"), x))
+			.OrderBy(x => x.Item1)
+			.Select(x => Tuple.Create(x.Item1.Split('.'), x.Item2))
+			.ToList();
+	for(int c = 0; c < namespaces.Count ; c++)
+	{
+		Tuple<string[], IDocument> current = namespaces[c];
+		string currentActiveClass = Model.String("Kind") == "Namespace" 
+			&& Model.String("SymbolId") == current.Item2.String("SymbolId")
+			? "active" : string.Empty;
+		if(current.Item1.Length > 1 && c+1 < namespaces.Count 
+			&& namespaces[c+1].Item1[0] == current.Item1[0] && namespaces[c+1].Item1[1] == current.Item1[1])
+		{
+			// Nest this namespace
+			string nestedActiveClass = Model.String("Kind") == "Namespace" 
+				&& (Model.String("SymbolId") == current.Item2.String("SymbolId") 
+					|| Model.String("DisplayName").StartsWith(current.Item1[0] + "." + current.Item1[1] + "."))
+				? "active" : string.Empty;
+			<li class="treeview @nestedActiveClass">
+				<a href="#">@(current.Item1[0]).@(current.Item1[1])...<i class="fa fa-angle-left pull-right"></i></a>
+				<ul class="treeview-menu">
+					<li class="@currentActiveClass">@Context.GetTypeLink(current.Item2)</li>
+					@{
+						while(c+1 < namespaces.Count 
+							&& namespaces[c+1].Item1[0] == current.Item1[0] && namespaces[c+1].Item1[1] == current.Item1[1])
+						{
+							nestedActiveClass = Model.String("Kind") == "Namespace" 
+								&& Model.String("SymbolId") == namespaces[c+1].Item2.String("SymbolId")
+								? "active" : string.Empty;
+							<li class="@nestedActiveClass">@Context.GetTypeLink(namespaces[c+1].Item2)</li>
+							c++;
+						}
+					}
+				</ul>
+			</li>
+		}
+		else
+		{
+			<li class="@currentActiveClass">@Context.GetTypeLink(current.Item2)</li>
+		}
+	}
+}      
