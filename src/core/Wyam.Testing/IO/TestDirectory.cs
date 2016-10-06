@@ -23,6 +23,19 @@ namespace Wyam.Testing.IO
 
         public bool Exists => _fileProvider.Directories.Contains(_path.FullPath);
 
+        public IDirectory Parent
+        {
+            get
+            {
+                DirectoryPath parentPath = _path.Parent;
+                if (parentPath == null)
+                {
+                    return null;
+                }
+                return new TestDirectory(_fileProvider, parentPath);
+            }
+        }
+
         public void Create() => _fileProvider.Directories.Add(_path.FullPath);
 
         public void Delete(bool recursive) => _fileProvider.Directories.Remove(_path.FullPath);

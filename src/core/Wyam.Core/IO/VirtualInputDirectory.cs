@@ -36,6 +36,19 @@ namespace Wyam.Core.IO
 
         NormalizedPath IFileSystemEntry.Path => Path;
 
+        public IDirectory Parent
+        {
+            get
+            {
+                DirectoryPath parentPath = _path.Parent;
+                if (parentPath == null)
+                {
+                    return null;
+                }
+                return new VirtualInputDirectory(_fileSystem, parentPath);
+            }
+        }
+
         public void Create()
         {
             throw new NotSupportedException("Can not create a virtual input directory");

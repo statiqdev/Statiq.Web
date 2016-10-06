@@ -33,16 +33,43 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("/a", new[] { "x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a", new[] { "x/*.\\{xml,txt\\}" }, new string[] { })]
             [TestCase("/a", new[] { "x/*", "!x/*.{xml,txt}" }, new[] { "/a/x/foo.doc" })]
-            [TestCase("/a", new[] { "x/*", "\\!x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml", "/a/x/foo.doc" })]  // TODO: Only change slashes if they don't preceed and escape character
+            [TestCase("/a", new[] { "x/*", "\\!x/*.{xml,txt}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml", "/a/x/foo.doc" })]  // TODO: Only change slashes if they don't precede and escape character
             [TestCase("/a", new[] { "x/*.{*,!doc}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a", new[] { "x/*{!doc,}" }, new[] { "/a/x/bar.txt", "/a/x/foo.xml" })]
             [TestCase("/a/b/c", new[] { "../d/*.txt" }, new[] { "/a/b/d/baz.txt" })]
             [TestCase("/a", new[] { "foo/*/*.txt" }, new[] { "/a/foo/bar/a.txt", "/a/foo/baz/b.txt" })]
             [TestCase("/a", new[] { "foo/*{!r,}/*.txt" }, new[] { "/a/foo/baz/b.txt" })]
+            [TestCase("/a/x", new [] { "../b/**/1/*.txt"}, new [] { "/a/b/c/1/2.txt" })]
+            [TestCase("/a/b", new[] { "**/1/*.txt" }, new[] { "/a/b/c/1/2.txt" })]
             public void ShouldReturnMatchedFiles(string directoryPath, string[] patterns, string[] resultPaths)
             {
                 // Given
                 IFileProvider fileProvider = GetFileProvider();
+                IDirectory directory = fileProvider.GetDirectory(directoryPath);
+
+                // When
+                IEnumerable<IFile> matches = Globber.GetFiles(directory, patterns);
+                IEnumerable<IFile> matchesReversedSlash = Globber.GetFiles(directory, patterns.Select(x => x.Replace("/", "\\")));
+
+                // Then
+                CollectionAssert.AreEquivalent(resultPaths, matches.Select(x => x.Path.FullPath));
+                CollectionAssert.AreEquivalent(resultPaths, matchesReversedSlash.Select(x => x.Path.FullPath));
+            }
+
+            [TestCase("/a/x", new[] { "../b/c/**/1/2/*.txt" }, new[] { "/a/b/c/d/e/1/2/3.txt" })]
+            [TestCase("/a/x", new[] { "../b/c/d/e/1/2/*.txt" }, new[] { "/a/b/c/d/e/1/2/3.txt" })]
+            public void RecursiveWildcardTests(string directoryPath, string[] patterns, string[] resultPaths)
+            {
+                // Given
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/a");
+                fileProvider.AddDirectory("/a/b");
+                fileProvider.AddDirectory("/a/b/c");
+                fileProvider.AddDirectory("/a/b/c/d");
+                fileProvider.AddDirectory("/a/b/c/d/e");
+                fileProvider.AddDirectory("/a/b/c/d/e/1");
+                fileProvider.AddDirectory("/a/b/c/d/e/1/2");
+                fileProvider.AddFile("/a/b/c/d/e/1/2/3.txt");
                 IDirectory directory = fileProvider.GetDirectory(directoryPath);
 
                 // When
@@ -136,7 +163,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             }
         }
 
-        private IFileProvider GetFileProvider()
+        private TestFileProvider GetFileProvider()
         {
             TestFileProvider fileProvider = new TestFileProvider();
 
@@ -161,7 +188,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             fileProvider.AddFile("/a/x/foo.doc");
             fileProvider.AddFile("/a/foo/bar/a.txt");
             fileProvider.AddFile("/a/foo/baz/b.txt");
-
+            
             return fileProvider;
         }
     }

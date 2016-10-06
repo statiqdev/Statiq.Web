@@ -19,6 +19,11 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <value>The path.</value>
         new DirectoryPath Path { get; }
+
+        /// <summary>
+        /// Gets the parent directory or <c>null</c> if the directory is a root.
+        /// </summary>
+        IDirectory Parent { get; }
         
         /// <summary>
         /// Creates the directory, including any necessary parent directories.
