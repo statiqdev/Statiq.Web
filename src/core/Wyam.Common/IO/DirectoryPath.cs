@@ -109,7 +109,7 @@ namespace Wyam.Common.IO
         public string Name => Segments.Length == 0 ? FullPath : Segments.Last();
 
         /// <summary>
-        /// Gets the parent path.
+        /// Gets the parent path or <c>null</c> if this is a root path.
         /// </summary>
         /// <value>
         /// The parent path or <c>null</c> if this is a root path.

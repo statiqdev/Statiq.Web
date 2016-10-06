@@ -162,7 +162,6 @@ namespace Wyam.Core.Tests.IO
 
         public class GetDirectoryTests : VirtualInputDirectoryFixture
         {
-            [Test]
             [TestCase("a/b", "..", "a")]
             [TestCase("a/b/", "..", "a")]
             [TestCase("a/b/../c", "..", "a")]
@@ -203,9 +202,28 @@ namespace Wyam.Core.Tests.IO
             }
         }
 
+        public class GetParentTests : VirtualInputDirectoryFixture
+        {
+            [TestCase("a/b", "a")]
+            [TestCase("a/b/", "a")]
+            [TestCase(".", null)]
+            [TestCase("a", null)]
+            public void ShouldReturnParentDirectory(string virtualPath, string expected)
+            {
+                // Given
+                VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
+
+                // When
+                IDirectory result = directory.Parent;
+
+                // Then
+                Assert.AreEqual(expected, result?.Path.Collapse().FullPath);
+            }
+
+        }
+
         public class ExistsTests : VirtualInputDirectoryFixture
         {
-            [Test]
             [TestCase(".")]
             [TestCase("c")]
             [TestCase("c/1")]

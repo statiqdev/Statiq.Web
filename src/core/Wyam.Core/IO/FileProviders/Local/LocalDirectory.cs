@@ -18,6 +18,15 @@ namespace Wyam.Core.IO.FileProviders.Local
 
         public bool Exists => _directory.Exists;
 
+        public IDirectory Parent
+        {
+            get
+            {
+                DirectoryInfo parent = _directory.Parent;
+                return parent == null ? null : new LocalDirectory(new DirectoryPath(_path.FileProvider, parent.FullName));
+            }
+        }
+
         public LocalDirectory(DirectoryPath path)
         {
             if (path == null)
