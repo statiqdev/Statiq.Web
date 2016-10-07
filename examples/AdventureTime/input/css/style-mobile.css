@@ -1,0 +1,342 @@
+/*
+	Dopetrope by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
+
+/*********************************************************************************/
+/* Basic                                                                         */
+/*********************************************************************************/
+
+	body,input,textarea,select
+	{
+		line-height: 1.75em;
+		font-size: 11pt;
+		letter-spacing: 0;
+	}
+
+	h2, h3, h4, h5, h6
+	{
+		font-size: 1.25em;
+	}
+
+	/* Section/Article */
+
+		section,
+		article
+		{
+			margin: 0 0 1.5em 0 !important;
+		}
+
+		header
+		{
+			margin: 0 0 1em 0;
+		}
+		
+		footer
+		{
+			margin: 2em 0 0 0;
+		}
+
+	/* Box */
+
+		.box
+		{
+			padding: 25px 15px 20px 15px;
+		}
+		
+			.box .image.featured
+			{
+				left: 15px;
+				top: 15px;
+				margin: -40px 0 40px -30px;
+			}
+
+	/* Button */
+
+		input[type="button"],
+		input[type="submit"],
+		input[type="reset"],
+		.button
+		{
+			position: relative;
+			padding: 0.65em 0 0.65em 0 !important;
+			width: 100%;
+			text-align: center;
+			font-size: 1.25em;
+			margin: 0.25em 0 0.25em 0;
+		}
+
+			.button.icon
+			{
+				padding-right: 1em !important;
+			}
+
+	/* List */
+
+		ul.actions
+		{
+		}
+		
+			ul.actions li
+			{
+				display: block;
+				margin-top: 0.5em;
+			}
+			
+			ul.actions li:first-child
+			{
+				margin-top: 0;
+			}
+			
+		ul.contact
+		{
+		}
+
+			ul.contact li
+			{
+				padding: 0.8em 0 0.8em 7em;
+			}
+
+				ul.contact li h3
+				{
+					top: 0.8em;
+				}
+
+		ul.divided
+		{
+		}
+		
+			ul.divided li
+			{
+				padding: 0.5em 0 0.5em 0;
+			}
+
+		ul.links
+		{
+		}
+		
+			ul.links li
+			{
+				display: block;
+				border-top: solid 1px rgba(255,255,255,0.05);
+				padding: 0.25em 0 0 0;
+				margin: 0.25em 0 0 0;
+			}
+			
+			ul.links li:first-child
+			{
+				border-top: 0;
+				padding-top: 0;
+				margin-top: 0;
+			}
+
+		ul.social
+		{
+		}
+
+			ul.social li
+			{
+				margin: 0 0.5em 0.75em 0;
+			}
+
+/*********************************************************************************/
+/* Mobile UI                                                                     */
+/*********************************************************************************/
+
+	#titleBar
+	{
+		background: none;
+	}
+
+		#titleBar .title
+		{
+			display: none;
+		}
+
+	#titleBar .toggle
+	{
+		width: 80px;
+		height: 60px;
+	}
+
+		#titleBar .toggle:before
+		{
+			font-family: FontAwesome;
+			text-decoration: none;
+			font-style: normal;
+			font-weight: normal;
+			-webkit-font-smoothing:antialiased;
+			-moz-osx-font-smoothing:grayscale;
+
+			content: '\f0c9';
+			display: block;
+			position: absolute;
+			left: 10px;
+			top: 10px;
+			width: 50px;
+			height: 40px;
+			line-height: 40px;
+			font-size: 18px;
+			color: #fff;
+			text-align: center;
+			background: rgba(150,150,150,0.75);
+			border-radius: 5px;
+		}
+
+		#titleBar .toggle:active
+		{
+		}
+
+			#titleBar .toggle:active:before
+			{
+				background-color: rgba(150,150,150,1);
+			}
+
+	#navPanel
+	{
+		color: #858484;
+		background-image: url('images/bg02.png');
+		box-shadow: inset -3px 0px 5px 0px rgba(0,0,0,0.35);
+	}
+
+		#navPanel .link
+		{
+			display: block;
+			color: #888;
+			text-decoration: none;
+			height: 44px;
+			line-height: 44px;
+			border-top: solid 1px rgba(255,255,255,0.05);
+			padding: 0 1em 0 1em;
+			font-style: italic;
+		}
+		
+			#navPanel .link:first-child
+			{
+				border-top: 0;
+			}
+
+		#navPanel .indent-1 { display: inline-block; width: 1em; }
+		#navPanel .indent-2 { display: inline-block; width: 2em; }
+		#navPanel .indent-3 { display: inline-block; width: 3em; }
+		#navPanel .indent-4 { display: inline-block; width: 4em; }
+		#navPanel .indent-5 { display: inline-block; width: 5em; }
+		#navPanel .depth-0 { color: #fff; }
+
+/*********************************************************************************/
+/* Wrappers                                                                      */
+/*********************************************************************************/
+
+	#main-wrapper
+	{
+		padding: 2em 10px;
+		overflow: hidden;
+	}
+
+	#header-wrapper
+	{
+		padding: 2em 0;
+	}
+
+	#footer-wrapper
+	{
+		padding: 2em 25px;
+		overflow: hidden;
+		-webkit-transform: translateZ(0);
+	}
+	
+/*********************************************************************************/
+/* Intro                                                                         */
+/*********************************************************************************/
+
+	#intro
+	{
+		padding: 0 25px 0 25px;
+	}
+	
+		#intro section
+		{
+			position: relative;
+			border-top:	solid 1px #dfdfdf;
+			padding: 2.5em 0 0 0;
+			margin: 1.5em 0 0 0 !important;
+		}
+
+			#intro section.first
+			{
+				border-top: 0;
+				padding-top: 0;
+			}
+
+			#intro section p
+			{
+				margin: 0;
+			}
+			
+/*********************************************************************************/
+/* Header                                                                        */
+/*********************************************************************************/
+
+	#header
+	{
+		text-align: center;
+	}
+	
+		#header h1
+		{
+			color: #252122;
+			font-weight: 900;
+			font-size: 1.75em;
+			letter-spacing: -0.035em;
+		}
+
+/*********************************************************************************/
+/* Nav                                                                           */
+/*********************************************************************************/
+
+	#nav
+	{
+		display: none;
+	}
+
+/*********************************************************************************/
+/* Banner                                                                        */
+/*********************************************************************************/
+
+	#banner
+	{
+		margin: 2em 0 4em 0 !important;
+		padding: 6em 0;
+	}
+	
+		#banner header
+		{
+			padding: 1.5em 1em 1.5em 1em;
+		}
+		
+			#banner header h2
+			{
+				font-size: 1.5em;
+				line-height: 1.5em;
+				margin: 0 0 0.25em 0;
+			}
+			
+			#banner header p
+			{
+				font-size: 1.2em;
+			}
+
+/*********************************************************************************/
+/* Copyright                                                                     */
+/*********************************************************************************/
+		
+	#copyright
+	{
+		margin: 3em 0 0 0;
+	}
+	
+		#copyright .links
+		{
+			padding: 0.75em 1.25em 0.75em 1.25em;
+		}

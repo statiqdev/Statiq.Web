@@ -1,4 +1,4 @@
-// This directive installs packages from NuGet and it what yuo would normally use
+// This directive installs packages from NuGet and it what you would normally use
 // NOTE: If running the example against a downloaded version of Wyam, uncomment this line and comment the next line
 // #n -p Wyam.Yaml
 // #n -p Wyam.Markdown
