@@ -16,8 +16,7 @@
 			foreach(IDocument type in typeGroup
 				.OrderBy(x => x.String("Name")))
 			{
-				string activeClass = type.String("SymbolId") == Model.String("SymbolId") 
-					? "active" : string.Empty;
+				string activeClass = type.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
 				<li class="@activeClass">@Context.GetTypeLink(type)</li>
 			}	
 		}

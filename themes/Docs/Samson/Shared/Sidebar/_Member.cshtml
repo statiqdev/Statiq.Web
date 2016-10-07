@@ -23,8 +23,7 @@
 			<li class="header">Constructors</li>
 			foreach(IDocument constructor in constructors)
 			{
-				string activeClass = constructor.String("SymbolId") == Model.String("SymbolId") 
-					? "active" : string.Empty;
+				string activeClass = constructor.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
 				<li class="@activeClass">@Context.GetTypeLink(constructor)</li>
 			}
 		}			
@@ -38,8 +37,7 @@
 			foreach(IDocument member in memberGroup
 				.OrderBy(x => x.String("Name")))
 			{
-				string activeClass = member.String("SymbolId") == Model.String("SymbolId") 
-					? "active" : string.Empty;
+				string activeClass = member.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
 				<li class="@activeClass">@Context.GetTypeLink(member)</li>
 			}	
 		}
