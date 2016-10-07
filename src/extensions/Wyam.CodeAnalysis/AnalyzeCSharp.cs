@@ -247,7 +247,12 @@ namespace Wyam.CodeAnalysis
             {
                 // Members output to a page equal to their SymbolId under the folder for their type
                 IDocument containingTypeDocument = metadata.Get<IDocument>(CodeAnalysisKeys.ContainingType, null);
-                writePath = new FilePath(containingTypeDocument?.FilePath(Keys.WritePath).FullPath.Replace("index.html", metadata.String(CodeAnalysisKeys.SymbolId) + ".html"));
+                string containingPath = containingTypeDocument.FilePath(Keys.WritePath).FullPath;
+                if (prefix != null && containingPath.StartsWith(prefix.FullPath + "/"))
+                {
+                    containingPath = containingPath.Substring(prefix.FullPath.Length + 1);
+                }
+                writePath = new FilePath(containingPath.Replace("index.html", metadata.String(CodeAnalysisKeys.SymbolId) + ".html"));
             }
 
             // Add the prefix
