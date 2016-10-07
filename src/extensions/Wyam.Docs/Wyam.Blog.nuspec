@@ -21,6 +21,7 @@
       <dependency id="Wyam.Razor" version="$version$" />
       <dependency id="Wyam.Yaml" version="$version$" />
       <dependency id="Wyam.CodeAnalysis" version="$version$" />
+      <dependency id="Wyam.Less" version="$version$" />
     </dependencies>
   </metadata>
   <files></files>

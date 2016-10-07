@@ -1,0 +1,216 @@
+@import "bootstrap/mixins.less";
+@import "bootstrap/variables.less";
+@import "adminlte/variables.less";
+@import "adminlte/mixins.less";
+
+hr {
+    border-top-color: #B5BBC8;
+}
+
+.lead {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid #367fa9;
+}
+
+.three-cols th,
+.three-cols td {
+	width: 30%;
+}
+
+.two-cols th,
+.two-cols td {
+    width: 60%;
+}
+
+.two-cols th:last-child,
+.two-cols td:last-child,
+.three-cols th:last-child,
+.three-cols td:last-child {
+	width: 40%;
+}
+
+.two-cols-alt th,
+.two-cols-alt td {
+    width: 30%;
+}
+
+.two-cols-alt th:last-child,
+.two-cols-alt td:last-child {
+	width: 70%;
+}
+
+.larger {
+    font-size: @font-size-large;
+}
+
+.smaller {
+    font-size: @font-size-small;
+}
+
+.content-header > hr {
+    margin-bottom: 0;
+}
+
+h1 {
+	font-weight: bold;
+}
+
+dl ul,
+dl ol {
+	margin-bottom: 0;
+}
+
+.box-body dl,
+.box-body.lead {
+	margin-bottom: 0;
+}
+
+.paramref, .typeparamref {
+	font-style: italic;
+}
+
+.jumbotron {
+	padding: 0;
+	color: #fff;
+	margin: 0;
+}
+
+.jumbotron-title {
+	margin-bottom: 30px;
+}
+
+.jumbotron-intro, .jumbotron-title {	
+	background: #8058B5;
+}
+
+.jumbotron-intro .container-background {
+	background: url('/Content/images/intro-bg.png') no-repeat center center;
+	background-size: cover;
+}
+
+.jumbotron-intro .container {
+	padding-top: 48px;
+	padding-bottom: 48px;
+	background-size: cover;
+}
+
+.jumbotron-description {	
+	padding-top: 12px;
+
+	a, a:hover, a:visited {
+		color: white;
+		text-decoration: underline;
+	}
+}
+
+.jumbotron-description-1 {
+	background: #4EABDD;
+}
+
+.jumbotron-description-2 {	
+	background: #5A3C9B;
+}
+
+.jumbotron-description-3 {	
+	background: #045CAE;
+}
+
+.jumbotron-description-4 {	
+	background: #C171F1;
+}
+
+@media (min-width: 1200px) { 
+	.jumbotron-intro {
+		height: 400px;
+	}
+	.jumbotron-intro .container-background {
+		background: none;
+	}
+	.jumbotron-intro .container {
+		background: url('/Content/images/intro-bg.png') no-repeat center center;
+		height: 400px;
+	}	
+}
+
+/* Code styles */
+pre,
+pre.prettyprint {
+    padding: 8px;
+    margin: 0 0 8px 0;
+    overflow: auto;
+    word-wrap: normal;
+    word-break: normal;
+    border-color: #ddd;
+    background-color: #f3f3f3;
+}
+
+/* Mermaid */
+
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+  fill: #B1D1E4;
+  stroke: #1F4860;
+}
+
+.cluster rect {
+  fill: #f3f3f3 !important;
+  stroke: #ddd !important;
+}
+
+/* For Gitter and GitHub */
+
+.bottom-footer {
+	margin-bottom: 40px !important;  // Make room for Gitter and GitHub buttons
+}
+
+.gitter-open-chat-button {
+	background-color: #3c8dbc;
+	font-family: @font-family-sans-serif;
+	letter-spacing: normal;
+}
+
+.gitter-open-chat-button:focus, .gitter-open-chat-button:hover,
+.github-button:focus, .github-button:hover,
+{	
+	background-color: #4EABDD;
+	color: #fff;
+}
+
+.gitter-chat-embed {
+	top: 49px;
+	border-top: 1px solid #000;
+}
+
+.github-button {
+	z-index: 100;
+	position: fixed;
+	bottom: 0px;
+	right: 160px;
+	padding: 1em 3em;
+	background-color: #367fa9;
+	border: 0;
+	border-top-left-radius: 0.5em;
+	border-top-right-radius: 0.5em;
+	font-family: sans-serif;
+	font-size: 9pt;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	cursor: hand;
+	-webkit-transition: all .3s ease;
+	transition: all .3s ease;
+	color: #fff;
+	a, a:active, a:hover, a:focus {
+		color: #fff;
+	}
+}
+
+@media (max-width: @screen-header-collapse) {
+	.gitter-chat-embed {
+		top: 99px;
+	}
+}

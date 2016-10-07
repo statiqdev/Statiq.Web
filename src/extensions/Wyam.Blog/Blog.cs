@@ -104,7 +104,8 @@ namespace Wyam.Blog
             );
 
             engine.Pipelines.Add(BlogPipelines.Resources,
-                new CopyFiles("**/*{!.cshtml,!.md,}"));
+                new CopyFiles("**/*{!.cshtml,!.md,}")
+            );
         }
 
         public void Scaffold(IDirectory directory)

@@ -1,0 +1,257 @@
+@import "bootstrap/mixins.less";
+@import "bootstrap/variables.less";
+@import "adminlte/variables.less";
+@import "adminlte/mixins.less";
+
+body.wyam {
+  background-image: none;
+  background-color: #f4f4f4;
+
+  &.layout-boxed {  
+    .top-banner {
+      background-color: @light-blue;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+    }
+    
+    &.no-gutter {
+      .top-banner {
+        height: 50px;
+      }
+    }
+  
+    .wrapper {
+      box-shadow: none;
+      border: none; 
+    }
+      
+    .bottom-wrapper {
+      border: none;
+      background: transparent;
+    }  
+  }
+  
+  &.layout-top-nav {
+    .content-wrapper,
+    .main-footer {
+      border-left: none;
+    }
+    
+    .main-header > .navbar {
+        /* make space for logo, even when no sidebar */
+        margin-left: 230px;
+        
+        @media (max-width: @screen-header-collapse) {
+          margin-left: 0;
+        }
+    }
+  }
+}
+
+
+@media (max-width: @screen-header-collapse) {
+  body.wyam.layout-boxed {  
+    .wrapper {
+      border-left: none;
+      border-right: none;
+    }
+    
+    .main-sidebar {
+      width: @sidebar-width - 1px;
+    }
+    
+    .main-sidebar, .left-side {
+      padding-top: 50px;
+    }
+    
+    .wrapper {      
+      border-radius: 0;
+    }
+    
+    .content-wrapper,
+    .main-footer {
+      margin-left: -1px;
+    }
+  }
+}
+
+.wyam {
+  //Navbar
+  .main-header {    
+    background-color: @light-blue;
+      
+    .navbar {
+      .navbar-variant(@light-blue; #fff);
+      .sidebar-toggle {
+        color: #fff;
+        &:hover {
+          background-color: darken(@light-blue, 5%);
+        }
+      }
+      .navbar-toggle
+      {
+        font-family: "fontAwesome";
+        &:before {
+          content: "\f0c9";
+        }
+      }
+      @media (max-width: @screen-header-collapse) {
+          .dropdown-menu {
+            li {
+              &.divider {
+                background-color: rgba(255, 255, 255, 0.1);
+              }
+              a {
+                color: #fff;
+                &:hover {
+                  background: darken(@light-blue, 5%);
+                }
+              }
+            }
+          }
+        }
+      }
+    
+      //Logo
+      .logo {
+        .logo-variant(@light-blue);
+        @media (max-width: @screen-header-collapse) {
+          position: absolute;
+          top: 0;
+          z-index: 1001;
+          background-color: transparent;
+          width: 170px;
+          left: 50%;
+          margin-left: -85px;
+          padding: 0;
+          
+          & .logo-lg {
+            width: 170px;
+          }
+        }
+      }
+  
+      li.user-header {
+        background-color: @light-blue;
+      }
+    }
+    
+    .wrapper {
+      margin-bottom: 30px;
+    }
+    
+    //Content Header
+    .content-header {
+      background: transparent;
+      padding-top: 0;
+      
+      h1 {
+        font-size: floor((@font-size-base * 2.6));
+        background-color: #f4f4f4;
+        padding: 8px 16px;
+        .border-radius(@border-radius-large);   
+      }
+    }
+    
+    .content,
+    .content-header
+    {
+      padding-left: 30px;
+      padding-right: 30px;
+    }
+    
+    .sidebar {
+      padding: 30px 12px 0 12px;
+    }
+    
+    .sidebar-menu {
+      &,
+      li,
+      li a {
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        .border-radius(@border-radius-small);        
+      }
+      
+      li a {
+        padding-top: 6px;
+        padding-bottom: 6px;        
+      }
+      
+      li.active li.active a {
+        color: @light-blue;
+      }
+      
+      li.divider {
+          padding-top: 15px;
+          border-bottom: 1px solid @gray-lighter;
+          margin-bottom: 15px;
+      }
+      
+      li.header {
+        text-transform: uppercase;
+        font-size: @font-size-base;
+        font-weight: bold;        
+      }
+    } 
+        
+    .table-striped tr
+    {
+        background-color: #f9fafc;
+    }
+    
+    .table thead tr
+    {
+        background-color: @light-blue;
+        color: #fff;
+    }
+    
+    .box
+    {
+        border-top-color: darken(@light-blue, 10%);    
+    }
+  
+    //Create the sidebar skin
+    .skin-light-sidebar(@light-blue);
+    
+    // Overrides for the sidebar skin
+    .sidebar-menu {
+      & > li.header {
+        color: @gray;
+      }
+      
+      & > li.active > a {
+          background-color: @light-blue;
+          color: #fff;
+      }
+    }
+    
+    .main-header,  
+    .main-footer
+    {
+      margin-bottom: 30px;
+    }
+    
+    &.no-gutter .main-header
+    {
+      margin-bottom: 0px;
+    }
+    
+    .main-footer
+    {
+      border-top: none;
+    }
+       
+    .bottom-footer {
+      text-align: center;
+    }
+}
+
+.wyam.layout-top-nav .main-header > .logo {
+  .logo-variant(@light-blue);
+}
+
