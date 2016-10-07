@@ -71,6 +71,10 @@
       <Project>{f4c0c025-5e08-4ed2-a089-67c41702ae7b}</Project>
       <Name>Wyam.CodeAnalysis</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Less\Wyam.Less.csproj">
+      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
+      <Name>Wyam.Less</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Markdown\Wyam.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Markdown</Name>

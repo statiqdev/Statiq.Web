@@ -8,6 +8,11 @@ namespace Wyam.Docs
 {
     public static class DocsKeys
     {
+        /// <summary>
+        /// The location of your source files. Can be a <c>string</c>
+        /// or a collection of <c>string</c>. This will be evaluated
+        /// from the context of the input virtual file system.
+        /// </summary>
         public const string SourceFiles = nameof(SourceFiles);
         public const string IncludeGlobal = nameof(IncludeGlobal);
         public const string ApiPathPrefix = nameof(ApiPathPrefix);

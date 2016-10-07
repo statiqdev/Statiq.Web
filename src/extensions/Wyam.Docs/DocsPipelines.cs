@@ -10,5 +10,8 @@ namespace Wyam.Docs
     {
         public const string Code = nameof(Code);
         public const string Api = nameof(Api);
+        public const string Content = nameof(Content);
+        public const string Less = nameof(Less);
+        public const string Resources = nameof(Resources);
     }
 }

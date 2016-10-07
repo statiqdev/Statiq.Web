@@ -7,6 +7,7 @@ using Wyam.CodeAnalysis;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
@@ -19,7 +20,7 @@ namespace Wyam.Docs
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.GlobalMetadata[DocsKeys.SourceFiles] = "src/**/*.cs";
+            engine.GlobalMetadata[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
             engine.GlobalMetadata[DocsKeys.IncludeGlobal] = true;
             engine.GlobalMetadata[DocsKeys.ApiPathPrefix] = "api";
 
@@ -38,6 +39,29 @@ namespace Wyam.Docs
                 new Razor.Razor()
                     .WithLayout("/_ApiLayout.cshtml"),
                 new WriteFiles()
+            );
+
+            engine.Pipelines.Add(DocsPipelines.Content,
+                new ReadFiles("**/*.md"),
+                new FrontMatter(new Yaml.Yaml()),
+                new Markdown.Markdown(),
+                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
+                new Concat(
+                    new ReadFiles("**/{!_,}*.cshtml"),
+                    new FrontMatter(new Yaml.Yaml())
+                ),
+                new Razor.Razor(),
+                new WriteFiles(".html")
+            );
+
+            engine.Pipelines.Add(DocsPipelines.Less,
+                new ReadFiles("css/*.less"),
+                new Less.Less(),
+                new WriteFiles(".css")
+            );
+
+            engine.Pipelines.Add(DocsPipelines.Resources,
+                new CopyFiles("**/*{!.cshtml,!.md,!.less,}")
             );
         }
 
