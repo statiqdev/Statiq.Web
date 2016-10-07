@@ -1,0 +1,37 @@
+// This example is based on the Static-Site-Samples repository: https://github.com/remotesynth/Static-Site-Samples
+
+// This directive installs packages from NuGet and it what you would normally use
+// NOTE: If running the example against a downloaded version of Wyam, uncomment this line and comment the next line
+// #n Wyam.Markdown
+// #n Wyam.Razor
+// #n Wyam.Yaml
+// #n Wyam.Html 
+
+// This directive loads modules directly from the local build and is used for testing
+// NOTE: If running the example against modules built from source, call wyam.exe from the Wyam.Examples.Tests/bin/Debug folder 
+#a **/*
+
+InitialMetadata["title"] = "Adventure Time!";
+InitialMetadata["description"] = "Adventure Time is an American animated television series created by Pendleton Ward for Cartoon Network. The series follows the adventures of Finn, a human boy, and his best friend and adoptive brother Jake, a dog with magical powers to change shape and grow and shrink at will. Finn and Jake live in the post-apocalyptic Land of Ooo. Along the way, they interact with the other main characters of the show: Princess Bubblegum, The Ice King, and Marceline the Vampire Queen.";
+InitialMetadata["banner"] = "/images/about.jpg";
+
+Pipelines.Add("Characters",
+    ReadFiles("**/*.yaml"),
+    Yaml()
+);
+
+Pipelines.Add("Content",
+	ReadFiles("**/*.md"),
+	FrontMatter(Yaml()),
+	Markdown(),
+	Excerpt(),
+    Concat(
+        ReadFiles("index.cshtml")
+    ),
+	Razor(),
+	WriteFiles(".html")
+);    
+
+Pipelines.Add("Resources",
+	CopyFiles("**/*{!.cshtml,!.md,!.yaml,}")
+);
