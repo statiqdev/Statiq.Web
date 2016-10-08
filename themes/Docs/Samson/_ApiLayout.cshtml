@@ -8,7 +8,7 @@
 		containingTypeString = containingTypeString + containingType.String("DisplayName") + ".";
 		containingType = containingType.Get<IDocument>("ContainingType");
 	}
-	ViewData["Title"] = "API - " + containingTypeString + Model["DisplayName"] + " " + Model["SpecificKind"];
+	ViewData[DocsKeys.Title] = "API - " + containingTypeString + Model["DisplayName"] + " " + Model["SpecificKind"];
 }
 
 @section Sidebar {
@@ -28,6 +28,6 @@
 	<hr />
 </section>
 <section class="content smaller">
-	@RenderBody()  @* Empty, but needs to be here *@
+	@RenderBody()
 	@Html.Partial("Kind\\_" + Model.String("Kind"))
 </section>

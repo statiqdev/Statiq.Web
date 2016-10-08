@@ -7,10 +7,12 @@ using Wyam.CodeAnalysis;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
+using Wyam.Core.Modules.Metadata;
 using Wyam.Razor;
 
 namespace Wyam.Docs
@@ -38,6 +40,17 @@ namespace Wyam.Docs
                     .WithWritePathPrefix(ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix))),
                 new Razor.Razor()
                     .WithLayout("/_ApiLayout.cshtml"),
+                new WriteFiles()
+            );
+
+            engine.Pipelines.Add("ApiIndex",
+                new ReadFiles("_ApiIndex.cshtml"),
+                new Meta(Keys.RelativeFilePath, 
+                    ctx => new DirectoryPath(ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)).CombineFile("index.html")),
+                new Meta(Keys.SourceFileName, "index.html"),
+                new Meta(DocsKeys.Title, "API"),
+                new Meta(DocsKeys.NoSidebar, true),
+                new Razor.Razor(),
                 new WriteFiles()
             );
 
