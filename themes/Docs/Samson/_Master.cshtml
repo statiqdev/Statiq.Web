@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <title>Wyam - @ViewData["Title"]</title>
+        <title>Wyam - @ViewData[DocsKeys.Title]</title>
         <link href="/css/bootstrap.css" rel="stylesheet" />
         <link href="/css/AdminLTE.css" rel="stylesheet" />
         <link href="/css/theme.css" rel="stylesheet" />
@@ -30,8 +30,8 @@
         <![endif]-->  
     </head>
     @{
-        string layoutTopNav = Model.Get<bool>("NoSidebar", false) ? "layout-top-nav" : string.Empty;
-        string noGutter = Model.Get<bool>("NoGutter", false) ? "no-gutter" : string.Empty;
+        string layoutTopNav = Model.Get<bool>(DocsKeys.NoSidebar, false) ? "layout-top-nav" : string.Empty;
+        string noGutter = Model.Get<bool>(DocsKeys.NoGutter, false) ? "no-gutter" : string.Empty;
     }
     <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter" onload="prettyPrint()">    
         <div class="top-banner"></div>

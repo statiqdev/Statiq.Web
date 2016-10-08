@@ -1,0 +1,12 @@
+@{
+	Layout = "/_Layout.cshtml";
+	@Html.Partial("Section\\_DocsTable", new DocsTable
+	{
+		Docs = Documents.FromPipeline(DocsPipelines.Api)
+			.Where(x => x.String("Kind") == "Namespace")
+			.OrderBy(x => x.String("DisplayName"))
+			.ToList(),
+		Title = "Namespaces",
+		Header = "Namespace"	
+	});
+}  

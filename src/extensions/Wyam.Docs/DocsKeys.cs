@@ -16,5 +16,9 @@ namespace Wyam.Docs
         public const string SourceFiles = nameof(SourceFiles);
         public const string IncludeGlobal = nameof(IncludeGlobal);
         public const string ApiPathPrefix = nameof(ApiPathPrefix);
+        public const string Title = nameof(Title);
+        public const string NoSidebar = nameof(NoSidebar);
+        public const string NoContainer = nameof(NoContainer);
+        public const string NoGutter = nameof(NoGutter);
     }
 }
