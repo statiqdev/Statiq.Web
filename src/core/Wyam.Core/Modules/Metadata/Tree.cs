@@ -39,11 +39,19 @@ namespace Wyam.Core.Modules.Metadata
         private string _nextKey = Keys.Next;
         private string _previousKey = Keys.Previous;
 
-
         public Tree()
         {
             _isRoot = (ctx, doc) => false;
-            _getPath = (doc, ctx) => doc.Source.Segments;
+            _getPath = (doc, ctx) =>
+            {
+                // Promote "index." page up a level
+                List<string> segments = doc.FilePath(Keys.RelativeFilePath).Segments.ToList();
+                if (segments.Count > 0 && segments[segments.Count - 1].StartsWith("index."))
+                {
+                    segments.RemoveAt(segments.Count - 1);
+                }
+                return segments;
+            };
         }
 
         /// <summary>
@@ -104,7 +112,7 @@ namespace Wyam.Core.Modules.Metadata
                 : inputs.Select((value, index) => new { Index = index, Document = value }).ToDictionary(x => x.Document, x => x.Index);
 
             // Generate TreeNodes
-            foreach (var keypair in inputs.Select(x => new { Key = x, Value = (string[])_getPath(x, context) }))
+            foreach (var keypair in inputs.Select(x => new { Key = x, Value = _getPath.Invoke<string[]>(x, context) }))
             {
                 string[] splitedPath = keypair.Value;
                 IDocument document = keypair.Key;
@@ -153,16 +161,10 @@ namespace Wyam.Core.Modules.Metadata
                 }
             }
 
-            // Adding Empty Documents
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values.Where(x => x.Value == null))
-            {
-                treeElement.Value = context.GetDocument();
-            }
-
             // Adding Metadata
             foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
             {
-                treeElement.Value = context.GetDocument(treeElement.Value, new MetadataItems
+                MetadataItems metadata = new MetadataItems
                 {
                     new MetadataItem(_childrenKey,
                         new CachedDelegateMetadataValue(_ => new ReadOnlyCollection<IDocument> (treeElement.Children.Select(x=>x.Value).ToArray()))), 
@@ -176,10 +178,13 @@ namespace Wyam.Core.Modules.Metadata
                         new CachedDelegateMetadataValue(_ => GetNextNodeMetadata(treeElement))),
                     new MetadataItem(_previousKey,
                         new CachedDelegateMetadataValue(_ => GetPreviousNode(treeElement)))
-                });
+                };
+                treeElement.Value = treeElement.Value == null
+                    ? context.GetDocument(metadata)
+                    : context.GetDocument(treeElement.Value, metadata);
             }
             
-            return treeElementLookup.Values.Select(x => x.Value);
+            return treeElementLookup.Values.Where(x => x.Parent == null).Select(x => x.Value);
         }
 
         private IDocument GetPreviousNode(TreeNode<IDocument> treeElement)

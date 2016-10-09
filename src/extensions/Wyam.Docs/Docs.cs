@@ -27,7 +27,25 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.ApiPathPrefix] = "api";
 
             engine.Pipelines.Add(DocsPipelines.Code,
-                new ReadFiles((doc, ctx) => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
+                new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
+            );
+            
+            engine.Pipelines.Add(DocsPipelines.Pages,
+                new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/*.md"),
+                new FrontMatter(new Yaml.Yaml()),
+                new Markdown.Markdown(),
+                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
+                new Concat(
+                    // Add any additional Razor pages
+                    new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/{{!_,}}*.cshtml"),
+                    new FrontMatter(new Yaml.Yaml())),
+                new Tree()
+            );
+
+            engine.Pipelines.Add(DocsPipelines.RenderPages,
+                new Flatten(),
+                new Razor.Razor(),
+                new WriteFiles(".html")
             );
 
             engine.Pipelines.Add(DocsPipelines.Api,
@@ -43,7 +61,7 @@ namespace Wyam.Docs
                 new WriteFiles()
             );
 
-            engine.Pipelines.Add("ApiIndex",
+            engine.Pipelines.Add(DocsPipelines.ApiIndex,
                 new ReadFiles("_ApiIndex.cshtml"),
                 new Meta(Keys.RelativeFilePath, 
                     ctx => new DirectoryPath(ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)).CombineFile("index.html")),

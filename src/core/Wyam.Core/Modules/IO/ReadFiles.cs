@@ -47,9 +47,24 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class ReadFiles : IModule, IAsNewDocuments
     {
-        private readonly string[] _patterns;
-        private readonly DocumentConfig _patternsDelegate;
+        private readonly ContextConfig _contextPatterns;
+        private readonly DocumentConfig _documentPatterns;
         private Func<IFile, bool> _predicate = null;
+
+        /// <summary>
+        /// Reads all files that match the specified globbing patterns and/or absolute paths. This allows you to 
+        /// specify different patterns and/or paths depending on the context.
+        /// </summary>
+        /// <param name="patterns">A delegate that returns one or more globbing patterns and/or absolute paths.</param>
+        public ReadFiles(ContextConfig patterns)
+        {
+            if (patterns == null)
+            {
+                throw new ArgumentNullException(nameof(patterns));
+            }
+
+            _contextPatterns = patterns;
+        }
 
         /// <summary>
         /// Reads all files that match the specified globbing patterns and/or absolute paths. This allows you to 
@@ -63,7 +78,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(patterns));
             }
 
-            _patternsDelegate = patterns;
+            _documentPatterns = patterns;
         }
 
         /// <summary>
@@ -81,7 +96,7 @@ namespace Wyam.Core.Modules.IO
                 throw new ArgumentNullException(nameof(patterns));
             }
 
-            _patterns = patterns;
+            _contextPatterns = _ => patterns;
         }
 
         /// <summary>
@@ -97,10 +112,10 @@ namespace Wyam.Core.Modules.IO
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return _patterns != null
-                ? Execute(null, _patterns, context)
+            return _contextPatterns != null
+                ? Execute(null, _contextPatterns.Invoke<string[]>(context), context)
                 : inputs.AsParallel().SelectMany(input =>
-                    Execute(input, _patternsDelegate.Invoke<string[]>(input, context), context));
+                    Execute(input, _documentPatterns.Invoke<string[]>(input, context), context));
         }
 
         private IEnumerable<IDocument> Execute(IDocument input, string[] patterns, IExecutionContext context)

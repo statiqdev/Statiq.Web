@@ -9,7 +9,10 @@ namespace Wyam.Docs
     public static class DocsPipelines
     {
         public const string Code = nameof(Code);
+        public const string Pages = nameof(Pages);
+        public const string RenderPages = nameof(RenderPages);
         public const string Api = nameof(Api);
+        public const string ApiIndex = nameof(ApiIndex);
         public const string Content = nameof(Content);
         public const string Less = nameof(Less);
         public const string Resources = nameof(Resources);
