@@ -67,20 +67,14 @@
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">                            
                             @{
-                                string[] navs = new string[]
+                                Dictionary<string, string> pages = Context
+                                    .Documents[DocsPipelines.Pages]
+                                    .ToDictionary(x => x.String(DocsKeys.Title, x.FilePath(Keys.RelativeFilePath)?.FullPath ?? string.Empty), x => Context.GetLink(x));
+                                pages.Add("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix)));
+                                foreach(KeyValuePair<string, string> page in pages)
                                 {
-                                    "Getting Started",
-                                    "Recipes & Themes",
-                                    "Modules",
-                                    "API",
-                                    "Knowledgebase",
-                                    "Community"
-                                };
-                                foreach(string nav in navs)
-                                {
-                                    string navFolder = nav.ToLower().Replace(" & ", "-").Replace(' ', '-');
-                                    string active = Model.String("RelativeFilePath").StartsWith(navFolder) ? "active" : null;
-                                    <li class="@active"><a href="/@navFolder">@nav</a></li>
+                                    string active = null; // or "active"
+                                    <li class="@active"><a href="@page.Value">@page.Key</a></li>
                                 }
                             }
                         </ul>       

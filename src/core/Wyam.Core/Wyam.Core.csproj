@@ -103,6 +103,7 @@
     <Compile Include="Modules\Contents\Sitemap.cs" />
     <Compile Include="Modules\Control\Switch.cs" />
     <Compile Include="Modules\IO\UnwrittenFiles.cs" />
+    <Compile Include="Modules\Metadata\Flatten.cs" />
     <Compile Include="Modules\Metadata\Index.cs" />
     <Compile Include="Modules\Control\OrderBy.cs" />
     <Compile Include="Modules\Control\Paginate.cs" />
