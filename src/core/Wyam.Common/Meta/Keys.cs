@@ -101,5 +101,6 @@ namespace Wyam.Common.Meta
         public const string NextSibling = nameof(NextSibling);
         public const string Next = nameof(Next);
         public const string Previous = nameof(Previous);
+        public const string TreePath = nameof(TreePath);
     }
 }
