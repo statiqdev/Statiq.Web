@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,79 +8,141 @@ using System.Threading.Tasks;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 
 namespace Wyam.Core.Modules.Metadata
 {
     /// <summary>
-    /// Adds metadata to the input documents that describes the position of each one in a tree structure. 
+    /// Adds metadata to the input documents that describes the position of each one in a tree structure. By default,
+    /// this module is configured to generate a tree that mimics the directory structure of each document's input path
+    /// by looking at it's RelativeFilePath metadata value. Any documents with a file name of "index.*" are automatically
+    /// promoted to the node that represents the parent folder level. For any folder that does not contain an "index.*" file,
+    /// an empty placeholder tree node is used to represent the folder.
     /// </summary>
     /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata> 
     /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata> 
     /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children 
     /// collection of the parent or <c>null</c> if this is the first node in the collection or the parent is null.</metadata>
     /// <metadata name="NextSibling" type="IDocument">The next sibling, that is the next node in the children collection 
-    /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.</metadata> 
+    /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.</metadata>
     /// <metadata name="Next" type="IDocument">The next node in the tree using a depth-first 
     /// search or <c>null</c> if this was the last node.</metadata> 
     /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first 
     /// search or <c>null</c> if this was the first node.</metadata>
+    /// <metadata name="TreePath" type="object[]">The path that represents this node in the tree.</metadata>
     /// <category>Metadata</category>
     public class Tree : IModule
     {
         private DocumentConfig _isRoot;
-        private DocumentConfig _getPath;
-        private DocumentConfig _getOrder;
+        private DocumentConfig _treePath;
+        private Func<object[], MetadataItems, IExecutionContext, IDocument> _placeholderFactory;
+        private Comparison<IDocument> _sort;
 
         private string _parentKey = Keys.Parent;
         private string _childrenKey = Keys.Children;
         private string _previousSiblingKey = Keys.PreviousSibling;
         private string _nextSiblingKey = Keys.NextSibling;
-        private string _nextKey = Keys.Next;
         private string _previousKey = Keys.Previous;
+        private string _nextKey = Keys.Next;
+        private string _treePathKey = Keys.TreePath;
 
         public Tree()
         {
-            _isRoot = (ctx, doc) => false;
-            _getPath = (doc, ctx) =>
+            _isRoot = (doc, ctx) => false;
+            _treePath = (doc, ctx) =>
             {
-                // Promote "index." page up a level
-                List<string> segments = doc.FilePath(Keys.RelativeFilePath).Segments.ToList();
+                // Attempt to get the segments first from RelativeFilePath and then from Source
+                List<string> segments = doc.FilePath(Keys.RelativeFilePath)?.Segments.ToList();
+                if (segments == null)
+                {
+                    return null;
+                }
+
+                // Promote "index." pages up a level
                 if (segments.Count > 0 && segments[segments.Count - 1].StartsWith("index."))
                 {
                     segments.RemoveAt(segments.Count - 1);
                 }
                 return segments;
             };
+            _placeholderFactory = (treePath, items, context) =>
+            {
+                items.Add(new MetadataItem(Keys.RelativeFilePath,
+                    new FilePath(string.Join("/", treePath.Concat(new[] {"index.html"})))));
+                return context.GetDocument(items);
+            };
+            _sort = (x, y) => Comparer.Default.Compare(
+                x.Get<object[]>(Keys.TreePath)?.LastOrDefault(),
+                y.Get<object[]>(Keys.TreePath)?.LastOrDefault());
         }
 
         /// <summary>
-        /// Specifies for each document if it is a root of a tree. This results in splitting the generated tree into multiple smaller ones.
+        /// Allows you to specify a factory function for the creation of placeholder documents which get
+        /// created to represent nodes in the tree for which there was no input document. The factory
+        /// gets passed the current tree path, the set of tree metadata that should be set in the document,
+        /// and the execution context which can be used to create a new document. If the factory function
+        /// returns null, a new document with the tree metadata is created.
         /// </summary>
-        /// <param name="config">A predicate (must return <c>bool</c>) that specifies if the current document is treated as the root of a new tree.</param>
-        public Tree WithRoots(DocumentConfig config)
+        /// <param name="factory">The factory function.</param>
+        public Tree WithPlaceholderFactory(Func<object[], MetadataItems, IExecutionContext, IDocument> factory)
         {
-            _isRoot = config;
-            return this;
-        }
-        /// <summary>
-        /// Specifies the order of the children in the tree.
-        /// </summary>
-        /// <param name="config">A predicate that must return an <c>int</c>.</param>
-        public Tree WithOrder(DocumentConfig config)
-        {
-            _getOrder = config;
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
+
+            _placeholderFactory = factory;
             return this;
         }
 
         /// <summary>
-        /// Defines the structure of the tree.
+        /// This specifies how the children of a given tree node should be sorted. The default behavior is to
+        /// sort based on the string value of the last component of the child node's tree path (I.e., the folder
+        /// or file name). The output document for each tree node is used as the input to the sort delegate.
         /// </summary>
-        /// <param name="config">A predicate that must return a <c>string[]</c>.</param>
-        public Tree WithPath(DocumentConfig config)
+        /// <param name="sort">A comparison delegate.</param>
+        public Tree WithSort(Comparison<IDocument> sort)
         {
-            _getPath = config;
+            if (sort == null)
+            {
+                throw new ArgumentNullException(nameof(sort));
+            }
+
+            _sort = sort;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies for each document if it is a root of a tree. This results in splitting the generated tree into multiple smaller ones,
+        /// removing the root node from the set of children of it's parent and setting it's parent to <c>null</c>.
+        /// </summary>
+        /// <param name="isRoot">A predicate (must return <c>bool</c>) that specifies if the current document is treated as the root of a new tree.</param>
+        public Tree WithRoots(DocumentConfig isRoot)
+        {
+            if (isRoot == null)
+            {
+                throw new ArgumentNullException(nameof(isRoot));
+            }
+
+            _isRoot = isRoot;
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the structure of the tree. If the delegate returns <c>null</c> the document
+        /// is excluded from the tree.
+        /// </summary>
+        /// <param name="treePath">A delegate that must return a sequence of objects.</param>
+        public Tree WithTreePath(DocumentConfig treePath)
+        {
+            if (treePath == null)
+            {
+                throw new ArgumentNullException(nameof(treePath));
+            }
+
+            _treePath = treePath;
             return this;
         }
 
@@ -90,190 +153,172 @@ namespace Wyam.Core.Modules.Metadata
             string parentKey = Keys.Parent, 
             string childrenKey = Keys.Children, 
             string previousSiblingKey = Keys.PreviousSibling, 
-            string nextSiblingKey = Keys.NextSibling, 
-            string nextKey = Keys.Next, 
-            string previousKey = Keys.Previous)
+            string nextSiblingKey = Keys.NextSibling,
+            string previousKey = Keys.Previous,
+            string nextKey = Keys.Next,
+            string treePathKey = Keys.TreePath)
         {
             _parentKey = parentKey;
             _childrenKey = childrenKey;
             _previousSiblingKey = previousSiblingKey;
             _nextSiblingKey = nextSiblingKey;
-            _nextKey = nextKey;
             _previousKey = previousKey;
+            _nextKey = nextKey;
+            _treePathKey = treePathKey;
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            Dictionary<string, TreeNode<IDocument>> treeElementLookup = new Dictionary<string, TreeNode<IDocument>>();
+            // Create a dictionary of tree nodes
+            Dictionary<object[], TreeNode> nodes = inputs
+                .AsParallel()
+                .Select(x => new TreeNode(this, x, context))
+                .Where(x => x.TreePath != null)
+                .ToDictionary(x => x.TreePath, new TreePathEqualityComparer());
 
-            Dictionary<IDocument, int> documentOrder = _getOrder != null
-                ? inputs.ToDictionary(x => x, x => (int)_getOrder(x, context))
-                : inputs.Select((value, index) => new { Index = index, Document = value }).ToDictionary(x => x.Document, x => x.Index);
-
-            // Generate TreeNodes
-            foreach (var keypair in inputs.Select(x => new { Key = x, Value = _getPath.Invoke<string[]>(x, context) }))
+            // Add links between parent and children (creating empty tree nodes as needed)
+            Queue<TreeNode> nodesToProcess = new Queue<TreeNode>(nodes.Values);
+            while(nodesToProcess.Count > 0)
             {
-                string[] splitedPath = keypair.Value;
-                IDocument document = keypair.Key;
+                TreeNode node = nodesToProcess.Dequeue();
 
-                for (int i = 1; i <= splitedPath.Length; i++)
+                // Skip root nodes
+                if (node.TreePath.Length == 0 
+                    || (node.InputDocument != null && _isRoot.Invoke<bool>(node.InputDocument, context)))
                 {
-                    string id = string.Join("/", splitedPath.Take(i));
-                    if (treeElementLookup.ContainsKey(id))
-                    {
-                        continue;
-                    }
-                    string parent = string.Join("/", splitedPath.Take(i - 1));
-                    TreeNode<IDocument> treeNode = new TreeNode<IDocument>(id, parent);
-                    if (i == splitedPath.Length)
-                    {
-                        treeNode.Value = document;
-                    }
-                    treeElementLookup.Add(id, treeNode);
+                    continue;
+                }
+
+                // Find (or create) the parent
+                TreeNode parent;
+                object[] parentTreePath = node.GetParentTreePath();
+                if (!nodes.TryGetValue(parentTreePath, out parent))
+                {
+                    parent = new TreeNode(this, parentTreePath, context);
+                    nodes.Add(parentTreePath, parent);
+                    nodesToProcess.Enqueue(parent);
+                }
+
+                // Add the parent and child relationship
+                node.Parent = parent;
+                parent.Children.Add(node);
+            }
+
+            // Sort all the children and return root nodes
+            foreach (TreeNode node in nodes.Values)
+            {
+                node.Children.Sort((x, y) => _sort(x.OutputDocument, y.OutputDocument));
+                if (node.Parent == null)
+                {
+                    yield return node.OutputDocument;
                 }
             }
+        }
 
-            // Concatenating TreeNodes
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
+        private class TreeNode
+        {
+            public object[] TreePath { get; }
+            public IDocument InputDocument { get; }
+            public IDocument OutputDocument { get; }
+            public TreeNode Parent { get; set; }
+            public List<TreeNode> Children { get; } = new List<TreeNode>();
+
+            // Placeholder
+            public TreeNode(Tree tree, object[] treePath, IExecutionContext context)
+                : this(tree, treePath, null, context)
             {
-                treeElement.Parent = treeElement.ParentId == ""
-                    ? null
-                    : treeElementLookup[treeElement.ParentId];
             }
 
-            // Get (and order) children
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
+            // Input document
+            public TreeNode(Tree tree, IDocument inputDocument, IExecutionContext context)
+                : this(tree, tree._treePath.Invoke<object[]>(inputDocument, context), inputDocument, context)
             {
-                treeElement.Children = treeElementLookup.Values
-                    .Where(x => x.ParentId == treeElement.Id)
-                    .OrderBy(x => x.Value != null ? documentOrder[x.Value] : -1)
-                    .ToList();
             }
 
-            // Split up Trees
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values.Where(x => x.Value != null))
+            private TreeNode(Tree tree, object[] treePath, IDocument inputDocument, IExecutionContext context)
             {
-                if ((bool)_isRoot(treeElement.Value, context))
+                if (treePath == null)
                 {
-                    treeElement.Parent.Children.Remove(treeElement);
-                    treeElement.Parent = null;
+                    throw new ArgumentNullException(nameof(treePath));
                 }
-            }
 
-            // Adding Metadata
-            foreach (TreeNode<IDocument> treeElement in treeElementLookup.Values)
-            {
+                TreePath = treePath;
+                InputDocument = inputDocument;
+
+                // Create the output document
                 MetadataItems metadata = new MetadataItems
                 {
-                    new MetadataItem(_childrenKey,
-                        new CachedDelegateMetadataValue(_ => new ReadOnlyCollection<IDocument> (treeElement.Children.Select(x=>x.Value).ToArray()))), 
-                    new MetadataItem(_parentKey,
-                        new CachedDelegateMetadataValue(_ => treeElement.Parent?.Value)),
-                    new MetadataItem(_nextSiblingKey,
-                        new CachedDelegateMetadataValue(_ => GetNextSilbling(treeElement))),
-                    new MetadataItem(_previousSiblingKey,
-                        new CachedDelegateMetadataValue(_ => GetPreviousSilbling(treeElement))),
-                    new MetadataItem(_nextKey,
-                        new CachedDelegateMetadataValue(_ => GetNextNodeMetadata(treeElement))),
-                    new MetadataItem(_previousKey,
-                        new CachedDelegateMetadataValue(_ => GetPreviousNode(treeElement)))
+                    new MetadataItem(tree._childrenKey,
+                        new CachedDelegateMetadataValue(_ => new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray()))),
+                    new MetadataItem(tree._parentKey,
+                        new CachedDelegateMetadataValue(_ => Parent?.OutputDocument)),
+                    new MetadataItem(tree._previousSiblingKey,
+                        new CachedDelegateMetadataValue(_ => GetPreviousSibling()?.OutputDocument)),
+                    new MetadataItem(tree._nextSiblingKey,
+                        new CachedDelegateMetadataValue(_ => GetNextSibling()?.OutputDocument)),
+                    new MetadataItem(tree._previousKey,
+                        new CachedDelegateMetadataValue(_ => GetPrevious()?.OutputDocument)),
+                    new MetadataItem(tree._nextKey,
+                        new CachedDelegateMetadataValue(_ => GetNext()?.OutputDocument)),
+                    new MetadataItem(tree._treePathKey, TreePath)
                 };
-                treeElement.Value = treeElement.Value == null
-                    ? context.GetDocument(metadata)
-                    : context.GetDocument(treeElement.Value, metadata);
-            }
-            
-            return treeElementLookup.Values.Where(x => x.Parent == null).Select(x => x.Value);
-        }
-
-        private IDocument GetPreviousNode(TreeNode<IDocument> treeElement)
-        {
-            TreeNode<IDocument> previoussilbling = GetPreviousSilblingTree(treeElement);
-            while (previoussilbling != null && previoussilbling.Children.Any())
-            {
-                previoussilbling = previoussilbling.Children.Last();
-            }
-            if (previoussilbling != null)
-            {
-                return previoussilbling.Value;
+                OutputDocument = inputDocument == null
+                    ? (tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata))
+                    : context.GetDocument(inputDocument, metadata);
             }
 
-            return treeElement.Parent?.Value;
-        }
+            public object[] GetParentTreePath() => TreePath.Take(TreePath.Length - 1).ToArray();
 
-        private IDocument GetNextNodeMetadata(TreeNode<IDocument> treeElement)
-        {
-            // Calculate the next node using a depth-first search
-            if (treeElement.Children.Any())
+            private TreeNode GetPreviousSibling() =>
+                Parent?.Children.AsEnumerable().Reverse().SkipWhile(x => x != this).Skip(1).FirstOrDefault();
+
+            private TreeNode GetNextSibling() =>
+                Parent?.Children.SkipWhile(x => x != this).Skip(1).FirstOrDefault();
+
+            private TreeNode GetPrevious()
             {
-                return treeElement.Children[0].Value;
-            }
-
-            IDocument nextSilbling = GetNextSilbling(treeElement);
-            if (nextSilbling != null)
-            {
-                return nextSilbling;
-            }
-
-            TreeNode<IDocument> currentElement = treeElement;
-
-            while (currentElement.Parent != null)
-            {
-                IDocument parrentSilbling = GetNextSilbling(currentElement);
-                if (parrentSilbling != null)
+                TreeNode previousSibling = GetPreviousSibling();
+                while (previousSibling != null && previousSibling.Children.Count > 0)
                 {
-                    return parrentSilbling;
+                    previousSibling = previousSibling.Children.Last();
                 }
-                currentElement = currentElement.Parent;
+                return previousSibling ?? Parent;
             }
-            return null;
+
+            private TreeNode GetNext()
+            {
+                if (Children.Count > 0)
+                {
+                    return Children.First();
+                }
+
+                TreeNode nextSibling = GetNextSibling();
+                if (nextSibling != null)
+                {
+                    return nextSibling;
+                }
+
+                TreeNode current = Parent;
+                while (current?.Parent != null)
+                {
+                    nextSibling = current.GetNextSibling();
+                    if (nextSibling != null)
+                    {
+                        return nextSibling;
+                    }
+                    current = current.Parent;
+                }
+                return null;
+            }
         }
 
-        private TreeNode<IDocument> GetPreviousSilblingTree(TreeNode<IDocument> treeElement)
+        private class TreePathEqualityComparer : IEqualityComparer<object[]>
         {
-            if (treeElement.Parent == null)
-            {
-                return null;
-            }
-            int indexInParent = treeElement.Parent.Children.IndexOf(treeElement);
-            if (indexInParent == 0)
-            {
-                return null;
-            }
-            return treeElement.Parent.Children[indexInParent - 1];
-        }
+            public bool Equals(object[] x, object[] y) => x.SequenceEqual(y);
 
-        private IDocument GetPreviousSilbling(TreeNode<IDocument> treeElement) => 
-            GetPreviousSilblingTree(treeElement)?.Value;
-
-        private IDocument GetNextSilbling(TreeNode<IDocument> treeElement)
-        {
-            if (treeElement.Parent == null)
-            {
-                return null;
-            }
-            int indexInParent = treeElement.Parent.Children.IndexOf(treeElement);
-            if (indexInParent == treeElement.Parent.Children.Count - 1)
-            {
-                return null;
-            }
-            return treeElement.Parent.Children[indexInParent + 1].Value;
-        }
-
-        [System.Diagnostics.DebuggerDisplay("TreeElement {Id}")]
-        private class TreeNode<T>
-        {
-            public TreeNode(string id, string parentId)
-            {
-                Id = id;
-                ParentId = parentId;
-            }
-            public string Id { get; }
-            public string ParentId { get; }
-            public T Value { get; set; }
-            public TreeNode<T> Parent { get; set; }
-            public List<TreeNode<T>> Children { get; set; }
+            public int GetHashCode(object[] obj) =>
+                obj?.Aggregate(17, (index, x) => index * 23 + (x?.GetHashCode() ?? 0)) ?? 0;
         }
     }
 }
