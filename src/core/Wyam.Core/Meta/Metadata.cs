@@ -60,6 +60,20 @@ namespace Wyam.Core.Meta
             return TryGetValue(key, out value) ? value : defaultValue;
         }
 
+        public object GetRaw(string key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            IDictionary<string, object> meta = Stack.FirstOrDefault(x => x.ContainsKey(key));
+            if (meta == null)
+            {
+                throw new KeyNotFoundException(nameof(key));
+            }
+            return meta[key];
+        }
+
         public T Get<T>(string key) => MetadataAs<T>().Get(key);
 
         public T Get<T>(string key, T defaultValue) => MetadataAs<T>().Get(key, defaultValue);

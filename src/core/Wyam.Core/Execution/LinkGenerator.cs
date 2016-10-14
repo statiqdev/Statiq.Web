@@ -15,7 +15,7 @@ namespace Wyam.Core.Execution
             FilePath filePath = path as FilePath;
             if (filePath != null)
             {
-                if (hideIndexPages && (filePath.FileName.FullPath == "index.htm" || filePath.FileName.FullPath == "index.html"))
+                if (hideIndexPages && filePath.FileName.FullPath.StartsWith("index."))
                 {
                     path = filePath.Directory;
                 }

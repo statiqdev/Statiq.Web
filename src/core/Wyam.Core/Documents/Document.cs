@@ -260,6 +260,8 @@ namespace Wyam.Core.Documents
 
         public object Get(string key, object defaultValue) => _metadata.Get(key, defaultValue);
 
+        public object GetRaw(string key) => _metadata.GetRaw(key);
+
         public T Get<T>(string key) => _metadata.Get<T>(key);
 
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);

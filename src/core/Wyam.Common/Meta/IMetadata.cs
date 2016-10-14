@@ -27,6 +27,15 @@ namespace Wyam.Common.Meta
         object Get(string key, object defaultValue = null);
 
         /// <summary>
+        /// Gets the raw value for the specified key. This method will not materialize <see cref="IMetadataValue"/>
+        /// values the way <see cref="Get(string, object)"/> will. A <see cref="KeyNotFoundException"/> will be thrown
+        /// for missing keys.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The raw value for the specified ke.y</returns>
+        object GetRaw(string key);
+
+        /// <summary>
         /// Gets the value for the specified key converted to the specified type. 
         /// This method never throws an exception. It will return default(T) if the key is not found
         /// or the value cannot be converted to T.

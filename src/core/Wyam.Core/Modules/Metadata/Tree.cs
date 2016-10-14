@@ -39,6 +39,7 @@ namespace Wyam.Core.Modules.Metadata
         private DocumentConfig _treePath;
         private Func<object[], MetadataItems, IExecutionContext, IDocument> _placeholderFactory;
         private Comparison<IDocument> _sort;
+        private bool _collapseRoot = false;
 
         private string _parentKey = Keys.Parent;
         private string _childrenKey = Keys.Children;
@@ -168,6 +169,17 @@ namespace Wyam.Core.Modules.Metadata
             return this;
         }
 
+        /// <summary>
+        /// Indicates that the root of the tree should be collapsed and the module
+        /// should output first-level documents as if they were root documents.
+        /// </summary>
+        /// <param name="collapseRoot"><c>tree</c> if the root should be collapsed.</param>
+        public Tree CollapseRoot(bool collapseRoot = true)
+        {
+            _collapseRoot = collapseRoot;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Create a dictionary of tree nodes
@@ -190,12 +202,18 @@ namespace Wyam.Core.Modules.Metadata
                     continue;
                 }
 
+                // Skip the root node if collapsing the root
+                object[] parentTreePath = node.GetParentTreePath();
+                if (parentTreePath.Length == 0 && _collapseRoot)
+                {
+                    continue;
+                }
+
                 // Find (or create) the parent
                 TreeNode parent;
-                object[] parentTreePath = node.GetParentTreePath();
                 if (!nodes.TryGetValue(parentTreePath, out parent))
                 {
-                    parent = new TreeNode(this, parentTreePath, context);
+                    parent = new TreeNode(parentTreePath);
                     nodes.Add(parentTreePath, parent);
                     nodesToProcess.Enqueue(parent);
                 }
@@ -205,12 +223,12 @@ namespace Wyam.Core.Modules.Metadata
                 parent.Children.Add(node);
             }
 
-            // Sort all the children and return root nodes
+            // Return root nodes, recursively generating their child output documents
             foreach (TreeNode node in nodes.Values)
             {
-                node.Children.Sort((x, y) => _sort(x.OutputDocument, y.OutputDocument));
                 if (node.Parent == null)
                 {
+                    node.GenerateOutputDocuments(this, context);
                     yield return node.OutputDocument;
                 }
             }
@@ -220,23 +238,12 @@ namespace Wyam.Core.Modules.Metadata
         {
             public object[] TreePath { get; }
             public IDocument InputDocument { get; }
-            public IDocument OutputDocument { get; }
+            public IDocument OutputDocument { get; private set; }
             public TreeNode Parent { get; set; }
             public List<TreeNode> Children { get; } = new List<TreeNode>();
 
-            // Placeholder
-            public TreeNode(Tree tree, object[] treePath, IExecutionContext context)
-                : this(tree, treePath, null, context)
-            {
-            }
-
-            // Input document
-            public TreeNode(Tree tree, IDocument inputDocument, IExecutionContext context)
-                : this(tree, tree._treePath.Invoke<object[]>(inputDocument, context), inputDocument, context)
-            {
-            }
-
-            private TreeNode(Tree tree, object[] treePath, IDocument inputDocument, IExecutionContext context)
+            // New placeholder node
+            public TreeNode(object[] treePath)
             {
                 if (treePath == null)
                 {
@@ -244,13 +251,39 @@ namespace Wyam.Core.Modules.Metadata
                 }
 
                 TreePath = treePath;
-                InputDocument = inputDocument;
+            }
 
-                // Create the output document
+            // New node from an input document
+            public TreeNode(Tree tree, IDocument inputDocument, IExecutionContext context)
+            {
+                TreePath = tree._treePath.Invoke<object[]>(inputDocument, context);
+                InputDocument = inputDocument;
+            }
+
+            // We need to build the tree from the bottom up so that the children don't have to be lazy
+            // This also sorts the children once they're created
+            public void GenerateOutputDocuments(Tree tree, IExecutionContext context)
+            {
+                // Recursively build output documents for children
+                foreach (TreeNode child in Children)
+                {
+                    child.GenerateOutputDocuments(tree, context);
+                }
+
+                // We're done if we've already created the output document
+                if (OutputDocument != null)
+                {
+                    return;
+                }
+
+                // Sort the child documents since they're created now
+                Children.Sort((x, y) => tree._sort(x.OutputDocument, y.OutputDocument));
+
+                // Create this output document
                 MetadataItems metadata = new MetadataItems
                 {
-                    new MetadataItem(tree._childrenKey,
-                        new CachedDelegateMetadataValue(_ => new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray()))),
+                    new MetadataItem(tree._childrenKey, 
+                        new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray())),
                     new MetadataItem(tree._parentKey,
                         new CachedDelegateMetadataValue(_ => Parent?.OutputDocument)),
                     new MetadataItem(tree._previousSiblingKey,
@@ -263,9 +296,9 @@ namespace Wyam.Core.Modules.Metadata
                         new CachedDelegateMetadataValue(_ => GetNext()?.OutputDocument)),
                     new MetadataItem(tree._treePathKey, TreePath)
                 };
-                OutputDocument = inputDocument == null
+                OutputDocument = InputDocument == null
                     ? (tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata))
-                    : context.GetDocument(inputDocument, metadata);
+                    : context.GetDocument(InputDocument, metadata);
             }
 
             public object[] GetParentTreePath() => TreePath.Take(TreePath.Length - 1).ToArray();

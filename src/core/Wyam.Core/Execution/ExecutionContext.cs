@@ -16,9 +16,11 @@ using Wyam.Core.Meta;
 
 namespace Wyam.Core.Execution
 {
-    internal class ExecutionContext : IExecutionContext
+    internal class ExecutionContext : IExecutionContext, IDisposable
     {
         private readonly Pipeline _pipeline;
+
+        private bool _disposed;
         
         public Engine Engine { get; }
 
@@ -56,6 +58,28 @@ namespace Wyam.Core.Execution
         }
 
         internal ExecutionContext Clone(IModule module) => new ExecutionContext(this, module);
+
+
+        /// <summary>
+        /// The context is disposed after use by each module to ensure modules aren't accessing stale data
+        /// if they continue to create documents or perform other operations after the module is done
+        /// executing. A disposed context can no longer be used.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                _disposed = true;
+            }
+        }
+
+        private void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(ExecutionContext));
+            }
+        }
 
         public bool TryConvert<T>(object value, out T result) => TypeHelper.TryConvert(value, out result);
 
@@ -100,6 +124,7 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument()
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this);
             _pipeline.AddClonedDocument(document);
             return document;
@@ -107,6 +132,7 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
             if (sourceDocument != null && sourceDocument.Source == null)
             {
@@ -119,6 +145,7 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, content, items);
             _pipeline.AddClonedDocument(document);
             return document;
@@ -126,6 +153,7 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument(IDocument sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, stream, items, disposeStream);
             if (sourceDocument != null && sourceDocument.Source == null)
             {
@@ -138,6 +166,7 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, stream, items, disposeStream);
             _pipeline.AddClonedDocument(document);
             return document;
@@ -145,15 +174,14 @@ namespace Wyam.Core.Execution
 
         public IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items)
         {
+            CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, items);
             _pipeline.AddClonedDocument(document);
             return document;
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
-        {
-            return Execute(modules, inputs, null);
-        }
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) => 
+            Execute(modules, inputs, null);
 
         // Executes the module with an empty document containing the specified metadata items
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) => 
@@ -164,6 +192,8 @@ namespace Wyam.Core.Execution
 
         private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)
         {
+            CheckDisposed();
+
             if (modules == null)
             {
                 return ImmutableArray<IDocument>.Empty;
@@ -199,6 +229,8 @@ namespace Wyam.Core.Execution
         public IMetadata<T> MetadataAs<T>() => GlobalMetadata.MetadataAs<T>();
 
         public object Get(string key, object defaultValue = null) => GlobalMetadata.Get(key, defaultValue);
+
+        public object GetRaw(string key) => GlobalMetadata.Get(key);
 
         public T Get<T>(string key) => GlobalMetadata.Get<T>(key);
 

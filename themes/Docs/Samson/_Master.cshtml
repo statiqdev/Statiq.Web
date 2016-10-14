@@ -67,14 +67,16 @@
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">                            
                             @{
-                                Dictionary<string, string> pages = Context
+                                List<Tuple<string, string>> pages = Context
                                     .Documents[DocsPipelines.Pages]
-                                    .ToDictionary(x => x.String(DocsKeys.Title, x.FilePath(Keys.RelativeFilePath)?.FullPath ?? string.Empty), x => Context.GetLink(x));
-                                pages.Add("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix)));
-                                foreach(KeyValuePair<string, string> page in pages)
+                                    .Select(x => Tuple.Create(x.String(DocsKeys.Title), Context.GetLink(x)))
+                                    .OrderBy(x => x.Item1)
+                                    .ToList();
+                                pages.Add(Tuple.Create("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix))));
+                                foreach(Tuple<string, string> page in pages)
                                 {
                                     string active = null; // or "active"
-                                    <li class="@active"><a href="@page.Value">@page.Key</a></li>
+                                    <li class="@active"><a href="@page.Item2">@page.Item1</a></li>
                                 }
                             }
                         </ul>       
