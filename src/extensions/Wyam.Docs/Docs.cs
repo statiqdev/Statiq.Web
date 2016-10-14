@@ -40,11 +40,21 @@ namespace Wyam.Docs
                     new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/{{!_,}}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
                 new Tree()
+                    .WithPlaceholderFactory((path, items, context) =>
+                    {
+                        items.Add(Keys.RelativeFilePath, new FilePath(string.Join("/", path.Concat(new[] { "index.html" }))));
+                        items.Add(DocsKeys.NoSidebar, true);
+                        items.Add(DocsKeys.Title, path.Last().ToString());
+                        return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
+                    })
+                    .CollapseRoot()
             );
 
             engine.Pipelines.Add(DocsPipelines.RenderPages,
+                new Documents(DocsPipelines.Pages),
                 new Flatten(),
-                new Razor.Razor(),
+                new Razor.Razor()
+                    .WithLayout("/_Layout.cshtml"),
                 new WriteFiles(".html")
             );
 

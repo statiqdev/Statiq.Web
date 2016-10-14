@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         public class ExecuteTests : TreeFixture
         {
             [Test]
-            public void GetsTree()
+            public void GetsTreeWithCommonRoot()
             {
                 // Given
                 Engine engine = new Engine();
@@ -56,6 +56,70 @@ namespace Wyam.Core.Tests.Modules.Metadata
                     "root/c/index.html",
                     "root/c/d/index.html",
                     "root/c/d/5.txt");
+            }
+
+            [Test]
+            public void GetsTree()
+            {
+                // Given
+                Engine engine = new Engine();
+                Pipeline pipeline = new Pipeline("Pipeline", null);
+                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = GetDocuments(context,
+                    "a/2.txt",
+                    "b/3.txt",
+                    "a/1.txt",
+                    "b/x/4.txt",
+                    "c/d/5.txt",
+                    "6.txt"
+                );
+                Tree tree = new Tree();
+
+                // When
+                List<IDocument> documents = tree.Execute(inputs, context).ToList();
+
+                // Then
+                Assert.AreEqual(1, documents.Count);
+                AssertTree(documents[0],
+                    "index.html",
+                    "6.txt",
+                    "a/index.html",
+                    "a/1.txt",
+                    "a/2.txt",
+                    "b/index.html",
+                    "b/3.txt",
+                    "b/x/index.html",
+                    "b/x/4.txt",
+                    "c/index.html",
+                    "c/d/index.html",
+                    "c/d/5.txt");
+            }
+
+            [Test]
+            public void CollapseRoot()
+            {
+                // Given
+                Engine engine = new Engine();
+                Pipeline pipeline = new Pipeline("Pipeline", null);
+                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = GetDocuments(context,
+                    "a/2.txt",
+                    "b/3.txt",
+                    "a/1.txt",
+                    "b/x/4.txt",
+                    "c/d/5.txt",
+                    "6.txt"
+                );
+                Tree tree = new Tree().CollapseRoot();
+
+                // When
+                List<IDocument> documents = tree.Execute(inputs, context).ToList();
+
+                // Then
+                Assert.AreEqual(4, documents.Count);
+                CollectionAssert.AreEquivalent(
+                    new[] {"a/index.html", "b/index.html", "c/index.html", "6.txt"},
+                    documents.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath));
             }
 
             [Test]

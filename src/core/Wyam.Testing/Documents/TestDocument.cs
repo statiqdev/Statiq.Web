@@ -61,6 +61,8 @@ namespace Wyam.Testing.Documents
             return TryGetValue(key, out value) ? value : defaultValue;
         }
 
+        public object GetRaw(string key) => _metadata[key];
+
         public T Get<T>(string key) => (T)Get(key);
 
         public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);

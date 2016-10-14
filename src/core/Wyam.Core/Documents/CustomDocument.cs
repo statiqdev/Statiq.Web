@@ -48,6 +48,8 @@ namespace Wyam.Core.Documents
         public object Get(string key, object defaultValue = null) =>
             Document.Get(key, defaultValue);
 
+        public object GetRaw(string key) => Document.GetRaw(key);
+
         public T Get<T>(string key) => Document.Get<T>(key);
 
         public T Get<T>(string key, T defaultValue) =>
