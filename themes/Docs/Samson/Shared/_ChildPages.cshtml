@@ -1,47 +1,47 @@
-@{
-	string folder = Model.FilePath("RelativeFilePath")?.Segments[0];
-	IList<IGrouping<string, IDocument>> categoryGroups = folder == null 
-		? new List<IGrouping<string, IDocument>>() 
-		: Documents
-			.Where(x => x.ContainsKey("RelativeFilePath")
-				&& x.FilePath("RelativeFilePath").FileNameWithoutExtension.FullPath != "index" 
-				&& x.FilePath("RelativeFilePath")?.Segments[0] == folder)
-			.GroupBy(x => x.String("Category"))
-			.OrderBy(x => x.Key)
-			.ToList();
-	
-	foreach(IGrouping<string, IDocument> categoryGroup in categoryGroups)
+@{	
+	IReadOnlyList<IDocument> children = Model.DocumentList(Keys.Children);
+	if(children != null && children.Count > 0)
 	{
-		<div class="box">
-			<div class="box-body no-padding">
-				<table class="table table-striped table-hover two-cols-alt">
-					@if(!string.IsNullOrWhiteSpace(categoryGroup.Key))
-					{
-						<thead>
-							<tr class="active"><th colspan="2">@categoryGroup.Key</th></tr>
-						</thead>
-					}
-					
-					<tbody>
-						@foreach(IDocument childDoc in categoryGroup
-							.OrderBy(x => x.Get<int>("Order", 1000))
-							.ThenBy(x => x.String("Title")))
+		IList<IGrouping<string, IDocument>> categoryGroups = 
+			children
+				.GroupBy(x => x.String(DocsKeys.Category))
+				.OrderBy(x => x.Key)
+				.ToList();
+	
+		foreach(IGrouping<string, IDocument> categoryGroup in categoryGroups)
+		{
+			<div class="box">
+				<div class="box-body no-padding">
+					<table class="table table-striped table-hover two-cols-alt">
+						@if(!string.IsNullOrWhiteSpace(categoryGroup.Key))
 						{
-							<tr>
-								<td><strong><a href="@Context.GetLink(childDoc)">@(childDoc.String("Title", childDoc.String("SourceFileBase")))</a></strong></td>
-								<td>
-									@{
-										if(childDoc.ContainsKey("Description"))
-										{
-											<text>@(childDoc.String("Description"))</text>
-										}					
-									}
-								</td>
-							</tr>
+							<thead>
+								<tr class="active"><th colspan="2">@categoryGroup.Key</th></tr>
+							</thead>
 						}
-					</tbody>				
-				</table>
-			</div>
-		</div> 
+						
+						<tbody>
+							@foreach(IDocument child in categoryGroup
+								.OrderBy(x => x.Get<int>(DocsKeys.Order, 1000))
+								.ThenBy(x => x.String(DocsKeys.Title)))
+							{
+								object[] childTreePath = child.Get<object[]>(Keys.TreePath);
+								<tr>
+									<td><strong><a href="@Context.GetLink(child)">@(child.String(DocsKeys.Title, childTreePath.Last().ToString()))</a></strong></td>
+									<td>
+										@{
+											if(child.ContainsKey(DocsKeys.Description))
+											{
+												<text>@(child.String(DocsKeys.Description))</text>
+											}					
+										}
+									</td>
+								</tr>
+							}
+						</tbody>				
+					</table>
+				</div>
+			</div> 
+		}
 	}
 }

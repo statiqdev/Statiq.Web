@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,6 @@ namespace Wyam.Docs
                     .WithPlaceholderFactory((path, items, context) =>
                     {
                         items.Add(Keys.RelativeFilePath, new FilePath(string.Join("/", path.Concat(new[] { "index.html" }))));
-                        items.Add(DocsKeys.NoSidebar, true);
                         items.Add(DocsKeys.Title, path.Last().ToString());
                         return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
                     })
@@ -52,6 +52,8 @@ namespace Wyam.Docs
 
             engine.Pipelines.Add(DocsPipelines.RenderPages,
                 new Documents(DocsPipelines.Pages),
+                // Hide the sidebar for root pages if there's no children
+                new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar, (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)),
                 new Flatten(),
                 new Razor.Razor()
                     .WithLayout("/_Layout.cshtml"),

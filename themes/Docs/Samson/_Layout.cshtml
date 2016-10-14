@@ -4,7 +4,12 @@
 }
 
 @section Sidebar {
-	@RenderSection("Sidebar", false)
+	@if (IsSectionDefined("Sidebar")) {
+		RenderSection("Sidebar");
+	}
+	else { 		
+		@Html.Partial("Sidebar/_ChildPages") 
+	}
 }
 
 @if(Model.Get<bool>(DocsKeys.NoContainer, false))
