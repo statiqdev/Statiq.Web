@@ -1,31 +1,17 @@
 @{
-	string folder = Model.FilePath("RelativeFilePath")?.Segments[0];
-	IList<IGrouping<string, IDocument>> categoryGroups = folder == null 
-		? new List<IGrouping<string, IDocument>>() 
-		: Documents
-			.Where(x => x.ContainsKey("RelativeFilePath")
-				&& x.FilePath("RelativeFilePath").FileNameWithoutExtension.FullPath != "index" 
-				&& x.FilePath("RelativeFilePath")?.Segments[0] == folder)
-			.GroupBy(x => x.String("Category"))
-			.OrderBy(x => x.Key)
-			.ToList();
-	foreach(IGrouping<string, IDocument> categoryGroup in categoryGroups)
+	// Get the root
+	IDocument root = Document;
+	IDocument parent = root.Document(Keys.Parent);
+	while(parent != null)
 	{
-		if(!string.IsNullOrWhiteSpace(categoryGroup.Key))
-		{
-			<li class="header">@categoryGroup.Key</li>
-		}
-						
-		foreach(IDocument childDoc in categoryGroup
-			.OrderBy(x => x.Get<int>("Order", 1000))
-			.ThenBy(x => x.String("Title")))
-		{
-			string subActive = Model.String("RelativeFilePath") == childDoc.String("RelativeFilePath") ? "active" : null;
-			<li class="@subActive">
-				<a href="@Context.GetLink(childDoc)">
-					@(childDoc.String("Title", childDoc.String("SourceFileBase")))
-				</a>
-			</li>
-		}                             
+		root = parent;
+		parent = root.Document(Keys.Parent);
+	}	
+	
+	// Display the menu
+	IReadOnlyList<IDocument> children = root.DocumentList(Keys.Children);
+	if(children != null && children.Count > 0)
+	{
+		@Html.Partial("Sidebar/_ChildPagesMenu", children)
 	}
 }

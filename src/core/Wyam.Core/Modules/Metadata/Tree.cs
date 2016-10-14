@@ -21,6 +21,12 @@ namespace Wyam.Core.Modules.Metadata
     /// promoted to the node that represents the parent folder level. For any folder that does not contain an "index.*" file,
     /// an empty placeholder tree node is used to represent the folder.
     /// </summary>
+    /// <remarks>
+    /// Note that if you clone documents from the tree, the relationships of the cloned document (parent, child, etc.)
+    /// will not be updated to the new clones. In other words, your new document will still be pointing to the old
+    /// versions of it's parent, children, etc. To update the tree after cloning documents you will need to recreate it
+    /// by rerunning this module on all the newly created documents again.
+    /// </remarks>
     /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata> 
     /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata> 
     /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children 

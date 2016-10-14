@@ -1,0 +1,45 @@
+@model IReadOnlyList<IDocument>
+
+@{
+    // Group by category
+    IList<IGrouping<string, IDocument>> categoryGroups = Model
+        .GroupBy(x => x.String(DocsKeys.Category))
+        .OrderBy(x => x.Key)
+        .ToList();
+    foreach(IGrouping<string, IDocument> categoryGroup in categoryGroups)
+    {        
+        if(!string.IsNullOrWhiteSpace(categoryGroup.Key))
+        {
+            <li class="header">@categoryGroup.Key</li>
+        }
+
+        // Iterate documents in this category
+        foreach(IDocument child in categoryGroup
+            .OrderBy(x => x.Get<int>(DocsKeys.Order, 1000))
+            .ThenBy(x => x.String(DocsKeys.Title)))
+        {
+            object[] currentTreePath = Document.Get<object[]>(Keys.TreePath);
+            object[] childTreePath = child.Get<object[]>(Keys.TreePath);                
+            string childTitle = child.String(DocsKeys.Title, childTreePath.Last().ToString());  
+            string parentActive = currentTreePath.Take(childTreePath.Length).SequenceEqual(childTreePath) ? "active" : null;   
+            string childActive = parentActive != null && currentTreePath.Length == childTreePath.Length ? "active" : null;              
+            IReadOnlyList<IDocument> children = child.DocumentList(Keys.Children);
+            if(children != null && children.Count > 0)
+            {
+                // Parent                
+                <li class="treeview @parentActive">
+                    <a href="#">@childTitle <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li class="@childActive"><a href="@Context.GetLink(child)">Overview</a></li>
+                        @Html.Partial("Sidebar/_ChildPagesMenu", children)
+                    </ul>
+                </li>
+            }
+            else
+            {
+                // Leaf
+                <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
+            }
+        }
+    }
+}
