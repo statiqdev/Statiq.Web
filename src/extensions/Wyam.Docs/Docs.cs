@@ -52,9 +52,13 @@ namespace Wyam.Docs
 
             engine.Pipelines.Add(DocsPipelines.RenderPages,
                 new Documents(DocsPipelines.Pages),
-                // Hide the sidebar for root pages if there's no children
-                new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar, (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)),
                 new Flatten(),
+                // Hide the sidebar for root pages if there's no children
+                new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar, 
+                    (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
+                    && doc.Document(Keys.Parent) == null),
+                // Set the title to the file name if there wasn't already a title
+                new Meta(DocsKeys.Title, (doc, ctx) => doc.String(DocsKeys.Title, doc.Get<object[]>(Keys.TreePath).Last().ToString())),
                 new Razor.Razor()
                     .WithLayout("/_Layout.cshtml"),
                 new WriteFiles(".html")
@@ -84,21 +88,8 @@ namespace Wyam.Docs
                 new WriteFiles()
             );
 
-            engine.Pipelines.Add(DocsPipelines.Content,
-                new ReadFiles("**/*.md"),
-                new FrontMatter(new Yaml.Yaml()),
-                new Markdown.Markdown(),
-                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
-                new Concat(
-                    new ReadFiles("**/{!_,}*.cshtml"),
-                    new FrontMatter(new Yaml.Yaml())
-                ),
-                new Razor.Razor(),
-                new WriteFiles(".html")
-            );
-
             engine.Pipelines.Add(DocsPipelines.Less,
-                new ReadFiles("css/*.less"),
+                new ReadFiles("assets/css/*.less"),
                 new Less.Less(),
                 new WriteFiles(".css")
             );
