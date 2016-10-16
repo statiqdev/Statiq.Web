@@ -9,20 +9,20 @@
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
         <title>Wyam - @ViewData[DocsKeys.Title]</title>
-        <link href="/css/bootstrap.css" rel="stylesheet" />
-        <link href="/css/AdminLTE.css" rel="stylesheet" />
-        <link href="/css/theme.css" rel="stylesheet" />
-        <link href="/css/prettify.css" rel="stylesheet">
-        <link href="/css/github.css" rel="stylesheet">
+        <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+        <link href="/assets/css/AdminLTE.css" rel="stylesheet" />
+        <link href="/assets/css/theme.css" rel="stylesheet" />
+        <link href="/assets/css/prettify.css" rel="stylesheet">
+        <link href="/assets/css/github.css" rel="stylesheet">
         <link href="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.css" rel="stylesheet">
-        <link href="/css/master.css" rel="stylesheet" />
+        <link href="/assets/css/master.css" rel="stylesheet" />
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
         <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <script src="/js/jQuery-2.1.4.min.js"></script>
-        <script src="/js/bootstrap.min.js"></script>        
-        <script src="/js/app.min.js"></script>         
-        <script src="/js/prettify.js"></script>   
-        <script src="/js/jquery.slimscroll.min.js"></script>
+        <script src="/assets/js/jQuery-2.2.3.min.js"></script>
+        <script src="/assets/js/bootstrap.min.js"></script>        
+        <script src="/assets/js/app.min.js"></script>         
+        <script src="/assets/js/prettify.js"></script>   
+        <script src="/assets/js/jquery.slimscroll.min.js"></script>
         <script src="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.min.js"></script>
         <!--[if lt IE 9]>
         <script src="/Scripts/html5shiv.min.js"></script>
@@ -41,9 +41,9 @@
                      
                 <a href="/" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><img src="/Content/images/nav-logo.png"></span>
+                    <span class="logo-mini"><img src="/assets/img/logo.png"></span>
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><img src="/Content/images/nav-logo.png"></span>
+                    <span class="logo-lg"><img src="/assets/img/logo.png"></span>
                 </a>   
                          
                 <nav class="navbar navbar-static-top" role="navigation">
@@ -75,7 +75,8 @@
                                 pages.Add(Tuple.Create("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix))));
                                 foreach(Tuple<string, string> page in pages)
                                 {
-                                    string active = null; // or "active"
+                                    <!-- @Model.String("RelativeFilePath") || @page.Item2 -->
+                                    string active = Context.GetLink(Document).StartsWith(page.Item2) ? "active" : null;
                                     <li class="@active"><a href="@page.Item2">@page.Item1</a></li>
                                 }
                             }
