@@ -13,6 +13,7 @@ namespace Wyam.Docs
         /// or a collection of <c>string</c>. This will be evaluated
         /// from the context of the input virtual file system.
         /// </summary>
+        public const string SiteTitle = nameof(SiteTitle);
         public const string SourceFiles = nameof(SourceFiles);
         public const string IncludeGlobal = nameof(IncludeGlobal);
         public const string ApiPathPrefix = nameof(ApiPathPrefix);

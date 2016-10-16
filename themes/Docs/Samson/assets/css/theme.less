@@ -2,14 +2,24 @@
 @import "bootstrap/variables.less";
 @import "adminlte/variables.less";
 @import "adminlte/mixins.less";
+@import "theme/variables.less";
 
 body.wyam {
   background-image: none;
   background-color: #f4f4f4;
 
+  a:link,
+  a:visited,
+  a:active {
+    color: @theme-primary;
+  }
+  a:hover {
+      color: lighten(@theme-primary, 10%);
+  }
+
   &.layout-boxed {  
     .top-banner {
-      background-color: @light-blue;
+      background-color: @theme-primary;
       position: absolute;
       top: 0;
       left: 0;
@@ -81,14 +91,14 @@ body.wyam {
 .wyam {
   //Navbar
   .main-header {    
-    background-color: @light-blue;
+    background-color: @theme-primary;
       
     .navbar {
-      .navbar-variant(@light-blue; #fff);
+      .navbar-variant(@theme-primary; #fff);
       .sidebar-toggle {
         color: #fff;
         &:hover {
-          background-color: darken(@light-blue, 5%);
+          background-color: darken(@theme-primary, 5%);
         }
       }
       .navbar-toggle
@@ -107,7 +117,7 @@ body.wyam {
               a {
                 color: #fff;
                 &:hover {
-                  background: darken(@light-blue, 5%);
+                  background: darken(@theme-primary, 5%);
                 }
               }
             }
@@ -117,7 +127,7 @@ body.wyam {
     
       //Logo
       .logo {
-        .logo-variant(@light-blue);
+        .logo-variant(@theme-primary);
         @media (max-width: @screen-header-collapse) {
           position: absolute;
           top: 0;
@@ -135,7 +145,7 @@ body.wyam {
       }
   
       li.user-header {
-        background-color: @light-blue;
+        background-color: @theme-primary;
       }
     }
     
@@ -164,7 +174,7 @@ body.wyam {
     }
     
     //Create the sidebar skin
-    .skin-light-sidebar(@light-blue);
+    .skin-light-sidebar(@theme-primary);
     
     .sidebar {
       padding: 30px 12px 0 12px;
@@ -186,6 +196,15 @@ body.wyam {
         padding-bottom: 6px;        
       }
 
+      li a:link,
+      li a:visited,
+      li a:active {
+        color: @gray-dark;
+      }
+      li a:hover {
+       color: #000;
+      }
+
       li.treeview.active > a,
       & > li.treeview.active > a,
       li.treeview.active:hover > a,
@@ -202,7 +221,7 @@ body.wyam {
       li.active:hover > a,
       & > li.active:hover > a
       {
-          background-color: @light-blue;
+          background-color: @theme-primary;
           color: white;
       }
             
@@ -238,13 +257,13 @@ body.wyam {
     
     .table thead tr
     {
-        background-color: @light-blue;
+        background-color: @theme-primary;
         color: #fff;
     }
     
     .box
     {
-        border-top-color: darken(@light-blue, 10%);    
+        border-top-color: darken(@theme-primary, 10%);    
     }
           
     .main-header,  
@@ -277,6 +296,6 @@ body.wyam {
 }
 
 .wyam.layout-top-nav .main-header > .logo {
-  .logo-variant(@light-blue);
+  .logo-variant(@theme-primary);
 }
 
