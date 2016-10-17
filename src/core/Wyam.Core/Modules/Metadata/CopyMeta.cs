@@ -22,7 +22,8 @@ namespace Wyam.Core.Modules.Metadata
         /// The specified object in fromKey is copied to toKey. If a format is provided, the fromKey value is processed through string.Format before being copied (if the existing value is a DateTime, the format is passed as the argument to ToString).
         /// </summary>
         /// <param name="fromKey">The metadata key to copy from.</param>
-        /// <param name="metadata">The metadata key to copy to.</param>
+        /// <param name="toKey">The metadata key to copy to.</param>
+        /// <param name="format">The formatting to apply to the new value.</param>
         public CopyMeta(string fromKey, string toKey, string format = null)
         {
             if (fromKey == null)

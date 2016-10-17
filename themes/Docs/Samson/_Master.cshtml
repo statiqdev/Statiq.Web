@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <title>@Context.String(DocsKeys.SiteTitle, "Docs") - @ViewData[DocsKeys.Title]</title>
+        <title>@Context.String(DocsKeys.SiteTitle, "Docs") - @ViewData[Keys.Title]</title>
         <link href="/assets/css/bootstrap.css" rel="stylesheet" />
         <link href="/assets/css/AdminLTE.css" rel="stylesheet" />
         <link href="/assets/css/theme.css" rel="stylesheet" />
@@ -71,7 +71,7 @@
                             @{
                                 List<Tuple<string, string>> pages = Context
                                     .Documents[DocsPipelines.Pages]
-                                    .Select(x => Tuple.Create(x.String(DocsKeys.Title), Context.GetLink(x)))
+                                    .Select(x => Tuple.Create(x.String(Keys.Title), Context.GetLink(x)))
                                     .OrderBy(x => x.Item1)
                                     .ToList();
                                 pages.Add(Tuple.Create("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix))));
