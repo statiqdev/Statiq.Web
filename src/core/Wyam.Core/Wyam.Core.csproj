@@ -107,6 +107,7 @@
     <Compile Include="Modules\Metadata\Index.cs" />
     <Compile Include="Modules\Control\OrderBy.cs" />
     <Compile Include="Modules\Control\Paginate.cs" />
+    <Compile Include="Modules\Metadata\Title.cs" />
     <Compile Include="Modules\Metadata\Tree.cs" />
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\Metadata\ValidateMeta.cs" />

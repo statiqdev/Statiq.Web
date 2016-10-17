@@ -1,6 +1,6 @@
 @{
 	Layout = "/_Master.cshtml";
-	ViewData[DocsKeys.Title] = @Model.Get(DocsKeys.Title, string.Empty);
+	ViewData[Keys.Title] = @Model.Get(Keys.Title, string.Empty);
 }
 
 @section Sidebar {
@@ -19,7 +19,7 @@
 else
 {
 	<section class="content-header">
-		<h1>@ViewData[DocsKeys.Title]</h1>
+		<h1>@ViewData[Keys.Title]</h1>
 	</section>
 	<section class="content">
 		@RenderBody()

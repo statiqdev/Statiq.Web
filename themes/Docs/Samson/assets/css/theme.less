@@ -299,3 +299,96 @@ body.wyam {
   .logo-variant(@theme-primary);
 }
 
+hr {
+    border-top-color: #B5BBC8;
+}
+
+.lead {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid @theme-primary;
+}
+
+.three-cols th,
+.three-cols td {
+	width: 30%;
+}
+
+.two-cols th,
+.two-cols td {
+    width: 60%;
+}
+
+.two-cols th:last-child,
+.two-cols td:last-child,
+.three-cols th:last-child,
+.three-cols td:last-child {
+	width: 40%;
+}
+
+.two-cols-alt th,
+.two-cols-alt td {
+    width: 30%;
+}
+
+.two-cols-alt th:last-child,
+.two-cols-alt td:last-child {
+	width: 70%;
+}
+
+.larger {
+    font-size: @font-size-large;
+}
+
+.smaller {
+    font-size: @font-size-small;
+}
+
+.content-header > hr {
+    margin-bottom: 0;
+}
+
+h1 {
+	font-weight: bold;
+}
+
+dl ul,
+dl ol {
+	margin-bottom: 0;
+}
+
+.box-body dl,
+.box-body.lead {
+	margin-bottom: 0;
+}
+
+.paramref, .typeparamref {
+	font-style: italic;
+}
+
+/* Code styles */
+pre,
+pre.prettyprint {
+    padding: 8px;
+    margin: 0 0 8px 0;
+    overflow: auto;
+    word-wrap: normal;
+    word-break: normal;
+    border-color: #ddd;
+    background-color: #f3f3f3;
+}
+
+/* Mermaid */
+
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+  fill: #B1D1E4;
+  stroke: #1F4860;
+}
+
+.cluster rect {
+  fill: #f3f3f3 !important;
+  stroke: #ddd !important;
+}

@@ -40,11 +40,13 @@ namespace Wyam.Docs
                     // Add any additional Razor pages
                     new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/{{!_,}}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
+                new Title(),
                 new Tree()
                     .WithPlaceholderFactory((path, items, context) =>
                     {
-                        items.Add(Keys.RelativeFilePath, new FilePath(string.Join("/", path.Concat(new[] { "index.html" }))));
-                        items.Add(DocsKeys.Title, path.Last().ToString());
+                        FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] {"index.html"})));
+                        items.Add(Keys.RelativeFilePath, indexPath);
+                        items.Add(Keys.Title, Title.GetTitle(indexPath));
                         return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
                     })
                     .CollapseRoot()
@@ -57,8 +59,7 @@ namespace Wyam.Docs
                 new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar, 
                     (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
                     && doc.Document(Keys.Parent) == null),
-                // Set the title to the file name if there wasn't already a title
-                new Meta(DocsKeys.Title, (doc, ctx) => doc.String(DocsKeys.Title, doc.Get<object[]>(Keys.TreePath).Last().ToString())),
+                new Title(),
                 new Razor.Razor()
                     .WithLayout("/_Layout.cshtml"),
                 new WriteFiles(".html")
@@ -82,7 +83,7 @@ namespace Wyam.Docs
                 new Meta(Keys.RelativeFilePath, 
                     ctx => new DirectoryPath(ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)).CombineFile("index.html")),
                 new Meta(Keys.SourceFileName, "index.html"),
-                new Meta(DocsKeys.Title, "API"),
+                new Title("API"),
                 new Meta(DocsKeys.NoSidebar, true),
                 new Razor.Razor(),
                 new WriteFiles()
