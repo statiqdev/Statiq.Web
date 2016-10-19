@@ -33,12 +33,14 @@ namespace Wyam.Docs
             
             engine.Pipelines.Add(DocsPipelines.Pages,
                 new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/*.md"),
+                new Include(),
                 new FrontMatter(new Yaml.Yaml()),
                 new Markdown.Markdown(),
                 new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/{{!_,}}*.cshtml"),
+                    new Include(),
                     new FrontMatter(new Yaml.Yaml())),
                 new Title(),
                 new Tree()
@@ -47,6 +49,7 @@ namespace Wyam.Docs
                         FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] {"index.html"})));
                         items.Add(Keys.RelativeFilePath, indexPath);
                         items.Add(Keys.Title, Title.GetTitle(indexPath));
+                        items.Add(DocsKeys.HideInMenu, true);
                         return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
                     })
                     .CollapseRoot()
