@@ -13,9 +13,11 @@ using Wyam.Common.Modules;
 namespace Wyam.Core.Modules.Metadata
 {
     /// <summary>
-    /// Sets a title metadata key for documents based on their file path or source. This will
-    /// split the title at special characters, capitalize first letters, remove extensions, etc.
+    /// Sets a title metadata key for documents based on their file path or source.
     /// </summary>
+    /// <remarks>
+    /// This will split the title at special characters, capitalize first letters, remove extensions, etc.
+    /// </remarks>
     /// <metadata name="Title" type="string">The title of the document.</metadata>
     /// <category>Metadata</category>
     public class Title : IModule

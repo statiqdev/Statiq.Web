@@ -104,12 +104,12 @@ namespace Wyam.Markdown
                 {
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        var pipeline = CreatePipeline();
+                        MarkdownPipeline pipeline = CreatePipeline();
                         result = Markdig.Markdown.ToHtml(input.Content, pipeline);
                     }
                     else if (input.ContainsKey(_sourceKey))
                     {
-                        var pipeline = CreatePipeline();
+                        MarkdownPipeline pipeline = CreatePipeline();
                         result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty, pipeline);
                     }
                     else
@@ -137,7 +137,7 @@ namespace Wyam.Markdown
 
         private MarkdownPipeline CreatePipeline()
         {
-            var pipelineBuilder = new MarkdownPipelineBuilder();
+            MarkdownPipelineBuilder pipelineBuilder = new MarkdownPipelineBuilder();
             pipelineBuilder.Configure(_configuration);
             pipelineBuilder.Extensions.AddRange(_extensions);
             return pipelineBuilder.Build();

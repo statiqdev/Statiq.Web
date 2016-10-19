@@ -30,15 +30,21 @@
                 <li class="treeview @parentActive">
                     <a href="#">@childTitle <i class="fa fa-angle-left pull-right"></i></a>
                     <ul class="treeview-menu">
-                        <li class="@childActive"><a href="@Context.GetLink(child)">Overview</a></li>
+                        @if(!child.Get<bool>(DocsKeys.HideInMenu))
+                        {
+                            <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
+                        }
                         @Html.Partial("Sidebar/_ChildPagesMenu", children)
                     </ul>
                 </li>
             }
             else
             {
-                // Leaf
-                <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
+                // Leaf                
+                @if(!child.Get<bool>(DocsKeys.HideInMenu))
+                {
+                    <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
+                }
             }
         }
     }
