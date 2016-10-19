@@ -71,6 +71,7 @@
     <Compile Include="Modules\Control\ModuleCollectionFixture.cs" />
     <Compile Include="Modules\IO\CopyFilesFixture.cs" />
     <Compile Include="Modules\IO\DownloadFixture.cs" />
+    <Compile Include="Modules\IO\IncludeFixture.cs" />
     <Compile Include="Modules\IO\ReadFilesFixture.cs" />
     <Compile Include="Modules\IO\UnwrittenFilesFixture.cs" />
     <Compile Include="Modules\Metadata\TreeFixture.cs" />
