@@ -83,6 +83,7 @@
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
+    <Compile Include="Modules\IO\Include.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />
     <Compile Include="Modules\Control\GroupByMany.cs" />
