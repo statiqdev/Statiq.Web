@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using NUnit.Framework;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Testing;
 
 namespace Wyam.Html.Tests
@@ -171,6 +173,198 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
+                stream.Dispose();
+            }
+
+            [Test]
+            public void SeparatorInsideParagraph()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This is some <!-- excerpt --> Foobar text</p>
+                            <p>This is other text</p>
+                        </body>
+                    </html>";
+                IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                string result = null;
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                    .ReturnsForAnyArgs(
+                        x =>
+                        {
+                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
+                                .First(y => y.Key == "Excerpt")
+                                .Value;
+                            return null;
+                        });
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                Excerpt excerpt = new Excerpt();
+
+                // When
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("<p>This is some </p>", result);
+                stream.Dispose();
+            }
+
+            [Test]
+            public void SeparatorBetweenParagraphs()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This is some Foobar text</p>
+                            <p>This is some other text</p>
+                            <!-- excerpt -->
+                            <p>This is some more text</p>
+                        </body>
+                    </html>";
+                IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                string result = null;
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                    .ReturnsForAnyArgs(
+                        x =>
+                        {
+                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
+                                .First(y => y.Key == "Excerpt")
+                                .Value;
+                            return null;
+                        });
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                Excerpt excerpt = new Excerpt();
+
+                // When
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("<p>This is some Foobar text</p>\n                            <p>This is some other text</p>", result);
+                stream.Dispose();
+            }
+
+            [Test]
+            public void SeparatorInsideParagraphWithSiblings()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This is some Foobar text</p>
+                            <p>This <b>is</b> some <!-- excerpt --><i>other</i> text</p>
+                        </body>
+                    </html>";
+                IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                string result = null;
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                    .ReturnsForAnyArgs(
+                        x =>
+                        {
+                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
+                                .First(y => y.Key == "Excerpt")
+                                .Value;
+                            return null;
+                        });
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                Excerpt excerpt = new Excerpt();
+
+                // When
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("<p>This is some Foobar text</p>\n                            <p>This <b>is</b> some </p>", result);
+                stream.Dispose();
+            }
+
+            [Test]
+            public void AlternateSeparatorComment()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This is some <!-- foo --> Foobar text</p>
+                            <p>This is other text</p>
+                        </body>
+                    </html>";
+                IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                string result = null;
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                    .ReturnsForAnyArgs(
+                        x =>
+                        {
+                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
+                                .First(y => y.Key == "Excerpt")
+                                .Value;
+                            return null;
+                        });
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                Excerpt excerpt = new Excerpt().WithSeparators(new [] { "foo" });
+
+                // When
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("<p>This is some </p>", result);
+                stream.Dispose();
+            }
+
+            [Test]
+            public void MultipleSeparatorComments()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This is some <!-- excerpt --> Foobar text</p>
+                            <p>This is <!-- excerpt --> other text</p>
+                        </body>
+                    </html>";
+                IDocument document = Substitute.For<IDocument>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                string result = null;
+                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+                    .ReturnsForAnyArgs(
+                        x =>
+                        {
+                            result = (string)x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(1)
+                                .First(y => y.Key == "Excerpt")
+                                .Value;
+                            return null;
+                        });
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                Excerpt excerpt = new Excerpt();
+
+                // When
+                excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("<p>This is some </p>", result);
                 stream.Dispose();
             }
         }

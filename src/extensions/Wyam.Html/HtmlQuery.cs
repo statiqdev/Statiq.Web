@@ -168,17 +168,9 @@ namespace Wyam.Html
             return inputs.AsParallel().SelectMany(input =>
             {
                 // Parse the HTML content
-                IHtmlDocument htmlDocument;
-                try
+                IHtmlDocument htmlDocument = input.ParseHtml(parser);
+                if(htmlDocument == null)
                 {
-                    using (Stream stream = input.GetStream())
-                    {
-                        htmlDocument = parser.Parse(stream);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Trace.Warning("Exception while parsing HTML for {0}: {1}", input.SourceString(), ex.Message);
                     return new [] { input };
                 }
 
