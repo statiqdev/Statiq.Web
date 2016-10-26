@@ -210,6 +210,10 @@ namespace Wyam.Razor
                     || !x.ContainsKey(Keys.SourceFileName) 
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
+            if (validInputs.Count < inputs.Count)
+            {
+                Trace.Information($"Ignoring {inputs.Count - validInputs.Count} inputs due to source file name prefix");
+            }
             
             // Compile and evaluate the pages in parallel
             IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();

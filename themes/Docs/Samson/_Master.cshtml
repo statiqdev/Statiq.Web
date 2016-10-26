@@ -68,19 +68,7 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">                            
-                            @{
-                                List<Tuple<string, string>> pages = Context
-                                    .Documents[DocsPipelines.Pages]
-                                    .Select(x => Tuple.Create(x.String(Keys.Title), Context.GetLink(x)))
-                                    .OrderBy(x => x.Item1)
-                                    .ToList();
-                                pages.Add(Tuple.Create("API", Context.GetLink(Context.FilePath(DocsKeys.ApiPathPrefix))));
-                                foreach(Tuple<string, string> page in pages)
-                                {
-                                    string active = Context.GetLink(Document).StartsWith(page.Item2) ? "active" : null;
-                                    <li class="@active"><a href="@page.Item2">@page.Item1</a></li>
-                                }
-                            }
+                            @Html.Partial("_Navbar") 
                         </ul>       
                     </div>
                     <!-- /.navbar-collapse -->

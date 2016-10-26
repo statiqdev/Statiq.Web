@@ -35,7 +35,7 @@ namespace Wyam.Html
     {
         private string[] _separators = { "more", "excerpt"};
         private string _querySelector = "p";
-        private string _metadataKey = "Excerpt";
+        private string _metadataKey = HtmlKeys.Excerpt;
         private bool _outerHtml = true;
 
         /// <summary>

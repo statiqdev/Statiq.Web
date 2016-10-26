@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.CodeAnalysis;
 using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -14,6 +15,7 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
+using Wyam.Html;
 using Wyam.Razor;
 
 namespace Wyam.Docs
@@ -32,26 +34,20 @@ namespace Wyam.Docs
             );
             
             engine.Pipelines.Add(DocsPipelines.Pages,
-                new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/*.md"),
+                new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/*.md"),
                 new Include(),
                 new FrontMatter(new Yaml.Yaml()),
                 new Markdown.Markdown(),
                 new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
                 new Concat(
                     // Add any additional Razor pages
-                    new ReadFiles(ctx => $"{{!{ctx.GlobalMetadata.String(DocsKeys.ApiPathPrefix)},**}}/{{!_,}}*.cshtml"),
+                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())),
+                new Excerpt(),
                 new Title(),
                 new Tree()
-                    .WithPlaceholderFactory((path, items, context) =>
-                    {
-                        FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] {"index.html"})));
-                        items.Add(Keys.RelativeFilePath, indexPath);
-                        items.Add(Keys.Title, Title.GetTitle(indexPath));
-                        items.Add(DocsKeys.HideInMenu, true);
-                        return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
-                    })
+                    .WithPlaceholderFactory(TreePlaceholderFactory)
                     .CollapseRoot()
             );
 
@@ -103,9 +99,25 @@ namespace Wyam.Docs
             );
         }
 
+
         public void Scaffold(IDirectory directory)
         {
             throw new NotImplementedException();
+        }
+
+        private string GetIgnoreFoldersGlob(IExecutionContext context) => 
+            string.Join(",", context.GlobalMetadata
+                .List(DocsKeys.IgnoreFolders, Array.Empty<string>())
+                .Select(x => "!" + x)
+                .Concat(new[] { "**" }));
+
+        private IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
+        {
+            FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] {"index.html"})));
+            items.Add(Keys.RelativeFilePath, indexPath);
+            items.Add(Keys.Title, Title.GetTitle(indexPath));
+            items.Add(DocsKeys.HideInMenu, true);
+            return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
         }
     }
 }
