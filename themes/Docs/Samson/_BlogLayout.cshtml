@@ -1,0 +1,41 @@
+@{
+	Layout = "/_Layout.cshtml";
+}
+
+@section Sidebar {
+    <li class="header"><i class="fa fa-bookmark"></i> Categories</li>    
+    @foreach(string category in Documents[DocsPipelines.BlogPosts]
+        .Select(x => x.String(DocsKeys.Category))
+        .Distinct()
+        .OrderBy(x => x))
+    {
+        string link = category.ToLower().Replace(" ", "-").Replace("'", string.Empty);
+        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/{link}/") ? "active" : null;
+        <li class="@active"><a href="/blog/@(link)">@category</a></li>
+    }
+    
+    <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
+    @foreach(DateTime date in Documents[DocsPipelines.BlogPosts]
+        .Select(x => x.Get<DateTime>(DocsKeys.Date))
+        .Select(x => new DateTime(x.Year, x.Month, 1))
+        .Distinct()
+        .OrderByDescending(x => x))
+    {
+        string link = date.ToString("yyyy/MM");
+        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "active" : null;
+        <li class="@active"><a href="/blog/archive/@(link)">@(date.ToString("MMMM, yyyy"))</a></li>
+    }
+    
+    <li class="header"><i class="fa fa-user"></i> Authors</li>    
+    @foreach(string author in Documents[DocsPipelines.BlogPosts]
+        .Select(x => x.String(DocsKeys.Author))
+        .Distinct()
+        .OrderBy(x => x))
+    {
+        string link = author.ToLower().Replace(" ", "-").Replace("'", string.Empty);
+        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/author/{link}/") ? "active" : null;
+        <li class="@active"><a href="/blog/author/@(link)">@author</a></li>
+    }
+}
+
+@RenderBody()
