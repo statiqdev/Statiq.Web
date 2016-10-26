@@ -19,6 +19,7 @@ namespace Wyam.Core.Modules.Metadata
         private readonly IModule[] _modules;
         private bool _forEachDocument;
         private bool _ignoreNull;
+        private bool _onlyIfNonExisting;
 
         /// <summary>
         /// The specified object is added as metadata for the specified key for every input document.
@@ -76,24 +77,37 @@ namespace Wyam.Core.Modules.Metadata
         {
             _modules = modules;
         }
-        
+
         /// <summary>
         /// Specifies that the whole sequence of modules should be executed for every input document
         /// (as opposed to the default behavior of the sequence of modules only being executed once 
         /// with an empty initial document). This method has no effect if no modules are specified.
         /// </summary>
-        public Meta ForEachDocument()
+        /// <param name="forEachDocument"><c>true</c> to execute for every input document.</param>
+        public Meta ForEachDocument(bool forEachDocument = true)
         {
-            _forEachDocument = true;
+            _forEachDocument = forEachDocument;
             return this;
         }
 
         /// <summary>
         /// Ignores null values and does not add a metadata item for them.
         /// </summary>
-        public Meta IgnoreNull()
+        /// <param name="ignoreNull"><c>true</c> to ignore null values.</param>
+        public Meta IgnoreNull(bool ignoreNull = true)
         {
-            _ignoreNull = true;
+            _ignoreNull = ignoreNull;
+            return this;
+        }
+
+        /// <summary>
+        /// Only sets the new metadata value if a value doesn't already exist.
+        /// The default behavior is to set the new value regardless.
+        /// </summary>
+        /// <param name="onlyIfNonExisting"><c>true</c> if the new value should only be set if it doesn't already exist.</param>
+        public Meta OnlyIfNonExisting(bool onlyIfNonExisting = true)
+        {
+            _onlyIfNonExisting = onlyIfNonExisting;
             return this;
         }
 
@@ -118,22 +132,27 @@ namespace Wyam.Core.Modules.Metadata
                                 }
                             }
                         }
-                        return context.GetDocument(input, metadata);
+                        return context.GetDocument(input, 
+                            _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata);
                     });
                 }
 
                 // Execute the modules once and apply to each input document
                 foreach (IDocument result in context.Execute(_modules))
                 {
+
                     foreach (KeyValuePair<string, object> kvp in result)
                     {
                         metadata[kvp.Key] = kvp.Value;
                     }
                 }
-                return inputs.Select(input => context.GetDocument(input, metadata));
+                return inputs.Select(input => context.GetDocument(input, 
+                    _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata));
             }
 
-            return inputs.Select(x => context.GetDocument(x, new[] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
+            return inputs.Select(x => _onlyIfNonExisting && x.ContainsKey(_key) 
+                ? x 
+                : context.GetDocument(x, new[] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
         }
     }
 }
