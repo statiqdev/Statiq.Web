@@ -71,7 +71,7 @@ namespace Wyam.Html
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the outer HTML.</param>
-        public HtmlQuery GetOuterHtml(string metadataKey = "OuterHtml")
+        public HtmlQuery GetOuterHtml(string metadataKey = HtmlKeys.OuterHtml)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {
@@ -85,7 +85,7 @@ namespace Wyam.Html
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the inner HTML.</param>
-        public HtmlQuery GetInnerHtml(string metadataKey = "InnerHtml")
+        public HtmlQuery GetInnerHtml(string metadataKey = HtmlKeys.InnerHtml)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {
@@ -99,7 +99,7 @@ namespace Wyam.Html
         /// the corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the text content.</param>
-        public HtmlQuery GetTextContent(string metadataKey = "TextContent")
+        public HtmlQuery GetTextContent(string metadataKey = HtmlKeys.TextContent)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
             {

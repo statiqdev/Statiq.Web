@@ -49,6 +49,7 @@
     <Compile Include="DocumentExtensions.cs" />
     <Compile Include="Excerpt.cs" />
     <Compile Include="HtmlEscape.cs" />
+    <Compile Include="HtmlKeys.cs" />
     <Compile Include="HtmlQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\..\SolutionInfo.cs">
