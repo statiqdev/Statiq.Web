@@ -17,12 +17,21 @@ namespace Wyam.Docs
 
         public const string SourceFiles = nameof(SourceFiles);
 
-        public const string IncludeGlobal = nameof(IncludeGlobal);
-
-        public const string ApiPathPrefix = nameof(ApiPathPrefix);
-
+        public const string IncludeGlobalNamespace = nameof(IncludeGlobalNamespace);
+        
         public const string Description = nameof(Description);
 
+        /// <summary>
+        /// Setting this to <c>true</c> in global metadata uses
+        /// the year and date in the output path of blog posts.
+        /// The default value is <c>false</c>.
+        /// </summary>
+        public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
+
+        /// <summary>
+        /// Used by blog posts to indicate the category of the post.
+        /// Also used by pages to indicate the category of the page.
+        /// </summary>
         public const string Category = nameof(Category);
 
         public const string Order = nameof(Order);
@@ -43,5 +52,17 @@ namespace Wyam.Docs
         /// want the primary content page pipelines to pick them up.
         /// </summary>
         public const string IgnoreFolders = nameof(IgnoreFolders);
+
+        /// <summary>
+        /// Used for blog posts to store the date of the post.
+        /// </summary>
+        public const string Date = nameof(Date);
+
+        /// <summary>
+        /// Used by blog posts and pages to indicate the author.
+        /// </summary>
+        public const string Author = nameof(Author);
+
+
     }
 }
