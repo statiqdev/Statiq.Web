@@ -12,18 +12,18 @@
         <link href="/assets/css/bootstrap.css" rel="stylesheet" />
         <link href="/assets/css/AdminLTE.css" rel="stylesheet" />
         <link href="/assets/css/theme.css" rel="stylesheet" />
-        <link href="/assets/css/prettify.css" rel="stylesheet">
-        <link href="/assets/css/github.css" rel="stylesheet">
-        <link href="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.css" rel="stylesheet">
+        <link href="/assets/css/highlight.css" rel="stylesheet">
+        <link href="/assets/css/mermaid.css" rel="stylesheet">
         <link href="/assets/css/master.css" rel="stylesheet" />
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
         <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <script src="/assets/js/jQuery-2.2.3.min.js"></script>
         <script src="/assets/js/bootstrap.min.js"></script>        
         <script src="/assets/js/app.min.js"></script>         
-        <script src="/assets/js/prettify.js"></script>   
+        <script src="/assets/js/highlight.pack.js"></script>   
         <script src="/assets/js/jquery.slimscroll.min.js"></script>
-        <script src="https://cdn.rawgit.com/knsv/mermaid/0.5.8/dist/mermaid.min.js"></script>
+        <script src="/assets/js/jquery.sticky-kit.min.js"></script>
+        <script src="/assets/js/mermaid.min.js"></script>
         <!--[if lt IE 9]>
         <script src="/Scripts/html5shiv.min.js"></script>
         <script src="/Scripts/respond.min.js"></script>
@@ -35,7 +35,7 @@
         string layoutTopNav = Model.Get<bool>(DocsKeys.NoSidebar, false) ? "layout-top-nav" : string.Empty;
         string noGutter = Model.Get<bool>(DocsKeys.NoGutter, false) ? "no-gutter" : string.Empty;
     }
-    <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter" onload="prettyPrint()">    
+    <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter">    
         <div class="top-banner"></div>
         <div class="wrapper">
             <!-- Header -->
@@ -141,6 +141,7 @@
             $(document).load(function() {
                 mermaid.initialize();
             });
+            hljs.initHighlightingOnLoad();
         </script>
     </body>
 </html>

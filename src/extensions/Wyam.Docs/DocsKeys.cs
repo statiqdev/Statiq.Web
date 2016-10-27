@@ -29,6 +29,11 @@ namespace Wyam.Docs
         public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
 
         /// <summary>
+        /// Set this in global metadata to control the set of Markdown extensions for Markdig.
+        /// </summary>
+        public const string MarkdownExtensions = nameof(MarkdownExtensions);
+
+        /// <summary>
         /// Used by blog posts to indicate the category of the post.
         /// Also used by pages to indicate the category of the page.
         /// </summary>
