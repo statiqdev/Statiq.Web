@@ -66,12 +66,12 @@ namespace Wyam.Core.Tests.Execution
 
             [TestCase("/foo/bar/index.html", "/foo/bar")]
             [TestCase("/foo/bar/index.htm", "/foo/bar")]
-            [TestCase("/foo/bar/index.xyz", "/foo/bar/index.xyz")]
+            [TestCase("/foo/bar/index.xyz", "/foo/bar")]
             [TestCase("/index.html", "/")]
             [TestCase("/index.htm", "/")]
             [TestCase("index.html", "/")]
             [TestCase("index.htm", "/")]
-            [TestCase("index.xyz", "/index.xyz")]
+            [TestCase("index.xyz", "/")]
             [TestCase("/foo/bar/baz.html", "/foo/bar/baz.html")]
             public void ShouldHideIndexPagesForFilePath(string path, string expected)
             {
