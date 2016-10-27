@@ -188,6 +188,74 @@ namespace Wyam.Core.Tests.Modules.Control
                 Assert.AreEqual(6, d.OutputCount);
                 Assert.AreEqual(52, e.OutputCount);
             }
+
+            [Test]
+            public void IfWithContextResultsInCorrectCounts()
+            {
+                // Given
+                Engine engine = new Engine();
+                CountModule a = new CountModule("A")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule b = new CountModule("B")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule c = new CountModule("C")
+                {
+                    AdditionalOutputs = 3
+                };
+                engine.Pipelines.Add(a, new If(x => true, b), c);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(1, a.ExecuteCount);
+                Assert.AreEqual(1, b.ExecuteCount);
+                Assert.AreEqual(1, c.ExecuteCount);
+                Assert.AreEqual(1, a.InputCount);
+                Assert.AreEqual(3, b.InputCount);
+                Assert.AreEqual(9, c.InputCount);
+                Assert.AreEqual(3, a.OutputCount);
+                Assert.AreEqual(9, b.OutputCount);
+                Assert.AreEqual(36, c.OutputCount);
+            }
+
+            [Test]
+            public void FalseIfWithContextResultsInCorrectCounts()
+            {
+                // Given
+                Engine engine = new Engine();
+                CountModule a = new CountModule("A")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule b = new CountModule("B")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule c = new CountModule("C")
+                {
+                    AdditionalOutputs = 3
+                };
+                engine.Pipelines.Add(a, new If(x => false, b), c);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(1, a.ExecuteCount);
+                Assert.AreEqual(0, b.ExecuteCount);
+                Assert.AreEqual(1, c.ExecuteCount);
+                Assert.AreEqual(1, a.InputCount);
+                Assert.AreEqual(0, b.InputCount);
+                Assert.AreEqual(0, c.InputCount);
+                Assert.AreEqual(3, a.OutputCount);
+                Assert.AreEqual(0, b.OutputCount);
+                Assert.AreEqual(0, c.OutputCount);
+            }
         }
     }
 }

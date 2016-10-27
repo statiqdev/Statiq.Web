@@ -18,74 +18,129 @@ namespace Wyam.Core.Modules.Control
     /// <category>Control</category>
     public class If : IModule
     {
-        private readonly List<Tuple<DocumentConfig, IModule[]>> _conditions 
-            = new List<Tuple<DocumentConfig, IModule[]>>();
+        private readonly List<Condition> _conditions = new List<Condition>();
         
         /// <summary>
         /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
+        /// The predicate will be evaluated against every input document individually.
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
         public If(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
+            _conditions.Add(new Condition(predicate, modules));
+        }
+
+        /// <summary>
+        /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
+        /// The predicate will be evaluated once for all input documents.
+        /// </summary>
+        /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
+        /// <param name="modules">The modules to execute on documents if the predicate is <c>true</c>.</param>
+        public If(ContextConfig predicate, params IModule[] modules)
+        {
+            _conditions.Add(new Condition(predicate, modules));
         }
 
         /// <summary>
         /// Specifies an alternate condition to be tested on documents that did not satisfy 
         /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
+        /// The predicate will be evaluated against every input document individually.
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
         public If ElseIf(DocumentConfig predicate, params IModule[] modules)
         {
-            _conditions.Add(new Tuple<DocumentConfig, IModule[]>(predicate, modules));
+            _conditions.Add(new Condition(predicate, modules));
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies an alternate condition to be tested on documents that did not satisfy 
+        /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
+        /// The predicate will be evaluated once for all input documents.
+        /// </summary>
+        /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
+        /// <param name="modules">The modules to execute on documents if the predicate is <c>true</c>.</param>
+        public If ElseIf(ContextConfig predicate, params IModule[] modules)
+        {
+            _conditions.Add(new Condition(predicate, modules));
             return this;
         }
 
         /// <summary>
         /// This should be at the end of your fluent method chain and will evaluate the 
         /// specified child modules on all documents that did not satisfy previous predicates.
+        /// The predicate will be evaluated against every input document individually.
         /// </summary>
         /// <param name="modules">The modules to execute on documents where no previous predicate was <c>true</c>.</param>
         public IModule Else(params IModule[] modules)
         {
-            _conditions.Add(new Tuple<DocumentConfig, IModule[]>((x, y) => true, modules));
+            _conditions.Add(new Condition(ctx => true, modules));
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<IDocument> results = new List<IDocument>();
-            IEnumerable<IDocument> documents = inputs;
-            foreach (Tuple<DocumentConfig, IModule[]> condition in _conditions)
+            IReadOnlyList<IDocument> documents = inputs;
+            foreach (Condition condition in _conditions)
             {
                 // Split the documents into ones that satisfy the predicate and ones that don't
-                List<IDocument> handled = new List<IDocument>();
-                List<IDocument> unhandled = new List<IDocument>();
-                foreach (IDocument document in documents)
+                List<IDocument> matched = new List<IDocument>();
+                List<IDocument> unmatched = new List<IDocument>();
+                if (condition.ContextConfig != null && condition.ContextConfig.Invoke<bool>(context))
                 {
-                    if (condition.Item1 == null || condition.Item1.Invoke<bool>(document, context))
+                    matched.AddRange(documents);
+                }
+                else if(condition.ContextConfig == null)
+                {
+                    foreach (IDocument document in documents)
                     {
-                        handled.Add(document);
-                    }
-                    else
-                    {
-                        unhandled.Add(document);
+                        if (condition.DocumentConfig == null || condition.DocumentConfig.Invoke<bool>(document, context))
+                        {
+                            matched.Add(document);
+                        }
+                        else
+                        {
+                            unmatched.Add(document);
+                        }
                     }
                 }
 
                 // Run the modules on the documents that satisfy the predicate
-                results.AddRange(context.Execute(condition.Item2, handled));
+                if (matched.Count > 0)
+                {
+                    results.AddRange(context.Execute(condition.Modules, matched));
+                }
 
                 // Continue with the documents that don't satisfy the predicate
-                documents = unhandled;
+                documents = unmatched;
             }
 
             // Add back any documents that never matched a predicate
             results.AddRange(documents);
 
             return results;
+        }
+
+        private class Condition
+        {
+            public DocumentConfig DocumentConfig { get; }
+            public ContextConfig ContextConfig { get; }
+            public IModule[] Modules { get; }
+
+            public Condition(DocumentConfig documentConfig, IModule[] modules)
+            {
+                DocumentConfig = documentConfig;
+                Modules = modules;
+            }
+
+            public Condition(ContextConfig contextConfig, IModule[] modules)
+            {
+                ContextConfig = contextConfig;
+                Modules = modules;
+            }
         }
     }
 }
