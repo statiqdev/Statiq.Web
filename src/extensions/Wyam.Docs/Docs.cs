@@ -28,7 +28,7 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
             engine.GlobalMetadata[DocsKeys.IncludeGlobalNamespace] = true;
             engine.GlobalMetadata[DocsKeys.IncludeDateInPostPath] = false;
-
+            
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
             );
@@ -50,20 +50,7 @@ namespace Wyam.Docs
                     .WithPlaceholderFactory(TreePlaceholderFactory)
                     .CollapseRoot()
             );
-
-            engine.Pipelines.Add(DocsPipelines.RenderPages,
-                new Documents(DocsPipelines.Pages),
-                new Flatten(),
-                // Hide the sidebar for root pages if there's no children
-                new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar, 
-                    (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
-                    && doc.Document(Keys.Parent) == null),
-                new Title(),
-                new Razor.Razor()
-                    .WithLayout("/_Layout.cshtml"),
-                new WriteFiles(".html")
-            );
-
+            
             engine.Pipelines.Add(DocsPipelines.BlogPosts,
                 new ReadFiles("blog/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
@@ -83,149 +70,178 @@ namespace Wyam.Docs
             );
 
             engine.Pipelines.Add(DocsPipelines.BlogIndexes,
-                new ReadFiles("_BlogIndex.cshtml"),
-                new Paginate(5,
-                    new Documents(DocsPipelines.BlogPosts),
-                    new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
-                ),
-                new Meta(Keys.Title, (doc, ctx) =>
-                    doc.Get<int>(Keys.CurrentPage) == 1
-                        ? "Blog"
-                        : $"Blog (Page {doc[Keys.CurrentPage]})"),
-                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                    doc.Get<int>(Keys.CurrentPage) == 1
-                        ? "blog/index.html"
-                        : $"blog/page{doc[Keys.CurrentPage]}.html"),
-                new Razor.Razor()
-                    .IgnorePrefix(null)
-                    .WithLayout("/_BlogLayout.cshtml"),
-                new WriteFiles()
-            );
-
-            engine.Pipelines.Add(DocsPipelines.BlogCategories,
-                new ReadFiles("_BlogIndex.cshtml"),
-                new GroupBy((doc, ctx) => doc[DocsKeys.Category],
-                    new Documents(DocsPipelines.BlogPosts)
-                ),
-                new ForEach(
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    new ReadFiles("_BlogIndex.cshtml"),
                     new Paginate(5,
-                        new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
+                        new Documents(DocsPipelines.BlogPosts),
                         new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
                     ),
                     new Meta(Keys.Title, (doc, ctx) =>
                         doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"{doc[Keys.GroupKey]}"
-                            : $"{doc[Keys.GroupKey]} (Page {doc[Keys.CurrentPage]})"),
+                            ? "Blog"
+                            : $"Blog (Page {doc[Keys.CurrentPage]})"),
                     new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                    {
-                        string category = doc.String(Keys.GroupKey).ToLower().Replace(" ", "-").Replace("'", string.Empty);
-                        return doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"blog/{category}/index.html"
-                            : $"blog/{category}/page{doc[Keys.CurrentPage]}.html";
-                    }),
+                        doc.Get<int>(Keys.CurrentPage) == 1
+                            ? "blog/index.html"
+                            : $"blog/page{doc[Keys.CurrentPage]}.html"),
                     new Razor.Razor()
                         .IgnorePrefix(null)
                         .WithLayout("/_BlogLayout.cshtml"),
                     new WriteFiles()
+                )
+            );
+
+            engine.Pipelines.Add(DocsPipelines.BlogCategories,
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    new ReadFiles("_BlogIndex.cshtml"),
+                    new GroupBy((doc, ctx) => doc[DocsKeys.Category],
+                        new Documents(DocsPipelines.BlogPosts)
+                    ),
+                    new ForEach(
+                        new Paginate(5,
+                            new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                        ),
+                        new Meta(Keys.Title, (doc, ctx) =>
+                            doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"{doc[Keys.GroupKey]}"
+                                : $"{doc[Keys.GroupKey]} (Page {doc[Keys.CurrentPage]})"),
+                        new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                        {
+                            string category = doc.String(Keys.GroupKey).ToLower().Replace(" ", "-").Replace("'", string.Empty);
+                            return doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"blog/{category}/index.html"
+                                : $"blog/{category}/page{doc[Keys.CurrentPage]}.html";
+                        }),
+                        new Razor.Razor()
+                            .IgnorePrefix(null)
+                            .WithLayout("/_BlogLayout.cshtml"),
+                        new WriteFiles()
+                    )
                 )
             );
 
             engine.Pipelines.Add(DocsPipelines.BlogArchives,
-                // Monthly archives
-                new ReadFiles("_BlogIndex.cshtml"),
-                new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, doc.Get<DateTime>(DocsKeys.Date).Month, 1),
-                    new Documents(DocsPipelines.BlogPosts)
-                ),
-                new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy")),
-                new Meta("Link", (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy/MM")),
-                new Concat(
-                    // Yearly archives
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    // Monthly archives
                     new ReadFiles("_BlogIndex.cshtml"),
-                    new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, 1, 1),
+                    new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, doc.Get<DateTime>(DocsKeys.Date).Month, 1),
                         new Documents(DocsPipelines.BlogPosts)
                     ),
-                    new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy")),
-                    new Meta("Link", (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy"))
-                ),
-                new ForEach(
-                    new Paginate(5,
-                        new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
-                        new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                    new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy")),
+                    new Meta("Link", (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy/MM")),
+                    new Concat(
+                        // Yearly archives
+                        new ReadFiles("_BlogIndex.cshtml"),
+                        new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, 1, 1),
+                            new Documents(DocsPipelines.BlogPosts)
+                        ),
+                        new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy")),
+                        new Meta("Link", (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy"))
                     ),
-                    new Meta(Keys.Title, (doc, ctx) =>
-                         doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"{doc[Keys.Title]}"
-                            : $"{doc[Keys.Title]} (Page {doc[Keys.CurrentPage]})"),
-                    new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                        doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"blog/archive/{doc["Link"]}/index.html"
-                            : $"blog/archive/{doc["Link"]}/page{doc[Keys.CurrentPage]}.html"),
-                    new Razor.Razor()
-                        .IgnorePrefix(null)
-                        .WithLayout("/_BlogLayout.cshtml"),
-                    new WriteFiles()
+                    new ForEach(
+                        new Paginate(5,
+                            new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                        ),
+                        new Meta(Keys.Title, (doc, ctx) =>
+                             doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"{doc[Keys.Title]}"
+                                : $"{doc[Keys.Title]} (Page {doc[Keys.CurrentPage]})"),
+                        new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                            doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"blog/archive/{doc["Link"]}/index.html"
+                                : $"blog/archive/{doc["Link"]}/page{doc[Keys.CurrentPage]}.html"),
+                        new Razor.Razor()
+                            .IgnorePrefix(null)
+                            .WithLayout("/_BlogLayout.cshtml"),
+                        new WriteFiles()
+                    )
                 )
             );
 
             engine.Pipelines.Add(DocsPipelines.BlogAuthors,
-                new ReadFiles("_BlogIndex.cshtml"),
-                new GroupBy((doc, ctx) => doc[DocsKeys.Author],
-                    new Documents(DocsPipelines.BlogPosts)
-                ),
-                new ForEach(
-                    new Paginate(5,
-                        new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
-                        new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    new ReadFiles("_BlogIndex.cshtml"),
+                    new GroupBy((doc, ctx) => doc[DocsKeys.Author],
+                        new Documents(DocsPipelines.BlogPosts)
                     ),
-                    new Meta(Keys.Title, (doc, ctx) =>
-                        doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"{doc[Keys.GroupKey]}"
-                            : $"{doc[Keys.GroupKey]} (Page {doc[Keys.CurrentPage]})"),
-                    new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                    {
-                        string author = doc.String(Keys.GroupKey).ToLower().Replace(" ", "-").Replace("'", string.Empty);
-                        return doc.Get<int>(Keys.CurrentPage) == 1
-                            ? $"blog/author/{author}/index.html"
-                            : $"blog/author/{author}/page{doc[Keys.CurrentPage]}.html";
-                    }),
+                    new ForEach(
+                        new Paginate(5,
+                            new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                        ),
+                        new Meta(Keys.Title, (doc, ctx) =>
+                            doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"{doc[Keys.GroupKey]}"
+                                : $"{doc[Keys.GroupKey]} (Page {doc[Keys.CurrentPage]})"),
+                        new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                        {
+                            string author = doc.String(Keys.GroupKey).ToLower().Replace(" ", "-").Replace("'", string.Empty);
+                            return doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"blog/author/{author}/index.html"
+                                : $"blog/author/{author}/page{doc[Keys.CurrentPage]}.html";
+                        }),
+                        new Razor.Razor()
+                            .IgnorePrefix(null)
+                            .WithLayout("/_BlogLayout.cshtml"),
+                        new WriteFiles()
+                    )
+                )
+            );
+
+            engine.Pipelines.Add(DocsPipelines.RenderPages,
+                new If(ctx => ctx.Documents[DocsPipelines.Pages].Any(),
+                    new Documents(DocsPipelines.Pages),
+                    new Flatten(),
+                    // Hide the sidebar for root pages if there's no children
+                    new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(DocsKeys.NoSidebar,
+                        (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
+                        && doc.Document(Keys.Parent) == null),
+                    new Title(),
                     new Razor.Razor()
-                        .IgnorePrefix(null)
-                        .WithLayout("/_BlogLayout.cshtml"),
-                    new WriteFiles()
+                        .WithLayout("/_Layout.cshtml"),
+                    new WriteFiles(".html")
                 )
             );
 
             // Render the blog after the indexes and archive so the layout doesn't show up when including whole page (I.e., first post)
             engine.Pipelines.Add(DocsPipelines.RenderBlogPosts,
-                new Documents(DocsPipelines.BlogPosts),
-                new Razor.Razor()
-                    .WithLayout("/_BlogPost.cshtml"),
-                new WriteFiles()
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    new Documents(DocsPipelines.BlogPosts),
+                    new Razor.Razor()
+                        .WithLayout("/_BlogPost.cshtml"),
+                    new WriteFiles()
+                )
             );
-
+            
             engine.Pipelines.Add(DocsPipelines.Api,
-                new Documents(DocsPipelines.Code),
-                // Put analysis module inside execute to have access to global metadata at runtime
-                new Execute(ctx => new AnalyzeCSharp()
-                    .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
-                    .WherePublic()
-                    .WithCssClasses("pre", "prettyprint")
-                    .WithWritePathPrefix("api")),
-                new Razor.Razor()
-                    .WithLayout("/_ApiLayout.cshtml"),
-                new WriteFiles()
+                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
+                    new Documents(DocsPipelines.Code),
+                    // Put analysis module inside execute to have access to global metadata at runtime
+                    new Execute(ctx => new AnalyzeCSharp()
+                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                        .WherePublic()
+                        .WithCssClasses("pre", "prettyprint")
+                        .WithWritePathPrefix("api")),
+                    new Razor.Razor()
+                        .WithLayout("/_ApiLayout.cshtml"),
+                    new WriteFiles()
+                )
             );
 
             engine.Pipelines.Add(DocsPipelines.ApiIndex,
-                new ReadFiles("_ApiIndex.cshtml"),
-                new Meta(Keys.RelativeFilePath, "api/index.html"),
-                new Meta(Keys.SourceFileName, "index.html"),
-                new Title("API"),
-                new Meta(DocsKeys.NoSidebar, true),
-                new Razor.Razor(),
-                new WriteFiles()
+                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
+                    new ReadFiles("_ApiIndex.cshtml"),
+                    new Meta(Keys.RelativeFilePath, "api/index.html"),
+                    new Meta(Keys.SourceFileName, "index.html"),
+                    new Title("API"),
+                    new Meta(DocsKeys.NoSidebar, true),
+                    new Razor.Razor(),
+                    new WriteFiles()
+                )
             );
-
+            
             engine.Pipelines.Add(DocsPipelines.Less,
                 new ReadFiles("assets/css/*.less"),
                 new Less.Less(),

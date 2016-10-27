@@ -4,8 +4,14 @@
         .Select(x => Tuple.Create(x.String(Keys.Title), Context.GetLink(x)))
         .OrderBy(x => x.Item1)
         .ToList();
-    pages.Add(Tuple.Create("Blog", Context.GetLink("blog")));
-    pages.Add(Tuple.Create("API", Context.GetLink("api")));
+    if(Documents[DocsPipelines.BlogPosts].Any())
+    {
+        pages.Add(Tuple.Create("Blog", Context.GetLink("blog")));
+    }
+    if(Documents[DocsPipelines.Code].Any())
+    {
+        pages.Add(Tuple.Create("API", Context.GetLink("api")));
+    }
     foreach(Tuple<string, string> page in pages)
     {
         string active = Context.GetLink(Document).StartsWith(page.Item2) ? "active" : null;
