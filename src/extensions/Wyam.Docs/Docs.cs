@@ -28,7 +28,8 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
             engine.GlobalMetadata[DocsKeys.IncludeGlobalNamespace] = true;
             engine.GlobalMetadata[DocsKeys.IncludeDateInPostPath] = false;
-            
+            engine.GlobalMetadata[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
+
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
             );
@@ -37,8 +38,7 @@ namespace Wyam.Docs
                 new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/*.md"),
                 new Include(),
                 new FrontMatter(new Yaml.Yaml()),
-                new Markdown.Markdown(),
-                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
+                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
@@ -54,7 +54,7 @@ namespace Wyam.Docs
             engine.Pipelines.Add(DocsPipelines.BlogPosts,
                 new ReadFiles("blog/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Markdown.Markdown(),
+                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new Excerpt(),
                 new Meta("FrontMatterDate", (doc, ctx) => doc.ContainsKey(DocsKeys.Date)),
                 new Meta(DocsKeys.Date, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10)))
@@ -222,7 +222,7 @@ namespace Wyam.Docs
                     new Execute(ctx => new AnalyzeCSharp()
                         .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
                         .WherePublic()
-                        .WithCssClasses("pre", "prettyprint")
+                        .WithCssClasses("code", "cs")
                         .WithWritePathPrefix("api")),
                     new Razor.Razor()
                         .WithLayout("/_ApiLayout.cshtml"),
@@ -252,7 +252,6 @@ namespace Wyam.Docs
                 new CopyFiles("**/*{!.cshtml,!.md,!.less,}")
             );
         }
-
 
         public void Scaffold(IDirectory directory)
         {
