@@ -186,39 +186,39 @@ namespace Cake.Wyam
                 {
                     ProcessArgumentBuilder childBuilder = new ProcessArgumentBuilder();
 
+                    if (childSettings.Package != null)
+                    {
+                        childBuilder.Append(childSettings.Package);
+                    }
+
                     if (childSettings.Prerelease)
                     {
-                        builder.Append("--prerelease");
+                        childBuilder.Append("--prerelease");
                     }
 
                     if (childSettings.Unlisted)
                     {
-                        builder.Append("--unlisted");
+                        childBuilder.Append("--unlisted");
                     }
 
                     if (childSettings.Exclusive)
                     {
-                        builder.Append("--exclusive");
+                        childBuilder.Append("--exclusive");
                     }
 
                     if (childSettings.Version != null)
                     {
-                        builder.Append("--version");
-                        builder.Append(childSettings.Version);
+                        childBuilder.Append("--version");
+                        childBuilder.Append(childSettings.Version);
                     }
 
                     if (childSettings.Source != null)
                     {
                         foreach (string source in childSettings.Source)
                         {
-                            builder.Append("--source");
-                            builder.Append(source);
+                            childBuilder.Append("--source");
+                            childBuilder.Append(source);
                         }
-                    }
-
-                    if (childSettings.Package != null)
-                    {
-                        builder.Append(childSettings.Package);
                     }
 
                     builder.Append("--nuget");
@@ -247,13 +247,13 @@ namespace Cake.Wyam
             if (settings.Recipe != null)
             {
                 builder.Append("--recipe");
-                builder.Append(settings.Recipe);
+                builder.AppendQuoted(settings.Recipe);
             }
 
             if (settings.Theme != null)
             {
                 builder.Append("--theme");
-                builder.Append(settings.Theme);
+                builder.AppendQuoted(settings.Theme);
             }
 
             if (settings.RootPath != null)
