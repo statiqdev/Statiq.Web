@@ -1,3 +1,23 @@
+# 0.14.2
+
+- [Fix] Fixed some bugs with Cake addin when specifying NuGet packages
+- [Feature] `If` module now supports context-only predicates that only evaluate once for all input documents
+- [Feature] Added `Meta.OnlyIfNonExisting()` to prevent setting metadata if value already exists
+- [Feature] Support for Jekyll-style excerpt comment separators in the `Excerpt` module 
+- [Feature] New `Include` module for including content from a file into an existing document
+- [Feature] New `Title` module for setting title metadata
+- [Feature] New `Flatten` module for flattening heirarchial document trees
+- [Feature] Lots of improvements and fixes to `Tree` module
+- [Feature] Adds new `Docs` recipe - this is a big one, more documentation on the way (#342)
+- [Feature] Adds the `AdventureTime` sample from [Static-Site-Samples](https://github.com/remotesynth/Static-Site-Samples)
+- [Fix] Fixes bug with link generation in `CodeAnalysis` module for nested types
+- [Feature] Adds `Razor.WithModel()` for specifying a view model in config script
+- [Feature] Support for alternate model types in Razor views (including partials)
+- [Fix] Fixes some bugs with complex recursive globbing patterns
+- [Feature] Adds `IDirectory.Parent` for finding parent directory
+- [Refactoring] Big refactoring of source code organization
+- [Fix] Add NuSpec for Xslt2 module, resolves #341
+
 # 0.14.1
 
 - [Feature] `Execute` module now processes documents in parallel with a new option to fall back to sequential processing
