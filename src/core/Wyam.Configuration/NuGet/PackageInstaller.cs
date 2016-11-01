@@ -160,8 +160,8 @@ namespace Wyam.Configuration.NuGet
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while resolving package versions, attempting without remote repositories");
                     Trace.Verbose($"Exception while resolving package versions: {ex.Message}");
+                    Trace.Warning("Error while resolving package versions, attempting without remote repositories");
                     installationRepositories = new[] {localRepository};
                     ResolveVersions(localRepository, Array.Empty<SourceRepository>());
                 }
@@ -173,8 +173,8 @@ namespace Wyam.Configuration.NuGet
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning("Exception while installing packages, attempting without remote repositories");
                     Trace.Verbose($"Exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
+                    Trace.Warning("Error while installing packages, attempting without remote repositories");
                     InstallPackages(packageManager, new[] { localRepository });
                 }
 
@@ -183,8 +183,8 @@ namespace Wyam.Configuration.NuGet
             }
             catch (Exception ex)
             {
-                Trace.Warning("Unexpected exception while installing packages, attempting to continue anyway");
                 Trace.Verbose($"Unexpected exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
+                Trace.Warning("Error while installing packages, attempting to continue anyway");
             }
         }
 

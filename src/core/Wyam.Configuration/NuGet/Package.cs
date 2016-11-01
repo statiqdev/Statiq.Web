@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NuGet.Logging;
+using NuGet.Common;
 using NuGet.Versioning;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
@@ -98,14 +98,16 @@ namespace Wyam.Configuration.NuGet
                 return;
             }
             IReadOnlyList<SourceRepository> sourceRepositories = GetSourceRepositories(remoteRepositories);
-            Trace.Verbose($"Installing package {_packageId} {_versionMatch.Version}");
-            ResolutionContext resolutionContext = new ResolutionContext(
-                DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
-            INuGetProjectContext projectContext = new NuGetProjectContext();
-            await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
-                new PackageIdentity(_packageId, _versionMatch), resolutionContext, projectContext, sourceRepositories,
-                Array.Empty<SourceRepository>(), CancellationToken.None);
-            Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+            using (Trace.WithIndent().Verbose($"Installing package {_packageId} {_versionMatch.Version}"))
+            {
+                ResolutionContext resolutionContext = new ResolutionContext(
+                    DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
+                INuGetProjectContext projectContext = new NuGetProjectContext();
+                await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
+                    new PackageIdentity(_packageId, _versionMatch), resolutionContext, projectContext,
+                    sourceRepositories, Array.Empty<SourceRepository>(), CancellationToken.None);
+                Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+            }
         }
 
         private IReadOnlyList<SourceRepository> GetSourceRepositories(IReadOnlyList<SourceRepository> remoteRepositories)

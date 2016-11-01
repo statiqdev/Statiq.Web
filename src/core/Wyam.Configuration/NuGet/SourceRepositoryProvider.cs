@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NuGet.Configuration;
+using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 
 namespace Wyam.Configuration.NuGet
@@ -36,7 +37,7 @@ namespace Wyam.Configuration.NuGet
             // Create the set of default v2 and v3 resource providers
             _resourceProviders = new List<Lazy<INuGetResourceProvider>>();
             _resourceProviders.AddRange(global::NuGet.Protocol.Core.v2.FactoryExtensionsV2.GetCoreV2(Repository.Provider));
-            _resourceProviders.AddRange(global::NuGet.Protocol.Core.v3.FactoryExtensionsV2.GetCoreV3(Repository.Provider));
+            _resourceProviders.AddRange(Repository.Provider.GetCoreV3());
 
             // Add the default sources
             foreach (string defaultSource in DefaultSources)
@@ -65,14 +66,19 @@ namespace Wyam.Configuration.NuGet
         /// <summary>
         /// Creates or gets a non-default source repository.
         /// </summary>
-        public SourceRepository CreateRepository(string packageSource) => CreateRepository(new PackageSource(packageSource));
-        
+        public SourceRepository CreateRepository(string packageSource) => CreateRepository(new PackageSource(packageSource), FeedType.Undefined);
+
         /// <summary>
         /// Creates or gets a non-default source repository by PackageSource.
         /// </summary>
-        public SourceRepository CreateRepository(PackageSource packageSource) =>
-                    _repositoryCache.GetOrAdd(packageSource, x => new SourceRepository(packageSource, _resourceProviders));
-        
+        public SourceRepository CreateRepository(PackageSource packageSource) => CreateRepository(packageSource, FeedType.Undefined);
+
+        /// <summary>
+        /// Creates or gets a non-default source repository by PackageSource.
+        /// </summary>
+        public SourceRepository CreateRepository(PackageSource packageSource, FeedType feedType) =>
+            _repositoryCache.GetOrAdd(packageSource, x => new SourceRepository(packageSource, _resourceProviders));
+
         /// <summary>
         /// Gets all cached repositories.
         /// </summary>
