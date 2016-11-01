@@ -125,6 +125,11 @@ namespace Cake.Wyam
                 builder.Append("--use-local-packages");
             }
 
+            if (settings.UseGlobalSources)
+            {
+                builder.Append("--use-global-sources");
+            }
+
             if (settings.PackagesPath != null)
             {
                 builder.Append("--packages-path");

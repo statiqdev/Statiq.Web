@@ -66,6 +66,12 @@ namespace Cake.Wyam
         public bool UseLocalPackages { get; set; }
 
         /// <summary>
+        /// Toggles the use of the global NuGet sources.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool UseGlobalSources { get; set; }
+
+        /// <summary>
         /// Gets or sets the packages path to use.
         /// </summary>
         public DirectoryPath PackagesPath { get; set; }
