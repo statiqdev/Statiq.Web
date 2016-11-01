@@ -131,7 +131,7 @@ namespace Wyam.Configuration.NuGet
         internal void InstallPackages()
         {
             DirectoryPath packagesPath = GetAbsolutePackagesPath();
-            Trace.Verbose($"Installing packages to {packagesPath.FullPath} (using {(UseLocalPackagesFolder ? "local" : "global")} packages folder)");
+            Trace.Information($"Installing packages to {packagesPath.FullPath} (using {(UseLocalPackagesFolder ? "local" : "global")} packages folder)");
 
             try
             {
