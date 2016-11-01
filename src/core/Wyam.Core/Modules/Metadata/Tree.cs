@@ -50,6 +50,7 @@ namespace Wyam.Core.Modules.Metadata
         private Func<object[], MetadataItems, IExecutionContext, IDocument> _placeholderFactory;
         private Comparison<IDocument> _sort;
         private bool _collapseRoot = false;
+        private bool _nesting = false;
 
         private string _parentKey = Keys.Parent;
         private string _childrenKey = Keys.Children;
@@ -180,12 +181,18 @@ namespace Wyam.Core.Modules.Metadata
         }
 
         /// <summary>
-        /// Indicates that the root of the tree should be collapsed and the module
-        /// should output first-level documents as if they were root documents.
+        /// Indicates that the module should only output root nodes (instead of all
+        /// nodes which is the default behavior).
         /// </summary>
-        /// <param name="collapseRoot"><c>tree</c> if the root should be collapsed.</param>
-        public Tree CollapseRoot(bool collapseRoot = true)
+        /// <param name="nesting"><c>true</c> to enable nesting and only output the root nodes.</param>
+        /// <param name="collapseRoot">
+        /// Indicates that the root of the tree should be collapsed and the module
+        /// should output first-level documents as if they were root documents. This setting
+        /// has no effect if not nesting.
+        /// </param>
+        public Tree WithNesting(bool nesting = true, bool collapseRoot = false)
         {
+            _nesting = nesting;
             _collapseRoot = collapseRoot;
             return this;
         }
@@ -212,9 +219,9 @@ namespace Wyam.Core.Modules.Metadata
                     continue;
                 }
 
-                // Skip the root node if collapsing the root
+                // Skip the root node if not nesting or if collapsing the root
                 object[] parentTreePath = node.GetParentTreePath();
-                if (parentTreePath.Length == 0 && _collapseRoot)
+                if (parentTreePath.Length == 0 && (!_nesting || _collapseRoot))
                 {
                     continue;
                 }
@@ -233,15 +240,16 @@ namespace Wyam.Core.Modules.Metadata
                 parent.Children.Add(node);
             }
 
-            // Return root nodes, recursively generating their child output documents
-            foreach (TreeNode node in nodes.Values)
+            // Recursively generate child output documents
+            foreach (TreeNode node in nodes.Values.Where(x => x.Parent == null))
             {
-                if (node.Parent == null)
-                {
-                    node.GenerateOutputDocuments(this, context);
-                    yield return node.OutputDocument;
-                }
+                node.GenerateOutputDocuments(this, context);
             }
+
+            // Return parent nodes or all nodes depending on nesting
+            return nodes.Values
+                .Where(x => (!_nesting || x.Parent == null) && x.OutputDocument != null)
+                .Select(x => x.OutputDocument);
         }
 
         private class TreeNode
