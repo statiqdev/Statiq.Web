@@ -6,7 +6,7 @@ using System.Linq;
 namespace Wyam.Common.IO
 {
     /// <summary>
-    /// An ordered collection of unique <see cref="DirectoryPath"/>.
+    /// An ordered collection of unique <see cref="NormalizedPath"/>.
     /// </summary>
     public class PathCollection<TPath> : IReadOnlyList<TPath> where TPath : NormalizedPath
     {

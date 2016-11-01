@@ -21,7 +21,6 @@ namespace Wyam.Configuration.NuGet
     // This primarily exists to intercept package installations and store their paths
     internal class WyamFolderNuGetProject : FolderNuGetProject
     {
-        private readonly FrameworkReducer _reducer = new FrameworkReducer();
         private readonly ConcurrentHashSet<PackageIdentity> _packageIdentities = new ConcurrentHashSet<PackageIdentity>();
         private readonly IFileSystem _fileSystem;
         private readonly AssemblyLoader _assemblyLoader;
@@ -45,22 +44,28 @@ namespace Wyam.Configuration.NuGet
 
         public void ProcessAssembliesAndContent()
         {
-            Parallel.ForEach(_packageIdentities, packageIdentity =>
+            List<DirectoryPath> contentPaths = _packageIdentities
+                .AsParallel()
+                .SelectMany(packageIdentity =>
+                {
+                    DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
+                    string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
+                    PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
+                    AddReferencedAssemblies(installedPath, archiveReader);
+                    return GetContentDirectories(installedPath, archiveReader);
+                })
+                .ToList();
+            foreach (DirectoryPath contentPath in contentPaths)
             {
-                DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
-                string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
-                PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
-                AddReferencedAssemblies(installedPath, archiveReader);
-                IncludeContentDirectories(installedPath, archiveReader);
-                Trace.Verbose($"Finished processing NuGet package at {installedPath}");
-            });
+                _fileSystem.InputPaths.Insert(0, contentPath);
+                Trace.Verbose($"Added content path {contentPath} to included paths");
+            }
         }
 
         // Add all reference items to the assembly list
         private void AddReferencedAssemblies(DirectoryPath installedPath, PackageArchiveReader archiveReader)
         {
-            FrameworkSpecificGroup referenceGroup = GetMostCompatibleGroup(_reducer,
-                _currentFramework, archiveReader.GetReferenceItems().ToList());
+            FrameworkSpecificGroup referenceGroup = GetMostCompatibleGroup(_currentFramework, archiveReader.GetReferenceItems().ToList());
             if (referenceGroup != null)
             {
                 foreach (FilePath itemPath in referenceGroup.Items
@@ -75,10 +80,9 @@ namespace Wyam.Configuration.NuGet
         }
 
         // Add content directories to the input paths
-        private void IncludeContentDirectories(DirectoryPath installedPath, PackageArchiveReader archiveReader)
+        private IEnumerable<DirectoryPath> GetContentDirectories(DirectoryPath installedPath, PackageArchiveReader archiveReader)
         {
-            FrameworkSpecificGroup contentGroup = GetMostCompatibleGroup(_reducer,
-                _currentFramework, archiveReader.GetContentItems().ToList());
+            FrameworkSpecificGroup contentGroup = GetMostCompatibleGroup(_currentFramework, archiveReader.GetContentItems().ToList());
             if (contentGroup != null)
             {
                 // We need to use the directory name from an actual file to make sure we get the casing right
@@ -86,9 +90,7 @@ namespace Wyam.Configuration.NuGet
                     .Select(x => new FilePath(x).Segments[0])
                     .Distinct())
                 {
-                    DirectoryPath contentPath = installedPath.Combine(contentSegment);
-                    _fileSystem.InputPaths.Insert(0, contentPath);
-                    Trace.Verbose($"Added content path {contentPath} to included paths");
+                    yield return installedPath.Combine(contentSegment);
                 }
             }
         }
@@ -97,26 +99,25 @@ namespace Wyam.Configuration.NuGet
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
         #region MSBuildNuGetProjectSystemUtility  
 
-        private static FrameworkSpecificGroup GetMostCompatibleGroup(FrameworkReducer reducer, NuGetFramework projectTargetFramework,
-            ICollection<FrameworkSpecificGroup> itemGroups)
+        private static FrameworkSpecificGroup GetMostCompatibleGroup(NuGetFramework projectTargetFramework,
+            IEnumerable<FrameworkSpecificGroup> itemGroups)
         {
-            NuGetFramework mostCompatibleFramework
+            var reducer = new FrameworkReducer();
+            var mostCompatibleFramework
                 = reducer.GetNearest(projectTargetFramework, itemGroups.Select(i => i.TargetFramework));
             if (mostCompatibleFramework != null)
             {
-                FrameworkSpecificGroup mostCompatibleGroup = itemGroups
-                    .FirstOrDefault(i => i.TargetFramework.Equals(mostCompatibleFramework));
+                var mostCompatibleGroup
+                    = itemGroups.FirstOrDefault(i => i.TargetFramework.Equals(mostCompatibleFramework));
 
                 if (IsValid(mostCompatibleGroup))
                 {
-                    // Normalize() is called outside GetMostCompatibleGroup() in MSBuildNuGetProjectSystemUtility but I combined it
-                    return Normalize(mostCompatibleGroup);
+                    return mostCompatibleGroup;
                 }
             }
 
             return null;
         }
-
 
         private static bool IsValid(FrameworkSpecificGroup frameworkSpecificGroup)
         {
@@ -128,32 +129,6 @@ namespace Wyam.Configuration.NuGet
             }
 
             return false;
-        }
-
-        private static FrameworkSpecificGroup Normalize(FrameworkSpecificGroup group)
-        {
-            // Default to returning the same group
-            FrameworkSpecificGroup result = group;
-
-            // If the group is null or it does not contain any items besides _._ then this is a no-op.
-            // If it does have items create a new normalized group to replace it with.
-            if (group?.Items.Any() == true)
-            {
-                // Filter out invalid files
-                IEnumerable<string> normalizedItems = GetValidPackageItems(group.Items)
-                    .Select(PathUtility.ReplaceAltDirSeparatorWithDirSeparator);
-
-                // Create a new group
-                result = new FrameworkSpecificGroup(group.TargetFramework, normalizedItems);
-            }
-
-            return result;
-        }
-
-        private static IEnumerable<string> GetValidPackageItems(IEnumerable<string> items)
-        {
-            // Assume nupkg and nuspec as the save mode for identifying valid package files
-            return items?.Where(i => PackageHelper.IsPackageFile(i, PackageSaveMode.Defaultv3)) ?? Enumerable.Empty<string>();
         }
 
         #endregion MSBuildNuGetProjectSystemUtility
