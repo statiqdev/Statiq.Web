@@ -48,7 +48,7 @@ namespace Wyam.Docs
                 new Title(),
                 new Tree()
                     .WithPlaceholderFactory(TreePlaceholderFactory)
-                    .CollapseRoot()
+                    .WithNesting(true, true)
             );
             
             engine.Pipelines.Add(DocsPipelines.BlogPosts,
