@@ -39,6 +39,7 @@ namespace Wyam.Configuration.NuGet
             INuGetProjectContext nuGetProjectContext, CancellationToken token)
         {
             _packageIdentities.Add(packageIdentity);
+            Trace.Verbose($"Installing package or dependency {packageIdentity.Id} {(packageIdentity.HasVersion ? packageIdentity.Version.ToNormalizedString() : string.Empty)}");
             return base.InstallPackageAsync(packageIdentity, downloadResourceResult, nuGetProjectContext, token);
         }
 
