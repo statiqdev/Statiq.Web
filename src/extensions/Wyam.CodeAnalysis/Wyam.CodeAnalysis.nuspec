@@ -14,5 +14,6 @@
     <copyright>Copyright 2016</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine CodeAnalysis Roslyn XmlDocComments DocComments</tags>
   </metadata>
-  <files></files>
+  <files>
+  </files>
 </package>
