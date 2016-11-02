@@ -170,6 +170,7 @@ Task("Create-Library-Packages")
                 BasePath = nuspec.GetDirectory(),
                 OutputDirectory = nugetRoot,
                 Symbols = false,
+                Files = new NuSpecContent[] {},
                 Properties = new Dictionary<string, string>
                 {
                     { "Configuration", configuration }
