@@ -298,22 +298,35 @@ namespace Wyam.Core.Modules.Metadata
                 Children.Sort((x, y) => tree._sort(x.OutputDocument, y.OutputDocument));
 
                 // Create this output document
-                MetadataItems metadata = new MetadataItems
+                MetadataItems metadata = new MetadataItems();
+                if (tree._childrenKey != null)
                 {
-                    new MetadataItem(tree._childrenKey, 
-                        new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray())),
-                    new MetadataItem(tree._parentKey,
-                        new CachedDelegateMetadataValue(_ => Parent?.OutputDocument)),
-                    new MetadataItem(tree._previousSiblingKey,
-                        new CachedDelegateMetadataValue(_ => GetPreviousSibling()?.OutputDocument)),
-                    new MetadataItem(tree._nextSiblingKey,
-                        new CachedDelegateMetadataValue(_ => GetNextSibling()?.OutputDocument)),
-                    new MetadataItem(tree._previousKey,
-                        new CachedDelegateMetadataValue(_ => GetPrevious()?.OutputDocument)),
-                    new MetadataItem(tree._nextKey,
-                        new CachedDelegateMetadataValue(_ => GetNext()?.OutputDocument)),
-                    new MetadataItem(tree._treePathKey, TreePath)
-                };
+                    metadata.Add(tree._childrenKey, new ReadOnlyCollection<IDocument> (Children.Select(x => x.OutputDocument).ToArray()));
+                }
+                if (tree._parentKey != null)
+                {
+                    metadata.Add(tree._parentKey, new CachedDelegateMetadataValue(_ => Parent?.OutputDocument));
+                }
+                if (tree._previousSiblingKey != null)
+                {
+                    metadata.Add(tree._previousSiblingKey, new CachedDelegateMetadataValue(_ => GetPreviousSibling()?.OutputDocument));
+                }
+                if (tree._nextSiblingKey != null)
+                {
+                    metadata.Add(tree._nextSiblingKey, new CachedDelegateMetadataValue(_ => GetNextSibling()?.OutputDocument));
+                }
+                if (tree._previousKey != null)
+                {
+                    metadata.Add(tree._previousKey, new CachedDelegateMetadataValue(_ => GetPrevious()?.OutputDocument));
+                }
+                if (tree._nextKey != null)
+                {
+                    metadata.Add(tree._nextKey, new CachedDelegateMetadataValue(_ => GetNext()?.OutputDocument));
+                }
+                if (tree._treePathKey != null)
+                {
+                    metadata.Add(tree._treePathKey, TreePath);
+                }
                 OutputDocument = InputDocument == null
                     ? (tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata))
                     : context.GetDocument(InputDocument, metadata);
