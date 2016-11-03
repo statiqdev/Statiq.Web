@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HeadingsFixture.cs" />
     <Compile Include="HtmlEscapeFixture.cs" />
     <Compile Include="AutoLinkFixture.cs" />
     <Compile Include="ExcerptFixture.cs" />

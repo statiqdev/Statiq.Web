@@ -19,17 +19,27 @@ namespace Wyam.Testing.Documents
     {
         private readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
 
+        public TestDocument()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+
         public TestDocument(IEnumerable<MetadataItem> metadata)
         {
+            Id = Guid.NewGuid().ToString();
             foreach (KeyValuePair<string, object> item in metadata)
             {
                 _metadata[item.Key] = item.Value;
             }
         }
 
-        public IMetadata<T> MetadataAs<T>()
+        public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
         {
-            throw new NotSupportedException();
+            Id = Guid.NewGuid().ToString();
+            foreach (KeyValuePair<string, object> item in metadata)
+            {
+                _metadata[item.Key] = item.Value;
+            }
         }
 
         public bool ContainsKey(string key)
@@ -136,35 +146,26 @@ namespace Wyam.Testing.Documents
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(this)) : item;
         }
 
-        public string Id
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public string Id { get; set; }
 
-        public FilePath Source
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public FilePath Source { get; set; }
 
-        public string SourceString()
-        {
-            throw new NotSupportedException();
-        }
+        public string SourceString() => Source?.FullPath;
+
+        public string Content { get; set; }
+
+        public Stream GetStream() => new MemoryStream(Encoding.UTF8.GetBytes(Content));
 
         public IMetadata Metadata
         {
-            get { throw new NotSupportedException(); }
+            get { throw new NotImplementedException(); }
         }
 
-        public string Content
+        public IMetadata<T> MetadataAs<T>()
         {
-            get { throw new NotSupportedException(); }
+            throw new NotImplementedException();
         }
 
-        public Stream GetStream()
-        {
-            throw new NotSupportedException();
-        }
 
         public void Dispose()
         {

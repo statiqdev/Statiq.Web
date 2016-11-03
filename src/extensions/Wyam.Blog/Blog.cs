@@ -84,10 +84,10 @@ namespace Wyam.Blog
                 new Documents(BlogPipelines.RawPosts),
                 new Razor.Razor(),
                 new Excerpt()
-                    .SetMetadataKey(BlogKeys.Excerpt),
+                    .WithMetadataKey(BlogKeys.Excerpt),
                 new Excerpt("div#content")
-                    .SetMetadataKey(BlogKeys.Content)
-                    .GetOuterHtml(false),
+                    .WithMetadataKey(BlogKeys.Content)
+                    .WithOuterHtml(false),
                 new WriteFiles(".html"),
                 // Order them again since the order would have gotten messed up by the concurrent Razor rendering
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending());

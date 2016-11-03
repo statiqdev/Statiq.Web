@@ -103,7 +103,7 @@ namespace Wyam.Html.Tests
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
-                Excerpt excerpt = new Excerpt().SetMetadataKey("Baz");
+                Excerpt excerpt = new Excerpt().WithMetadataKey("Baz");
 
                 // When
                 excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -135,7 +135,7 @@ namespace Wyam.Html.Tests
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
-                Excerpt excerpt = new Excerpt().GetOuterHtml(false);
+                Excerpt excerpt = new Excerpt().WithOuterHtml(false);
 
                 // When
                 excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

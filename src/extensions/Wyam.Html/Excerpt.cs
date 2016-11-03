@@ -69,7 +69,7 @@ namespace Wyam.Html
         /// Allows you to specify an alternate metadata key.
         /// </summary>
         /// <param name="metadataKey">The metadata key to store the excerpt in.</param>
-        public Excerpt SetMetadataKey(string metadataKey)
+        public Excerpt WithMetadataKey(string metadataKey)
         {
             _metadataKey = metadataKey;
             return this;
@@ -106,7 +106,7 @@ namespace Wyam.Html
         /// This setting has no effect if a separator comment is found.
         /// </summary>
         /// <param name="outerHtml">If set to <c>true</c>, outer HTML will be stored.</param>
-        public Excerpt GetOuterHtml(bool outerHtml)
+        public Excerpt WithOuterHtml(bool outerHtml)
         {
             _outerHtml = outerHtml;
             return this;

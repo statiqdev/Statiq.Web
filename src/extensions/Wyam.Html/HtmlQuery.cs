@@ -16,7 +16,7 @@ using IDocument = Wyam.Common.Documents.IDocument;
 namespace Wyam.Html
 {
     /// <summary>
-    /// Queries HTML content and creates new documents with content and metadata from the results.
+    /// Queries HTML content of the input documents and creates new documents with content and metadata from the results.
     /// </summary>
     /// <remarks>
     /// Once you provide a DOM query selector, the module creates new output documents 
@@ -57,10 +57,14 @@ namespace Wyam.Html
         /// <summary>
         /// Sets the content of the result document(s) to the content of the corresponding query result, 
         /// optionally specifying whether inner or outer HTML content should be used. The default is
-        /// <c>false</c>, which does not add any content to the result documents (only metadata).
+        /// <c>null</c>, which does not add any content to the result documents (only metadata).
         /// </summary>
-        /// <param name="outerHtml">If set to <c>true</c>, outer HTML content is used.</param>
-        public HtmlQuery SetContent(bool outerHtml = true)
+        /// <param name="outerHtml">
+        /// If set to <c>true</c>, outer HTML content is used for the document content.
+        /// If set to <c>false</c>, inner HTML content is used for the document content.
+        /// If <c>null</c>, no document content is set.
+        /// </param>
+        public HtmlQuery SetContent(bool? outerHtml = true)
         {
             _outerHtmlContent = outerHtml;
             return this;
