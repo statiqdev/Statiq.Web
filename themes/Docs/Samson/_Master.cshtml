@@ -37,7 +37,10 @@
     }
     <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter">    
         <div class="top-banner"></div>
-        <div class="wrapper">
+        @{
+            string withContainer = Model.Get<bool>(DocsKeys.NoContainer, false) ? null : "with-container";
+        }
+        <div class="wrapper @withContainer">
             <!-- Header -->
             <header class="main-header">   
                      

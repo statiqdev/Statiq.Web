@@ -366,6 +366,33 @@ dl ol {
 	font-style: italic;
 }
 
+/* Infobar */
+
+@media only screen and (max-width: 1670px) and (min-width: 1250px) {
+  .layout-boxed .wrapper.with-container {
+    max-width: 1050px;
+    left: -100px;
+  }
+}
+
+.infobar {
+  padding: 30px;
+}
+
+@media only screen and (min-width: 1250px)
+{
+  .layout-boxed .infobar {
+    padding: 15px;
+    position: absolute;
+    left: 100%;
+    width: 200px;
+  }
+
+  .layout-boxed .wrapper.with-container {
+    overflow: visible;
+  }
+}
+
 /* Code styles */
 pre {
     padding: 0px;

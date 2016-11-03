@@ -21,6 +21,10 @@ else
 	<section class="content-header">
 		<h1>@ViewData[Keys.Title]</h1>
 	</section>
+	<aside class="infobar">		
+		Infobar!
+		@RenderSection("Infobar", false)
+	</aside>
 	<section class="content">
 		@RenderBody()
 	</section>
