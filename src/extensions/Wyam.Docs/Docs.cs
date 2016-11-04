@@ -199,6 +199,7 @@ namespace Wyam.Docs
                         (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
                         && doc.Document(Keys.Parent) == null),
                     new Title(),
+                    new Headings(),
                     new Razor.Razor()
                         .WithLayout("/_Layout.cshtml"),
                     new WriteFiles(".html")
@@ -209,6 +210,7 @@ namespace Wyam.Docs
             engine.Pipelines.Add(DocsPipelines.RenderBlogPosts,
                 new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
                     new Documents(DocsPipelines.BlogPosts),
+                    new Headings(),
                     new Razor.Razor()
                         .WithLayout("/_BlogPost.cshtml"),
                     new WriteFiles()

@@ -244,6 +244,35 @@ namespace Wyam.Html.Tests
                     new[] { "Boo" },
                     results[0].DocumentList(HtmlKeys.Headings)[3].DocumentList(Keys.Children).Select(x => x.Content).ToArray());
             }
+
+            [Test]
+            public void SetsHeadingIdAttribute()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Foo</h1>
+                            <h1 id=""bar"">Bar</h1>
+                        </body>
+                    </html>";
+                IDocument document = new TestDocument
+                {
+                    Content = input
+                };
+                IExecutionContext context = new TestExecutionContext();
+                Headings headings = new Headings();
+
+                // When
+                List<IDocument> results = headings.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                CollectionAssert.AreEqual(
+                    new[] { null, "bar" },
+                    results[0].DocumentList(HtmlKeys.Headings).Select(x => x.String(HtmlKeys.Id)).ToArray());
+            }
         }
     }
 }

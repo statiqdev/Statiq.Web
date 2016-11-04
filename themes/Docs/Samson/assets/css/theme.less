@@ -368,28 +368,37 @@ dl ol {
 
 /* Infobar */
 
-@media only screen and (max-width: 1670px) and (min-width: 1250px) {
-  .layout-boxed .wrapper.with-container {
-    max-width: 1050px;
-    left: -100px;
-  }
-}
-
 .infobar {
-  padding: 30px;
+  padding: 30px 12px 0 12px
 }
 
 @media only screen and (min-width: 1250px)
 {
-  .layout-boxed .infobar {
+  .infobar {
     padding: 15px;
     position: absolute;
-    left: 100%;
-    width: 200px;
+    left: 1250px;
+    top: 80px;
+    width: 230px;
   }
 
-  .layout-boxed .wrapper.with-container {
+  .wrapper.with-container {
     overflow: visible;
+  }
+}
+
+@media only screen and (max-width: 1670px) and (min-width: 1250px) {
+  .wrapper.with-container {
+    max-width: 1020px;
+    left: -115px;
+  }
+
+  .infobar {
+    padding: 15px;
+    position: absolute;
+    left: 1020px;
+    top: 80px;
+    width: 230px;
   }
 }
 
