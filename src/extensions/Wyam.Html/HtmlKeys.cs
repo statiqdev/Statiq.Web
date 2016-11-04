@@ -13,6 +13,7 @@ namespace Wyam.Html
         public const string InnerHtml = nameof(InnerHtml);
         public const string TextContent = nameof(TextContent);
         public const string Headings = nameof(Headings);
+        public const string Id = nameof(Id);
         public const string Level = nameof(Level);
     }
 }

@@ -30,6 +30,7 @@ namespace Wyam.Html
         private bool _nesting;
         private string _metadataKey = HtmlKeys.Headings;
         private string _levelKey = HtmlKeys.Level;
+        private string _idKey = HtmlKeys.Id;
         private string _childrenKey = Keys.Children;
         private string _parentKey = Keys.Parent;
         private string _headingKey;
@@ -71,6 +72,17 @@ namespace Wyam.Html
         public Headings WithLevelKey(string levelKey)
         {
             _levelKey = levelKey;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the key to use in the heading documents to store the heading
+        /// <c>id</c> attribute (if it has one).
+        /// </summary>
+        /// <param name="idKey">The key to use for the <c>id</c>.</param>
+        public Headings WithIdKey(string idKey)
+        {
+            _idKey = idKey;
             return this;
         }
 
@@ -203,6 +215,10 @@ namespace Wyam.Html
                         if (_levelKey != null)
                         {
                             metadata.Add(_levelKey, heading.Level);
+                        }
+                        if (_idKey != null && heading.Element.HasAttribute("id"))
+                        {
+                            metadata.Add(_idKey, heading.Element.GetAttribute("id"));
                         }
                         if (_headingKey != null)
                         {
