@@ -115,9 +115,9 @@ namespace Wyam.Xslt2
                     {
                         XmlReader xml = XmlReader.Create(stream);
 
-                        var documentBuilder = processor.NewDocumentBuilder();
+                        Saxon.Api.DocumentBuilder documentBuilder = processor.NewDocumentBuilder();
                         documentBuilder.BaseUri = xslt.BaseUri;
-                        var xdmNode = documentBuilder.Build(xml);
+                        Saxon.Api.XdmNode xdmNode = documentBuilder.Build(xml);
                         transformer.InitialContextNode = xdmNode;
 
                         using (System.IO.StringWriter writer = new StringWriter())
@@ -140,7 +140,7 @@ namespace Wyam.Xslt2
 
         private static Saxon.Api.XsltTransformer LoadXsltDataInTransformer(Saxon.Api.XsltCompiler xslt, Stream stream)
         {
-            var xml = XmlReader.Create(stream);
+            XmlReader xml = XmlReader.Create(stream);
             xslt.BaseUri = new Uri(string.IsNullOrEmpty(xml.BaseURI) ? "http://NOT.SET" : xml.BaseURI);
             Saxon.Api.XsltExecutable executable = xslt.Compile(xml);
             Saxon.Api.XsltTransformer transformer = executable.Load();
