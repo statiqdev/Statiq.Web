@@ -95,7 +95,7 @@
             
             <!-- Left side column. contains the logo and sidebar -->
             <aside class="main-sidebar @(Model.Get<bool>("NoSidebar", false) ? "hidden" : string.Empty)">
-                <section class="infobar smaller"> 
+                <section class="infobar smaller" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     @RenderSection("Infobar", false)
                 </section>
                 <section class="sidebar smaller">                    

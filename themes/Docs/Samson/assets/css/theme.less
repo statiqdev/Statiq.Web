@@ -369,7 +369,18 @@ dl ol {
 /* Infobar */
 
 .infobar {
-  padding: 30px 12px 0 12px
+  padding: 30px 12px 0 27px
+}
+
+.affix {
+    position: relative;
+}
+
+@media only screen and (max-width: 1249px)
+{
+  .wyam .sidebar {
+    padding-top: 0;
+  }
 }
 
 @media only screen and (min-width: 1250px)
@@ -382,8 +393,19 @@ dl ol {
     width: 230px;
   }
 
+  .infobar-hidden {
+    display: none;
+  }
+
   .wrapper.with-container {
     overflow: visible;
+  }
+      
+  .affix {
+    top: 20px;
+    position: fixed;
+    left: initial;
+    margin-left: 1250px;
   }
 }
 
@@ -399,6 +421,13 @@ dl ol {
     left: 1020px;
     top: 80px;
     width: 230px;
+  }
+
+  .affix {
+    top: 20px;
+    position: fixed;
+    left: initial;
+    margin-left: 1020px;
   }
 }
 
