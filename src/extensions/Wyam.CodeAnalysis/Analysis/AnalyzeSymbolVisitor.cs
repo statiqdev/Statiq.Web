@@ -2,20 +2,16 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Execution;
 
-namespace Wyam.CodeAnalysis
+namespace Wyam.CodeAnalysis.Analysis
 {
     internal class AnalyzeSymbolVisitor : SymbolVisitor
     {

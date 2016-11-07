@@ -4,18 +4,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 
-namespace Wyam.CodeAnalysis
+namespace Wyam.CodeAnalysis.Analysis
 {
 	internal class XmlDocumentationParser
 	{

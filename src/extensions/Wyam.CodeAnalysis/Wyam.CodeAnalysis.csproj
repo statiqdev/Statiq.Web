@@ -159,23 +159,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\NonReentrantLock.cs" />
+    <Compile Include="Analysis\XmlDocumentationProvider.cs" />
+    <Compile Include="AnalyzeAssemblies.cs" />
     <Compile Include="AnalyzeCSharp.cs" />
-    <Compile Include="AnalyzeSymbolVisitor.cs" />
+    <Compile Include="Analysis\AnalyzeSymbolVisitor.cs" />
+    <Compile Include="CodeAnalysisModule.cs" />
     <Compile Include="OtherComment.cs" />
     <Compile Include="ReadProject.cs" />
     <Compile Include="ReadSolution.cs" />
     <Compile Include="ReadWorkspace.cs" />
     <Compile Include="ReferenceComment.cs" />
-    <Compile Include="WrappingStringBuilder.cs" />
+    <Compile Include="Analysis\WrappingStringBuilder.cs" />
     <Compile Include="CodeAnalysisKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="SymbolDocumentValue.cs" />
-    <Compile Include="SymbolDocumentValues.cs" />
-    <Compile Include="SyntaxHelper.cs" />
-    <Compile Include="XmlDocumentationParser.cs" />
+    <Compile Include="Analysis\SymbolDocumentValue.cs" />
+    <Compile Include="Analysis\SymbolDocumentValues.cs" />
+    <Compile Include="Analysis\SyntaxHelper.cs" />
+    <Compile Include="Analysis\XmlDocumentationParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

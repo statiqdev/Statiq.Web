@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 
-namespace Wyam.CodeAnalysis
+namespace Wyam.CodeAnalysis.Analysis
 {
     internal class SymbolDocumentValues : IMetadataValue
     {

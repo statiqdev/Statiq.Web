@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Wyam.CodeAnalysis
+namespace Wyam.CodeAnalysis.Analysis
 {
     /// <summary>
     /// Provides an API similar to <see cref="StringBuilder"/> that can be used for building
