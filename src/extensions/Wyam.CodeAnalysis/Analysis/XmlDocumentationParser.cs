@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
@@ -272,7 +273,7 @@ namespace Wyam.CodeAnalysis.Analysis
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
 			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
-				link = $"<a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{name}</a>";
+				link = $"<a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{WebUtility.HtmlEncode(name)}</a>";
 			    return name;
 			}
 			link = null;

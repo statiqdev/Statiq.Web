@@ -136,8 +136,8 @@ namespace Wyam.CodeAnalysis
         public TModule WherePublic(bool includeProtected = true)
         {
             return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public
-                                    || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
-                                    || x.DeclaredAccessibility == Accessibility.NotApplicable);
+                || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
+                || x.DeclaredAccessibility == Accessibility.NotApplicable);
         }
         
         /// <summary>

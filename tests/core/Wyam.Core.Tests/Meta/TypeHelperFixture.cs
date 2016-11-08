@@ -354,6 +354,21 @@ namespace Wyam.Core.Tests.Meta
             }
 
             [Test]
+            public void StringConvertsToDateTime()
+            {
+                // Given
+                string value = "2016-10-17 08:00";
+
+                // When
+                DateTime dateTime;
+                bool convert = TypeHelper.TryConvert(value, out dateTime);
+
+                // Then
+                Assert.IsTrue(convert);
+                Assert.AreEqual(new DateTime(2016, 10, 17, 8, 0, 0), dateTime);
+            }
+
+            [Test]
             public void NullConvertsToNullable()
             {
                 // Given

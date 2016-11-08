@@ -317,6 +317,20 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private static string GetId(ISymbol symbol)
         {
+            if (symbol is INamespaceOrTypeSymbol)
+            {
+                char[] id = symbol.MetadataName.ToCharArray();
+                for (int c = 0; c < id.Length; c++)
+                {
+                    if (!char.IsLetterOrDigit(id[c]) && id[c] != '-' && id[c] != '.')
+                    {
+                        id[c] = '_';
+                    }
+                }
+                return new string(id);
+            }
+
+            // Get a hash for anything other than namespaces or types
             return BitConverter.ToString(BitConverter.GetBytes(Crc32.Calculate(symbol.GetDocumentationCommentId() ?? GetFullName(symbol)))).Replace("-", string.Empty);
         }
 

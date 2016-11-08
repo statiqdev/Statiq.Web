@@ -526,7 +526,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "Foo/414E2165/index.html", "Foo.Bar/92C5B5C5/index.html", "global/439037DE/index.html", "Foo/53AB53EF/index.html" },
+                CollectionAssert.AreEquivalent(new[] { "Foo/Green/index.html", "Foo.Bar/Blue/index.html", "global/Yellow/index.html", "Foo/Red/index.html" },
                     results.Where(x => x["Kind"].Equals("NamedType")).Select(x => ((FilePath)x[Keys.WritePath]).FullPath));
             }
 
