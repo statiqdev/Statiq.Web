@@ -17,6 +17,8 @@ namespace Wyam.Docs
 
         public const string SourceFiles = nameof(SourceFiles);
 
+        public const string AssemblyFiles = nameof(AssemblyFiles);
+
         public const string IncludeGlobalNamespace = nameof(IncludeGlobalNamespace);
         
         public const string Description = nameof(Description);

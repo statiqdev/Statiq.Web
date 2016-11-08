@@ -33,7 +33,26 @@ namespace Wyam.Docs
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
             );
-            
+
+            engine.Pipelines.Add(DocsPipelines.Api,
+                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
+                    new Documents(DocsPipelines.Code),
+                    // Put analysis module inside execute to have access to global metadata at runtime
+                    new Execute(ctx => new AnalyzeCSharp()
+                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                        .WherePublic()
+                        .WithCssClasses("code", "cs")
+                        .WithWritePathPrefix("api"))
+                ),
+                new Concat(
+                    new Execute(ctx => new AnalyzeAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
+                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                        .WherePublic()
+                        .WithCssClasses("code", "cs")
+                        .WithWritePathPrefix("api"))
+                )
+            );
+
             engine.Pipelines.Add(DocsPipelines.Pages,
                 new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/*.md"),
                 new Include(),
@@ -217,15 +236,9 @@ namespace Wyam.Docs
                 )
             );
             
-            engine.Pipelines.Add(DocsPipelines.Api,
-                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
-                    new Documents(DocsPipelines.Code),
-                    // Put analysis module inside execute to have access to global metadata at runtime
-                    new Execute(ctx => new AnalyzeCSharp()
-                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
-                        .WherePublic()
-                        .WithCssClasses("code", "cs")
-                        .WithWritePathPrefix("api")),
+            engine.Pipelines.Add(DocsPipelines.RenderApi,
+                new If(ctx => ctx.Documents[DocsPipelines.Api].Any(),
+                    new Documents(DocsPipelines.Api),
                     new Razor.Razor()
                         .WithLayout("/_ApiLayout.cshtml"),
                     new WriteFiles()
@@ -233,7 +246,7 @@ namespace Wyam.Docs
             );
 
             engine.Pipelines.Add(DocsPipelines.ApiIndex,
-                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
+                new If(ctx => ctx.Documents[DocsPipelines.Api].Any(),
                     new ReadFiles("_ApiIndex.cshtml"),
                     new Meta(Keys.RelativeFilePath, "api/index.html"),
                     new Meta(Keys.SourceFileName, "index.html"),

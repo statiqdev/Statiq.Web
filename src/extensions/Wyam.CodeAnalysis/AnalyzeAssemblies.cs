@@ -44,12 +44,34 @@ namespace Wyam.CodeAnalysis
         /// <summary>
         /// Analyzes the specified assemblies.
         /// </summary>
+        /// <param name="assemblies">Globbing patterns indicating the assemblies to analyze.</param>
+        public AnalyzeAssemblies(IEnumerable<string> assemblies)
+        {
+            WithAssemblies(assemblies);
+        }
+
+        /// <summary>
+        /// Analyzes the specified assemblies.
+        /// </summary>
         /// <param name="assemblies">A globbing pattern indicating the assemblies to analyze.</param>
         public AnalyzeAssemblies WithAssemblies(string assemblies)
         {
             if (!string.IsNullOrEmpty(assemblies))
             {
                 _assemblyGlobs.Add(assemblies);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Analyzes the specified assemblies.
+        /// </summary>
+        /// <param name="assemblies">Globbing patterns indicating the assemblies to analyze.</param>
+        public AnalyzeAssemblies WithAssemblies(IEnumerable<string> assemblies)
+        {
+            if (assemblies != null)
+            {
+                _assemblyGlobs.AddRange(assemblies.Where(x => !string.IsNullOrEmpty(x)));
             }
             return this;
         }

@@ -61,8 +61,18 @@ namespace Wyam.CodeAnalysis.Analysis
                 try
                 {
                     // We shouldn't need a root element, the compiler adds a "<member name='Foo.Bar'>" root for us
-                    XDocument xml = XDocument.Parse(documentationCommentXml, LoadOptions.PreserveWhitespace);
+                    // unless we're using a custom XML documentation provider (I.e., for assembly docs), so add a root
+                    // and then ignore it if we got the root <member> element
+                    XDocument xml = XDocument.Parse($"<root>{documentationCommentXml}</root>", LoadOptions.PreserveWhitespace);
                     XElement root = xml.Root;
+                    if (root != null 
+                        && root.Elements().Count() == 1
+                        && string.Equals(root.Elements().First().Name.LocalName, "member", StringComparison.OrdinalIgnoreCase))
+                    {
+                        root = root.Elements().First();
+                    }
+
+                    // Process the elements
                     if (root != null)
                     {
                         lock (_processLock)

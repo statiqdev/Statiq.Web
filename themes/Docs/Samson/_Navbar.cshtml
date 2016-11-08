@@ -8,7 +8,7 @@
     {
         pages.Add(Tuple.Create("Blog", Context.GetLink("blog")));
     }
-    if(Documents[DocsPipelines.Code].Any())
+    if(Documents[DocsPipelines.Api].Any())
     {
         pages.Add(Tuple.Create("API", Context.GetLink("api")));
     }
