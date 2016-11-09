@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Text;
 using Cake.Core;
 using Cake.Core.IO;
 
@@ -163,20 +165,12 @@ namespace Cake.Wyam
 
             if (settings.GlobalMetadata != null)
             {
-                foreach (KeyValuePair<string, string> metadata in settings.GlobalMetadata)
-                {
-                    builder.Append("--global");
-                    builder.Append($"\"{EscapeMetadata(metadata.Key)}={EscapeMetadata(metadata.Value)}\"");
-                }
+                SetMetadata(builder, "--global", settings.GlobalMetadata);
             }
 
             if (settings.InitialMetadata != null)
             {
-                foreach (KeyValuePair<string, string> metadata in settings.InitialMetadata)
-                {
-                    builder.Append("--initial");
-                    builder.Append($"\"{EscapeMetadata(metadata.Key)}={EscapeMetadata(metadata.Value)}\"");
-                }
+                SetMetadata(builder, "--initial", settings.InitialMetadata);
             }
 
             if (settings.LogFilePath != null)
@@ -272,8 +266,35 @@ namespace Cake.Wyam
 
             return builder;
         }
+        
+        private static void SetMetadata(ProcessArgumentBuilder builder, string argument, IDictionary<string, object> values)
+        {
+            foreach (KeyValuePair<string, object> metadata in values)
+            {
+                builder.Append(argument);
+                IEnumerable enumerable = metadata.Value as IEnumerable;
+                if (enumerable != null && !(metadata.Value is string))
+                {
+                    // The value is an array
+                    StringBuilder valueBuilder = new StringBuilder();
+                    foreach (object value in enumerable)
+                    {
+                        if (valueBuilder.Length != 0)
+                        {
+                            valueBuilder.Append(",");
+                        }
+                        valueBuilder.Append($"{EscapeMetadata(value.ToString()).Replace(",","\\,")}");
+                    }
+                    builder.Append($"\"{EscapeMetadata(metadata.Key)}=[{valueBuilder}]\"");
+                }
+                else
+                {
+                    builder.Append($"\"{EscapeMetadata(metadata.Key)}={EscapeMetadata(metadata.Value.ToString())}\"");
+                }
+            }
+        }
 
-        private static string EscapeMetadata(string s) => 
+        private static string EscapeMetadata(string s) =>
             s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("=", "\\=");
     }
 }

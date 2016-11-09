@@ -70,12 +70,12 @@ namespace Wyam.Commands
 
             // Metadata
             IReadOnlyList<string> globalMetadata = null;
-            if (syntax.DefineOptionList("g|global", ref globalMetadata, "Specifies global metadata as a sequence of key=value pairs.").IsSpecified)
+            if (syntax.DefineOptionList("g|global", ref globalMetadata, "Specifies global metadata as a sequence of key=value pairs. Use the syntax [x,y] to specify array values.").IsSpecified)
             {
                 _configOptions.GlobalMetadata = MetadataParser.Parse(globalMetadata);
             }
             IReadOnlyList<string> initialMetadata = null;
-            if (syntax.DefineOptionList("initial", ref initialMetadata, "Specifies initial document metadata as a sequence of key=value pairs.").IsSpecified)
+            if (syntax.DefineOptionList("initial", ref initialMetadata, "Specifies initial document metadata as a sequence of key=value pairs. Use the syntax [x,y] to specify array values.").IsSpecified)
             {
                 _configOptions.InitialMetadata = MetadataParser.Parse(initialMetadata);
             }

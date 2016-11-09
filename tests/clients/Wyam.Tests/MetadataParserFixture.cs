@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Wyam.Testing;
 
@@ -14,15 +15,15 @@ namespace Wyam.Tests
             public void TestKeyOnlyParse()
             {
                 // Given
-                var excepted = new string[] {"hi", "=hello", "\\=abcd", "key\\=val", "     bjorn  \\=   dad"};
+                string[] excepted = {"hi", "=hello", "\\=abcd", "key\\=val", "     bjorn  \\=   dad"};
 
                 // When
-                var args = MetadataParser.Parse(excepted);
+                IReadOnlyDictionary<string, object> args = MetadataParser.Parse(excepted);
 
                 // Then
                 Assert.AreEqual(excepted.Length, args.Count);
                 int i = 0;
-                foreach (var arg in args)
+                foreach (KeyValuePair<string, object> arg in args)
                 {
                     Assert.AreEqual(excepted[i].Replace("\\=", "=").Trim(), arg.Key);
                     Assert.IsNull(arg.Value);
@@ -34,15 +35,14 @@ namespace Wyam.Tests
             public void TestKeyValueParse()
             {
                 // Given
-                var pairs = new string[]
-                {"key=value", "k=v", "except=bro", "awesome====123123", "   keytrimmed    =    value trimmed   "};
+                string[] pairs = {"key=value", "k=v", "except=bro", "awesome====123123", "   keytrimmed    =    value trimmed   "};
 
                 // When
-                var args = MetadataParser.Parse(pairs);
+                IReadOnlyDictionary<string, object> args = MetadataParser.Parse(pairs);
 
                 // Then
                 Assert.AreEqual(pairs.Length, args.Count);
-                foreach (var arg in args)
+                foreach (KeyValuePair<string, object> arg in args)
                 {
                     Assert.NotNull(arg.Value, "Argument value should not be null.");
                     StringAssert.DoesNotStartWith(" ", arg.Key, "Arguments key should be trimmed.");
@@ -50,6 +50,20 @@ namespace Wyam.Tests
                     StringAssert.DoesNotStartWith(" ", (string)arg.Value, "Arguments value should be trimmed.");
                     StringAssert.DoesNotEndWith(" ", (string)arg.Value, "Arguments value should be trimmed.");
                 }
+            }
+
+            [Test]
+            public void ArrayValue()
+            {
+                // Given
+                string[] pairs = {"foo = [bar,baz boo,baz\\, boo, a, b\\\"b]"};
+
+                // When
+                IReadOnlyDictionary<string, object> args = MetadataParser.Parse(pairs);
+
+                // Then
+                CollectionAssert.AreEqual(new [] {"foo"}, args.Keys);
+                CollectionAssert.AreEqual(new [] {"bar", "baz boo", "baz, boo", "a", "b\"b"}, args["foo"] as object[]);
             }
 
             /// <summary>
@@ -60,7 +74,7 @@ namespace Wyam.Tests
             {
                 // Given, When, Then
                 Assert.Throws<ArgumentException>(
-                    () => MetadataParser.Parse(new string[] {"hello=world", "hello=exception"}));
+                    () => MetadataParser.Parse(new [] {"hello=world", "hello=exception"}));
             }
         }
     }

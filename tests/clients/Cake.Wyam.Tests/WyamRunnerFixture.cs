@@ -399,10 +399,11 @@ namespace Cake.Wyam.Tests
                 {
                     Settings =
                     {
-                        GlobalMetadata = new Dictionary<string, string>
+                        GlobalMetadata = new Dictionary<string, object>
                         {
                             { "A", "a" },
-                            { "B", "C" }
+                            { "B", 1 },
+                            { "X", new object[] { "y", 1, "x,y", "z\"z" } }
                         }
                     }
                 };
@@ -411,7 +412,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--global \"A=a\" --global \"B=C\" \"/Working\"", result.Args);
+                Assert.AreEqual("--global \"A=a\" --global \"B=1\" --global \"X=[y,1,x\\,y,z\\\"z]\" \"/Working\"", result.Args);
             }
 
             [Test]

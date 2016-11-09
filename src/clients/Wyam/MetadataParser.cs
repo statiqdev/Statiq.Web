@@ -23,12 +23,50 @@ namespace Wyam
                 {
                     return new KeyValuePair<string, object>(
                         Unescape(arg.Substring(0, i).Trim()),
-                        Unescape(arg.Substring(i + 1).Trim()));
+                        ProcessValue(arg.Substring(i + 1).Trim()));
                 }
             }
 
             // If one wasn't found, just unescape the whole string and set a null value
             return new KeyValuePair<string, object>(Unescape(arg.Trim()), null);
+        }
+
+        // Checks for arrays
+        public static object ProcessValue(string s)
+        {
+            if (s.StartsWith("[") && s.EndsWith("]"))
+            {
+                // Array, split on commas
+                List<string> items = s.Substring(1, s.Length - 2).Split(',').ToList();
+
+                // Trim and merge values
+                List<string> values = new List<string>();
+                int c = 0;
+                while (c < items.Count)
+                {
+                    string value = items[c];
+
+                    // Deal with comma escapes
+                    int end = c;
+                    while (items[end].EndsWith("\\"))
+                    {
+                        end++;
+                    }
+                    if (end != c)
+                    {
+                        value = string.Join(",", items.Skip(c).Take(end - c + 1)).Replace("\\,", ",");
+                        c = end;
+                    }
+
+                    // Add the value
+                    values.Add(Unescape(value.Trim()));
+                    c++;
+                }
+                return values.Cast<object>().ToArray();
+            }
+
+            // Not an array, just unescape the value
+            return Unescape(s);
         }
 
         // Based on code from StackOverflow: http://stackoverflow.com/a/25471811/807064
