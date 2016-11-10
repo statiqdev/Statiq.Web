@@ -39,6 +39,7 @@ namespace Wyam.CodeAnalysis.Analysis
                         return document;
                     })
                     .Where(x => x != null)
+                    .Distinct()
                     .ToImmutableArray();
                 _cached = true;
             }

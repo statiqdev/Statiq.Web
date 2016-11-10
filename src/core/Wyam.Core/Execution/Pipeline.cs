@@ -262,7 +262,7 @@ namespace Wyam.Core.Execution
             {
                 if (document == null || !flattenedResultDocuments.Add(document))
                 {
-                    return;
+                    continue;
                 }
                 
                 FlattenResultDocuments(

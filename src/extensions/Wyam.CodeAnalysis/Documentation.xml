@@ -28,7 +28,8 @@
       A unique ID that identifies the symbol (can be used for generating folder paths, for example).
     </metadata>
     <metadata name="Symbol" type="ISymbol">
-      The Roslyn <c>ISymbol</c> from which this document is derived.
+      The Roslyn <c>ISymbol</c> from which this document is derived. If the document represents a namespace, this metadata might contain more than one
+      symbol since the namespaces documents consolidate same-named namespaces across input code and assemblies.
     </metadata>
     <metadata name="Name" type="string">
       The name of the symbol, or an empty string if the symbol has no name (like the global namespace).

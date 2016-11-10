@@ -257,20 +257,8 @@ namespace Wyam.CodeAnalysis
             // Namespaces output to the index page in a folder of their full name
             else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.Namespace.ToString())
             {
-                StringBuilder writePathBuilder = new StringBuilder();
-
-                // Add the assembly (if there is one)
-                if (assemblyDocument != null)
-                {
-                    writePathBuilder.Append($"{assemblyDocument[CodeAnalysisKeys.DisplayName]}/");
-                }
-
                 // If this namespace does not have a containing namespace, it's the global namespace
-                writePathBuilder.Append(namespaceDocument == null
-                    ? "global/index.html"
-                    : $"{metadata[CodeAnalysisKeys.DisplayName]}/index.html");
-
-                writePath = new FilePath(writePathBuilder.ToString());
+                writePath = new FilePath(namespaceDocument == null ? "global/index.html" : $"{metadata[CodeAnalysisKeys.DisplayName]}/index.html");
             }
             // Types output to the index page in a folder of their SymbolId under the folder for their namespace
             else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())

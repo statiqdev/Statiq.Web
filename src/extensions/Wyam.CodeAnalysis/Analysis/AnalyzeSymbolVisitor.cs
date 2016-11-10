@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using ConcurrentCollections;
 using Microsoft.CodeAnalysis;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
@@ -15,6 +16,8 @@ namespace Wyam.CodeAnalysis.Analysis
 {
     internal class AnalyzeSymbolVisitor : SymbolVisitor
     {
+        private readonly ConcurrentDictionary<string, IDocument> _namespaceDisplayNameToDocument = new ConcurrentDictionary<string, IDocument>();
+        private readonly ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>> _namespaceDisplayNameToSymbols = new ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>>();
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
@@ -51,12 +54,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 .ToImmutableArray();
             return _symbolToDocument.Select(x => x.Value);
         }
-
-        public bool TryGetDocument(ISymbol symbol, out IDocument document)
-        {
-            return _symbolToDocument.TryGetValue(symbol, out document);
-        }
-
+        
         public override void VisitAssembly(IAssemblySymbol symbol)
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
@@ -77,14 +75,23 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitNamespace(INamespaceSymbol symbol)
         {
+            // Add to the namespace symbol cache
+            string displayName = GetDisplayName(symbol);
+            ConcurrentHashSet<INamespaceSymbol> symbols = _namespaceDisplayNameToSymbols.GetOrAdd(displayName, _ => new ConcurrentHashSet<INamespaceSymbol>());
+            symbols.Add(symbol);
+
+            // Create the document
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocument(symbol, true, new MetadataItems
-                {
-                    { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
-                    { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(symbol.GetNamespaceMembers()) },
-                    { CodeAnalysisKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()) }
-                });
+                _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
+                    _ => AddNamespaceDocument(symbol, true),
+                    (_, existing) =>
+                    {
+                        // There's already a document for this symbol display name, add it to the symbol-to-document cache
+                        _symbolToDocument.TryAdd(symbol, existing);
+                        MapCommentId(symbol, existing);
+                        return existing;
+                    });
             }
 
             // Descend if not finished, regardless if this namespace was included
@@ -136,7 +143,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, false, new MetadataItems
+                AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.TypeParameterKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
@@ -148,7 +155,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, false, new MetadataItems
+                AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type))
@@ -160,7 +167,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, true, new MetadataItems
+                AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind,
                         _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
@@ -177,7 +184,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, true, new MetadataItems
+                AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
@@ -190,7 +197,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, true, new MetadataItems
+                AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
@@ -204,7 +211,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
-                AddDocumentForMember(symbol, true, new MetadataItems
+                AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
@@ -228,31 +235,35 @@ namespace Wyam.CodeAnalysis.Analysis
             return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
         }
 
-        private void AddDocumentForMember(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
+        private IDocument AddMemberDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
         {
             items.AddRange(new[]
             {
                 new MetadataItem(CodeAnalysisKeys.ContainingType, DocumentFor(symbol.ContainingType))
             });
-            AddDocument(symbol, xmlDocumentation, items);
+            return AddDocument(symbol, xmlDocumentation, items);
         }
 
-        private void AddDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
+        private IDocument AddNamespaceDocument(INamespaceSymbol symbol, bool xmlDocumentation)
         {
-            // Get universal metadata
-            items.AddRange(new []
+            string displayName = GetDisplayName(symbol);
+            MetadataItems items = new MetadataItems
             {
-                // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
-                new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
-                new MetadataItem(CodeAnalysisKeys.SymbolId, _ => GetId(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.Symbol, symbol),
-                new MetadataItem(CodeAnalysisKeys.Name, _ => symbol.Name),
-                new MetadataItem(CodeAnalysisKeys.FullName, _ => GetFullName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.DisplayName, _ => GetDisplayName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.QualifiedName, _ => GetQualifiedName(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.Kind, _ => symbol.Kind.ToString()),
-                new MetadataItem(CodeAnalysisKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
-                new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true)
+                {CodeAnalysisKeys.Symbol, _ => _namespaceDisplayNameToSymbols[displayName].ToImmutableList()},
+                {CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()},
+                // We need to aggregate the results across all matching namespaces
+                {CodeAnalysisKeys.MemberNamespaces, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetNamespaceMembers()))},
+                {CodeAnalysisKeys.MemberTypes, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetTypeMembers()))}
+            };
+            return AddDocumentCommon(symbol, xmlDocumentation, items);
+        }
+
+        // Used for everything but namespace documents
+        private IDocument AddDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
+        {
+            items.AddRange(new[]
+            {
+                new MetadataItem(CodeAnalysisKeys.Symbol, symbol)
             });
 
             // Add the containing assembly, but only if it's not the code analysis compilation
@@ -261,6 +272,26 @@ namespace Wyam.CodeAnalysis.Analysis
                 items.Add(new MetadataItem(CodeAnalysisKeys.ContainingAssembly, DocumentFor(symbol.ContainingAssembly)));
             }
 
+            return AddDocumentCommon(symbol, xmlDocumentation, items);
+        }
+
+        private IDocument AddDocumentCommon(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
+        {
+            // Get universal metadata
+            items.AddRange(new []
+            {
+                // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
+                new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
+                new MetadataItem(CodeAnalysisKeys.SymbolId, _ => GetId(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.Name, _ => symbol.Name),
+                new MetadataItem(CodeAnalysisKeys.FullName, _ => GetFullName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.DisplayName, _ => GetDisplayName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.QualifiedName, _ => GetQualifiedName(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.Kind, _ => symbol.Kind.ToString()),
+                new MetadataItem(CodeAnalysisKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
+                new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true)
+            });
+            
             // Add metadata that's specific to initially-processed symbols
             if (!_finished)
             {
@@ -283,11 +314,17 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddXmlDocumentation(symbol, items);
             }
 
-            // Create the document and add it to the cache
-            IDocument document = _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), null, items);
-            _symbolToDocument.GetOrAdd(symbol, _ => document);
+            // Create the document and add it to caches
+            IDocument document = _symbolToDocument.GetOrAdd(symbol, 
+                _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), null, items));
+            MapCommentId(symbol, document);
 
-            // Map the comment ID to the document
+            return document;
+        }
+
+        // Map the comment ID to the document so it can be found when processing comments
+        private void MapCommentId(ISymbol symbol, IDocument document)
+        {
             if (!_finished)
             {
                 string documentationCommentId = symbol.GetDocumentationCommentId();
@@ -342,6 +379,7 @@ namespace Wyam.CodeAnalysis.Analysis
             return str.ToUpper();
         }
 
+        // Note that the symbol ID is not fully-qualified and is therefore only unique within a namespace
         private static string GetId(ISymbol symbol)
         {
             if (symbol is IAssemblySymbol)
@@ -426,6 +464,11 @@ namespace Wyam.CodeAnalysis.Analysis
         private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols)
         {
             return new SymbolDocumentValues(symbols, this);
+        }
+
+        public bool TryGetDocument(ISymbol symbol, out IDocument document)
+        {
+            return _symbolToDocument.TryGetValue(symbol, out document);
         }
     }
 }

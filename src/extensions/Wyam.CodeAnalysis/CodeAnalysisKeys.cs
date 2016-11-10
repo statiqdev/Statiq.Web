@@ -8,7 +8,7 @@ namespace Wyam.CodeAnalysis
         // All
         public const string IsResult = nameof(IsResult); // bool, true = part of the initial result set (I.e., only those that matched the predicate, if any)
         public const string SymbolId = nameof(SymbolId); // string, a unique ID that identifies this symbol
-        public const string Symbol = nameof(Symbol); // ISymbol
+        public const string Symbol = nameof(Symbol); // ISymbol (except namespace documents which may have more than one symbol)
         public const string Name = nameof(Name); // string, empty string if the symbol has no name (like the top-level namespace)
         public const string FullName = nameof(FullName); // string, namespaces = name of the namespace, types = with generic type parameters
         public const string QualifiedName = nameof(QualifiedName); // string, the qualified name including containing namespaces
