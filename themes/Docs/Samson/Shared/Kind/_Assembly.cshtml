@@ -1,0 +1,9 @@
+@Html.Partial("Section\\_DocsTable", new DocsTable
+{
+    Docs = Model.List<IDocument>("MemberNamespaces")
+        ?.Where(x => x.Get<bool>("IsResult"))
+        .OrderBy(x => x["DisplayName"])
+        .ToList(),
+    Title = "Namespaces",
+    Header = "Namespace"	
+})

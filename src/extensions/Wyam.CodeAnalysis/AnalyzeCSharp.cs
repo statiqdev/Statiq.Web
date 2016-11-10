@@ -107,15 +107,11 @@ namespace Wyam.CodeAnalysis
         /// <param name="predicate">A predicate that returns <c>true</c> if the symbol should be included in the initial result set.</param>
         public AnalyzeCSharp WithNamedTypes(Func<INamedTypeSymbol, bool> predicate = null)
         {
-            Func<ISymbol, bool> newPredicate = x =>
+            return WhereSymbol(x =>
             {
                 INamedTypeSymbol namedTypeSymbol = x as INamedTypeSymbol;
-                return namedTypeSymbol != null &&
-                       (predicate?.Invoke(namedTypeSymbol) ?? true);
-            };
-            Func<ISymbol, bool> currentPredicate = _symbolPredicate;
-            _symbolPredicate = currentPredicate == null ? newPredicate : x => currentPredicate(x) && newPredicate(x);
-            return this;
+                return namedTypeSymbol != null && (predicate?.Invoke(namedTypeSymbol) ?? true);
+            });
         }
 
         /// <summary>
@@ -128,6 +124,10 @@ namespace Wyam.CodeAnalysis
         {
             return WhereSymbol(x =>
             {
+                if (x is IAssemblySymbol)
+                {
+                    return true;
+                }
                 INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
                 if (namespaceSymbol == null)
                 {
@@ -151,6 +151,10 @@ namespace Wyam.CodeAnalysis
         {
             return WhereSymbol(x =>
             {
+                if (x is IAssemblySymbol)
+                {
+                    return true;
+                }
                 INamespaceSymbol namespaceSymbol = x as INamespaceSymbol;
                 if (namespaceSymbol == null)
                 {
@@ -166,9 +170,16 @@ namespace Wyam.CodeAnalysis
         /// <param name="includeProtected">If set to <c>true</c>, protected symbols are also included.</param>
         public AnalyzeCSharp WherePublic(bool includeProtected = true)
         {
-            return WhereSymbol(x => x.DeclaredAccessibility == Accessibility.Public
-                || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
-                || x.DeclaredAccessibility == Accessibility.NotApplicable);
+            return WhereSymbol(x =>
+            {
+                if (x is IAssemblySymbol)
+                {
+                    return true;
+                }
+                return x.DeclaredAccessibility == Accessibility.Public
+                    || (includeProtected && x.DeclaredAccessibility == Accessibility.Protected)
+                    || x.DeclaredAccessibility == Accessibility.NotApplicable;
+            });
         }
         
         /// <summary>
@@ -202,8 +213,7 @@ namespace Wyam.CodeAnalysis
         public AnalyzeCSharp WithAssemblySymbols(bool assemblySymbols = true)
         {
             _assemblySymbols = assemblySymbols;
-            WhereSymbol(x => !(x is IAssemblySymbol) || (_assemblySymbols && x.Name != CompilationAssemblyName));
-            return this;
+            return WhereSymbol(x => !(x is IAssemblySymbol) || (_assemblySymbols && x.Name != CompilationAssemblyName));
         }
         
         /// <summary>
