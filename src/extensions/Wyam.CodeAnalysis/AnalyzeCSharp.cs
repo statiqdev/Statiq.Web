@@ -245,7 +245,6 @@ namespace Wyam.CodeAnalysis
 
         private FilePath DefaultWritePath(IMetadata metadata, DirectoryPath prefix)
         {
-            IDocument assemblyDocument = metadata.Document(CodeAnalysisKeys.ContainingAssembly);
             IDocument namespaceDocument = metadata.Document(CodeAnalysisKeys.ContainingNamespace);
             FilePath writePath = null;
 
@@ -263,20 +262,9 @@ namespace Wyam.CodeAnalysis
             // Types output to the index page in a folder of their SymbolId under the folder for their namespace
             else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())
             {
-                StringBuilder writePathBuilder = new StringBuilder();
-
-                // Add the assembly (if there is one)
-                if (assemblyDocument != null)
-                {
-                    writePathBuilder.Append($"{assemblyDocument[CodeAnalysisKeys.DisplayName]}/");
-                }
-
-                // If containing namespace is null (shouldn't happen) or our namespace is global, output to root folder
-                writePathBuilder.Append(namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null
+                writePath = new FilePath(namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null
                     ? $"global/{metadata[CodeAnalysisKeys.SymbolId]}/index.html"
                     : $"{namespaceDocument[CodeAnalysisKeys.DisplayName]}/{metadata[CodeAnalysisKeys.SymbolId]}/index.html");
-
-                writePath = new FilePath(writePathBuilder.ToString());
             }
             else
             {

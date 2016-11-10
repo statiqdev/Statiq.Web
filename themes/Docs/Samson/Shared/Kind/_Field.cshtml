@@ -1,10 +1,18 @@
 @{
+	IDocument containingAssembly = Model.Get<IDocument>("ContainingAssembly");
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
 	IDocument containingType = Model.Get<IDocument>("ContainingType");
-	if(containingNamespace != null 
+	if(containingAssembly != null
+		|| containingNamespace != null 
 		|| containingType != null)
 	{
-		<dl class="dl-horizontal">		
+		<dl class="dl-horizontal">				
+			@if(containingAssembly != null)
+			{	
+				<dt>Assembly</dt>
+				<dd>@Context.GetTypeLink(containingAssembly)</dd>
+			}
+
 			@if(containingNamespace != null)
 			{		
 				<dt>Namespace</dt>

@@ -1,9 +1,13 @@
-@Html.Partial("Section\\_DocsTable", new DocsTable
+@foreach(IGrouping<string, IDocument> typeGroup 
+    in Documents.FromPipeline(DocsPipelines.Api)
+        .Where(x => x.Get<bool>("IsResult") && x["Kind"].Equals("NamedType") && x.Document("ContainingAssembly") == Model)
+        .GroupBy(x => x.String("SpecificKind")))
 {
-    Docs = Model.List<IDocument>("MemberNamespaces")
-        ?.Where(x => x.Get<bool>("IsResult"))
-        .OrderBy(x => x["DisplayName"])
-        .ToList(),
-    Title = "Namespaces",
-    Header = "Namespace"	
-})
+    @Html.Partial("Section\\_DocsTable", new DocsTable
+    {
+        Docs = typeGroup.OrderBy(x => x["DisplayName"]).ToList(),
+        Title = typeGroup.Key + " Types",
+        Header = typeGroup.Key,
+        HasSummary = true
+    });		
+}

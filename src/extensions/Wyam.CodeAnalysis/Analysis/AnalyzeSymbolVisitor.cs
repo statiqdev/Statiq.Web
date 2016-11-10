@@ -62,7 +62,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddDocument(symbol, true, new MetadataItems
                 {
                     { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
-                    { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(new [] { symbol.GlobalNamespace }) }
+                    { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(symbol.GlobalNamespace.GetNamespaceMembers()) }
                 });
             }
 

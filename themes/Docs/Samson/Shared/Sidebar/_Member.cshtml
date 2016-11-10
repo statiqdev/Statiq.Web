@@ -1,4 +1,11 @@
 @{
+	IDocument containingAssembly = Model.Get<IDocument>("ContainingAssembly");
+	if(containingAssembly != null)
+	{
+		<li class="header">Assembly</li>
+		<li>@Context.GetTypeLink(containingAssembly)</li>
+	}
+
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
 	if(containingNamespace != null)
 	{

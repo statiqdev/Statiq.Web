@@ -1,16 +1,24 @@
 @{
+	IDocument containingAssembly = Model.Get<IDocument>("ContainingAssembly");
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
 	IReadOnlyList<IDocument> allInterfaces = Model.List<IDocument>("AllInterfaces");
 	IDocument baseType = Model.Get<IDocument>("BaseType");
 	IReadOnlyList<IDocument> derivedTypes = Model.List<IDocument>("DerivedTypes");
 	IReadOnlyList<IDocument> implementingTypes = Model.List<IDocument>("ImplementingTypes");
-	if(containingNamespace != null
+	if(containingAssembly != null
+		|| containingNamespace != null
 		|| (allInterfaces != null && allInterfaces.Count > 0)
 		|| baseType != null
 		|| (derivedTypes != null && derivedTypes.Count > 0)
 		|| (implementingTypes != null && implementingTypes.Count > 0))
 	{
 		<dl class="dl-horizontal">		
+			@if(containingAssembly != null)
+			{	
+				<dt>Assembly</dt>
+				<dd>@Context.GetTypeLink(containingAssembly)</dd>
+			}
+
 			@if(containingNamespace != null)
 			{	
 				<dt>Namespace</dt>

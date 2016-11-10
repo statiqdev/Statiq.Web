@@ -1,1 +1,13 @@
-@Html.Partial("Sidebar/_Namespace")
+<li class="header">Assemblies</li>   
+@{
+    IReadOnlyList<IDocument> assemblies = 
+        Documents.FromPipeline(DocsPipelines.Api)
+			.Where(x => x.String("Kind") == "Assembly")
+            .OrderBy(x => x.String("DisplayName"))
+            .ToList();
+    foreach(IDocument assembly in assemblies)
+    {
+        string activeClass = assembly.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
+        <li class="@activeClass">@Context.GetTypeLink(assembly)</li>
+    }
+}
