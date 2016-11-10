@@ -35,22 +35,15 @@ namespace Wyam.Docs
             );
 
             engine.Pipelines.Add(DocsPipelines.Api,
-                new If(ctx => ctx.Documents[DocsPipelines.Code].Any(),
-                    new Documents(DocsPipelines.Code),
-                    // Put analysis module inside execute to have access to global metadata at runtime
-                    new Execute(ctx => new AnalyzeCSharp()
-                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
-                        .WherePublic()
-                        .WithCssClasses("code", "cs")
-                        .WithWritePathPrefix("api"))
-                ),
-                new Concat(
-                    new Execute(ctx => new AnalyzeAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
-                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
-                        .WherePublic()
-                        .WithCssClasses("code", "cs")
-                        .WithWritePathPrefix("api"))
-                )
+                new Documents(DocsPipelines.Code),
+                // Put analysis module inside execute to have access to global metadata at runtime
+                new Execute(ctx => new AnalyzeCSharp()
+                    .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                    .WherePublic()
+                    .WithCssClasses("code", "cs")
+                    .WithWritePathPrefix("api")
+                    .WithAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
+                    .WithAssemblySymbols())
             );
 
             engine.Pipelines.Add(DocsPipelines.Pages,

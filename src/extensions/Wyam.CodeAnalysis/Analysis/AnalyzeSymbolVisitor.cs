@@ -23,6 +23,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly Func<IMetadata, FilePath> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
+        private readonly bool _assemblySymbols;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
@@ -30,13 +31,15 @@ namespace Wyam.CodeAnalysis.Analysis
             Func<ISymbol, bool> symbolPredicate, 
             Func<IMetadata, FilePath> writePath, 
             ConcurrentDictionary<string, string> cssClasses,
-            bool docsForImplicitSymbols)
+            bool docsForImplicitSymbols,
+            bool assemblySymbols)
         {
             _context = context;
             _symbolPredicate = symbolPredicate;
             _writePath = writePath;
             _cssClasses = cssClasses;
             _docsForImplicitSymbols = docsForImplicitSymbols;
+            _assemblySymbols = assemblySymbols;
         }
 
         public IEnumerable<IDocument> Finish()
@@ -52,6 +55,24 @@ namespace Wyam.CodeAnalysis.Analysis
         public bool TryGetDocument(ISymbol symbol, out IDocument document)
         {
             return _symbolToDocument.TryGetValue(symbol, out document);
+        }
+
+        public override void VisitAssembly(IAssemblySymbol symbol)
+        {
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            {
+                AddDocument(symbol, true, new MetadataItems
+                {
+                    { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
+                    { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(new [] { symbol.GlobalNamespace }) }
+                });
+            }
+
+            // Descend if not finished, regardless if this namespace was included
+            if (!_finished)
+            {
+                symbol.GlobalNamespace.Accept(this);
+            }
         }
 
         public override void VisitNamespace(INamespaceSymbol symbol)
@@ -234,6 +255,12 @@ namespace Wyam.CodeAnalysis.Analysis
                 new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true)
             });
 
+            // Add the containing assembly, but only if it's not the code analysis compilation
+            if (symbol.ContainingAssembly?.Name != AnalyzeCSharp.CompilationAssemblyName && _assemblySymbols)
+            {
+                items.Add(new MetadataItem(CodeAnalysisKeys.ContainingAssembly, DocumentFor(symbol.ContainingAssembly)));
+            }
+
             // Add metadata that's specific to initially-processed symbols
             if (!_finished)
             {
@@ -317,6 +344,10 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private static string GetId(ISymbol symbol)
         {
+            if (symbol is IAssemblySymbol)
+            {
+                return symbol.Name + ".dll";
+            }
             if (symbol is INamespaceOrTypeSymbol)
             {
                 char[] id = symbol.MetadataName.ToCharArray();
@@ -353,6 +384,11 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private static string GetDisplayName(ISymbol symbol)
         {
+            if (symbol is IAssemblySymbol)
+            {
+                // Add .dll to assembly names
+                return symbol.Name + ".dll";
+            }
             if (symbol.Kind == SymbolKind.Namespace)
             {
                 // Use "global" for the global namespace display name since it's a reserved keyword and it's used to refer to the global namespace in code

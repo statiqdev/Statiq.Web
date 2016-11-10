@@ -2,21 +2,22 @@
 @{
 	IList<Tuple<string[], IDocument>> namespaces 
 		= Documents.FromPipeline(DocsPipelines.Api)
-			.Where(x => x.String("Kind") == "Namespace")
-			.Select(x => Tuple.Create(x.String("DisplayName"), x))
+			.Where(x => x.String("Kind") == "Namespace" || x.String("Kind") == "Assembly")
+			.Select(x => Tuple.Create(x.String("DisplayName"), x, x.Document("ContainingAssembly")))
+			.OrderBy(x => x.Item3?.String("DisplayName") ?? "zzzz")
 			.OrderBy(x => x.Item1)
-			.Select(x => Tuple.Create(x.Item1.Split('.'), x.Item2))
+			.Select(x => Tuple.Create(x.Item2.String("Kind") == "Assembly" ? new [] { x.Item1 } : x.Item1.Split('.'), x.Item2))
 			.ToList();
 	for(int c = 0; c < namespaces.Count ; c++)
 	{
 		Tuple<string[], IDocument> current = namespaces[c];
-		string currentActiveClass = Model.String("Kind") == "Namespace" 
+		string currentActiveClass = (Model.String("Kind") == "Namespace" || Model.String("Kind") == "Assembly") 
 			&& Model.String("SymbolId") == current.Item2.String("SymbolId") ? "active" : null;
 		if(current.Item1.Length > 1 && c+1 < namespaces.Count 
 			&& namespaces[c+1].Item1[0] == current.Item1[0] && namespaces[c+1].Item1[1] == current.Item1[1])
 		{
 			// Nest this namespace
-			string nestedActiveClass = Model.String("Kind") == "Namespace" 
+			string nestedActiveClass = (Model.String("Kind") == "Namespace" || Model.String("Kind") == "Assembly") 
 				&& (Model.String("SymbolId") == current.Item2.String("SymbolId") 
 					|| Model.String("DisplayName").StartsWith(current.Item1[0] + "." + current.Item1[1] + ".")) ? "active" : null;
 			<li class="treeview @nestedActiveClass">
@@ -27,7 +28,7 @@
 						while(c+1 < namespaces.Count 
 							&& namespaces[c+1].Item1[0] == current.Item1[0] && namespaces[c+1].Item1[1] == current.Item1[1])
 						{
-							nestedActiveClass = Model.String("Kind") == "Namespace" 
+							nestedActiveClass = (Model.String("Kind") == "Namespace" || Model.String("Kind") == "Assembly")
 								&& Model.String("SymbolId") == namespaces[c+1].Item2.String("SymbolId") ? "active" : null;
 							<li class="@nestedActiveClass">@Context.GetTypeLink(namespaces[c+1].Item2)</li>
 							c++;

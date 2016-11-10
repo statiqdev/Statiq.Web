@@ -16,6 +16,7 @@ namespace Wyam.CodeAnalysis
         public const string Kind = nameof(Kind); // string, the general kind of symbol (Namespace, NamedType, etc.)
         public const string SpecificKind = nameof(SpecificKind); // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = nameof(ContainingNamespace); // IDocument, null if not nested
+        public const string ContainingAssembly = nameof(ContainingAssembly); // IDocument, null if not in an assembly
 
         // Namespace
         public const string MemberTypes = nameof(MemberTypes); // IReadOnlyList<IDocument>, only contains direct children, not all descendants

@@ -161,10 +161,8 @@
   <ItemGroup>
     <Compile Include="Analysis\NonReentrantLock.cs" />
     <Compile Include="Analysis\XmlDocumentationProvider.cs" />
-    <Compile Include="AnalyzeAssemblies.cs" />
-    <Compile Include="AnalyzeCSharp.cs" />
     <Compile Include="Analysis\AnalyzeSymbolVisitor.cs" />
-    <Compile Include="CodeAnalysisModule.cs" />
+    <Compile Include="AnalyzeCSharp.cs" />
     <Compile Include="OtherComment.cs" />
     <Compile Include="ReadProject.cs" />
     <Compile Include="ReadSolution.cs" />

@@ -53,6 +53,9 @@
     <metadata name="ContainingNamespace" type="IDocument">
       The document that represents the containing namespace (or null if this symbol is not nested).
     </metadata>
+    <metadata name="ContainingAssembly" type="IDocument">
+      The document that represents the containing assembly (or null if this symbol is not from an assembly).
+    </metadata>
     
     <!-- Symbol specific -->
     <metadata name="MemberTypes" type="IReadOnlyList&lt;IDocument&gt;">
