@@ -84,8 +84,7 @@ namespace Wyam.Xslt2
                             {
                                 using (Stream fileStream = file.OpenRead())
                                 {
-                                    Saxon.Api.XsltExecutable executable = xslt.Compile(fileStream);
-                                    transformer = executable.Load();
+                                    transformer = LoadXsltDataInTransformer(xslt, fileStream);
                                 }
                             }
                             else
@@ -103,11 +102,7 @@ namespace Wyam.Xslt2
                         IDocument xsltDocument = context.Execute(_xsltGeneration, new[] { input }).Single();
                         using (Stream stream = xsltDocument.GetStream())
                         {
-
-                            var xml = XmlReader.Create(stream);
-                            xslt.BaseUri  = new Uri(string.IsNullOrEmpty( xml.BaseURI)?"http://temp.org": xml.BaseURI);
-                            Saxon.Api.XsltExecutable executable = xslt.Compile(xml);
-                            transformer = executable.Load();
+                            transformer = LoadXsltDataInTransformer(xslt, stream);
                         }
                     }
                     else
@@ -118,11 +113,13 @@ namespace Wyam.Xslt2
 
                     using (Stream stream = input.GetStream())
                     {
-                        var documentBuilder = processor.NewDocumentBuilder();
+                        XmlReader xml = XmlReader.Create(stream);
+
+                        Saxon.Api.DocumentBuilder documentBuilder = processor.NewDocumentBuilder();
                         documentBuilder.BaseUri = xslt.BaseUri;
-                        var xdmNode = documentBuilder.Build(stream);
+                        Saxon.Api.XdmNode xdmNode = documentBuilder.Build(xml);
                         transformer.InitialContextNode = xdmNode;
-                        
+
                         using (System.IO.StringWriter writer = new StringWriter())
                         {
                             Saxon.Api.Serializer serializer = new Saxon.Api.Serializer();
@@ -139,6 +136,15 @@ namespace Wyam.Xslt2
                     return null;
                 }
             }).Where(x => x != null);
+        }
+
+        private static Saxon.Api.XsltTransformer LoadXsltDataInTransformer(Saxon.Api.XsltCompiler xslt, Stream stream)
+        {
+            XmlReader xml = XmlReader.Create(stream);
+            xslt.BaseUri = new Uri(string.IsNullOrEmpty(xml.BaseURI) ? "http://NOT.SET" : xml.BaseURI);
+            Saxon.Api.XsltExecutable executable = xslt.Compile(xml);
+            Saxon.Api.XsltTransformer transformer = executable.Load();
+            return transformer;
         }
     }
 }
