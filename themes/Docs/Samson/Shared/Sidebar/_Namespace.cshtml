@@ -1,12 +1,48 @@
 <li class="header">Namespaces</li>   
 @{
-	IList<Tuple<string[], IDocument>> namespaces 
+	IList<Tuple<string, IDocument>> namespaces 
 		= Documents.FromPipeline(DocsPipelines.Api)
 			.Where(x => x.String("Kind") == "Namespace")
 			.Select(x => Tuple.Create(x.String("DisplayName"), x))
 			.OrderBy(x => x.Item1)
-			.Select(x => Tuple.Create(x.Item1.Split('.'), x.Item2))
+			//.Select(x => Tuple.Create(x.Item1.Split('.'), x.Item2))
 			.ToList();
+	Stack<string> nestingStack = new Stack<string>();
+	for(int c = 0 ; c < namespaces.Count ; c++)
+	{
+		Tuple<string, IDocument> current = namespaces[c];
+		string next = c < namespaces.Count - 1 ? namespaces[c + 1].Item1 : null;
+			
+		// End nesting
+		while(nestingStack.Count > 0 && !current.Item1.StartsWith(nestingStack.Peek() + "."))
+		{
+			@Html.Raw("</ul></li>");
+			nestingStack.Pop();
+		}
+
+		// Start nesting
+		if(next != null && next.StartsWith(current.Item1 + "."))
+		{
+			string parent = current.Item1.Replace(".", "<wbr>.");
+			@Html.Raw($@"
+				<li class=""treeview"">
+				{Context.GetTypeLink(current.Item2)} <a href=""#"" class=""expand""></a>
+				<ul class=""treeview-menu"">
+			");
+			nestingStack.Push(current.Item1);
+		}
+		else
+		{
+			<li>@Context.GetTypeLink(current.Item2)</li>
+		}
+	}
+	while(nestingStack.Count > 0)
+	{
+		@Html.Raw("</ul></li>");
+		nestingStack.Pop();
+	}
+
+	/*
 	for(int c = 0; c < namespaces.Count ; c++)
 	{
 		Tuple<string[], IDocument> current = namespaces[c];
@@ -41,4 +77,5 @@
 			<li class="@currentActiveClass">@Context.GetTypeLink(current.Item2)</li>
 		}
 	}
+	*/
 }      

@@ -252,6 +252,12 @@ namespace Wyam.Docs
             
             engine.Pipelines.Add(DocsPipelines.Less,
                 new ReadFiles("assets/css/*.less"),
+                new Concat(
+                    new ReadFiles("assets/css/bootstrap/bootstrap.less")
+                ),
+                new Concat(
+                    new ReadFiles("assets/css/adminlte/AdminLTE.less")
+                ),
                 new Less.Less(),
                 new WriteFiles(".css")
             );
