@@ -4,12 +4,7 @@
 }
 
 @section Infobar {
-	@if (IsSectionDefined("Infobar")) {
-		RenderSection("Infobar");
-	}
-	else { 		
-		@Html.Partial("Infobar/_Headings") 
-	}
+	<div id="infobar-headings"></div> 
 }
 
 @section Sidebar {

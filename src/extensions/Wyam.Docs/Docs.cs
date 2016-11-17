@@ -211,9 +211,10 @@ namespace Wyam.Docs
                         (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
                         && doc.Document(Keys.Parent) == null),
                     new Title(),
-                    new Headings(),
                     new Razor.Razor()
                         .WithLayout("/_Layout.cshtml"),
+                    new Headings(),
+                    new HtmlInsert("div#infobar-headings", GenerateInfobarHeadings),
                     new WriteFiles(".html")
                 )
             );
@@ -222,9 +223,10 @@ namespace Wyam.Docs
             engine.Pipelines.Add(DocsPipelines.RenderBlogPosts,
                 new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
                     new Documents(DocsPipelines.BlogPosts),
-                    new Headings(),
                     new Razor.Razor()
                         .WithLayout("/_BlogPost.cshtml"),
+                    new Headings(),
+                    new HtmlInsert("div#infobar-headings", GenerateInfobarHeadings),
                     new WriteFiles()
                 )
             );
@@ -234,6 +236,8 @@ namespace Wyam.Docs
                     new Documents(DocsPipelines.Api),
                     new Razor.Razor()
                         .WithLayout("/_ApiLayout.cshtml"),
+                    new Headings(),
+                    new HtmlInsert("div#infobar-headings", GenerateInfobarHeadings),
                     new WriteFiles()
                 )
             );
@@ -284,6 +288,30 @@ namespace Wyam.Docs
             items.Add(Keys.RelativeFilePath, indexPath);
             items.Add(Keys.Title, Title.GetTitle(indexPath));
             return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
+        }
+
+        private string GenerateInfobarHeadings(IDocument document, IExecutionContext context)
+        {
+            StringBuilder content = new StringBuilder();
+            IReadOnlyList<IDocument> headings = document.DocumentList(HtmlKeys.Headings);
+            if (headings != null)
+            {
+                foreach (IDocument heading in headings)
+                {
+                    string id = heading.String(HtmlKeys.Id);
+                    if (id != null)
+                    {
+                        content.AppendLine($"<p><a href=\"#{id}\">{heading.Content}</a></p>");
+                    }
+                }
+            }
+            if (content.Length > 0)
+            {
+                content.Insert(0, "<h6>On This Page</h6>");
+                content.AppendLine("<hr class=\"infobar-hidden\" />");
+                return content.ToString();
+            }
+            return null;
         }
     }
 }

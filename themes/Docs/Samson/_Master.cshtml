@@ -144,6 +144,9 @@
             </footer>
         </div>
         <script>
+            $(".main-sidebar a").click(function(){
+                $(document.body).removeClass('sidebar-open');
+            });
             $(document).load(function() {
                 mermaid.initialize();
             });

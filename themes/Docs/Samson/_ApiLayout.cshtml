@@ -11,8 +11,12 @@
 	ViewData[Keys.Title] = "API - " + containingTypeString + Model["DisplayName"] + " " + Model["SpecificKind"];
 }
 
+@section Infobar {	
+	<div id="infobar-headings"></div>
+}
+
 @section Sidebar {
-	@Html.Partial("Sidebar\\_" + Model.String("Kind"))
+	@Html.Partial("Sidebar/_" + Model.String("Kind"))
 }
 
 <section class="content-header">
@@ -29,5 +33,5 @@
 </section>
 <section class="content smaller">
 	@RenderBody()
-	@Html.Partial("Kind\\_" + Model.String("Kind"))
+	@Html.Partial("Kind/_" + Model.String("Kind"))
 </section>
