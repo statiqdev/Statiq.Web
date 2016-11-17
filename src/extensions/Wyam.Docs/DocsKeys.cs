@@ -42,9 +42,7 @@ namespace Wyam.Docs
         public const string Category = nameof(Category);
 
         public const string Order = nameof(Order);
-
-        public const string HideInMenu = nameof(HideInMenu);
-
+        
         public const string NoSidebar = nameof(NoSidebar);
 
         public const string NoContainer = nameof(NoContainer);

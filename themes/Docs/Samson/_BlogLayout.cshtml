@@ -10,8 +10,8 @@
         .OrderBy(x => x))
     {
         string link = category.ToLower().Replace(" ", "-").Replace("'", string.Empty);
-        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/{link}/") ? "active" : null;
-        <li class="@active"><a href="/blog/@(link)">@category</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="/blog/@(link)">@category</a></li>
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
@@ -22,8 +22,8 @@
         .OrderByDescending(x => x))
     {
         string link = date.ToString("yyyy/MM");
-        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "active" : null;
-        <li class="@active"><a href="/blog/archive/@(link)">@(date.ToString("MMMM, yyyy"))</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="/blog/archive/@(link)">@(date.ToString("MMMM, yyyy"))</a></li>
     }
     
     <li class="header"><i class="fa fa-user"></i> Authors</li>    
@@ -33,8 +33,8 @@
         .OrderBy(x => x))
     {
         string link = author.ToLower().Replace(" ", "-").Replace("'", string.Empty);
-        string active = Model.String(Keys.RelativeFilePath).StartsWith($"blog/author/{link}/") ? "active" : null;
-        <li class="@active"><a href="/blog/author/@(link)">@author</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/author/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="/blog/author/@(link)">@author</a></li>
     }
 }
 

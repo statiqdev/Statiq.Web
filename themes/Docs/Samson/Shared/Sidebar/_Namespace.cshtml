@@ -21,11 +21,15 @@
 		}
 
 		// Start nesting
+		string selectedClass = Model.String("Kind") == "Namespace" && Model.String("DisplayName") == current.Item1
+			? " selected" : null;
 		if(next != null && next.StartsWith(current.Item1 + "."))
 		{
-			string parent = current.Item1.Replace(".", "<wbr>.");
+			string activeClass = Model.String("Kind") == "Namespace" 
+				&& (selectedClass != null || Model.String("DisplayName").StartsWith(current.Item1 + ".")) 
+				? " active" : null;
 			@Html.Raw($@"
-				<li class=""treeview"">
+				<li class=""treeview{activeClass}{selectedClass}"">
 				{Context.GetTypeLink(current.Item2)} <a href=""#"" class=""expand""></a>
 				<ul class=""treeview-menu"">
 			");
@@ -33,7 +37,7 @@
 		}
 		else
 		{
-			<li>@Context.GetTypeLink(current.Item2)</li>
+			<li class="@selectedClass">@Context.GetTypeLink(current.Item2)</li>
 		}
 	}
 	while(nestingStack.Count > 0)

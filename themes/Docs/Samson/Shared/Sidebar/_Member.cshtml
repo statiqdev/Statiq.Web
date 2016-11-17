@@ -30,8 +30,8 @@
 			<li class="header">Constructors</li>
 			foreach(IDocument constructor in constructors)
 			{
-				string activeClass = constructor.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
-				<li class="@activeClass">@Context.GetTypeLink(constructor)</li>
+				string selectedClass = constructor.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
+				<li class="@selectedClass">@Context.GetTypeLink(constructor)</li>
 			}
 		}			
 	
@@ -44,8 +44,8 @@
 			foreach(IDocument member in memberGroup
 				.OrderBy(x => x.String("Name")))
 			{
-				string activeClass = member.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
-				<li class="@activeClass">@Context.GetTypeLink(member)</li>
+				string selectedClass = member.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
+				<li class="@selectedClass">@Context.GetTypeLink(member)</li>
 			}	
 		}
 	}

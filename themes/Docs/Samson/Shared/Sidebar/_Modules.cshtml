@@ -17,8 +17,8 @@
 		foreach(IDocument childDoc in categoryGroup
 			.OrderBy(x => x.String("DisplayName")))
 		{
-			string subActive = Model.String("RelativeFilePath") == childDoc.String("RelativeFilePath") ? "active" : null;
-			<li class="@subActive">
+			string selectedClass = Model.String("RelativeFilePath") == childDoc.String("RelativeFilePath") ? "selected" : null;
+			<li class="@selectedClass">
 				<a href="@Context.GetLink(childDoc)">
 					@(childDoc.String("DisplayName"))
 				</a>

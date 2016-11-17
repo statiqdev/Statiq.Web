@@ -283,7 +283,6 @@ namespace Wyam.Docs
             FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] {"index.html"})));
             items.Add(Keys.RelativeFilePath, indexPath);
             items.Add(Keys.Title, Title.GetTitle(indexPath));
-            items.Add(DocsKeys.HideInMenu, true);
             return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
         }
     }

@@ -22,29 +22,22 @@
             object[] childTreePath = child.Get<object[]>(Keys.TreePath);                
             string childTitle = child.String(Keys.Title, childTreePath.Last().ToString());  
             string parentActive = currentTreePath.Take(childTreePath.Length).SequenceEqual(childTreePath) ? "active" : null;   
-            string childActive = parentActive != null && currentTreePath.Length == childTreePath.Length ? "active" : null;              
+            string childSelected = parentActive != null && currentTreePath.Length == childTreePath.Length ? "selected" : null;              
             IReadOnlyList<IDocument> children = child.DocumentList(Keys.Children);
             if(children != null && children.Count > 0)
             {
                 // Parent                
-                <li class="treeview @parentActive">
-                    <a href="#">@childTitle <i class="fa fa-angle-left pull-right"></i></a>
+                <li class="treeview @parentActive @childSelected">
+                    <a href="@Context.GetLink(child)">@childTitle</a> <a href="#" class="expand"></a>
                     <ul class="treeview-menu">
-                        @if(!child.Get<bool>(DocsKeys.HideInMenu))
-                        {
-                            <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
-                        }
                         @Html.Partial("Sidebar/_ChildPagesMenu", children)
                     </ul>
                 </li>
             }
             else
             {
-                // Leaf                
-                @if(!child.Get<bool>(DocsKeys.HideInMenu))
-                {
-                    <li class="@childActive"><a href="@Context.GetLink(child)">@childTitle</a></li>
-                }
+                // Leaf       
+                <li class="@childSelected"><a href="@Context.GetLink(child)">@childTitle</a></li>
             }
         }
     }

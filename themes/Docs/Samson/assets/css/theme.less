@@ -5,19 +5,10 @@
 @import "theme/variables.less";
 
 body {
-  background-image: none;
-  background-color: #f4f4f4;
+  &.layout-boxed {    
+    background-image: none;
+    background-color: #f4f4f4;
 
-  a:link,
-  a:visited,
-  a:active {
-    color: @theme-primary;
-  }
-  a:hover {
-      color: lighten(@theme-primary, 10%);
-  }
-
-  &.layout-boxed {  
     .top-banner {
       background-color: @theme-primary;
       position: absolute;
@@ -61,6 +52,14 @@ body {
   }
 }
 
+a:link,
+a:visited,
+a:active {
+  color: @theme-primary;
+}
+a:hover {
+    color: lighten(@theme-primary, 10%);
+}
 
 @media (max-width: @screen-header-collapse) {
   body.layout-boxed {  
@@ -208,23 +207,40 @@ body {
     li a:hover {
       color: @theme-primary;
     }
-
+    
     li.treeview.active > a,
     & > li.treeview.active > a,
     li.treeview.active:hover > a,
     & > li.treeview.active:hover > a,
     li:hover > a,
-    & > li:hover > a
-    {
-        background: transparent;
-    }
-    
+    & > li:hover > a,
     li.active > a,
     & > li.active > a,
     li.active:hover > a,
     & > li.active:hover > a
     {
-        background-color: @theme-primary;
+        background: transparent;
+    }
+        
+    li.selected
+    {
+        background-color: lighten(@theme-primary, 50%);
+        .border-radius(@border-radius-large);
+
+        & > a
+        {        
+          background-color: @theme-primary !important;
+          color: white;
+          font-weight: 600;
+          
+          &:link,
+          &:visited,
+          &:active,
+          &:hover {
+            color: white;
+          }     
+        }    
+          
     }
     
     /* Expander */
@@ -257,26 +273,27 @@ body {
     .treeview-menu,    
     .treeview-menu .treeview-menu
     {
-      padding-left: 15px;
+      padding-left: 18px;
     }
           
     li.divider {
-        padding-top: 15px;
+        padding-top: 18px;
         border-bottom: 1px solid @gray-lighter;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
     }
     
     li.header {
       text-transform: uppercase;
       font-size: @font-size-base;
-      font-weight: bold; 
+      font-weight: 600; 
       color: @gray;       
+      .border-radius(@border-radius-large);   
     }           
 
     .treeview-menu > li > a,
     .treeview-menu > li.header
     {
-      padding-left: 15px;
+      padding-left: 18px;
     } 
 
     & > li > .treeview-menu
@@ -423,7 +440,7 @@ wbr:after { content: "\00200B"; }
 @media only screen and (min-width: 1250px)
 {
   .infobar {
-    padding: 15px;
+    padding: 18px;
     position: absolute;
     left: 1250px;
     top: 80px;
@@ -453,7 +470,7 @@ wbr:after { content: "\00200B"; }
   }
 
   .infobar {
-    padding: 15px;
+    padding: 18px;
     position: absolute;
     left: 1020px;
     top: 80px;

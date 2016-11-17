@@ -7,7 +7,7 @@
             .ToList();
     foreach(IDocument assembly in assemblies)
     {
-        string activeClass = assembly.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
-        <li class="@activeClass">@Context.GetTypeLink(assembly)</li>
+        string selectedClass = assembly.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
+        <li class="@selectedClass">@Context.GetTypeLink(assembly)</li>
     }
 }

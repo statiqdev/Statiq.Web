@@ -23,8 +23,8 @@
 			foreach(IDocument type in typeGroup
 				.OrderBy(x => x.String("Name")))
 			{
-				string activeClass = type.String("SymbolId") == Model.String("SymbolId") ? "active" : null;
-				<li class="@activeClass">@Context.GetTypeLink(type)</li>
+				string selectedClass = type.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
+				<li class="@selectedClass">@Context.GetTypeLink(type)</li>
 			}	
 		}
 	}
