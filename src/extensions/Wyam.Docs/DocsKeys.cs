@@ -19,6 +19,19 @@ namespace Wyam.Docs
 
         public const string AssemblyFiles = nameof(AssemblyFiles);
 
+        /// <summary>
+        /// The base URL for generating edit links for content and blog pages.
+        /// The edit link combines this base URL with the relative path of the
+        /// input file.
+        /// </summary>
+        public const string BaseEditUrl = nameof(BaseEditUrl);
+
+        /// <summary>
+        /// Set by the system for documents that support editing. Contains the
+        /// relative path to the document to be appended to the base edit URL.
+        /// </summary>
+        public const string EditFilePath = nameof(EditFilePath);
+
         public const string IncludeGlobalNamespace = nameof(IncludeGlobalNamespace);
         
         public const string Description = nameof(Description);

@@ -48,6 +48,7 @@ namespace Wyam.Docs
 
             engine.Pipelines.Add(DocsPipelines.Pages,
                 new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/*.md"),
+                new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new Include(),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
@@ -65,6 +66,7 @@ namespace Wyam.Docs
             
             engine.Pipelines.Add(DocsPipelines.BlogPosts,
                 new ReadFiles("blog/*.md"),
+                new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new Excerpt(),
