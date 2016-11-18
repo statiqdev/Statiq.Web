@@ -1,16 +1,15 @@
-@import "bootstrap/mixins.less";
-@import "bootstrap/variables.less";
-@import "adminlte/variables.less";
-@import "adminlte/mixins.less";
-@import "theme/variables.less";
+@import "../bootstrap/variables.less";
+@import "../bootstrap/mixins.less";
+@import "../adminlte/variables.less";
+@import "../adminlte/mixins.less";
 
 body {
   &.layout-boxed {    
     background-image: none;
-    background-color: #f4f4f4;
+    background-color: @body-bg;
 
     .top-banner {
-      background-color: @theme-primary;
+      background-color: @brand-primary;
       position: absolute;
       top: 0;
       left: 0;
@@ -52,19 +51,16 @@ body {
   }
 }
 
-a:link,
-a:visited,
-a:active {
-  color: @theme-primary;
-}
-a:hover {
-    color: lighten(@theme-primary, 10%);
+h5, h6 {
+  font-weight: 600;
 }
 
-h5,
-h6
-{
-  font-weight: 600;
+h1 {
+	font-weight: bold;
+}
+
+.content-header > h1 > small {
+  font-size: @font-size-h3;
 }
 
 @media (max-width: @screen-header-collapse) {
@@ -96,14 +92,14 @@ h6
 
 //Navbar
 .main-header {    
-  background-color: @theme-primary;
+  background-color: @brand-primary;
     
   .navbar {
-    .navbar-variant(@theme-primary; #fff);
+    .navbar-variant(@brand-primary; #fff);
     .sidebar-toggle {
       color: #fff;
       &:hover {
-        background-color: darken(@theme-primary, 5%);
+        background-color: darken(@brand-primary, 5%);
       }
     }
     .navbar-toggle
@@ -122,7 +118,7 @@ h6
             a {
               color: #fff;
               &:hover {
-                background: darken(@theme-primary, 5%);
+                background: darken(@brand-primary, 5%);
               }
             }
           }
@@ -132,7 +128,7 @@ h6
   
     //Logo
     .logo {
-      .logo-variant(@theme-primary);
+      .logo-variant(@brand-primary);
       @media (max-width: @screen-header-collapse) {
         position: absolute;
         top: 0;
@@ -150,7 +146,7 @@ h6
     }
 
     li.user-header {
-      background-color: @theme-primary;
+      background-color: @brand-primary;
     }
   }
   
@@ -179,7 +175,7 @@ h6
   }
   
   //Create the sidebar skin
-  .skin-light-sidebar(@theme-primary);
+  .skin-light-sidebar(@brand-primary);
   
   .sidebar {
     padding: 30px 12px 0 12px;
@@ -211,7 +207,7 @@ h6
       color: @gray-dark;
     }
     li a:hover {
-      color: @theme-primary;
+      color: @brand-primary;
     }
     
     li.treeview.active > a,
@@ -230,12 +226,12 @@ h6
         
     li.selected
     {
-        background-color: lighten(@theme-primary, 50%);
+        background-color: lighten(@brand-primary, 50%);
         .border-radius(@border-radius-large);
 
         & > a
         {        
-          background-color: @theme-primary !important;
+          background-color: @brand-primary !important;
           color: white;
           font-weight: 600;
           
@@ -293,7 +289,8 @@ h6
       font-size: @font-size-base;
       font-weight: 600; 
       color: @gray;       
-      .border-radius(@border-radius-large);   
+      background-color: transparent;
+      border: none;   
     }           
 
     .treeview-menu > li > a,
@@ -315,13 +312,13 @@ h6
   
   .table thead tr
   {
-      background-color: @theme-primary;
+      background-color: @brand-primary;
       color: #fff;
   }
   
   .box
   {
-      border-top-color: darken(@theme-primary, 10%);    
+      border-top-color: darken(@brand-primary, 10%);    
   }
         
   .main-header,  
@@ -353,7 +350,7 @@ h6
   }
 
 .layout-top-nav .main-header > .logo {
-  .logo-variant(@theme-primary);
+  .logo-variant(@brand-primary);
 }
 
 hr {
@@ -363,7 +360,7 @@ hr {
 .lead {
     padding: 10px 20px;
     margin: 0 0 20px;
-    border-left: 5px solid @theme-primary;
+    border-left: 5px solid @brand-primary;
 }
 
 .three-cols th,
@@ -403,10 +400,6 @@ hr {
 
 .content-header > hr {
     margin-bottom: 0;
-}
-
-h1 {
-	font-weight: bold;
 }
 
 dl ul,
@@ -499,4 +492,5 @@ pre {
     word-wrap: normal;
     word-break: normal;
     border-color: #ddd;
+    font-size: 12px;
 }

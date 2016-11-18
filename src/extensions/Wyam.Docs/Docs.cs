@@ -264,6 +264,9 @@ namespace Wyam.Docs
                 new Concat(
                     new ReadFiles("assets/css/adminlte/AdminLTE.less")
                 ),
+                new Concat(
+                    new ReadFiles("assets/css/theme/theme.less")
+                ),
                 new Less.Less(),
                 new WriteFiles(".css")
             );

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
@@ -101,7 +104,10 @@ namespace Wyam.Html
                             {
                                 element.Insert(_position, content);
                             }
-                            return context.GetDocument(input, htmlDocument.DocumentElement.OuterHtml);
+                            StringWriter writer = new StringWriter();
+                            htmlDocument.ToHtml(writer, new HtmlMarkupFormatter());
+                            writer.Flush();
+                            return context.GetDocument(input, writer.ToString());
                         }
                     }
                     return input;
