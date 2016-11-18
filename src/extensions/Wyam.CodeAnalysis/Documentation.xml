@@ -116,6 +116,9 @@
     <metadata name="DeclaringType" type="IDocument">
       This is available for type parameter symbols and contains a document that represents the declaring type of the type parameter.
     </metadata>
+    <metadata name="Attributes" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type, method, field, event, property, parameter, and type parameter symbols and contains the type symbol documents for attributes applied to the symbol.
+    </metadata>
 
     <!-- Documentation (not present for external symbols) -->
     <metadata name="CommentXml" type="string">

@@ -116,7 +116,8 @@ namespace Wyam.CodeAnalysis.Analysis
                     { CodeAnalysisKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
-                    { CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString() }
+                    { CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString() },
+                    { CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol) }
                 };
                 if (!_finished)
                 {
@@ -146,7 +147,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.TypeParameterKind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.DeclaringType, DocumentFor(symbol.DeclaringType))
+                    new MetadataItem(CodeAnalysisKeys.DeclaringType, DocumentFor(symbol.DeclaringType)),
+                    new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
         }
@@ -158,7 +160,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type))
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
         }
@@ -175,9 +178,19 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
+        }
+   
+        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol)
+        {
+            return symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
+            {
+                { CodeAnalysisKeys.AttributeData, attributeData },
+                { CodeAnalysisKeys.Type, DocumentFor(attributeData.AttributeClass) }
+            })).ToList();
         }
 
         public override void VisitField(IFieldSymbol symbol)
@@ -188,7 +201,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
         }
@@ -217,7 +231,8 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
-                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
+                    new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
         }

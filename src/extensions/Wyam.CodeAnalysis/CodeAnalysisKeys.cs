@@ -32,6 +32,7 @@ namespace Wyam.CodeAnalysis
         public const string Constructors = nameof(Constructors); // IReadOnlyList<IDocument>
         public const string TypeParameters = nameof(TypeParameters); // IReadOnlyList<IDocument>
         public const string Accessibility = nameof(Accessibility); // string
+        public const string Attributes = nameof(Attributes); // IReadOnlyList<IDocument>
         //                  MemberTypes
 
         // Method
@@ -64,6 +65,11 @@ namespace Wyam.CodeAnalysis
         // Parameter
         //                  Type
         //                  ContainingType
+
+        // Attribute Data
+        public const string AttributeData = nameof(AttributeData); // AttributeData
+        //                  Type
+
 
         // Documentation (not present for external symbols)
         public const string CommentXml = nameof(CommentXml); // string, the XML documentation comments (if any) or an empty string
