@@ -200,10 +200,11 @@ namespace Wyam.Core.Modules.Metadata
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Create a dictionary of tree nodes
+            TreeNodeEqualityComparer treeNodeEqualityComparer = new TreeNodeEqualityComparer();
             Dictionary<object[], TreeNode> nodes = inputs
-                .AsParallel()
                 .Select(x => new TreeNode(this, x, context))
                 .Where(x => x.TreePath != null)
+                .Distinct(treeNodeEqualityComparer)
                 .ToDictionary(x => x.TreePath, new TreePathEqualityComparer());
 
             // Add links between parent and children (creating empty tree nodes as needed)
@@ -375,6 +376,17 @@ namespace Wyam.Core.Modules.Metadata
                 }
                 return null;
             }
+        }
+
+        private class TreeNodeEqualityComparer : IEqualityComparer<TreeNode>
+        {
+            private readonly TreePathEqualityComparer _comparer = new TreePathEqualityComparer();
+
+            public bool Equals(TreeNode x, TreeNode y) =>
+                _comparer.Equals(x?.TreePath, y?.TreePath);
+
+            public int GetHashCode(TreeNode obj) =>
+                _comparer.GetHashCode(obj?.TreePath);
         }
 
         private class TreePathEqualityComparer : IEqualityComparer<object[]>

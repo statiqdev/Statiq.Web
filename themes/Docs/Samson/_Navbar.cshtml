@@ -1,6 +1,7 @@
 @{
     List<Tuple<string, string>> pages = Context
         .Documents[DocsPipelines.Pages]
+        .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
         .Select(x => Tuple.Create(x.String(Keys.Title), Context.GetLink(x)))
         .OrderBy(x => x.Item1)
         .ToList();

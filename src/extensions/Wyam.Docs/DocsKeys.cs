@@ -56,9 +56,23 @@ namespace Wyam.Docs
 
         public const string Order = nameof(Order);
         
+        /// <summary>
+        /// Setting this to <c>true</c> for a document will remove the
+        /// sidebar from the page.
+        /// </summary>
         public const string NoSidebar = nameof(NoSidebar);
 
+        /// <summary>
+        /// Setting this to <c>true</c> for a document will remove the
+        /// surrounding container from a page, including the title.
+        /// </summary>
         public const string NoContainer = nameof(NoContainer);
+
+        /// <summary>
+        /// Setting this to <c>true</c> for a document will remove the
+        /// title banner from the page.
+        /// </summary>
+        public const string NoTitle = nameof(NoTitle);
 
         public const string NoGutter = nameof(NoGutter);
 
