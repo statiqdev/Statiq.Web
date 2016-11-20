@@ -27,7 +27,7 @@ namespace Wyam.Core.Tests.Execution
                 pipelines.Add(name);
 
                 // Then
-                Assert.AreEqual("Pipeline 2", pipelines.Skip(1).First().Key);
+                Assert.AreEqual("Pipeline 2", pipelines.Values.Skip(1).First().Name);
             }
 
             [Test]
