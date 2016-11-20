@@ -173,7 +173,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 return elements.Select(element =>
                 {
                     string link;
-                    string name = GetCrefNameAndLink(element, out link);
+                    string name = GetRefNameAndLink(element, out link);
                     return link ?? name;
                 }).ToImmutableArray();
             }
@@ -214,7 +214,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     string link = null;
                     string name = keyIsCref
-                        ? GetCrefNameAndLink(element, out link)
+                        ? GetRefNameAndLink(element, out link)
                         : (element.Attribute("name")?.Value ?? string.Empty);
                     ProcessChildElements(element);
                     AddCssClasses(element);
@@ -266,9 +266,19 @@ namespace Wyam.CodeAnalysis.Analysis
 	    }
         
         // Returns the name and sets link if one could be found (or null if not)
-		private string GetCrefNameAndLink(XElement element, out string link)
+        // First checks for "href" attribute and then checks for "cref"
+		private string GetRefNameAndLink(XElement element, out string link)
 		{
-			XAttribute crefAttribute = element.Attribute("cref");
+            // Check for href
+            XAttribute hrefAttribute = element.Attribute("href");
+		    if (hrefAttribute != null)
+		    {
+		        link = $"<a href=\"{hrefAttribute.Value}\">{element.Value}</a>";
+		        return element.Value;
+		    }
+
+            // Check for cref
+            XAttribute crefAttribute = element.Attribute("cref");
 			IDocument crefDoc;
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
@@ -433,7 +443,7 @@ namespace Wyam.CodeAnalysis.Analysis
 			foreach (XElement seeElement in parentElement.Elements("see").ToList())
 			{
 				string link;
-				string name = GetCrefNameAndLink(seeElement, out link);
+				string name = GetRefNameAndLink(seeElement, out link);
 				seeElement.ReplaceWith(link != null ? (object)XElement.Parse(link) : name);
 			}
 		}

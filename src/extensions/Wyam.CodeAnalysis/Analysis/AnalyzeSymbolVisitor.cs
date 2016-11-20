@@ -184,15 +184,6 @@ namespace Wyam.CodeAnalysis.Analysis
             }
         }
    
-        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol)
-        {
-            return symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
-            {
-                { CodeAnalysisKeys.AttributeData, attributeData },
-                { CodeAnalysisKeys.Type, DocumentFor(attributeData.AttributeClass) }
-            })).ToList();
-        }
-
         public override void VisitField(IFieldSymbol symbol)
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
@@ -469,6 +460,16 @@ namespace Wyam.CodeAnalysis.Analysis
         private string GetSyntax(ISymbol symbol)
         {
             return SyntaxHelper.GetSyntax(symbol);
+        }
+
+        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol)
+        {
+            return symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
+            {
+                { CodeAnalysisKeys.AttributeData, attributeData },
+                { CodeAnalysisKeys.Type, DocumentFor(attributeData.AttributeClass) },
+                { CodeAnalysisKeys.Name, attributeData.AttributeClass.Name }
+            })).ToList();
         }
 
         private SymbolDocumentValue DocumentFor(ISymbol symbol)

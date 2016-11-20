@@ -342,7 +342,7 @@ namespace Wyam.CodeAnalysis
             }).ToArray();
             if (assemblyReferences.Length > 0)
             {
-                compilation = compilation.WithReferences(assemblyReferences);
+                compilation = compilation.AddReferences(assemblyReferences);
                 symbols.AddRange(assemblyReferences
                     .Select(x => (IAssemblySymbol) compilation.GetAssemblyOrModuleSymbol(x))
                     .Select(x => _assemblySymbols ? x : (ISymbol) x.GlobalNamespace));
