@@ -1,3 +1,4 @@
+@Html.Partial("Section\\_Summary")
 @{
 	IDocument containingAssembly = Model.Get<IDocument>("ContainingAssembly");
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
@@ -12,69 +13,130 @@
 		|| (derivedTypes != null && derivedTypes.Count > 0)
 		|| (implementingTypes != null && implementingTypes.Count > 0))
 	{
-		<dl class="dl-horizontal">		
-			@if(containingAssembly != null)
-			{	
-				<dt>Assembly</dt>
-				<dd>@Context.GetTypeLink(containingAssembly)</dd>
-			}
+		<div class="panel panel-default">
+  			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6">
+						<dl class="dl-horizontal">		
+							@if(containingAssembly != null)
+							{	
+								<dt>Assembly</dt>
+								<dd>@Context.GetTypeLink(containingAssembly)</dd>
+							}
 
-			@if(containingNamespace != null)
-			{	
-				<dt>Namespace</dt>
-				<dd>@Context.GetTypeLink(containingNamespace)</dd>
-			}
+							@if(containingNamespace != null)
+							{	
+								<dt>Namespace</dt>
+								<dd>@Context.GetTypeLink(containingNamespace)</dd>
+							}
+											
+							@if(allInterfaces != null && allInterfaces.Count > 0)
+							{
+								<dt>Interfaces</dt>
+								<dd>
+									<ul class="list-inline">
+										@foreach(IDocument interfaceDocument in allInterfaces)
+										{
+											<li>@Context.GetTypeLink(interfaceDocument)</li>								
+										}
+									</ul>
+								</dd>
+							}
 							
-			@if(allInterfaces != null && allInterfaces.Count > 0)
-			{
-				<dt>Interfaces</dt>
-				<dd>
-					<ul class="list-inline">
-						@foreach(IDocument interfaceDocument in allInterfaces)
-						{
-							<li>@Context.GetTypeLink(interfaceDocument)</li>								
+							@if(baseType != null)
+							{
+								<dt>Base Type</dt>
+								<dd>@Context.GetTypeLink(baseType)</dd>				
+							}
+							
+							@if(derivedTypes != null && derivedTypes.Count > 0)
+							{
+								<dt>Derived Types</dt>
+								<dd>
+									<ul class="list-inline">
+										@foreach(IDocument derivedType in derivedTypes)
+										{
+											<li>@Context.GetTypeLink(derivedType)</li>								
+										}
+									</ul>
+								</dd>			
+							}
+							
+							@if(implementingTypes != null && implementingTypes.Count > 0)
+							{
+								<dt>Implementing Types</dt>
+								<dd>
+									<ul class="list-inline">
+										@foreach(IDocument implementingType in implementingTypes)
+										{
+											<li>@Context.GetTypeLink(implementingType)</li>								
+										}
+									</ul>
+								</dd>				
+							}
+						</dl>
+					</div>		
+					<div class="col-md-6">
+						@{
+							System.Text.StringBuilder hierarchy = new System.Text.StringBuilder();
+							hierarchy.AppendLine("graph TD");
+							int b = 0;
+							while(baseType != null && baseType.String(CodeAnalysisKeys.DisplayName) != "object")
+							{
+								hierarchy.AppendLine($"\tBase{b}[\"{System.Net.WebUtility.HtmlEncode(baseType.String(CodeAnalysisKeys.DisplayName))}\"]-->{(b == 0 ? "Type" : "Base" + (b - 1))}");
+								if(baseType.ContainsKey(Keys.WritePath))
+								{
+									hierarchy.AppendLine($"\tclick Base{b} \"{(Context.GetLink(baseType.FilePath("WritePath")))}\"");
+								}
+								baseType = baseType.Get<IDocument>("BaseType");
+								b++;
+							}
+							if(allInterfaces != null && allInterfaces.Count > 0)
+							{
+								for(int c = 0 ; c < allInterfaces.Count ; c++)
+								{
+									hierarchy.AppendLine($"\tInterface{c}[\"{System.Net.WebUtility.HtmlEncode(allInterfaces[c].String(CodeAnalysisKeys.DisplayName))}\"]-.->Type");			
+									if(allInterfaces[c].ContainsKey(Keys.WritePath))
+									{
+										hierarchy.AppendLine($"\tclick Interface{c} \"{(Context.GetLink(allInterfaces[c].FilePath("WritePath")))}\"");
+									}				
+								}
+							}
+							hierarchy.AppendLine($"\tType[\"{System.Net.WebUtility.HtmlEncode(Model.String(CodeAnalysisKeys.DisplayName))}\"]");		
+							hierarchy.AppendLine("class Type type-node");				
+							if(derivedTypes != null && derivedTypes.Count > 0)
+							{
+								for(int c = 0 ; c < derivedTypes.Count ; c++)
+								{
+									hierarchy.AppendLine($"\tType-->Derived{c}[\"{System.Net.WebUtility.HtmlEncode(derivedTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]");							
+									if(derivedTypes[c].ContainsKey(Keys.WritePath))
+									{
+										hierarchy.AppendLine($"\tclick Derived{c} \"{(Context.GetLink(derivedTypes[c].FilePath("WritePath")))}\"");
+									}			
+								}		
+							}						
+							if(implementingTypes != null && implementingTypes.Count > 0)
+							{
+								for(int c = 0 ; c < implementingTypes.Count ; c++)
+								{
+									hierarchy.AppendLine($"\tType-.->Implementing{c}[\"{System.Net.WebUtility.HtmlEncode(implementingTypes[c].String(CodeAnalysisKeys.DisplayName))}\"]");			
+									if(implementingTypes[c].ContainsKey(Keys.WritePath))
+									{
+										hierarchy.AppendLine($"\tclick Implementing{c} \"{(Context.GetLink(implementingTypes[c].FilePath("WritePath")))}\"");
+									}							
+								}
+							}
 						}
-					</ul>
-				</dd>
-			}
-			
-			@if(baseType != null)
-			{
-				<dt>Base Type</dt>
-				<dd>@Context.GetTypeLink(baseType)</dd>				
-			}
-			
-			@if(derivedTypes != null && derivedTypes.Count > 0)
-			{
-				<dt>Derived Types</dt>
-				<dd>
-					<ul class="list-inline">
-						@foreach(IDocument derivedType in derivedTypes)
-						{
-							<li>@Context.GetTypeLink(derivedType)</li>								
-						}
-					</ul>
-				</dd>			
-			}
-			
-			@if(implementingTypes != null && implementingTypes.Count > 0)
-			{
-				<dt>Implementing Types</dt>
-				<dd>
-					<ul class="list-inline">
-						@foreach(IDocument implementingType in implementingTypes)
-						{
-							<li>@Context.GetTypeLink(implementingType)</li>								
-						}
-					</ul>
-				</dd>				
-			}
-		</dl>
-		<hr />
+						<div class="mermaid">
+							@Html.Raw(hierarchy.ToString())
+						</div>
+					</div>
+				</div>
+  			</div>
+		</div>
 	}
 }
 
-@Html.Partial("Section\\_Summary")
 @Html.Partial("Section\\_Syntax")
 @Html.Partial("Section\\_Attributes")
 @Html.Partial("Section\\_TypeParameters")

@@ -402,11 +402,9 @@ hr {
     margin-bottom: 0;
 }
 
+dl,
 dl ul,
-dl ol {
-	margin-bottom: 0;
-}
-
+dl ol,
 .box-body dl,
 .box-body.lead {
 	margin-bottom: 0;
@@ -493,4 +491,31 @@ pre {
     word-break: normal;
     border-color: #ddd;
     font-size: 12px;
+}
+
+/* Mermaid */
+.mermaid {
+  overflow: hidden;
+  visibility: hidden;
+  &[data-processed="true"] {
+    visibility: visible;
+  }
+}
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+  fill: lighten(@brand-primary, 50%);
+  stroke: @brand-primary;
+}
+.type-node rect,
+.type-node circle,
+.type-node ellipse,
+.type-node polygon {
+  fill: lighten(@brand-primary, 30%);
+  stroke: @brand-primary;
+}
+.cluster rect {
+  fill: #f3f3f3 !important;
+  stroke: #ddd !important;
 }

@@ -1,3 +1,4 @@
+@Html.Partial("Section\\_Summary")
 @{
 	IDocument containingAssembly = Model.Get<IDocument>("ContainingAssembly");
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
@@ -8,36 +9,38 @@
 		|| containingType != null
 		|| overridden != null)
 	{
-		<dl class="dl-horizontal">	
-			@if(containingAssembly != null)
-			{	
-				<dt>Assembly</dt>
-				<dd>@Context.GetTypeLink(containingAssembly)</dd>
-			}
-				
-			@if(containingNamespace != null)
-			{		
-				<dt>Namespace</dt>
-				<dd>@Context.GetTypeLink(containingNamespace)</dd>
-			}
-			
-			@if(containingType != null)
-			{
-				<dt>Containing Type</dt>
-				<dd>@Context.GetTypeLink(containingType)</dd>		
-			}
-			
-			@if(overridden != null)
-			{
-				<dt>Overridden</dt>
-				<dd>@Context.GetTypeLink(overridden)</dd>
-			}
-		</dl>
-		<hr />	
+		<div class="panel panel-default">
+  			<div class="panel-body">
+				<dl class="dl-horizontal">	
+					@if(containingAssembly != null)
+					{	
+						<dt>Assembly</dt>
+						<dd>@Context.GetTypeLink(containingAssembly)</dd>
+					}
+						
+					@if(containingNamespace != null)
+					{		
+						<dt>Namespace</dt>
+						<dd>@Context.GetTypeLink(containingNamespace)</dd>
+					}
+					
+					@if(containingType != null)
+					{
+						<dt>Containing Type</dt>
+						<dd>@Context.GetTypeLink(containingType)</dd>		
+					}
+					
+					@if(overridden != null)
+					{
+						<dt>Overridden</dt>
+						<dd>@Context.GetTypeLink(overridden)</dd>
+					}
+				</dl>
+  			</div>
+		</div>
 	}
 }
 
-@Html.Partial("Section\\_Summary")
 @Html.Partial("Section\\_Syntax")
 @Html.Partial("Section\\_Attributes")
 @Html.Partial("Section\\_Parameters")
