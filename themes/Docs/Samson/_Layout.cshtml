@@ -3,8 +3,11 @@
 	ViewData[Keys.Title] = @Model.Get(Keys.Title, string.Empty);
 }
 
-@section Infobar {
-	@{
+@section Infobar {	
+	@if (IsSectionDefined("Infobar")) {
+		RenderSection("Infobar");
+	}
+	else { 			
 		string baseEditUrl = Context.GlobalMetadata.String(DocsKeys.BaseEditUrl);
 		FilePath editFilePath = Model.FilePath(DocsKeys.EditFilePath);
 		if(!string.IsNullOrWhiteSpace(baseEditUrl) && editFilePath != null)
@@ -12,8 +15,8 @@
 			string editUrl = baseEditUrl + editFilePath.FullPath;
 			<div><p><a href="@editUrl"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Content</a></p></div>
 		}
-	}
-	<div id="infobar-headings"></div> 
+		<div id="infobar-headings"></div>
+	} 
 }
 
 @section Sidebar {
