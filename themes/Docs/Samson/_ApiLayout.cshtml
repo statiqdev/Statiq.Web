@@ -31,6 +31,8 @@
 	<h1>@Model.Name() <small>@Model["SpecificKind"]</small></h1>
 </section>
 <section class="content smaller">
+	@Html.Partial("_ApiBeforeContent")
 	@RenderBody()
 	@Html.Partial("Kind/_" + Model.String("Kind"))
+	@Html.Partial("_ApiAfterContent")
 </section>
