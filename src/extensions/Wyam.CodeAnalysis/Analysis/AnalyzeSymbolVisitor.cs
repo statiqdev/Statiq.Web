@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using Microsoft.CodeAnalysis;
@@ -27,6 +28,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
         private readonly bool _assemblySymbols;
+        private MethodInfo _getAccessibleMembersInThisAndBaseTypes;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
@@ -110,9 +112,9 @@ namespace Wyam.CodeAnalysis.Analysis
                     { CodeAnalysisKeys.SpecificKind, _ => symbol.TypeKind.ToString() },
                     { CodeAnalysisKeys.ContainingType, DocumentFor(symbol.ContainingType) },
                     { CodeAnalysisKeys.MemberTypes, DocumentsFor(symbol.GetTypeMembers()) },
-                    { CodeAnalysisKeys.BaseType, DocumentFor(symbol.BaseType) },
+                    { CodeAnalysisKeys.BaseTypes, DocumentsFor(GetBaseTypes(symbol)) },
                     { CodeAnalysisKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces) },
-                    { CodeAnalysisKeys.Members, DocumentsFor(symbol.GetMembers().Where(MemberPredicate)) },
+                    { CodeAnalysisKeys.Members, DocumentsFor(GetAccessibleMembersInThisAndBaseTypes(symbol, symbol).Where(MemberPredicate)) },
                     { CodeAnalysisKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
@@ -229,6 +231,29 @@ namespace Wyam.CodeAnalysis.Analysis
         }
 
         // Helpers below...
+
+        // This was helpful: http://stackoverflow.com/a/30445814/807064
+        private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within)
+        {
+            if (_getAccessibleMembersInThisAndBaseTypes == null)
+            {
+                Assembly assembly = typeof(Microsoft.CodeAnalysis.Workspace).Assembly;
+                Type type = assembly.GetType("Microsoft.CodeAnalysis.Shared.Extensions.ITypeSymbolExtensions");
+                MethodInfo method = type.GetMethod("GetAccessibleMembersInThisAndBaseTypes");
+                _getAccessibleMembersInThisAndBaseTypes = method.MakeGenericMethod(typeof(ISymbol));
+            }
+            return (IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within });
+        }
+
+        private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol type)
+        {
+            ITypeSymbol current = type.BaseType;
+            while (current != null)
+            {
+                yield return current;
+                current = current.BaseType;
+            }
+        }
 
         private bool MemberPredicate(ISymbol symbol)
         {

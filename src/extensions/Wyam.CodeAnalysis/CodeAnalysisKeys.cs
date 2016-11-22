@@ -24,7 +24,7 @@ namespace Wyam.CodeAnalysis
 
         // Type
         public const string ContainingType = nameof(ContainingType); // IDocument, null if not nested
-        public const string BaseType = nameof(BaseType); // IDocument
+        public const string BaseTypes = nameof(BaseTypes); // IReadOnlyList<IDocument>
         public const string AllInterfaces = nameof(AllInterfaces); // IReadOnlyList<IDocument>
         public const string Members = nameof(Members); // IReadOnlyList<IDocument>
         public const string DerivedTypes = nameof(DerivedTypes); // IReadOnlyList<IDocument>

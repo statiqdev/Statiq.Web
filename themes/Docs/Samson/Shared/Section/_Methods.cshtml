@@ -24,7 +24,16 @@
 							<tr>
 								<td>@Context.GetTypeLink(method)</td>
 								<td>@(returnType == null ? new HtmlString(string.Empty) : Context.GetTypeLink(returnType))</td>
-								<td>@Html.Raw(method["Summary"])</td>
+								<td>
+									<div>@Html.Raw(method["Summary"])</div>
+									@{
+										IDocument containingType = method.Document(CodeAnalysisKeys.ContainingType);
+										if(containingType != Model)
+										{
+											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
+										}
+									}
+								</td>
 							</tr>
 						}
 					</table>

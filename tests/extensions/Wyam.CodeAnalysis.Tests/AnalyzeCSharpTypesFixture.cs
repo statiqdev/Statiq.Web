@@ -406,12 +406,12 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Object", results.Single(x => x["Name"].Equals("Red")).Get<IDocument>("BaseType")["Name"]);
-                Assert.AreEqual("Red", results.Single(x => x["Name"].Equals("Green")).Get<IDocument>("BaseType")["Name"]);
-                Assert.AreEqual("ValueType", results.Single(x => x["Name"].Equals("Blue")).Get<IDocument>("BaseType")["Name"]);
-                Assert.IsNull(results.Single(x => x["Name"].Equals("Yellow")).Get<IDocument>("BaseType"));
-                Assert.IsNull(results.Single(x => x["Name"].Equals("Purple")).Get<IDocument>("BaseType"));
-                Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Orange")).Get<IDocument>("BaseType")["Name"]);
+                Assert.AreEqual("Object", results.Single(x => x["Name"].Equals("Red")).DocumentList("BaseTypes").First()["Name"]);
+                Assert.AreEqual("Red", results.Single(x => x["Name"].Equals("Green")).DocumentList("BaseTypes").First()["Name"]);
+                Assert.AreEqual("ValueType", results.Single(x => x["Name"].Equals("Blue")).DocumentList("BaseTypes").First()["Name"]);
+                CollectionAssert.IsEmpty(results.Single(x => x["Name"].Equals("Yellow")).DocumentList("BaseTypes"));
+                CollectionAssert.IsEmpty(results.Single(x => x["Name"].Equals("Purple")).DocumentList("BaseTypes"));
+                Assert.AreEqual("Enum", results.Single(x => x["Name"].Equals("Orange")).DocumentList("BaseTypes").First()["Name"]);
             }
 
             [Test]
@@ -447,7 +447,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "Green", "Red", "_yellow", "Changed" },
+                CollectionAssert.AreEquivalent(new[] { "Green", "Red", "_yellow", "Changed", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             }
 
@@ -550,7 +550,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Object", GetResult(results, "Red").Get<IDocument>("BaseType")["Name"]);
+                Assert.AreEqual("Object", GetResult(results, "Red").DocumentList("BaseTypes").First()["Name"]);
             }
 
             [Test]

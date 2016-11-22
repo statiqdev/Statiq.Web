@@ -71,15 +71,15 @@
       This is available for type, method, field, event, property, and parameter symbols and contains a document representing the containing
       type (or <c>null</c> if no containing type).
     </metadata>
-    <metadata name="BaseType" type="IDocument">
-      This is available for type symbols and contains a document representing the base type.
+    <metadata name="BaseTypes" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all base types (inner-most first).
     </metadata>
     <metadata name="AllInterfaces" type="IReadOnlyList&lt;IDocument&gt;">
       This is available for type symbols and contains a collection of the documents that represent all implemented interfaces. The collection
       is empty if the type doesn't implement any interfaces.
     </metadata>
     <metadata name="Members" type="IReadOnlyList&lt;IDocument&gt;">
-      This is available for type symbols and contains a collection of the documents that represent all members of the type. The collection
+      This is available for type symbols and contains a collection of the documents that represent all members of the type, including inherited ones. The collection
       is empty if the type doesn't have any members.
     </metadata>
     <metadata name="DerivedTypes" type="IReadOnlyList&lt;IDocument&gt;">
