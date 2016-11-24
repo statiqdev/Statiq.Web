@@ -1044,6 +1044,58 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("This is a included summary.", GetResult(results, "Green")["Summary"]);
             }
+
+            [Test]
+            public void NamespaceSummary()
+            {
+                // Given
+                string code = @"
+                    /// <summary>This is a summary.</summary>
+                    namespace Foo
+                    {
+                        class Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Foo")["Summary"]);
+            }
+
+            [Test]
+            public void NamespaceSummaryWithNamespaceDocClass()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        class Green
+                        {
+                        }
+
+                        /// <summary>This is a summary.</summary>
+                        class NamespaceDoc
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Foo")["Summary"]);
+            }
         }
     }
 }

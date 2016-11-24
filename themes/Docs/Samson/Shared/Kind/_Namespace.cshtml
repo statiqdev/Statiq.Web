@@ -1,3 +1,4 @@
+@Html.Partial("Section\\_Summary")
 @{				
 	foreach(IGrouping<string, IDocument> typeGroup 
 		in Model.List<IDocument>("MemberTypes")
@@ -20,6 +21,7 @@
 			.OrderBy(x => x["DisplayName"])
 			.ToList(),
 		Title = "Namespaces",
-		Header = "Namespace"	
+		Header = "Namespace",
+		HasSummary = true	
 	});
 }

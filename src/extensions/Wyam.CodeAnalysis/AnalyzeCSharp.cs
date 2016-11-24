@@ -350,7 +350,7 @@ namespace Wyam.CodeAnalysis
 
             // Get and return the document tree
             symbols.Add(compilation.Assembly.GlobalNamespace);
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(context, _symbolPredicate,
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(compilation, context, _symbolPredicate,
                 _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), 
                 _cssClasses, _docsForImplicitSymbols, _assemblySymbols);
             foreach (ISymbol symbol in symbols)

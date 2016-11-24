@@ -18,7 +18,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	internal class XmlDocumentationParser
 	{
 	    private readonly IExecutionContext _context;
-	    private readonly ISymbol _symbol;
+	    private readonly string _symbolName;
 	    private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
 		private readonly ConcurrentDictionary<string, string> _cssClasses;
         private List<Action> _processActions; 
@@ -44,12 +44,12 @@ namespace Wyam.CodeAnalysis.Analysis
 
 		public XmlDocumentationParser(
             IExecutionContext context,
-            ISymbol symbol,
+            string symbolName,
             ConcurrentDictionary<string, IDocument> commentIdToDocument,
 			ConcurrentDictionary<string, string> cssClasses)
 		{
 		    _context = context;
-		    _symbol = symbol;
+		    _symbolName = symbolName;
 		    _commentIdToDocument = commentIdToDocument;
 			_cssClasses = cssClasses;
         }
@@ -142,7 +142,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning($"Could not parse XML documentation comments for {_symbol.Name}: {ex.Message}");
+                    Trace.Warning($"Could not parse XML documentation comments for {_symbolName}: {ex.Message}");
                 }
             }
 
@@ -179,7 +179,7 @@ namespace Wyam.CodeAnalysis.Analysis
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <seealso> XML documentation comments for {_symbol.Name}: {ex.Message}");
+                Trace.Warning($"Could not parse <seealso> XML documentation comments for {_symbolName}: {ex.Message}");
             }
             return ImmutableArray<string>.Empty;
         }
@@ -200,7 +200,7 @@ namespace Wyam.CodeAnalysis.Analysis
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbol.Name}: {ex.Message}");
+                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbolName}: {ex.Message}");
             }
             return string.Empty;
 		}
@@ -225,7 +225,7 @@ namespace Wyam.CodeAnalysis.Analysis
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbol.Name}: {ex.Message}");
+                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbolName}: {ex.Message}");
             }
             return ImmutableArray<ReferenceComment>.Empty;
         }
@@ -247,7 +247,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	        }
 	        catch (Exception ex)
             {
-                Trace.Warning($"Could not parse other XML documentation comments for {_symbol.Name}: {ex.Message}");
+                Trace.Warning($"Could not parse other XML documentation comments for {_symbolName}: {ex.Message}");
             }
 	        return ImmutableArray<OtherComment>.Empty;
 	    }

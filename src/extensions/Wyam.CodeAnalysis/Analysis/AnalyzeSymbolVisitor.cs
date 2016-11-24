@@ -2,11 +2,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using ConcurrentCollections;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -22,29 +26,44 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
+        private readonly Compilation _compilation;
         private readonly IExecutionContext _context;
         private readonly Func<ISymbol, bool> _symbolPredicate;
         private readonly Func<IMetadata, FilePath> _writePath;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
         private readonly bool _assemblySymbols;
-        private MethodInfo _getAccessibleMembersInThisAndBaseTypes;
+        private readonly MethodInfo _getAccessibleMembersInThisAndBaseTypes;
+        private readonly Type _documentationCommentCompiler;
+        private readonly MethodInfo _documentationCommentCompilerDefaultVisit;
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
-            IExecutionContext context, 
+            Compilation compilation,
+            IExecutionContext context,
             Func<ISymbol, bool> symbolPredicate, 
             Func<IMetadata, FilePath> writePath, 
             ConcurrentDictionary<string, string> cssClasses,
             bool docsForImplicitSymbols,
             bool assemblySymbols)
         {
+            _compilation = compilation;
             _context = context;
             _symbolPredicate = symbolPredicate;
             _writePath = writePath;
             _cssClasses = cssClasses;
             _docsForImplicitSymbols = docsForImplicitSymbols;
             _assemblySymbols = assemblySymbols;
+
+            // Get any reflected methods we need
+            Assembly reflectedAssembly = typeof(Microsoft.CodeAnalysis.Workspace).Assembly;
+            Type reflectedType = reflectedAssembly.GetType("Microsoft.CodeAnalysis.Shared.Extensions.ITypeSymbolExtensions");
+            MethodInfo reflectedMethod = reflectedType.GetMethod("GetAccessibleMembersInThisAndBaseTypes");
+            _getAccessibleMembersInThisAndBaseTypes = reflectedMethod.MakeGenericMethod(typeof(ISymbol));
+
+            reflectedAssembly = typeof(CSharpCompilation).Assembly;
+            _documentationCommentCompiler = reflectedAssembly.GetType("Microsoft.CodeAnalysis.CSharp.DocumentationCommentCompiler");
+            _documentationCommentCompilerDefaultVisit = _documentationCommentCompiler.GetMethod("DefaultVisit");
         }
 
         public IEnumerable<IDocument> Finish()
@@ -233,17 +252,8 @@ namespace Wyam.CodeAnalysis.Analysis
         // Helpers below...
 
         // This was helpful: http://stackoverflow.com/a/30445814/807064
-        private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within)
-        {
-            if (_getAccessibleMembersInThisAndBaseTypes == null)
-            {
-                Assembly assembly = typeof(Microsoft.CodeAnalysis.Workspace).Assembly;
-                Type type = assembly.GetType("Microsoft.CodeAnalysis.Shared.Extensions.ITypeSymbolExtensions");
-                MethodInfo method = type.GetMethod("GetAccessibleMembersInThisAndBaseTypes");
-                _getAccessibleMembersInThisAndBaseTypes = method.MakeGenericMethod(typeof(ISymbol));
-            }
-            return (IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within });
-        }
+        private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within) => 
+            (IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within });
 
         private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol type)
         {
@@ -368,9 +378,12 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private void AddXmlDocumentation(ISymbol symbol, MetadataItems metadata)
         {
-            string documentationCommentXml = symbol.GetDocumentationCommentXml(expandIncludes: true);
+            INamespaceSymbol namespaceSymbol = symbol as INamespaceSymbol;
+            string documentationCommentXml = namespaceSymbol == null
+                ? symbol.GetDocumentationCommentXml(expandIncludes: true)
+                : GetNamespaceDocumentationCommentXml(namespaceSymbol);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(_context, symbol, _commentIdToDocument, _cssClasses);
+                = new XmlDocumentationParser(_context, symbol.Name, _commentIdToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements
@@ -393,6 +406,40 @@ namespace Wyam.CodeAnalysis.Analysis
             metadata.AddRange(otherHtmlElementNames.Select(x => 
                 new MetadataItem(FirstLetterToUpper(x) + "Comments",
                     _ => xmlDocumentationParser.Process().OtherComments[x])));
+        }
+
+        // This can be removed once changes in https://github.com/dotnet/roslyn/pull/15494 are merged and deployed
+        private string GetNamespaceDocumentationCommentXml(INamespaceSymbol symbol)
+        {
+            // Try and get comments applied to the namespace
+            TextWriter writer = new StringWriter();
+            CancellationToken ct = new CancellationToken();
+            object documentationCompiler = Activator.CreateInstance(_documentationCommentCompiler, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[]
+            {
+                (string)null,
+                _compilation,
+                writer,
+                (SyntaxTree)null,
+                (TextSpan?)null,
+                true,
+                true,
+                null,
+                ct
+            }, null);
+            _documentationCommentCompilerDefaultVisit.Invoke(documentationCompiler, new object[] { symbol });
+            string docs = writer.ToString();
+
+            // Fall back to looking for a NamespaceDoc class
+            if (string.IsNullOrEmpty(docs))
+            {
+                INamespaceOrTypeSymbol namespaceDoc = symbol.GetMembers("NamespaceDoc").FirstOrDefault();
+                if (namespaceDoc != null)
+                {
+                    return namespaceDoc.GetDocumentationCommentXml(expandIncludes: true);
+                }
+            }
+
+            return docs ?? string.Empty;
         }
 
         public static string FirstLetterToUpper(string str)
