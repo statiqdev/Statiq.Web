@@ -15,15 +15,15 @@
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
-    @foreach(DateTime date in Documents[DocsPipelines.BlogPosts]
-        .Select(x => x.Get<DateTime>(DocsKeys.Date))
+    @foreach(DateTime published in Documents[DocsPipelines.BlogPosts]
+        .Select(x => x.Get<DateTime>(DocsKeys.Published))
         .Select(x => new DateTime(x.Year, x.Month, 1))
         .Distinct()
         .OrderByDescending(x => x))
     {
-        string link = date.ToString("yyyy/MM");
+        string link = published.ToString("yyyy/MM");
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="/blog/archive/@(link)">@(date.ToString("MMMM, yyyy"))</a></li>
+        <li class="@selected"><a href="/blog/archive/@(link)">@(published.ToString("MMMM, yyyy"))</a></li>
     }
     
     <li class="header"><i class="fa fa-user"></i> Authors</li>    

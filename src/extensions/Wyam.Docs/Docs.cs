@@ -15,6 +15,7 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
+using Wyam.Feeds;
 using Wyam.Html;
 using Wyam.Razor;
 
@@ -70,17 +71,17 @@ namespace Wyam.Docs
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new Excerpt(),
-                new Meta("FrontMatterDate", (doc, ctx) => doc.ContainsKey(DocsKeys.Date)),
-                new Meta(DocsKeys.Date, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10)))
-                    .OnlyIfNonExisting(),
+                new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(DocsKeys.Published)),  // Record whether the publish date came from front matter
+                new Meta(DocsKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
-                    DateTime date = doc.Get<DateTime>(DocsKeys.Date);
-                    string fileName = doc.Get<bool>("FrontMatterDate")
+                    DateTime published = doc.Get<DateTime>(DocsKeys.Published);
+                    string fileName = doc.Get<bool>("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Get<bool>(DocsKeys.IncludeDateInPostPath) ? $"blog/{date:yyyy}/{date:MM}/{fileName}" : $"blog/{fileName}";
-                })
+                    return ctx.Get<bool>(DocsKeys.IncludeDateInPostPath) ? $"blog/{published:yyyy}/{published:MM}/{fileName}" : $"blog/{fileName}";
+                }),
+                new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
             );
 
             engine.Pipelines.Add(DocsPipelines.BlogIndexes,
@@ -88,7 +89,7 @@ namespace Wyam.Docs
                     new ReadFiles("_BlogIndex.cshtml"),
                     new Paginate(5,
                         new Documents(DocsPipelines.BlogPosts),
-                        new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                        new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
                     ),
                     new Meta(Keys.Title, (doc, ctx) =>
                         doc.Get<int>(Keys.CurrentPage) == 1
@@ -114,7 +115,7 @@ namespace Wyam.Docs
                     new ForEach(
                         new Paginate(5,
                             new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
-                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
                         ),
                         new Meta(Keys.Title, (doc, ctx) =>
                             doc.Get<int>(Keys.CurrentPage) == 1
@@ -139,7 +140,7 @@ namespace Wyam.Docs
                 new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
                     // Monthly archives
                     new ReadFiles("_BlogIndex.cshtml"),
-                    new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, doc.Get<DateTime>(DocsKeys.Date).Month, 1),
+                    new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, doc.Get<DateTime>(DocsKeys.Published).Month, 1),
                         new Documents(DocsPipelines.BlogPosts)
                     ),
                     new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy")),
@@ -147,7 +148,7 @@ namespace Wyam.Docs
                     new Concat(
                         // Yearly archives
                         new ReadFiles("_BlogIndex.cshtml"),
-                        new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Date).Year, 1, 1),
+                        new GroupBy((doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, 1, 1),
                             new Documents(DocsPipelines.BlogPosts)
                         ),
                         new Meta(Keys.Title, (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy")),
@@ -156,7 +157,7 @@ namespace Wyam.Docs
                     new ForEach(
                         new Paginate(5,
                             new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
-                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
                         ),
                         new Meta(Keys.Title, (doc, ctx) =>
                              doc.Get<int>(Keys.CurrentPage) == 1
@@ -183,7 +184,7 @@ namespace Wyam.Docs
                     new ForEach(
                         new Paginate(5,
                             new Documents((doc, ctx) => doc[Keys.GroupDocuments]),
-                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Date)).Descending()
+                            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
                         ),
                         new Meta(Keys.Title, (doc, ctx) =>
                             doc.Get<int>(Keys.CurrentPage) == 1
@@ -201,6 +202,14 @@ namespace Wyam.Docs
                             .WithLayout("/_BlogLayout.cshtml"),
                         new WriteFiles()
                     )
+                )
+            );
+
+            engine.Pipelines.Add(DocsPipelines.BlogFeed,
+                new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
+                    new Documents(DocsPipelines.BlogPosts),
+                    new GenerateFeeds(),
+                    new WriteFiles()
                 )
             );
 

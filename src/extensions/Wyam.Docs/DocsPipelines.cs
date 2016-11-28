@@ -17,6 +17,7 @@ namespace Wyam.Docs
         public const string BlogCategories = nameof(BlogCategories);
         public const string BlogArchives = nameof(BlogArchives);
         public const string BlogAuthors = nameof(BlogAuthors);
+        public const string BlogFeed = nameof(BlogFeed);
         public const string RenderBlogPosts = nameof(RenderBlogPosts);
         public const string RenderApi = nameof(RenderApi);
         public const string ApiIndex = nameof(ApiIndex);

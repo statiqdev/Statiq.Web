@@ -19,7 +19,8 @@ namespace Wyam.Feeds
     /// Each input document represents an item in the feed, up to the specified maximum number of
     /// documents. Note that documents will be used in the order in which they are input
     /// into this module, so a <c>OrderBy</c> module or similar should be used
-    /// to order the documents prior to this module.
+    /// to order the documents prior to this module. You should also set the <code>Settings.Host</code> value
+    /// in your configuration file since that's used to create the absolute links for feed readers.
     /// This module outputs a document for each of the selected feed types. Input documents
     /// are not output by this module.
     /// </remarks>

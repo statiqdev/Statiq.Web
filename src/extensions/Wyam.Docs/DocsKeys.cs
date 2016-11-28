@@ -88,7 +88,7 @@ namespace Wyam.Docs
         /// <summary>
         /// Used for blog posts to store the date of the post.
         /// </summary>
-        public const string Date = nameof(Date);
+        public const string Published = nameof(Published);
 
         /// <summary>
         /// Used by blog posts and pages to indicate the author.

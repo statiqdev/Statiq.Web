@@ -1,8 +1,8 @@
 @model IDocument
 
 <dl class="dl-horizontal">
-    <dt><i class="fa fa-calendar"></i> Date</dt>
-    <dd>@(Model.Get<DateTime>(DocsKeys.Date).ToLongDateString())</dd>
+    <dt><i class="fa fa-calendar"></i> Published</dt>
+    <dd>@(Model.Get<DateTime>(DocsKeys.Published).ToLongDateString())</dd>
     @if(Model.ContainsKey(DocsKeys.Category))
     {
         string link = Model.String(DocsKeys.Category).ToLower().Replace(" ", "-").Replace("'", string.Empty);
