@@ -91,6 +91,10 @@
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Razor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.SearchIndex\Wyam.SearchIndex.csproj">
+      <Project>{957fe3a0-7ce0-48a1-9767-d122b9f43907}</Project>
+      <Name>Wyam.SearchIndex</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>

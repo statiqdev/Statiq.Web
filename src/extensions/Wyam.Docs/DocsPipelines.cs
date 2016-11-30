@@ -21,6 +21,7 @@ namespace Wyam.Docs
         public const string RenderBlogPosts = nameof(RenderBlogPosts);
         public const string RenderApi = nameof(RenderApi);
         public const string ApiIndex = nameof(ApiIndex);
+        public const string ApiSearchIndex = nameof(ApiSearchIndex);
         public const string Less = nameof(Less);
         public const string Resources = nameof(Resources);
     }

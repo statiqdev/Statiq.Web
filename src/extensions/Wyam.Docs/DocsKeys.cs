@@ -44,6 +44,12 @@ namespace Wyam.Docs
         public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
 
         /// <summary>
+        /// Set to <c>false</c> to prevent a search index for named API types from being
+        /// generated and presented on the API pages.
+        /// </summary>
+        public const string SearchIndex = nameof(SearchIndex);
+
+        /// <summary>
         /// Set this in global metadata to control the set of Markdown extensions for Markdig.
         /// </summary>
         public const string MarkdownExtensions = nameof(MarkdownExtensions);

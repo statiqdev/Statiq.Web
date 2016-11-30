@@ -66,6 +66,7 @@ namespace Wyam.SearchIndex
         private readonly DocumentConfig _searchIndexItem;
         private readonly FilePath _stopwordsPath;
         private readonly bool _enableStemming;
+        private bool _includeHost = true;
 
         /// <summary>
         /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that 
@@ -108,6 +109,16 @@ namespace Wyam.SearchIndex
             _enableStemming = enableStemming;
         }
 
+        /// <summary>
+        /// Indicates whether the host should be automatically included in generated links.
+        /// </summary>
+        /// <param name="includeHost"><c>true</c> to include the host.</param>
+        public SearchIndex IncludeHost(bool includeHost = true)
+        {
+            _includeHost = includeHost;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             SearchIndexItem[] searchIndexItems = inputs
@@ -148,7 +159,7 @@ tags:'{itm.Tags}'
             foreach (SearchIndexItem itm in searchIndexItems)
             {
                 sb.AppendLine($@"y({{
-url:'{context.GetLink(new FilePath(itm.Url), true)}',
+url:'{context.GetLink(new FilePath(itm.Url), _includeHost)}',
 title:{ToJsonString(itm.Title)},
 description:{ToJsonString(itm.Description)}
 }});");

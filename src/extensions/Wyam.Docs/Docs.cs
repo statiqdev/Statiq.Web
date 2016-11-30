@@ -18,6 +18,7 @@ using Wyam.Core.Modules.Metadata;
 using Wyam.Feeds;
 using Wyam.Html;
 using Wyam.Razor;
+using Wyam.SearchIndex;
 
 namespace Wyam.Docs
 {
@@ -30,6 +31,7 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.IncludeGlobalNamespace] = true;
             engine.GlobalMetadata[DocsKeys.IncludeDateInPostPath] = false;
             engine.GlobalMetadata[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.GlobalMetadata[DocsKeys.SearchIndex] = true;
 
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
@@ -261,6 +263,22 @@ namespace Wyam.Docs
                     new Title("API"),
                     new Meta(DocsKeys.NoSidebar, true),
                     new Razor.Razor(),
+                    new WriteFiles()
+                )
+            );
+
+            engine.Pipelines.Add(DocsPipelines.ApiSearchIndex,
+                new If(ctx => ctx.Documents[DocsPipelines.Api].Any() && ctx.GlobalMetadata.Get<bool>(DocsKeys.SearchIndex),
+                    new Documents(DocsPipelines.Api),
+                    new Where((doc, ctx) => doc.String(CodeAnalysisKeys.Kind) == "NamedType"),
+                    new SearchIndex.SearchIndex((doc, ctx) => 
+                        new SearchIndexItem(
+                            ctx.GetLink(doc),
+                            doc.String(CodeAnalysisKeys.DisplayName),
+                            doc.String(CodeAnalysisKeys.DisplayName)
+                        )
+                    ).IncludeHost(false),
+                    new Meta(Keys.WritePath, new FilePath("assets/js/searchIndex.js")),
                     new WriteFiles()
                 )
             );
