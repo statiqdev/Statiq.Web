@@ -62,11 +62,12 @@ namespace Wyam.SearchIndex
     /// <category>Content</category>
     public class SearchIndex : IModule
     {
-        private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-z]{2,};|&#\d+;|[^a-z-#]", RegexOptions.Compiled);
+        private static readonly Regex StripHtmlAndSpecialChars = new Regex(@"<[^>]+>|&[a-zA-Z]{2,};|&#\d+;|[^a-zA-Z-#]", RegexOptions.Compiled);
         private readonly DocumentConfig _searchIndexItem;
         private readonly FilePath _stopwordsPath;
         private readonly bool _enableStemming;
         private bool _includeHost = true;
+        private Func<StringBuilder, IExecutionContext, string> _script = (builder, _) => builder.ToString();
 
         /// <summary>
         /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that 
@@ -119,6 +120,22 @@ namespace Wyam.SearchIndex
             return this;
         }
 
+        /// <summary>
+        /// This allows you to customize the Lunr.js JavaScript that this module creates.
+        /// </summary>
+        /// <param name="script">A script transformation function. The <see cref="StringBuilder"/> contains
+        /// the generated script content. You can manipulate as appropriate and then return the final
+        /// script as a <c>string</c>.</param>
+        public SearchIndex WithScript(Func<StringBuilder, IExecutionContext, string> script)
+        {
+            if (script == null)
+            {
+                throw new ArgumentNullException(nameof(script));
+            }
+            _script = script;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             SearchIndexItem[] searchIndexItems = inputs
@@ -136,59 +153,68 @@ namespace Wyam.SearchIndex
             }
             
             string[] stopwords = GetStopwords(context);
-            string jsFileContent = BuildSearchIndex(searchIndexItems, stopwords, context);
-            return new []{ context.GetDocument(jsFileContent) };
+            StringBuilder scriptBuilder = BuildScript(searchIndexItems, stopwords, context);
+            string script = _script(scriptBuilder, context);
+            return new []{ context.GetDocument(script) };
         }
         
-        private string BuildSearchIndex(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
+        private StringBuilder BuildScript(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder scriptBuilder = new StringBuilder($@"
+var searchModule = function() {{
+    var idMap = [];
+    function y(e) {{ 
+        idMap.push(e); 
+    }}
+    var idx = lunr(function() {{
+        this.field('title', {{ boost: 10 }});
+        this.field('content');
+        this.field('description', {{ boost: 5 }});
+        this.field('tags', {{ boost: 50 }});
+        this.ref('id');
 
-            for (int i = 0; i < searchIndexItems.Count(); ++i)
+        this.pipeline.remove(lunr.stopWordFilter);
+        {(_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);")}
+    }});
+    function a(e) {{ 
+        idx.add(e); 
+    }}
+");
+
+            for (int i = 0; i < searchIndexItems.Count; ++i)
             {
                 SearchIndexItem itm = searchIndexItems.ElementAt(i);
-                sb.AppendLine($@"a({{
-id:{i},
-title:{CleanString(itm.Title, stopwords)},
-content:{CleanString(itm.Content, stopwords)},
-description:{CleanString(itm.Description, stopwords)},
-tags:'{itm.Tags}'
-}});");
+                scriptBuilder.AppendLine($@"
+    a({{
+        id:{i},
+        title:{CleanString(itm.Title, stopwords)},
+        content:{CleanString(itm.Content, stopwords)},
+        description:{CleanString(itm.Description, stopwords)},
+        tags:'{itm.Tags}'
+    }});");
             }
 
             foreach (SearchIndexItem itm in searchIndexItems)
             {
-                sb.AppendLine($@"y({{
-url:'{context.GetLink(new FilePath(itm.Url), _includeHost)}',
-title:{ToJsonString(itm.Title)},
-description:{ToJsonString(itm.Description)}
-}});");
+                scriptBuilder.AppendLine($@"
+    y({{
+        url:'{context.GetLink(new FilePath(itm.Url), _includeHost)}',
+        title:{ToJsonString(itm.Title)},
+        description:{ToJsonString(itm.Description)}
+    }});");
             }
 
-            return CreateJs(sb.ToString());
-        }
+            scriptBuilder.AppendLine($@"
+    return {{
+        search: function(q) {{
+            return idx.search(q).map(function(i) {{
+                return idMap[i.ref];
+            }});
+        }}
+    }};
+}}();");
 
-        private string CreateJs(string dynamicJsContent)
-        {
-            return @"var searchModule = function() {
-var idMap = [];
-function y(e){idMap.push(e);}
-var idx = lunr(function() {
-this.field('title', { boost: 10})
-this.field('content')
-this.field('description', { boost: 5})
-this.field('tags', { boost: 50})
-this.ref('id')
-
-this.pipeline.remove(lunr.stopWordFilter);" + (_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);") + @"
-})
-function a(e){idx.add(e);}
-
-" + dynamicJsContent + @"
-return {
-search: function(q) {return idx.search(q).map(function(i){return idMap[i.ref];});}
-};
-}();";
+            return scriptBuilder;
         }
 
         private static string CleanString(string input, string[] stopwords)
@@ -197,11 +223,10 @@ search: function(q) {return idx.search(q).map(function(i){return idMap[i.ref];})
             {
                 return "''";
             }
-
-            string clean = input.ToLowerInvariant();
-            clean = StripHtmlAndSpecialChars.Replace(clean, " ").Trim();
+            
+            string clean = StripHtmlAndSpecialChars.Replace(input, " ").Trim();
             clean = Regex.Replace(clean, @"\s{2,}", " ");
-            clean = string.Join(" ", clean.Split(' ').Where(f => f.Length > 1 && !stopwords.Contains(f)).ToArray());
+            clean = string.Join(" ", clean.Split(' ').Where(f => f.Length > 1 && !stopwords.Contains(f, StringComparer.InvariantCultureIgnoreCase)).ToArray());
             clean = ToJsonString(clean);
 
             return clean;

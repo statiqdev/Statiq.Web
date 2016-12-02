@@ -261,7 +261,6 @@ namespace Wyam.Docs
                     new Meta(Keys.RelativeFilePath, "api/index.html"),
                     new Meta(Keys.SourceFileName, "index.html"),
                     new Title("API"),
-                    new Meta(DocsKeys.NoSidebar, true),
                     new Razor.Razor(),
                     new WriteFiles()
                 )
@@ -276,8 +275,30 @@ namespace Wyam.Docs
                             ctx.GetLink(doc),
                             doc.String(CodeAnalysisKeys.DisplayName),
                             doc.String(CodeAnalysisKeys.DisplayName)
-                        )
-                    ).IncludeHost(false),
+                        ))
+                        .WithScript((scriptBuilder, context) =>
+                        {
+                            // Use a custom tokenizer that splits on camel case characters
+                            // https://github.com/olivernn/lunr.js/issues/230#issuecomment-244790648
+                            scriptBuilder.Insert(0, @"
+var camelCaseTokenizer = function (obj) {
+    var previous = '';
+    return obj.toString().trim().split(/[\s\-]+|(?=[A-Z])/).reduce(function(acc, cur) {
+        var current = cur.toLowerCase();
+        if(acc.length === 0) {
+            previous = current;
+            return acc.concat(current);
+        }
+        previous = previous.concat(current);
+        return acc.concat([current, previous]);
+    }, []);
+}
+lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
+                            scriptBuilder.Replace("this.ref('id');", @"this.ref('id');
+        this.tokenizer(camelCaseTokenizer);");
+                            return scriptBuilder.ToString();
+                        })
+                        .IncludeHost(false),
                     new Meta(Keys.WritePath, new FilePath("assets/js/searchIndex.js")),
                     new WriteFiles()
                 )

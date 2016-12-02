@@ -19,6 +19,12 @@
 	} 
 }
 
+@section Search {
+	@if (IsSectionDefined("Search")) {
+		RenderSection("Search");
+	}
+}
+
 @section Sidebar {
 	@if (IsSectionDefined("Sidebar")) {
 		RenderSection("Sidebar");
