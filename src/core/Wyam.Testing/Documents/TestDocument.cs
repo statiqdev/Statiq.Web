@@ -129,12 +129,12 @@ namespace Wyam.Testing.Documents
         public int Count => _metadata.Count;
 
         /// <summary>
-        /// This resolves the metadata value by expanding IMetadataValue.
+        /// This resolves the metadata value by recursivly expanding IMetadataValue.
         /// </summary>
         private object GetValue(object originalValue)
         {
             IMetadataValue metadataValue = originalValue as IMetadataValue;
-            return metadataValue != null ? metadataValue.Get(this) : originalValue;
+            return metadataValue != null ? GetValue(metadataValue.Get(this)) : originalValue;
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Wyam.Testing.Documents
         private KeyValuePair<string, object> GetItem(KeyValuePair<string, object> item)
         {
             IMetadataValue metadataValue = item.Value as IMetadataValue;
-            return metadataValue != null ? new KeyValuePair<string, object>(item.Key, metadataValue.Get(this)) : item;
+            return metadataValue != null ? new KeyValuePair<string, object>(item.Key, GetValue(metadataValue.Get(this))) : item;
         }
 
         public string Id { get; set; }
