@@ -329,11 +329,47 @@ namespace Wyam.CodeAnalysis.Analysis
 		}
 
 		// <code>
+        // Wrap with <pre> and trim margins off each line
 		private void ProcessChildCodeElements(XElement parentElement)
 		{
 			foreach (XElement codeElement in parentElement.Elements("code").ToList())
-			{
-				codeElement.ReplaceWith(new XElement("pre", codeElement));
+            {
+                // Get all the lines of the code element
+                XmlReader reader = codeElement.CreateReader();
+                reader.MoveToContent();
+                List<string> lines = reader.ReadInnerXml().Split(new [] { "\n", "\r\n" }, StringSplitOptions.None).ToList();
+
+                // Trim start and end lines
+                while (lines[0].Trim() == string.Empty)
+                {
+                    lines.RemoveAt(0);
+                }
+                while (lines[lines.Count - 1].Trim() == string.Empty)
+                {
+                    lines.RemoveAt(lines.Count - 1);
+                }
+
+                // Tabs vs. spaces
+                bool tabs = lines.Count > 0 && lines[0].StartsWith("\t");
+
+                // Find the margin padding
+                int padding = int.MaxValue;
+                foreach (string line in lines)
+                {
+                    padding = Math.Min(padding, line.TakeWhile(x => tabs ? x == '\t' : x == ' ').Count());
+                }
+
+                // Remove the padding, replacing the nodes in the original element to preserve any attributes
+                if (padding > 0)
+                {
+                    string newInnerXml = string.Join("\n",
+                        lines.Select(x => padding < x.Length ? x.Substring(padding) : string.Empty));
+                    XElement newCodeElement = XElement.Parse($"<code>{newInnerXml}</code>");
+                    codeElement.ReplaceNodes(newCodeElement.Nodes().Cast<object>().ToArray());
+                }
+
+                // Wrap with pre
+                codeElement.ReplaceWith(new XElement("pre", codeElement));
 			}
 		}
 
