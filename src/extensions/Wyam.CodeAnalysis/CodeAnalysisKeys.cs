@@ -27,6 +27,7 @@ namespace Wyam.CodeAnalysis
         public const string BaseTypes = nameof(BaseTypes); // IReadOnlyList<IDocument>
         public const string AllInterfaces = nameof(AllInterfaces); // IReadOnlyList<IDocument>
         public const string Members = nameof(Members); // IReadOnlyList<IDocument>
+        public const string ExtensionMethods = nameof(ExtensionMethods); // IReadOnlyList<IDocument>
         public const string DerivedTypes = nameof(DerivedTypes); // IReadOnlyList<IDocument>
         public const string ImplementingTypes = nameof(ImplementingTypes); // IReadOnlyList<IDocument>
         public const string Constructors = nameof(Constructors); // IReadOnlyList<IDocument>

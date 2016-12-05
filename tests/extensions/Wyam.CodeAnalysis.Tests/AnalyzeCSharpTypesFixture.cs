@@ -61,6 +61,72 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void ReturnsExtensionMethods()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public class Blue
+                        {
+                        }
+
+                        public static class Green
+                        {
+                            public static void Ext(this Blue blue)
+                            {
+                            }
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                CollectionAssert.AreEquivalent(new[] { "Ext" },
+                    results.Single(x => x["Name"].Equals("Blue")).Get<IEnumerable<IDocument>>("ExtensionMethods").Select(x => x["Name"]));
+            }
+
+            [Test]
+            public void ReturnsExtensionMethodsForBaseClass()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public class Red
+                        {
+                        }
+
+                        public class Blue : Red
+                        {
+                        }
+
+                        public static class Green
+                        {
+                            public static void Ext(this Red red)
+                            {
+                            }
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                CollectionAssert.AreEquivalent(new[] { "Ext" },
+                    results.Single(x => x["Name"].Equals("Blue")).Get<IEnumerable<IDocument>>("ExtensionMethods").Select(x => x["Name"]));
+            }
+
+            [Test]
             public void MemberTypesReturnsNestedTypes()
             {
                 // Given

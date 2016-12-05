@@ -82,6 +82,9 @@
       This is available for type symbols and contains a collection of the documents that represent all members of the type, including inherited ones. The collection
       is empty if the type doesn't have any members.
     </metadata>
+    <metadata name="ExtensionMethods" type="IReadOnlyList&lt;IDocument&gt;">
+      This is available for type symbols and contains a collection of the documents that represent all extension members applicable to the type.
+    </metadata>
     <metadata name="DerivedTypes" type="IReadOnlyList&lt;IDocument&gt;">
       This is available for type symbols and contains a collection of the documents that represent all types derived from the type. The collection
       is empty if the type doesn't have any derived types.

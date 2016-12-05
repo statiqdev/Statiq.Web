@@ -25,7 +25,9 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>> _namespaceDisplayNameToSymbols = new ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>>();
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
         private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
+        private readonly ConcurrentHashSet<IMethodSymbol> _extensionMethods = new ConcurrentHashSet<IMethodSymbol>();
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
+
         private readonly Compilation _compilation;
         private readonly IExecutionContext _context;
         private readonly Func<ISymbol, bool> _symbolPredicate;
@@ -134,6 +136,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     { CodeAnalysisKeys.BaseTypes, DocumentsFor(GetBaseTypes(symbol)) },
                     { CodeAnalysisKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces) },
                     { CodeAnalysisKeys.Members, DocumentsFor(GetAccessibleMembersInThisAndBaseTypes(symbol, symbol).Where(MemberPredicate)) },
+                    { CodeAnalysisKeys.ExtensionMethods, _ => DocumentsFor(_extensionMethods.Where(x => x.ReduceExtensionMethod(symbol) != null)) },
                     { CodeAnalysisKeys.Constructors,
                         DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
@@ -189,6 +192,12 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitMethod(IMethodSymbol symbol)
         {
+            // If this is an extension method, record it
+            if (!_finished && symbol.IsExtensionMethod)
+            {
+                _extensionMethods.Add(symbol);
+            }
+
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
             {
                 AddMemberDocument(symbol, true, new MetadataItems

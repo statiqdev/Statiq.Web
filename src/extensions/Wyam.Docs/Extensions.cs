@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
+using Wyam.CodeAnalysis;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
@@ -15,9 +16,10 @@ namespace Wyam.Docs
     /// </summary>
     public static class Extensions
     {
-        public static HtmlString Name(this IMetadata metadata)
+        public static HtmlString Name(this IMetadata metadata) => FormatName(metadata.String(CodeAnalysisKeys.DisplayName));
+
+        private static HtmlString FormatName(string name)
         {
-            string name = metadata.String("DisplayName");
             if (name == null)
             {
                 return new HtmlString(string.Empty);
@@ -49,7 +51,11 @@ namespace Wyam.Docs
             return new HtmlString(replaced ? string.Join("<wbr>", segments) : name);
         }
 
-        public static HtmlString GetTypeLink(this IExecutionContext context, IMetadata metadata)
+        public static HtmlString GetTypeLink(this IExecutionContext context, IMetadata metadata) => context.GetTypeLink(metadata, metadata.Name());
+
+        public static HtmlString GetTypeLink(this IExecutionContext context, IMetadata metadata, string name) => context.GetTypeLink(metadata, name == null ? null : FormatName(name));
+
+        public static HtmlString GetTypeLink(this IExecutionContext context, IMetadata metadata, HtmlString name)
         {
             if (metadata.String("Kind") == "TypeParameter")
             {
@@ -62,9 +68,10 @@ namespace Wyam.Docs
                 }
             }
             return metadata.ContainsKey("WritePath")
-                ? new HtmlString($"<a href=\"{context.GetLink(metadata.FilePath("WritePath"))}\">{metadata.Name()}</a>")
-                : metadata.Name();
+                ? new HtmlString($"<a href=\"{context.GetLink(metadata.FilePath("WritePath"))}\">{name ?? metadata.Name()}</a>")
+                : (name ?? metadata.Name());
         }
+
 
         /// <summary>
         /// Generates links to each heading on a page and returns a string containing all of the links.
