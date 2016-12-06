@@ -132,35 +132,27 @@
             </footer>
         </div>
         <script>
-            $(".main-sidebar a").click(function(){
+            // Close the sidebar if we select an anchor link
+            $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
                 $(document.body).removeClass('sidebar-open');
             });
 
             // Called after Turbolinks page load
-            document.addEventListener("turbolinks:load", function() {
-                // Adjust the AdminLTE page height/sidebar   
-                var o = $.AdminLTE.options;
-                if (o.sidebarPushMenu) {
-                    $.AdminLTE.pushMenu.activate(o.sidebarToggleSelector);
-                }
-                $.AdminLTE.layout.activate();
-
-                commonOnLoad();
-            });
-
-            // Normal page load
-            $(document).load(function() {
-                mermaid.initialize();
-                commonOnLoad();
-            });
-
-            // Common page load functionality (normal + Turbolinks)
-            function commonOnLoad() {
+            document.addEventListener("turbolinks:load", function() {    
                 mermaid.init(undefined, ".mermaid")
+                
                 $('pre code').each(function(i, block) {
                     hljs.highlightBlock(block);
                 });  
-            }
+                
+                $.AdminLTE.layout.activate();                
+                $("body").removeClass("hold-transition");
+            });
+
+            // Normal page load
+            $(document).load(function() {                
+                mermaid.initialize();
+            });
         </script>
     </body>
 </html>
