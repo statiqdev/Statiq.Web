@@ -6,8 +6,8 @@
         <meta name="description" content="@Context.String(DocsKeys.Description)" />
         <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/assets/img/favicon.ico" type="image/x-icon">
         <title>@Context.String(DocsKeys.SiteTitle, "Docs") - @ViewData[Keys.Title]</title>
         <link href="/assets/css/mermaid.css" rel="stylesheet">
         <link href="/assets/css/highlight.css" rel="stylesheet">
@@ -26,8 +26,8 @@
         <script src="/assets/js/jquery.sticky-kit.min.js"></script>
         <script src="/assets/js/mermaid.min.js"></script>
         <!--[if lt IE 9]>
-        <script src="/Scripts/html5shiv.min.js"></script>
-        <script src="/Scripts/respond.min.js"></script>
+        <script src="/assets/js/html5shiv.min.js"></script>
+        <script src="/assets/js/respond.min.js"></script>
         <![endif]-->  
 
         @Html.Partial("_Head")
@@ -131,6 +131,8 @@
                 @Html.Partial("_Footer")
             </footer>
         </div>
+        <a href="javascript:" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
+        @Html.Partial("_Bottom")
         <script>
             // Close the sidebar if we select an anchor link
             $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
@@ -138,8 +140,17 @@
             });
 
             // Called after Turbolinks page load
-            document.addEventListener("turbolinks:load", function() {    
+            document.addEventListener("turbolinks:load", function() {       
+                mermaid.initialize(
+                {
+                    flowchart:
+                    {
+                        htmlLabels: false,
+                        useMaxWidth:false
+                    }
+                });  
                 mermaid.init(undefined, ".mermaid")
+                $('svg').addClass('img-responsive');
                 
                 $('pre code').each(function(i, block) {
                     hljs.highlightBlock(block);
@@ -147,11 +158,23 @@
                 
                 $.AdminLTE.layout.activate();                
                 $("body").removeClass("hold-transition");
+
+                // This reinits all the Bootstrap JS
+                $(window).trigger('load');
             });
 
-            // Normal page load
-            $(document).load(function() {                
-                mermaid.initialize();
+            // Back to top
+            $(window).scroll(function() {
+                if ($(this).scrollTop() >= 200) {        // If page is scrolled more than 50px
+                    $('#return-to-top').fadeIn(1000);    // Fade in the arrow
+                } else {
+                    $('#return-to-top').fadeOut(1000);   // Else fade out the arrow
+                }
+            });
+            $('#return-to-top').click(function() {      // When arrow is clicked
+                $('body,html').animate({
+                    scrollTop : 0                       // Scroll to top of body
+                }, 500);
             });
         </script>
     </body>
