@@ -298,8 +298,8 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
         this.tokenizer(camelCaseTokenizer);");
                             return scriptBuilder.ToString();
                         })
-                        .IncludeHost(false),
-                    new Meta(Keys.WritePath, new FilePath("assets/js/searchIndex.js")),
+                        .IncludeHost(false)
+                        .WithPath("assets/js/searchIndex.js"),
                     new WriteFiles()
                 )
             );
