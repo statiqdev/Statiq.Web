@@ -56,6 +56,7 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Documents\TestDocument.cs" />
     <Compile Include="Execution\TestExecutionContext.cs" />
     <Compile Include="Modules\CountModule.cs" />

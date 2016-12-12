@@ -70,7 +70,7 @@ namespace Wyam.SearchIndex
         private FilePath _stopwordsPath;
         private bool _enableStemming;
         private ContextConfig _path = _ => new FilePath("searchIndex.js");
-        private bool _includeHost = true;
+        private bool _includeHost = false;
         private Func<StringBuilder, IExecutionContext, string> _script = (builder, _) => builder.ToString();
 
         /// <summary>

@@ -12,11 +12,13 @@ namespace Wyam.Testing
 {
     public abstract class BaseFixture
     {
+        public TestTraceListener Listener { get; private set; }
+
         [SetUp]
         public void BaseSetUp()
         {
-            TestTraceListener listener = new TestTraceListener(TestContext.CurrentContext.Test.ID);
-            Trace.AddListener(listener);
+            Listener = new TestTraceListener(TestContext.CurrentContext.Test.ID);
+            Trace.AddListener(Listener);
         }
 
         [TearDown]
@@ -35,7 +37,7 @@ namespace Wyam.Testing
             }
         }
 
-        public void ThrowOnTraceEventType(TraceEventType traceEventType)
+        public void ThrowOnTraceEventType(TraceEventType? traceEventType)
         {
             TestTraceListener listener = Trace.Listeners.OfType<TestTraceListener>()
                 .FirstOrDefault(x => x.TestId == TestContext.CurrentContext.Test.ID);

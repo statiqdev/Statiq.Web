@@ -101,6 +101,18 @@ namespace Wyam.Docs
         /// </summary>
         public const string Author = nameof(Author);
 
+        /// <summary>
+        /// Set to <c>true</c> (the default value) to generate meta refresh pages
+        /// for any redirected documents (as indicated by a <c>RedirectFrom</c>
+        /// metadata value).
+        /// </summary>
+        public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
 
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to generate
+        /// a Netlify <c>_redirects</c> file from redirected documents
+        /// (as indicated by a <c>RedirectFrom</c> metadata value).
+        /// </summary>
+        public const string NetlifyRedirects = nameof(NetlifyRedirects);
     }
 }

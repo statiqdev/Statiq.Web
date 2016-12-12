@@ -7,10 +7,9 @@ using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
-using Wyam.Core.Execution;
 using Wyam.Testing;
 
-namespace Wyam.Core.Tests.Execution
+namespace Wyam.Common.Tests.Execution
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]

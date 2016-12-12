@@ -105,5 +105,8 @@ namespace Wyam.Common.Meta
 
         // Title
         public const string Title = nameof(Title);
+
+        // RedirectFrom
+        public const string RedirectFrom = nameof(RedirectFrom);
     }
 }

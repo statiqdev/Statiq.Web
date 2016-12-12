@@ -70,7 +70,6 @@
     <Compile Include="Documents\CustomDocument.cs" />
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
-    <Compile Include="Execution\LinkGenerator.cs" />
     <Compile Include="IO\FileProviderCollection.cs" />
     <Compile Include="IO\FileSystem.cs" />
     <Compile Include="IO\Globbing\DirectoryInfo.cs" />
@@ -83,6 +82,7 @@
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />
+    <Compile Include="Modules\Contents\Redirect.cs" />
     <Compile Include="Modules\IO\Include.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Contents\SitemapItem.cs" />

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.Execution
+namespace Wyam.Common.Execution
 {
-    internal static class LinkGenerator
+    public static class LinkGenerator
     {
         public static string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions)
         {

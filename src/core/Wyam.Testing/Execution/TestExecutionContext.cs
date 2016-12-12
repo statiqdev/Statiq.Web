@@ -12,6 +12,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Testing.Configuration;
 using Wyam.Testing.Documents;
 
 namespace Wyam.Testing.Execution
@@ -184,48 +185,50 @@ namespace Wyam.Testing.Execution
         public IModule Module { get; }
         public IExecutionCache ExecutionCache { get; }
         public IReadOnlyFileSystem FileSystem { get; }
-        public IReadOnlySettings Settings { get; }
         public IDocumentCollection Documents { get; }
         public IMetadata GlobalMetadata { get; }
         public string ApplicationInput { get; }
-        public string GetLink()
-        {
-            throw new NotImplementedException();
-        }
 
-        public string GetLink(IMetadata metadata, bool includeHost = false)
-        {
-            throw new NotImplementedException();
-        }
+
+        public Settings Settings { get; } = new Settings();
+
+        IReadOnlySettings IExecutionContext.Settings => Settings;
+
+        // GetLink
+
+        public string GetLink() =>
+            GetLink((NormalizedPath)null, Settings.Host, Settings.LinkRoot, Settings.LinksUseHttps, false, false);
+
+        public string GetLink(IMetadata metadata, bool includeHost = false) =>
+            GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
 
         public string GetLink(IMetadata metadata, string key, bool includeHost = false)
         {
-            throw new NotImplementedException();
+            FilePath filePath = metadata?.FilePath(key);
+            return filePath != null ? GetLink(filePath, includeHost) : null;
         }
 
-        public string GetLink(string path, bool includeHost = false)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetLink(string path, bool includeHost = false) =>
+            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
 
-        public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
+            GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
 
-        public string GetLink(NormalizedPath path, bool includeHost = false)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetLink(NormalizedPath path, bool includeHost = false) =>
+            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
 
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
+            LinkGenerator.GetLink(path, host, root, useHttps, hideIndexPages, hideExtensions);
 
         public bool TryConvert<T>(object value, out T result)
         {
-            throw new NotImplementedException();
+            if (value is T)
+            {
+                result = (T) value;
+                return true;
+            }
+            result = default(T);
+            return value == null;
         }
 
         public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)

@@ -47,6 +47,7 @@
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="Execution\IEngine.cs" />
     <Compile Include="Configuration\IRecipe.cs" />
+    <Compile Include="Execution\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
     <Compile Include="IO\FileEqualityComparer.cs" />

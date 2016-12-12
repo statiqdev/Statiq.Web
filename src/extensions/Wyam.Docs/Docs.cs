@@ -32,6 +32,7 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.IncludeDateInPostPath] = false;
             engine.GlobalMetadata[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
             engine.GlobalMetadata[DocsKeys.SearchIndex] = true;
+            engine.GlobalMetadata[DocsKeys.MetaRefreshRedirects] = true;
 
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
@@ -243,7 +244,26 @@ namespace Wyam.Docs
                     new WriteFiles()
                 )
             );
-            
+
+            engine.Pipelines.Add(DocsPipelines.Redirects,
+                new Documents(DocsPipelines.RenderPages),
+                new Concat(
+                    new Documents(DocsPipelines.RenderBlogPosts)
+                ),
+                new Execute(ctx =>
+                {
+                    Redirect redirect = new Redirect()
+                        .WithMetaRefreshPages(ctx.Get<bool>(DocsKeys.MetaRefreshRedirects));
+                    if (ctx.Get<bool>(DocsKeys.NetlifyRedirects))
+                    {
+                        redirect.WithAdditionalOutput("_redirects", redirects =>
+                            string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));
+                    }
+                    return redirect;
+                }),
+                new WriteFiles()
+            );
+
             engine.Pipelines.Add(DocsPipelines.RenderApi,
                 new If(ctx => ctx.Documents[DocsPipelines.Api].Any(),
                     new Documents(DocsPipelines.Api),
@@ -298,7 +318,6 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
         this.tokenizer(camelCaseTokenizer);");
                             return scriptBuilder.ToString();
                         })
-                        .IncludeHost(false)
                         .WithPath("assets/js/searchIndex.js"),
                     new WriteFiles()
                 )

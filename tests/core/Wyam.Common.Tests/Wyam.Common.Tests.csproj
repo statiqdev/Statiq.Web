@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Documents\ToLookupExtensionsFixture.cs" />
+    <Compile Include="Execution\LinkGeneratorFixture.cs" />
     <Compile Include="IO\DirectoryPathFixture.cs" />
     <Compile Include="IO\FilePathFixture.cs" />
     <Compile Include="IO\NormalizedPathFixture.cs" />
