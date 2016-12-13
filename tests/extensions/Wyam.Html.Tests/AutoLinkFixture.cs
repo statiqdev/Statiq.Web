@@ -570,6 +570,99 @@ namespace Wyam.Html.Tests
                 context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
                 stream.Dispose();
             }
+
+            [Test]
+            public void AdjacentWords()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>abc Foo(baz) xyz</p>
+                        </body>
+                    </html>";
+                string output = @"<html><head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>abc <a href=""http://www.google.com"">Foo</a>(<a href=""http://www.yahoo.com"">baz</a>) xyz</p>
+                        
+                    </body></html>";
+                IDocument document = Substitute.For<IDocument>();
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Dictionary<string, string> convertedLinks;
+                context.TryConvert(new object(), out convertedLinks)
+                    .ReturnsForAnyArgs(x =>
+                    {
+                        x[1] = x[0];
+                        return true;
+                    });
+                AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+                {
+                    { "Foo", "http://www.google.com" },
+                    { "baz", "http://www.yahoo.com" },
+                });
+
+                // When
+                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
+                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
+                stream.Dispose();
+            }
+
+            [Test]
+            public void NonWholeWords()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>abc Foo(baz) xyz</p>
+                        </body>
+                    </html>";
+                string output = @"<html><head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>abc Foo(baz) xyz</p>
+                        
+                    </body></html>";
+                IDocument document = Substitute.For<IDocument>();
+                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+                document.GetStream().Returns(stream);
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                Dictionary<string, string> convertedLinks;
+                context.TryConvert(new object(), out convertedLinks)
+                    .ReturnsForAnyArgs(x =>
+                    {
+                        x[1] = x[0];
+                        return true;
+                    });
+                AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+                {
+                    { "Foo", "http://www.google.com" },
+                    { "baz", "http://www.yahoo.com" },
+                }).WithMatchOnlyWholeWord();
+
+                // When
+                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
+                stream.Dispose();
+            }
         }
     }
 }

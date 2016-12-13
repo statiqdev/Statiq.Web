@@ -58,7 +58,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Specifies a dictionary of link mappings given an <c>IExecutionContext</c>. The return value is expected 
+        /// Specifies a dictionary of link mappings given an <see cref="IExecutionContext"/>. The return value is expected 
         /// to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the HTML content 
         /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same 
         /// link mappings for all input documents.
@@ -70,7 +70,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Specifies a dictionary of link mappings given an <c>IDocument</c> and <c>IExecutionContext</c>. The return 
+        /// Specifies a dictionary of link mappings given an <see cref="IDocument"/> and <see cref="IExecutionContext"/>. The return 
         /// value is expected to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the 
         /// HTML content and the values specify what should be placed in the <c>href</c> attribute. This allows you 
         /// to specify a different mapping for each input document.
@@ -117,7 +117,7 @@ namespace Wyam.Html
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            HtmlParser parser = new HtmlParser();            
+            HtmlParser parser = new HtmlParser();
             return inputs.AsParallel().Select(input =>
             {
                 try
@@ -125,6 +125,7 @@ namespace Wyam.Html
                     // Get the links
                     IDictionary<string, string> links = _links.GetValue(input, context, v => _extraLinks
                         .Concat(v.Where(l => !_extraLinks.ContainsKey(l.Key)))
+                        .Where(x => !string.IsNullOrWhiteSpace(x.Value))
                         .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>"));
 
                     // Enumerate all elements that match the query selector not already in a link element
@@ -139,8 +140,8 @@ namespace Wyam.Html
                         // Enumerate all descendant text nodes not already in a link element
                         foreach (IText text in element.Descendents().OfType<IText>().Where(t => !t.Ancestors<IHtmlAnchorElement>().Any()))
                         {
-                            string newText = ReplaceStrings(text.Text, links);
-                            if (newText != text.Text)
+                            string newText;
+                            if (ReplaceStrings(text, links, out newText))
                             {
                                 // Only perform replacement if the text content changed
                                 replacements.Add(new KeyValuePair<IText, string>(text, newText));
@@ -167,14 +168,16 @@ namespace Wyam.Html
             });
         }
 
-        private string ReplaceStrings(string s, IDictionary<string, string> map)
+        private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText)
         {
+            string s = text.Text;
             Trie<char> lookup = new Trie<char>(map.Keys);
             StringBuilder builder = new StringBuilder();
             int lastIdx = -1;
             Trie<char>.Node lastNode = lookup.Root;
             int matchIdx = -1;
             HashSet<Trie<char>.Node> badMatches = new HashSet<Trie<char>.Node>();
+            bool replaced = false;
             for (int i = 0; i < s.Length + 1; i++)
             {
                 if (i < s.Length)
@@ -201,7 +204,9 @@ namespace Wyam.Html
                     // Complete match
                     string key = new string(lastNode.Cumulative.ToArray());
                     builder.Append(map[key]);
-                    lastIdx = i - 1;
+                    replaced = true;
+                    i = i - 1;
+                    lastIdx = i;
                 }
                 else
                 {
@@ -222,15 +227,18 @@ namespace Wyam.Html
                 matchIdx = -1;
                 lastNode = lookup.Root;
             }
-            return builder.ToString();
+            newText = replaced ? builder.ToString() : string.Empty;
+            return replaced;
         }
 
         private bool CheckAdditonalConditions(string stringToCheck, int matchStartIndex, int matchEndIndex)
         {
-            return !_matchOnlyWholeWord || (
-                (matchEndIndex >= stringToCheck.Length -1|| !char.IsLetterOrDigit(stringToCheck[matchEndIndex+1])) 
-                && (matchStartIndex - 1 < 0 || !char.IsLetterOrDigit(stringToCheck[matchStartIndex - 1]))
-                );
+            if (_matchOnlyWholeWord)
+            {
+                return (matchStartIndex <= 0 || char.IsWhiteSpace(stringToCheck[matchStartIndex - 1]))
+                    && (matchEndIndex >= stringToCheck.Length - 1 || char.IsWhiteSpace(stringToCheck[matchEndIndex + 1]));
+            }
+            return true;
         }
 
   

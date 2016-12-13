@@ -37,6 +37,13 @@ namespace Wyam.Docs
         public const string Description = nameof(Description);
 
         /// <summary>
+        /// Controls whether type names from the API enclosed in code fences in either
+        /// blog posts or content pages should be automatically linked to the
+        /// corresponding API documentation page (the default is <c>true</c>).
+        /// </summary>
+        public const string AutoLinkTypes = nameof(AutoLinkTypes);
+
+        /// <summary>
         /// Setting this to <c>true</c> in global metadata uses
         /// the year and date in the output path of blog posts.
         /// The default value is <c>false</c>.

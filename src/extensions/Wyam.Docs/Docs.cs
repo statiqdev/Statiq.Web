@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,8 @@ namespace Wyam.Docs
 {
     public class Docs : IRecipe
     {
+        private readonly ConcurrentDictionary<string, string> _typeNamesToLink = new ConcurrentDictionary<string, string>();
+
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
@@ -33,6 +36,7 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
             engine.GlobalMetadata[DocsKeys.SearchIndex] = true;
             engine.GlobalMetadata[DocsKeys.MetaRefreshRedirects] = true;
+            engine.GlobalMetadata[DocsKeys.AutoLinkTypes] = true;
 
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
@@ -47,7 +51,29 @@ namespace Wyam.Docs
                     .WithCssClasses("code", "cs")
                     .WithWritePathPrefix("api")
                     .WithAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
-                    .WithAssemblySymbols())
+                    .WithAssemblySymbols()),
+                // Calculate a type name to link lookup for auto linking
+                new Execute((doc, ctx) =>
+                {
+                    string name = null;
+                    string kind = doc.String(CodeAnalysisKeys.Kind);
+                    if (kind == "NamedType")
+                    {
+                        name = doc.String(CodeAnalysisKeys.DisplayName);
+                    }
+                    else if (kind == "Property" || kind == "Method")
+                    {
+                        IDocument containingType = doc.Document(CodeAnalysisKeys.ContainingType);
+                        if (containingType != null)
+                        {
+                            name = $"{containingType.String(CodeAnalysisKeys.DisplayName)}.{doc.String(CodeAnalysisKeys.DisplayName)}";
+                        }
+                    }
+                    if (name != null)
+                    {
+                        _typeNamesToLink.AddOrUpdate(name, ctx.GetLink(doc), (x, y) => string.Empty);
+                    }
+                })
             );
 
             engine.Pipelines.Add(DocsPipelines.Pages,
@@ -61,6 +87,16 @@ namespace Wyam.Docs
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())),
+                new If(ctx => ctx.GlobalMetadata.Get<bool>(DocsKeys.AutoLinkTypes),
+                    new AutoLink(_typeNamesToLink)
+                        .WithQuerySelector("code")
+                        .WithMatchOnlyWholeWord()
+                ),
+                // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+                // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+                new If((doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                    new Replace("@", "&#64;")
+                ),
                 new Excerpt(),
                 new Title(),
                 new Tree()
@@ -73,6 +109,16 @@ namespace Wyam.Docs
                 new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
+                new If(ctx => ctx.GlobalMetadata.Get<bool>(DocsKeys.AutoLinkTypes),
+                    new AutoLink(_typeNamesToLink)
+                        .WithQuerySelector("code")
+                        .WithMatchOnlyWholeWord()
+                ),
+                // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+                // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+                new If((doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                    new Replace("@", "&#64;")
+                ),
                 new Excerpt(),
                 new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(DocsKeys.Published)),  // Record whether the publish date came from front matter
                 new Meta(DocsKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
