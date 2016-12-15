@@ -3,10 +3,7 @@ Title: All Tags
 <div class="container-sm-height">
     <div class="row row-sm-height">
         <div class="col-sm-8 right-border col-sm-height">
-            @{ 
-                ViewData["PostListDocuments"] = Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published));
-            }     
-            @Html.Partial("_PostList")
+            @Html.Partial("_PostList", Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
             <hr class="visible-xs-block" />
         </div>
 		

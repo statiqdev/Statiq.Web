@@ -87,7 +87,7 @@ namespace Wyam.Docs
         public const string ApiSearchIndex = nameof(ApiSearchIndex);
 
         /// <summary>
-        /// Processes the Less stylesheets and outputs the resulting CSS files.
+        /// Processes any Less stylesheets and outputs the resulting CSS files.
         /// </summary>
         public const string Less = nameof(Less);
 

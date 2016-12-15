@@ -2,10 +2,7 @@ Title: All Tags
 ---
 <div class="row">
     <div class="8u 12u$(medium)">
-        @{ 
-            ViewData["PostListDocuments"] = Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published));
-        }     
-        @Html.Partial("_PostList")
+        @Html.Partial("_PostList", Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
     </div>
     
     <div class="4u 12u$(medium)">

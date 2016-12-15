@@ -1,6 +1,7 @@
+@model IEnumerable<IDocument>
+
 @{
-    var docs = (IEnumerable<IDocument>)ViewData[BlogKeys.PostListDocuments];
-    foreach (IDocument doc in docs)
+    foreach (IDocument doc in Model)
     {
         string lead = doc.String(BlogKeys.Lead);
         

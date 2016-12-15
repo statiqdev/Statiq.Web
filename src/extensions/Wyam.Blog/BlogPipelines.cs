@@ -8,12 +8,42 @@ namespace Wyam.Blog
 {
     public static class BlogPipelines
     {
-        public const string RawPosts = nameof(RawPosts);
-        public const string Posts = nameof(Posts);
-        public const string Tags = nameof(Tags);
+        /// <summary>
+        /// Loads page content from Markdown and/or Razor files.
+        /// </summary>
         public const string Pages = nameof(Pages);
-        public const string RenderPages = nameof(RenderPages);
-        public const string Resources = nameof(Resources);
+
+        /// <summary>
+        /// Loads blog posts from Markdown and/or Razor files.
+        /// </summary>
+        public const string RawPosts = nameof(RawPosts);
+
+        /// <summary>
+        /// Generates tag groups from the tags on blog posts.
+        /// </summary>
+        public const string Tags = nameof(Tags);
+
+        /// <summary>
+        /// Renders blog post pages. This needs to come after the tags
+        /// pipeline so that the listing of tags on each blog post page
+        /// will have the correct counts.
+        /// </summary>
+        public const string Posts = nameof(Posts);
+
+        /// <summary>
+        /// Generates the blog RSS, Atom, and/or RDF feeds.
+        /// </summary>
         public const string Feed = nameof(Feed);
+
+        /// <summary>
+        /// Renders and outputs the content pages using the template layouts.
+        /// </summary>
+        public const string RenderPages = nameof(RenderPages);
+
+        /// <summary>
+        /// Copies all other resources to the output path.
+        /// </summary>
+        public const string Resources = nameof(Resources);
+
     }
 }

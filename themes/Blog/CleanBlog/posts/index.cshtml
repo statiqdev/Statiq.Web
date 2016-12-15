@@ -13,7 +13,6 @@ Title: Archive
     {
         <h1>@year.Key</h1>
         <hr />
-        ViewData["PostListDocuments"] = year;
-        @Html.Partial("_PostList");
+        @Html.Partial("_PostList", year);
     }
 }
