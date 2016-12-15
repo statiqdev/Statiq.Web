@@ -11,6 +11,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
+using Wyam.Core.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -37,6 +38,7 @@ namespace Wyam.Core.Modules.Control
         private readonly DocumentConfig _key;
         private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
+        private IEqualityComparer<object> _comparer;
 
         /// <summary>
         /// Partitions the result of the specified modules into groups with matching keys 
@@ -91,11 +93,36 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <summary>
+        /// Specifies an equality comparer to use for the grouping.
+        /// </summary>
+        /// <param name="comparer">The equality comparer to use.</param>
+        public GroupByMany WithComparer(IEqualityComparer<object> comparer)
+        {
+            _comparer = comparer;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a typed equality comparer to use for the grouping. A conversion to the
+        /// comparer type will be attempted for all metadata values. If the conversion fails,
+        /// the value will not be considered equal. Note that this will also have the effect
+        /// of treating different convertible types as being of the same type. For example,
+        /// if you have two group keys, 1 and "1" (in that order), and use a string-based comparison, you will
+        /// only end up with a single group for those documents with a group key of 1 (since the <c>int</c> key came first).
+        /// </summary>
+        /// <param name="comparer">The typed equality comparer to use.</param>
+        public GroupByMany WithComparer<TValue>(IEqualityComparer<TValue> comparer)
+        {
+            _comparer = comparer == null ? null : new ConvertingEqualityComparer<TValue>(comparer);
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(_modules, inputs)
                 .Where(x => _predicate?.Invoke(x, context) ?? true)    
-                .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context))
+                .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context), _comparer)
                 .ToImmutableArray();
             if (groupings.Length == 0)
             {

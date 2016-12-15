@@ -65,7 +65,9 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),
                 new FrontMatter(new Yaml.Yaml()),
-                new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts)),
+                new Execute(ctx => 
+                    new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts))
+                        .WithComparer(ctx.Get<bool>(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                 new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
                 new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),

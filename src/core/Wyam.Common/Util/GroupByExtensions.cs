@@ -99,7 +99,7 @@ namespace Wyam.Common.Util
             return source
                 .SelectMany(x => keySelector(x)
                     .Select(key => Tuple.Create(key, elementSelector(x))))
-                .GroupBy(x => x.Item1, x => x.Item2);
+                .GroupBy(x => x.Item1, x => x.Item2, comparer);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
@@ -129,6 +130,66 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 CollectionAssert.AreEquivalent(new[] { 1, 2, 3 }, groupKey);
+            }
+
+            [Test]
+            public void DefaultComparerIsCaseSensitive()
+            {
+                // Given
+                List<object> groupKey = new List<object>();
+                Engine engine = new Engine();
+                Execute meta = new Execute((d, c) => new IDocument[]
+                {
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"A", "b"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"B"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", "C"}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"c"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] { 1 }}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", "1"}})
+                }, false);
+                GroupByMany groupByMany = new GroupByMany("Tag", meta);
+                Execute gatherData = new Execute((d, c) =>
+                {
+                    groupKey.Add(d.Get(Keys.GroupKey));
+                    return null;
+                }, false);
+                engine.Pipelines.Add(groupByMany, gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                CollectionAssert.AreEquivalent(new object[] { "A", "B", "b", "C", "c", 1, "1" }, groupKey);
+            }
+
+            [Test]
+            public void CaseInsensitiveStringComparer()
+            {
+                // Given
+                List<object> groupKey = new List<object>();
+                Engine engine = new Engine();
+                Execute meta = new Execute((d, c) => new IDocument[]
+                {
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"A", "b"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"B"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", "C"}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] {"c"}}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", new[] { 1 }}}),
+                    c.GetDocument(d, new MetadataItems {{"Tag", "1"}})
+                }, false);
+                GroupByMany groupByMany = new GroupByMany("Tag", meta).WithComparer(StringComparer.OrdinalIgnoreCase);
+                Execute gatherData = new Execute((d, c) =>
+                {
+                    groupKey.Add(d.Get(Keys.GroupKey));
+                    return null;
+                }, false);
+                engine.Pipelines.Add(groupByMany, gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                CollectionAssert.AreEquivalent(new object[] { "A", "b", "C", 1 }, groupKey);
             }
 
             [Test]

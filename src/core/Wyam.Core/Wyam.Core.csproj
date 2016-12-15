@@ -147,6 +147,8 @@
     <Compile Include="Execution\Engine.cs" />
     <Compile Include="Meta\MetadataAs.cs" />
     <Compile Include="Meta\TypeHelper.cs" />
+    <Compile Include="Util\ConvertingComparer.cs" />
+    <Compile Include="Util\ConvertingEqualityComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

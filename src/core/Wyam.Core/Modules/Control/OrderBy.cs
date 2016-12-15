@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Core.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -17,9 +18,7 @@ namespace Wyam.Core.Modules.Control
     /// <category>Control</category>
     public class OrderBy : IModule
     {
-        private readonly DocumentConfig _key;
-        private bool _descending;
-        private readonly List<ThenByEntry> _thenByList = new List<ThenByEntry>();
+        private readonly Stack<Order> _orders = new Stack<Order>();
 
         /// <summary>
         /// Orders the input documents using the specified delegate to get the ordering key.
@@ -31,22 +30,7 @@ namespace Wyam.Core.Modules.Control
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            _key = key;
-        }
-
-        /// <summary>
-        /// Specifies whether the documents should be output in descending order (the default is ascending order).
-        /// If you use this method after called ThenBy, the descending ordering will apply to the secondary sort.
-        /// </summary>
-        /// <param name="descending">If set to <c>true</c>, the documents are output in descending order.</param>
-        /// <returns></returns>
-        public OrderBy Descending(bool descending = true)
-        {
-            if (_thenByList.Count == 0)
-                _descending = descending;
-            else
-                _thenByList.Last().Descending = descending;
-            return this;
+            _orders.Push(new Order(key));
         }
 
         /// <summary>
@@ -60,35 +44,79 @@ namespace Wyam.Core.Modules.Control
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            _thenByList.Add(new ThenByEntry(key));
+            _orders.Push(new Order(key));
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies whether the documents should be output in descending order (the default is ascending order).
+        /// If you use this method after called ThenBy, the descending ordering will apply to the secondary sort.
+        /// </summary>
+        /// <param name="descending">If set to <c>true</c>, the documents are output in descending order.</param>
+        /// <returns></returns>
+        public OrderBy Descending(bool descending = true)
+        {
+            _orders.Peek().Descending = descending;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a comparer to use for the ordering.
+        /// </summary>
+        /// <param name="comparer">The comparer to use.</param>
+        public OrderBy WithComparer(IComparer<object> comparer)
+        {
+            _orders.Peek().Comparer = comparer;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a typed comparer to use for the ordering. A conversion to the
+        /// comparer type will be attempted for all metadata values. If the conversion fails,
+        /// the values will be considered equivalent. Note that this will also have the effect
+        /// of treating different convertible types as being of the same type. For example,
+        /// if you have two keys, 1 and "1", and use a string-based comparison, the
+        /// documents will compare as equal.
+        /// </summary>
+        /// <param name="comparer">The typed comparer to use.</param>
+        public OrderBy WithComparer<TValue>(IComparer<TValue> comparer)
+        {
+            _orders.Peek().Comparer = comparer == null ? null : new ConvertingComparer<TValue>(comparer);
             return this;
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IOrderedEnumerable<IDocument> orderdList = _descending
-                ? inputs.OrderByDescending(x => _key(x, context))
-                : inputs.OrderBy(x => _key(x, context));
-            foreach (ThenByEntry thenBy in _thenByList)
+            IOrderedEnumerable<IDocument> orderdList = null;
+            foreach (Order order in _orders.Reverse())
             {
-                orderdList = thenBy.Descending
-                    ? orderdList.ThenByDescending(x => thenBy.Key(x, context))
-                    : orderdList.ThenBy(x => thenBy.Key(x, context));
+                if (orderdList == null)
+                {
+                    orderdList = order.Descending
+                       ? inputs.OrderByDescending(x => order.Key(x, context), order.Comparer)
+                       : inputs.OrderBy(x => order.Key(x, context), order.Comparer);
+                }
+                else
+                {
+                    orderdList = order.Descending
+                        ? orderdList.ThenByDescending(x => order.Key(x, context), order.Comparer)
+                        : orderdList.ThenBy(x => order.Key(x, context), order.Comparer);
+                }
             }
 
             return orderdList;
         }
 
-        private class ThenByEntry
+        private class Order
         {
-
-            public ThenByEntry(DocumentConfig key)
-            {
-                this.Key = key;
-            }
-
             public DocumentConfig Key { get; }
             public bool Descending { get; set; }
+            public IComparer<object> Comparer { get; set; }
+
+            public Order(DocumentConfig key)
+            {
+                Key = key;
+            }
         }
     }
 }
