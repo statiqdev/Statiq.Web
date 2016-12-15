@@ -41,6 +41,14 @@ namespace Wyam.Blog
         /// <type><see cref="bool"/></type>
         public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
 
+        /// <summary>
+        /// Set this to control the activated set of Markdown extensions for the
+        /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="string"/></type>
+        public const string MarkdownExtensions = nameof(MarkdownExtensions);
+
         // ***Document
 
         /// <summary>

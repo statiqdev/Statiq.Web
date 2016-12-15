@@ -631,14 +631,6 @@ namespace Wyam.Html.Tests
                             <p>abc Foo(baz) xyz</p>
                         </body>
                     </html>";
-                string output = @"<html><head>
-                            <title>Foobar</title>
-                        </head>
-                        <body>
-                            <h1>Title</h1>
-                            <p>abc Foo(baz) xyz</p>
-                        
-                    </body></html>";
                 IDocument document = Substitute.For<IDocument>();
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);

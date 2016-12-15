@@ -26,13 +26,13 @@ namespace Wyam.Blog
             // Global metadata defaults
             engine.GlobalMetadata[BlogKeys.Title] = "My Blog";
             engine.GlobalMetadata[BlogKeys.Description] = "Welcome!";
-            
+            engine.GlobalMetadata[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
+
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
                 new ReadFiles("{!posts,**}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Markdown.Markdown(),
-                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
+                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles("{!posts,!tags,**}/*.cshtml"),
@@ -53,8 +53,7 @@ namespace Wyam.Blog
                 new ReadFiles("posts/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
-                new Markdown.Markdown(),
-                new Replace("<pre><code>", "<pre class=\"prettyprint\"><code>"),
+                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any posts written in Razor
                     new ReadFiles("posts/{!_,!index,}*.cshtml"),

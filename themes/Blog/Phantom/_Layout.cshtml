@@ -12,7 +12,8 @@
 	<head>
 		<title>@PageTitle</title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />		
+        <link href="/assets/css/highlight.css" rel="stylesheet">
 		<!--[if lte IE 8]><script src="/assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="/assets/css/main.css" />
 		<!--[if lte IE 9]><link rel="stylesheet" href="/assets/css/ie9.css" /><![endif]-->
@@ -24,9 +25,6 @@
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 		<link rel="icon" href="/favicon.ico" type="image/x-icon">
 
-		<link href="/assets/css/prettify.css" rel="stylesheet">
-		<link href="/assets/css/github.css" rel="stylesheet">
-
 		<meta name="application-name" content="@Context.String(BlogKeys.Title)" />
 		<meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
 		<meta name="msapplication-starturl" content="/" />
@@ -37,10 +35,10 @@
 		<meta property="og:url" content="@Context.GetLink(Model, true)" />
 		<!-- TODO: More social graph meta tags -->
 
-		<script src="/assets/js/prettify.js"></script>
+        <script src="/assets/js/highlight.pack.js"></script>   
 	</head>
 
-	<body onload="prettyPrint()">
+	<body>
 		<!-- Wrapper -->
 		<div id="wrapper">
 
@@ -104,6 +102,7 @@
 		@Html.Partial("_Scripts")
 
 		<!-- Scripts -->
+		<script>hljs.initHighlightingOnLoad();</script>
 		<script src="/assets/js/jquery.min.js"></script>
 		<script src="/assets/js/skel.min.js"></script>
 		<script src="/assets/js/util.js"></script>
