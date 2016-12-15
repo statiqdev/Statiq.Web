@@ -49,6 +49,15 @@ namespace Wyam.Blog
         /// <type><see cref="string"/></type>
         public const string MarkdownExtensions = nameof(MarkdownExtensions);
 
+        /// <summary>
+        /// Setting this to <c>true</c> uses
+        /// the year and date in the output path of blog posts.
+        /// The default value is <c>false</c>.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
+
         // ***Document
 
         /// <summary>

@@ -125,6 +125,8 @@ namespace Wyam.Docs
                 new Excerpt(),
                 new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(DocsKeys.Published)),  // Record whether the publish date came from front matter
                 new Meta(DocsKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
+
+                new Where((doc, ctx) => doc.ContainsKey(DocsKeys.Published) && doc.Get<DateTime>(DocsKeys.Published) <= DateTime.Today),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     DateTime published = doc.Get<DateTime>(DocsKeys.Published);

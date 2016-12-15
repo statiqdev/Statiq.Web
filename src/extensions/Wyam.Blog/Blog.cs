@@ -27,6 +27,7 @@ namespace Wyam.Blog
             engine.GlobalMetadata[BlogKeys.Title] = "My Blog";
             engine.GlobalMetadata[BlogKeys.Description] = "Welcome!";
             engine.GlobalMetadata[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.GlobalMetadata[BlogKeys.IncludeDateInPostPath] = false;
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
@@ -52,12 +53,22 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.RawPosts,
                 new ReadFiles("posts/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any posts written in Razor
                     new ReadFiles("posts/{!_,!index,}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
+                new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(BlogKeys.Published)),  // Record whether the publish date came from front matter
+                new Meta(BlogKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
+                new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
+                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                {
+                    DateTime published = doc.Get<DateTime>(BlogKeys.Published);
+                    string fileName = doc.Get<bool>("FrontMatterPublished")
+                        ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
+                        : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
+                    return ctx.Get<bool>(BlogKeys.IncludeDateInPostPath) ? $"posts/{published:yyyy}/{published:MM}/{fileName}" : $"posts/{fileName}";
+                }),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending()
             );
 
