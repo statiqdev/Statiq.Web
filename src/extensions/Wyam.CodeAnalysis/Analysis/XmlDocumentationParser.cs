@@ -283,7 +283,7 @@ namespace Wyam.CodeAnalysis.Analysis
 			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
 			{
 			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
-				link = $"<a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{WebUtility.HtmlEncode(name)}</a>";
+				link = $"<code><a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{WebUtility.HtmlEncode(name)}</a></code>";
 			    return name;
 			}
 			link = null;
@@ -480,7 +480,7 @@ namespace Wyam.CodeAnalysis.Analysis
 			{
 				string link;
 				string name = GetRefNameAndLink(seeElement, out link);
-				seeElement.ReplaceWith(link != null ? (object)XElement.Parse(link) : name);
+			    seeElement.ReplaceWith(XElement.Parse(link ?? $"<code>{WebUtility.HtmlEncode(name)}</code>"));
 			}
 		}
 	}

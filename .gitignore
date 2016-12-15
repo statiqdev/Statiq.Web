@@ -29,3 +29,4 @@ ipch
 *UpgradeWizard*
 .vs/*
 TestResult.xml
+/debug.log

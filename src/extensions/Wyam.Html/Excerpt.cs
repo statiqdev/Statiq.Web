@@ -21,7 +21,7 @@ namespace Wyam.Html
     /// </summary>
     /// <remarks>
     /// This module is useful for situations like displaying the first paragraph of your most recent
-    /// blog posts or <a href="http://wyam.io/knowledgebase/rss-and-atom-feeds">generating RSS and Atom feeds</a>. 
+    /// blog posts or generating RSS and Atom feeds. 
     /// This module looks for the first occurrence of an excerpt separator (default of <c>more</c> or <c>excerpt</c>)
     /// contained within an HTML comment (<c>&lt;!--more--&gt;</c>). If a separator comment isn't found, the module
     /// will fallback to looking for the first occurrence of a specific HTML element (<c>p</c> paragraph elements by default)

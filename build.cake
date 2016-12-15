@@ -199,7 +199,7 @@ Task("Create-Theme-Packages")
                 Owners = new [] { "Dave Glick" },
                 Description = "A theme for the Wyam " + segments[segments.Length - 2] + " recipe.",
                 ProjectUrl = new Uri("http://wyam.io"),
-                IconUrl = new Uri("http://wyam.io/Content/images/logo-square-64.png"),
+                IconUrl = new Uri("http://wyam.io/assets/img/logo-square-64.png"),
                 LicenseUrl = new Uri("https://github.com/Wyamio/Wyam/blob/master/LICENSE"),
                 Copyright = "Copyright 2016",
                 Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
@@ -389,7 +389,7 @@ Task("Publish-Release")
         {
             Name = semVersion,
             Body = string.Join(Environment.NewLine, releaseNotes.Notes) + Environment.NewLine + Environment.NewLine
-                + @"### Please see http://wyam.io/getting-started/obtaining for important notes about downloading and installing.",
+                + @"### Please see http://wyam.io/docs/usage/obtaining for important notes about downloading and installing.",
             Prerelease = true,
             TargetCommitish = "master"
         }).Result; 

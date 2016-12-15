@@ -130,7 +130,7 @@
 
 - [Fix] Fixed a bug where execution could hang in some environments that open stdin and leave it open like Azure CI or VS Code task execution (#287)
 - [Feature] Added a `--latest` flag to the `#nuget` preprocessor directive to indicate that the latest available package version should always be installed
-- **Breaking changes**: Please see http://wyam.io/knowledgebase/migrating-to-0.12.x for more information
+- **Breaking changes**: Please see http://wyam.io/docs/advanced/migrating-to-0.12.x for more information
 
 # 0.12.2
 
@@ -149,8 +149,8 @@
 
 # 0.12.0
 
-- **MAJOR BREAKING CHANGES, BEWARE YE WHO ENTER HERE!*- - The entire I/O stack has (finally) been rewritten and modules that were using `System.IO` classes have been ported to the new abstraction - read about how to migrate your pre 0.12.0 code at http://wyam.io/knowledgebase/migrating-to-0.12.x and keep on the lookout for bugs
-- [Feature] New globbing engine with brace expansion, negation, and wildcard support (see http://wyam.io/getting-started/io for more details)
+- **MAJOR BREAKING CHANGES, BEWARE YE WHO ENTER HERE!*- - The entire I/O stack has (finally) been rewritten and modules that were using `System.IO` classes have been ported to the new abstraction - read about how to migrate your pre 0.12.0 code at http://wyam.io/docs/advanced/migrating-to-0.12.x and keep on the lookout for bugs
+- [Feature] New globbing engine with brace expansion, negation, and wildcard support (see http://wyam.io/docs/concepts/io for more details)
 - **[Breaking Change]** [Refactoring] ReadFiles now uses the new I/O API and several configuration methods have been removed or changed
 - **[Breaking Change]** [Refactoring] `IDocument.Source` is now a `FilePath`
 - [Feature] You can now explicitly specify if a given `FilePath` or `DirectoryPath` is absolute or not

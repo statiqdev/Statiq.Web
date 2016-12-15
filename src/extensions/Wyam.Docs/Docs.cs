@@ -37,6 +37,9 @@ namespace Wyam.Docs
             engine.GlobalMetadata[DocsKeys.SearchIndex] = true;
             engine.GlobalMetadata[DocsKeys.MetaRefreshRedirects] = true;
             engine.GlobalMetadata[DocsKeys.AutoLinkTypes] = true;
+            engine.GlobalMetadata[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
+            engine.GlobalMetadata[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
+            engine.GlobalMetadata[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
 
             engine.Pipelines.Add(DocsPipelines.Code,
                 new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
@@ -257,7 +260,10 @@ namespace Wyam.Docs
             engine.Pipelines.Add(DocsPipelines.BlogFeed,
                 new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
                     new Documents(DocsPipelines.BlogPosts),
-                    new GenerateFeeds(),
+                    new GenerateFeeds()
+                        .WithRssPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogRssPath))
+                        .WithAtomPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogAtomPath))
+                        .WithRdfPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogRdfPath)),
                     new WriteFiles()
                 )
             );

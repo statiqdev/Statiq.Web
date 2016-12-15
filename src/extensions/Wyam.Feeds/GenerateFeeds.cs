@@ -29,10 +29,14 @@ namespace Wyam.Feeds
     /// <category>Content</category>
     public class GenerateFeeds : IModule
     {
+        public static readonly FilePath DefaultRssPath = new FilePath("feed.rss");
+        public static readonly FilePath DefaultAtomPath = new FilePath("feed.atom");
+        public static readonly FilePath DefaultRdfPath = null;
+
         private int _maximumItems = 20;
-        private ContextConfig _rssPath = _ => new FilePath("feed.rss");
-        private ContextConfig _atomPath = _ => new FilePath("feed.atom");
-        private ContextConfig _rdfPath = null;
+        private ContextConfig _rssPath = _ => DefaultRssPath;
+        private ContextConfig _atomPath = _ => DefaultAtomPath;
+        private ContextConfig _rdfPath = _ => DefaultRdfPath;
 
         private ContextConfig _feedId = ctx => ctx.GetLink();
         private ContextConfig _feedTitle = ctx => ctx.GlobalMetadata.String("Title");
