@@ -193,6 +193,7 @@ namespace Wyam.Configuration.ConfigScript
                 // Trace warnings
                 List<string> warningMessages = result.Diagnostics
                     .Where(x => x.Severity == DiagnosticSeverity.Warning)
+                    .Where(x => x.Id != "CS1701")  // Assembly binding redirects, we don't care about these in the script
                     .Select(GetCompilationErrorMessage)
                     .ToList();
                 if (warningMessages.Count > 0)
