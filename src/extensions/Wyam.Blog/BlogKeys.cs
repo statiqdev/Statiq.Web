@@ -20,6 +20,28 @@ namespace Wyam.Blog
         public const string Title = nameof(Title);
 
         /// <summary>
+        /// When used in global metadata, the relative path to an image to display on the
+        /// home page. When used in document metadata, the relative path to an image for 
+        /// the current post or page (often shown in the header of the page).
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <scope>Document</scope>
+        /// <type><see cref="string"/></type>
+        public const string Image = nameof(Image);
+
+        /// <summary>
+        /// When used in global metadata, this changes the header and nav bar text color on the
+        /// home page. When used in document metadata, this changes the header and nav bar text color on 
+        /// the current post or page. The value should be a valid CSS color and you should surround it
+        /// in quotes when defining in front matter. This setting has no effect in themes where the header
+        /// text is not over an image.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <scope>Document</scope>
+        /// <type><see cref="string"/></type>
+        public const string HeaderTextColor = nameof(HeaderTextColor);
+
+        /// <summary>
         /// The description of your blog (usually placed on the home page).
         /// </summary>
         /// <scope>Global</scope>
@@ -95,14 +117,7 @@ namespace Wyam.Blog
         /// <scope>Document</scope>
         /// <type><see cref="bool"/></type>
         public const string ShowInNavbar = nameof(ShowInNavbar);
-
-        /// <summary>
-        /// The relative path to an image for the post or page (often shown in the header of the page).
-        /// </summary>
-        /// <scope>Document</scope>
-        /// <type><see cref="string"/></type>
-        public const string Image = nameof(Image);
-
+        
         /// <summary>
         /// Set by the recipe to the content of the post (without any of the wrapping HTML elements).
         /// Used primarily by the feed generation module to ensure feed items don't include the whole layout.

@@ -46,6 +46,11 @@ namespace Wyam.Blog
                     // Add the tags index page
                     new ReadFiles("tags/index.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
+                // Copy the index page image and header text color from global metadata (if there is one)
+                new If((doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.Image),
+                    new Meta(BlogKeys.Image, ctx => ctx[BlogKeys.Image])),
+                new If((doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.HeaderTextColor),
+                    new Meta(BlogKeys.HeaderTextColor, ctx => ctx[BlogKeys.HeaderTextColor])),
                 new WriteFiles(".html")
                     .OnlyMetadata()
             );
