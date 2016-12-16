@@ -1,6 +1,28 @@
 # 0.15.0
 
 - **[Breaking Change]** [Refactoring] Moved several of the blog recipe files to the root to accomodate different post paths. If you have a file override for `/posts/_PostFooter.cshtml` it'll need to be moved to `/_PostFooter.cshtml` (likewise with other theme files in `/posts` except for `/posts/index.cshtml` which is still in `/posts`).
+- [Fix] Suppresses CS1701 (binding redirect) warnings in config script host
+- [Refactoring] Switched the blog themes to highlight.js (#345)
+- [Feature] Added ability to set a comparer for `GroupBy`, `GroupByMany`, and `OrderBy` modules
+- [Fix] Several bug fixes for `AutoLink` module
+- [Refactoring] Moved `LinkGenerator` to `Wyam.Common`
+- [Feature] New `Redirect` module for generating redirect pages (#44)
+- [Feature] `IMetadataValues` are now searched recursivly (so an `IMetadataValue` and return another `IMetadaValue`)
+- [Feature] New customization options in `SearchIndex` module
+- [Feature] Added support for `NamespaceDoc` classes to `AnalyzeCSharp` module
+- [Feature] Added support for namespace XML doc comments to `AnalyzeCSharp` module
+- [Feature] Added support for inherited members to `AnalyzeCSharp` module
+- [Feature] Ability to insert new pipelines before and after other named pipelines (useful for customizing recipes)
+- [Feature] Added support for analyzing attributes to `AnalyzeCSharp` module
+- [Fix] Fixed a bug in `Xslt2` regarding base URIs (#355, thanks @LokiMidgard)
+- [Feature] Support for array values when specifying global/initial metadata via the CLI and Cake
+- [Feature] New `AnalyzeCSharp.WithAssemblies()` method for assembly-based code analysis
+- [Feature] New `TestExecutionContext` class in `Wyam.Testing` for easier test mocking
+- [Feature] New `Headings` module for adding HTML headings in content to metadata
+- [Feature] Added `.WithNesting()` to `Tree` module to nest documents inside metadata as a hierarchy
+- [Fix] Fixed a bug with content folders in NuGet packages
+- [Refactoring] Updated NuGet libraries to 3.5
+- [Fix] Added `UseGlobalSources` flag to Cake addin
 - [Fix] Fixed some bugs with Cake addin when specifying NuGet packages
 - [Feature] `If` module now supports context-only predicates that only evaluate once for all input documents
 - [Feature] Added `Meta.OnlyIfNonExisting()` to prevent setting metadata if value already exists
@@ -9,7 +31,7 @@
 - [Feature] New `Title` module for setting title metadata
 - [Feature] New `Flatten` module for flattening hierarchical document trees
 - [Feature] Lots of improvements and fixes to `Tree` module
-- [Feature] Adds new `Docs` recipe - this is a big one, more documentation on the way (#342)
+- [Feature] Adds new `Docs` recipe (#342)
 - [Feature] Adds the `AdventureTime` sample from [Static-Site-Samples](https://github.com/remotesynth/Static-Site-Samples)
 - [Fix] Fixes bug with link generation in `CodeAnalysis` module for nested types
 - [Feature] Adds `Razor.WithModel()` for specifying a view model in config script
