@@ -1,12 +1,13 @@
-# 0.14.2
+# 0.15.0
 
+- **[Breaking Change]** [Refactoring] Moved several of the blog recipe files to the root to accomodate different post paths. If you have a file override for `/posts/_PostFooter.cshtml` it'll need to be moved to `/_PostFooter.cshtml` (likewise with other theme files in `/posts` except for `/posts/index.cshtml` which is still in `/posts`).
 - [Fix] Fixed some bugs with Cake addin when specifying NuGet packages
 - [Feature] `If` module now supports context-only predicates that only evaluate once for all input documents
 - [Feature] Added `Meta.OnlyIfNonExisting()` to prevent setting metadata if value already exists
 - [Feature] Support for Jekyll-style excerpt comment separators in the `Excerpt` module 
 - [Feature] New `Include` module for including content from a file into an existing document
 - [Feature] New `Title` module for setting title metadata
-- [Feature] New `Flatten` module for flattening heirarchial document trees
+- [Feature] New `Flatten` module for flattening hierarchical document trees
 - [Feature] Lots of improvements and fixes to `Tree` module
 - [Feature] Adds new `Docs` recipe - this is a big one, more documentation on the way (#342)
 - [Feature] Adds the `AdventureTime` sample from [Static-Site-Samples](https://github.com/remotesynth/Static-Site-Samples)

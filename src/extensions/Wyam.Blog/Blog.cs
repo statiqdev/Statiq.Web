@@ -29,6 +29,7 @@ namespace Wyam.Blog
             engine.GlobalMetadata[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
             engine.GlobalMetadata[BlogKeys.IncludeDateInPostPath] = false;
             engine.GlobalMetadata[BlogKeys.PostsPath] = new DirectoryPath("posts");
+            engine.GlobalMetadata[BlogKeys.MetaRefreshRedirects] = true;
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
