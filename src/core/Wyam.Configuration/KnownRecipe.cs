@@ -6,6 +6,7 @@
     public partial class KnownRecipe : ClassEnum<KnownRecipe>
     {
         public static readonly KnownRecipe Blog = new KnownRecipe("Wyam.Blog", nameof(KnownTheme.CleanBlog));
+        public static readonly KnownRecipe Docs = new KnownRecipe("Wyam.Docs", nameof(KnownTheme.Samson));
 
         /// <summary>
         /// Gets the package that the recipe class is in. If the recipe is in the

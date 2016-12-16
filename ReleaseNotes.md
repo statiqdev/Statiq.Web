@@ -1,3 +1,7 @@
+# 0.15.1
+
+- [Fix] Added the Docs recipe and Samson theme to the set of known recipes and themes
+
 # 0.15.0
 
 - **[Breaking Change]** [Refactoring] Moved several of the blog recipe files to the root to accomodate different post paths. If you have a file override for `/posts/_PostFooter.cshtml` it'll need to be moved to `/_PostFooter.cshtml` (likewise with other theme files in `/posts` except for `/posts/index.cshtml` which is still in `/posts`).
