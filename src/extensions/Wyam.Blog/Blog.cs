@@ -161,15 +161,14 @@ namespace Wyam.Blog
         public void Scaffold(IDirectory directory)
         {
             // Add info page
-            IFile aboutFile = directory.GetFile("about.md");
-            aboutFile.WriteAllText(@"Title: About Me
+            directory.GetFile("about.md").WriteAllText(
+@"Title: About Me
 ---
 I'm awesome!");
 
             // Add post page
-            IDirectory postsDirectory = directory.GetDirectory("posts");
-            IFile postFile = postsDirectory.GetFile("first-post.md");
-            postFile.WriteAllText(@"Title: First Post
+            directory.GetFile("posts/first-post.md").WriteAllText(
+@"Title: First Post
 Published: 1/1/2016
 Tags: Introduction
 ---

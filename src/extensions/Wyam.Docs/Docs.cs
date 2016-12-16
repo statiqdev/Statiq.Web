@@ -46,37 +46,39 @@ namespace Wyam.Docs
             );
 
             engine.Pipelines.Add(DocsPipelines.Api,
-                new Documents(DocsPipelines.Code),
-                // Put analysis module inside execute to have access to global metadata at runtime
-                new Execute(ctx => new AnalyzeCSharp()
-                    .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
-                    .WherePublic()
-                    .WithCssClasses("code", "cs")
-                    .WithWritePathPrefix("api")
-                    .WithAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
-                    .WithAssemblySymbols()),
-                // Calculate a type name to link lookup for auto linking
-                new Execute((doc, ctx) =>
-                {
-                    string name = null;
-                    string kind = doc.String(CodeAnalysisKeys.Kind);
-                    if (kind == "NamedType")
+                new If(ctx => ctx.Documents[DocsPipelines.Code].Any() || ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
+                    new Documents(DocsPipelines.Code),
+                    // Put analysis module inside execute to have access to global metadata at runtime
+                    new Execute(ctx => new AnalyzeCSharp()
+                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                        .WherePublic()
+                        .WithCssClasses("code", "cs")
+                        .WithWritePathPrefix("api")
+                        .WithAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
+                        .WithAssemblySymbols()),
+                    // Calculate a type name to link lookup for auto linking
+                    new Execute((doc, ctx) =>
                     {
-                        name = doc.String(CodeAnalysisKeys.DisplayName);
-                    }
-                    else if (kind == "Property" || kind == "Method")
-                    {
-                        IDocument containingType = doc.Document(CodeAnalysisKeys.ContainingType);
-                        if (containingType != null)
+                        string name = null;
+                        string kind = doc.String(CodeAnalysisKeys.Kind);
+                        if (kind == "NamedType")
                         {
-                            name = $"{containingType.String(CodeAnalysisKeys.DisplayName)}.{doc.String(CodeAnalysisKeys.DisplayName)}";
+                            name = doc.String(CodeAnalysisKeys.DisplayName);
                         }
-                    }
-                    if (name != null)
-                    {
-                        _typeNamesToLink.AddOrUpdate(name, ctx.GetLink(doc), (x, y) => string.Empty);
-                    }
-                })
+                        else if (kind == "Property" || kind == "Method")
+                        {
+                            IDocument containingType = doc.Document(CodeAnalysisKeys.ContainingType);
+                            if (containingType != null)
+                            {
+                                name = $"{containingType.String(CodeAnalysisKeys.DisplayName)}.{doc.String(CodeAnalysisKeys.DisplayName)}";
+                            }
+                        }
+                        if (name != null)
+                        {
+                            _typeNamesToLink.AddOrUpdate(name, ctx.GetLink(doc), (x, y) => string.Empty);
+                        }
+                    })
+                )
             );
 
             engine.Pipelines.Add(DocsPipelines.Pages,
@@ -397,11 +399,6 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             );
         }
 
-        public void Scaffold(IDirectory directory)
-        {
-            throw new NotImplementedException();
-        }
-
         private string GetIgnoreFoldersGlob(IExecutionContext context) => 
             string.Join(",", context.GlobalMetadata
                 .List(DocsKeys.IgnoreFolders, Array.Empty<string>())
@@ -414,6 +411,34 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             items.Add(Keys.RelativeFilePath, indexPath);
             items.Add(Keys.Title, Title.GetTitle(indexPath));
             return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
+        }
+
+        public void Scaffold(IDirectory directory)
+        {
+            // Add info page
+            directory.GetFile("about.md").WriteAllText(
+@"Title: About This Project
+---
+This project is awesome!");
+
+            // Add docs pages
+            directory.GetFile("docs/command-line.md").WriteAllText(
+@"Description: How to use the command line.
+---
+Here are some instructions on how to use the command line.");
+            directory.GetFile("docs/usage.md").WriteAllText(
+@"Description: Library usage instructions.
+---
+To use this library, take these steps...");
+
+            // Add post page
+            directory.GetFile("blog/new-release.md").WriteAllText(
+@"Title: New Release
+Published: 1/1/2016
+Category: Release
+Author: me
+---
+There is a new release out, go get it now.");
         }
     }
 }
