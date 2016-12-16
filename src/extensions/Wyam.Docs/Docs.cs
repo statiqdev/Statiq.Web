@@ -263,9 +263,9 @@ namespace Wyam.Docs
                 new If(ctx => ctx.Documents[DocsPipelines.BlogPosts].Any(),
                     new Documents(DocsPipelines.BlogPosts),
                     new GenerateFeeds()
-                        .WithRssPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogRssPath))
-                        .WithAtomPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogAtomPath))
-                        .WithRdfPath(ctx => ctx.Get<FilePath>(DocsKeys.BlogRdfPath)),
+                        .WithRssPath(ctx => ctx.FilePath(DocsKeys.BlogRssPath))
+                        .WithAtomPath(ctx => ctx.FilePath(DocsKeys.BlogAtomPath))
+                        .WithRdfPath(ctx => ctx.FilePath(DocsKeys.BlogRdfPath)),
                     new WriteFiles()
                 )
             );

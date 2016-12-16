@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
 
 namespace Wyam.Blog
 {
@@ -55,6 +56,15 @@ namespace Wyam.Blog
         /// <scope>Global</scope>
         /// <type><see cref="string"/></type>
         public const string Intro = nameof(Intro);
+
+        /// <summary>
+        /// Controls the parent path where blog posts are placed. The default is "posts".
+        /// This affects both input and output files (I.e., if you change this your input
+        /// files must also be under the same path).
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
+        public const string PostsPath = nameof(PostsPath);
         
         /// <summary>
         /// Set to <c>true</c> to make tag groupings case-insensitive.
@@ -79,6 +89,51 @@ namespace Wyam.Blog
         /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
+
+        /// <summary>
+        /// Set to <c>true</c> (the default value) to generate meta refresh pages
+        /// for any redirected documents (as indicated by a <c>RedirectFrom</c>
+        /// metadata value in the document).
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
+
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to generate
+        /// a Netlify <c>_redirects</c> file from redirected documents
+        /// (as indicated by a <c>RedirectFrom</c> metadata value).
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string NetlifyRedirects = nameof(NetlifyRedirects);
+
+        /// <summary>
+        /// Specifies the path where the blog RSS file will be output.
+        /// The default value is <c>feed.rss</c>. Set to <c>null</c>
+        /// to prevent generating an RSS feed.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="FilePath"/> or <see cref="string"/></type>
+        public const string RssPath = nameof(RssPath);
+
+        /// <summary>
+        /// Specifies the path where the blog Atom file will be output.
+        /// The default value is <c>feed.atom</c>. Set to <c>null</c>
+        /// to prevent generating an Atom feed.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="FilePath"/> or <see cref="string"/></type>
+        public const string AtomPath = nameof(AtomPath);
+
+        /// <summary>
+        /// Specifies the path where the blog RDF file will be output.
+        /// The default value is <c>null</c> which
+        /// prevents generating an RDF feed.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="FilePath"/> or <see cref="string"/></type>
+        public const string RdfPath = nameof(RdfPath);
 
         // ***Document
 

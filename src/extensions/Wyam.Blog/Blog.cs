@@ -28,24 +28,29 @@ namespace Wyam.Blog
             engine.GlobalMetadata[BlogKeys.Description] = "Welcome!";
             engine.GlobalMetadata[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
             engine.GlobalMetadata[BlogKeys.IncludeDateInPostPath] = false;
+            engine.GlobalMetadata[BlogKeys.PostsPath] = new DirectoryPath("posts");
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
-                new ReadFiles("{!posts,**}/*.md"),
+                new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},**}}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any additional Razor pages
-                    new ReadFiles("{!posts,!tags,**}/*.cshtml"),
-                    new FrontMatter(new Yaml.Yaml())),
+                    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
+                    new FrontMatter(new Yaml.Yaml())
+                ),
                 new Concat(
                     // Add the posts index page
                     new ReadFiles("posts/index.cshtml"),
-                    new FrontMatter(new Yaml.Yaml())),
+                    new FrontMatter(new Yaml.Yaml()),
+                    new Meta(Keys.RelativeFilePath, ctx => ctx.DirectoryPath(BlogKeys.PostsPath).CombineFile("index.cshtml"))
+                ),
                 new Concat(
                     // Add the tags index page
                     new ReadFiles("tags/index.cshtml"),
-                    new FrontMatter(new Yaml.Yaml())),
+                    new FrontMatter(new Yaml.Yaml())
+                ),
                 // Copy the index page image and header text color from global metadata (if there is one)
                 new If((doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.Image),
                     new Meta(BlogKeys.Image, ctx => ctx[BlogKeys.Image])),
@@ -56,12 +61,12 @@ namespace Wyam.Blog
             );
 
             engine.Pipelines.Add(BlogPipelines.RawPosts,
-                new ReadFiles("posts/*.md"),
+                new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any posts written in Razor
-                    new ReadFiles("posts/{!_,!index,}*.cshtml"),
+                    new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{{!_,!index,}}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())),
                 new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(BlogKeys.Published)),  // Record whether the publish date came from front matter
                 new Meta(BlogKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
@@ -72,7 +77,9 @@ namespace Wyam.Blog
                     string fileName = doc.Get<bool>("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Get<bool>(BlogKeys.IncludeDateInPostPath) ? $"posts/{published:yyyy}/{published:MM}/{fileName}" : $"posts/{fileName}";
+                    return ctx.Get<bool>(BlogKeys.IncludeDateInPostPath) 
+                        ? $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{published:yyyy}/{published:MM}/{fileName}" 
+                        : $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{fileName}";
                 }),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending()
             );
@@ -92,14 +99,16 @@ namespace Wyam.Blog
                     string tag = doc.String(Keys.GroupKey);
                     return $"tags/{(tag.StartsWith(".") ? tag.Substring(1) : tag).ToLowerInvariant().Replace(' ', '-')}.html";
                 }),
-                new Razor.Razor(),
+                new Razor.Razor()
+                    .WithLayout("/_Layout.cshtml"),
                 new WriteFiles()
             );
 
             // Defer rendering the posts until after the tags have been generated
             engine.Pipelines.Add(BlogPipelines.Posts,
                 new Documents(BlogPipelines.RawPosts),
-                new Razor.Razor(),
+                new Razor.Razor()
+                    .WithLayout("/_PostLayout.cshtml"),
                 new Excerpt()
                     .WithMetadataKey(BlogKeys.Excerpt),
                 new Excerpt("div#content")
@@ -111,12 +120,35 @@ namespace Wyam.Blog
 
             engine.Pipelines.Add(BlogPipelines.Feed,
                 new Documents(BlogPipelines.Posts),
-                new GenerateFeeds(),
+                new GenerateFeeds()
+                    .WithRssPath(ctx => ctx.FilePath(BlogKeys.RssPath))
+                    .WithAtomPath(ctx => ctx.FilePath(BlogKeys.AtomPath))
+                    .WithRdfPath(ctx => ctx.FilePath(BlogKeys.RdfPath)),
                 new WriteFiles());
 
             engine.Pipelines.Add(BlogPipelines.RenderPages,
                 new Documents(BlogPipelines.Pages),
-                new Razor.Razor(),
+                new Razor.Razor()
+                    .WithLayout("/_Layout.cshtml"),
+                new WriteFiles()
+            );
+
+            engine.Pipelines.Add(BlogPipelines.Redirects,
+                new Documents(BlogPipelines.RenderPages),
+                new Concat(
+                    new Documents(BlogPipelines.Posts)
+                ),
+                new Execute(ctx =>
+                {
+                    Redirect redirect = new Redirect()
+                        .WithMetaRefreshPages(ctx.Get<bool>(BlogKeys.MetaRefreshRedirects));
+                    if (ctx.Get<bool>(BlogKeys.NetlifyRedirects))
+                    {
+                        redirect.WithAdditionalOutput("_redirects", redirects =>
+                            string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));
+                    }
+                    return redirect;
+                }),
                 new WriteFiles()
             );
 

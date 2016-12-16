@@ -41,6 +41,11 @@ namespace Wyam.Blog
         public const string RenderPages = nameof(RenderPages);
 
         /// <summary>
+        /// Generates any redirect placeholders and files.
+        /// </summary>
+        public const string Redirects = nameof(Redirects);
+
+        /// <summary>
         /// Copies all other resources to the output path.
         /// </summary>
         public const string Resources = nameof(Resources);

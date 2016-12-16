@@ -55,7 +55,7 @@
         @if(Model.ContainsKey(BlogKeys.HeaderTextColor))
         {
                 <style>
-                        .intro-header *, .navbar * { color: @(Model.String(BlogKeys.HeaderTextColor)) !important; }
+                        .intro-header *, .navbar:not(.is-fixed) * { color: @(Model.String(BlogKeys.HeaderTextColor)) !important; }
                         hr { border-color: @(Model.String(BlogKeys.HeaderTextColor)) !important; }
                         .btn { color: initial !important }
                 </style>
