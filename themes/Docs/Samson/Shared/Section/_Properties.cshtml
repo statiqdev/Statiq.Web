@@ -32,6 +32,10 @@
 										{
 											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
 										}
+										if(property.Get<bool>(CodeAnalysisKeys.IsStatic))
+										{
+											<div><small><em>static</em></small></div>
+										}
 									}
 								</td>
 							</tr>

@@ -222,6 +222,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.HasConstantValue, _ => symbol.HasConstantValue),
+                    new MetadataItem(CodeAnalysisKeys.ConstantValue, _ => symbol.ConstantValue),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
@@ -339,7 +341,11 @@ namespace Wyam.CodeAnalysis.Analysis
                 new MetadataItem(CodeAnalysisKeys.QualifiedName, _ => GetQualifiedName(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.Kind, _ => symbol.Kind.ToString()),
                 new MetadataItem(CodeAnalysisKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
-                new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true)
+                new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.IsStatic, _ => symbol.IsStatic ),
+                new MetadataItem(CodeAnalysisKeys.IsAbstract, _ => symbol.IsAbstract ),
+                new MetadataItem(CodeAnalysisKeys.IsVirtual, _ => symbol.IsVirtual ),
+                new MetadataItem(CodeAnalysisKeys.IsOverride, _ => symbol.IsOverride )
             });
             
             // Add metadata that's specific to initially-processed symbols

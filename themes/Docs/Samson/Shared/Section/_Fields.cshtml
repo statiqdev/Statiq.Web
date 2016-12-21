@@ -1,38 +1,37 @@
 @using Microsoft.AspNetCore.Html;
 @{
-	IList<IDocument> events = Model.List<IDocument>("Members")
-		?.Where(x => x.Get<bool>("IsResult") && x.String("Kind") == "Event")
+	IList<IDocument> fields = Model.List<IDocument>("Members")
+		?.Where(x => x.Get<bool>("IsResult") && x.String("Kind") == "Field")
 		.OrderBy(x => x["DisplayName"])
 		.ToList();
-	if(events.Count > 0)
+	if(fields.Count > 0)
 	{
 		<text>
-			<h1 id="Events">Events</h1>
+			<h1 id="fields">Fields</h1>
 			<div class="box">
 				<div class="box-body no-padding table-responsive">
 					<table class="table table-striped table-hover three-cols">
 						<thead>
 							<tr>
 								<th>Name</th>
-								<th>Type</th>
+								<th>Constant Value</th>
 								<th>Summary</th>
 							</tr>
 						</thead>
-						@foreach(IDocument evt in events)
+						@foreach(IDocument field in fields)
 						{
-							IDocument type = evt.Get<IDocument>("Type");
 							<tr>
-								<td>@Context.GetTypeLink(evt)</td>
-								<td>@(type == null ? new HtmlString(string.Empty) : Context.GetTypeLink(type))</td>
+								<td>@Context.GetTypeLink(field)</td>
+								<td>@(field.Get<bool>(CodeAnalysisKeys.HasConstantValue) ? new HtmlString(field.Get(CodeAnalysisKeys.ConstantValue)?.ToString() ?? "null") : new HtmlString(string.Empty))</td>
 								<td>
-									<div>@Html.Raw(evt["Summary"])</div>
+									<div>@Html.Raw(field["Summary"])</div>
 									@{
-										IDocument containingType = evt.Document(CodeAnalysisKeys.ContainingType);
+										IDocument containingType = field.Document(CodeAnalysisKeys.ContainingType);
 										if(containingType != Model)
 										{
 											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
 										}
-										if(evt.Get<bool>(CodeAnalysisKeys.IsStatic))
+										if(field.Get<bool>(CodeAnalysisKeys.IsStatic))
 										{
 											<div><small><em>static</em></small></div>
 										}

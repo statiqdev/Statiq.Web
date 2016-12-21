@@ -17,6 +17,10 @@ namespace Wyam.CodeAnalysis
         public const string SpecificKind = nameof(SpecificKind); // string, the more specific kind of the symbol (Class, Struct, etc. - same as Kind if no more specific kind)
         public const string ContainingNamespace = nameof(ContainingNamespace); // IDocument, null if not nested
         public const string ContainingAssembly = nameof(ContainingAssembly); // IDocument, null if not in an assembly
+        public const string IsStatic = nameof(IsStatic); // bool
+        public const string IsAbstract = nameof(IsAbstract); // bool
+        public const string IsVirtual = nameof(IsVirtual); // bool
+        public const string IsOverride = nameof(IsOverride); // bool
 
         // Namespace
         public const string MemberTypes = nameof(MemberTypes); // IReadOnlyList<IDocument>, only contains direct children, not all descendants
@@ -46,6 +50,8 @@ namespace Wyam.CodeAnalysis
 
         // Field
         public const string Type = nameof(Type); // IDocument
+        public const string HasConstantValue = nameof(HasConstantValue); // bool
+        public const string ConstantValue = nameof(ConstantValue);  // object
         //                  ContainingType
         //                  Accessibility
 

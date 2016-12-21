@@ -57,6 +57,18 @@
     <metadata name="ContainingAssembly" type="IDocument">
       The document that represents the containing assembly (or null if this symbol is not from an assembly).
     </metadata>
+    <metadata name="IsStatic" type="bool">
+     Indicates if the symbol is static.
+    </metadata>
+    <metadata name="IsAbstract" type="bool">
+     Indicates if the symbol is abstract.
+    </metadata>
+    <metadata name="IsVirtual" type="bool">
+     Indicates if the symbol is virtual.
+    </metadata>
+    <metadata name="IsOverride" type="bool">
+     Indicates if the symbol is an override.
+    </metadata>
     
     <!-- Symbol specific -->
     <metadata name="MemberTypes" type="IReadOnlyList&lt;IDocument&gt;">
@@ -121,6 +133,12 @@
     </metadata>
     <metadata name="Attributes" type="IReadOnlyList&lt;IDocument&gt;">
       This is available for type, method, field, event, property, parameter, and type parameter symbols and contains the type symbol documents for attributes applied to the symbol.
+    </metadata>
+    <metadata name="HasConstantValue" type="bool">
+      This is available for field symbols and indicates whether a constant value is available for the field.
+    </metadata>
+    <metadata name="ConstantValue" type="object">
+      This is available for field symbols and contains the constant value (if one exists).
     </metadata>
 
     <!-- Documentation (not present for external symbols) -->
