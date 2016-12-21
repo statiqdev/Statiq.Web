@@ -126,9 +126,17 @@ namespace Wyam.Docs
                 ),
                 new Excerpt(),
                 new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(DocsKeys.Published)),  // Record whether the publish date came from front matter
-                new Meta(DocsKeys.Published, (doc, ctx) => DateTime.Parse(doc.String(Keys.SourceFileName).Substring(0, 10))).OnlyIfNonExisting(),
-
-                new Where((doc, ctx) => doc.ContainsKey(DocsKeys.Published) && doc.Get<DateTime>(DocsKeys.Published) <= DateTime.Today),
+                new Meta(DocsKeys.Published, (doc, ctx) =>
+                {
+                    DateTime published;
+                    if (!DateTime.TryParse(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
+                    {
+                        Wyam.Common.Tracing.Trace.Warning($"Could not parse published date for {doc.Source?.FullPath ?? "[unknown]"}.");
+                        return null;
+                    }
+                    return published;
+                }).OnlyIfNonExisting(),
+                new Where((doc, ctx) => doc.ContainsKey(DocsKeys.Published) && doc.Get(DocsKeys.Published) != null && doc.Get<DateTime>(DocsKeys.Published) <= DateTime.Today),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     DateTime published = doc.Get<DateTime>(DocsKeys.Published);
