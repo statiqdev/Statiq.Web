@@ -1,3 +1,8 @@
+# 0.15.2
+
+- [Fix] Adds a warning for unparsed publish dates in docs and blog recipes (#361)
+- [Fix] Added support for fields and constant values to `CodeAnalysis` module and docs recipe (#363)
+
 # 0.15.1
 
 - [Fix] Added the Docs recipe and Samson theme to the set of known recipes and themes
