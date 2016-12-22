@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wyam.Common;
@@ -65,6 +66,7 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
+        private readonly ConcurrentDictionary<string, CompilationResult> _compilationCache = new ConcurrentDictionary<string, CompilationResult>();
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private DocumentConfig _layoutPath;
@@ -294,7 +296,7 @@ namespace Wyam.Razor
                 .Select(x => x.RazorPageFactory())
                 .Reverse()
                 .ToList();
-            IRazorPage page = GetPageFromStream(relativePath, stream, rootFileProvider, razorCompilationService);
+            IRazorPage page = GetPageFromStream(relativePath, viewStartLocation, layoutLocation, stream, rootFileProvider, razorCompilationService);
             if (layoutLocation != null)
             {
                 page.Layout = layoutLocation;
@@ -307,7 +309,7 @@ namespace Wyam.Razor
         /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother 
         /// with caching the page if it's from a live stream.
         /// </summary>
-        private IRazorPage GetPageFromStream(string relativePath, Stream stream,
+        private IRazorPage GetPageFromStream(string relativePath, string viewStartLocation, string layoutLocation, Stream stream,
             IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
         {
             if (relativePath.StartsWith("~/", StringComparison.Ordinal))
@@ -320,14 +322,27 @@ namespace Wyam.Razor
             IFileInfo fileInfo = new StreamFileInfo(rootFileProvider.GetFileInfo(relativePath), stream);
             RelativeFileInfo relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
 
-            // Create the compilation
-            CompilationResult compilationResult = razorCompilationService.Compile(relativeFileInfo);
-            compilationResult.EnsureSuccessful();
+            // Try to get the compilation from the cache, but only if the stream is empty
+            // Cache key is relative path if no explicit view start or layout OR either/both of those if specified
+            CompilationResult compilationResult = stream.Length == 0
+                ? _compilationCache.GetOrAdd(
+                    viewStartLocation == null
+                        ? (layoutLocation ?? relativePath)
+                        : (layoutLocation == null ? viewStartLocation : viewStartLocation + layoutLocation), 
+                    _ => GetCompilation(relativeFileInfo, razorCompilationService))
+                : GetCompilation(relativeFileInfo, razorCompilationService);
 
             // Create and return the page
-            // We're not actually using the cache, but the CompilerCacheResult ctor contains the logic to create the page factory
+            // We're not actually using the ASP.NET cache, but the CompilerCacheResult ctor contains the logic to create the page factory
             CompilerCacheResult compilerCacheResult = new CompilerCacheResult(relativePath, compilationResult, Array.Empty<IChangeToken>());
             return compilerCacheResult.PageFactory();
+        }
+
+        private CompilationResult GetCompilation(RelativeFileInfo relativeFileInfo, IRazorCompilationService razorCompilationService)
+        {
+            CompilationResult compilationResult = razorCompilationService.Compile(relativeFileInfo);
+            compilationResult.EnsureSuccessful();
+            return compilationResult;
         }
 
         private string GetRelativePath(IDocument document, IExecutionContext context)
