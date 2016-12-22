@@ -1,3 +1,8 @@
+# 0.15.3
+
+- [Refactoring] Updated Roslyn and Razor NuGet packages
+- [Refactoring] Additional caching for Razor page compilation under certain conditions (especially for docs recipe)
+
 # 0.15.2
 
 - [Fix] Adds a warning for unparsed publish dates in docs and blog recipes (#361)
