@@ -7,13 +7,15 @@
 
 // Publishing workflow:
 // - Update ReleaseNotes.md and RELEASE in develop branch
-// - Run a normal build with Cake to set SolutionInfo.cs in the repo and run through unit tests ("build.cmd")
+// - Run a normal build with Cake to set SolutionInfo.cs in the repo and run through unit tests (`build.cmd`)
 // - Push to develop and fast-forward merge to master
 // - Switch to master
-// - Run a Publish build with Cake ("build -target Publish")
+// - Wait for CI to complete build and publish to MyGet
+// - Run a local prerelease build of Wyam.Web to verify release (`build -Script "prerelease.cake"` from Wyam.Web folder)
+// - Run a Publish build with Cake (`build -target Publish`)
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
-// - Rebuild Wyam.Web from CI to verify release (after a short delay to give NuGet gallery time to list)
+// - Run a build on Wyam.Web from CI to verify final release (first make sure NuGet Gallery has updated packages by searching for "wyam")
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
