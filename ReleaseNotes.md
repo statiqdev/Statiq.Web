@@ -1,3 +1,7 @@
+# 0.15.4
+
+- [Fix] Fixing some deployment issues with last release and package dependencies
+
 # 0.15.3
 
 - [Refactoring] Updated Roslyn and Razor NuGet packages

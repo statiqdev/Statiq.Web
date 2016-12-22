@@ -13,6 +13,7 @@
 // - Run a Publish build with Cake ("build -target Publish")
 // - No need to add a version tag to the repo - added by GitHub on publish
 // - Switch back to develop branch
+// - Rebuild Wyam.Web from CI to verify release (after a short delay to give NuGet gallery time to list)
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
