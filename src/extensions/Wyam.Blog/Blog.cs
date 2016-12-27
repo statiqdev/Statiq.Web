@@ -30,6 +30,9 @@ namespace Wyam.Blog
             engine.GlobalMetadata[BlogKeys.IncludeDateInPostPath] = false;
             engine.GlobalMetadata[BlogKeys.PostsPath] = new DirectoryPath("posts");
             engine.GlobalMetadata[BlogKeys.MetaRefreshRedirects] = true;
+            engine.GlobalMetadata[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
+            engine.GlobalMetadata[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
+            engine.GlobalMetadata[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
