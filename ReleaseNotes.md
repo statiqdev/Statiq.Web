@@ -1,3 +1,8 @@
+# 0.15.5
+
+- [Fix] Fixed missing default paths for blog feeds
+- [Refactoring] Made all theme resources except Google Fonts local for better HTTPS support
+
 # 0.15.4
 
 - [Fix] Fixing some deployment issues with last release and package dependencies
