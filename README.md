@@ -22,7 +22,7 @@ Watching folder c:\MySite\.\Input...
 Hit any key to exit...	
 ```
 
-For more information see [Wyam.io](http://wyam.io).
+For more information see [Wyam.io](https://wyam.io).
 
 ## Acknowledgements
 

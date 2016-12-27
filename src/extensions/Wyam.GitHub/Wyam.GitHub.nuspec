@@ -7,8 +7,8 @@
     <authors>Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
-    <iconUrl>http://wyam.io/Content/images/logo-square-64.png</iconUrl>
-    <projectUrl>http://wyam.io</projectUrl>
+    <iconUrl>https://wyam.io/Content/images/logo-square-64.png</iconUrl>
+    <projectUrl>https://wyam.io</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains modules for interacting with GitHub.</description>
     <copyright>Copyright 2016</copyright>

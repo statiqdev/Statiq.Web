@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 Stream stream = null;
                 IEnumerable<KeyValuePair<string, object>> metadata = null;
                 FilePath source = null;
-                IModule download = new Download().WithUris("http://wyam.io/");
+                IModule download = new Download().WithUris("https://wyam.io/");
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context
                     .When(x => x.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>(), Arg.Any<bool>()))
@@ -81,7 +81,7 @@ namespace Wyam.Core.Tests.Modules.IO
                         output.Add(Tuple.Create(x.Arg<Stream>(), x.Arg<IEnumerable<KeyValuePair<string, object>>>()));
                     });
 
-                IModule download = new Download().WithUris("http://wyam.io/", "https://github.com/Wyamio/Wyam");
+                IModule download = new Download().WithUris("https://wyam.io/", "https://github.com/Wyamio/Wyam");
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -124,7 +124,7 @@ namespace Wyam.Core.Tests.Modules.IO
                         metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
 
-                IModule download = new Download().WithUris("http://wyam.io/Content/images/nav-logo.png");
+                IModule download = new Download().WithUris("https://wyam.io/Content/images/nav-logo.png");
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
@@ -154,7 +154,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 var header = new RequestHeader();
                 header.Accept.Add("image/jpeg");
 
-                IModule download = new Download().WithUri("http://wyam.io/Content/images/nav-logo.png", header);
+                IModule download = new Download().WithUri("https://wyam.io/Content/images/nav-logo.png", header);
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

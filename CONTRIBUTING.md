@@ -20,7 +20,7 @@ Build instructions are in the `BUILDING.md` file at the root of the repository.
 
 If you would like to submit code to Wyam, please follow the guidelines below. If your change is small, go ahead and submit a pull request and any questions can be discussed in the request. If it's a larger change, you should probably open an issue first so that it can be discussed before you start spending time coding.
 
-Also note that most code contributions are going to be related to module development. If that's the case for your contribution, then please read [this article on module development](http://wyam.io/docs/extensibility/writing-a-module) first.
+Also note that most code contributions are going to be related to module development. If that's the case for your contribution, then please read [this article on module development](https://wyam.io/docs/extensibility/writing-a-module) first.
 
 ### Making Changes
 

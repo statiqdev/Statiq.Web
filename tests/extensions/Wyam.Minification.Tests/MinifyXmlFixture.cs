@@ -21,18 +21,18 @@ namespace Wyam.Minification.Tests
                         <urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">
                             <!-- Homepage -->
                             <url>
-                                <loc>http://wyam.io/</loc>
+                                <loc>https://wyam.io/</loc>
                                 <changefreq>weekly</changefreq>
                                 <priority>0.9</priority>
                             </url>
                             <!-- Content Page -->
                             <url>
-                                <loc>http://wyam.io/modules/minifyxml</loc>
+                                <loc>https://wyam.io/modules/minifyxml</loc>
                                 <changefreq>monthly</changefreq>
                                 <priority>0.7</priority>
                             </url>
                         </urlset>";
-                string output = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""><url><loc>http://wyam.io/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url><url><loc>http://wyam.io/modules/minifyxml</loc><changefreq>monthly</changefreq><priority>0.7</priority></url></urlset>";
+                string output = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""><url><loc>https://wyam.io/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url><url><loc>https://wyam.io/modules/minifyxml</loc><changefreq>monthly</changefreq><priority>0.7</priority></url></urlset>";
 
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
