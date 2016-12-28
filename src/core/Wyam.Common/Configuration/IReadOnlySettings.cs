@@ -24,8 +24,7 @@ namespace Wyam.Common.Configuration
         bool LinksUseHttps { get; }
 
         /// <summary>
-        /// Gets the default root path to use when generating links 
-        /// with <see cref="NormalizedPath.ToLink"/>
+        /// Gets the default root path to use when generating links.
         /// </summary>
         /// <value>
         /// The link root.
@@ -33,8 +32,7 @@ namespace Wyam.Common.Configuration
         DirectoryPath LinkRoot { get; }
 
         /// <summary>
-        /// Gets a value indicating whether to hide index pages by default
-        /// when generating links with <see cref="NormalizedPath.ToLink"/>.
+        /// Gets a value indicating whether to hide index pages by default when generating links.
         /// </summary>
         /// <value>
         /// <c>true</c> if index pages should be hidden; otherwise, <c>false</c>.
@@ -42,8 +40,7 @@ namespace Wyam.Common.Configuration
         bool LinkHideIndexPages { get; }
 
         /// <summary>
-        /// Gets a value indicating whether to hide extensions by default
-        /// when generating links with <see cref="NormalizedPath.ToLink"/>.
+        /// Gets a value indicating whether to hide ".html" and ".htm" extensions by default when generating links.
         /// </summary>
         /// <value>
         /// <c>true</c> if extensions should be hidden; otherwise, <c>false</c>.

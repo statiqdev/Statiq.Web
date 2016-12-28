@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
-using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Util;
 using Wyam.Testing;
 
-namespace Wyam.Common.Tests.Execution
+namespace Wyam.Common.Tests.Util
 {
     [TestFixture]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
@@ -34,7 +29,7 @@ namespace Wyam.Common.Tests.Execution
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, false, false, false);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, null);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -57,7 +52,7 @@ namespace Wyam.Common.Tests.Execution
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), false, false, false);
+                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), null, null, null);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -78,7 +73,7 @@ namespace Wyam.Common.Tests.Execution
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, false, true, false);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, new [] {"index"}, null);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -99,7 +94,22 @@ namespace Wyam.Common.Tests.Execution
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, false, false, true);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, Array.Empty<string>());
+
+                // Then
+                Assert.AreEqual(expected, link);
+            }
+
+            [TestCase("/foo/bar/abc.html", "/foo/bar/abc")]
+            [TestCase("/foo/bar/abc.htm", "/foo/bar/abc")]
+            [TestCase("/foo/bar/abc.xyz", "/foo/bar/abc.xyz")]
+            public void ShouldHideSpecificExtensionsForFilePath(string path, string expected)
+            {
+                // Given
+                FilePath filePath = new FilePath(path);
+
+                // When
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, new [] {"html", ".htm"});
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -126,20 +136,20 @@ namespace Wyam.Common.Tests.Execution
                 DirectoryPath directoryPath = path == null ? null : new DirectoryPath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), false, false, false);
+                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), null, null, null);
 
                 // Then
                 Assert.AreEqual(expected, link);
             }
 
             [Test]
-            public void ShouldUseHttpsAsScheme()
+            public void ShouldUseSpecifiedScheme()
             {
                 // Given
                 DirectoryPath directoryPath = new DirectoryPath("/foo/bar");
 
                 // When
-                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, true, false, false);
+                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "https", null, null);
                 
                 // Then
                 Assert.AreEqual("https://www.google.com/foo/bar", link);

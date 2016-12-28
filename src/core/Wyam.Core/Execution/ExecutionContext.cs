@@ -12,6 +12,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Meta;
 
 namespace Wyam.Core.Execution
@@ -107,7 +108,10 @@ namespace Wyam.Core.Execution
             GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
 
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) => 
-            LinkGenerator.GetLink(path, host, root, useHttps, hideIndexPages, hideExtensions);
+            LinkGenerator.GetLink(path, host, root, 
+                useHttps ? "https" : null, 
+                hideIndexPages ? new [] {"index"} : null, 
+                hideExtensions ? new [] {".html", ".htm"} : null);
 
         // GetDocument
 
