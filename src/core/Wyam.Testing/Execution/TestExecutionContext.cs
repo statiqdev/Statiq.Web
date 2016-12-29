@@ -92,6 +92,11 @@ namespace Wyam.Testing.Execution
             throw new NotImplementedException();
         }
 
+        public IDocument GetDocument(IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             throw new NotImplementedException();
@@ -221,8 +226,8 @@ namespace Wyam.Testing.Execution
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
             LinkGenerator.GetLink(path, host, root,
                 useHttps ? "https" : null,
-                hideIndexPages ? new[] { "index" } : null,
-                hideExtensions ? new[] { ".html", ".htm" } : null);
+                hideIndexPages ? LinkGenerator.DefaultHidePages : null,
+                hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
 
         public bool TryConvert<T>(object value, out T result)
         {

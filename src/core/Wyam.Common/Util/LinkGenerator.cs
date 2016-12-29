@@ -6,6 +6,9 @@ namespace Wyam.Common.Util
 {
     public static class LinkGenerator
     {
+        public static readonly string[] DefaultHidePages = {"index"};
+        public static readonly string[] DefaultHideExtensions = {".htm", ".html"};
+
         /// <summary>
         /// Generates a normalized link given a path and other conditions.
         /// </summary>

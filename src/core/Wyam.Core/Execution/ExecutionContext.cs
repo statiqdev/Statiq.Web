@@ -110,8 +110,8 @@ namespace Wyam.Core.Execution
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) => 
             LinkGenerator.GetLink(path, host, root, 
                 useHttps ? "https" : null, 
-                hideIndexPages ? new [] {"index"} : null, 
-                hideExtensions ? new [] {".html", ".htm"} : null);
+                hideIndexPages ? LinkGenerator.DefaultHidePages : null, 
+                hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
 
         // GetDocument
 
@@ -144,6 +144,19 @@ namespace Wyam.Core.Execution
         {
             CheckDisposed();
             IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
+            if (sourceDocument != null && sourceDocument.Source == null)
+            {
+                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
+                _pipeline.AddDocumentSource(source);
+            }
+            _pipeline.AddClonedDocument(document);
+            return document;
+        }
+
+        public IDocument GetDocument(IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            CheckDisposed();
+            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, items);
             if (sourceDocument != null && sourceDocument.Source == null)
             {
                 // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)

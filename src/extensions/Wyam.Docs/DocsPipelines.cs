@@ -95,5 +95,10 @@ namespace Wyam.Docs
         /// Copies all other resources to the output path.
         /// </summary>
         public const string Resources = nameof(Resources);
+
+        /// <summary>
+        /// Validates links.
+        /// </summary>
+        public const string ValidateLinks = nameof(ValidateLinks);
     }
 }

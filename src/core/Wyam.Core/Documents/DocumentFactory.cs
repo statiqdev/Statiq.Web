@@ -38,6 +38,16 @@ namespace Wyam.Core.Documents
             return new Document((Document)sourceDocument, source, content, items);
         }
 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source,
+            IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
+            {
+                return new Document(_initialMetadata, source, null, null, items, true);
+            }
+            return new Document((Document)sourceDocument, source, items);
+        }
+
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content, 
             IEnumerable<KeyValuePair<string, object>> items = null)
         {

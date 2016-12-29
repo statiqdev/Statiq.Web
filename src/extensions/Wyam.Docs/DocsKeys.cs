@@ -147,6 +147,31 @@ namespace Wyam.Docs
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
         public const string BlogRdfPath = nameof(BlogRdfPath);
 
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to
+        /// validate all absolute links. Note that this may add considerable
+        /// time to your generation process.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateAbsoluteLinks = nameof(ValidateAbsoluteLinks);
+
+        /// <summary>
+        /// Set to <c>true</c> (the default value) to
+        /// validate all relative links.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
+
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to
+        /// report errors on link validation failures.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
+
         // ***Document
 
         /// <summary>

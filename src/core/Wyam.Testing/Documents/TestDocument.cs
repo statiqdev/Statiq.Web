@@ -24,22 +24,40 @@ namespace Wyam.Testing.Documents
             Id = Guid.NewGuid().ToString();
         }
 
-        public TestDocument(IEnumerable<MetadataItem> metadata)
+        public TestDocument(string content)
+            : this()
         {
-            Id = Guid.NewGuid().ToString();
+            Content = content;
+        }
+
+        public TestDocument(IEnumerable<MetadataItem> metadata)
+            : this()
+        {
             foreach (KeyValuePair<string, object> item in metadata)
             {
                 _metadata[item.Key] = item.Value;
             }
         }
 
-        public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
+        public TestDocument(string content, IEnumerable<MetadataItem> metadata)
+            : this(metadata)
         {
-            Id = Guid.NewGuid().ToString();
+            Content = content;
+        }
+
+        public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
+            : this()
+        {
             foreach (KeyValuePair<string, object> item in metadata)
             {
                 _metadata[item.Key] = item.Value;
             }
+        }
+
+        public TestDocument(string content, IEnumerable<KeyValuePair<string, object>> metadata)
+            : this(metadata)
+        {
+            Content = content;
         }
 
         public bool ContainsKey(string key)

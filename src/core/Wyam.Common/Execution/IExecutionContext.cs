@@ -251,6 +251,16 @@ namespace Wyam.Common.Execution
         IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
+        /// Clones the specified source document with a new source and additional metadata (all existing metadata is retained)
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
+        /// </summary>
+        /// <param name="sourceDocument">The source document.</param>
+        /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
+        /// <param name="items">The metadata items.</param>
+        /// <returns>The cloned or new document.</returns>
+        IDocument GetDocument(IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null);
+
+        /// <summary>
         /// Clones the specified source document with identical content and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>

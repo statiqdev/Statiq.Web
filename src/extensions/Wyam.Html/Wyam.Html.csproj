@@ -57,6 +57,7 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="ValidateLinks.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">

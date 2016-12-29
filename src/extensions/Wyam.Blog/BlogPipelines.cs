@@ -50,5 +50,10 @@ namespace Wyam.Blog
         /// </summary>
         public const string Resources = nameof(Resources);
 
+        /// <summary>
+        /// Validates links.
+        /// </summary>
+        public const string ValidateLinks = nameof(ValidateLinks);
+
     }
 }

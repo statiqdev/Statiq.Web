@@ -168,6 +168,31 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.Resources,
                 new CopyFiles("**/*{!.cshtml,!.md,}")
             );
+
+            engine.Pipelines.Add(BlogPipelines.ValidateLinks,
+                new If(ctx => ctx.Get<bool>(BlogKeys.ValidateAbsoluteLinks) || ctx.Get<bool>(BlogKeys.ValidateRelativeLinks),
+                    new Documents(BlogPipelines.RenderPages),
+                    new Concat(
+                        new Documents(BlogPipelines.Posts)
+                    ),
+                    new Concat(
+                        new Documents(BlogPipelines.Resources)
+                    ),
+                    new Where((doc, ctx) =>
+                    {
+                        FilePath destinationPath = doc.FilePath(Keys.DestinationFilePath);
+                        return destinationPath != null 
+                            && (destinationPath.Extension == ".html" || destinationPath.Extension == ".htm");
+                    }),
+                    new Execute(ctx =>
+                        new ValidateLinks()
+                            .ValidateAbsoluteLinks(ctx.Get<bool>(BlogKeys.ValidateAbsoluteLinks))
+                            .ValidateRelativeLinks(ctx.Get<bool>(BlogKeys.ValidateRelativeLinks))
+                            .AsError(ctx.Get<bool>(BlogKeys.ValidateLinksAsError)
+                        )
+                    )
+                )
+            );
         }
 
         public void Scaffold(IDirectory directory)

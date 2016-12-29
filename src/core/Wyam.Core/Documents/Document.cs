@@ -86,6 +86,16 @@ namespace Wyam.Core.Documents
             sourceDocument.CheckDisposed();
         }
 
+        internal Document(Document sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
+            : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source ?? source, sourceDocument._stream,
+                sourceDocument._streamLock, sourceDocument._content, items, sourceDocument._disposeStream)
+        {
+            sourceDocument.CheckDisposed();
+
+            // Don't dispose the stream since the cloned document might be final and get passed to another pipeline, it'll take care of final disposal
+            sourceDocument._disposeStream = false;
+        }
+
         internal Document(Document sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
             : this(sourceDocument.Id, sourceDocument._metadata, sourceDocument.Source, content, items)
         {

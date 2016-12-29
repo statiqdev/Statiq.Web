@@ -405,6 +405,34 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             engine.Pipelines.Add(DocsPipelines.Resources,
                 new CopyFiles("**/*{!.cshtml,!.md,!.less,}")
             );
+
+            engine.Pipelines.Add(DocsPipelines.ValidateLinks,
+                new If(ctx => ctx.Get<bool>(DocsKeys.ValidateAbsoluteLinks) || ctx.Get<bool>(DocsKeys.ValidateRelativeLinks),
+                    new Documents(DocsPipelines.RenderPages),
+                    new Concat(
+                        new Documents(DocsPipelines.RenderBlogPosts)
+                    ),
+                    new Concat(
+                        new Documents(DocsPipelines.RenderApi)
+                    ),
+                    new Concat(
+                        new Documents(DocsPipelines.Resources)
+                    ),
+                    new Where((doc, ctx) =>
+                    {
+                        FilePath destinationPath = doc.FilePath(Keys.DestinationFilePath);
+                        return destinationPath != null
+                            && (destinationPath.Extension == ".html" || destinationPath.Extension == ".htm");
+                    }),
+                    new Execute(ctx =>
+                        new ValidateLinks()
+                            .ValidateAbsoluteLinks(ctx.Get<bool>(DocsKeys.ValidateAbsoluteLinks))
+                            .ValidateRelativeLinks(ctx.Get<bool>(DocsKeys.ValidateRelativeLinks))
+                            .AsError(ctx.Get<bool>(DocsKeys.ValidateLinksAsError)
+                        )
+                    )
+                )
+            );
         }
 
         private string GetIgnoreFoldersGlob(IExecutionContext context) => 
