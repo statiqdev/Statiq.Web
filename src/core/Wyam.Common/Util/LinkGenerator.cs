@@ -22,15 +22,13 @@ namespace Wyam.Common.Util
             FilePath filePath = path as FilePath;
             if (filePath != null)
             {
-                if (hidePages != null 
+                if (hidePages != null && filePath.FullPath != "/"
                     && hidePages.Where(x => x != null).Select(x => x.EndsWith(".") ? x : x + ".").Any(x => filePath.FileName.FullPath.StartsWith(x)))
                 {
                     path = filePath.Directory;
                 }
                 else if (hideExtensions != null
-                    && (hideExtensions.Length == 0 
-                    || hideExtensions.Contains(filePath.Extension) 
-                    || hideExtensions.Contains(filePath.Extension.TrimStart('.'))))
+                    && (hideExtensions.Length == 0 || hideExtensions.Where(x => x != null).Select(x => x.StartsWith(".") ? x : "." + x).Contains(filePath.Extension)))
                 {
                     path = filePath.ChangeExtension(null);
                 }

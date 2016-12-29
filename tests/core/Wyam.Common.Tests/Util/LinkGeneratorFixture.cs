@@ -154,6 +154,58 @@ namespace Wyam.Common.Tests.Util
                 // Then
                 Assert.AreEqual("https://www.google.com/foo/bar", link);
             }
+
+            [Test]
+            public void SupportsSingleSlash()
+            {
+                // Given
+                FilePath path = new FilePath("/");
+
+                // When
+                string link = LinkGenerator.GetLink(path, null, null, null, null, null);
+
+                // Then
+                Assert.AreEqual("/", link);
+            }
+
+            [Test]
+            public void SupportsSingleSlashWithRoot()
+            {
+                // Given
+                FilePath path = new FilePath("/");
+
+                // When
+                string link = LinkGenerator.GetLink(path, null, "root", null, null, null);
+
+                // Then
+                Assert.AreEqual("/root/", link);
+            }
+
+            [Test]
+            public void SupportsSingleSlashWithHidePages()
+            {
+                // Given
+                FilePath path = new FilePath("/");
+
+                // When
+                string link = LinkGenerator.GetLink(path, null, null, null, new [] {"index"}, null);
+
+                // Then
+                Assert.AreEqual("/", link);
+            }
+
+            [Test]
+            public void SupportsSingleSlashWithHideExtensions()
+            {
+                // Given
+                FilePath path = new FilePath("/");
+
+                // When
+                string link = LinkGenerator.GetLink(path, null, null, null, null, new [] { "html" });
+
+                // Then
+                Assert.AreEqual("/", link);
+            }
         }
     }
 }

@@ -6,28 +6,28 @@
         <meta name="description" content="@Context.String(DocsKeys.Description)" />
         <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="/assets/img/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="@Context.GetLink("/assets/img/favicon.ico")" type="image/x-icon">
+        <link rel="icon" href="@Context.GetLink("/assets/img/favicon.ico")" type="image/x-icon">
         <title>@Context.String(DocsKeys.Title, "Docs") - @ViewData[Keys.Title]</title>
-        <link href="/assets/css/mermaid.css" rel="stylesheet">
-        <link href="/assets/css/highlight.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap/bootstrap.css" rel="stylesheet" />
-        <link href="/assets/css/adminlte/AdminLTE.css" rel="stylesheet" />
-        <link href="/assets/css/theme/theme.css" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/mermaid.css")" rel="stylesheet">
+        <link href="@Context.GetLink("/assets/css/highlight.css")" rel="stylesheet">
+        <link href="@Context.GetLink("/assets/css/bootstrap/bootstrap.css")" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/adminlte/AdminLTE.css")" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/theme/theme.css")" rel="stylesheet" />
         <link href="//fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,400i,700,700i" rel="stylesheet">
-        <link href="/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <link href="/assets/css/override.css" rel="stylesheet" />
-        <script src="/assets/js/turbolinks.js"></script>
-        <script src="/assets/js/jQuery-2.2.3.min.js"></script>
-        <script src="/assets/js/bootstrap.min.js"></script>        
-        <script src="/assets/js/app.min.js"></script>         
-        <script src="/assets/js/highlight.pack.js"></script>   
-        <script src="/assets/js/jquery.slimscroll.min.js"></script>
-        <script src="/assets/js/jquery.sticky-kit.min.js"></script>
-        <script src="/assets/js/mermaid.min.js"></script>
+        <link href="@Context.GetLink("/assets/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
+        <link href="@Context.GetLink("/assets/css/override.css")" rel="stylesheet" />
+        <script src="@Context.GetLink("/assets/js/turbolinks.js")"></script>
+        <script src="@Context.GetLink("/assets/js/jQuery-2.2.3.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/bootstrap.min.js")"></script>        
+        <script src="@Context.GetLink("/assets/js/app.min.js")"></script>         
+        <script src="@Context.GetLink("/assets/js/highlight.pack.js")"></script>   
+        <script src="@Context.GetLink("/assets/js/jquery.slimscroll.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/jquery.sticky-kit.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/mermaid.min.js")"></script>
         <!--[if lt IE 9]>
-        <script src="/assets/js/html5shiv.min.js"></script>
-        <script src="/assets/js/respond.min.js"></script>
+        <script src="@Context.GetLink("/assets/js/html5shiv.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
         <![endif]-->  
 
         @Html.Partial("_Head")
@@ -47,9 +47,9 @@
                      
                 <a href="/" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><img src="/assets/img/logo.png"></span>
+                    <span class="logo-mini"><img src="@Context.GetLink("/assets/img/logo.png")"></span>
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><img src="/assets/img/logo.png"></span>
+                    <span class="logo-lg"><img src="@Context.GetLink("/assets/img/logo.png")"></span>
                 </a>   
                          
                 <nav class="navbar navbar-static-top" role="navigation">

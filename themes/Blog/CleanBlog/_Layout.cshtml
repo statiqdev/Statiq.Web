@@ -13,24 +13,24 @@
         <meta name="description" content="@Context.String(BlogKeys.Description)" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">        
 
-        <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="/feed.rss" />
-        <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="/feed.atom" />
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink("/feed.rss")" />
+        <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink("/feed.atom")" />
+        <link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+        <link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
 
-        <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="/assets/css/highlight.css" rel="stylesheet">
-        <link href="/assets/css/clean-blog.css" rel="stylesheet" />
-        <link href="/assets/css/master.css" rel="stylesheet" />
-        <link href="/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="@Context.GetLink("/assets/css/bootstrap.min.css")" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/highlight.css")" rel="stylesheet">
+        <link href="@Context.GetLink("/assets/css/clean-blog.css")" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/master.css")" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
         <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-        <link href="/assets/css/override.css" rel="stylesheet" />
+        <link href="@Context.GetLink("/assets/css/override.css")" rel="stylesheet" />
 
 
         <meta name="application-name" content="@Context.String(BlogKeys.Title)" />
         <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
-        <meta name="msapplication-starturl" content="/" />
+        <meta name="msapplication-starturl" content="@Context.GetLink("/")" />
 
         <meta property="og:title" content="@PageTitle" />
         @* <meta property="og:image" content="@Blog.Image" /> *@
@@ -38,19 +38,19 @@
         <meta property="og:url" content="@Context.GetLink(Model, true)" />
         <!-- TODO: More social graph meta tags -->
 
-        <script src="/assets/js/jquery.min.js"></script>
-        <script src="/assets/js/bootstrap.min.js"></script>     
-        <script src="/assets/js/highlight.pack.js"></script>   
-        <script src="/assets/js/clean-blog.js"></script>
-        <script src="/assets/js/d3.v3.min.js"></script>
-        <script src="/assets/js/trianglify.min.js"></script>
-        <script src="/assets/js/Please-compressed.js"></script>
+        <script src="@Context.GetLink("/assets/js/jquery.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/bootstrap.min.js")"></script>     
+        <script src="@Context.GetLink("/assets/js/highlight.pack.js")"></script>   
+        <script src="@Context.GetLink("/assets/js/clean-blog.js")"></script>
+        <script src="@Context.GetLink("/assets/js/d3.v3.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/trianglify.min.js")"></script>
+        <script src="@Context.GetLink("/assets/js/Please-compressed.js")"></script>
                 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
-                <script src="/assets/js/html5shiv.js"></script>
-                <script src="/assets/js/respond.min.js"></script>
+                <script src="@Context.GetLink("/assets/js/html5shiv.js")"></script>
+                <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
         <![endif]-->
 
         @if(Model.ContainsKey(BlogKeys.HeaderTextColor))
@@ -76,7 +76,7 @@
                                         <span class="icon-bar"></span>
                                         <span class="icon-bar"></span>
                                         </button>
-                                        <a class="navbar-brand" href="/">@Context.String(BlogKeys.Title)</a>
+                                        <a class="navbar-brand" href="@Context.GetLink("/")">@Context.String(BlogKeys.Title)</a>
                                 </div>
                         
                                 <!-- Collect the nav links, forms, and other content for toggling -->
