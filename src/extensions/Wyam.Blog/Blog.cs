@@ -83,7 +83,20 @@ namespace Wyam.Blog
                     }
                     return published;
                 }).OnlyIfNonExisting(),
-                new Where((doc, ctx) => doc.ContainsKey(BlogKeys.Published) && doc.Get(BlogKeys.Published) != null && doc.Get<DateTime>(BlogKeys.Published) <= DateTime.Today),
+                new Where((doc, ctx) => 
+                {
+                    if (!doc.ContainsKey(BlogKeys.Published) || doc.Get(BlogKeys.Published) == null)
+                    {
+                        Common.Tracing.Trace.Warning($"Skipping {doc.Source} due to not having {BlogKeys.Published} metadata");
+                        return false;
+                    }
+                    if (doc.Get<DateTime>(BlogKeys.Published) > DateTime.Now)
+                    {
+                        Common.Tracing.Trace.Warning($"Skipping {doc.Source} due to having {BlogKeys.Published} metadata of {doc.Get<DateTime>(BlogKeys.Published)} in the future (current date and time is {DateTime.Now})");
+                        return false;
+                    }
+                    return true;
+                }),
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     DateTime published = doc.Get<DateTime>(BlogKeys.Published);
