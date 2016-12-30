@@ -1,3 +1,12 @@
+# 0.15.6
+
+- [Fix] Post date comparison now performed with current time instead of midnight (#365)
+- [Refactoring] Better warnings when posts are skipped due to future or missing date in docs and blog recipes (#365)
+- [Feature] Adds support for serving from a virtual directory to the preview server using the `--virtual-dir` option
+- [Feature] New `ValidateLinks` module with opt-in use for blog and docs recipes (#15)
+- [Fix] Modifying all assets and links in themes to use link generation for virtual directory support
+- [Refactoring] Improvements to `LinkGenerator` to make it more flexible (this class isn't typically used by user code)
+
 # 0.15.5
 
 - [Fix] Fixed missing default paths for blog feeds

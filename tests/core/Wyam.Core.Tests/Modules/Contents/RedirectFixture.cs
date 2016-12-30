@@ -78,7 +78,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             List<IDocument> results = redirect.Execute(new[] { redirected, notRedirected }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            Assert.IsTrue(Listener.Messages.Single(x => x.Key == TraceEventType.Warning).Value.StartsWith("The redirect path must be relative"));
+            Assert.IsTrue(Listener.Messages.ToList().Single(x => x.Key == TraceEventType.Warning).Value.StartsWith("The redirect path must be relative"));
             Assert.AreEqual(0, results.Count);
         }
 
