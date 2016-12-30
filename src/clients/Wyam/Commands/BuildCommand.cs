@@ -21,6 +21,7 @@ namespace Wyam.Commands
         
         private bool _preview = false;
         private int _previewPort = 5080;
+        private DirectoryPath _previewVirtualDirectory = null;
         private bool _previewForceExtension = false;
         private FilePath _logFilePath = null;
         private bool _verifyConfig = false;
@@ -45,6 +46,10 @@ namespace Wyam.Commands
             if (syntax.DefineOption("force-ext", ref _previewForceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).").IsSpecified && !_preview)
             {
                 syntax.ReportError("force-ext can only be specified if the preview server is running.");
+            }
+            if (syntax.DefineOption("virtual-dir", ref _previewVirtualDirectory, DirectoryPath.FromString, "Serve files in the preview web server under the specified virtual directory.").IsSpecified && !_preview)
+            {
+                syntax.ReportError("virtual-dir can only be specified if the preview server is running.");
             }
             if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
             {
@@ -159,7 +164,7 @@ namespace Wyam.Commands
                 DirectoryPath previewPath = _previewRoot == null
                     ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
                     : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension);
+                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory);
             }
 
             // Start the watchers

@@ -20,7 +20,7 @@ namespace Wyam.Owin
         {
             if (builder == null)
             {
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
             }
 
             return builder.Use<ExtensionlessUrlsMiddleware>(options);

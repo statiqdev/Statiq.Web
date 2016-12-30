@@ -15,7 +15,7 @@ namespace Wyam
 {
     internal static class PreviewServer
     {
-        public static IDisposable Start(DirectoryPath path, int port, bool forceExtension)
+        public static IDisposable Start(DirectoryPath path, int port, bool forceExtension, DirectoryPath virtualDirectory)
         {
             IDisposable server;
             try
@@ -29,6 +29,12 @@ namespace Wyam
                 server = WebApp.Start(options, app =>
                 {
                     Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(path.FullPath);
+
+                    // Support for virtual directory
+                    if (virtualDirectory != null)
+                    {
+                        app.UseVirtualDirectory(virtualDirectory.FullPath);
+                    }
 
                     // Disable caching
                     app.Use((c, t) =>
@@ -65,11 +71,12 @@ namespace Wyam
             }
             catch (Exception ex)
             {
-                Trace.Critical("Error while running preview server: {0}", ex.Message);
+                Trace.Critical($"Error while running preview server: {ex.Message}");
                 return null;
             }
 
-            Trace.Information("Preview server listening on port {0} and serving from path {1}", port, path);
+            Trace.Information($"Preview server listening on port {port} and serving from path {path}"
+                + (virtualDirectory == null ? string.Empty : $" with virtual directory {virtualDirectory.FullPath}"));
             return server;
         }
 

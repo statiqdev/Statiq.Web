@@ -35,7 +35,9 @@ namespace Wyam.Html
         /// <summary>
         /// Validates absolute (often external) links. This may add a significant delay to your
         /// generation process so it's recommended absolute links are only checked periodically.
-        /// The default behavior is not to check absolute links.
+        /// The default behavior is not to check absolute links. Also note that false positive
+        /// failures are common when validating external links so any links that fail the check
+        /// should be subsequently checked manually.
         /// </summary>
         /// <param name="validateAbsoluteLinks"><c>true</c> to validate absolute links.</param>
         public ValidateLinks ValidateAbsoluteLinks(bool validateAbsoluteLinks = true)

@@ -101,6 +101,8 @@
     <Compile Include="Commands\ConfigOptions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
+    <Compile Include="Owin\VirtualDirectoryExtensions.cs" />
+    <Compile Include="Owin\VirtualDirectoryMiddleware.cs" />
     <Compile Include="PreviewServer.cs" />
     <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="EngineManager.cs" />

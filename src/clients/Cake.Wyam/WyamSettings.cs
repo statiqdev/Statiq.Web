@@ -34,6 +34,11 @@ namespace Cake.Wyam
         public bool PreviewForceExtensions { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating the virtual directory to use for the preview server.
+        /// </summary>
+        public DirectoryPath PreviewVirtualDirectory { get; set; }
+
+        /// <summary>
         /// The path to the root of the preview server, if not the output folder.
         /// </summary>
         public DirectoryPath PreviewRoot { get; set; }

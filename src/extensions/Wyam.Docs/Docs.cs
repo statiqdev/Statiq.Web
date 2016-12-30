@@ -104,6 +104,7 @@ namespace Wyam.Docs
                 ),
                 new Excerpt(),
                 new Title(),
+                new WriteFiles(".html").OnlyMetadata(),
                 new Tree()
                     .WithPlaceholderFactory(TreePlaceholderFactory)
                     .WithNesting(true, true)
@@ -293,7 +294,7 @@ namespace Wyam.Docs
                         .WithLayout("/_Layout.cshtml"),
                     new Headings(),
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)),
-                    new WriteFiles(".html")
+                    new WriteFiles()
                 )
             );
 

@@ -23,7 +23,6 @@ namespace Wyam.Owin
 
         public IList<string> DefaultExtensions { get; set; }
 
-
         public IFileSystem FileSystem { get; set; }
     }
 }

@@ -157,6 +157,19 @@ namespace Cake.Wyam.Tests
             }
 
             [Test]
+            public void ShouldSetPreviewFlagAndVirtualDirectory()
+            {
+                // Given
+                WyamToolFixture fixture = new WyamToolFixture { Settings = { Preview = true, PreviewVirtualDirectory = "foo" } };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--preview 5080 --virtual-dir \"foo\" \"/Working\"", result.Args);
+            }
+
+            [Test]
             public void ShouldSetPreviewFlagAndPortAndForceExtensions()
             {
                 // Given
