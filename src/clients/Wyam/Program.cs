@@ -15,6 +15,7 @@ using Owin;
 using Wyam.Commands;
 using Wyam.Common.IO;
 using Wyam.Configuration.Preprocessing;
+using Wyam.Core.Execution;
 using Wyam.Owin;
 using Trace = Wyam.Common.Tracing.Trace;
 
@@ -47,9 +48,7 @@ namespace Wyam
             Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
             
             // Output version info
-            AssemblyInformationalVersionAttribute versionAttribute
-                = Attribute.GetCustomAttribute(typeof(Program).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
-            Trace.Information("Wyam version {0}", versionAttribute == null ? "unknown" : versionAttribute.InformationalVersion);
+            Trace.Information($"Wyam version {Engine.Version}");
 
             // It's not a serious console app unless there's some ASCII art
             OutputLogo();

@@ -51,7 +51,7 @@ namespace Wyam.Docs
 
         /// <summary>
         /// Controls whether the global namespace is included in your API
-        /// documentation. Should be 
+        /// documentation.
         /// </summary>
         /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>

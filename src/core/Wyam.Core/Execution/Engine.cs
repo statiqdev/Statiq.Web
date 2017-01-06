@@ -22,6 +22,20 @@ namespace Wyam.Core.Execution
     /// </summary>
     public class Engine : IEngine, IDisposable
     {
+        public static string Version
+        {
+            get
+            {
+                AssemblyInformationalVersionAttribute versionAttribute
+                    = Attribute.GetCustomAttribute(typeof(Engine).Assembly, typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
+                if (versionAttribute == null)
+                {
+                    throw new Exception("Something went terribly wrong, could not determine Wyam version");
+                }
+                return versionAttribute.InformationalVersion;
+            }
+        }
+
         private readonly FileSystem _fileSystem = new FileSystem();
         private readonly Settings _settings = new Settings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();

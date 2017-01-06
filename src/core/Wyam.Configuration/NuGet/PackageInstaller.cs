@@ -77,7 +77,7 @@ namespace Wyam.Configuration.NuGet
             // If this package is a known Wyam extension and no version is specified, set to the current version
             if (KnownExtension.Values.Values.Any(x => x.PackageId == packageId) && versionRange == null)
             {
-                versionRange = $"[{FileVersionInfo.GetVersionInfo(typeof(Engine).Assembly.Location).ProductVersion}]";
+                versionRange = $"[{Engine.Version}]";
                 allowPrereleaseVersions = true;
                 Trace.Verbose($"Added known extension package {packageId} without version, setting version to {versionRange}");
             }
