@@ -1,3 +1,9 @@
+# 0.15.7
+
+- [Fix] Fixed a bug with new docs recipe package downloads
+- [Fix] Fix for wrong System.Console binding in Wyam.Windows (#372, thanks @adamclifford)
+- [Fix] Fix for logo path in docs recipe (#369, thanks @meil)
+
 # 0.15.6
 
 - [Fix] Post date comparison now performed with current time instead of midnight (#365)
