@@ -398,7 +398,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 ? symbol.GetDocumentationCommentXml(expandIncludes: true)
                 : GetNamespaceDocumentationCommentXml(namespaceSymbol);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(_context, symbol.Name, _commentIdToDocument, _cssClasses);
+                = new XmlDocumentationParser(_context, symbol, _symbolToDocument, _commentIdToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements

@@ -18,8 +18,9 @@ namespace Wyam.CodeAnalysis.Analysis
 	internal class XmlDocumentationParser
 	{
 	    private readonly IExecutionContext _context;
-	    private readonly string _symbolName;
-	    private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
+	    private readonly ISymbol _symbol;
+	    private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument;
+        private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
 		private readonly ConcurrentDictionary<string, string> _cssClasses;
         private List<Action> _processActions; 
         private readonly object _processLock = new object();
@@ -44,12 +45,14 @@ namespace Wyam.CodeAnalysis.Analysis
 
 		public XmlDocumentationParser(
             IExecutionContext context,
-            string symbolName,
+            ISymbol symbol,
+            ConcurrentDictionary<ISymbol, IDocument> symbolToDocument,
             ConcurrentDictionary<string, IDocument> commentIdToDocument,
 			ConcurrentDictionary<string, string> cssClasses)
 		{
 		    _context = context;
-		    _symbolName = symbolName;
+		    _symbol = symbol;
+		    _symbolToDocument = symbolToDocument;
 		    _commentIdToDocument = commentIdToDocument;
 			_cssClasses = cssClasses;
         }
@@ -80,7 +83,12 @@ namespace Wyam.CodeAnalysis.Analysis
                         {
                             _processActions = new List<Action>();
 
-                            // <seealso> - get all descendant elements (even if they're nested), do this first
+                            // Add inherited documentation, do this very first since it manipulates the root XML
+                            // can be removed if https://github.com/dotnet/roslyn/issues/67 gets resolved
+                            _processActions.Add(() => ProcessInheritDoc(root));
+
+                            // <seealso> - get all descendant elements (even if they're nested),
+                            // do this first since it will modify the comment XML to remove the <seealso> elements
                             List<XElement> seeAlsoElements = root.Descendants("seealso").ToList().Select(x =>
                             {
                                 x.Remove();
@@ -120,10 +128,12 @@ namespace Wyam.CodeAnalysis.Analysis
                                         _processActions.Add(() => Permissions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "param":
-                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName));
+                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName, 
+                                            (_symbol as IMethodSymbol)?.Parameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     case "typeparam":
-                                        _processActions.Add(() => TypeParams = GetReferenceComments(group, false, elementName));
+                                        _processActions.Add(() => TypeParams = GetReferenceComments(group, false, elementName,
+                                            (_symbol as IMethodSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? (_symbol as INamedTypeSymbol)?.TypeParameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     default:
                                         otherElements.Add(group);
@@ -142,7 +152,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 }
                 catch (Exception ex)
                 {
-                    Trace.Warning($"Could not parse XML documentation comments for {_symbolName}: {ex.Message}");
+                    Trace.Warning($"Could not parse XML documentation comments for {_symbol.Name}: {ex.Message}");
                 }
             }
 
@@ -165,8 +175,50 @@ namespace Wyam.CodeAnalysis.Analysis
 		        return this;
             }
 		}
+        
+	    private void ProcessInheritDoc(XElement root)
+	    {
+	        // Gather all of the inherited symbols
+	        string[] inheritedCrefs = root.Elements("inheritdoc").Select(x => x.Attribute("cref")?.Value).Distinct().ToArray();
+	        while (inheritedCrefs.Length > 0)
+	        {
+                // Gather the documents
+	            List<IDocument> inheritedDocs = new List<IDocument>();
+	            foreach (string inheritedCref in inheritedCrefs)
+	            {
+                    // Locate the appropriate symbol
+	                if (string.IsNullOrEmpty(inheritedCref))
+	                {
+                        // Types and interfaces
+                        sadf // TODO
+	                }
+	                else
+	                {
+	                    // Explicit cref
+	                    IDocument inheritedDoc;
+	                    if (_commentIdToDocument.TryGetValue(inheritedCref, out inheritedDoc))
+	                    {
+	                        inheritedDocs.Add(inheritedDoc);
+	                    }
+	                }
+	            }
 
-        private IReadOnlyList<string> GetSeeAlsoHtml(IEnumerable<XElement> elements)
+                // Add the inherited comments
+	            foreach (IDocument inheritedDoc in inheritedDocs)
+                {
+                    string inheritedXml = inheritedDoc.String(CodeAnalysisKeys.CommentXml);
+                    if (!string.IsNullOrEmpty(inheritedXml))
+                    {
+                        asdf // TODO
+                    }
+                }
+
+                // Recursively inherit
+                inheritedCrefs = root.Elements("inheritdoc").Select(x => x.Attribute("cref")?.Value).Distinct().ToArray();
+	        }
+	    }
+
+	    private IReadOnlyList<string> GetSeeAlsoHtml(IEnumerable<XElement> elements)
         {
             try
             {
@@ -179,7 +231,7 @@ namespace Wyam.CodeAnalysis.Analysis
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <seealso> XML documentation comments for {_symbolName}: {ex.Message}");
+                Trace.Warning($"Could not parse <seealso> XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
             return ImmutableArray<string>.Empty;
         }
@@ -200,13 +252,13 @@ namespace Wyam.CodeAnalysis.Analysis
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbolName}: {ex.Message}");
+                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
             return string.Empty;
 		}
 
         // <exception>, <permission>, <param>, <typeParam>
-        private IReadOnlyList<ReferenceComment> GetReferenceComments(IEnumerable<XElement> elements, bool keyIsCref, string elementName)
+        private IReadOnlyList<ReferenceComment> GetReferenceComments(IEnumerable<XElement> elements, bool keyIsCref, string elementName, string[] validNames = null)
         {
             try
             {
@@ -216,16 +268,22 @@ namespace Wyam.CodeAnalysis.Analysis
                     string name = keyIsCref
                         ? GetRefNameAndLink(element, out link)
                         : (element.Attribute("name")?.Value ?? string.Empty);
+                    if (validNames != null && !validNames.Contains(name))
+                    {
+                        return null;
+                    }
                     ProcessChildElements(element);
                     AddCssClasses(element);
                     XmlReader reader = element.CreateReader();
                     reader.MoveToContent();
                     return new ReferenceComment(name, link, reader.ReadInnerXml());
-                }).ToImmutableArray();
+                })
+                .Where(x => x != null)
+                .ToImmutableArray();
             }
             catch (Exception ex)
             {
-                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbolName}: {ex.Message}");
+                Trace.Warning($"Could not parse <{elementName}> XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
             return ImmutableArray<ReferenceComment>.Empty;
         }
@@ -247,7 +305,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	        }
 	        catch (Exception ex)
             {
-                Trace.Warning($"Could not parse other XML documentation comments for {_symbolName}: {ex.Message}");
+                Trace.Warning($"Could not parse other XML documentation comments for {_symbol.Name}: {ex.Message}");
             }
 	        return ImmutableArray<OtherComment>.Empty;
 	    }

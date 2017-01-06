@@ -358,6 +358,63 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("\n    This is\n    <pre><code>with some code</code></pre>\n    a summary\n    <pre><code>more code</code></pre>\n    ", GetResult(results, "Green")["Summary"]);
             }
+            
+            [Test]
+            public void MethodWithParam()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        class Green
+                        {
+                            /// <param name=""bar"">comment</param>
+                            void Go(string bar)
+                            {
+                            }
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("bar",
+                    GetMember(results, "Green", "Go").List<ReferenceComment>("Params")[0].Name);
+                Assert.AreEqual("comment",
+                    GetMember(results, "Green", "Go").List<ReferenceComment>("Params")[0].Html);
+            }
+
+            [Test]
+            public void MethodWithMissingParam()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        class Green
+                        {
+                            /// <param name=""bar"">comment</param>
+                            void Go()
+                            {
+                            }
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                CollectionAssert.IsEmpty(GetMember(results, "Green", "Go").List<ReferenceComment>("Params"));
+            }
 
             [Test]
             public void MethodWithExceptionElement()
