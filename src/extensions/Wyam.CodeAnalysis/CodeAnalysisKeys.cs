@@ -21,6 +21,7 @@ namespace Wyam.CodeAnalysis
         public const string IsAbstract = nameof(IsAbstract); // bool
         public const string IsVirtual = nameof(IsVirtual); // bool
         public const string IsOverride = nameof(IsOverride); // bool
+        public const string CommentId = nameof(CommentId); // string
 
         // Namespace
         public const string MemberTypes = nameof(MemberTypes); // IReadOnlyList<IDocument>, only contains direct children, not all descendants

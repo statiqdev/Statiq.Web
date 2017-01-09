@@ -112,7 +112,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     {
                         // There's already a document for this symbol display name, add it to the symbol-to-document cache
                         _symbolToDocument.TryAdd(symbol, existing);
-                        MapCommentId(symbol, existing);
+                        MapCommentId(symbol.GetDocumentationCommentId(), existing);
                         return existing;
                     });
             }
@@ -330,11 +330,13 @@ namespace Wyam.CodeAnalysis.Analysis
         private IDocument AddDocumentCommon(ISymbol symbol, bool xmlDocumentation, MetadataItems items)
         {
             // Get universal metadata
+            string commentId = symbol.GetDocumentationCommentId();
             items.AddRange(new []
             {
                 // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
                 new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
                 new MetadataItem(CodeAnalysisKeys.SymbolId, _ => GetId(symbol), true),
+                new MetadataItem(CodeAnalysisKeys.CommentId, commentId),
                 new MetadataItem(CodeAnalysisKeys.Name, _ => symbol.Name),
                 new MetadataItem(CodeAnalysisKeys.FullName, _ => GetFullName(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.DisplayName, _ => GetDisplayName(symbol), true),
@@ -373,20 +375,19 @@ namespace Wyam.CodeAnalysis.Analysis
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(symbol, 
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), null, items));
-            MapCommentId(symbol, document);
+            MapCommentId(commentId, document);
 
             return document;
         }
 
         // Map the comment ID to the document so it can be found when processing comments
-        private void MapCommentId(ISymbol symbol, IDocument document)
+        private void MapCommentId(string commentId, IDocument document)
         {
             if (!_finished)
             {
-                string documentationCommentId = symbol.GetDocumentationCommentId();
-                if (documentationCommentId != null)
+                if (commentId != null)
                 {
-                    _commentIdToDocument.GetOrAdd(documentationCommentId, _ => document);
+                    _commentIdToDocument.GetOrAdd(commentId, _ => document);
                 }
             }
         }

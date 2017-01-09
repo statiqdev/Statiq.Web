@@ -1153,6 +1153,37 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("This is a summary.", GetResult(results, "Foo")["Summary"]);
             }
+
+            [Test]
+            public void InheritFromBaseClass()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        class Green
+                        {
+                        }
+
+                        /// <inheritdoc />
+                        class Blue : Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            // TODO: Does not enter infinite loop for circular inheriting w/ cref
         }
     }
 }

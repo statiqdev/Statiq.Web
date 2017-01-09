@@ -27,6 +27,9 @@
     <metadata name="SymbolId" type="string">
       A unique ID that identifies the symbol (can be used for generating folder paths, for example).
     </metadata>
+    <metadata name="CommentId" type="string">
+      A unique ID that identifies the symbol for documentation purposed.
+    </metadata>
     <metadata name="Symbol" type="ISymbol">
       The Roslyn <c>ISymbol</c> from which this document is derived. If the document represents a namespace, this metadata might contain more than one
       symbol since the namespaces documents consolidate same-named namespaces across input code and assemblies.

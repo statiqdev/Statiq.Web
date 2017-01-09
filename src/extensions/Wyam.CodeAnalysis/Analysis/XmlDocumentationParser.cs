@@ -64,19 +64,8 @@ namespace Wyam.CodeAnalysis.Analysis
             {
                 try
                 {
-                    // We shouldn't need a root element, the compiler adds a "<member name='Foo.Bar'>" root for us
-                    // unless we're using a custom XML documentation provider (I.e., for assembly docs), so add a root
-                    // and then ignore it if we got the root <member> element
-                    XDocument xml = XDocument.Parse($"<root>{documentationCommentXml}</root>", LoadOptions.PreserveWhitespace);
-                    XElement root = xml.Root;
-                    if (root != null 
-                        && root.Elements().Count() == 1
-                        && string.Equals(root.Elements().First().Name.LocalName, "member", StringComparison.OrdinalIgnoreCase))
-                    {
-                        root = root.Elements().First();
-                    }
-
                     // Process the elements
+                    XElement root = GetRootElement(documentationCommentXml);
                     if (root != null)
                     {
                         lock (_processLock)
@@ -84,8 +73,15 @@ namespace Wyam.CodeAnalysis.Analysis
                             _processActions = new List<Action>();
 
                             // Add inherited documentation, do this very first since it manipulates the root XML
-                            // can be removed if https://github.com/dotnet/roslyn/issues/67 gets resolved
-                            _processActions.Add(() => ProcessInheritDoc(root));
+                            _processActions.Add(() =>
+                            {
+                                HashSet<string> inheritedSymbolCommentIds = new HashSet<string>();
+                                IDocument symbolDocument;
+                                if (_symbolToDocument.TryGetValue(_symbol, out symbolDocument))
+                                {
+                                    ProcessInheritDoc(root, symbolDocument, root.Elements("inheritdoc").ToList(), inheritedSymbolCommentIds);
+                                }
+                            });
 
                             // <seealso> - get all descendant elements (even if they're nested),
                             // do this first since it will modify the comment XML to remove the <seealso> elements
@@ -175,28 +171,114 @@ namespace Wyam.CodeAnalysis.Analysis
 		        return this;
             }
 		}
-        
-	    private void ProcessInheritDoc(XElement root)
+
+        // We shouldn't need a root element, the compiler adds a "<member name='Foo.Bar'>" root for us
+        // unless we're using a custom XML documentation provider (I.e., for assembly docs), so add a root
+        // and then ignore it if we got the root <member> element
+        private XElement GetRootElement(string xml)
+        {
+            XDocument document = XDocument.Parse($"<root>{xml}</root>", LoadOptions.PreserveWhitespace);
+            XElement root = document.Root;
+            if (root != null
+                && root.Elements().Count() == 1
+                && string.Equals(root.Elements().First().Name.LocalName, "member", StringComparison.OrdinalIgnoreCase))
+            {
+                root = root.Elements().First();
+            }
+            return root;
+        }
+
+        // Can be removed if https://github.com/dotnet/roslyn/issues/67 gets resolved
+        // Modeled after Sandcastle implementation: http://tunnelvisionlabs.github.io/SHFB/docs-master/XMLCommentsGuide/html/86453FFB-B978-4A2A-9EB5-70E118CA8073.htm
+        private void ProcessInheritDoc(XElement root, IDocument currentDocument, List<XElement> inheritDocElements, HashSet<string> inheritedSymbolCommentIds)
 	    {
-	        // Gather all of the inherited symbols
-	        string[] inheritedCrefs = root.Elements("inheritdoc").Select(x => x.Attribute("cref")?.Value).Distinct().ToArray();
-	        while (inheritedCrefs.Length > 0)
+	        if (inheritDocElements.Count > 0)
 	        {
-                // Gather the documents
+                // Gather the documents (first in the list takes precedence)
 	            List<IDocument> inheritedDocs = new List<IDocument>();
-	            foreach (string inheritedCref in inheritedCrefs)
+	            foreach (XElement inheritDocElement in inheritDocElements)
 	            {
+                    // Remove from the parent
+	                inheritDocElement.Remove();
+
                     // Locate the appropriate symbol
-	                if (string.IsNullOrEmpty(inheritedCref))
+                    string inheritDocElementCref = inheritDocElement.Attribute("cref")?.Value;
+	                if (inheritDocElementCref == null && inheritedSymbolCommentIds.Add(currentDocument.String(CodeAnalysisKeys.CommentId)))
 	                {
-                        // Types and interfaces
-                        sadf // TODO
+	                    if (_symbol.Kind == SymbolKind.NamedType)
+	                    {
+                            // Types and interfaces
+
+                            // Inherit from all base types
+                            List<IDocument> baseTypeDocuments = currentDocument
+                                .DocumentList(CodeAnalysisKeys.BaseTypes)
+                                .Where(x => inheritedSymbolCommentIds.Add(x.String(CodeAnalysisKeys.CommentId)))
+                                .ToList();
+	                        if (baseTypeDocuments.Count > 0)
+	                        {
+	                            inheritedDocs.AddRange(baseTypeDocuments);
+	                        }
+
+                            // Inherit from all interfaces
+                            List<IDocument> interfaceDocuments = currentDocument
+                                .DocumentList(CodeAnalysisKeys.AllInterfaces)
+                                .Where(x => inheritedSymbolCommentIds.Add(x.String(CodeAnalysisKeys.CommentId)))
+                                .ToList();
+                            if (interfaceDocuments.Count > 0)
+                            {
+                                inheritedDocs.AddRange(interfaceDocuments);
+                            }
+                        }
+                        else if (_symbol.Kind == SymbolKind.Method && _symbol.Name == ((IMethodSymbol) _symbol).ContainingType.Name)
+	                    {
+                            // Constructor, check base type constructors for the same signature
+	                        string signature = currentDocument.String(CodeAnalysisKeys.DisplayName);
+	                        signature = signature.Substring(signature.IndexOf('('));
+                            foreach (IDocument baseTypeDocument in currentDocument.DocumentList(CodeAnalysisKeys.BaseTypes))
+                            {
+                                foreach (IDocument constructorDocument in baseTypeDocument.DocumentList(CodeAnalysisKeys.Constructors))
+                                {
+                                    string constructorSignature = constructorDocument.String(CodeAnalysisKeys.DisplayName);
+                                    constructorSignature = constructorSignature.Substring(constructorSignature.IndexOf('('));
+                                    if (signature == constructorSignature 
+                                        && inheritedSymbolCommentIds.Add(constructorDocument.String(CodeAnalysisKeys.CommentId)))
+                                    {
+                                        inheritedDocs.Add(constructorDocument);
+                                    }
+                                }
+                            }
+                        }
+                        else if (_symbol.Kind == SymbolKind.Method && _symbol.IsOverride)
+	                    {
+	                        // Override, get overridden method
+	                        IDocument overriddenMethodDocument = currentDocument.Document(CodeAnalysisKeys.OverriddenMethod);
+	                        if (overriddenMethodDocument != null 
+                                && inheritedSymbolCommentIds.Add(overriddenMethodDocument.String(CodeAnalysisKeys.CommentId)))
+	                        {
+	                            inheritedDocs.Add(overriddenMethodDocument);
+	                        }
+	                    }
+                        else if (_symbol.Kind == SymbolKind.Method)
+	                    {
+                            // Check if this is an interface implementation
+                            IMethodSymbol interfaceMethodSymbol = _symbol.ContainingType.AllInterfaces
+                                .SelectMany(x => x.GetMembers().OfType<IMethodSymbol>())
+                                .FirstOrDefault(x => _symbol.Equals(_symbol.ContainingType.FindImplementationForInterfaceMember(x)));
+	                        IDocument interfaceMethodDocument;
+	                        if (interfaceMethodSymbol != null 
+                                && _symbolToDocument.TryGetValue(interfaceMethodSymbol, out interfaceMethodDocument)
+                                && inheritedSymbolCommentIds.Add(interfaceMethodDocument.String(CodeAnalysisKeys.CommentId)))
+	                        {
+	                            inheritedDocs.Add(interfaceMethodDocument);
+	                        }
+                        }
 	                }
-	                else
+	                else if(inheritDocElementCref != null)
 	                {
 	                    // Explicit cref
 	                    IDocument inheritedDoc;
-	                    if (_commentIdToDocument.TryGetValue(inheritedCref, out inheritedDoc))
+	                    if (_commentIdToDocument.TryGetValue(inheritDocElementCref, out inheritedDoc)
+                            && inheritedSymbolCommentIds.Add(inheritedDoc.String(CodeAnalysisKeys.CommentId)))
 	                    {
 	                        inheritedDocs.Add(inheritedDoc);
 	                    }
@@ -209,12 +291,58 @@ namespace Wyam.CodeAnalysis.Analysis
                     string inheritedXml = inheritedDoc.String(CodeAnalysisKeys.CommentXml);
                     if (!string.IsNullOrEmpty(inheritedXml))
                     {
-                        asdf // TODO
+                        XElement inheritedRoot = GetRootElement(inheritedXml);
+                        if (inheritedRoot != null)
+                        {
+                            // Inherit elements other than <inheritdoc>
+                            List<XElement> inheritedInheritDocElements = new List<XElement>();
+                            foreach (XElement inheritedElement in inheritedRoot.Elements())
+                            {
+                                if (inheritedElement.Name == "inheritdoc")
+                                {
+                                    inheritedInheritDocElements.Add(inheritedElement);
+                                }
+                                else
+                                {
+                                    string inheritedElementCref = inheritedElement.Attribute("cref")?.Value;
+                                    string inheritedElementName = inheritedElement.Attribute("name")?.Value;
+                                    bool inherit = true;
+                                    foreach (XElement rootElement in root.Elements(inheritedElement.Name))
+                                    {
+                                        if (inheritedElementCref == null && inheritedElementName == null)
+                                        {
+                                            // Don't inherit if the name is the same and there's no distinguishing attributes
+                                            inherit = false;
+                                            break;
+                                        }
+                                        if (inheritedElementCref != null && inheritedElementCref == rootElement.Attribute("cref")?.Value)
+                                        {
+                                            // Don't inherit if the cref attribute is the same
+                                            inherit = false;
+                                            break;
+                                        }
+                                        if (inheritedElementName != null && inheritedElementName == rootElement.Attribute("name")?.Value)
+                                        {
+                                            // Don't inherit if the name attribute is the same
+                                            inherit = false;
+                                            break;
+                                        }
+                                    }
+                                    if (inherit)
+                                    {
+                                        root.Add(inheritedElement);
+                                    }
+                                }
+                            }
+
+                            // Recursively inherit <inheritdoc>
+                            if (inheritedInheritDocElements.Count > 0)
+                            {
+                                ProcessInheritDoc(root, inheritedDoc, inheritedInheritDocElements, inheritedSymbolCommentIds);
+                            }
+                        }
                     }
                 }
-
-                // Recursively inherit
-                inheritedCrefs = root.Elements("inheritdoc").Select(x => x.Attribute("cref")?.Value).Distinct().ToArray();
 	        }
 	    }
 
