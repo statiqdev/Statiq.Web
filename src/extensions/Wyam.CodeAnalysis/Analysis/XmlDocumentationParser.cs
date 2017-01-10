@@ -19,9 +19,9 @@ namespace Wyam.CodeAnalysis.Analysis
 	{
 	    private readonly IExecutionContext _context;
 	    private readonly ISymbol _symbol;
+	    private readonly Compilation _compilation;
 	    private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument;
-        private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument;
-		private readonly ConcurrentDictionary<string, string> _cssClasses;
+        private readonly ConcurrentDictionary<string, string> _cssClasses;
         private List<Action> _processActions; 
         private readonly object _processLock = new object();
 
@@ -46,16 +46,16 @@ namespace Wyam.CodeAnalysis.Analysis
 		public XmlDocumentationParser(
             IExecutionContext context,
             ISymbol symbol,
+            Compilation compilation, 
             ConcurrentDictionary<ISymbol, IDocument> symbolToDocument,
-            ConcurrentDictionary<string, IDocument> commentIdToDocument,
 			ConcurrentDictionary<string, string> cssClasses)
 		{
 		    _context = context;
 		    _symbol = symbol;
+            _compilation = compilation;
 		    _symbolToDocument = symbolToDocument;
-		    _commentIdToDocument = commentIdToDocument;
 			_cssClasses = cssClasses;
-        }
+		}
 
         // Returns a list of custom elements
 	    public IEnumerable<string> Parse(string documentationCommentXml)
@@ -73,15 +73,7 @@ namespace Wyam.CodeAnalysis.Analysis
                             _processActions = new List<Action>();
 
                             // Add inherited documentation, do this very first since it manipulates the root XML
-                            _processActions.Add(() =>
-                            {
-                                HashSet<string> inheritedSymbolCommentIds = new HashSet<string>();
-                                IDocument symbolDocument;
-                                if (_symbolToDocument.TryGetValue(_symbol, out symbolDocument))
-                                {
-                                    ProcessInheritDoc(root, symbolDocument, root.Elements("inheritdoc").ToList(), inheritedSymbolCommentIds);
-                                }
-                            });
+                            ProcessInheritDoc(root, _symbol, root.Elements("inheritdoc").ToList(), new HashSet<string>());
 
                             // <seealso> - get all descendant elements (even if they're nested),
                             // do this first since it will modify the comment XML to remove the <seealso> elements
@@ -95,7 +87,7 @@ namespace Wyam.CodeAnalysis.Analysis
                                 _processActions.Add(() => SeeAlso = GetSeeAlsoHtml(seeAlsoElements));
                             }
 
-                            // All other top-level elements
+                            // All other top-level elements as individual actions so we don't process those elements if they don't exist
                             List<IGrouping<string, XElement>> otherElements = new List<IGrouping<string, XElement>>();
                             foreach (IGrouping<string, XElement> group in root.Elements().GroupBy(x => x.Name.ToString()))
                             {
@@ -190,12 +182,12 @@ namespace Wyam.CodeAnalysis.Analysis
 
         // Can be removed if https://github.com/dotnet/roslyn/issues/67 gets resolved
         // Modeled after Sandcastle implementation: http://tunnelvisionlabs.github.io/SHFB/docs-master/XMLCommentsGuide/html/86453FFB-B978-4A2A-9EB5-70E118CA8073.htm
-        private void ProcessInheritDoc(XElement root, IDocument currentDocument, List<XElement> inheritDocElements, HashSet<string> inheritedSymbolCommentIds)
+        private void ProcessInheritDoc(XElement root, ISymbol currentSymbol, List<XElement> inheritDocElements, HashSet<string> inheritedSymbolCommentIds)
 	    {
 	        if (inheritDocElements.Count > 0)
 	        {
                 // Gather the documents (first in the list takes precedence)
-	            List<IDocument> inheritedDocs = new List<IDocument>();
+	            List<ISymbol> inheritedSymbols = new List<ISymbol>();
 	            foreach (XElement inheritDocElement in inheritDocElements)
 	            {
                     // Remove from the parent
@@ -203,92 +195,90 @@ namespace Wyam.CodeAnalysis.Analysis
 
                     // Locate the appropriate symbol
                     string inheritDocElementCref = inheritDocElement.Attribute("cref")?.Value;
-	                if (inheritDocElementCref == null && inheritedSymbolCommentIds.Add(currentDocument.String(CodeAnalysisKeys.CommentId)))
+	                if (inheritDocElementCref == null && inheritedSymbolCommentIds.Add(currentSymbol.GetDocumentationCommentId()))
 	                {
-	                    if (_symbol.Kind == SymbolKind.NamedType)
+                        INamedTypeSymbol currentTypeSymbol = currentSymbol as INamedTypeSymbol;
+                        IMethodSymbol currentMethodSymbol = currentSymbol as IMethodSymbol;
+	                    if (currentTypeSymbol != null)
 	                    {
-                            // Types and interfaces
-
-                            // Inherit from all base types
-                            List<IDocument> baseTypeDocuments = currentDocument
-                                .DocumentList(CodeAnalysisKeys.BaseTypes)
-                                .Where(x => inheritedSymbolCommentIds.Add(x.String(CodeAnalysisKeys.CommentId)))
+                            // Types and interfaces, inherit from all base types
+                            List<INamedTypeSymbol> baseTypeSymbols = AnalyzeSymbolVisitor.GetBaseTypes(currentTypeSymbol)
+                                .Where(x => inheritedSymbolCommentIds.Add(x.GetDocumentationCommentId()))
                                 .ToList();
-	                        if (baseTypeDocuments.Count > 0)
+	                        if (baseTypeSymbols.Count > 0)
 	                        {
-	                            inheritedDocs.AddRange(baseTypeDocuments);
+                                inheritedSymbols.AddRange(baseTypeSymbols);
 	                        }
 
-                            // Inherit from all interfaces
-                            List<IDocument> interfaceDocuments = currentDocument
-                                .DocumentList(CodeAnalysisKeys.AllInterfaces)
-                                .Where(x => inheritedSymbolCommentIds.Add(x.String(CodeAnalysisKeys.CommentId)))
+                            // Then inherit from all interfaces
+                            List<INamedTypeSymbol> interfaceSymbols = currentTypeSymbol.AllInterfaces
+                                .Where(x => inheritedSymbolCommentIds.Add(x.GetDocumentationCommentId()))
                                 .ToList();
-                            if (interfaceDocuments.Count > 0)
+                            if (interfaceSymbols.Count > 0)
                             {
-                                inheritedDocs.AddRange(interfaceDocuments);
+                                inheritedSymbols.AddRange(interfaceSymbols);
                             }
                         }
-                        else if (_symbol.Kind == SymbolKind.Method && _symbol.Name == ((IMethodSymbol) _symbol).ContainingType.Name)
+                        else if (currentMethodSymbol != null && currentMethodSymbol.Name == currentMethodSymbol.ContainingType.Name)
 	                    {
                             // Constructor, check base type constructors for the same signature
-	                        string signature = currentDocument.String(CodeAnalysisKeys.DisplayName);
+	                        string signature = AnalyzeSymbolVisitor.GetFullName(currentMethodSymbol);
 	                        signature = signature.Substring(signature.IndexOf('('));
-                            foreach (IDocument baseTypeDocument in currentDocument.DocumentList(CodeAnalysisKeys.BaseTypes))
+                            foreach (INamedTypeSymbol baseTypeSymbol in AnalyzeSymbolVisitor.GetBaseTypes(currentMethodSymbol.ContainingType))
                             {
-                                foreach (IDocument constructorDocument in baseTypeDocument.DocumentList(CodeAnalysisKeys.Constructors))
+                                foreach (IMethodSymbol constructorSymbol in baseTypeSymbol.Constructors.Where(x => !x.IsImplicitlyDeclared))
                                 {
-                                    string constructorSignature = constructorDocument.String(CodeAnalysisKeys.DisplayName);
+                                    string constructorSignature = AnalyzeSymbolVisitor.GetFullName(constructorSymbol);
                                     constructorSignature = constructorSignature.Substring(constructorSignature.IndexOf('('));
                                     if (signature == constructorSignature 
-                                        && inheritedSymbolCommentIds.Add(constructorDocument.String(CodeAnalysisKeys.CommentId)))
+                                        && inheritedSymbolCommentIds.Add(constructorSymbol.GetDocumentationCommentId()))
                                     {
-                                        inheritedDocs.Add(constructorDocument);
+                                        inheritedSymbols.Add(constructorSymbol);
                                     }
                                 }
                             }
                         }
-                        else if (_symbol.Kind == SymbolKind.Method && _symbol.IsOverride)
+                        else if (currentMethodSymbol != null && currentMethodSymbol.IsOverride)
 	                    {
-	                        // Override, get overridden method
-	                        IDocument overriddenMethodDocument = currentDocument.Document(CodeAnalysisKeys.OverriddenMethod);
-	                        if (overriddenMethodDocument != null 
-                                && inheritedSymbolCommentIds.Add(overriddenMethodDocument.String(CodeAnalysisKeys.CommentId)))
+                            // Override, get overridden method
+                            IMethodSymbol overriddenMethodSymbol = currentMethodSymbol.OverriddenMethod;
+	                        if (overriddenMethodSymbol != null 
+                                && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
 	                        {
-	                            inheritedDocs.Add(overriddenMethodDocument);
+	                            inheritedSymbols.Add(overriddenMethodSymbol);
 	                        }
 	                    }
-                        else if (_symbol.Kind == SymbolKind.Method)
+                        else if (currentMethodSymbol != null)
 	                    {
                             // Check if this is an interface implementation
-                            IMethodSymbol interfaceMethodSymbol = _symbol.ContainingType.AllInterfaces
+                            IMethodSymbol interfaceMethodSymbol = currentMethodSymbol.ContainingType.AllInterfaces
                                 .SelectMany(x => x.GetMembers().OfType<IMethodSymbol>())
-                                .FirstOrDefault(x => _symbol.Equals(_symbol.ContainingType.FindImplementationForInterfaceMember(x)));
-	                        IDocument interfaceMethodDocument;
+                                .FirstOrDefault(x => currentSymbol.Equals(currentSymbol.ContainingType.FindImplementationForInterfaceMember(x)));
 	                        if (interfaceMethodSymbol != null 
-                                && _symbolToDocument.TryGetValue(interfaceMethodSymbol, out interfaceMethodDocument)
-                                && inheritedSymbolCommentIds.Add(interfaceMethodDocument.String(CodeAnalysisKeys.CommentId)))
+                                && inheritedSymbolCommentIds.Add(interfaceMethodSymbol.GetDocumentationCommentId()))
 	                        {
-	                            inheritedDocs.Add(interfaceMethodDocument);
+	                            inheritedSymbols.Add(interfaceMethodSymbol);
 	                        }
                         }
 	                }
 	                else if(inheritDocElementCref != null)
 	                {
 	                    // Explicit cref
-	                    IDocument inheritedDoc;
-	                    if (_commentIdToDocument.TryGetValue(inheritDocElementCref, out inheritedDoc)
-                            && inheritedSymbolCommentIds.Add(inheritedDoc.String(CodeAnalysisKeys.CommentId)))
-	                    {
-	                        inheritedDocs.Add(inheritedDoc);
-	                    }
+                        if(inheritedSymbolCommentIds.Add(inheritDocElementCref))
+                        {
+                            ISymbol inheritedSymbol = DocumentationCommentId.GetFirstSymbolForDeclarationId(inheritDocElementCref, _compilation);
+	                        if (inheritedSymbol != null)
+	                        {
+	                            inheritedSymbols.Add(inheritedSymbol);
+	                        }
+                        }
 	                }
 	            }
 
                 // Add the inherited comments
-	            foreach (IDocument inheritedDoc in inheritedDocs)
-                {
-                    string inheritedXml = inheritedDoc.String(CodeAnalysisKeys.CommentXml);
+	            foreach (ISymbol inheritedSymbol in inheritedSymbols)
+	            {
+	                string inheritedXml = inheritedSymbol.GetDocumentationCommentXml(expandIncludes: true);
                     if (!string.IsNullOrEmpty(inheritedXml))
                     {
                         XElement inheritedRoot = GetRootElement(inheritedXml);
@@ -338,7 +328,7 @@ namespace Wyam.CodeAnalysis.Analysis
                             // Recursively inherit <inheritdoc>
                             if (inheritedInheritDocElements.Count > 0)
                             {
-                                ProcessInheritDoc(root, inheritedDoc, inheritedInheritDocElements, inheritedSymbolCommentIds);
+                                ProcessInheritDoc(root, inheritedSymbol, inheritedInheritDocElements, inheritedSymbolCommentIds);
                             }
                         }
                     }
@@ -464,16 +454,20 @@ namespace Wyam.CodeAnalysis.Analysis
 		    }
 
             // Check for cref
-            XAttribute crefAttribute = element.Attribute("cref");
-			IDocument crefDoc;
-			if (crefAttribute != null && _commentIdToDocument.TryGetValue(crefAttribute.Value, out crefDoc))
-			{
-			    string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
-				link = $"<code><a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{WebUtility.HtmlEncode(name)}</a></code>";
-			    return name;
-			}
-			link = null;
-			return crefAttribute?.Value.Substring(crefAttribute.Value.IndexOf(':') + 1) ?? string.Empty;
+            string cref = element.Attribute("cref")?.Value;
+		    if (cref != null)
+		    {
+                IDocument crefDoc;
+		        ISymbol crefSymbol = DocumentationCommentId.GetFirstSymbolForDeclarationId(cref, _compilation);
+		        if (crefSymbol != null && _symbolToDocument.TryGetValue(crefSymbol, out crefDoc))
+		        {
+		            string name = crefDoc.String(CodeAnalysisKeys.DisplayName);
+		            link = $"<code><a href=\"{_context.GetLink(crefDoc.FilePath(Keys.WritePath))}\">{WebUtility.HtmlEncode(name)}</a></code>";
+		            return name;
+		        }
+		    }
+		    link = null;
+			return cref?.Substring(cref.IndexOf(':') + 1) ?? string.Empty;
 		}
 
 		// Adds/updates CSS classes for all nested elements

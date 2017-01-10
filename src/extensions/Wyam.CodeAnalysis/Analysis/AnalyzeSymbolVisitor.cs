@@ -24,7 +24,6 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, IDocument> _namespaceDisplayNameToDocument = new ConcurrentDictionary<string, IDocument>();
         private readonly ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>> _namespaceDisplayNameToSymbols = new ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>>();
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
-        private readonly ConcurrentDictionary<string, IDocument> _commentIdToDocument = new ConcurrentDictionary<string, IDocument>();
         private readonly ConcurrentHashSet<IMethodSymbol> _extensionMethods = new ConcurrentHashSet<IMethodSymbol>();
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
 
@@ -112,7 +111,6 @@ namespace Wyam.CodeAnalysis.Analysis
                     {
                         // There's already a document for this symbol display name, add it to the symbol-to-document cache
                         _symbolToDocument.TryAdd(symbol, existing);
-                        MapCommentId(symbol.GetDocumentationCommentId(), existing);
                         return existing;
                     });
             }
@@ -266,9 +264,9 @@ namespace Wyam.CodeAnalysis.Analysis
         private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within) => 
             (IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within });
 
-        private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol type)
+        internal static IEnumerable<INamedTypeSymbol> GetBaseTypes(ITypeSymbol type)
         {
-            ITypeSymbol current = type.BaseType;
+            INamedTypeSymbol current = type.BaseType;
             while (current != null)
             {
                 yield return current;
@@ -375,21 +373,8 @@ namespace Wyam.CodeAnalysis.Analysis
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(symbol, 
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), null, items));
-            MapCommentId(commentId, document);
 
             return document;
-        }
-
-        // Map the comment ID to the document so it can be found when processing comments
-        private void MapCommentId(string commentId, IDocument document)
-        {
-            if (!_finished)
-            {
-                if (commentId != null)
-                {
-                    _commentIdToDocument.GetOrAdd(commentId, _ => document);
-                }
-            }
         }
 
         private void AddXmlDocumentation(ISymbol symbol, MetadataItems metadata)
@@ -399,7 +384,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 ? symbol.GetDocumentationCommentXml(expandIncludes: true)
                 : GetNamespaceDocumentationCommentXml(namespaceSymbol);
             XmlDocumentationParser xmlDocumentationParser
-                = new XmlDocumentationParser(_context, symbol, _symbolToDocument, _commentIdToDocument, _cssClasses);
+                = new XmlDocumentationParser(_context, symbol, _compilation, _symbolToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
 
             // Add standard HTML elements
@@ -497,7 +482,7 @@ namespace Wyam.CodeAnalysis.Analysis
             return BitConverter.ToString(BitConverter.GetBytes(Crc32.Calculate(symbol.GetDocumentationCommentId() ?? GetFullName(symbol)))).Replace("-", string.Empty);
         }
 
-        private static string GetFullName(ISymbol symbol)
+        internal static string GetFullName(ISymbol symbol)
         {
             return symbol.ToDisplayString(new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
