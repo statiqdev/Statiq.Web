@@ -1183,7 +1183,332 @@ namespace Wyam.CodeAnalysis.Tests
                 Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
             }
 
-            // TODO: Does not enter infinite loop for circular inheriting w/ cref
+            [Test]
+            public void InheritFromCref()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        class Green
+                        {
+                        }
+
+                        /// <inheritdoc cref=""Green"" />
+                        class Blue
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void CircularInheritdoc()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        /// <inheritdoc cref=""Blue"" />
+                        class Green
+                        {
+                        }
+
+                        /// <inheritdoc cref=""Green"" />
+                        class Blue
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void RecursiveInheritdoc()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        class Red
+                        {
+                        }
+
+                        /// <inheritdoc cref=""Red"" />
+                        class Green
+                        {
+                        }
+
+                        /// <inheritdoc cref=""Green"" />
+                        class Blue
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void InheritDoesNotOverrideExistingSummary()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        class Green
+                        {
+                        }
+
+                        /// <inheritdoc />
+                        /// <summary>Blue summary.</summary>
+                        class Blue : Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Blue summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromOverriddenMethod()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Green summary.</summary>
+                        class Green
+                        {
+                            /// <summary>Base summary.</summary>
+                            public virtual void Foo() {}
+                        }
+
+                        /// <summary>Blue summary.</summary>
+                        class Blue : Green
+                        {
+                            /// <inheritdoc />
+                            public override void Foo() {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Base summary.", GetMember(results, "Blue", "Foo")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromOverriddenMethodWithParams()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Green summary.</summary>
+                        class Green
+                        {
+                            /// <param name=""a"">AAA</param>
+                            /// <param name=""b"">BBB</param>
+                            public virtual void Foo(string a, string b) {}
+                        }
+
+                        /// <summary>Blue summary.</summary>
+                        class Blue : Green
+                        {
+                            /// <inheritdoc />
+                            /// <param name=""b"">XXX</param>
+                            public override void Foo(string a, string b) {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("b",
+                    GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[0].Name);
+                Assert.AreEqual("XXX",
+                    GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[0].Html);
+                Assert.AreEqual("a",
+                    GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[1].Name);
+                Assert.AreEqual("AAA",
+                    GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[1].Html);
+            }
+
+            [Test]
+            public void InheritFromInterface()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Green summary.</summary>
+                        interface IGreen
+                        {
+                        }
+
+                        /// <inheritdoc />
+                        class Blue : IGreen
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Green summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromMultipleInterfaces()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Red summary.</summary>
+                        interface IRed
+                        {
+                        }
+
+                        interface IGreen
+                        {
+                        }
+
+                        /// <inheritdoc />
+                        class Blue : IGreen, IRed
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Red summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromMultipleInterfacesWithMultipleMatches()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Red summary.</summary>
+                        interface IRed
+                        {
+                        }
+
+                        /// <summary>Green summary.</summary>
+                        interface IGreen
+                        {
+                        }
+
+                        /// <inheritdoc />
+                        class Blue : IGreen, IRed
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Green summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromImplementedMethod()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Green summary.</summary>
+                        interface IGreen
+                        {
+                            /// <summary>Interface summary.</summary>
+                            void Foo();
+                        }
+
+                        /// <summary>Blue summary.</summary>
+                        class Blue : IGreen
+                        {
+                            /// <inheritdoc />
+                            public void Foo() {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Interface summary.", GetMember(results, "Blue", "Foo")["Summary"]);
+            }
         }
     }
 }
