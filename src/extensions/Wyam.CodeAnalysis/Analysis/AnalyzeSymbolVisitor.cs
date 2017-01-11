@@ -261,8 +261,18 @@ namespace Wyam.CodeAnalysis.Analysis
         // Helpers below...
 
         // This was helpful: http://stackoverflow.com/a/30445814/807064
-        private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within) => 
-            (IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within });
+        private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within)
+        {
+            List<ISymbol> members = ((IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within })).ToList();
+           
+            // Remove overridden symbols
+            ImmutableHashSet<ISymbol> remove = members
+                .Select(x => (ISymbol)(x as IMethodSymbol)?.OverriddenMethod ?? (x as IPropertySymbol)?.OverriddenProperty)
+                .Where(x => x != null)
+                .ToImmutableHashSet();
+            members.RemoveAll(x => remove.Contains(x));
+            return members;
+        }
 
         internal static IEnumerable<INamedTypeSymbol> GetBaseTypes(ITypeSymbol type)
         {
