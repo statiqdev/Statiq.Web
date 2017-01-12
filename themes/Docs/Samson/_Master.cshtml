@@ -17,7 +17,6 @@
         <link href="//fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,400i,700,700i" rel="stylesheet">
         <link href="@Context.GetLink("/assets/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
         <link href="@Context.GetLink("/assets/css/override.css")" rel="stylesheet" />
-        <script src="@Context.GetLink("/assets/js/turbolinks.js")"></script>
         <script src="@Context.GetLink("/assets/js/jQuery-2.2.3.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/bootstrap.min.js")"></script>        
         <script src="@Context.GetLink("/assets/js/app.min.js")"></script>         
@@ -133,14 +132,13 @@
         </div>
         <a href="javascript:" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
         @Html.Partial("_Bottom")
-        <script>
+        <script>           
             // Close the sidebar if we select an anchor link
             $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
                 $(document.body).removeClass('sidebar-open');
             });
-
-            // Called after Turbolinks page load
-            document.addEventListener("turbolinks:load", function() {       
+            
+            $(document).load(function() {
                 mermaid.initialize(
                 {
                     flowchart:
@@ -155,13 +153,8 @@
                 $('pre code').each(function(i, block) {
                     hljs.highlightBlock(block);
                 });  
-                
-                $.AdminLTE.layout.activate();                
-                $("body").removeClass("hold-transition");
-
-                // This reinits all the Bootstrap JS
-                $(window).trigger('load');
             });
+            hljs.initHighlightingOnLoad();
 
             // Back to top
             $(window).scroll(function() {
