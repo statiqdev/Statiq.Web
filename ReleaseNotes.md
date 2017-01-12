@@ -1,3 +1,12 @@
+# 0.15.8
+
+- [Refactoring] Removed Turbolinks from the docs theme due to some oddness with JavaScript loading
+- [Fix] Removes overridden members from the members collection in `CodeAnalysis` module
+- [Refactoring] Moved remarks section up in docs theme
+- [Feature] Added `_Head.cshtml` override file to the blog themes
+- [Feature] Support for `<inheritdoc/>` in the `CodeAnalysis` module and docs recipe (#364)
+- [Refactoring] Updated Markdig version
+
 # 0.15.7
 
 - [Fix] Fixed a bug with new docs recipe package downloads
