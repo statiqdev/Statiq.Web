@@ -72,9 +72,9 @@ namespace Wyam.Core.Modules.Contents
 
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the resulting
-        /// documents will be passed to the delegate together with the current Match. The result replaces all occurrences of the search string in every input document
-        /// (possibly creating more than one output document for each input document).
+        /// Replaces all occurrences of the search string in every input document 
+        /// with the string value of the objects returned by the delegate. The delegate wil be called
+        /// for each found Match.
         /// </summary>
         /// <param name="search">The string to search for. (Interpreted as a regular expression)</param>
         /// <param name="contentFinder">A deleget thet selects the content that will replace the search string.</param>
