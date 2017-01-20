@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules.Contents
         private readonly string _search;
         private bool _isRegex;
         private RegexOptions _regexOptions = RegexOptions.None;
-        private Func<Match, object> _contentFinder;
+        private readonly Func<Match, object> _contentFinder;
 
         /// <summary>
         /// Replaces all occurrences of the search string in every input document 
@@ -73,12 +73,11 @@ namespace Wyam.Core.Modules.Contents
 
         /// <summary>
         /// Replaces all occurrences of the search string in every input document 
-        /// with the string value of the objects returned by the delegate. The delegate wil be called
-        /// for each found Match.
+        /// with the string value of the objects returned by the delegate. The delegate will be called
+        /// for each Match in the supplied regular expression.
         /// </summary>
-        /// <param name="search">The string to search for. (Interpreted as a regular expression)</param>
-        /// <param name="contentFinder">A deleget thet selects the content that will replace the search string.</param>
-        /// <param name="modules">Modules that output the content to replace the search string with.</param>
+        /// <param name="search">The string to search for (interpreted as a regular expression).</param>
+        /// <param name="contentFinder">A delegate that returns the content to replace the match.</param>
         public Replace(string search, Func<Match, object> contentFinder)
             : base(null as object)
         {
@@ -114,7 +113,9 @@ namespace Wyam.Core.Modules.Contents
             {
                 Match match = Regex.Match(input.Content, _search, _regexOptions);
                 if (!match.Success)
-                    return new[] { input };
+                {
+                    return new[] {input};
+                }
                 string currentDocumentContent = input.Content;
                 while (match.Success)
                 {
