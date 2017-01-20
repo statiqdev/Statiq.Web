@@ -23,8 +23,12 @@
         <link href="@Context.GetLink("/assets/css/override.css")" rel="stylesheet" />
 
 		<meta name="description" content="@Context.String(BlogKeys.Description)" />
-		<link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink("/feed.rss")" />
-		<link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink("/feed.atom")" />
+		@if (Context.String(BlogKeys.RssPath) != null) {
+		<link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.RssPath))" />
+		}
+		@if (Context.String(BlogKeys.AtomPath) != null) {
+		<link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" />
+		}
 		<link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
 		<link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
 
