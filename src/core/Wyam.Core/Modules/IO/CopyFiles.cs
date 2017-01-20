@@ -33,6 +33,7 @@ namespace Wyam.Core.Modules.IO
         private readonly string[] _patterns;
         private Func<IFile, FilePath> _destinationPath;
         private Func<IFile, bool> _predicate = null;
+        private Func<IFile, FilePath> _pathFilter;
 
         /// <summary>
         /// Copies all files that match the specified globbing patterns and/or absolute paths. This allows you to specify different 
@@ -98,11 +99,26 @@ namespace Wyam.Core.Modules.IO
             return this;
         }
 
+        /// <summary>
+        /// Specifies a filter for the destination path
+        /// </summary>
+        /// <param name="filter">A delegate that specifies a filter for the path.</param>
+        public CopyFiles WithPathFilter(Func<IFile, FilePath> pathFilter)
+        {
+            if (pathFilter == null)
+            {
+                throw new ArgumentNullException(nameof(pathFilter));
+            }
+
+            _pathFilter = pathFilter;
+            return this;
+        }
+
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _patterns != null
                 ? Execute(null, _patterns, context)
-                : inputs.AsParallel().SelectMany(input => 
+                : inputs.AsParallel().SelectMany(input =>
                     Execute(input, _patternsDelegate.Invoke<string[]>(input, context), context));
         }
 
@@ -129,6 +145,13 @@ namespace Wyam.Core.Modules.IO
                             destination = context.FileSystem.GetOutputFile(_destinationPath(file));
                         }
 
+
+                        // Run the path filter
+                        if (_pathFilter != null)
+                        {
+                            destination = context.FileSystem.GetOutputFile(_pathFilter(destination));
+                        }
+
                         // Copy to the destination
                         file.CopyTo(destination);
                         Trace.Verbose("Copied file {0} to {1}", file.Path.FullPath, destination.Path.FullPath);
@@ -143,6 +166,6 @@ namespace Wyam.Core.Modules.IO
                     .Where(x => x != null);
             }
             return Array.Empty<IDocument>();
-        } 
+        }
     }
 }
