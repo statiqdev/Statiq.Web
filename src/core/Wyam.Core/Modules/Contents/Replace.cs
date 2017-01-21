@@ -4,6 +4,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using System.Text.RegularExpressions;
+using System;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -16,6 +17,7 @@ namespace Wyam.Core.Modules.Contents
         private readonly string _search;
         private bool _isRegex;
         private RegexOptions _regexOptions = RegexOptions.None;
+        private readonly Func<Match, object> _contentFinder;
 
         /// <summary>
         /// Replaces all occurrences of the search string in every input document 
@@ -49,7 +51,7 @@ namespace Wyam.Core.Modules.Contents
         /// </summary>
         /// <param name="search">The string to search for.</param>
         /// <param name="content">A delegate that returns the content to replace the search string with.</param>
-        public Replace(string search, DocumentConfig content) 
+        public Replace(string search, DocumentConfig content)
             : base(content)
         {
             _search = search;
@@ -67,6 +69,23 @@ namespace Wyam.Core.Modules.Contents
         {
             _search = search;
         }
+
+
+        /// <summary>
+        /// Replaces all occurrences of the search string in every input document 
+        /// with the string value of the objects returned by the delegate. The delegate will be called
+        /// for each Match in the supplied regular expression.
+        /// </summary>
+        /// <param name="search">The string to search for (interpreted as a regular expression).</param>
+        /// <param name="contentFinder">A delegate that returns the content to replace the match.</param>
+        public Replace(string search, Func<Match, object> contentFinder)
+            : base(null as object)
+        {
+            _search = search;
+            _contentFinder = contentFinder;
+            _isRegex = true;
+        }
+
 
         /// <summary>
         /// Indicates that the search string(s) should be treated as a regular expression(s)
@@ -89,6 +108,23 @@ namespace Wyam.Core.Modules.Contents
             if (string.IsNullOrEmpty(_search))
             {
                 return new[] { input };
+            }
+            if (_contentFinder != null)
+            {
+                Match match = Regex.Match(input.Content, _search, _regexOptions);
+                if (!match.Success)
+                {
+                    return new[] {input};
+                }
+                string currentDocumentContent = input.Content;
+                while (match.Success)
+                {
+                    object result = _contentFinder(match);
+                    currentDocumentContent = currentDocumentContent.Remove(match.Index, match.Length);
+                    currentDocumentContent = currentDocumentContent.Insert(match.Index, result.ToString());
+                    match = Regex.Match(currentDocumentContent, _search, _regexOptions);
+                }
+                return new[] { context.GetDocument(input, currentDocumentContent) };
             }
             return new[] {
                 context.GetDocument(input,

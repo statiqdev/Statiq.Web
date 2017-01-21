@@ -31,7 +31,7 @@ namespace Wyam.Core.Modules.IO
     {
         private readonly DocumentConfig _patternsDelegate;
         private readonly string[] _patterns;
-        private Func<IFile, FilePath> _destinationPath;
+        private Func<IFile, IFile, FilePath> _destinationPath;
         private Func<IFile, bool> _predicate = null;
 
         /// <summary>
@@ -86,8 +86,31 @@ namespace Wyam.Core.Modules.IO
         /// file path (including file name) of the destination file. If the delegate returns 
         /// <c>null</c> for a particular file, that file will not be copied.
         /// </summary>
-        /// <param name="destinationPath">A delegate that specifies an alternate destination.</param>
+        /// <param name="destinationPath">A delegate that specifies an alternate destination. 
+        /// The parameter contains the source <see cref="IFile"/>.</param>
         public CopyFiles To(Func<IFile, FilePath> destinationPath)
+        {
+            if (destinationPath == null)
+            {
+                throw new ArgumentNullException(nameof(destinationPath));
+            }
+
+            _destinationPath = (source, destination) => destinationPath(source);
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies an alternate destination path for each file (by default files are copied to their 
+        /// same relative path in the output directory). The output of the function should be the full 
+        /// file path (including file name) of the destination file. If the delegate returns 
+        /// <c>null</c> for a particular file, that file will not be copied. This overload allows you to
+        /// view the <see cref="IFile"/> where the module would normally have copied the file to and then
+        /// manipulate it (or not) as appropriate.
+        /// </summary>
+        /// <param name="destinationPath">A delegate that specifies an alternate destination. 
+        /// The first parameter contains the source <see cref="IFile"/> and the second contains
+        /// an <see cref="IFile"/> representing the calculated destination.</param>
+        public CopyFiles To(Func<IFile, IFile, FilePath> destinationPath)
         {
             if (destinationPath == null)
             {
@@ -102,7 +125,7 @@ namespace Wyam.Core.Modules.IO
         {
             return _patterns != null
                 ? Execute(null, _patterns, context)
-                : inputs.AsParallel().SelectMany(input => 
+                : inputs.AsParallel().SelectMany(input =>
                     Execute(input, _patternsDelegate.Invoke<string[]>(input, context), context));
         }
 
@@ -116,17 +139,15 @@ namespace Wyam.Core.Modules.IO
                     .Where(x => _predicate == null || _predicate(x))
                     .Select(file =>
                     {
-                        // Get the destination file
-                        IFile destination = null;
-                        if (_destinationPath == null)
+                        // Get the default destination file
+                        DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
+                        FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
+                        IFile destination = context.FileSystem.GetOutputFile(relativePath);
+
+                        // Calculate an alternate destination if needed
+                        if (_destinationPath != null)
                         {
-                            DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
-                            FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
-                            destination = context.FileSystem.GetOutputFile(relativePath);
-                        }
-                        else
-                        {
-                            destination = context.FileSystem.GetOutputFile(_destinationPath(file));
+                            destination = context.FileSystem.GetOutputFile(_destinationPath(file, destination));
                         }
 
                         // Copy to the destination
@@ -143,6 +164,6 @@ namespace Wyam.Core.Modules.IO
                     .Where(x => x != null);
             }
             return Array.Empty<IDocument>();
-        } 
+        }
     }
 }
