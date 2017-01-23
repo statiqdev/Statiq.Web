@@ -499,6 +499,7 @@ namespace Wyam.CodeAnalysis.Analysis
 		// Groups all the nested element processing together so it can be used from multiple parent elements
 		private void ProcessChildElements(XElement parentElement)
 		{
+		    ProcessDescendantCdataElements(parentElement);
 			ProcessChildCodeElements(parentElement);
 			ProcessChildCElements(parentElement);
 			ProcessChildListElements(parentElement);
@@ -507,6 +508,19 @@ namespace Wyam.CodeAnalysis.Analysis
 			ProcessChildParamrefAndTypeparamrefElements(parentElement, "typeparamref");
 			ProcessChildSeeElements(parentElement);
 		}
+
+        // CDATA
+        // Should escape all CDATA content and remove the CDATA element
+	    private void ProcessDescendantCdataElements(XElement parentElement)
+	    {
+            // Take them one at a time in case we erase one during the processing
+	        XCData cdata = parentElement.DescendantNodes().OfType<XCData>().FirstOrDefault();
+	        while (cdata != null)
+	        {
+                cdata.ReplaceWith(new XText(cdata.Value.Trim()));
+                cdata = parentElement.DescendantNodes().OfType<XCData>().FirstOrDefault();
+            }
+	    }
 
 		// <code>
         // Wrap with <pre> and trim margins off each line

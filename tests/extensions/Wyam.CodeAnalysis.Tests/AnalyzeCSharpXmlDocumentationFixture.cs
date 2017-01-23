@@ -1509,6 +1509,64 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("Interface summary.", GetMember(results, "Blue", "Foo")["Summary"]);
             }
+
+            [Test]
+            public void SummaryWithCdata()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>
+                        /// <![CDATA[
+                        /// <foo>bar</foo>
+                        /// ]]>
+                        /// </summary>
+                        class Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("\n    &lt;foo&gt;bar&lt;/foo&gt;\n    ", GetResult(results, "Green")["Summary"]);
+            }
+
+            [Test]
+            public void ExampleCodeWithCdata()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <example>
+                        /// <code>
+                        /// <![CDATA[
+                        /// <foo>bar</foo>
+                        /// ]]>
+                        /// </code>
+                        /// </example>
+                        class Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("\n    <pre><code>&lt;foo&gt;bar&lt;/foo&gt;</code></pre>\n    ", GetResult(results, "Green")["Example"]);
+            }
         }
     }
 }
