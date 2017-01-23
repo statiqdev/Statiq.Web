@@ -79,7 +79,7 @@ hr.small {
     color: rgba(255, 255, 255, 0.8);
   }
   .navbar-custom .nav .open .dropdown-menu li a {
-    color: black;
+    color: #333333;
   }
 }
 @media only screen and (min-width: 1170px) {
