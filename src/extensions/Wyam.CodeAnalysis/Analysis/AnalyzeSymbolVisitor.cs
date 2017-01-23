@@ -76,7 +76,17 @@ namespace Wyam.CodeAnalysis.Analysis
                 .ToImmutableArray();
             return _symbolToDocument.Select(x => x.Value);
         }
-        
+
+        public override void DefaultVisit(ISymbol symbol)
+        {
+            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            {
+                AddDocument(symbol, false, new MetadataItems());
+            }
+
+            base.DefaultVisit(symbol);
+        }
+
         public override void VisitAssembly(IAssemblySymbol symbol)
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
@@ -345,7 +355,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
                 new MetadataItem(CodeAnalysisKeys.SymbolId, _ => GetId(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.CommentId, commentId),
-                new MetadataItem(CodeAnalysisKeys.Name, _ => symbol.Name),
+                new MetadataItem(CodeAnalysisKeys.Name, metadata => string.IsNullOrEmpty(symbol.Name) ? metadata.String(CodeAnalysisKeys.FullName) : symbol.Name),
                 new MetadataItem(CodeAnalysisKeys.FullName, _ => GetFullName(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.DisplayName, _ => GetDisplayName(symbol), true),
                 new MetadataItem(CodeAnalysisKeys.QualifiedName, _ => GetQualifiedName(symbol), true),

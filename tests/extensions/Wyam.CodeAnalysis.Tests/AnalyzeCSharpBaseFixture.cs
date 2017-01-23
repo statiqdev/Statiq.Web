@@ -47,5 +47,14 @@ namespace Wyam.CodeAnalysis.Tests
                 .Get<IEnumerable<IDocument>>("Members")
                 .Single(x => x["Name"].Equals(memberName));
         }
+
+        protected IDocument GetParameter(List<IDocument> results, string className, string methodName, string parameterName)
+        {
+            return GetResult(results, className)
+                .Get<IEnumerable<IDocument>>("Members")
+                .Single(x => x["Name"].Equals(methodName))
+                .Get<IEnumerable<IDocument>>("Parameters")
+                .Single(x => x["Name"].Equals(parameterName));
+        }
     }
 }
