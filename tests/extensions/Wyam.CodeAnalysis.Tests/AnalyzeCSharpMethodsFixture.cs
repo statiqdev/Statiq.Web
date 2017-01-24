@@ -248,6 +248,56 @@ namespace Wyam.CodeAnalysis.Tests
                 CollectionAssert.AreEquivalent(new[] { "Red", "Green", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             }
+
+            [Test]
+            public void ParameterType()
+            {
+                // Given
+                string code = @"
+                    class Yellow
+                    {
+                        public X(int z)
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Int32", ((IDocument)GetParameter(results, "Yellow", "X", "z")["Type"])["Name"]);
+            }
+
+
+            [Test]
+            public void ParameterParamsType()
+            {
+                // Given
+                string code = @"
+                    class Yellow
+                    {
+                        public X(params int[] z)
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                var x = GetParameter(results, "Yellow", "X", "z");
+                var y = (IDocument) x["Type"];
+                var z = y["Name"];
+                Assert.AreEqual("int[]", ((IDocument)GetParameter(results, "Yellow", "X", "z")["Type"])["Name"]);
+            }
         }
     }
 }
