@@ -34,6 +34,9 @@ blockquote {
   color: #555555;
   font-style: italic;
 }
+blockquote > p {
+  margin-top: 0;
+}
 hr.small {
   max-width: 100px;
   margin: 15px auto;
