@@ -11,6 +11,7 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Util;
 using IDocument = Wyam.Common.Documents.IDocument;
@@ -184,10 +185,10 @@ namespace Wyam.Html
             }
             
             // Remove the link root if there is one and remove the preceding slash
-            if (context.Settings.LinkRoot != null 
-                && normalizedPath.StartsWith(context.Settings.LinkRoot.FullPath))
+            if (context.Settings.DirectoryPath(Keys.LinkRoot) != null 
+                && normalizedPath.StartsWith(context.Settings.DirectoryPath(Keys.LinkRoot).FullPath))
             {
-                normalizedPath = normalizedPath.Substring(context.Settings.LinkRoot.FullPath.Length);
+                normalizedPath = normalizedPath.Substring(context.Settings.DirectoryPath(Keys.LinkRoot).FullPath.Length);
             }
             if (normalizedPath.StartsWith("/"))
             {

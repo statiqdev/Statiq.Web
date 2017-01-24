@@ -27,7 +27,7 @@
 	}
 }
 
-@if(Model.Get<bool>(DocsKeys.NoContainer, false))
+@if(Model.Bool(DocsKeys.NoContainer, false))
 {
 	@RenderBody()
 }

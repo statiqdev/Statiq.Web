@@ -169,6 +169,7 @@ namespace Cake.Wyam
                 builder.Append("--verbose");
             }
 
+#pragma warning disable CS0612
             if (settings.GlobalMetadata != null)
             {
                 SetMetadata(builder, "--global", settings.GlobalMetadata);
@@ -177,6 +178,12 @@ namespace Cake.Wyam
             if (settings.InitialMetadata != null)
             {
                 SetMetadata(builder, "--initial", settings.InitialMetadata);
+            }
+#pragma warning restore CS0612
+
+            if (settings.Settings != null)
+            {
+                SetMetadata(builder, "--setting", settings.Settings);
             }
 
             if (settings.LogFilePath != null)

@@ -49,7 +49,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void DoesNotOutputExistingFiles()
         {
             // Given
-            Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("test.md");
+            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.md");
             IDocument[] inputs = new[] { Context.GetDocument() };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles();
 
@@ -64,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void DoesNotOutputExistingFilesWithDifferentExtension()
         {
             // Given
-            Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("test.txt");
+            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.txt");
             IDocument[] inputs = new[] { Context.GetDocument() };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles(".md");
 
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void ShouldOutputNonExistingFiles()
         {
             // Given
-            Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("foo.txt");
+            Engine.Settings[Keys.RelativeFilePath] = new FilePath("foo.txt");
             IDocument[] inputs = new[] { Context.GetDocument("Test") };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles();
 
@@ -95,7 +95,7 @@ namespace Wyam.Core.Tests.Modules.IO
         public void ShouldOutputNonExistingFilesWithDifferentExtension()
         {
             // Given
-            Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("test.md");
+            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.md");
             IDocument[] inputs = new[] { Context.GetDocument("Test") };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles(".txt");
 

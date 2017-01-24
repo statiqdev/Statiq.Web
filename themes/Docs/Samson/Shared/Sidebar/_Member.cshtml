@@ -23,7 +23,7 @@
 		
 		IReadOnlyList<IDocument> constructors = containingType
 			.List<IDocument>("Constructors")
-			.Where(x => x.Get<bool>("IsResult"))
+			.Where(x => x.Bool("IsResult"))
 			.ToList();
 		if(constructors != null && constructors.Count > 0)
 		{
@@ -37,7 +37,7 @@
 	
 		foreach(IGrouping<string, IDocument> memberGroup 
 			in containingType.List<IDocument>("Members")
-				.Where(x => x.Get<bool>("IsResult"))
+				.Where(x => x.Bool("IsResult"))
 				.GroupBy(x => x.String("Kind")))
 		{
 			<li class="header">@memberGroup.Key Members</li>

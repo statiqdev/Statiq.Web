@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Html;
 @{
 	IList<IDocument> fields = Model.List<IDocument>("Members")
-		?.Where(x => x.Get<bool>("IsResult") && x.String("Kind") == "Field")
+		?.Where(x => x.Bool("IsResult") && x.String("Kind") == "Field")
 		.OrderBy(x => x["DisplayName"])
 		.ToList();
 	if(fields.Count > 0)
@@ -22,7 +22,7 @@
 						{
 							<tr>
 								<td>@Context.GetTypeLink(field)</td>
-								<td>@(field.Get<bool>(CodeAnalysisKeys.HasConstantValue) ? new HtmlString(field.Get(CodeAnalysisKeys.ConstantValue)?.ToString() ?? "null") : new HtmlString(string.Empty))</td>
+								<td>@(field.Bool(CodeAnalysisKeys.HasConstantValue) ? new HtmlString(field.Get(CodeAnalysisKeys.ConstantValue)?.ToString() ?? "null") : new HtmlString(string.Empty))</td>
 								<td>
 									<div>@Html.Raw(field["Summary"])</div>
 									@{
@@ -31,7 +31,7 @@
 										{
 											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
 										}
-										if(field.Get<bool>(CodeAnalysisKeys.IsStatic))
+										if(field.Bool(CodeAnalysisKeys.IsStatic))
 										{
 											<div><small><em>static</em></small></div>
 										}

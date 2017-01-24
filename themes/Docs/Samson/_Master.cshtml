@@ -32,13 +32,13 @@
         @Html.Partial("_Head")
     </head>
     @{
-        string layoutTopNav = Model.Get<bool>(DocsKeys.NoSidebar, false) ? "layout-top-nav" : string.Empty;
-        string noGutter = Model.Get<bool>(DocsKeys.NoGutter, false) ? "no-gutter" : string.Empty;
+        string layoutTopNav = Model.Bool(DocsKeys.NoSidebar, false) ? "layout-top-nav" : string.Empty;
+        string noGutter = Model.Bool(DocsKeys.NoGutter, false) ? "no-gutter" : string.Empty;
     }
     <body class="hold-transition wyam layout-boxed @layoutTopNav @noGutter">    
         <div class="top-banner"></div>
         @{
-            string withContainer = Model.Get<bool>(DocsKeys.NoContainer, false) ? null : "with-container";
+            string withContainer = Model.Bool(DocsKeys.NoContainer, false) ? null : "with-container";
         }
         <div class="wrapper @withContainer">
             <!-- Header -->
@@ -53,7 +53,7 @@
                          
                 <nav class="navbar navbar-static-top" role="navigation">
                     <!-- Sidebar toggle button-->
-                    @if(!Model.Get<bool>("NoSidebar", false))
+                    @if(!Model.Bool("NoSidebar", false))
                     {
                         <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
                             <span class="sr-only">Toggle side menu</span>
@@ -94,7 +94,7 @@
             </header>
             
             <!-- Left side column. contains the logo and sidebar -->
-            <aside class="main-sidebar @(Model.Get<bool>("NoSidebar", false) ? "hidden" : string.Empty)">
+            <aside class="main-sidebar @(Model.Bool("NoSidebar", false) ? "hidden" : string.Empty)">
                 <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     @RenderSection("Infobar", false)
                 </section>

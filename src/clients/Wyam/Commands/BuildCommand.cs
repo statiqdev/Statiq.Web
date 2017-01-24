@@ -74,15 +74,39 @@ namespace Wyam.Commands
             }
 
             // Metadata
+            // TODO: Remove this dictionary and initial/global options
+            Dictionary<string, object> settingsDictionary = new Dictionary<string, object>();
             IReadOnlyList<string> globalMetadata = null;
-            if (syntax.DefineOptionList("g|global", ref globalMetadata, "Specifies global metadata as a sequence of key=value pairs. Use the syntax [x,y] to specify array values.").IsSpecified)
+            if (syntax.DefineOptionList("g|global", ref globalMetadata, "Deprecated, do not use.").IsSpecified)
             {
-                _configOptions.GlobalMetadata = MetadataParser.Parse(globalMetadata);
+                Trace.Warning("-g/--global is deprecated and will be removed in a future version. Please use -s/--setting instead.");
+                AddSettings(settingsDictionary, globalMetadata);
             }
             IReadOnlyList<string> initialMetadata = null;
-            if (syntax.DefineOptionList("initial", ref initialMetadata, "Specifies initial document metadata as a sequence of key=value pairs. Use the syntax [x,y] to specify array values.").IsSpecified)
+            if (syntax.DefineOptionList("initial", ref initialMetadata, "Deprecated, do not use.").IsSpecified)
             {
-                _configOptions.InitialMetadata = MetadataParser.Parse(initialMetadata);
+                Trace.Warning("--initial is deprecated and will be removed in a future version. Please use -s/--setting instead.");
+                AddSettings(settingsDictionary, initialMetadata);
+            }
+            IReadOnlyList<string> settings = null;
+            if (syntax.DefineOptionList("s|setting", ref settings, "Specifies a setting as a key=value pair. Use the syntax [x,y] to specify an array value.").IsSpecified)
+            {
+                // _configOptions.Settings = MetadataParser.Parse(settings); TODO: Use this when AddSettings() is removed
+
+                AddSettings(settingsDictionary, settings);
+            }
+            if (settingsDictionary.Count > 0)
+            {
+                _configOptions.Settings = settingsDictionary;
+            }
+        }
+
+        // TODO: Remove this method and the global/initial support in the parser
+        private static void AddSettings(IDictionary<string, object> settings, IReadOnlyList<string> value)
+        {
+            foreach (KeyValuePair<string, object> kvp in MetadataParser.Parse(value))
+            {
+               settings[kvp.Key] = kvp.Value;
             }
         }
 

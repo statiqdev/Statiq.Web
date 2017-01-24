@@ -39,24 +39,24 @@ namespace Wyam.Feeds
         private ContextConfig _rdfPath = _ => DefaultRdfPath;
 
         private ContextConfig _feedId = ctx => ctx.GetLink();
-        private ContextConfig _feedTitle = ctx => ctx.GlobalMetadata.String("Title");
-        private ContextConfig _feedDescription = ctx => ctx.GlobalMetadata.String("Description");
-        private ContextConfig _feedAuthor = ctx => ctx.GlobalMetadata.String("Author");
+        private ContextConfig _feedTitle = ctx => ctx.String(FeedKeys.Title);
+        private ContextConfig _feedDescription = ctx => ctx.String(FeedKeys.Description);
+        private ContextConfig _feedAuthor = ctx => ctx.String(FeedKeys.Author);
         private ContextConfig _feedPublished = _ => DateTime.UtcNow;
         private ContextConfig _feedUpdated = _ => DateTime.UtcNow;
         private ContextConfig _feedLink = ctx => ctx.GetLink();
-        private ContextConfig _feedImageLink = ctx => ctx.GetLink(ctx.GlobalMetadata, "Image", true);
-        private ContextConfig _feedCopyright = ctx => ctx.GlobalMetadata.String("Copyright") ?? DateTime.UtcNow.Year.ToString();
+        private ContextConfig _feedImageLink = ctx => ctx.GetLink(ctx, FeedKeys.Image, true);
+        private ContextConfig _feedCopyright = ctx => ctx.String(FeedKeys.Copyright) ?? DateTime.UtcNow.Year.ToString();
 
         private DocumentConfig _itemId = (doc, ctx) => ctx.GetLink(doc, true);
-        private DocumentConfig _itemTitle = (doc, ctx) => doc.String("Title");
-        private DocumentConfig _itemDescription = (doc, ctx) => doc.String("Description") ?? doc.String("Excerpt");
-        private DocumentConfig _itemAuthor = (doc, ctx) => doc.String("Author");
-        private DocumentConfig _itemPublished = (doc, ctx) => doc.String("Published");
-        private DocumentConfig _itemUpdated = (doc, ctx) => doc.String("Updated");
+        private DocumentConfig _itemTitle = (doc, ctx) => doc.String(FeedKeys.Title);
+        private DocumentConfig _itemDescription = (doc, ctx) => doc.String(FeedKeys.Description) ?? doc.String(FeedKeys.Excerpt);
+        private DocumentConfig _itemAuthor = (doc, ctx) => doc.String(FeedKeys.Author);
+        private DocumentConfig _itemPublished = (doc, ctx) => doc.String(FeedKeys.Published);
+        private DocumentConfig _itemUpdated = (doc, ctx) => doc.String(FeedKeys.Updated);
         private DocumentConfig _itemLink = (doc, ctx) => ctx.GetLink(doc, true);
-        private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, "Image", true);
-        private DocumentConfig _itemContent = (doc, ctx) => doc.String("Content");
+        private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, FeedKeys.Image, true);
+        private DocumentConfig _itemContent = (doc, ctx) => doc.String(FeedKeys.Content);
         private DocumentConfig _itemThreadLink = null;
         private DocumentConfig _itemThreadCount = null;
         private DocumentConfig _itemThreadUpdated = null;

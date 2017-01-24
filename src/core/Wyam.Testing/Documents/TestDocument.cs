@@ -97,6 +97,8 @@ namespace Wyam.Testing.Documents
 
         public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
 
+        public bool Bool(string key, bool defaultValue = false) => Get<bool>(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
             object value = Get(key, (object)defaultValue);

@@ -43,6 +43,7 @@ namespace Wyam.Core.Execution
 
         public string ApplicationInput => Engine.ApplicationInput;
 
+        [Obsolete]
         public IMetadata GlobalMetadata => Engine.GlobalMetadata; 
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
@@ -87,7 +88,7 @@ namespace Wyam.Core.Execution
         // GetLink
 
         public string GetLink() => 
-            GetLink((NormalizedPath)null, Settings.Host, Settings.LinkRoot, Settings.LinksUseHttps, false, false);
+            GetLink((NormalizedPath)null, Settings.String(Common.Meta.Keys.Host), Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), Settings.Bool(Common.Meta.Keys.LinksUseHttps), false, false);
 
         public string GetLink(IMetadata metadata, bool includeHost = false) => 
             GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
@@ -99,13 +100,15 @@ namespace Wyam.Core.Execution
         }
         
         public string GetLink(string path, bool includeHost = false) =>
-            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), 
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
             GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
 
         public string GetLink(NormalizedPath path, bool includeHost = false) => 
-            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+            GetLink(path, includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) => 
             LinkGenerator.GetLink(path, host, root, 
@@ -235,42 +238,44 @@ namespace Wyam.Core.Execution
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => GlobalMetadata.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => Settings.GetEnumerator();
 
-        public int Count => GlobalMetadata.Count;
+        public int Count => Settings.Count;
 
-        public bool ContainsKey(string key) => GlobalMetadata.ContainsKey(key);
+        public bool ContainsKey(string key) => Settings.ContainsKey(key);
 
-        public bool TryGetValue(string key, out object value) => GlobalMetadata.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object value) => Settings.TryGetValue(key, out value);
 
-        public object this[string key] => GlobalMetadata[key];
+        public object this[string key] => Settings[key];
 
-        public IEnumerable<string> Keys => GlobalMetadata.Keys;
+        public IEnumerable<string> Keys => Settings.Keys;
 
-        public IEnumerable<object> Values => GlobalMetadata.Values;
+        public IEnumerable<object> Values => Settings.Values;
 
-        public IMetadata<T> MetadataAs<T>() => GlobalMetadata.MetadataAs<T>();
+        public IMetadata<T> MetadataAs<T>() => Settings.MetadataAs<T>();
 
-        public object Get(string key, object defaultValue = null) => GlobalMetadata.Get(key, defaultValue);
+        public object Get(string key, object defaultValue = null) => Settings.Get(key, defaultValue);
 
-        public object GetRaw(string key) => GlobalMetadata.Get(key);
+        public object GetRaw(string key) => Settings.Get(key);
 
-        public T Get<T>(string key) => GlobalMetadata.Get<T>(key);
+        public T Get<T>(string key) => Settings.Get<T>(key);
 
-        public T Get<T>(string key, T defaultValue) => GlobalMetadata.Get(key, defaultValue);
+        public T Get<T>(string key, T defaultValue) => Settings.Get(key, defaultValue);
 
-        public string String(string key, string defaultValue = null) => GlobalMetadata.String(key, defaultValue);
+        public string String(string key, string defaultValue = null) => Settings.String(key, defaultValue);
 
-        public FilePath FilePath(string key, FilePath defaultValue = null) => GlobalMetadata.FilePath(key, defaultValue);
+        public bool Bool(string key, bool defaultValue = false) => Settings.Bool(key, defaultValue);
 
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => GlobalMetadata.DirectoryPath(key, defaultValue);
+        public FilePath FilePath(string key, FilePath defaultValue = null) => Settings.FilePath(key, defaultValue);
 
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => GlobalMetadata.List(key, defaultValue);
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Settings.DirectoryPath(key, defaultValue);
 
-        public IDocument Document(string key) => GlobalMetadata.Document(key);
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Settings.List(key, defaultValue);
 
-        public IReadOnlyList<IDocument> DocumentList(string key) => GlobalMetadata.DocumentList(key);
+        public IDocument Document(string key) => Settings.Document(key);
 
-        public dynamic Dynamic(string key, object defaultValue = null) => GlobalMetadata.Dynamic(key, defaultValue);
+        public IReadOnlyList<IDocument> DocumentList(string key) => Settings.DocumentList(key);
+
+        public dynamic Dynamic(string key, object defaultValue = null) => Settings.Dynamic(key, defaultValue);
     }
 }

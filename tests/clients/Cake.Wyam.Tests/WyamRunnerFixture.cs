@@ -405,14 +405,14 @@ namespace Cake.Wyam.Tests
             }
 
             [Test]
-            public void ShouldSetGlobalMetadata()
+            public void ShouldSetSettingsMetadata()
             {
                 // Given
                 WyamToolFixture fixture = new WyamToolFixture
                 {
                     Settings =
                     {
-                        GlobalMetadata = new Dictionary<string, object>
+                        Settings = new Dictionary<string, object>
                         {
                             { "A", "a" },
                             { "B", 1 },
@@ -425,7 +425,7 @@ namespace Cake.Wyam.Tests
                 ToolFixtureResult result = fixture.Run();
 
                 // Then
-                Assert.AreEqual("--global \"A=a\" --global \"B=1\" --global \"X=[y,1,x\\,y,z\\\"z]\" \"/Working\"", result.Args);
+                Assert.AreEqual("--setting \"A=a\" --setting \"B=1\" --setting \"X=[y,1,x\\,y,z\\\"z]\" \"/Working\"", result.Args);
             }
 
             [Test]

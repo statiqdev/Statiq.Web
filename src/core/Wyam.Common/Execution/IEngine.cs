@@ -33,11 +33,13 @@ namespace Wyam.Common.Execution
         /// <summary>
         /// Gets the initial metadata.
         /// </summary>
+        [Obsolete]
         IMetadataDictionary InitialMetadata { get; }
 
         /// <summary>
         /// Gets the global metadata.
         /// </summary>
+        [Obsolete]
         IMetadataDictionary GlobalMetadata { get; }
 
         /// <summary>

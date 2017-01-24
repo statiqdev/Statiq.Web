@@ -17,7 +17,6 @@ namespace Wyam.Commands
         public IReadOnlyList<DirectoryPath> InputPaths = null;
         public DirectoryPath OutputPath = null;
         public FilePath ConfigFilePath = null;
-        public IReadOnlyDictionary<string, object> GlobalMetadata = null;
-        public IReadOnlyDictionary<string, object> InitialMetadata = null;
+        public IReadOnlyDictionary<string, object> Settings = null;
     }
 }

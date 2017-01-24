@@ -1,5 +1,5 @@
 @{
-    string baseEditUrl = Context.GlobalMetadata.String(DocsKeys.BaseEditUrl);
+    string baseEditUrl = Context.String(DocsKeys.BaseEditUrl);
     FilePath editFilePath = Model.FilePath(DocsKeys.EditFilePath);
     if(!string.IsNullOrWhiteSpace(baseEditUrl) && editFilePath != null)
     {

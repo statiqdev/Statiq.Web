@@ -11,6 +11,43 @@ namespace Wyam.Common.Meta
     /// </summary>
     public static class Keys
     {
+        // Settings
+
+        /// <summary>
+        /// The host to use when generating links.
+        /// </summary>
+        public const string Host = nameof(Host);
+
+        /// <summary>
+        /// Indicates if generated links should use HTTPS instead of HTTP as the scheme.
+        /// </summary>
+        public const string LinksUseHttps = nameof(LinksUseHttps);
+
+        /// <summary>
+        /// The default root path to use when generating links.
+        /// </summary>
+        public const string LinkRoot = nameof(LinkRoot);
+
+        /// <summary>
+        /// Indicates whether to hide index pages by default when generating links.
+        /// </summary>
+        public const string LinkHideIndexPages = nameof(LinkHideIndexPages);
+
+        /// <summary>
+        /// Indicates whether to hide ".html" and ".htm" extensions by default when generating links.
+        /// </summary>
+        public const string LinkHideExtensions = nameof(LinkHideExtensions);
+
+        /// <summary>
+        /// Indicates whether caching should be used.
+        /// </summary>
+        public const string UseCache = nameof(UseCache);
+
+        /// <summary>
+        /// Indicates whether to clean the output path on each execution.
+        /// </summary>
+        public const string CleanOutputPath = nameof(CleanOutputPath);
+
         // ReadFile/WriteFiles/CopyFiles
 
         /// <summary>

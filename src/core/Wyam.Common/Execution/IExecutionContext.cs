@@ -30,6 +30,8 @@ namespace Wyam.Common.Execution
         IReadOnlyFileSystem FileSystem { get; }
         IReadOnlySettings Settings { get; }
         IDocumentCollection Documents { get; }
+
+        [Obsolete]
         IMetadata GlobalMetadata { get; }
 
         /// <summary>

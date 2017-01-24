@@ -8,6 +8,7 @@ using Wyam.Common;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
 
@@ -21,7 +22,7 @@ namespace Wyam.Core.Caching
         // Creates one if it doesn't exist
         public IExecutionCache Get(IModule module, IReadOnlySettings settings)
         {
-            return settings.UseCache
+            return settings.Bool(Keys.UseCache)
                 ? _executionCaches.GetOrAdd(module, new ExecutionCache())
                 : (IExecutionCache) new NoCache();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Wyam.Commands;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Configuration;
 using Wyam.Configuration.ConfigScript;
@@ -41,7 +42,7 @@ namespace Wyam
             // Set no cache if requested
             if (_configOptions.NoCache)
             {
-                Engine.Settings.UseCache = false;
+                Engine.Settings[Keys.UseCache] = false;
             }
 
             // Set folders
@@ -59,13 +60,13 @@ namespace Wyam
             }
             if (_configOptions.NoClean)
             {
-                Engine.Settings.CleanOutputPath = false;
+                Engine.Settings[Keys.CleanOutputPath] = false;
             }
-            if (_configOptions.GlobalMetadata != null)
+            if (_configOptions.Settings != null)
             {
-                foreach (KeyValuePair<string, object> item in _configOptions.GlobalMetadata)
+                foreach (KeyValuePair<string, object> item in _configOptions.Settings)
                 {
-                    Engine.GlobalMetadata.Add(item);
+                    Engine.Settings.Add(item);
                 }
             }
 
@@ -79,8 +80,7 @@ namespace Wyam
             }
 
             // Metadata
-            Configurator.GlobalMetadata = configOptions.GlobalMetadata;
-            Configurator.InitialMetadata = configOptions.InitialMetadata;
+            Configurator.Settings = configOptions.Settings;
 
             // Script output
             Configurator.OutputScript = _configOptions.OutputScript;

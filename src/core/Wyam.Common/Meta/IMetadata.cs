@@ -63,6 +63,15 @@ namespace Wyam.Common.Meta
         string String(string key, string defaultValue = null);
 
         /// <summary>
+        /// Gets the value for the specified key converted to a bool. This method never throws an exception. It will return the specified 
+        /// default value if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a bool.</param>
+        /// <returns>The value for the specified key converted to a bool or the specified default value.</returns>
+        bool Bool(string key, bool defaultValue = false);
+
+        /// <summary>
         /// Gets the value for the specified key converted to a <see cref="FilePath"/>. This method never throws an exception. It will
         /// return the specified default value if the key is not found or if the string value can't be converted to a <see cref="FilePath"/>.
         /// </summary>

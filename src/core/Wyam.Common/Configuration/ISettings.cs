@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.Common.Configuration
 {
-    public interface ISettings : IReadOnlySettings
+    public interface ISettings : IMetadataDictionary, IReadOnlySettings
     {
         /// <summary>
         /// Gets or sets the host to use when generating links.
@@ -13,6 +15,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// The link host.
         /// </value>
+        [Obsolete]
         new string Host { get; set; }
 
         /// <summary>
@@ -22,6 +25,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if HTTPS should be used.
         /// </value>
+        [Obsolete]
         new bool LinksUseHttps { get; set; }
 
         /// <summary>
@@ -30,6 +34,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// The link root.
         /// </value>
+        [Obsolete]
         new DirectoryPath LinkRoot { get; set; }
 
         /// <summary>
@@ -38,6 +43,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if index pages should be hidden; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         new bool LinkHideIndexPages { get; set; }
 
         /// <summary>
@@ -46,6 +52,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         new bool LinkHideExtensions { get; set; }
 
         /// <summary>
@@ -54,6 +61,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if caching should be used; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         new bool UseCache { get; set; }
 
         /// <summary>
@@ -62,6 +70,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if the output path should be cleaned; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         new bool CleanOutputPath { get; set; }
     }
 }

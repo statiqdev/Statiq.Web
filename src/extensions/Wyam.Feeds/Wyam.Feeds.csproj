@@ -43,6 +43,7 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="FeedKeys.cs" />
     <Compile Include="GenerateFeeds.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Syndication\Atom\AtomBase.cs" />

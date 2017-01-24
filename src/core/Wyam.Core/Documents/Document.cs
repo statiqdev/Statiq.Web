@@ -279,6 +279,8 @@ namespace Wyam.Core.Documents
 
         public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
 
+        public bool Bool(string key, bool defaultValue = false) => _metadata.Bool(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _metadata.DirectoryPath(key, defaultValue);
