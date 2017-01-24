@@ -78,6 +78,9 @@ hr.small {
   .navbar-custom .nav li a:focus {
     color: rgba(255, 255, 255, 0.8);
   }
+  .navbar-custom .nav .open .dropdown-menu li a {
+    color: #333333;
+  }
 }
 @media only screen and (min-width: 1170px) {
   .navbar-custom {
