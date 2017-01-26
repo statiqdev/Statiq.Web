@@ -60,6 +60,8 @@ namespace Wyam.Testing.Documents
             Content = content;
         }
 
+        public IMetadata WithoutSettings => this;
+
         public bool ContainsKey(string key)
         {
             if (key == null)

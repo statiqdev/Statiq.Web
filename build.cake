@@ -393,7 +393,6 @@ Task("Publish-Release")
             Name = semVersion,
             Body = string.Join(Environment.NewLine, releaseNotes.Notes) + Environment.NewLine + Environment.NewLine
                 + @"### Please see https://wyam.io/docs/usage/obtaining for important notes about downloading and installing.",
-            Prerelease = true,
             TargetCommitish = "master"
         }).Result; 
         

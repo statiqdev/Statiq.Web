@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Wyam.Common.Documents;
@@ -250,6 +251,8 @@ namespace Wyam.Core.Documents
                     $"Attempted to access disposed document with ID {Id} and source {SourceString()}");
             }
         }
+
+        public IMetadata WithoutSettings => new MetadataStack(_metadata.Stack.Reverse().Skip(1));
 
         // IMetadata
 

@@ -27,6 +27,8 @@ namespace Wyam.Core.Documents
         /// <returns>A new custom document instance with the same values as the current instance.</returns>
         protected internal virtual CustomDocument Clone() => (CustomDocument)MemberwiseClone();
 
+        public IMetadata WithoutSettings => Document.WithoutSettings;
+
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => Document.GetEnumerator();
 
         public int Count => Document.Count;

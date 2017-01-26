@@ -44,5 +44,11 @@ namespace Wyam.Common.Documents
         /// <summary>Gets the content associated with this document as a <see cref="Stream"/>.</summary>
         /// <returns>A <see cref="Stream"/> of the content associated with this document.</returns>
         Stream GetStream();
+
+        /// <summary>
+        /// Gets the metadata for this document without any global settings included.
+        /// </summary>
+        /// <returns>The document metadata without global settings.</returns>
+        IMetadata WithoutSettings { get; }
     }
 }
