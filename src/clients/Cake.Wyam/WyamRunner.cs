@@ -70,6 +70,11 @@ namespace Cake.Wyam
                 builder.Append("--watch");
             }
 
+            if (settings.Attach)
+            {
+                builder.Append("--attach");
+            }
+
             if (settings.Preview)
             {
                 builder.Append("--preview");

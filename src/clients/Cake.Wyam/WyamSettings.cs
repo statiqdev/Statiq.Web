@@ -17,6 +17,12 @@ namespace Cake.Wyam
         public bool Watch { get; set; }
 
         /// <summary>
+        /// Pauses execution while waiting for a debugger to attach.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool Attach { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to enable previewing of the generated content in built in web server.
         /// </summary>
         /// <remarks>Default is false</remarks>
