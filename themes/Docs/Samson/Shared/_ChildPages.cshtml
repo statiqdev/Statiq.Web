@@ -23,11 +23,11 @@
 						<tbody>
 							@foreach(IDocument child in categoryGroup
 								.OrderBy(x => x.Get<int>(DocsKeys.Order, 1000))
-								.ThenBy(x => x.String(Keys.Title)))
+								.ThenBy(x => x.WithoutSettings.String(Keys.Title)))
 							{
 								object[] childTreePath = child.Get<object[]>(Keys.TreePath);
 								<tr>
-									<td><strong><a href="@Context.GetLink(child)">@(child.String(Keys.Title, childTreePath.Last().ToString()))</a></strong></td>
+									<td><strong><a href="@Context.GetLink(child)">@(child.WithoutSettings.String(Keys.Title, childTreePath.Last().ToString()))</a></strong></td>
 									<td>
 										@{
 											if(child.ContainsKey(DocsKeys.Description))

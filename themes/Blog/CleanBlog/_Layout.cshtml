@@ -1,5 +1,5 @@
 @{
-        string Title = Model.String(BlogKeys.Title);
+        string Title = Model.WithoutSettings.String(BlogKeys.Title);
         string PageTitle = Context.String(BlogKeys.Title) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
 }
 

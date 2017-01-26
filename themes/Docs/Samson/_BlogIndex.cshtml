@@ -2,7 +2,7 @@
     bool fullContent = Model.String(Keys.RelativeFilePath) == "blog/index.html" && Model.Get<int>(Keys.CurrentPage) == 1;
     foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
     {
-        <h2><a href="@Context.GetLink(post)">@post.String(Keys.Title)</a></h2>
+        <h2><a href="@Context.GetLink(post)">@post.WithoutSettings.String(Keys.Title)</a></h2>
         @Html.Partial("_BlogPostDetails", post)
         @if(fullContent)
         {

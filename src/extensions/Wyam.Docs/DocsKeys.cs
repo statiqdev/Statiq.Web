@@ -10,9 +10,9 @@ namespace Wyam.Docs
     public static class DocsKeys
     {
         // ***Global
-        
+
         /// <summary>
-        /// When used in global metadata, indicates the title of your site. Otherwise,
+        /// When used as a global setting, indicates the title of your site. Otherwise,
         /// when used in document metadata, indicates the title of the post or page.
         /// </summary>
         /// <scope>Global</scope>

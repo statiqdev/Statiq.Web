@@ -112,7 +112,7 @@ namespace Wyam.Core.Modules.Metadata
                 .Select(input =>
                 {
                     // Check if there's already a title set
-                    if (_keepExisting && input.ContainsKey(_key))
+                    if (_keepExisting && input.WithoutSettings.ContainsKey(_key))
                     {
                         return input;
                     }

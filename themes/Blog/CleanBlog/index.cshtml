@@ -16,7 +16,7 @@
                 string lead = doc.String(BlogKeys.Lead);
                 <div class="post-preview">
                     <a href="@Context.GetLink(doc)">
-                        <h2 class="post-title">@doc.String(BlogKeys.Title)</h2>
+                        <h2 class="post-title">@doc.WithoutSettings.String(BlogKeys.Title)</h2>
                         @if(!string.IsNullOrWhiteSpace(lead))
                         {
                             <h3 class="post-subtitle">@lead</h3>
@@ -49,7 +49,7 @@
         <ul class="list-unstyled">
             @foreach(IDocument doc in Documents[BlogKeys.Posts].Skip(3).Take(4))
             {        
-                <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
+                <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
             }
         </ul>
         <ul class="pager">

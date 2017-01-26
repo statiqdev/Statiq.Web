@@ -7,7 +7,7 @@
         
         <div class="post-list">
             <a href="@Context.GetLink(doc)">
-                <h3 class="post-title">@doc.String(BlogKeys.Title)</h3>
+                <h3 class="post-title">@doc.WithoutSettings.String(BlogKeys.Title)</h3>
                 @if(!string.IsNullOrWhiteSpace(lead))
                 {
                     <h4 class="post-subtitle">@lead</h4>
