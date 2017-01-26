@@ -56,7 +56,7 @@ namespace Wyam
             // Make sure we're not running under Mono
             if (Type.GetType("Mono.Runtime") != null)
             {
-                Trace.Error("The Mono runtime is not supported. Please check the GitHub repository and issue tracker for information on .NET Core support for cross platform execution.");
+                Trace.Critical("The Mono runtime is not supported. Please check the GitHub repository and issue tracker for information on .NET Core support for cross platform execution.");
                 return (int) ExitCode.UnsupportedRuntime;
             }
 

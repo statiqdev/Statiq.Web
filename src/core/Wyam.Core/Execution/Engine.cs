@@ -154,6 +154,13 @@ namespace Wyam.Core.Execution
         {
             CheckDisposed();
 
+            // Make sure we've actually configured some pipelines
+            if (_pipelines.Count == 0)
+            {
+                Trace.Error("No pipelines are configured. Please supply a configuration file, specify a recipe, or configure programmatically");
+                return;
+            }
+
             // Clean the output folder if requested
             if (Settings.Bool(Keys.CleanOutputPath))
             {

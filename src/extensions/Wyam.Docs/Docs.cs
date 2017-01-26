@@ -463,26 +463,29 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
+            // Config file
+            configFile?.WriteAllText(@"#recipe Docs");
+
             // Add info page
-            directory.GetFile("about.md").WriteAllText(
+            inputDirectory.GetFile("about.md").WriteAllText(
 @"Title: About This Project
 ---
 This project is awesome!");
 
             // Add docs pages
-            directory.GetFile("docs/command-line.md").WriteAllText(
+            inputDirectory.GetFile("docs/command-line.md").WriteAllText(
 @"Description: How to use the command line.
 ---
 Here are some instructions on how to use the command line.");
-            directory.GetFile("docs/usage.md").WriteAllText(
+            inputDirectory.GetFile("docs/usage.md").WriteAllText(
 @"Description: Library usage instructions.
 ---
 To use this library, take these steps...");
 
             // Add post page
-            directory.GetFile("blog/new-release.md").WriteAllText(
+            inputDirectory.GetFile("blog/new-release.md").WriteAllText(
 @"Title: New Release
 Published: 1/1/2016
 Category: Release

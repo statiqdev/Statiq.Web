@@ -464,7 +464,7 @@ SetCustomDocumentType<MyDocument>();
             engine.Settings["Foo"] = "Bar";
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
             throw new NotImplementedException();
         }

@@ -112,26 +112,7 @@ namespace Wyam.Commands
 
         protected override void ParseParameters(ArgumentSyntax syntax)
         {
-            // Root
-            if (syntax.DefineParameter("root", ref _configOptions.RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
-            {
-                // If a root folder was defined, but it actually points to a file, set the root folder to the directory
-                // and use the specified file as the config file (if a config file was already specified, it's an error)
-                FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(_configOptions.RootPath.FullPath);
-                if (File.Exists(rootDirectoryPathAsConfigFile.FullPath))
-                {
-                    // The specified root actually points to a file...
-                    if (_configOptions.ConfigFilePath != null)
-                    {
-                        syntax.ReportError("A config file was both explicitly specified and specified in the root folder.");
-                    }
-                    else
-                    {
-                        _configOptions.ConfigFilePath = rootDirectoryPathAsConfigFile.FileName;
-                        _configOptions.RootPath = rootDirectoryPathAsConfigFile.Directory;
-                    }
-                }
-            }
+            ParseRootPathParameter(syntax, _configOptions);
         }
 
         protected override ExitCode RunCommand(Preprocessor preprocessor)

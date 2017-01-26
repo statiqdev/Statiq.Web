@@ -208,16 +208,19 @@ namespace Wyam.Blog
             );
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
+            // Config file
+            configFile?.WriteAllText(@"#recipe Blog");
+
             // Add info page
-            directory.GetFile("about.md").WriteAllText(
+            inputDirectory.GetFile("about.md").WriteAllText(
 @"Title: About Me
 ---
 I'm awesome!");
 
             // Add post page
-            directory.GetFile("posts/first-post.md").WriteAllText(
+            inputDirectory.GetFile("posts/first-post.md").WriteAllText(
 @"Title: First Post
 Published: 1/1/2016
 Tags: Introduction
