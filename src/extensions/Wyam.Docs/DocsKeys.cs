@@ -21,6 +21,13 @@ namespace Wyam.Docs
         public const string Title = nameof(Title);
 
         /// <summary>
+        /// The path to a logo to use for the site.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="FilePath"/></type>
+        public const string Logo = nameof(Logo);
+
+        /// <summary>
         /// Indicates where to locate source files for the API documentation.
         /// By default the globbing pattern "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs"
         /// is used which searches for all "*.cs" files at any depth under a "src" folder

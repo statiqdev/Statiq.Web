@@ -45,10 +45,22 @@
             <header class="main-header">   
                      
                 <a href="@Context.GetLink("/")" class="logo">
-                    <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><img src="@Context.GetLink("/assets/img/logo.png")"></span>
-                    <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><img src="@Context.GetLink("/assets/img/logo.png")"></span>
+                    @{
+                        FilePath logo = Context.FilePath(DocsKeys.Logo);
+                        if(logo != null)
+                        {
+                            <text>
+                                <!-- mini logo for sidebar mini 50x50 pixels -->
+                                <span class="logo-mini"><img src="@Context.GetLink(logo)"></span>
+                                <!-- logo for regular state and mobile devices -->
+                                <span class="logo-lg"><img src="@Context.GetLink(logo)"></span>
+                            </text>
+                        }
+                        else
+                        {
+                            <span>@Context.String(DocsKeys.Title, "Docs")</span>
+                        }
+                    }
                 </a>   
                          
                 <nav class="navbar navbar-static-top" role="navigation">
