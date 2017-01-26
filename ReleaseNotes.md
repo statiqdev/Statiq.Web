@@ -1,3 +1,10 @@
+# 0.16.1
+
+- [Refactoring] Docs recipe now allows you to specify a logo file using the `DocsKeys.Logo` setting
+- [Fix] Fixes recipes and `Title` module so that page titles wouldn't use the global title settings if no explicit title was set
+- [Feature] Added `IDocument.WithoutSettings` for getting metadata for a document without the global settings
+- [Feature] Added `IMetadata.Bool(...)` for getting Boolean values from metadata
+
 # 0.16.0
 
 - [Refactoring] Out of beta!
