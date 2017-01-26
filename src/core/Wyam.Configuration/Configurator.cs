@@ -148,7 +148,7 @@ namespace Wyam.Configuration
                         // Add the package, but only if it wasn't added manually
                         if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
                         {
-                            PackageInstaller.AddPackage(knownRecipe.PackageId, allowPrereleaseVersions: true);
+                            PackageInstaller.AddPackage(knownRecipe.PackageId);
                         }
                     }
                     else

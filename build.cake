@@ -43,7 +43,7 @@ var buildNumber = AppVeyor.Environment.Build.Number;
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
 var version = releaseNotes.Version.ToString();
-var semVersion = version + (isLocal ? "-beta" : string.Concat("-build-", buildNumber));
+var semVersion = version + (isLocal ? string.Empty : string.Concat("-build-", buildNumber));
 
 var buildDir = Directory("./src/clients/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build") + Directory(semVersion);

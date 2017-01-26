@@ -11,9 +11,9 @@
 // NOTE: If running the example against modules built from source, call wyam.exe from the Wyam.Examples.Tests/bin/Debug folder 
 #a **/*
 
-InitialMetadata["title"] = "Adventure Time!";
-InitialMetadata["description"] = "Adventure Time is an American animated television series created by Pendleton Ward for Cartoon Network. The series follows the adventures of Finn, a human boy, and his best friend and adoptive brother Jake, a dog with magical powers to change shape and grow and shrink at will. Finn and Jake live in the post-apocalyptic Land of Ooo. Along the way, they interact with the other main characters of the show: Princess Bubblegum, The Ice King, and Marceline the Vampire Queen.";
-InitialMetadata["banner"] = "/images/about.jpg";
+Settings["title"] = "Adventure Time!";
+Settings["description"] = "Adventure Time is an American animated television series created by Pendleton Ward for Cartoon Network. The series follows the adventures of Finn, a human boy, and his best friend and adoptive brother Jake, a dog with magical powers to change shape and grow and shrink at will. Finn and Jake live in the post-apocalyptic Land of Ooo. Along the way, they interact with the other main characters of the show: Princess Bubblegum, The Ice King, and Marceline the Vampire Queen.";
+Settings["banner"] = "/images/about.jpg";
 
 Pipelines.Add("Characters",
     ReadFiles("**/*.yaml"),
