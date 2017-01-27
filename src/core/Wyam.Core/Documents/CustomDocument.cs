@@ -57,6 +57,8 @@ namespace Wyam.Core.Documents
 
         public bool Bool(string key, bool defaultValue = false) => Document.Bool(key, defaultValue);
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Document.DateTime(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null) => Document.FilePath(key, defaultValue);
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Document.DirectoryPath(key, defaultValue);

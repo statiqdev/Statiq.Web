@@ -160,6 +160,11 @@ namespace Wyam.Testing.Execution
             throw new NotImplementedException();
         }
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime))
+        {
+            throw new NotImplementedException();
+        }
+
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
             throw new NotImplementedException();

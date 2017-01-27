@@ -266,6 +266,8 @@ namespace Wyam.Core.Execution
 
         public bool Bool(string key, bool defaultValue = false) => Settings.Bool(key, defaultValue);
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Settings.DateTime(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null) => Settings.FilePath(key, defaultValue);
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Settings.DirectoryPath(key, defaultValue);

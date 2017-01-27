@@ -284,6 +284,8 @@ namespace Wyam.Core.Documents
 
         public bool Bool(string key, bool defaultValue = false) => _metadata.Bool(key, defaultValue);
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => _metadata.DateTime(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _metadata.DirectoryPath(key, defaultValue);

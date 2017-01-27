@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.SqlServer.Server;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -70,6 +71,15 @@ namespace Wyam.Common.Meta
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a bool.</param>
         /// <returns>The value for the specified key converted to a bool or the specified default value.</returns>
         bool Bool(string key, bool defaultValue = false);
+
+        /// <summary>
+        /// Gets the value for the specified key converted to a <see cref="DateTime"/>. This method never throws an exception. It will return the specified 
+        /// default value if the key is not found.
+        /// </summary>
+        /// <param name="key">The key of the value to get.</param>
+        /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a <see cref="DateTime"/>.</param>
+        /// <returns>The value for the specified key converted to a <see cref="DateTime"/> or the specified default value.</returns>
+        DateTime DateTime(string key, DateTime defaultValue = default(DateTime));
 
         /// <summary>
         /// Gets the value for the specified key converted to a <see cref="FilePath"/>. This method never throws an exception. It will

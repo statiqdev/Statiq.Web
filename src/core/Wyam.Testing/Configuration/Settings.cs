@@ -54,6 +54,8 @@ namespace Wyam.Testing.Configuration
 
         public bool Bool(string key, bool defaultValue = false) => Get<bool>(key, defaultValue);
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Get<DateTime>(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
             object value = Get(key, (object)defaultValue);

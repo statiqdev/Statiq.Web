@@ -82,6 +82,8 @@ namespace Wyam.Core.Meta
 
         public bool Bool(string key, bool defaultValue = false) => Get(key, defaultValue);
 
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Get(key, defaultValue);
+
         public FilePath FilePath(string key, FilePath defaultValue = null) => Get(key, defaultValue);
 
         public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Get(key, defaultValue);
