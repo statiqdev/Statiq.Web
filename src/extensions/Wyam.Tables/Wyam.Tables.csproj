@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CsvToHtml.cs" />
+    <Compile Include="CsvToMarkdown.cs" />
     <Compile Include="ExcelToCsv.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\..\SolutionInfo.cs">
