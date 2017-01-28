@@ -253,7 +253,6 @@ namespace Wyam.Commands
                         if (!engineManager.Execute())
                         {
                             exitCode = ExitCode.ExecutionError;
-                            break;
                         }
 
                         // Clear the changed files since we just re-ran
@@ -282,7 +281,6 @@ namespace Wyam.Commands
                             if (!engineManager.Execute())
                             {
                                 exitCode = ExitCode.ExecutionError;
-                                break;
                             }
                         }
                     }
