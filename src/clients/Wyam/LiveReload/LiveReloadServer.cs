@@ -1,31 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.Hosting;
+using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 
 using Owin;
 using Owin.WebSocket.Extensions;
+
+using Wyam.Common.Tracing;
+using Wyam.Owin;
 
 namespace Wyam.LiveReload
 {
     internal class LiveReloadServer : IDisposable
     {
         private readonly ReloadClientServiceLocator _clientServiceLocator;
+        private IDisposable _server;
 
         public LiveReloadServer()
         {
             _clientServiceLocator = new ReloadClientServiceLocator();
         }
 
+        public void StartStandaloneHost(int port = 35729)
+        {
+            try
+            {
+                // This must be 127.0.0.1 due to http.sys hostname verification, LiveReload hardcodes it.
+                StartOptions options = new StartOptions("http://127.0.0.1:" + port);
+                options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
+                _server = WebApp.Start(options, InjectOwinMiddleware);
+            }
+            catch (Exception ex)
+            {
+                Trace.Warning($"Error while running the LiveReload server: {ex.Message}");
+            }
+
+            Trace.Verbose($"LiveReload server listening on port {port}.");
+        }
+
         public void InjectOwinMiddleware(IAppBuilder app)
         {
             // Host livereload.js
-            var liveReloadAssembly = typeof(LiveReloadServer).Assembly;
-            var rootNamespace = typeof(LiveReloadServer).Namespace;
-            var reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
+            Assembly liveReloadAssembly = typeof(LiveReloadServer).Assembly;
+            string rootNamespace = typeof(LiveReloadServer).Namespace;
+            IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
             app.UseStaticFiles(new StaticFileOptions
             {
                 RequestPath = PathString.Empty,
@@ -39,10 +63,10 @@ namespace Wyam.LiveReload
 
         public void RebuildCompleted(ICollection<string> filesChanged)
         {
-            var clientsToNotify = _clientServiceLocator?.ReloadClients ?? Enumerable.Empty<ReloadClient>();
-            foreach (var client in clientsToNotify.Where(x => x.IsConnected))
+            IEnumerable<ReloadClient> clientsToNotify = _clientServiceLocator.ReloadClients;
+            foreach (ReloadClient client in clientsToNotify.Where(x => x.IsConnected))
             {
-                foreach (var modifiedFile in filesChanged)
+                foreach (string modifiedFile in filesChanged)
                 {
                     client.NotifyOfChanges(modifiedFile);
                 }
@@ -51,6 +75,7 @@ namespace Wyam.LiveReload
 
         public void Dispose()
         {
+            _server?.Dispose();
         }
     }
 }

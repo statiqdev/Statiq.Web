@@ -36,7 +36,7 @@ namespace Wyam.LiveReload
         {
             if (typeof(TService) == typeof(ReloadClient))
             {
-                var client = CreateClient();
+                object client = CreateClient();
                 return (TService) client;
             }
 
@@ -55,7 +55,7 @@ namespace Wyam.LiveReload
 
         private object CreateClient()
         {
-            var client = new ReloadClient();
+            ReloadClient client = new ReloadClient();
             _clients.Add(client);
             return client;
         }

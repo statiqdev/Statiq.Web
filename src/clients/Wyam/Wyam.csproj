@@ -141,7 +141,7 @@
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
-	</Reference>
+    </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
@@ -276,6 +276,7 @@
     <Compile Include="LiveReload\Messages\ILiveReloadMessage.cs" />
     <Compile Include="LiveReload\ReloadClient.cs" />
     <Compile Include="LiveReload\Messages\ReloadMessage.cs" />
+    <Compile Include="Owin\NullTraceOutputFactory.cs" />
     <Compile Include="Server\ApplicationBuilderExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryMiddleware.cs" />

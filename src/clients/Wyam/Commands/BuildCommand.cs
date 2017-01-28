@@ -169,6 +169,7 @@ namespace Wyam.Commands
             if (runLiveReloadServer)
             {
                 liveReloadServer = new LiveReloadServer();
+                liveReloadServer.StartStandaloneHost();
             }
 
             // Start the preview server

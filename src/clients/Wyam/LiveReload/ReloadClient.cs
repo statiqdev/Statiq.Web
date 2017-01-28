@@ -35,9 +35,9 @@ namespace Wyam.LiveReload
 
         public override Task OnMessageReceived(ArraySegment<byte> message, WebSocketMessageType type)
         {
-            var json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
+            string json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
             HandleClientMessage(json);
-
+            
             return Task.CompletedTask;
         }
 
@@ -57,7 +57,7 @@ namespace Wyam.LiveReload
         public void NotifyOfChanges(string modifiedFile, bool supportCssReload = true)
         {
             // Asume changes have been rebuilt by this time
-            var reloadMessage = new ReloadMessage
+            ReloadMessage reloadMessage = new ReloadMessage
             {
                 Path = modifiedFile,
                 LiveCss = supportCssReload
@@ -69,15 +69,15 @@ namespace Wyam.LiveReload
 
         private ILiveReloadMessage HandleClientMessage(string json)
         {
-            var parsedMessage = JsonConvert.DeserializeObject<BasicMessage>(json, _defaultSettings);
+            BasicMessage parsedMessage = JsonConvert.DeserializeObject<BasicMessage>(json, _defaultSettings);
             switch (parsedMessage.Command)
             {
                 case "info":
-                    var info = JsonConvert.DeserializeObject<InfoMessage>(json, _defaultSettings);
-                    LogVerbose($"LiveReload sent info ({info.Url}).");
+                    InfoMessage info = JsonConvert.DeserializeObject<InfoMessage>(json, _defaultSettings);
+                    LogVerbose($"LiveReload client sent info ({info.Url}).");
                     break;
                 case "hello":
-                    var hello = JsonConvert.DeserializeObject<HelloMessage>(json, _defaultSettings);
+                    HelloMessage hello = JsonConvert.DeserializeObject<HelloMessage>(json, _defaultSettings);
                     HandleHello(hello);
                     break;
                 default:
@@ -90,14 +90,14 @@ namespace Wyam.LiveReload
 
         private void HandleHello(HelloMessage message)
         {
-            var negotiatedVersion = message.Protocols
+            string negotiatedVersion = message.Protocols
                                            .Intersect(_supportedVersion)
                                            .OrderByDescending(x => x)
                                            .FirstOrDefault();
 
             if (negotiatedVersion == null)
             {
-                var incompatibleMessage = "LiveReload client is not compatible with this server, aborting connection. " +
+                string incompatibleMessage = "LiveReload client is not compatible with this server, aborting connection. " +
                                           $"Client=({string.Join(",", message.Protocols)}) " +
                                           $"Server=({string.Join(",", _supportedVersion)})";
                 LogVerbose(incompatibleMessage);
@@ -112,7 +112,7 @@ namespace Wyam.LiveReload
 
         private void SayHello()
         {
-            var helloMessage = new HelloMessage
+            HelloMessage helloMessage = new HelloMessage
             {
                 Protocols = _supportedVersion
             };
@@ -122,8 +122,8 @@ namespace Wyam.LiveReload
 
         private void SendObject<T>(T obj)
         {
-            var json = JsonConvert.SerializeObject(obj, _defaultSettings);
-            var bytes = Encoding.UTF8.GetBytes(json); // UTF-8 by spec
+            string json = JsonConvert.SerializeObject(obj, _defaultSettings);
+            byte[] bytes = Encoding.UTF8.GetBytes(json); // UTF-8 by spec
             SendText(bytes, true);
         }
 
