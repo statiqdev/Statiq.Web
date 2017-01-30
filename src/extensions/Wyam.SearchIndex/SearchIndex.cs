@@ -209,12 +209,12 @@ namespace Wyam.SearchIndex
 
             // Get the output path
             MetadataItems metadata = null;
-            FilePath outputPath = _path?.Invoke<FilePath>(context);
+            FilePath outputPath = _path?.Invoke<FilePath>(context, "while getting output path");
             if (outputPath != null)
             {
                 if (!outputPath.IsRelative)
                 {
-                    throw new ArgumentException("The feed output path must be relative");
+                    throw new ArgumentException("The output path must be relative");
                 }
                 metadata = new MetadataItems
                 {

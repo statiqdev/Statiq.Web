@@ -115,7 +115,7 @@ namespace Wyam.Core.Modules.Contents
                 .AsParallel()
                 .SelectMany(input =>
                 {
-                    IReadOnlyList<FilePath> paths = _paths.Invoke<IReadOnlyList<FilePath>>(input, context);
+                    IReadOnlyList<FilePath> paths = _paths.Invoke<IReadOnlyList<FilePath>>(input, context, "while getting paths");
                     if (paths != null)
                     {
                         List<IDocument> metaRefreshDocuments = new List<IDocument>();

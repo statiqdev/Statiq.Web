@@ -89,7 +89,7 @@ namespace Wyam.Core.Modules.Control
                 // Split the documents into ones that satisfy the predicate and ones that don't
                 List<IDocument> matched = new List<IDocument>();
                 List<IDocument> unmatched = new List<IDocument>();
-                if (condition.ContextConfig != null && condition.ContextConfig.Invoke<bool>(context))
+                if (condition.ContextConfig != null && condition.ContextConfig.Invoke<bool>(context, "while evaluating condition"))
                 {
                     matched.AddRange(documents);
                 }
@@ -97,7 +97,7 @@ namespace Wyam.Core.Modules.Control
                 {
                     foreach (IDocument document in documents)
                     {
-                        if (condition.DocumentConfig == null || condition.DocumentConfig.Invoke<bool>(document, context))
+                        if (condition.DocumentConfig == null || condition.DocumentConfig.Invoke<bool>(document, context, "while evaluating condition"))
                         {
                             matched.Add(document);
                         }

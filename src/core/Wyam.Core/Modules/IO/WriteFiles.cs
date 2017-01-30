@@ -221,7 +221,7 @@ namespace Wyam.Core.Modules.IO
             }
 
             // Fallback to the default behavior function
-            return path ?? _path.Invoke<FilePath>(input, context);
+            return path ?? _path.Invoke<FilePath>(input, context, "while getting path");
         }
 
         public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
