@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Html;
 @{
 	IList<IDocument> events = Model.List<IDocument>("Members")
-		?.Where(x => x.Get<bool>("IsResult") && x.String("Kind") == "Event")
+		?.Where(x => x.Bool("IsResult") && x.String("Kind") == "Event")
 		.OrderBy(x => x["DisplayName"])
 		.ToList();
 	if(events.Count > 0)
@@ -32,7 +32,7 @@
 										{
 											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
 										}
-										if(evt.Get<bool>(CodeAnalysisKeys.IsStatic))
+										if(evt.Bool(CodeAnalysisKeys.IsStatic))
 										{
 											<div><small><em>static</em></small></div>
 										}

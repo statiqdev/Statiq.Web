@@ -60,6 +60,8 @@ namespace Wyam.Testing.Documents
             Content = content;
         }
 
+        public IMetadata WithoutSettings => this;
+
         public bool ContainsKey(string key)
         {
             if (key == null)
@@ -96,6 +98,10 @@ namespace Wyam.Testing.Documents
         public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);
 
         public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
+
+        public bool Bool(string key, bool defaultValue = false) => Get<bool>(key, defaultValue);
+
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Get<DateTime>(key, defaultValue);
 
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {

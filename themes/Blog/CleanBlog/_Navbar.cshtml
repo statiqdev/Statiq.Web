@@ -1,7 +1,7 @@
 @{
     var pages = Documents[BlogPipelines.Pages]
-        .Where(x => x.Get<bool>(BlogKeys.ShowInNavbar, true))
-        .Select(x => Tuple.Create(x.String(BlogKeys.Title), Context.GetLink(x)))
+        .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
+        .Select(x => Tuple.Create(x.WithoutSettings.String(BlogKeys.Title), Context.GetLink(x)))
         .Where(x => !string.IsNullOrEmpty(x.Item1))
         .OrderBy(x => x.Item1);
     foreach(var page in pages)

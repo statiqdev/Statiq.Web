@@ -126,7 +126,7 @@ namespace Wyam.Core.Modules.IO
             return _patterns != null
                 ? Execute(null, _patterns, context)
                 : inputs.AsParallel().SelectMany(input =>
-                    Execute(input, _patternsDelegate.Invoke<string[]>(input, context), context));
+                    Execute(input, _patternsDelegate.Invoke<string[]>(input, context, "while getting patterns"), context));
         }
 
         private IEnumerable<IDocument> Execute(IDocument input, string[] patterns, IExecutionContext context)

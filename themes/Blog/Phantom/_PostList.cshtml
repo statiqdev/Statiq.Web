@@ -7,7 +7,7 @@
         
         <div>
             <a href="@Context.GetLink(doc)">
-                <h3>@doc.String(BlogKeys.Title)</h3>
+                <h3>@doc.WithoutSettings.String(BlogKeys.Title)</h3>
                 @if(!string.IsNullOrWhiteSpace(lead))
                 {
                     <p>@lead</p>

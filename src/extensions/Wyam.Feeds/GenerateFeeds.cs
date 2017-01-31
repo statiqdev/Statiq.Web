@@ -39,24 +39,24 @@ namespace Wyam.Feeds
         private ContextConfig _rdfPath = _ => DefaultRdfPath;
 
         private ContextConfig _feedId = ctx => ctx.GetLink();
-        private ContextConfig _feedTitle = ctx => ctx.GlobalMetadata.String("Title");
-        private ContextConfig _feedDescription = ctx => ctx.GlobalMetadata.String("Description");
-        private ContextConfig _feedAuthor = ctx => ctx.GlobalMetadata.String("Author");
+        private ContextConfig _feedTitle = ctx => ctx.String(FeedKeys.Title);
+        private ContextConfig _feedDescription = ctx => ctx.String(FeedKeys.Description);
+        private ContextConfig _feedAuthor = ctx => ctx.String(FeedKeys.Author);
         private ContextConfig _feedPublished = _ => DateTime.UtcNow;
         private ContextConfig _feedUpdated = _ => DateTime.UtcNow;
         private ContextConfig _feedLink = ctx => ctx.GetLink();
-        private ContextConfig _feedImageLink = ctx => ctx.GetLink(ctx.GlobalMetadata, "Image", true);
-        private ContextConfig _feedCopyright = ctx => ctx.GlobalMetadata.String("Copyright") ?? DateTime.UtcNow.Year.ToString();
+        private ContextConfig _feedImageLink = ctx => ctx.GetLink(ctx, FeedKeys.Image, true);
+        private ContextConfig _feedCopyright = ctx => ctx.String(FeedKeys.Copyright) ?? DateTime.UtcNow.Year.ToString();
 
         private DocumentConfig _itemId = (doc, ctx) => ctx.GetLink(doc, true);
-        private DocumentConfig _itemTitle = (doc, ctx) => doc.String("Title");
-        private DocumentConfig _itemDescription = (doc, ctx) => doc.String("Description") ?? doc.String("Excerpt");
-        private DocumentConfig _itemAuthor = (doc, ctx) => doc.String("Author");
-        private DocumentConfig _itemPublished = (doc, ctx) => doc.String("Published");
-        private DocumentConfig _itemUpdated = (doc, ctx) => doc.String("Updated");
+        private DocumentConfig _itemTitle = (doc, ctx) => doc.String(FeedKeys.Title);
+        private DocumentConfig _itemDescription = (doc, ctx) => doc.String(FeedKeys.Description) ?? doc.String(FeedKeys.Excerpt);
+        private DocumentConfig _itemAuthor = (doc, ctx) => doc.String(FeedKeys.Author);
+        private DocumentConfig _itemPublished = (doc, ctx) => doc.String(FeedKeys.Published);
+        private DocumentConfig _itemUpdated = (doc, ctx) => doc.String(FeedKeys.Updated);
         private DocumentConfig _itemLink = (doc, ctx) => ctx.GetLink(doc, true);
-        private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, "Image", true);
-        private DocumentConfig _itemContent = (doc, ctx) => doc.String("Content");
+        private DocumentConfig _itemImageLink = (doc, ctx) => ctx.GetLink(doc, FeedKeys.Image, true);
+        private DocumentConfig _itemContent = (doc, ctx) => doc.String(FeedKeys.Content);
         private DocumentConfig _itemThreadLink = null;
         private DocumentConfig _itemThreadCount = null;
         private DocumentConfig _itemThreadUpdated = null;
@@ -359,15 +359,15 @@ namespace Wyam.Feeds
             // Get the feed
             Feed feed = new Feed
             {
-                ID = _feedId?.Invoke<Uri>(context),
-                Title = _feedTitle?.Invoke<string>(context),
-                Description = _feedDescription?.Invoke<string>(context),
-                Author = _feedAuthor?.Invoke<string>(context),
-                Published = _feedPublished?.Invoke<DateTime?>(context),
-                Updated = _feedUpdated?.Invoke<DateTime?>(context),
-                Link = _feedLink?.Invoke<Uri>(context),
-                ImageLink = _feedImageLink?.Invoke<Uri>(context),
-                Copyright = _feedCopyright?.Invoke<string>(context)
+                ID = _feedId?.Invoke<Uri>(context, "while reading feed ID from settings"),
+                Title = _feedTitle?.Invoke<string>(context, "while reading feed title from settings"),
+                Description = _feedDescription?.Invoke<string>(context, "while reading feed description from settings"),
+                Author = _feedAuthor?.Invoke<string>(context, "while reading feed author from settings"),
+                Published = _feedPublished?.Invoke<DateTime?>(context, "while reading feed published date from settings"),
+                Updated = _feedUpdated?.Invoke<DateTime?>(context, "while reading feed updated date from settings"),
+                Link = _feedLink?.Invoke<Uri>(context, "while reading feed link from settings"),
+                ImageLink = _feedImageLink?.Invoke<Uri>(context, "while reading feed image from settings"),
+                Copyright = _feedCopyright?.Invoke<string>(context, "while reading feed copyright from settings")
             };
 
             // Add items
@@ -375,18 +375,18 @@ namespace Wyam.Feeds
             {
                 feed.Items.Add(new FeedItem
                 {
-                    ID = _itemId?.Invoke<Uri>(input, context),
-                    Title = _itemTitle?.Invoke<string>(input, context),
-                    Description = _itemDescription?.Invoke<string>(input, context),
-                    Author = _itemAuthor?.Invoke<string>(input, context),
-                    Published = _itemPublished?.Invoke<DateTime?>(input, context),
-                    Updated = _itemUpdated?.Invoke<DateTime?>(input, context),
-                    Link = _itemLink?.Invoke<Uri>(input, context),
-                    ImageLink = _itemImageLink?.Invoke<Uri>(input, context),
-                    Content = _itemContent?.Invoke<string>(input, context),
-                    ThreadLink = _itemThreadLink?.Invoke<Uri>(input, context),
-                    ThreadCount = _itemThreadCount?.Invoke<int?>(input, context),
-                    ThreadUpdated = _itemThreadUpdated?.Invoke<DateTime?>(input, context)
+                    ID = _itemId?.Invoke<Uri>(input, context, "while reading ID for feed"),
+                    Title = _itemTitle?.Invoke<string>(input, context, "while reading title for feed"),
+                    Description = _itemDescription?.Invoke<string>(input, context, "while reading description for feed"),
+                    Author = _itemAuthor?.Invoke<string>(input, context, "while reading author for feed"),
+                    Published = _itemPublished?.Invoke<DateTime?>(input, context, "while reading published date for feed"),
+                    Updated = _itemUpdated?.Invoke<DateTime?>(input, context, "while reading updated date for feed"),
+                    Link = _itemLink?.Invoke<Uri>(input, context, "while reading feed link for feed"),
+                    ImageLink = _itemImageLink?.Invoke<Uri>(input, context, "while reading image for feed"),
+                    Content = _itemContent?.Invoke<string>(input, context, "while reading content for feed"),
+                    ThreadLink = _itemThreadLink?.Invoke<Uri>(input, context, "while reading thread link for feed"),
+                    ThreadCount = _itemThreadCount?.Invoke<int?>(input, context, "while reading thread count for feed"),
+                    ThreadUpdated = _itemThreadUpdated?.Invoke<DateTime?>(input, context, "while reading thread updated for feed")
                 });
             }
 
@@ -402,7 +402,7 @@ namespace Wyam.Feeds
         private IDocument GenerateFeed(FeedType feedType, Feed feed, ContextConfig path, IExecutionContext context)
         {
             // Get the output path
-            FilePath outputPath = path?.Invoke<FilePath>(context);
+            FilePath outputPath = path?.Invoke<FilePath>(context, "while getting output path");
             if (outputPath == null)
             {
                 return null;

@@ -5,7 +5,7 @@
 }
 
 <header>
-    <h1>@Model.String(BlogKeys.Title)</h1>
+    <h1>@Model.WithoutSettings.String(BlogKeys.Title)</h1>
     @if(!string.IsNullOrWhiteSpace(Lead))
     {
         <p>@Lead</p>

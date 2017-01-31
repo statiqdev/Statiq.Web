@@ -27,15 +27,15 @@ namespace Wyam.Core.Documents
         /// <returns>A new custom document instance with the same values as the current instance.</returns>
         protected internal virtual CustomDocument Clone() => (CustomDocument)MemberwiseClone();
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() =>
-            Document.GetEnumerator();
+        public IMetadata WithoutSettings => Document.WithoutSettings;
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => Document.GetEnumerator();
 
         public int Count => Document.Count;
 
         public bool ContainsKey(string key) => Document.ContainsKey(key);
 
-        public bool TryGetValue(string key, out object value) =>
-            Document.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object value) => Document.TryGetValue(key, out value);
 
         public object this[string key] => Document[key];
 
@@ -45,35 +45,31 @@ namespace Wyam.Core.Documents
 
         public IMetadata<T> MetadataAs<T>() => Document.MetadataAs<T>();
 
-        public object Get(string key, object defaultValue = null) =>
-            Document.Get(key, defaultValue);
+        public object Get(string key, object defaultValue = null) => Document.Get(key, defaultValue);
 
         public object GetRaw(string key) => Document.GetRaw(key);
 
         public T Get<T>(string key) => Document.Get<T>(key);
 
-        public T Get<T>(string key, T defaultValue) =>
-            Document.Get(key, defaultValue);
+        public T Get<T>(string key, T defaultValue) => Document.Get(key, defaultValue);
 
-        public string String(string key, string defaultValue = null) =>
-            Document.String(key, defaultValue);
+        public string String(string key, string defaultValue = null) => Document.String(key, defaultValue);
 
-        public FilePath FilePath(string key, FilePath defaultValue = null) =>
-            Document.FilePath(key, defaultValue);
+        public bool Bool(string key, bool defaultValue = false) => Document.Bool(key, defaultValue);
 
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) =>
-            Document.DirectoryPath(key, defaultValue);
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Document.DateTime(key, defaultValue);
 
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) =>
-            Document.List(key, defaultValue);
+        public FilePath FilePath(string key, FilePath defaultValue = null) => Document.FilePath(key, defaultValue);
 
-        IDocument IMetadata.Document(string key) =>
-            Document.Document(key);
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Document.DirectoryPath(key, defaultValue);
+
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Document.List(key, defaultValue);
+
+        IDocument IMetadata.Document(string key) => Document.Document(key);
 
         public IReadOnlyList<IDocument> DocumentList(string key) => Document.DocumentList(key);
 
-        public dynamic Dynamic(string key, object defaultValue = null) =>
-            Document.Dynamic(key, defaultValue);
+        public dynamic Dynamic(string key, object defaultValue = null) => Document.Dynamic(key, defaultValue);
 
         public void Dispose() => Document.Dispose();
 

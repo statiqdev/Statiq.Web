@@ -162,7 +162,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"Layout/Test.cshtml", 
+                IDocument document = GetDocument(@"/Layout/Test.cshtml", 
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -185,7 +185,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"Layout/Test.cshtml",
+                IDocument document = GetDocument(@"/Layout/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithLayout("_Layout.cshtml");
 
@@ -205,7 +205,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"ViewStartAndLayout/Test.cshtml",
+                IDocument document = GetDocument(@"/ViewStartAndLayout/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor();
 
@@ -225,7 +225,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStart.cshtml");
 
@@ -245,7 +245,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
@@ -265,7 +265,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
@@ -285,12 +285,12 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document1 = GetDocument(@"IgnoreUnderscores/Test.cshtml",
+                IDocument document1 = GetDocument(@"/IgnoreUnderscores/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
 <p>This is a test</p>");
-                IDocument document2 = GetDocument(@"IgnoreUnderscores/_Layout.cshtml",
+                IDocument document2 = GetDocument(@"/IgnoreUnderscores/_Layout.cshtml",
 @"LAYOUT4
 @RenderBody()");
                 Razor razor = new Razor();
@@ -311,9 +311,9 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document1 = GetDocument(@"AlternateIgnorePrefix/Test.cshtml",
+                IDocument document1 = GetDocument(@"/AlternateIgnorePrefix/Test.cshtml",
 @"<p>This is a test</p>");
-                IDocument document2 = GetDocument(@"AlternateIgnorePrefix/IgnoreMe.cshtml",
+                IDocument document2 = GetDocument(@"/AlternateIgnorePrefix/IgnoreMe.cshtml",
 @"<p>Ignore me</p>");
                 Razor razor = new Razor().IgnorePrefix("Ignore");
 
@@ -332,7 +332,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
+                IDocument document = GetDocument(@"/LayoutWithSection/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -361,7 +361,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"LayoutWithSection/Test.cshtml",
+                IDocument document = GetDocument(@"/LayoutWithSection/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -388,7 +388,7 @@ namespace Wyam.Razor.Tests
             private IDocument GetDocument(string source, string content)
             {
                 IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(new FilePath("/" + source));
+                document.Source.Returns(new FilePath(source));
                 document.ContainsKey(Keys.RelativeFilePath).Returns(true);
                 document.String(Keys.RelativeFilePath).Returns(source);
                 document.ContainsKey(Keys.SourceFileName).Returns(true);

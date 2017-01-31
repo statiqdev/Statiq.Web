@@ -55,7 +55,7 @@ foo bar;
                 string configScript = @"
 Pipelines.Add(
     Content(true
-        && @doc.Get<bool>(""Key"") == false
+        && @doc.Bool(""Key"") == false
     )
 );
 
@@ -87,7 +87,7 @@ foo bar;
                 string configScript = @"
 Pipelines.Add(
     Content(
-        @doc.Get<bool>(""Key"") == false
+        @doc.Bool(""Key"") == false
     )
 );
 
@@ -119,7 +119,7 @@ foo bar;
                 string configScript = @"
 Pipelines.Add(
     If(
-        @doc.Get<bool>(""Key""),
+        @doc.Bool(""Key""),
         Content(""Baz"")
     )
 );
@@ -200,20 +200,20 @@ SetCustomDocumentType<MyDocument>();
                 Engine engine = new Engine();
                 Configurator configurator = GetConfigurator(engine);
                 string configScript = @"
-                    InitialMetadata[""TestString""] = ""teststring"";
-                    InitialMetadata[""TestInt""] = 1234;
-                    InitialMetadata[""TestFloat""] = 1234.567;
-                    InitialMetadata[""TestBool""] = true;
+                    Settings[""TestString""] = ""teststring"";
+                    Settings[""TestInt""] = 1234;
+                    Settings[""TestFloat""] = 1234.567;
+                    Settings[""TestBool""] = true;
                 ";
 
                 // When
                 configurator.Configure(configScript);
 
                 // Then
-                Assert.AreEqual("teststring", engine.InitialMetadata["TestString"]);
-                Assert.AreEqual(1234, engine.InitialMetadata["TestInt"]);
-                Assert.AreEqual(1234.567, engine.InitialMetadata["TestFloat"]);
-                Assert.AreEqual(true, engine.InitialMetadata["TestBool"]);
+                Assert.AreEqual("teststring", engine.Settings["TestString"]);
+                Assert.AreEqual(1234, engine.Settings["TestInt"]);
+                Assert.AreEqual(1234.567, engine.Settings["TestFloat"]);
+                Assert.AreEqual(true, engine.Settings["TestBool"]);
             }
 
             [Test]
@@ -264,7 +264,7 @@ SetCustomDocumentType<MyDocument>();
                 Configurator configurator = GetConfigurator(engine);
                 configurator.AssemblyLoader.Add(Assembly.GetExecutingAssembly().FullName);
                 configurator.RecipeName = nameof(MetadataTestRecipe);
-                configurator.GlobalMetadata = new Dictionary<string, object>
+                configurator.Settings = new Dictionary<string, object>
                 {
                     { "Foo", "Baz" }
                 };
@@ -273,7 +273,7 @@ SetCustomDocumentType<MyDocument>();
                 configurator.Configure(string.Empty);
 
                 // Then
-                Assert.AreEqual("Baz", engine.GlobalMetadata["Foo"]);
+                Assert.AreEqual("Baz", engine.Settings["Foo"]);
             }
         }
 
@@ -461,10 +461,10 @@ SetCustomDocumentType<MyDocument>();
     {
         public void Apply(IEngine engine)
         {
-            engine.GlobalMetadata["Foo"] = "Bar";
+            engine.Settings["Foo"] = "Bar";
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
             throw new NotImplementedException();
         }

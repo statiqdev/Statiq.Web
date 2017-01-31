@@ -95,6 +95,50 @@ C: Yes
                 Assert.AreEqual("true", items.First(x => x.Key == "B").Value);
                 Assert.AreEqual("Yes", items.First(x => x.Key == "C").Value);
             }
+
+            [Test]
+            public void UsesDocumentNestingForComplexChildren()
+            {
+                // Given
+                IDocument document = Substitute.For<IDocument>();
+                IList<KeyValuePair<string, object>> items = null;
+                List<IList<KeyValuePair<string, object>>> subItems = new List<IList<KeyValuePair<string, object>>>();
+                IExecutionContext context = Substitute.For<IExecutionContext>();
+                context
+                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                    .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>().ToList());
+                context
+                    .When(x => x.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
+                    .Do(x => subItems.Add(x.Arg<IEnumerable<KeyValuePair<string, object>>>().ToList()));
+                document.Content.Returns(@"
+C:
+  - X: 1
+    Y: 2
+  - X: 4
+    Z: 5
+");
+                Yaml yaml = new Yaml();
+
+                // When
+                yaml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                Assert.AreEqual(1, items.Count);
+                IDocument[] documents = items.First(x => x.Key == "C").Value as IDocument[];
+                Assert.IsNotNull(documents);
+
+                context.Received(2).GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                Assert.AreEqual(2, subItems.Count);
+                Assert.AreEqual("X", subItems[0][0].Key);
+                Assert.AreEqual("1", subItems[0][0].Value);
+                Assert.AreEqual("Y", subItems[0][1].Key);
+                Assert.AreEqual("2", subItems[0][1].Value);
+                Assert.AreEqual("X", subItems[1][0].Key);
+                Assert.AreEqual("4", subItems[1][0].Value);
+                Assert.AreEqual("Z", subItems[1][1].Key);
+                Assert.AreEqual("5", subItems[1][1].Value);
+            }
         }
     }
 }

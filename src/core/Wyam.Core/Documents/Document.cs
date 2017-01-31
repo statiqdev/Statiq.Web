@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Wyam.Common.Documents;
@@ -251,6 +252,8 @@ namespace Wyam.Core.Documents
             }
         }
 
+        public IMetadata WithoutSettings => new MetadataStack(_metadata.Stack.Reverse().Skip(1));
+
         // IMetadata
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _metadata.GetEnumerator();
@@ -278,6 +281,10 @@ namespace Wyam.Core.Documents
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
         public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
+
+        public bool Bool(string key, bool defaultValue = false) => _metadata.Bool(key, defaultValue);
+
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => _metadata.DateTime(key, defaultValue);
 
         public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
 

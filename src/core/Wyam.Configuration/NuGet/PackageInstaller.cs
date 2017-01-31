@@ -78,7 +78,6 @@ namespace Wyam.Configuration.NuGet
             if (KnownExtension.Values.Values.Any(x => x.PackageId == packageId) && versionRange == null)
             {
                 versionRange = $"[{Engine.Version}]";
-                allowPrereleaseVersions = true;
                 Trace.Verbose($"Added known extension package {packageId} without version, setting version to {versionRange}");
             }
 

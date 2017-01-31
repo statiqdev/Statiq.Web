@@ -24,15 +24,15 @@ namespace Wyam.Blog
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.GlobalMetadata[BlogKeys.Title] = "My Blog";
-            engine.GlobalMetadata[BlogKeys.Description] = "Welcome!";
-            engine.GlobalMetadata[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
-            engine.GlobalMetadata[BlogKeys.IncludeDateInPostPath] = false;
-            engine.GlobalMetadata[BlogKeys.PostsPath] = new DirectoryPath("posts");
-            engine.GlobalMetadata[BlogKeys.MetaRefreshRedirects] = true;
-            engine.GlobalMetadata[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
-            engine.GlobalMetadata[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
-            engine.GlobalMetadata[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[BlogKeys.Title] = "My Blog";
+            engine.Settings[BlogKeys.Description] = "Welcome!";
+            engine.Settings[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.Settings[BlogKeys.IncludeDateInPostPath] = false;
+            engine.Settings[BlogKeys.PostsPath] = new DirectoryPath("posts");
+            engine.Settings[BlogKeys.MetaRefreshRedirects] = true;
+            engine.Settings[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
+            engine.Settings[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
+            engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
@@ -100,10 +100,10 @@ namespace Wyam.Blog
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     DateTime published = doc.Get<DateTime>(BlogKeys.Published);
-                    string fileName = doc.Get<bool>("FrontMatterPublished")
+                    string fileName = doc.Bool("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Get<bool>(BlogKeys.IncludeDateInPostPath) 
+                    return ctx.Bool(BlogKeys.IncludeDateInPostPath) 
                         ? $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{published:yyyy}/{published:MM}/{fileName}" 
                         : $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{fileName}";
                 }),
@@ -115,7 +115,7 @@ namespace Wyam.Blog
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => 
                     new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts))
-                        .WithComparer(ctx.Get<bool>(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
+                        .WithComparer(ctx.Bool(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                 new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
                 new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
@@ -167,8 +167,8 @@ namespace Wyam.Blog
                 new Execute(ctx =>
                 {
                     Redirect redirect = new Redirect()
-                        .WithMetaRefreshPages(ctx.Get<bool>(BlogKeys.MetaRefreshRedirects));
-                    if (ctx.Get<bool>(BlogKeys.NetlifyRedirects))
+                        .WithMetaRefreshPages(ctx.Bool(BlogKeys.MetaRefreshRedirects));
+                    if (ctx.Bool(BlogKeys.NetlifyRedirects))
                     {
                         redirect.WithAdditionalOutput("_redirects", redirects =>
                             string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));
@@ -183,7 +183,7 @@ namespace Wyam.Blog
             );
 
             engine.Pipelines.Add(BlogPipelines.ValidateLinks,
-                new If(ctx => ctx.Get<bool>(BlogKeys.ValidateAbsoluteLinks) || ctx.Get<bool>(BlogKeys.ValidateRelativeLinks),
+                new If(ctx => ctx.Bool(BlogKeys.ValidateAbsoluteLinks) || ctx.Bool(BlogKeys.ValidateRelativeLinks),
                     new Documents(BlogPipelines.RenderPages),
                     new Concat(
                         new Documents(BlogPipelines.Posts)
@@ -199,25 +199,28 @@ namespace Wyam.Blog
                     }),
                     new Execute(ctx =>
                         new ValidateLinks()
-                            .ValidateAbsoluteLinks(ctx.Get<bool>(BlogKeys.ValidateAbsoluteLinks))
-                            .ValidateRelativeLinks(ctx.Get<bool>(BlogKeys.ValidateRelativeLinks))
-                            .AsError(ctx.Get<bool>(BlogKeys.ValidateLinksAsError)
+                            .ValidateAbsoluteLinks(ctx.Bool(BlogKeys.ValidateAbsoluteLinks))
+                            .ValidateRelativeLinks(ctx.Bool(BlogKeys.ValidateRelativeLinks))
+                            .AsError(ctx.Bool(BlogKeys.ValidateLinksAsError)
                         )
                     )
                 )
             );
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
+            // Config file
+            configFile?.WriteAllText(@"#recipe Blog");
+
             // Add info page
-            directory.GetFile("about.md").WriteAllText(
+            inputDirectory.GetFile("about.md").WriteAllText(
 @"Title: About Me
 ---
 I'm awesome!");
 
             // Add post page
-            directory.GetFile("posts/first-post.md").WriteAllText(
+            inputDirectory.GetFile("posts/first-post.md").WriteAllText(
 @"Title: First Post
 Published: 1/1/2016
 Tags: Introduction

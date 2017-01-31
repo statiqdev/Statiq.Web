@@ -55,6 +55,35 @@ namespace Wyam.Core.Tests.Documents
             }
         }
 
+        public class WitoutSettingsTests : DocumentFixture
+        {
+            [Test]
+            public void ReturnsMetadataWithoutSettings()
+            {
+                // Given
+                MetadataDictionary initialMetadata = new MetadataDictionary();
+                initialMetadata.Add("A", "a");
+                Document document = new Document(initialMetadata);
+                Document cloned = new Document(document, new MetadataItems {{"B", "b"}});
+
+                // When
+                string initialA = document.String("A");
+                string initialB = document.String("B");
+                string clonedA = cloned.String("A");
+                string clonedB = cloned.String("B");
+                string withoutA = cloned.WithoutSettings.String("A");
+                string withoutB = cloned.WithoutSettings.String("B");
+
+                // Then
+                Assert.AreEqual("a", initialA);
+                Assert.IsNull(initialB);
+                Assert.AreEqual("a", clonedA);
+                Assert.AreEqual("b", clonedB);
+                Assert.IsNull(withoutA);
+                Assert.AreEqual("b", withoutB);
+            }
+        }
+
         public class DisposeTests : DocumentFixture
         {
             [Test]

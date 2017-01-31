@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Wyam.Common.IO;
 using Wyam.Configuration.Preprocessing;
 using Trace = Wyam.Common.Tracing.Trace;
 
@@ -118,5 +119,29 @@ namespace Wyam.Commands
         }
 
         protected abstract ExitCode RunCommand(Preprocessor preprocessor);
+
+        // Used by both build and new
+        protected static void ParseRootPathParameter(ArgumentSyntax syntax, ConfigOptions configOptions)
+        {
+            if (syntax.DefineParameter("root", ref configOptions.RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
+            {
+                // If a root folder was defined, but it actually points to a file, set the root folder to the directory
+                // and use the specified file as the config file (if a config file was already specified, it's an error)
+                FilePath rootDirectoryPathAsConfigFile = new DirectoryPath(Environment.CurrentDirectory).CombineFile(configOptions.RootPath.FullPath);
+                if (System.IO.File.Exists(rootDirectoryPathAsConfigFile.FullPath))
+                {
+                    // The specified root actually points to a file...
+                    if (configOptions.ConfigFilePath != null)
+                    {
+                        syntax.ReportError("A config file was both explicitly specified and specified in the root folder.");
+                    }
+                    else
+                    {
+                        configOptions.ConfigFilePath = rootDirectoryPathAsConfigFile.FileName;
+                        configOptions.RootPath = rootDirectoryPathAsConfigFile.Directory;
+                    }
+                }
+            }
+        }
     }
 }

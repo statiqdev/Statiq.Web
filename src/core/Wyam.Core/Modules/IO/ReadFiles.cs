@@ -113,9 +113,9 @@ namespace Wyam.Core.Modules.IO
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _contextPatterns != null
-                ? Execute(null, _contextPatterns.Invoke<string[]>(context), context)
+                ? Execute(null, _contextPatterns.Invoke<string[]>(context, "while getting patterns"), context)
                 : inputs.AsParallel().SelectMany(input =>
-                    Execute(input, _documentPatterns.Invoke<string[]>(input, context), context));
+                    Execute(input, _documentPatterns.Invoke<string[]>(input, context, "while getting patterns"), context));
         }
 
         private IEnumerable<IDocument> Execute(IDocument input, string[] patterns, IExecutionContext context)

@@ -13,7 +13,12 @@ namespace Wyam.Core.Meta
     internal class MetadataStack : Metadata
     {
         internal MetadataStack(Metadata initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
-            : base(new Stack<IDictionary<string, object>>(initialMetadata.Stack.Reverse()))
+            : this(initialMetadata.Stack.Reverse(), items)
+        {
+        }
+
+        internal MetadataStack(IEnumerable<IDictionary<string, object>> initialMetadata, IEnumerable<KeyValuePair<string, object>> items = null)
+            : base(new Stack<IDictionary<string, object>>(initialMetadata))
         {
             if (items != null)
             {

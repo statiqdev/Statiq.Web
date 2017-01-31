@@ -40,7 +40,6 @@ namespace Wyam.Core.Execution
         private readonly Settings _settings = new Settings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
-        private readonly MetadataDictionary _initialMetadata = new MetadataDictionary();
         private bool _disposed;
 
         /// <summary>
@@ -61,12 +60,28 @@ namespace Wyam.Core.Execution
         /// <summary>
         /// Gets the initial metadata.
         /// </summary>
-        public IMetadataDictionary InitialMetadata => _initialMetadata;
+        [Obsolete]
+        public IMetadataDictionary InitialMetadata
+        {
+            get
+            {
+                Trace.Warning("InitialMetadata is deprecated and will be removed in a future version. Please use Settings instead.");
+                return Settings;
+            }
+        }
 
         /// <summary>
         /// Gets the global metadata.
         /// </summary>
-        public IMetadataDictionary GlobalMetadata { get; } = new MetadataDictionary();
+        [Obsolete]
+        public IMetadataDictionary GlobalMetadata
+        {
+            get
+            {
+                Trace.Warning("GlobalMetadata is deprecated and will be removed in a future version. Please use Settings instead.");
+                return Settings;
+            }
+        }
 
         /// <summary>
         /// Gets the documents.
@@ -114,7 +129,7 @@ namespace Wyam.Core.Execution
         public Engine()
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
-            _documentFactory = new DocumentFactory(_initialMetadata);
+            _documentFactory = new DocumentFactory(_settings);
         }
 
         public void CleanOutputPath()
@@ -139,8 +154,15 @@ namespace Wyam.Core.Execution
         {
             CheckDisposed();
 
+            // Make sure we've actually configured some pipelines
+            if (_pipelines.Count == 0)
+            {
+                Trace.Error("No pipelines are configured. Please supply a configuration file, specify a recipe, or configure programmatically");
+                return;
+            }
+
             // Clean the output folder if requested
-            if (Settings.CleanOutputPath)
+            if (Settings.Bool(Keys.CleanOutputPath))
             {
                 CleanOutputPath();
             }

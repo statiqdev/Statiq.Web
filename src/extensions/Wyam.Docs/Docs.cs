@@ -30,31 +30,31 @@ namespace Wyam.Docs
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.GlobalMetadata[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
-            engine.GlobalMetadata[DocsKeys.IncludeGlobalNamespace] = true;
-            engine.GlobalMetadata[DocsKeys.IncludeDateInPostPath] = false;
-            engine.GlobalMetadata[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
-            engine.GlobalMetadata[DocsKeys.SearchIndex] = true;
-            engine.GlobalMetadata[DocsKeys.MetaRefreshRedirects] = true;
-            engine.GlobalMetadata[DocsKeys.AutoLinkTypes] = true;
-            engine.GlobalMetadata[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
-            engine.GlobalMetadata[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
-            engine.GlobalMetadata[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
+            engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
+            engine.Settings[DocsKeys.IncludeDateInPostPath] = false;
+            engine.Settings[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.Settings[DocsKeys.SearchIndex] = true;
+            engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
+            engine.Settings[DocsKeys.AutoLinkTypes] = true;
+            engine.Settings[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
+            engine.Settings[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
+            engine.Settings[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
 
             engine.Pipelines.Add(DocsPipelines.Code,
-                new ReadFiles(ctx => ctx.GlobalMetadata.List<string>(DocsKeys.SourceFiles))
+                new ReadFiles(ctx => ctx.List<string>(DocsKeys.SourceFiles))
             );
 
             engine.Pipelines.Add(DocsPipelines.Api,
-                new If(ctx => ctx.Documents[DocsPipelines.Code].Any() || ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
+                new If(ctx => ctx.Documents[DocsPipelines.Code].Any() || ctx.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
                     new Documents(DocsPipelines.Code),
                     // Put analysis module inside execute to have access to global metadata at runtime
                     new Execute(ctx => new AnalyzeCSharp()
-                        .WhereNamespaces(ctx.GlobalMetadata.Get<bool>(DocsKeys.IncludeGlobalNamespace))
+                        .WhereNamespaces(ctx.Bool(DocsKeys.IncludeGlobalNamespace))
                         .WherePublic()
                         .WithCssClasses("code", "cs")
                         .WithWritePathPrefix("api")
-                        .WithAssemblies(ctx.GlobalMetadata.List<string>(DocsKeys.AssemblyFiles))
+                        .WithAssemblies(ctx.List<string>(DocsKeys.AssemblyFiles))
                         .WithAssemblySymbols()),
                     // Calculate a type name to link lookup for auto linking
                     new Execute((doc, ctx) =>
@@ -92,7 +92,7 @@ namespace Wyam.Docs
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())),
-                new If(ctx => ctx.GlobalMetadata.Get<bool>(DocsKeys.AutoLinkTypes),
+                new If(ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                     new AutoLink(_typeNamesToLink)
                         .WithQuerySelector("code")
                         .WithMatchOnlyWholeWord()
@@ -115,7 +115,7 @@ namespace Wyam.Docs
                 new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new FrontMatter(new Yaml.Yaml()),
                 new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
-                new If(ctx => ctx.GlobalMetadata.Get<bool>(DocsKeys.AutoLinkTypes),
+                new If(ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                     new AutoLink(_typeNamesToLink)
                         .WithQuerySelector("code")
                         .WithMatchOnlyWholeWord()
@@ -154,10 +154,10 @@ namespace Wyam.Docs
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
                     DateTime published = doc.Get<DateTime>(DocsKeys.Published);
-                    string fileName = doc.Get<bool>("FrontMatterPublished")
+                    string fileName = doc.Bool("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Get<bool>(DocsKeys.IncludeDateInPostPath) ? $"blog/{published:yyyy}/{published:MM}/{fileName}" : $"blog/{fileName}";
+                    return ctx.Bool(DocsKeys.IncludeDateInPostPath) ? $"blog/{published:yyyy}/{published:MM}/{fileName}" : $"blog/{fileName}";
                 }),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
             );
@@ -331,8 +331,8 @@ namespace Wyam.Docs
                 new Execute(ctx =>
                 {
                     Redirect redirect = new Redirect()
-                        .WithMetaRefreshPages(ctx.Get<bool>(DocsKeys.MetaRefreshRedirects));
-                    if (ctx.Get<bool>(DocsKeys.NetlifyRedirects))
+                        .WithMetaRefreshPages(ctx.Bool(DocsKeys.MetaRefreshRedirects));
+                    if (ctx.Bool(DocsKeys.NetlifyRedirects))
                     {
                         redirect.WithAdditionalOutput("_redirects", redirects =>
                             string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));
@@ -365,7 +365,7 @@ namespace Wyam.Docs
             );
 
             engine.Pipelines.Add(DocsPipelines.ApiSearchIndex,
-                new If(ctx => ctx.Documents[DocsPipelines.Api].Any() && ctx.GlobalMetadata.Get<bool>(DocsKeys.SearchIndex),
+                new If(ctx => ctx.Documents[DocsPipelines.Api].Any() && ctx.Bool(DocsKeys.SearchIndex),
                     new Documents(DocsPipelines.Api),
                     new Where((doc, ctx) => doc.String(CodeAnalysisKeys.Kind) == "NamedType"),
                     new SearchIndex.SearchIndex((doc, ctx) => 
@@ -421,7 +421,7 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             );
 
             engine.Pipelines.Add(DocsPipelines.ValidateLinks,
-                new If(ctx => ctx.Get<bool>(DocsKeys.ValidateAbsoluteLinks) || ctx.Get<bool>(DocsKeys.ValidateRelativeLinks),
+                new If(ctx => ctx.Bool(DocsKeys.ValidateAbsoluteLinks) || ctx.Bool(DocsKeys.ValidateRelativeLinks),
                     new Documents(DocsPipelines.RenderPages),
                     new Concat(
                         new Documents(DocsPipelines.RenderBlogPosts)
@@ -440,9 +440,9 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
                     }),
                     new Execute(ctx =>
                         new ValidateLinks()
-                            .ValidateAbsoluteLinks(ctx.Get<bool>(DocsKeys.ValidateAbsoluteLinks))
-                            .ValidateRelativeLinks(ctx.Get<bool>(DocsKeys.ValidateRelativeLinks))
-                            .AsError(ctx.Get<bool>(DocsKeys.ValidateLinksAsError)
+                            .ValidateAbsoluteLinks(ctx.Bool(DocsKeys.ValidateAbsoluteLinks))
+                            .ValidateRelativeLinks(ctx.Bool(DocsKeys.ValidateRelativeLinks))
+                            .AsError(ctx.Bool(DocsKeys.ValidateLinksAsError)
                         )
                     )
                 )
@@ -450,7 +450,7 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
         }
 
         private string GetIgnoreFoldersGlob(IExecutionContext context) => 
-            string.Join(",", context.GlobalMetadata
+            string.Join(",", context
                 .List(DocsKeys.IgnoreFolders, Array.Empty<string>())
                 .Select(x => "!" + x)
                 .Concat(new[] { "!blog", "!api", "**" }));
@@ -463,26 +463,29 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
         }
 
-        public void Scaffold(IDirectory directory)
+        public void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
+            // Config file
+            configFile?.WriteAllText(@"#recipe Docs");
+
             // Add info page
-            directory.GetFile("about.md").WriteAllText(
+            inputDirectory.GetFile("about.md").WriteAllText(
 @"Title: About This Project
 ---
 This project is awesome!");
 
             // Add docs pages
-            directory.GetFile("docs/command-line.md").WriteAllText(
+            inputDirectory.GetFile("docs/command-line.md").WriteAllText(
 @"Description: How to use the command line.
 ---
 Here are some instructions on how to use the command line.");
-            directory.GetFile("docs/usage.md").WriteAllText(
+            inputDirectory.GetFile("docs/usage.md").WriteAllText(
 @"Description: Library usage instructions.
 ---
 To use this library, take these steps...");
 
             // Add post page
-            directory.GetFile("blog/new-release.md").WriteAllText(
+            inputDirectory.GetFile("blog/new-release.md").WriteAllText(
 @"Title: New Release
 Published: 1/1/2016
 Category: Release

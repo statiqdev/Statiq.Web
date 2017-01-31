@@ -2,7 +2,7 @@
     bool fullContent = Model.String(Keys.RelativeFilePath) == "blog/index.html" && Model.Get<int>(Keys.CurrentPage) == 1;
     foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
     {
-        <h2><a href="@Context.GetLink(post)">@post.String(Keys.Title)</a></h2>
+        <h2><a href="@Context.GetLink(post)">@post.WithoutSettings.String(Keys.Title)</a></h2>
         @Html.Partial("_BlogPostDetails", post)
         @if(fullContent)
         {
@@ -26,7 +26,7 @@
         }
         <ul class="pager">
             <li class="previous">                
-                @if(Model.Get<bool>(Keys.HasPreviousPage))
+                @if(Model.Bool(Keys.HasPreviousPage))
                 {
                     string previousPage = Model.Get<int>(Keys.CurrentPage) == 2
                         ? $"/{directory}" : $"/{directory}/page{Model.Get<int>(Keys.CurrentPage) - 1}";
@@ -34,7 +34,7 @@
                 }                
             </li>
             <li class="next">
-                @if(Model.Get<bool>(Keys.HasNextPage))
+                @if(Model.Bool(Keys.HasNextPage))
                 {
                     string nextPage = $"/{directory}/page{Model.Get<int>(Keys.CurrentPage) + 1}";
                     <a href="@nextPage">Older <span aria-hidden="true">&rarr;</span></a>

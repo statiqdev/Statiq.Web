@@ -37,8 +37,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     currentPage.Add(d.Get<int>(Keys.CurrentPage));
                     totalPages.Add(d.Get<int>(Keys.TotalPages));
-                    hasNextPage.Add(d.Get<bool>(Keys.HasNextPage));
-                    hasPreviousPage.Add(d.Get<bool>(Keys.HasPreviousPage));
+                    hasNextPage.Add(d.Bool(Keys.HasNextPage));
+                    hasPreviousPage.Add(d.Bool(Keys.HasPreviousPage));
                     return null;
                 }, false);
                 engine.Pipelines.Add(paginate, gatherData);

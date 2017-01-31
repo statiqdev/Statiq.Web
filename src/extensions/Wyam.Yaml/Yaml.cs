@@ -69,12 +69,12 @@ namespace Wyam.Yaml
                             YamlSequenceNode rootSequence = document.RootNode as YamlSequenceNode;
                             if (rootSequence != null)
                             {
-                                documentMetadata.AddRange(rootSequence.Children.Select(GetDocumentMetadata));
+                                documentMetadata.AddRange(rootSequence.Children.Select(x => GetDocumentMetadata(x, context)));
                             }
                             else
                             {
                                 // Otherwise, just get a single set of metadata
-                                documentMetadata.Add(GetDocumentMetadata(document.RootNode));
+                                documentMetadata.Add(GetDocumentMetadata(document.RootNode, context));
                             }
                         }
                     }
@@ -83,7 +83,7 @@ namespace Wyam.Yaml
                 .Where(x => x != null);
         }
 
-        private Dictionary<string, object> GetDocumentMetadata(YamlNode node)
+        private Dictionary<string, object> GetDocumentMetadata(YamlNode node, IExecutionContext context)
         {
             Dictionary<string, object> metadata = new Dictionary<string, object>();
 
@@ -115,6 +115,15 @@ namespace Wyam.Yaml
                 {
                     metadata[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => ((YamlScalarNode)a).Value).ToArray();
                 }
+
+                // Map object sequences
+                foreach (KeyValuePair<YamlNode, YamlNode> child in
+                    mappingNode.Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlSequenceNode && ((YamlSequenceNode)y.Value).All(z => z is YamlMappingNode)))
+                {
+                    metadata[((YamlScalarNode)child.Key).Value] = ((YamlSequenceNode)child.Value).Select(a => context.GetDocument(GetDocumentMetadata(a, context))).ToArray();
+                }
+
+                // Note: No support for mixed sequences of YamlMappingNode and YamlScalarNode together
             }
 
             return metadata;

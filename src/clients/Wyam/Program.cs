@@ -53,6 +53,13 @@ namespace Wyam
             // It's not a serious console app unless there's some ASCII art
             OutputLogo();
 
+            // Make sure we're not running under Mono
+            if (Type.GetType("Mono.Runtime") != null)
+            {
+                Trace.Critical("The Mono runtime is not supported. Please check the GitHub repository and issue tracker for information on .NET Core support for cross platform execution.");
+                return (int) ExitCode.UnsupportedRuntime;
+            }
+
             // Parse the command line
             Preprocessor preprocessor = new Preprocessor();
             Command command;

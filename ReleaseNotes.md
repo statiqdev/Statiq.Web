@@ -1,3 +1,28 @@
+# 0.16.1
+
+- [Refactoring] Docs recipe now allows you to specify a logo file using the `DocsKeys.Logo` setting
+- [Fix] Fixes recipes and `Title` module so that page titles wouldn't use the global title settings if no explicit title was set
+- [Feature] Added `IDocument.WithoutSettings` for getting metadata for a document without the global settings
+- [Feature] Added `IMetadata.Bool(...)` for getting Boolean values from metadata
+
+# 0.16.0
+
+- [Refactoring] Out of beta!
+- [Refactoring] All libraries now target .NET Framework 4.6.2
+- [Refactoring] `GlobalMetadata`, `InitialMetadata`, and `Settings` have all been moved to a consolidated `Settings` metadata collection (#379)
+- [Feature] An error is now displayed when running under Mono (#375)
+- [Feature] Recipes can now output a config file (#388)
+- [Fix] Preview server can now handle escaped URL characters when supporting extensionless files (#413)
+- [Fix] Fixes CSS for block quote margins in CleanBlog theme (#412, thanks @n-develop)
+- [Fix] Fixes CSS for dropdown menus in CleanBlog theme (#409, thanks @n-develop)
+- [Fix] Fixes use of `PostsPath` setting for archive links in themes (#400, thanks @kamranayub)
+- [Fix] Fixes `params` parameter types in `CodeAnalysis` module (#407)
+- [Feature] Adds support for escaping CDATA XML doc comments to `CodeAnalysis` module (#411)
+- [Feature] Adds a filter function for `CopyFiles` module to fine-tune destination path (#398, thanks @deanebarker)
+- [Fix] Fixes support for `RssPath` and `AtomPath` settings in themes (#396, #397, thanks @kamranayub)
+- [Feature] Adds option to replace RegEx matching groups in `Replace` module (#386, thanks @LokiMidgard)
+- [Feature] New `CsvToMarkdown` module (#384, thanks @LokiMidgard)
+
 # 0.15.8
 
 - [Refactoring] Removed Turbolinks from the docs theme due to some oddness with JavaScript loading

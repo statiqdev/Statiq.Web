@@ -10,15 +10,22 @@ namespace Wyam.Docs
     public static class DocsKeys
     {
         // ***Global
-        
+
         /// <summary>
-        /// When used in global metadata, indicates the title of your site. Otherwise,
+        /// When used as a global setting, indicates the title of your site. Otherwise,
         /// when used in document metadata, indicates the title of the post or page.
         /// </summary>
         /// <scope>Global</scope>
         /// <scope>Document</scope>
         /// <type><see cref="string"/></type>
         public const string Title = nameof(Title);
+
+        /// <summary>
+        /// The path to a logo to use for the site.
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="FilePath"/></type>
+        public const string Logo = nameof(Logo);
 
         /// <summary>
         /// Indicates where to locate source files for the API documentation.

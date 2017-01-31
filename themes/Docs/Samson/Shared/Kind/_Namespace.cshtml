@@ -2,7 +2,7 @@
 @{				
 	foreach(IGrouping<string, IDocument> typeGroup 
 		in Model.List<IDocument>("MemberTypes")
-			.Where(x => x.Get<bool>("IsResult") && x["Kind"].Equals("NamedType"))
+			.Where(x => x.Bool("IsResult") && x["Kind"].Equals("NamedType"))
 			.GroupBy(x => x.String("SpecificKind")))
 	{
 		@Html.Partial("Section\\_DocsTable", new DocsTable
@@ -17,7 +17,7 @@
 	@Html.Partial("Section\\_DocsTable", new DocsTable
 	{
 		Docs = Model.List<IDocument>("MemberNamespaces")
-			?.Where(x => x.Get<bool>("IsResult"))
+			?.Where(x => x.Bool("IsResult"))
 			.OrderBy(x => x["DisplayName"])
 			.ToList(),
 		Title = "Namespaces",

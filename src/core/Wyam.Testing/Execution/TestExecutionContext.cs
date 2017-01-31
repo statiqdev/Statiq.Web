@@ -155,6 +155,16 @@ namespace Wyam.Testing.Execution
             throw new NotImplementedException();
         }
 
+        public bool Bool(string key, bool defaultValue = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime))
+        {
+            throw new NotImplementedException();
+        }
+
         public FilePath FilePath(string key, FilePath defaultValue = null)
         {
             throw new NotImplementedException();
@@ -192,18 +202,17 @@ namespace Wyam.Testing.Execution
         public IExecutionCache ExecutionCache { get; }
         public IReadOnlyFileSystem FileSystem { get; }
         public IDocumentCollection Documents { get; }
+        [Obsolete]
         public IMetadata GlobalMetadata { get; }
         public string ApplicationInput { get; }
 
-
-        public Settings Settings { get; } = new Settings();
-
+        public ISettings Settings { get; } = new Settings();
         IReadOnlySettings IExecutionContext.Settings => Settings;
 
         // GetLink
 
         public string GetLink() =>
-            GetLink((NormalizedPath)null, Settings.Host, Settings.LinkRoot, Settings.LinksUseHttps, false, false);
+            GetLink((NormalizedPath)null, Settings.String(Common.Meta.Keys.Host), Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), Settings.Bool(Common.Meta.Keys.LinksUseHttps), false, false);
 
         public string GetLink(IMetadata metadata, bool includeHost = false) =>
             GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
@@ -215,13 +224,15 @@ namespace Wyam.Testing.Execution
         }
 
         public string GetLink(string path, bool includeHost = false) =>
-            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
             GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
 
         public string GetLink(NormalizedPath path, bool includeHost = false) =>
-            GetLink(path, includeHost ? Settings.Host : null, Settings.LinkRoot, Settings.LinksUseHttps, Settings.LinkHideIndexPages, Settings.LinkHideExtensions);
+            GetLink(path, includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
             LinkGenerator.GetLink(path, host, root,

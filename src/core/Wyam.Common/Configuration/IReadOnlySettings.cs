@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.Common.Configuration
 {
-    public interface IReadOnlySettings
+    public interface IReadOnlySettings : IMetadata
     {
         /// <summary>
         /// Gets the host to use when generating links.
@@ -12,6 +14,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// The link host.
         /// </value>
+        [Obsolete]
         string Host { get; }
 
         /// <summary>
@@ -21,6 +24,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if HTTPS should be used.
         /// </value>
+        [Obsolete]
         bool LinksUseHttps { get; }
 
         /// <summary>
@@ -29,6 +33,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// The link root.
         /// </value>
+        [Obsolete]
         DirectoryPath LinkRoot { get; }
 
         /// <summary>
@@ -37,6 +42,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if index pages should be hidden; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         bool LinkHideIndexPages { get; }
 
         /// <summary>
@@ -45,6 +51,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if extensions should be hidden; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         bool LinkHideExtensions { get; }
 
         /// <summary>
@@ -53,6 +60,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if caching should be used; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         bool UseCache { get; }
 
         /// <summary>
@@ -61,6 +69,7 @@ namespace Wyam.Common.Configuration
         /// <value>
         /// <c>true</c> if the output path should be cleaned; otherwise, <c>false</c>.
         /// </value>
+        [Obsolete]
         bool CleanOutputPath { get; }
     }
 }

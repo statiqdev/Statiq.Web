@@ -144,7 +144,7 @@ namespace Wyam.Core.Modules.Control
             }
             else if (_contextDocuments != null)
             {
-                documents = _contextDocuments.Invoke<IEnumerable<IDocument>>(context);
+                documents = _contextDocuments.Invoke<IEnumerable<IDocument>>(context, "while getting documents");
             }
             else
             {

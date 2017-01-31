@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Html;
 
-@if(Model.Get<bool>(CodeAnalysisKeys.HasConstantValue))
+@if(Model.Bool(CodeAnalysisKeys.HasConstantValue))
 {
 	object constantValue = Model.Get(CodeAnalysisKeys.ConstantValue);
 	<h1 id="Value">Constant Value</h1>

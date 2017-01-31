@@ -1,4 +1,4 @@
-@if(Context.GlobalMetadata.Get<bool>(DocsKeys.SearchIndex))
+@if(Context.Bool(DocsKeys.SearchIndex))
 {
     <script src="/assets/js/lunr.min.js"></script>
     <script src="/assets/js/searchIndex.js"></script>

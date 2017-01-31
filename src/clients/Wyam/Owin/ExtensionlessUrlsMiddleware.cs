@@ -47,7 +47,7 @@ namespace Wyam.Owin
                 // Check if there's a file with the matched extension, and rewrite the request if found
                 foreach (string extension in _options.DefaultExtensions)
                 {
-                    string filePath = context.Request.Path + extension;
+                    string filePath = Uri.UnescapeDataString(context.Request.Path.ToString()) + extension;
                     IFileInfo fileInfo;
                     if (_options.FileSystem.TryGetFileInfo(filePath, out fileInfo))
                     {

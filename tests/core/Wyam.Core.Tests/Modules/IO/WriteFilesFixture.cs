@@ -60,7 +60,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ExtensionWithDotWritesFiles()
             {
                 // Given
-                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
                 IDocument[] inputs = new[] { Context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
@@ -77,7 +77,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ExtensionWithoutDotWritesFiles()
             {
                 // Given
-                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
                 IDocument[] inputs = new[] { Context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles("txt");
 
@@ -229,7 +229,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldSetFilePathMetadata(string key, string expected)
             {
                 // Given
-                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
                 IDocument[] inputs = new[] { Context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
@@ -247,7 +247,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldSetDirectoryPathMetadata(string key, string expected)
             {
                 // Given
-                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
                 IDocument[] inputs = new[] { Context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
@@ -264,7 +264,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldSetStringMetadata(string key, string expected)
             {
                 // Given
-                Engine.InitialMetadata[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
+                Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
                 IDocument[] inputs = new[] { Context.GetDocument("Test") };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 

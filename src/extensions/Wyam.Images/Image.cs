@@ -26,9 +26,10 @@ namespace Wyam.Images
     /// input and <c>WriteFiles</c> to write images to disk.</para>
     /// <code>
     /// Pipelines.Add("Images",
-    ///   ReadFiles("*").Where(x =&gt; x.Contains("images\\") &amp;&amp; new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(Path.GetExtension(x))),
-    /// Image()
-    ///   .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb"),
+    ///   ReadFiles("*")
+    ///     .Where(x => new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(x.Path.Extension)),
+    ///   Image()
+    ///     .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb"),
     ///   WriteFiles("*")
     /// );
     /// </code>
@@ -37,12 +38,13 @@ namespace Wyam.Images
     /// than one set of processing instructions by using the fluent property <c>And</c>.</para>
     /// <code>
     /// Pipelines.Add("Images",
-    /// ReadFiles("*").Where(x =&gt; x.Contains("images\\") &amp;&amp; new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(Path.GetExtension(x))),
-    /// Image()
-    ///   .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb")
-    ///   .And
-    ///   .SetJpegQuality(70).Resize(400*2, 209*2).SetSuffix("-medium"),
-    /// WriteFiles("*")
+    ///   ReadFiles("*")
+    ///     .Where(x => new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(x.Path.Extension)),
+    ///   Image()
+    ///     .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb")
+    ///     .And
+    ///     .SetJpegQuality(70).Resize(400*2, 209*2).SetSuffix("-medium"),
+    ///   WriteFiles("*")
     /// );
     /// </code>
     /// <para>The above configuration produces two set of new images, one with a "-thumb" suffix and the other with a "-medium" suffix.</para>

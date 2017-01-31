@@ -16,7 +16,7 @@
 		
 		foreach(IGrouping<string, IDocument> typeGroup 
 			in containingNamespace.List<IDocument>("MemberTypes")
-				.Where(x => x.Get<bool>("IsResult") && x["Kind"].Equals("NamedType"))
+				.Where(x => x.Bool("IsResult") && x["Kind"].Equals("NamedType"))
 				.GroupBy(x => x.String("SpecificKind")))
 		{
 			<li class="header">@typeGroup.Key Types</li>

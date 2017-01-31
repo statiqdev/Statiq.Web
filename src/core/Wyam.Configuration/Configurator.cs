@@ -37,9 +37,7 @@ namespace Wyam.Configuration
 
         public FilePath OutputScriptPath { get; set; }
 
-        public IReadOnlyDictionary<string, object> GlobalMetadata { get; set; }
-
-        public IReadOnlyDictionary<string, object> InitialMetadata { get; set; }
+        public IReadOnlyDictionary<string, object> Settings { get; set; }
 
         public string RecipeName { get; set; }
 
@@ -150,7 +148,7 @@ namespace Wyam.Configuration
                         // Add the package, but only if it wasn't added manually
                         if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
                         {
-                            PackageInstaller.AddPackage(knownRecipe.PackageId, allowPrereleaseVersions: true);
+                            PackageInstaller.AddPackage(knownRecipe.PackageId);
                         }
                     }
                     else
@@ -305,18 +303,11 @@ namespace Wyam.Configuration
         private void SetMetadata()
         {
             // Set the global and initial metadata after applying the recipe in case the recipe sets default values
-            if (GlobalMetadata != null)
+            if (Settings != null)
             {
-                foreach (KeyValuePair<string, object> kvp in GlobalMetadata)
+                foreach (KeyValuePair<string, object> kvp in Settings)
                 {
-                    _engine.GlobalMetadata[kvp.Key] = kvp.Value;
-                }
-            }
-            if (InitialMetadata != null)
-            {
-                foreach (KeyValuePair<string, object> kvp in InitialMetadata)
-                {
-                    _engine.InitialMetadata[kvp.Key] = kvp.Value;
+                    _engine.Settings[kvp.Key] = kvp.Value;
                 }
             }
         }

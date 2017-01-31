@@ -11,7 +11,7 @@ namespace Wyam.Commands
     {
         private readonly ConfigOptions _configOptions = new ConfigOptions();
 
-        private DirectoryPath _path = null;
+        private DirectoryPath _inputPath = null;
 
         public override string Description => "Scaffolds the given recipe into a specified path.";
 
@@ -29,11 +29,13 @@ namespace Wyam.Commands
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
             syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
+            syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
+            syntax.DefineOption("c|config", ref _configOptions.ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
         }
 
         protected override void ParseParameters(ArgumentSyntax syntax)
         {
-            syntax.DefineParameter("path", ref _path, DirectoryPath.FromString, "The path to generate the scaffold in.");
+            ParseRootPathParameter(syntax, _configOptions);
         }
 
         protected override ExitCode RunCommand(Preprocessor preprocessor)
@@ -45,8 +47,11 @@ namespace Wyam.Commands
                 return ExitCode.CommandLineError;
             }
 
-            _configOptions.RootPath = Environment.CurrentDirectory;
-            _path = _path ?? "input";
+            // Fix the root folder and other files
+            DirectoryPath currentDirectory = Environment.CurrentDirectory;
+            _configOptions.RootPath = _configOptions.RootPath == null ? currentDirectory : currentDirectory.Combine(_configOptions.RootPath);
+            _configOptions.ConfigFilePath = _configOptions.RootPath.CombineFile(_configOptions.ConfigFilePath ?? "config.wyam");
+            _inputPath = _inputPath ?? "input";
 
             // Get the engine and configurator
             using (EngineManager engineManager = EngineManager.Get(preprocessor, _configOptions))
@@ -57,27 +62,48 @@ namespace Wyam.Commands
                 }
                 
                 // Check to make sure the directory is empty (and provide option to clear it)
-                IDirectory scaffoldDirectory = engineManager.Engine.FileSystem.GetRootDirectory(_path);
-                if (scaffoldDirectory.Exists)
+                IDirectory inputDirectory = engineManager.Engine.FileSystem.GetRootDirectory(_inputPath);
+                if (inputDirectory.Exists)
                 {
-                    Console.WriteLine($"Scaffold directory {scaffoldDirectory.Path.FullPath} exists, are you sure you want to clear it [y|N]?");
+                    Console.WriteLine($"Input directory {inputDirectory.Path.FullPath} exists, are you sure you want to clear it [y|N]?");
                     char inputChar = Console.ReadKey(true).KeyChar;
                     if (inputChar != 'y' && inputChar != 'Y')
                     {
-                        Trace.Information($"Scaffold directory will not be cleared");
+                        Trace.Information($"Input directory will not be cleared");
                         return ExitCode.Normal;
                     }
-                    Trace.Information($"Scaffold directory will be cleared");
+                    Trace.Information($"Input directory will be cleared");
                 }
                 else
                 {
-                    Trace.Information($"Scaffold directory {scaffoldDirectory.Path.FullPath} does not exist and will be created");
+                    Trace.Information($"Input directory {inputDirectory.Path.FullPath} does not exist and will be created");
                 }
-                if (scaffoldDirectory.Exists)
+                if (inputDirectory.Exists)
                 {
-                    scaffoldDirectory.Delete(true);
+                    inputDirectory.Delete(true);
                 }
-                scaffoldDirectory.Create();
+                inputDirectory.Create();
+
+                // Check the config file (and provide option to clear it)
+                IFile configFile = engineManager.Engine.FileSystem.GetRootFile(_configOptions.ConfigFilePath);
+                if (configFile.Exists)
+                {
+                    Console.WriteLine($"Configuration file {configFile.Path.FullPath} exists, are you sure you want to potentially overwrite it [y|N]?");
+                    char inputChar = Console.ReadKey(true).KeyChar;
+                    if (inputChar != 'y' && inputChar != 'Y')
+                    {
+                        Trace.Information($"Configuration file will not be overwritten");
+                        configFile = null;
+                    }
+                    else
+                    {
+                        Trace.Information($"Configuration file may be overwritten");
+                    }
+                }
+                else
+                {
+                    Trace.Information($"Configuration file {configFile.Path.FullPath} does not exist and may be created");
+                }
 
                 // We can ignore theme packages since we don't care about the theme for scaffolding
                 engineManager.Configurator.IgnoreKnownThemePackages = true;
@@ -94,7 +120,7 @@ namespace Wyam.Commands
                 }
                 
                 // Scaffold the recipe
-                engineManager.Configurator.Recipe.Scaffold(scaffoldDirectory);
+                engineManager.Configurator.Recipe.Scaffold(configFile, inputDirectory);
             }
 
             return ExitCode.Normal;

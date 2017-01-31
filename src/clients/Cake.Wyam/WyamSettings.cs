@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cake.Core.IO;
 using Cake.Core.Tooling;
 
@@ -14,6 +15,12 @@ namespace Cake.Wyam
         /// </summary>
         /// <remarks>Default is false</remarks>
         public bool Watch { get; set; }
+
+        /// <summary>
+        /// Pauses execution while waiting for a debugger to attach.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool Attach { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable previewing of the generated content in built in web server.
@@ -114,12 +121,19 @@ namespace Cake.Wyam
         /// <summary>
         /// Gets or sets the global metadata.
         /// </summary>
+        [Obsolete]
         public IDictionary<string, object> GlobalMetadata { get; set; }
 
         /// <summary>
         /// Gets or sets the initial document metadata.
         /// </summary>
+        [Obsolete]
         public IDictionary<string, object> InitialMetadata { get; set; }
+
+        /// <summary>
+        /// Gets or sets metadata settings.
+        /// </summary>
+        public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the path to the Wyam log file.
