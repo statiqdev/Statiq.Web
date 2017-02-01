@@ -1,18 +1,16 @@
-﻿using img = ImageProcessor;
-using ImageProcessor.Imaging;
+﻿using ImageProcessor.Imaging;
 using ImageProcessor.Imaging.Formats;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using Wyam.Common;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using img = ImageProcessor;
 
 namespace Wyam.Images
 {
@@ -153,7 +151,7 @@ namespace Wyam.Images
         /// <param name="percentage">The percentage to brighten the image by (<c>0</c> to <c>100</c>).</param>
         public Image Brighten(short percentage)
         {
-            if (percentage < 0 && percentage > 100)
+            if (percentage < 0 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -169,7 +167,7 @@ namespace Wyam.Images
         /// <param name="percentage">The percentage to darken the image by (<c>0</c> to <c>100</c>).</param>
         public Image Darken(short percentage)
         {
-            if (percentage < 0 && percentage > 100)
+            if (percentage < 0 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -185,7 +183,7 @@ namespace Wyam.Images
         /// <param name="percentage">The opacity percentage (<c>0</c> to <c>100</c>).</param>
         public Image SetOpacity(short percentage)
         {
-            if (percentage < 0 && percentage > 100)
+            if (percentage < 0 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -202,7 +200,7 @@ namespace Wyam.Images
         /// <param name="rotate">If set to <c>true</c>, rotates the hue.</param>
         public Image SetHue(short degrees, bool rotate = false)
         {
-            if (degrees < 0 && degrees > 360)
+            if (degrees < 0 || degrees > 360)
                 throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
 
             EnsureCurrentInstruction();
@@ -222,7 +220,7 @@ namespace Wyam.Images
         /// check here for more color values</a>.
         /// </summary>
         /// <param name="color">The color to tint the image to.</param>
-        public Image Tint (Color color)
+        public Image Tint(Color color)
         {
             EnsureCurrentInstruction();
             _currentInstruction.Tint = color;
@@ -248,7 +246,7 @@ namespace Wyam.Images
         /// <param name="percentage">The saturation percentage (<c>0</c> to <c>100</c>).</param>
         public Image Saturate(short percentage)
         {
-            if (percentage < 0 && percentage > 100)
+            if (percentage < 0 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -262,7 +260,7 @@ namespace Wyam.Images
         /// <param name="percentage">The desaturation percentage (<c>0</c> to <c>100</c>).</param>
         public Image Desaturate(short percentage)
         {
-            if (percentage < 0 && percentage > 100)
+            if (percentage < 0 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -277,7 +275,7 @@ namespace Wyam.Images
         /// <param name="quality">The desired JPEG quality (<c>0</c> to <c>100</c>).</param>
         public Image SetJpegQuality(short quality)
         {
-            if (quality < 0 && quality > 100)
+            if (quality < 0 || quality > 100)
                 throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
 
             EnsureCurrentInstruction();
@@ -291,7 +289,7 @@ namespace Wyam.Images
         /// <param name="percentage">Set the contrast value of the image from the value of <c>-100</c> to <c>100</c>.</param>
         public Image SetContrast(short percentage)
         {
-            if (percentage < -100 && percentage > 100)
+            if (percentage < -100 || percentage > 100)
                 throw new ArgumentException($"Percentage must be between -100 and 100 instead of {percentage}%");
 
             EnsureCurrentInstruction();
@@ -344,7 +342,7 @@ namespace Wyam.Images
         private ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
         {
             ISupportedImageFormat format = null;
-            
+
             if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
                 format = new JpegFormat { Quality = ins.JpegQuality };
             else
@@ -366,7 +364,7 @@ namespace Wyam.Images
                     continue;
                 }
                 FilePath destinationPath = context.FileSystem.GetOutputPath(relativePath);
-                
+
                 foreach (ImageInstruction instruction in _instructions)
                 {
                     ISupportedImageFormat format = GetFormat(relativePath.Extension, instruction);
