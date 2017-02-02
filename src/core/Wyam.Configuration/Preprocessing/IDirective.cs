@@ -29,6 +29,11 @@ namespace Wyam.Configuration.Preprocessing
         string Description { get; }
 
         /// <summary>
+        /// Gets a string comparer that can be used to compare values of one directive to another for equality.
+        /// </summary>
+        IEqualityComparer<string> ValueComparer { get; }
+
+        /// <summary>
         /// Processes the directive.
         /// </summary>
         /// <param name="configurator">The configurator.</param>

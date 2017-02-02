@@ -14,6 +14,8 @@ namespace Wyam.Configuration.Directives
 
         public override string Description => "Adds a NuGet package (downloading and installing it if needed).";
 
+        public override IEqualityComparer<string> ValueComparer => StringComparer.Ordinal;
+
         // Any changes to settings should also be made in Cake.Wyam
         public class Settings
         {

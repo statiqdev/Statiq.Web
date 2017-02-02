@@ -61,18 +61,32 @@ namespace Wyam.Configuration.Preprocessing
         /// </summary>
         internal void ProcessDirectives(Configurator configurator, IEnumerable<DirectiveValue> additionalValues)
         {
-            HashSet<string> singleValueNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string> singleDirectiveValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (DirectiveValue value in _values.Concat(additionalValues))
             {
                 IDirective directive;
                 if (AllDirectives.TryGetValue(value.Name, out directive))
                 {
                     // Make sure this isn't an extra value for a single-value directive
-                    if (!directive.SupportsMultiple && !singleValueNames.Add(value.Name))
+                    if (!directive.SupportsMultiple)
                     {
-                        string line = value.Line.HasValue ? (" on line " + value.Line.Value) : string.Empty;
-                        throw new Exception($"Error while processing directive{line}: #{value.Name} {value.Value}{Environment.NewLine}"
-                            + "Directive was previously specified and only one value is allowed");
+                        // Have we already seen this directive?
+                        string previousValue;
+                        if (singleDirectiveValues.TryGetValue(value.Name, out previousValue))
+                        {
+                            // We have seen it, check if the new value is equivalent to the initial one
+                            if (!directive.ValueComparer.Equals(previousValue, value.Value))
+                            {
+                                string line = value.Line.HasValue ? (" on line " + value.Line.Value) : string.Empty;
+                                throw new Exception($"Error while processing directive{line}: #{value.Name} {value.Value}{Environment.NewLine}"
+                                    + "Directive was previously specified and only one value is allowed");
+                            }
+                        }
+                        else
+                        {
+                            singleDirectiveValues.Add(value.Name, value.Value);
+                        }
+
                     }
 
                     // Process the directive

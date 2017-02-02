@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Directives
@@ -12,6 +13,8 @@ namespace Wyam.Configuration.Directives
         public bool SupportsMultiple => true;
 
         public string Description => "Specifies an additional package source to use.";
+
+        public IEqualityComparer<string> ValueComparer => StringComparer.Ordinal;
 
         public void Process(Configurator configurator, string value)
         {

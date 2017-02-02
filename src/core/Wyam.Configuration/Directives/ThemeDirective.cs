@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using Wyam.Configuration.Preprocessing;
 
@@ -13,6 +14,8 @@ namespace Wyam.Configuration.Directives
         public override bool SupportsMultiple => false;
 
         public override string Description => "Specifies a theme to use.";
+
+        public override IEqualityComparer<string> ValueComparer => StringComparer.OrdinalIgnoreCase;
 
         // Any changes to settings should also be made in Cake.Wyam
         public class Settings

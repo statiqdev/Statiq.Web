@@ -6,6 +6,9 @@ using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Directives
 {
+    /// <summary>
+    /// Helps support directives that can use CLI-style options and arguments.
+    /// </summary>
     internal abstract class ArgumentSyntaxDirective<TSettings> : IDirective
         where TSettings : new()
     {
@@ -15,21 +18,14 @@ namespace Wyam.Configuration.Directives
 
         public abstract bool SupportsMultiple { get; }
 
+        public abstract string Description { get; }
+
+        public abstract IEqualityComparer<string> ValueComparer { get; }
+
         public void Process(Configurator configurator, string value)
         {
             Process(configurator, value, false);
         }
-
-        public string GetHelpText()
-        {
-            return string.Join(Environment.NewLine, 
-                Process(null, string.Empty, true)
-                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                    .Skip(1)
-                    .Where(x => !string.IsNullOrEmpty(x)));
-        }
-
-        public abstract string Description { get; }
 
         private string Process(Configurator configurator, string value, bool getHelpText)
         {
@@ -70,6 +66,15 @@ namespace Wyam.Configuration.Directives
             return null;
         }
 
+        public string GetHelpText()
+        {
+            return string.Join(Environment.NewLine, 
+                Process(null, string.Empty, true)
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                    .Skip(1)
+                    .Where(x => !string.IsNullOrEmpty(x)));
+        }
+        
         protected abstract void Define(ArgumentSyntax syntax, TSettings settings);
 
         protected abstract void Process(Configurator configurator, TSettings settings);

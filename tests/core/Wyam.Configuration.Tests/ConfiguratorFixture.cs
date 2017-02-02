@@ -275,6 +275,60 @@ SetCustomDocumentType<MyDocument>();
                 // Then
                 Assert.AreEqual("Baz", engine.Settings["Foo"]);
             }
+
+            [Test]
+            public void ThrowsForDuplicateDirectives()
+            {
+                // Given
+                RemoveListener();
+                Configurator configurator = GetConfigurator();
+                string configScript = @"
+#recipe foo
+#recipe bar
+";
+
+                // When
+                Exception exception = null;
+                try
+                {
+                    configurator.Configure(configScript);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+
+                // Then
+                Assert.IsNotNull(exception);
+                StringAssert.Contains("Directive was previously specified", exception.Message);
+            }
+
+            [Test]
+            public void DoesNotThrowForEquivalentDirectiveValues()
+            {
+                // Given
+                RemoveListener();
+                Configurator configurator = GetConfigurator();
+                string configScript = @"
+#recipe foo
+#recipe Foo
+";
+
+                // When
+                Exception exception = null;
+                try
+                {
+                    configurator.Configure(configScript);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+
+                // Then
+                Assert.IsNotNull(exception);
+                StringAssert.DoesNotContain("Directive was previously specified", exception.Message);
+            }
         }
 
         public class AddRecipePackageAndSetThemeTests : ConfiguratorFixture
