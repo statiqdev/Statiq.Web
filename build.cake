@@ -105,10 +105,12 @@ Task("Build")
         {
             MSBuild("./Wyam.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
+                .SetMaxCpuCount(0)
                 .SetVerbosity(Verbosity.Minimal)
             );
             MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
+                .SetMaxCpuCount(0)
                 .SetVerbosity(Verbosity.Minimal)
             );
         }
