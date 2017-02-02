@@ -86,7 +86,7 @@ namespace Wyam.Docs
                 new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new Include(),
                 new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
+                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings[DocsKeys.MarkdownExternalExtensions] as IEnumerable<Type>).UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
@@ -114,7 +114,7 @@ namespace Wyam.Docs
                 new ReadFiles("blog/*.md"),
                 new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                 new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => new Markdown.Markdown().UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
+                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings[DocsKeys.MarkdownExternalExtensions] as IEnumerable<Type>).UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
                 new If(ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                     new AutoLink(_typeNamesToLink)
                         .WithQuerySelector("code")

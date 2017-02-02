@@ -99,6 +99,14 @@ namespace Wyam.Docs
         public const string MarkdownExtensions = nameof(MarkdownExtensions);
 
         /// <summary>
+        /// Set this to add extension Markdown extensions for the Markdig Markdown
+        /// renderer. The default value is null;
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="IEnumerable{IMarkDownExtension}"/></type>
+        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
+
+        /// <summary>
         /// This should be a string or array of strings with the name(s)
         /// of root-level folders to ignore when scanning for content pages.
         /// Setting this global metadata value is useful when introducing
