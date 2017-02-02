@@ -82,6 +82,14 @@ namespace Wyam.Blog
         public const string MarkdownExtensions = nameof(MarkdownExtensions);
 
         /// <summary>
+        /// Set this to add extension Markdown extensions for the Markdig Markdown
+        /// renderer. The default value is null;
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="IEnumerable{IMarkDownExtension}"/></type>
+        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
+
+        /// <summary>
         /// Setting this to <c>true</c> uses
         /// the year and date in the output path of blog posts.
         /// The default value is <c>false</c>.

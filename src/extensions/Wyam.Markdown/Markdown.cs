@@ -1,4 +1,5 @@
-﻿using Markdig;
+﻿using System;
+using Markdig;
 using Markdig.Helpers;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,29 @@ namespace Wyam.Markdown
             where TExtension : class, IMarkdownExtension, new()
         {
             _extensions.AddIfNotAlready<TExtension>();
+            return this;
+        }
+
+        /// <summary>
+        /// Includes multiple custom extension in the markdown processing given by classes implementing
+        /// the IMarkdownExtension interface.
+        /// </summary>
+        public Markdown UseExtensions(IEnumerable<Type> extensions)
+        {
+            if (extensions == null)
+            {
+                return this;
+            }
+
+            foreach (var type in extensions)
+            {
+                var extension = Activator.CreateInstance(type) as IMarkdownExtension;
+                if (extension != null)
+                {
+                    _extensions.AddIfNotAlready(extension);
+                }
+            }
+
             return this;
         }
 
