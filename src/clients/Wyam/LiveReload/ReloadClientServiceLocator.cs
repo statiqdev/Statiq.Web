@@ -8,9 +8,9 @@ namespace Wyam.LiveReload
 {
     internal class ReloadClientServiceLocator : IServiceLocator
     {
-        readonly ConcurrentBag<ReloadClient> _clients = new ConcurrentBag<ReloadClient>();
+        private readonly ConcurrentBag<IReloadClient> _clients = new ConcurrentBag<IReloadClient>();
 
-        public IEnumerable<ReloadClient> ReloadClients => _clients.ToArray();
+        public virtual IEnumerable<IReloadClient> ReloadClients => _clients.ToArray();
 
         public object GetService(Type serviceType)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
@@ -22,9 +23,9 @@ namespace Wyam.LiveReload
         private readonly ReloadClientServiceLocator _clientServiceLocator;
         private IDisposable _server;
 
-        public LiveReloadServer()
+        public LiveReloadServer(ReloadClientServiceLocator clientServiceLocator = null)
         {
-            _clientServiceLocator = new ReloadClientServiceLocator();
+            _clientServiceLocator = clientServiceLocator ?? new ReloadClientServiceLocator();
         }
 
         public void StartStandaloneHost(int port = 35729)
@@ -63,8 +64,8 @@ namespace Wyam.LiveReload
 
         public void RebuildCompleted(ICollection<string> filesChanged)
         {
-            IEnumerable<ReloadClient> clientsToNotify = _clientServiceLocator.ReloadClients;
-            foreach (ReloadClient client in clientsToNotify.Where(x => x.IsConnected))
+            IEnumerable<IReloadClient> clientsToNotify = _clientServiceLocator.ReloadClients;
+            foreach (IReloadClient client in clientsToNotify.Where(x => x.IsConnected))
             {
                 foreach (string modifiedFile in filesChanged)
                 {

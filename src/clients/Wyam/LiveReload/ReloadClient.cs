@@ -15,7 +15,13 @@ using Wyam.LiveReload.Messages;
 
 namespace Wyam.LiveReload
 {
-    public class ReloadClient : WebSocketConnection
+    public interface IReloadClient
+    {
+        bool IsConnected { get; }
+        void NotifyOfChanges(string modifiedFile, bool supportCssReload = true);
+    }
+
+    public class ReloadClient : WebSocketConnection, IReloadClient
     {
         // Attempt to support the Livereload protocol v7.
         // http://feedback.livereload.com/knowledgebase/articles/86174-livereload-protocol

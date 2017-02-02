@@ -2,6 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+// NSubstitute
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+
 [assembly: AssemblyTitle("Wyam")]
 [assembly: AssemblyDescription("")]
 [assembly: ComVisible(false)]
