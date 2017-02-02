@@ -1,3 +1,17 @@
+# 0.16.2
+
+- [Fix] Fixes a bug when multiple input paths have the same starting characters (#414)
+- [Fix] Adds support for duplicate single-value directives when values are equivalent (#430)
+- [Feature] Adds ability to specify Markdig extension classes within the Blog and Docs recipes (#429, thanks @enkafan)
+- [Refactoring] Changed MSBuild to use maximum number of CPUs, speeding up compile times (#428, thanks @enkafan)
+- [Fix] Fixed guard clauses in `Image` module (#427, thanks @n-develop)
+- [Feature] Exceptions and other execution errors no longer kill the watch loop (#422, #421, thanks @Silvenga)
+- [Feature] Improved error messages when delegate invocation return types don't match
+- [Feature] Adds support for complex nested object sequences to the `Yaml` module
+- [Feature] Adds `IMetadata.DateTime()` shorthand method for getting `DateTime` values from metadata
+- [Fix] Adds the missing `CsvToMarkdown` file to the project (#418, thanks @LokiMidgard)
+- [Feature] Adds support for the `--attach` flag to the Cake addin
+
 # 0.16.1
 
 - [Refactoring] Docs recipe now allows you to specify a logo file using the `DocsKeys.Logo` setting
