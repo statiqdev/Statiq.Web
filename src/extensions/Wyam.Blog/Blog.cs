@@ -38,7 +38,7 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.Pages,
                 new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},**}}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings[BlogKeys.MarkdownExternalExtensions] as IEnumerable<Type>).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
+                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(BlogKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any additional Razor pages
                     new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
@@ -67,7 +67,7 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.RawPosts,
                 new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/*.md"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings[BlogKeys.MarkdownExternalExtensions] as IEnumerable<Type>).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
+                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(BlogKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
                 new Concat(
                     // Add any posts written in Razor
                     new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{{!_,!index,}}*.cshtml"),
