@@ -127,7 +127,7 @@ namespace Wyam.Core.IO
                     .Reverse()
                     .Select(x => RootPath.Combine(x))
                     .FirstOrDefault(x => x.FileProvider == path.FileProvider 
-                        && path.FullPath.StartsWith(x.Collapse().FullPath));
+                        && (path.FullPath == x.Collapse().FullPath || path.FullPath.StartsWith(x.Collapse().FullPath + "/")));
             }
             FilePath filePath = path as FilePath;
             if (filePath != null)

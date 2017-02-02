@@ -362,6 +362,27 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.AreEqual(expected, inputPath?.FullPath);
             }
+
+            [Test]
+            public void ShouldReturnContainingPathWhenOtherInputPathStartsTheSame()
+            {
+                // Given
+                FileSystem fileSystem = new FileSystem();
+                fileSystem.RootPath = "/a";
+                fileSystem.InputPaths.Add("yz");
+                fileSystem.InputPaths.Add("y");
+                TestFileProvider fileProvider = (TestFileProvider)GetFileProvider();
+                fileProvider.AddDirectory("yz");
+                fileProvider.AddDirectory("y");
+                fileProvider.AddFile("/a/yz/baz.txt");
+                fileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, fileProvider);
+
+                // When
+                DirectoryPath inputPath = fileSystem.GetContainingInputPath(new FilePath("baz.txt"));
+
+                // Then
+                Assert.AreEqual("/a/yz", inputPath?.FullPath);
+            }
         }
 
         public class GetFileProviderTests : FileSystemFixture
