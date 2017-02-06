@@ -21,7 +21,7 @@
         <div class="tags">
             @foreach (string tag in Tags.OrderBy(x => x))
             {
-                IDocument tagDocument = Documents[BlogKeys.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag) == tag);
+                IDocument tagDocument = Documents[BlogPipelines.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag) == tag);
                 if(tagDocument != null)
                 {                
                     <a role="button" href="@Context.GetLink(tagDocument)" class="btn btn-default btn-xs">@tag</a>

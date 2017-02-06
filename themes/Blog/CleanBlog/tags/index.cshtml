@@ -3,7 +3,7 @@ Title: All Tags
 <div class="container-sm-height">
     <div class="row row-sm-height">		
         <div class="col-sm-12 col-sm-height">            
-            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
             {
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();

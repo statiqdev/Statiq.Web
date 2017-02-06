@@ -19,7 +19,7 @@
         <ul class="actions small">
             @foreach (string tag in Tags.OrderBy(x => x))
             {
-                IDocument tagDocument = Documents[BlogKeys.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag) == tag);
+                IDocument tagDocument = Documents[BlogPipelines.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag) == tag);
                 if(tagDocument != null)
                 {                
                     <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small">@tag</a></li>

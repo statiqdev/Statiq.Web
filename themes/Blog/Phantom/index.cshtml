@@ -5,7 +5,7 @@
 <div class="row">
     <div class="8u 12u$(medium)">
         @{
-            foreach(IDocument doc in Documents[BlogKeys.Posts].Take(3))
+            foreach(IDocument doc in Documents[BlogPipelines.Posts].Take(3))
             {                
                 string lead = doc.String(BlogKeys.Lead);
                 <div>
@@ -25,7 +25,7 @@
     <div class="4u 12u$(medium)">
         <h5>Tags</h5>
         <ul class="actions small">
-            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderByDescending(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags].OrderByDescending(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
             { 
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
@@ -37,7 +37,7 @@
         </ul>
         <h5>Older Posts</h5>
         <ul>
-            @foreach(IDocument doc in Documents[BlogKeys.Posts].Skip(3).Take(4))
+            @foreach(IDocument doc in Documents[BlogPipelines.Posts].Skip(3).Take(4))
             {        
                 <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
             }
