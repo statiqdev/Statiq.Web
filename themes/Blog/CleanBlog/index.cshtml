@@ -6,7 +6,7 @@
     <div class="col-sm-8 right-border">
         @{
             bool first = true;
-            foreach(IDocument doc in Documents[BlogKeys.Posts].Take(3))
+            foreach(IDocument doc in Documents[BlogPipelines.Posts].Take(3))
             {                
                 if (!first)
                 {
@@ -32,7 +32,7 @@
         <hr class="visible-xs-block" />
         <h5>Tags</h5>
         <div>
-            @foreach (IDocument tagDocument in Documents[BlogKeys.Tags].OrderByDescending(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags].OrderByDescending(x => x.DocumentList(BlogKeys.Posts).Count()).Take(10))
             { 
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
@@ -47,7 +47,7 @@
         <hr />
         <h5>Older Posts</h5>
         <ul class="list-unstyled">
-            @foreach(IDocument doc in Documents[BlogKeys.Posts].Skip(3).Take(4))
+            @foreach(IDocument doc in Documents[BlogPipelines.Posts].Skip(3).Take(4))
             {        
                 <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
             }
