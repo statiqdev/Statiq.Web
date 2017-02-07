@@ -1,3 +1,13 @@
+# 0.16.3
+
+- [Feature] Docs recipe now checks for an "src" folder both inside and alongside the "input" folder (#436)
+- [Feature] Outputs current settings on every build
+- [Refactoring] Switched blog theme string constants to use the correct `BlogPipelines` keys (#435, thanks @enkafan)
+- [Fix] Fixed null check in Phantom blog theme footer (#433, thanks @enkafan)
+- [Feature] Added helpers for module developers to trace per-document exception messages (#320)
+- [Feature] Greatly improved per-document error messages (#320)
+- [Fix] jQuery CSS reference casing was wrong in docs theme
+
 # 0.16.2
 
 - [Fix] Fixes a bug when multiple input paths have the same starting characters (#414)
