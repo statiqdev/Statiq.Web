@@ -14,6 +14,7 @@ using System.Globalization;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Xmp
 {
@@ -107,7 +108,7 @@ namespace Wyam.Xmp
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select(input =>
+            return inputs.Select(context, input =>
              {
                  MetadataExtractor.Formats.Xmp.XmpDirectory xmpDirectory;
                  try

@@ -3,6 +3,7 @@ using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -56,7 +57,7 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context) 
         {
-            return inputs.SelectMany(x => context.Execute(_modules, new[] { x }));
+            return inputs.SelectMany(context, x => context.Execute(_modules, new[] { x }));
         }
     }
 }

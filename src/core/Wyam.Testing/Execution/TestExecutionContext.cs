@@ -12,6 +12,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Testing.Configuration;
 using Wyam.Testing.Documents;
@@ -195,16 +196,16 @@ namespace Wyam.Testing.Execution
             throw new NotImplementedException();
         }
 
-        public IReadOnlyCollection<byte[]> DynamicAssemblies { get; }
-        public IReadOnlyCollection<string> Namespaces { get; }
-        public IReadOnlyPipeline Pipeline { get; }
-        public IModule Module { get; }
-        public IExecutionCache ExecutionCache { get; }
-        public IReadOnlyFileSystem FileSystem { get; }
-        public IDocumentCollection Documents { get; }
+        public IReadOnlyCollection<byte[]> DynamicAssemblies { get; set; }
+        public IReadOnlyCollection<string> Namespaces { get; set; }
+        public IReadOnlyPipeline Pipeline { get; set; }
+        public IModule Module { get; set; }
+        public IExecutionCache ExecutionCache { get; set; }
+        public IReadOnlyFileSystem FileSystem { get; set; }
+        public IDocumentCollection Documents { get; set; }
         [Obsolete]
-        public IMetadata GlobalMetadata { get; }
-        public string ApplicationInput { get; }
+        public IMetadata GlobalMetadata { get; set; }
+        public string ApplicationInput { get; set; }
 
         public ISettings Settings { get; } = new Settings();
         IReadOnlySettings IExecutionContext.Settings => Settings;
@@ -251,19 +252,27 @@ namespace Wyam.Testing.Execution
             return value == null;
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs)
-        {
-            throw new NotImplementedException();
-        }
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) =>
+            Execute(modules, inputs, null);
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> metadata = null)
-        {
-            throw new NotImplementedException();
-        }
+        // Executes the module with an empty document containing the specified metadata items
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) =>
+            Execute(modules, null, items);
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> metadata)
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items) =>
+            Execute(modules, items?.Select(x => x.Pair));
+
+        private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)
         {
-            throw new NotImplementedException();
+            if (modules == null)
+            {
+                return Array.Empty<IDocument>();
+            }
+            foreach (IModule module in modules)
+            {
+                inputs = module.Execute(inputs.ToList(), this);
+            }
+            return inputs.ToList();
         }
     }
 }

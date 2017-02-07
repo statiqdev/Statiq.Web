@@ -11,6 +11,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -113,7 +114,7 @@ namespace Wyam.Core.Modules.Contents
             ConcurrentDictionary<FilePath, string> redirects = new ConcurrentDictionary<FilePath, string>();
             List<IDocument> outputs = inputs
                 .AsParallel()
-                .SelectMany(input =>
+                .SelectMany(context, input =>
                 {
                     IReadOnlyList<FilePath> paths = _paths.Invoke<IReadOnlyList<FilePath>>(input, context, "while getting paths");
                     if (paths != null)
@@ -124,7 +125,7 @@ namespace Wyam.Core.Modules.Contents
                             // Make sure it's a relative path
                             if (!fromPath.IsRelative)
                             {
-                                Trace.Warning($"The redirect path must be relative for document {input.Source.ToString()}: {fromPath}");
+                                Trace.Warning($"The redirect path must be relative for document {input.SourceString()}: {fromPath}");
                                 continue;
                             }
 

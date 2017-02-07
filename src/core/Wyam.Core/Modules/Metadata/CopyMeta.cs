@@ -4,6 +4,7 @@ using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -62,7 +63,7 @@ namespace Wyam.Core.Modules.Metadata
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().SelectMany(input =>
+            return inputs.AsParallel().SelectMany(context, input =>
             {
                 object existingValue;
                 var hasExistingKey = input.TryGetValue(_fromKey, out existingValue);

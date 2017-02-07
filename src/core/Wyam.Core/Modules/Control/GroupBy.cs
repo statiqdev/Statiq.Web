@@ -7,6 +7,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Util;
@@ -114,14 +115,14 @@ namespace Wyam.Core.Modules.Control
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(_modules, inputs)
-                .Where(x => _predicate?.Invoke(x, context) ?? true)    
+                .Where(context, x => _predicate?.Invoke(x, context) ?? true)    
                 .GroupBy(x => _key(x, context), _comparer)
                 .ToImmutableArray();
             if (groupings.Length == 0)
             {
                 return inputs;
             }
-            return inputs.SelectMany(input =>
+            return inputs.SelectMany(context, input =>
             {
                 return groupings.Select(x => context.GetDocument(input,
                     new MetadataItems

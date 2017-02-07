@@ -121,14 +121,14 @@ namespace Wyam.Core.Modules.Control
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(_modules, inputs)
-                .Where(x => _predicate?.Invoke(x, context) ?? true)    
+                .Where(context, x => _predicate?.Invoke(x, context) ?? true)    
                 .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context), _comparer)
                 .ToImmutableArray();
             if (groupings.Length == 0)
             {
                 return inputs;
             }
-            return inputs.SelectMany(input =>
+            return inputs.SelectMany(context, input =>
             {
                 return groupings.Select(x => context.GetDocument(input,
                     new MetadataItems

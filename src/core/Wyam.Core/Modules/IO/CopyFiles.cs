@@ -9,6 +9,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -125,7 +126,7 @@ namespace Wyam.Core.Modules.IO
         {
             return _patterns != null
                 ? Execute(null, _patterns, context)
-                : inputs.AsParallel().SelectMany(input =>
+                : inputs.AsParallel().SelectMany(context, input =>
                     Execute(input, _patternsDelegate.Invoke<string[]>(input, context, "while getting patterns"), context));
         }
 
@@ -139,27 +140,35 @@ namespace Wyam.Core.Modules.IO
                     .Where(x => _predicate == null || _predicate(x))
                     .Select(file =>
                     {
-                        // Get the default destination file
-                        DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
-                        FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
-                        IFile destination = context.FileSystem.GetOutputFile(relativePath);
-
-                        // Calculate an alternate destination if needed
-                        if (_destinationPath != null)
+                        try
                         {
-                            destination = context.FileSystem.GetOutputFile(_destinationPath(file, destination));
+                            // Get the default destination file
+                            DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
+                            FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? file.Path.FileName;
+                            IFile destination = context.FileSystem.GetOutputFile(relativePath);
+
+                            // Calculate an alternate destination if needed
+                            if (_destinationPath != null)
+                            {
+                                destination = context.FileSystem.GetOutputFile(_destinationPath(file, destination));
+                            }
+
+                            // Copy to the destination
+                            file.CopyTo(destination);
+                            Trace.Verbose("Copied file {0} to {1}", file.Path.FullPath, destination.Path.FullPath);
+
+                            // Return the document
+                            return context.GetDocument(input, file.Path, new MetadataItems
+                            {
+                                {Keys.SourceFilePath, file.Path},
+                                {Keys.DestinationFilePath, destination.Path}
+                            });
                         }
-
-                        // Copy to the destination
-                        file.CopyTo(destination);
-                        Trace.Verbose("Copied file {0} to {1}", file.Path.FullPath, destination.Path.FullPath);
-
-                        // Return the document
-                        return context.GetDocument(input, file.Path, new MetadataItems
+                        catch (Exception ex)
                         {
-                            { Keys.SourceFilePath, file.Path },
-                            { Keys.DestinationFilePath, destination.Path }
-                        });
+                            Trace.Error($"Error while copying file {file.Path.FullPath}: {ex.Message}");
+                            throw;
+                        }
                     })
                     .Where(x => x != null);
             }

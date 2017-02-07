@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -12,6 +13,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Core.Meta;
 

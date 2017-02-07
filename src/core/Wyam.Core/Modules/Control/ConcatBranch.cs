@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -47,7 +48,9 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IEnumerable<IDocument> documents = _predicate == null ? inputs : inputs.Where(x => _predicate(x, context));
+            IEnumerable<IDocument> documents = _predicate == null 
+                ? inputs 
+                : inputs.Where(context, x => _predicate(x, context));
             return inputs.Concat(context.Execute(_modules, documents));
         }
     }

@@ -44,7 +44,7 @@ namespace Wyam.Common.Configuration
             {
                 errorDetails = GetErrorDetails(errorDetails);
                 throw new InvalidOperationException(
-                    $"Could not convert from type {value?.GetType().Name ?? "null"} to type {typeof(T).Name} for {document.Source?.FullPath}{errorDetails}");
+                    $"Could not convert from type {value?.GetType().Name ?? "null"} to type {typeof(T).Name} for {document.SourceString()}{errorDetails}");
             }
             return result;
         }

@@ -6,6 +6,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Modules.IO;
 
 namespace Wyam.Core.Modules.Metadata
@@ -90,7 +91,7 @@ namespace Wyam.Core.Modules.Metadata
             //Find metadata files
             var metadataDictionary = inputs
                 .Where(input => input.Source != null)
-                .Select(input =>
+                .Select(context, input =>
                 {
                     var found = _metadataFile
                         .Select((y, index) => new
@@ -119,7 +120,7 @@ namespace Wyam.Core.Modules.Metadata
             return inputs
                 .Where(input => input.Source != null)
                 .Where(input => _preserveMetadataFiles || !(_metadataFile.Any(isMetadata => isMetadata.MetadataFileName.Invoke<bool>(input, context)))) // ignore files that define Metadata if not preserved
-                .Select(input =>
+                .Select(context, input =>
                 {
                     // First add the inherited metadata to the temp dictionary
                     List<DirectoryPath> sourcePaths = new List<DirectoryPath>();

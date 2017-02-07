@@ -4,6 +4,7 @@ using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -87,7 +88,7 @@ namespace Wyam.Core.Modules.Metadata
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 // Check if the key exists
                 if (!input.Metadata.ContainsKey(_key))
@@ -99,7 +100,7 @@ namespace Wyam.Core.Modules.Metadata
                     }
 
                     // This doesn't exist, and was required.
-                    throw GetException(input, $"Meta key \"{_key}\" is not found.");
+                    throw GetException($"Meta key \"{_key}\" is not found.");
                 }
 
                 // Attempt to convert it to the desired type
@@ -108,7 +109,7 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     // Report the original string, as the value coming out of TryGetValue might not be the same as what went in.
                     string originalStringValue = input.String(_key);
-                    throw GetException(input, $"Value \"{originalStringValue}\" could not be converted to type \"{typeof (T).Name}\".");
+                    throw GetException($"Value \"{originalStringValue}\" could not be converted to type \"{typeof (T).Name}\".");
                 }
 
                 // Check each assertion
@@ -116,7 +117,7 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     if (!assertion.Execute(value))
                     {
-                        throw GetException(input, assertion.Message);
+                        throw GetException(assertion.Message);
                     }
                 }
                 
@@ -124,8 +125,7 @@ namespace Wyam.Core.Modules.Metadata
             });
         }
 
-        private Exception GetException(IDocument document, string message) => 
-            new Exception($"{message ?? "Assertion failed"} [Source: {document.SourceString()}; Id: {document.Id}]");
+        private Exception GetException(string message) => new Exception($"{message ?? "Assertion failed"}");
     }
 
     internal class Assertion<T>

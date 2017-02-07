@@ -11,7 +11,7 @@ using Wyam.Common;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
-using IDocument = Wyam.Common.Documents.IDocument;
+using Wyam.Common.Util;
 
 namespace Wyam.Html
 {
@@ -166,10 +166,10 @@ namespace Wyam.Html
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public IEnumerable<Common.Documents.IDocument> Execute(IReadOnlyList<Common.Documents.IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            return inputs.AsParallel().SelectMany(input =>
+            return inputs.AsParallel().SelectMany(context, input =>
             {
                 // Parse the HTML content
                 IHtmlDocument htmlDocument = input.ParseHtml(parser);
@@ -188,7 +188,7 @@ namespace Wyam.Html
                             : htmlDocument.QuerySelectorAll(_querySelector).ToArray();
                         if (elements.Length > 0 && elements[0] != null)
                         {
-                            List<IDocument> documents = new List<IDocument>();
+                            List<Common.Documents.IDocument> documents = new List<Common.Documents.IDocument>();
                             foreach (IElement element in elements)
                             {
                                 // Get the metadata
@@ -203,7 +203,7 @@ namespace Wyam.Html
                                     ? context.GetDocument(input, _outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
                                     : context.GetDocument(input, metadata));
                             }
-                            return (IEnumerable<IDocument>) documents;
+                            return (IEnumerable<Common.Documents.IDocument>) documents;
                         }
                     }
                     return new[] { input };

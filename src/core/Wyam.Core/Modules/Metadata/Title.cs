@@ -9,6 +9,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -109,7 +110,7 @@ namespace Wyam.Core.Modules.Metadata
         {
             return inputs
                 .AsParallel()
-                .Select(input =>
+                .Select(context, input =>
                 {
                     // Check if there's already a title set
                     if (_keepExisting && input.WithoutSettings.ContainsKey(_key))

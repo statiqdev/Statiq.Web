@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Modules.Contents;
 
 namespace Wyam.Core.Modules.Extensibility
@@ -106,8 +107,8 @@ namespace Wyam.Core.Modules.Extensibility
                            ?? ChangeContent(documentResult, context, input);
                 };
                 return _parallel 
-                    ? inputs.AsParallel().SelectMany(selectMany) 
-                    : inputs.SelectMany(selectMany);
+                    ? inputs.AsParallel().SelectMany(context, selectMany) 
+                    : inputs.SelectMany(context, selectMany);
             }
 
             object contextResult = _executeContext(context);

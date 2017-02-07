@@ -11,6 +11,7 @@ using LibGit2Sharp;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 
 namespace Wyam.Git
 {
@@ -90,7 +91,7 @@ namespace Wyam.Git
 
             // Outputting commit information for each document
             DirectoryPath repositoryPath = GetRepositoryPath(context);
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 if (input.Source == null)
                 {

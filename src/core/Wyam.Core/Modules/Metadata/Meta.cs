@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Metadata
 {
@@ -120,7 +121,7 @@ namespace Wyam.Core.Modules.Metadata
                 // Execute the modules for each input document
                 if (_forEachDocument)
                 {
-                    return inputs.Select(input =>
+                    return inputs.Select(context, input =>
                     {
                         foreach (IDocument result in context.Execute(_modules, new[] { input }))
                         {
@@ -146,11 +147,11 @@ namespace Wyam.Core.Modules.Metadata
                         metadata[kvp.Key] = kvp.Value;
                     }
                 }
-                return inputs.Select(input => context.GetDocument(input, 
+                return inputs.Select(context, input => context.GetDocument(input, 
                     _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata));
             }
 
-            return inputs.Select(x => _onlyIfNonExisting && x.ContainsKey(_key) 
+            return inputs.Select(context, x => _onlyIfNonExisting && x.ContainsKey(_key) 
                 ? x 
                 : context.GetDocument(x, new[] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
         }

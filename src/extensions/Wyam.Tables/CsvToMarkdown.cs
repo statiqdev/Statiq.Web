@@ -7,6 +7,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Tables
 {
@@ -40,7 +41,7 @@ namespace Wyam.Tables
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 try
                 {

@@ -23,12 +23,39 @@ namespace Wyam.Common.Execution
         /// </summary>
         IReadOnlyCollection<byte[]> DynamicAssemblies { get; }
         
+        /// <summary>
+        /// Gets a set of namespaces that should be brought into scope for modules that perform dynamic compilation.
+        /// </summary>
         IReadOnlyCollection<string> Namespaces { get; }
+
+        /// <summary>
+        /// Gets the currently executing pipeline.
+        /// </summary>
         IReadOnlyPipeline Pipeline { get; }
+
+        /// <summary>
+        /// Gets the currently executing module.
+        /// </summary>
         IModule Module { get; }
+
+        /// <summary>
+        /// Gets the current execution cache. Modules can use the cache to store data between executions.
+        /// </summary>
         IExecutionCache ExecutionCache { get; }
+
+        /// <summary>
+        /// Gets the current file system.
+        /// </summary>
         IReadOnlyFileSystem FileSystem { get; }
+
+        /// <summary>
+        /// Gets the current settings metadata.
+        /// </summary>
         IReadOnlySettings Settings { get; }
+
+        /// <summary>
+        /// Gets the collection of all previously processed documents.
+        /// </summary>
         IDocumentCollection Documents { get; }
 
         [Obsolete]

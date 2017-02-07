@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Html
 {
@@ -190,7 +191,7 @@ namespace Wyam.Html
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 string oldContent = input.Content;
                 StringWriter outputString = new StringWriter();

@@ -11,6 +11,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -230,7 +231,7 @@ namespace Wyam.Core.Modules.IO
             // Value = input source string(s) (for reporting a warning if not appending), write action
             ConcurrentBag<IDocument> outputs = new ConcurrentBag<IDocument>();
             Dictionary<FilePath, Tuple<List<string>, Action>> writesBySource = new Dictionary<FilePath, Tuple<List<string>, Action>>();
-            foreach (IDocument input in inputs)
+            context.ForEach(inputs, input =>
             {
                 FilePath outputPath = ShouldProcess(input, context) ? GetOutputPath(input, context) : null;
                 if (outputPath == null)
@@ -263,7 +264,7 @@ namespace Wyam.Core.Modules.IO
                     }
                     writesBySource[outputPath] = value;
                 }
-            }
+            });
 
             // Display a warning for any duplicated outputs if not appending
             if (!_append)

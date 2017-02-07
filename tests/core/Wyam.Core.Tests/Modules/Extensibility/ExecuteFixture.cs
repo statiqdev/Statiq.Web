@@ -9,6 +9,8 @@ using Wyam.Common.Modules;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
@@ -62,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             public void ReturnsInputsForNullResultWithDocumentConfig()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
                     Substitute.For<IDocument>(),
@@ -159,10 +161,10 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             }
 
             [Test]
-            public void RunsSModuleAgainstEachInputDocument()
+            public void RunsModuleAgainstEachInputDocument()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
                     Substitute.For<IDocument>(),
@@ -175,7 +177,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 ((IModule)execute).Execute(inputs, context).ToList();
 
                 // Then
-                context.Received(2).Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>());
+                module.Received(2).Execute(Arg.Any<IReadOnlyList<IDocument>>(), Arg.Any<IExecutionContext>());
             }
 
             [Test]
@@ -222,21 +224,20 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             public void SetsNewContentForInputDocuments()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
+                    new TestDocument(),
+                    new TestDocument()
                 };
                 int count = 0;
                 Execute execute = new Execute((d, c) => count++);
 
                 // When
-                ((IModule)execute).Execute(inputs, context).ToList();
+                List<IDocument> results = ((IModule)execute).Execute(inputs, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), "0");
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), "1");
+                CollectionAssert.AreEquivalent(results.Select(x => x.Content), new[] {"0", "1"});
             }
         }
     }

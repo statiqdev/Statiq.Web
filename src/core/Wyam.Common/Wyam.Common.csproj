@@ -105,6 +105,7 @@
     <Compile Include="Tracing\Trace.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="Util\GroupByExtensions.cs" />
+    <Compile Include="Util\TraceExceptionsExtensions.cs" />
     <Compile Include="Util\ToLookupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

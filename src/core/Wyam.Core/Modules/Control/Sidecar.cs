@@ -7,6 +7,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -73,7 +74,8 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            List<IDocument> results = new List<IDocument>();
+            context.ForEach(inputs, input =>
             {
                 FilePath sidecarPath = _sidecarPath.Invoke<FilePath>(input, context);
                 if (sidecarPath != null)
@@ -84,19 +86,20 @@ namespace Wyam.Core.Modules.Control
                         string sidecarContent = sidecarFile.ReadAllText();
                         foreach (IDocument result in context.Execute(_modules, new[] { context.GetDocument(input, sidecarContent) }))
                         {
-                            yield return context.GetDocument(input, result);
+                            results.Add(context.GetDocument(input, result));
                         }
                     }
                     else
                     {
-                        yield return input;
+                        results.Add(input);
                     }
                 }
                 else
                 {
-                    yield return input;
+                    results.Add(input);
                 }
-            }
+            });
+            return results;
         }
     }
 }

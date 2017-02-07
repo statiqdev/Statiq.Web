@@ -11,6 +11,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Xslt2
 {
@@ -67,7 +68,7 @@ namespace Wyam.Xslt2
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 try
                 {

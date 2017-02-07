@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.AmazonWebServices
 {
@@ -109,67 +110,67 @@ namespace Wyam.AmazonWebServices
             {
                 writer.WriteStartArray();
 
-                foreach (var doc in inputs)
+                context.ForEach(inputs, doc =>
                 {
                     writer.WriteStartObject();
 
-                        writer.WritePropertyName("type");
-                        writer.WriteValue("add");
+                    writer.WritePropertyName("type");
+                    writer.WriteValue("add");
 
-                        writer.WritePropertyName("id");
-                        writer.WriteValue(_idMetaKey != null ? doc.String(_idMetaKey) : doc.Id);
-                                          
-                        writer.WritePropertyName("fields");
-                        writer.WriteStartObject();
+                    writer.WritePropertyName("id");
+                    writer.WriteValue(_idMetaKey != null ? doc.String(_idMetaKey) : doc.Id);
 
-                            if (_bodyField != null)
-                            {
-                                writer.WritePropertyName(_bodyField);
-                                writer.WriteValue(doc.Content);
-                            }
+                    writer.WritePropertyName("fields");
+                    writer.WriteStartObject();
 
-                            foreach(var field in _fields)
-                            {
-                                var value = field.GetValue(doc);
-                                if(value == null)
-                                {
-                                    // Null fields are not written
-                                    continue;
-                                }
+                    if (_bodyField != null)
+                    {
+                        writer.WritePropertyName(_bodyField);
+                        writer.WriteValue(doc.Content);
+                    }
 
-                                writer.WritePropertyName(field.FieldName);
-                                writer.WriteRawValue(JsonConvert.SerializeObject(value));
-                            }
+                    foreach (var field in _fields)
+                    {
+                        var value = field.GetValue(doc);
+                        if (value == null)
+                        {
+                            // Null fields are not written
+                            continue;
+                        }
 
-                            foreach(var field in _metaFields)
-                            {
-                                if(!doc.ContainsKey(field.MetaKey))
-                                {
-                                    continue;
-                                }
+                        writer.WritePropertyName(field.FieldName);
+                        writer.WriteRawValue(JsonConvert.SerializeObject(value));
+                    }
 
-                                var value = doc.Get(field.MetaKey);
-                                if (value == null)
-                                {
-                                    // Null fields are not written
-                                    continue;
-                                }
+                    foreach (var field in _metaFields)
+                    {
+                        if (!doc.ContainsKey(field.MetaKey))
+                        {
+                            continue;
+                        }
 
-                                value = field.Transformer.Invoke(value.ToString());
-                                if (value == null)
-                                {
-                                    // If the transformer function returns null, we'll not writing this either
-                                    continue;
-                                }
+                        var value = doc.Get(field.MetaKey);
+                        if (value == null)
+                        {
+                            // Null fields are not written
+                            continue;
+                        }
 
-                                writer.WritePropertyName(field.FieldName);
-                                writer.WriteRawValue(JsonConvert.SerializeObject(value));
-                            }
+                        value = field.Transformer.Invoke(value.ToString());
+                        if (value == null)
+                        {
+                            // If the transformer function returns null, we'll not writing this either
+                            continue;
+                        }
 
-                        writer.WriteEndObject();
+                        writer.WritePropertyName(field.FieldName);
+                        writer.WriteRawValue(JsonConvert.SerializeObject(value));
+                    }
 
                     writer.WriteEndObject();
-                }
+
+                    writer.WriteEndObject();
+                });
 
                 writer.WriteEndArray();
 

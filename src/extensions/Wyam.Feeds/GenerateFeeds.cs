@@ -8,6 +8,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 using Wyam.Feeds.Syndication;
 
 namespace Wyam.Feeds
@@ -371,7 +372,7 @@ namespace Wyam.Feeds
             };
 
             // Add items
-            foreach (IDocument input in inputs.Take(_maximumItems))
+            context.ForEach(inputs.Take(_maximumItems), input =>
             {
                 feed.Items.Add(new FeedItem
                 {
@@ -388,7 +389,7 @@ namespace Wyam.Feeds
                     ThreadCount = _itemThreadCount?.Invoke<int?>(input, context, "while reading thread count for feed"),
                     ThreadUpdated = _itemThreadUpdated?.Invoke<DateTime?>(input, context, "while reading thread updated for feed")
                 });
-            }
+            });
 
             // Generate the feeds
             return new[]

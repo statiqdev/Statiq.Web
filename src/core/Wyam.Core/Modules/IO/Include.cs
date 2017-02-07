@@ -6,6 +6,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.IO
 {
@@ -39,7 +40,7 @@ namespace Wyam.Core.Modules.IO
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 string content = input.Content;
                 return ProcessIncludes(ref content, input.Source, context) ? context.GetDocument(input, content) : input;

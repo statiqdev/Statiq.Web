@@ -3,6 +3,7 @@ using System.Linq;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Common.Modules
 {
@@ -41,9 +42,12 @@ namespace Wyam.Common.Modules
         {
             if (_modules != null)
             {
-                return context.Execute(_modules, inputs.Count == 1 ? inputs : null).SelectMany(x => inputs.SelectMany(y => Execute(x.Content, y, context)));
+                return context
+                    .Execute(_modules, inputs.Count == 1 ? inputs : null)
+                    .SelectMany(context, 
+                        x => inputs.SelectMany(context, y => Execute(x.Content, y, context)));
             }
-            return inputs.SelectMany(x => Execute(_content.GetValue(x, context), x, context));
+            return inputs.SelectMany(context, x => Execute(_content.GetValue(x, context), x, context));
         }
 
         // Note that content can be passed in as null, implementers should guard against that

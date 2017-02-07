@@ -7,6 +7,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -91,14 +92,16 @@ namespace Wyam.Core.Modules.Control
         {
             ImmutableArray<ImmutableArray<IDocument>> partitions 
                 = Partition(
-                    context.Execute(_modules, inputs).Where(x => _predicate?.Invoke(x, context) ?? true).ToList(),
+                    context.Execute(_modules, inputs)
+                        .Where(context, x => _predicate?.Invoke(x, context) ?? true)
+                        .ToList(),
                     _pageSize)
-                    .ToImmutableArray();
+                        .ToImmutableArray();
             if (partitions.Length == 0)
             {
                 return inputs;
             }
-            return inputs.SelectMany(input =>
+            return inputs.SelectMany(context, input =>
             {
                 return partitions.Select((x, i) => context.GetDocument(input,
                     new Dictionary<string, object>

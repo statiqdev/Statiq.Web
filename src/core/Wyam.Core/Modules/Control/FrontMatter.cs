@@ -4,6 +4,7 @@ using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -75,7 +76,8 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            List<IDocument> results = new List<IDocument>();
+            context.ForEach(inputs, input =>
             {
                 List<string> inputLines = input.Content.Split(new[] { '\n' }, StringSplitOptions.None).ToList();
                 int delimiterLine = inputLines.FindIndex(x =>
@@ -100,14 +102,15 @@ namespace Wyam.Core.Modules.Control
                     string content = string.Join("\n", inputLines);
                     foreach (IDocument result in context.Execute(_modules, new[] { context.GetDocument(input, frontMatter) }))
                     {
-                        yield return context.GetDocument(result, content);
+                        results.Add(context.GetDocument(result, content));
                     }
                 }
                 else
                 {
-                    yield return input;
+                    results.Add(input);
                 }
-            }
+            });
+            return results;
         }
     }
 }

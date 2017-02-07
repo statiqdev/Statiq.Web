@@ -34,6 +34,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Util;
 using Trace = Wyam.Common.Tracing.Trace;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.ObjectPool;
@@ -208,7 +209,7 @@ namespace Wyam.Razor
             
             // Eliminate input documents that we shouldn't process
             List<IDocument> validInputs = inputs
-                .Where(x => _ignorePrefix == null 
+                .Where(context, x => _ignorePrefix == null 
                     || !x.ContainsKey(Keys.SourceFileName) 
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
@@ -219,7 +220,7 @@ namespace Wyam.Razor
             
             // Compile and evaluate the pages in parallel
             IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
-            return validInputs.AsParallel().Select(input =>
+            return validInputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Razor for {0}", input.SourceString());
                 using (var scope = scopeFactory.CreateScope())

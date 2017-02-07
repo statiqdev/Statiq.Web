@@ -13,6 +13,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.SearchIndex
 {
@@ -189,7 +190,7 @@ namespace Wyam.SearchIndex
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             SearchIndexItem[] searchIndexItems = inputs
-                .Select(x => _searchIndexItem.TryInvoke<SearchIndexItem>(x, context))
+                .Select(context, x => _searchIndexItem.TryInvoke<SearchIndexItem>(x, context))
                 .Where(x => x != null 
                     && !string.IsNullOrEmpty(x.Url) 
                     && !string.IsNullOrEmpty(x.Title) 

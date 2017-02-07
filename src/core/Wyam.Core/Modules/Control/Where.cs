@@ -4,6 +4,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -27,7 +28,7 @@ namespace Wyam.Core.Modules.Control
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Where(x => _predicate.Invoke<bool>(x, context));
+            return inputs.Where(context, x => _predicate.Invoke<bool>(x, context));
         }
     }
 }

@@ -10,6 +10,8 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
@@ -23,19 +25,9 @@ namespace Wyam.Core.Tests.Modules.Control
             public void AppendsContent()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context
-                    .GetDocument(Arg.Any<IDocument>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x =>
-                    {
-                        IDocument result = Substitute.For<IDocument>();
-                        result.Content.Returns(x.ArgAt<string>(1));
-                        return result;
-                    });
-                IDocument a = Substitute.For<IDocument>();
-                a.Content.Returns(@"a");
-                IDocument b = Substitute.For<IDocument>();
-                b.Content.Returns(@"b");
+                TestExecutionContext context = new TestExecutionContext();
+                IDocument a = new TestDocument("a");
+                IDocument b = new TestDocument("b");
                 Combine combine = new Combine();
 
                 // When
@@ -49,36 +41,17 @@ namespace Wyam.Core.Tests.Modules.Control
             public void MergesMetadata()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context
-                    .GetDocument(Arg.Any<IDocument>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                    .Returns(x =>
-                    {
-                        Dictionary<string, object> metadata = new Dictionary<string, object>();
-                        foreach (KeyValuePair<string, object> kvp in x.ArgAt<IDocument>(0))
-                        {
-                            metadata[kvp.Key] = kvp.Value;
-                        }
-                        foreach (KeyValuePair<string, object> kvp in x.ArgAt<IEnumerable<KeyValuePair<string, object>>>(2))
-                        {
-                            metadata[kvp.Key] = kvp.Value;
-                        }
-                        IDocument result = Substitute.For<IDocument>();
-                        result.GetEnumerator().Returns(metadata.GetEnumerator());
-                        return result;
-                    });
-                IDocument a = Substitute.For<IDocument>();
-                a.GetEnumerator().Returns(new Dictionary<string, object>
+                TestExecutionContext context = new TestExecutionContext();
+                IDocument a = new TestDocument(new Dictionary<string, object>
                 {
-                    { "a", 1 },
-                    { "b", 2 }
-                }.GetEnumerator());
-                IDocument b = Substitute.For<IDocument>();
-                b.GetEnumerator().Returns(new Dictionary<string, object>
+                    {"a", 1},
+                    {"b", 2}
+                });
+                IDocument b = new TestDocument(new Dictionary<string, object>
                 {
-                    { "b", 3 },
-                    { "c", 4 }
-                }.GetEnumerator());
+                    {"b", 3},
+                    {"c", 4}
+                });
                 Combine combine = new Combine();
 
                 // When

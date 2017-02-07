@@ -17,6 +17,7 @@ using System.Text;
 using Wyam.Common.Modules;
 using System.Collections.ObjectModel;
 using System;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
@@ -125,43 +126,11 @@ namespace Wyam.Core.Tests.Modules.Control
 
             private IExecutionContext GetExecutionContext(Engine engine)
             {
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.Namespaces.Returns(engine.Namespaces);
-                IReadOnlyFileSystem fileSystem = GetFileSystem();
-                context.FileSystem.Returns(fileSystem);
-                FilePath result;
-
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(x =>
+                TestExecutionContext context = new TestExecutionContext
                 {
-                    IDocument document = (IDocument)x[0];
-                    string content = (string)x[1];
-                    return GetDocument(document.Source.FullPath, content);
-                });
-
-                context.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(x =>
-                {
-                    IDocument document = (IDocument)x[0];
-                    string content = document.Content;
-                    return GetDocument(document.Source.FullPath, content);
-                });
-
-                context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(x =>
-                {
-                    IModule[] modules = ((IEnumerable<IModule>)x[0]).ToArray();
-                    IEnumerable<IDocument> documents = (IEnumerable<IDocument>)x[1];
-
-                    foreach (IModule module in modules)
-                    {
-                        documents = module.Execute(new ReadOnlyCollection<IDocument>(documents.ToList()), context);
-                    }
-
-                    return new ReadOnlyCollection<IDocument>(documents.ToArray());
-                });
-                context.TryConvert(Arg.Any<object>(), out result).Returns(x =>
-                {
-                    x[1] = (FilePath)x[0];
-                    return true;
-                });
+                    Namespaces = engine.Namespaces,
+                    FileSystem = GetFileSystem()
+                };
                 return context;
             }
 

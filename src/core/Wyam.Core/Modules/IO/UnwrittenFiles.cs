@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.IO
 {
@@ -60,7 +61,7 @@ namespace Wyam.Core.Modules.IO
         {
             return inputs
                 .AsParallel()
-                .Select(input =>
+                .Select(context, input =>
                 {
                     if (ShouldProcess(input, context))
                     {

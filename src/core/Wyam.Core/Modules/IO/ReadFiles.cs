@@ -9,6 +9,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
@@ -114,7 +115,7 @@ namespace Wyam.Core.Modules.IO
         {
             return _contextPatterns != null
                 ? Execute(null, _contextPatterns.Invoke<string[]>(context, "while getting patterns"), context)
-                : inputs.AsParallel().SelectMany(input =>
+                : inputs.AsParallel().SelectMany(context, input =>
                     Execute(input, _documentPatterns.Invoke<string[]>(input, context, "while getting patterns"), context));
         }
 

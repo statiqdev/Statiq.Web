@@ -4,6 +4,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -95,7 +96,7 @@ namespace Wyam.Core.Modules.Control
                 }
                 else if(condition.ContextConfig == null)
                 {
-                    foreach (IDocument document in documents)
+                    context.ForEach(documents, document =>
                     {
                         if (condition.DocumentConfig == null || condition.DocumentConfig.Invoke<bool>(document, context, "while evaluating condition"))
                         {
@@ -105,7 +106,7 @@ namespace Wyam.Core.Modules.Control
                         {
                             unmatched.Add(document);
                         }
-                    }
+                    });
                 }
 
                 // Run the modules on the documents that satisfy the predicate

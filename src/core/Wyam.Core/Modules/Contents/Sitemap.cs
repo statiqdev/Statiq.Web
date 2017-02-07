@@ -10,6 +10,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 
@@ -86,7 +87,7 @@ namespace Wyam.Core.Modules.Contents
             StringBuilder sb = new StringBuilder();
             sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
 
-            foreach (IDocument input in inputs)
+            context.ForEach(inputs, input =>
             {
                 // Try to get a SitemapItem
                 object delegateResult = _sitemapItemOrLocation(input, context);
@@ -145,7 +146,7 @@ namespace Wyam.Core.Modules.Contents
                         sb.Append("</url>");
                     }
                 }
-            }
+            });
 
             // Always output the sitemap document, even if it's empty
             sb.Append("</urlset>");

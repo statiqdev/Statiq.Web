@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using img = ImageProcessor;
 
 namespace Wyam.Images
@@ -356,21 +358,21 @@ namespace Wyam.Images
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            foreach (IDocument input in inputs)
+            return inputs.SelectMany(context, input =>
             {
                 FilePath relativePath = input.FilePath(Keys.RelativeFilePath);
                 if (relativePath == null)
                 {
-                    continue;
+                    return Array.Empty<IDocument>();
                 }
                 FilePath destinationPath = context.FileSystem.GetOutputPath(relativePath);
 
-                foreach (ImageInstruction instruction in _instructions)
+                return _instructions.Select(instruction =>
                 {
                     ISupportedImageFormat format = GetFormat(relativePath.Extension, instruction);
                     if (format == null)
                     {
-                        continue;
+                        return null;
                     }
 
                     string destinationFile = relativePath.FileNameWithoutExtension.FullPath;
@@ -397,13 +399,13 @@ namespace Wyam.Images
 
                     Stream output = ProcessImage(input, format, instruction);
 
-                    yield return context.GetDocument(input, output, new MetadataItems
+                    return context.GetDocument(input, output, new MetadataItems
                     {
-                        { Keys.WritePath, destinationPath},
-                        { Keys.WriteExtension, relativePath.Extension }
+                        {Keys.WritePath, destinationPath},
+                        {Keys.WriteExtension, relativePath.Extension}
                     });
-                }
-            }
+                }).Where(x => x != null);
+            });
         }
 
         private Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)

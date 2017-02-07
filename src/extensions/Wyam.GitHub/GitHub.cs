@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.GitHub
 {
@@ -133,7 +134,7 @@ namespace Wyam.GitHub
             {
                 github.Credentials = _credentials;
             }
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 ConcurrentDictionary<string, object> results = new ConcurrentDictionary<string, object>();
                 foreach (KeyValuePair<string, Func<IDocument, IExecutionContext, GitHubClient, object>> request in _requests.AsParallel())

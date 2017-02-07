@@ -20,6 +20,7 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Less
 {
@@ -50,7 +51,7 @@ namespace Wyam.Less
             EngineFactory engineFactory = new EngineFactory(config);
             FileSystemReader fileSystemReader = new FileSystemReader(context.FileSystem);
             
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Less for {0}", input.SourceString());
                 ILessEngine engine = engineFactory.GetEngine();

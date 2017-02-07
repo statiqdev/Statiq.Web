@@ -83,7 +83,7 @@ namespace Wyam.Html
 
             // Gather all links
             HtmlParser parser = new HtmlParser();
-            Parallel.ForEach(inputs, input =>
+            context.ParallelForEach(inputs, input =>
             {
                 GatherLinks(input, parser, links);
             });

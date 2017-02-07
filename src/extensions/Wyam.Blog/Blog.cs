@@ -78,7 +78,7 @@ namespace Wyam.Blog
                     DateTime published;
                     if (!DateTime.TryParse(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
                     {
-                        Wyam.Common.Tracing.Trace.Warning($"Could not parse published date for {doc.Source?.FullPath ?? "[unknown]"}.");
+                        Wyam.Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
                         return null;
                     }
                     return published;
@@ -87,12 +87,12 @@ namespace Wyam.Blog
                 {
                     if (!doc.ContainsKey(BlogKeys.Published) || doc.Get(BlogKeys.Published) == null)
                     {
-                        Common.Tracing.Trace.Warning($"Skipping {doc.Source} due to not having {BlogKeys.Published} metadata");
+                        Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to not having {BlogKeys.Published} metadata");
                         return false;
                     }
                     if (doc.Get<DateTime>(BlogKeys.Published) > DateTime.Now)
                     {
-                        Common.Tracing.Trace.Warning($"Skipping {doc.Source} due to having {BlogKeys.Published} metadata of {doc.Get<DateTime>(BlogKeys.Published)} in the future (current date and time is {DateTime.Now})");
+                        Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to having {BlogKeys.Published} metadata of {doc.Get<DateTime>(BlogKeys.Published)} in the future (current date and time is {DateTime.Now})");
                         return false;
                     }
                     return true;

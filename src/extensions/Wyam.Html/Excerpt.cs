@@ -12,7 +12,7 @@ using Wyam.Common;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
-using IDocument = Wyam.Common.Documents.IDocument;
+using Wyam.Common.Util;
 
 namespace Wyam.Html
 {
@@ -112,7 +112,7 @@ namespace Wyam.Html
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public IEnumerable<Common.Documents.IDocument> Execute(IReadOnlyList<Common.Documents.IDocument> inputs, IExecutionContext context)
         {
             if (string.IsNullOrWhiteSpace(_metadataKey))
             {
@@ -120,7 +120,7 @@ namespace Wyam.Html
             }
 
             HtmlParser parser = new HtmlParser();
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 // Parse the HTML content
                 IHtmlDocument htmlDocument = input.ParseHtml(parser);

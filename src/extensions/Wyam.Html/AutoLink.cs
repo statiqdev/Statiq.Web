@@ -15,7 +15,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
-using IDocument = Wyam.Common.Documents.IDocument;
+using Wyam.Common.Util;
 
 namespace Wyam.Html
 {
@@ -115,10 +115,10 @@ namespace Wyam.Html
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public IEnumerable<Common.Documents.IDocument> Execute(IReadOnlyList<Common.Documents.IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 try
                 {

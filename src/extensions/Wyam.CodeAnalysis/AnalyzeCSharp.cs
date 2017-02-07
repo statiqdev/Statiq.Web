@@ -15,6 +15,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis
 {
@@ -318,7 +319,7 @@ namespace Wyam.CodeAnalysis
             {
                 // Get syntax trees (supply path so that XML doc includes can be resolved)
                 ConcurrentBag<SyntaxTree> syntaxTrees = new ConcurrentBag<SyntaxTree>();
-                Parallel.ForEach(inputs, input =>
+                context.ParallelForEach(inputs, input =>
                 {
                     using (Stream stream = input.GetStream())
                     {

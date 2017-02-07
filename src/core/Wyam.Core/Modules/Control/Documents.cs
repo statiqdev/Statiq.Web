@@ -5,6 +5,7 @@ using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -140,7 +141,7 @@ namespace Wyam.Core.Modules.Control
             IEnumerable<IDocument> documents;
             if (_documentDocuments != null)
             {
-                documents = inputs.SelectMany(x => _documentDocuments.Invoke<IEnumerable<IDocument>>(x, context));
+                documents = inputs.SelectMany(context, x => _documentDocuments.Invoke<IEnumerable<IDocument>>(x, context));
             }
             else if (_contextDocuments != null)
             {
@@ -154,7 +155,7 @@ namespace Wyam.Core.Modules.Control
             }
             if (_predicate != null)
             {
-                documents = documents.Where(x => _predicate(x, context));
+                documents = documents.Where(context, x => _predicate(x, context));
             }
             return documents;
         }

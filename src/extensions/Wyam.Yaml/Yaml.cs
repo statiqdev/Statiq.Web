@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using YamlDotNet.Dynamic;
 using YamlDotNet.RepresentationModel;
 
@@ -56,7 +57,7 @@ namespace Wyam.Yaml
         {
             return inputs
                 .AsParallel()
-                .SelectMany(input =>
+                .SelectMany(context, input =>
                 {
                     List<Dictionary<string, object>> documentMetadata = new List<Dictionary<string, object>>();
                     using (TextReader contentReader = new StringReader(input.Content))

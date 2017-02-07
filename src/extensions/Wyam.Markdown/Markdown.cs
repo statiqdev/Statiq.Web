@@ -9,6 +9,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Markdown
 {
@@ -117,7 +118,7 @@ namespace Wyam.Markdown
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(input =>
+            return inputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Markdown {0} for {1}", 
                     string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.SourceString());

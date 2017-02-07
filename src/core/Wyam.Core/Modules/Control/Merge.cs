@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -52,7 +53,7 @@ namespace Wyam.Core.Modules.Control
                 // Execute the modules for each input document
                 if (_forEachDocument)
                 {
-                    return inputs.SelectMany(input =>
+                    return inputs.SelectMany(context, input =>
                         context.Execute(_modules, new[] {input})
                             .Select(result => context.GetDocument(input, result.Content, result.Metadata))
                     );
@@ -60,7 +61,7 @@ namespace Wyam.Core.Modules.Control
 
                 // Execute the modules once and apply to each input document
                 List<IDocument> results = context.Execute(_modules).ToList();
-                return inputs.SelectMany(input =>
+                return inputs.SelectMany(context, input =>
                     results.Select(result => context.GetDocument(input, result.Content, result.Metadata)));
             }
 
