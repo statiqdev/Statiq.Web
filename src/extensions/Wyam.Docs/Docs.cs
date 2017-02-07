@@ -30,7 +30,11 @@ namespace Wyam.Docs
         public void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.Settings[DocsKeys.SourceFiles] = "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs";
+            engine.Settings[DocsKeys.SourceFiles] = new []
+            {
+                "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs",
+                "../src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs"
+            };
             engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
             engine.Settings[DocsKeys.IncludeDateInPostPath] = false;
             engine.Settings[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
