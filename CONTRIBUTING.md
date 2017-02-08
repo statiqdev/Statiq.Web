@@ -47,7 +47,7 @@ Wyam generally follows accepted .NET coding styles (see the [Framework Design Gu
 - Pay attention to whitespace and extra blank lines.
 - Be explicit with access modifiers. If a class member is private, add the `private` access modifier even though it's implied. 
 - Avoid `#region`. There is debate on whether regions are valuable, but one of the perks of being a benevolent dictator is that I can restrict their use in this code.
-- Constants should be all uppercase and should be placed at the top of their containing class.
+- Constants should be TitleCase and should be placed at the top of their containing class.
 
 ### Dependencies
 
