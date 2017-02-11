@@ -21,7 +21,7 @@ namespace Wyam.LiveReload
         void NotifyOfChanges(string modifiedFile, bool supportCssReload = true);
     }
 
-    public class ReloadClient : WebSocketConnection, IReloadClient
+    public class ReloadClient : FleckWebSocketConnection, IReloadClient
     {
         // Attempt to support the Livereload protocol v7.
         // http://feedback.livereload.com/knowledgebase/articles/86174-livereload-protocol
@@ -31,10 +31,12 @@ namespace Wyam.LiveReload
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Formatting = Formatting.Indented
         };
+
         private readonly HashSet<string> _supportedVersion = new HashSet<string>
         {
             "http://livereload.com/protocols/official-7" // Only supporting v7 right now
         };
+
         private readonly Guid _clientId = Guid.NewGuid();
 
         public bool IsConnected { get; private set; }
@@ -43,7 +45,7 @@ namespace Wyam.LiveReload
         {
             string json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
             HandleClientMessage(json);
-            
+
             return Task.CompletedTask;
         }
 
@@ -97,15 +99,15 @@ namespace Wyam.LiveReload
         private void HandleHello(HelloMessage message)
         {
             string negotiatedVersion = message.Protocols
-                                           .Intersect(_supportedVersion)
-                                           .OrderByDescending(x => x)
-                                           .FirstOrDefault();
+                                              .Intersect(_supportedVersion)
+                                              .OrderByDescending(x => x)
+                                              .FirstOrDefault();
 
             if (negotiatedVersion == null)
             {
                 string incompatibleMessage = "LiveReload client is not compatible with this server, aborting connection. " +
-                                          $"Client=({string.Join(",", message.Protocols)}) " +
-                                          $"Server=({string.Join(",", _supportedVersion)})";
+                                             $"Client=({string.Join(",", message.Protocols)}) " +
+                                             $"Server=({string.Join(",", _supportedVersion)})";
                 LogVerbose(incompatibleMessage);
                 Abort();
             }

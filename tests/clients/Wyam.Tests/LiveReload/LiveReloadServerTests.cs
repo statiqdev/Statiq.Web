@@ -24,10 +24,8 @@ namespace Wyam.Tests.LiveReload
             var reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(true);
 
-            var serviceLocatorMock = Substitute.ForPartsOf<ReloadClientServiceLocator>();
-            serviceLocatorMock.ReloadClients.Returns(new List<IReloadClient> { reloadClientMock });
-
-            var server = new LiveReloadServer(serviceLocatorMock);
+            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
             reloadClientMock.Received().NotifyOfChanges(Arg.Is<string>(s => changedFiles.Contains(s)), Arg.Is(true));
@@ -41,10 +39,8 @@ namespace Wyam.Tests.LiveReload
             var reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(false);
 
-            var serviceLocatorMock = Substitute.ForPartsOf<ReloadClientServiceLocator>();
-            serviceLocatorMock.ReloadClients.Returns(new List<IReloadClient> { reloadClientMock });
-
-            var server = new LiveReloadServer(serviceLocatorMock);
+            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
             reloadClientMock.DidNotReceive().NotifyOfChanges(Arg.Any<string>(), Arg.Any<bool>());
@@ -58,10 +54,8 @@ namespace Wyam.Tests.LiveReload
             var reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(true);
 
-            var serviceLocatorMock = Substitute.ForPartsOf<ReloadClientServiceLocator>();
-            serviceLocatorMock.ReloadClients.Returns(new List<IReloadClient> { reloadClientMock });
-
-            var server = new LiveReloadServer(serviceLocatorMock);
+            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
             foreach (var changedFile in changedFiles)

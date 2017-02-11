@@ -1,41 +1,34 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Hosting;
-using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 
 using Owin;
 using Owin.WebSocket.Extensions;
 
 using Wyam.Common.Tracing;
-using Wyam.Owin;
+using Wyam.Server;
 
 namespace Wyam.LiveReload
 {
     internal class LiveReloadServer : IDisposable
     {
-        private readonly ReloadClientServiceLocator _clientServiceLocator;
-        private IDisposable _server;
+        private readonly ConcurrentBag<IReloadClient> _clients = new ConcurrentBag<IReloadClient>();
+        private HttpServer _server;
 
-        public LiveReloadServer(ReloadClientServiceLocator clientServiceLocator = null)
-        {
-            _clientServiceLocator = clientServiceLocator ?? new ReloadClientServiceLocator();
-        }
+        public virtual IEnumerable<IReloadClient> ReloadClients => _clients.ToArray();
 
         public void StartStandaloneHost(int port = 35729)
         {
             try
             {
-                // This must be 127.0.0.1 due to http.sys hostname verification, LiveReload hardcodes it.
-                StartOptions options = new StartOptions("http://127.0.0.1:" + port);
-                options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
-                _server = WebApp.Start(options, InjectOwinMiddleware);
+                _server = new HttpServer();
+                _server.StartServer(port, InjectOwinMiddleware);
             }
             catch (Exception ex)
             {
@@ -59,13 +52,12 @@ namespace Wyam.LiveReload
             });
 
             // Host ws://
-            app.MapWebSocketRoute<ReloadClient>("/livereload", _clientServiceLocator);
+            app.MapFleckRoute<ReloadClient>("/livereload", connection => _clients.Add((ReloadClient) connection));
         }
 
         public void RebuildCompleted(ICollection<string> filesChanged)
         {
-            IEnumerable<IReloadClient> clientsToNotify = _clientServiceLocator.ReloadClients;
-            foreach (IReloadClient client in clientsToNotify.Where(x => x.IsConnected))
+            foreach (IReloadClient client in ReloadClients.Where(x => x.IsConnected))
             {
                 foreach (string modifiedFile in filesChanged)
                 {

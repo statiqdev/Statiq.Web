@@ -49,6 +49,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Fleck, Version=0.13.0.57, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Fleck.0.13.0.57\lib\net40\Fleck.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.Hosting, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.AspNetCore.Hosting.1.1.0\lib\net451\Microsoft.AspNetCore.Hosting.dll</HintPath>
     </Reference>
@@ -153,7 +157,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin.WebSocket, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Owin.WebSocket.1.6.0\lib\net45\Owin.WebSocket.dll</HintPath>
+      <HintPath>..\..\..\packages\Owin.WebSocket.Fleck.1.6.1\lib\net452\Owin.WebSocket.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin.WebSocket.Fleck, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Owin.WebSocket.Fleck.1.6.1\lib\net452\Owin.WebSocket.Fleck.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -276,7 +285,6 @@
     <Compile Include="LiveReload\Messages\ILiveReloadMessage.cs" />
     <Compile Include="LiveReload\ReloadClient.cs" />
     <Compile Include="LiveReload\Messages\ReloadMessage.cs" />
-    <Compile Include="Owin\NullTraceOutputFactory.cs" />
     <Compile Include="Server\ApplicationBuilderExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryMiddleware.cs" />
@@ -295,7 +303,6 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CommandParser.cs" />
-    <Compile Include="LiveReload\ReloadClientServiceLocator.cs" />
     <Compile Include="Server\HttpServer.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />
     <Compile Include="SimpleFileTraceListener.cs" />
