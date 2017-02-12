@@ -23,22 +23,32 @@ namespace Wyam.LiveReload
 
         public virtual IEnumerable<IReloadClient> ReloadClients => _clients.ToArray();
 
-        public void StartStandaloneHost(int port = 35729)
+        public void StartStandaloneHost(int port = 35729, bool throwExceptions = false)
         {
             try
             {
                 _server = new HttpServer();
-                _server.StartServer(port, InjectOwinMiddleware);
+                _server.StartServer(port, AddHostMiddleware);
             }
             catch (Exception ex)
             {
                 Trace.Warning($"Error while running the LiveReload server: {ex.Message}");
+                if (throwExceptions)
+                {
+                    throw;
+                }
             }
 
             Trace.Verbose($"LiveReload server listening on port {port}.");
         }
 
-        public void InjectOwinMiddleware(IAppBuilder app)
+        public void AddInjectionMiddleware(IAppBuilder app)
+        {
+            // Inject LR script.
+            app.UseLiveReloadScriptInjections("/livereload.js");
+        }
+
+        public void AddHostMiddleware(IAppBuilder app)
         {
             // Host livereload.js
             Assembly liveReloadAssembly = typeof(LiveReloadServer).Assembly;

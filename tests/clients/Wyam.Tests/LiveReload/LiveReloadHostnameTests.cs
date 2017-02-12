@@ -18,21 +18,21 @@ namespace Wyam.Tests.LiveReload
         [Test]
         public void ServerShouldBindWithoutUrlReservations()
         {
-            var port = GetEphemeralPort();
+            int port = GetEphemeralPort();
             Assert.DoesNotThrow(() => _reloadServer.StartStandaloneHost(port, true));
         }
 
         [Test]
         public async Task ServerShouldAcceptRequestsFromLocalhost()
         {
-            var port = GetEphemeralPort();
+            int port = GetEphemeralPort();
             _reloadServer.StartStandaloneHost(port);
 
-            var client = new HttpClient
+            HttpClient client = new HttpClient
             {
                 BaseAddress = new Uri($"http://localhost:{port}/")
             };
-            var response = await client.GetAsync("livereload.js");
+            HttpResponseMessage response = await client.GetAsync("livereload.js");
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
@@ -40,16 +40,16 @@ namespace Wyam.Tests.LiveReload
         [Test]
         public async Task ServerShouldAcceptRequestsFrom127001()
         {
-            var port = GetEphemeralPort();
+            int port = GetEphemeralPort();
             _reloadServer.StartStandaloneHost(port);
 
-            var client = new HttpClient
+            HttpClient client = new HttpClient
             {
                 BaseAddress = new Uri($"http://127.0.0.1:{port}/")
             };
-            var response = await client.GetAsync("livereload.js");
+            HttpResponseMessage response = await client.GetAsync("livereload.js");
 
-            Assert.IsTrue(response.IsSuccessStatusCode);
+            Assert.IsTrue(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
         }
 
         private static int GetEphemeralPort()

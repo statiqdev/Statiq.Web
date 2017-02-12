@@ -19,12 +19,12 @@ namespace Wyam.Tests.LiveReload
         [Test]
         public void RebuildCompletedShouldNotifyConnectedClients()
         {
-            var changedFiles = AutoFixture.CreateMany<string>(1).ToList();
+            List<string> changedFiles = AutoFixture.CreateMany<string>(1).ToList();
 
-            var reloadClientMock = Substitute.For<IReloadClient>();
+            IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(true);
 
-            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            LiveReloadServer server = Substitute.ForPartsOf<LiveReloadServer>();
             server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
@@ -34,12 +34,12 @@ namespace Wyam.Tests.LiveReload
         [Test]
         public void RebuildCompletedShouldAvoidMissingClients()
         {
-            var changedFiles = AutoFixture.CreateMany<string>(1).ToList();
+            List<string> changedFiles = AutoFixture.CreateMany<string>(1).ToList();
 
-            var reloadClientMock = Substitute.For<IReloadClient>();
+            IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(false);
 
-            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            LiveReloadServer server = Substitute.ForPartsOf<LiveReloadServer>();
             server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
@@ -49,16 +49,16 @@ namespace Wyam.Tests.LiveReload
         [Test]
         public void RebuildCompletedShouldNotifyOfAllChangedFiles()
         {
-            var changedFiles = AutoFixture.CreateMany<string>().ToList();
+            List<string> changedFiles = AutoFixture.CreateMany<string>().ToList();
 
-            var reloadClientMock = Substitute.For<IReloadClient>();
+            IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
             reloadClientMock.IsConnected.Returns(true);
 
-            var server = Substitute.ForPartsOf<LiveReloadServer>();
+            LiveReloadServer server = Substitute.ForPartsOf<LiveReloadServer>();
             server.ReloadClients.Returns(new List<IReloadClient> {reloadClientMock});
             server.RebuildCompleted(changedFiles);
 
-            foreach (var changedFile in changedFiles)
+            foreach (string changedFile in changedFiles)
             {
                 reloadClientMock.Received().NotifyOfChanges(Arg.Is(changedFile), Arg.Is(true));
             }
