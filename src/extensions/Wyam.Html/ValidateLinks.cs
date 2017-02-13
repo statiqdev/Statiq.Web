@@ -179,6 +179,7 @@ namespace Wyam.Html
             {
                 normalizedPath = normalizedPath.Remove(normalizedPath.IndexOf("?", StringComparison.Ordinal));
             }
+            normalizedPath = Uri.UnescapeDataString(normalizedPath);
             if (normalizedPath == string.Empty)
             {
                 return true;
