@@ -21,22 +21,21 @@ namespace Wyam.Core.Modules.Control
     /// The output document content is set to the original content without the front matter.
     /// </remarks>
     /// <category>Control</category>
-    public class FrontMatter : IModule
+    public class FrontMatter : CollectionModule
     {
         private readonly string _delimiter;
         private bool _ignoreDelimiterOnFirstLine = true;
         private readonly bool _repeated;
-        private readonly IModule[] _modules;
 
         /// <summary>
         /// Uses the default delimiter character and passes any front matter to the specified child modules for processing.
         /// </summary>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(params IModule[] modules)
+            : base(modules)
         {
             _delimiter = "-";
             _repeated = true;
-            _modules = modules;
         }
 
         /// <summary>
@@ -45,10 +44,10 @@ namespace Wyam.Core.Modules.Control
         /// <param name="delimiter">The delimiter to use.</param>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(string delimiter, params IModule[] modules)
+            : base(modules)
         {
             _delimiter = delimiter;
             _repeated = false;
-            _modules = modules;
         }
 
         /// <summary>
@@ -57,10 +56,10 @@ namespace Wyam.Core.Modules.Control
         /// <param name="delimiter">The delimiter to use.</param>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(char delimiter, params IModule[] modules)
+            : base(modules)
         {
             _delimiter = new string(delimiter, 1);
             _repeated = true;
-            _modules = modules;
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<IDocument> results = new List<IDocument>();
             context.ForEach(inputs, input =>
@@ -100,7 +99,7 @@ namespace Wyam.Core.Modules.Control
                     string frontMatter = string.Join("\n", inputLines.Skip(startLine).Take(delimiterLine - startLine)) + "\n";
                     inputLines.RemoveRange(0, delimiterLine + 1);
                     string content = string.Join("\n", inputLines);
-                    foreach (IDocument result in context.Execute(_modules, new[] { context.GetDocument(input, frontMatter) }))
+                    foreach (IDocument result in context.Execute(this, new[] { context.GetDocument(input, frontMatter) }))
                     {
                         results.Add(context.GetDocument(result, content));
                     }

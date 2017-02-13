@@ -3,11 +3,9 @@ using Wyam.Common.Modules;
 
 namespace Wyam.Common.Execution
 {
-    public interface IPipeline : IList<IModule>
+    public interface IPipeline : IModuleCollection
     {
         string Name { get; }
         bool ProcessDocumentsOnce { get; }
-        void Add(params IModule[] items);
-        void Insert(int index, params IModule[] items);
     }
 }

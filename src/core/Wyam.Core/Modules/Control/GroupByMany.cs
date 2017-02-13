@@ -33,10 +33,9 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="GroupDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current group.</metadata>
     /// <metadata name="GroupKey" type="object">The key for the current group.</metadata>
     /// <category>Control</category>
-    public class GroupByMany : IModule
+    public class GroupByMany : CollectionModule
     {
         private readonly DocumentConfig _key;
-        private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
         private IEqualityComparer<object> _comparer;
 
@@ -49,6 +48,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="key">A delegate that returns the group keys.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
         public GroupByMany(DocumentConfig key, params IModule[] modules)
+            : base(modules)
         {
             if (key == null)
             {
@@ -56,7 +56,6 @@ namespace Wyam.Core.Modules.Control
             }
 
             _key = key;
-            _modules = modules;
         }
 
         /// <summary>
@@ -69,6 +68,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="keyMetadataKey">The key metadata key.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
         public GroupByMany(string keyMetadataKey, params IModule[] modules)
+            : base(modules)
         {
             if (keyMetadataKey == null)
             {
@@ -76,7 +76,6 @@ namespace Wyam.Core.Modules.Control
             }
 
             _key = (doc, ctx) => doc.Get(keyMetadataKey);
-            _modules = modules;
             _predicate = (doc, ctx) => doc.ContainsKey(keyMetadataKey);
         }
 
@@ -118,9 +117,9 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(_modules, inputs)
+            ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(this, inputs)
                 .Where(context, x => _predicate?.Invoke(x, context) ?? true)    
                 .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context), _comparer)
                 .ToImmutableArray();
@@ -133,8 +132,8 @@ namespace Wyam.Core.Modules.Control
                 return groupings.Select(x => context.GetDocument(input,
                     new MetadataItems
                     {
-                        {Keys.GroupDocuments, x.ToImmutableArray()},
-                        {Keys.GroupKey, x.Key}
+                        {Common.Meta.Keys.GroupDocuments, x.ToImmutableArray()},
+                        {Common.Meta.Keys.GroupKey, x.Key}
                     })
                 );
             });

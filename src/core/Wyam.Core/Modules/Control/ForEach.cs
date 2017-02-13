@@ -42,22 +42,20 @@ namespace Wyam.Core.Modules.Control
     /// </code>
     /// </example>
     /// <category>Control</category>
-    public class ForEach : IModule
+    public class ForEach : CollectionModule
     {
-        private readonly IModule[] _modules;
-
         /// <summary>
         /// Specifies the modules to execute against the input document one at a time.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public ForEach(params IModule[] modules)
+            : base(modules)
         {
-            _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context) 
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context) 
         {
-            return inputs.SelectMany(context, x => context.Execute(_modules, new[] { x }));
+            return inputs.SelectMany(context, x => context.Execute(this, new[] { x }));
         }
     }
 }

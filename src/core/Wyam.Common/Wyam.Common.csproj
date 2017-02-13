@@ -51,6 +51,12 @@
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="Execution\IEngine.cs" />
     <Compile Include="Configuration\IRecipe.cs" />
+    <Compile Include="Modules\CollectionModule.cs" />
+    <Compile Include="Modules\IModuleCollection.cs" />
+    <Compile Include="Modules\IReadOnlyModuleCollection.cs" />
+    <Compile Include="Modules\ModuleCollection.cs" />
+    <Compile Include="Modules\ModuleExtensions.cs" />
+    <Compile Include="Modules\NamedModule.cs" />
     <Compile Include="Util\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />

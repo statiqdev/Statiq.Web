@@ -51,10 +51,9 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="HasNextPage" type="bool">Whether there is another page after this one.</metadata>
     /// <metadata name="HasPreviousPage" type="bool">Whether there is another page before this one.</metadata>
     /// <category>Control</category>
-    public class Paginate : IModule
+    public class Paginate : CollectionModule
     {
         private readonly int _pageSize;
-        private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
         /// <summary>
@@ -65,6 +64,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="modules">The modules to execute to get the documents to page.</param>
         /// <exception cref="System.ArgumentException"></exception>
         public Paginate(int pageSize, params IModule[] modules)
+            : base(modules)
         {
             if (pageSize <= 0)
             {
@@ -72,7 +72,6 @@ namespace Wyam.Core.Modules.Control
             }
 
             _pageSize = pageSize;
-            _modules = modules;
         }
 
         /// <summary>
@@ -88,11 +87,11 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<ImmutableArray<IDocument>> partitions 
                 = Partition(
-                    context.Execute(_modules, inputs)
+                    context.Execute(this, inputs)
                         .Where(context, x => _predicate?.Invoke(x, context) ?? true)
                         .ToList(),
                     _pageSize)
@@ -106,11 +105,11 @@ namespace Wyam.Core.Modules.Control
                 return partitions.Select((x, i) => context.GetDocument(input,
                     new Dictionary<string, object>
                     {
-                        {Keys.PageDocuments, partitions[i]},
-                        {Keys.CurrentPage, i + 1},
-                        {Keys.TotalPages, partitions.Length},
-                        {Keys.HasNextPage, partitions.Length > i + 1},
-                        {Keys.HasPreviousPage, i != 0}
+                        {Common.Meta.Keys.PageDocuments, partitions[i]},
+                        {Common.Meta.Keys.CurrentPage, i + 1},
+                        {Common.Meta.Keys.TotalPages, partitions.Length},
+                        {Common.Meta.Keys.HasNextPage, partitions.Length > i + 1},
+                        {Common.Meta.Keys.HasPreviousPage, i != 0}
                     })
                 );
             });

@@ -36,14 +36,19 @@ namespace Wyam.Blog
 
             // Get the pages first so they're available in the navbar, but don't render until last
             engine.Pipelines.Add(BlogPipelines.Pages,
-                new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},**}}/*.md"),
-                new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(BlogKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions))),
+                new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},**}}/*.md")
+                    .WithName(BlogPipelines.PagesModules.ReadMarkdownFiles),
+                new FrontMatter(new Yaml.Yaml())
+                    .WithName(BlogPipelines.PagesModules.ProcessMarkdownFilesFrontMatter),
+                new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(BlogKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(BlogKeys.MarkdownExtensions)))
+                    .WithName(BlogPipelines.PagesModules.RenderMarkdown),
                 new Concat(
                     // Add any additional Razor pages
-                    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
+                    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml")
+                        .WithName(BlogPipelines.PagesModules.ReadRazorFiles),
                     new FrontMatter(new Yaml.Yaml())
-                ),
+                        .WithName(BlogPipelines.PagesModules.ProcessRazorFilesFrontMatter))
+                    .WithName(BlogPipelines.PagesModules.ConcatRazorFiles),
                 new Concat(
                     // Add the posts index page
                     new ReadFiles("posts/index.cshtml"),

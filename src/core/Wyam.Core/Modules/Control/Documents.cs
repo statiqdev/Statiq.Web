@@ -136,7 +136,7 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IEnumerable<IDocument> documents;
             if (_documentDocuments != null)

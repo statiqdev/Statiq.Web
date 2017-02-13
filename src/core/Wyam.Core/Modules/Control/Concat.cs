@@ -15,22 +15,20 @@ namespace Wyam.Core.Modules.Control
     /// results from the specified module sequence.
     /// </remarks>
     /// <category>Control</category>
-    public class Concat : IModule
+    public class Concat : CollectionModule
     {
-        private readonly IModule[] _modules;
-
         /// <summary>
         /// Executes the specified modules with an empty initial input document.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public Concat(params IModule[] modules)
+            : base(modules)
         {
-            _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Concat(context.Execute(_modules));
+            return inputs.Concat(context.Execute(this));
         }
     }
 }

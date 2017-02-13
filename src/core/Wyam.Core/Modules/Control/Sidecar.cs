@@ -23,10 +23,9 @@ namespace Wyam.Core.Modules.Control
     /// The output document content is set to the original input document content.
     /// </remarks>
     /// <category>Control</category>
-    public class Sidecar : IModule
+    public class Sidecar : CollectionModule
     {
         private readonly DocumentConfig _sidecarPath;
-        private readonly IModule[] _modules;
 
         /// <summary>
         /// Searches for sidecar files at the same path as the input document SourceFilePath with the additional extension .meta.
@@ -45,14 +44,14 @@ namespace Wyam.Core.Modules.Control
         /// <param name="extension">The extension to search.</param>
         /// <param name="modules">The modules to execute against the sidecar file.</param>
         public Sidecar(string extension, params IModule[] modules)
+            : base(modules)
         {
             if (string.IsNullOrEmpty(extension))
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(extension));
             }
             
-            _sidecarPath = (d, c) => d.FilePath(Keys.SourceFilePath)?.AppendExtension(extension);
-            _modules = modules;
+            _sidecarPath = (d, c) => d.FilePath(Common.Meta.Keys.SourceFilePath)?.AppendExtension(extension);
         }
 
         /// <summary>
@@ -62,6 +61,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="sidecarPath">A delegate that returns a <see cref="FilePath"/> with the desired sidecar path.</param>
         /// <param name="modules">The modules to execute against the sidecar file.</param>
         public Sidecar(DocumentConfig sidecarPath, params IModule[] modules)
+            : base(modules)
         {
             if (sidecarPath == null)
             {
@@ -69,10 +69,9 @@ namespace Wyam.Core.Modules.Control
             }
 
             _sidecarPath = sidecarPath;
-            _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<IDocument> results = new List<IDocument>();
             context.ForEach(inputs, input =>
@@ -84,7 +83,7 @@ namespace Wyam.Core.Modules.Control
                     if (sidecarFile.Exists)
                     {
                         string sidecarContent = sidecarFile.ReadAllText();
-                        foreach (IDocument result in context.Execute(_modules, new[] { context.GetDocument(input, sidecarContent) }))
+                        foreach (IDocument result in context.Execute(this, new[] { context.GetDocument(input, sidecarContent) }))
                         {
                             results.Add(context.GetDocument(input, result));
                         }

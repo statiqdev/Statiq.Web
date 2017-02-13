@@ -7,7 +7,9 @@ using Wyam.Common.Util;
 
 namespace Wyam.Common.Modules
 {
-    // This class can be used as a base class for modules that operate on arbitrary content (as represented by an object)
+    /// <summary>
+    /// This class can be used as a base class for modules that operate on arbitrary content (as represented by an object).
+    /// </summary>
     public abstract class ContentModule : IModule
     {
         private readonly ConfigHelper<object> _content;

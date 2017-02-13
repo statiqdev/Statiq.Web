@@ -19,9 +19,8 @@ namespace Wyam.Core.Modules.Control
     /// each input document will be merged with each result document.
     /// </remarks>
     /// <category>Control</category>
-    public class Merge : IModule
+    public class Merge : CollectionModule
     {
-        private readonly IModule[] _modules;
         private bool _forEachDocument;
 
         /// <summary>
@@ -31,8 +30,8 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public Merge(params IModule[] modules)
+            : base(modules)
         {
-            _modules = modules;
         }
 
         /// <summary>
@@ -46,21 +45,21 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            if (_modules != null && _modules.Length > 0)
+            if (((IModuleCollection)this).Count > 0)
             {
                 // Execute the modules for each input document
                 if (_forEachDocument)
                 {
                     return inputs.SelectMany(context, input =>
-                        context.Execute(_modules, new[] {input})
+                        context.Execute(this, new[] {input})
                             .Select(result => context.GetDocument(input, result.Content, result.Metadata))
                     );
                 }
 
                 // Execute the modules once and apply to each input document
-                List<IDocument> results = context.Execute(_modules).ToList();
+                List<IDocument> results = context.Execute(this).ToList();
                 return inputs.SelectMany(context, input =>
                     results.Select(result => context.GetDocument(input, result.Content, result.Metadata)));
             }

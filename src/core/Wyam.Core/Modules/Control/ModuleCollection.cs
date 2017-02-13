@@ -37,22 +37,20 @@ namespace Wyam.Core.Modules.Control
     /// </code>
     /// </example>
     /// <category>Control</category>
-    public class ModuleCollection : IModule
+    public class ModuleCollection : CollectionModule
     {
-        private readonly IModule[] _modules;
-
         /// <summary>
         /// Creates a module collection with the specified child modules.
         /// </summary>
         /// <param name="modules">The child modules.</param>
         public ModuleCollection(params IModule[] modules)
+            : base(modules)
         {
-            _modules = modules;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return context.Execute(_modules, inputs);
+            return context.Execute(this, inputs);
         }
     }
 }

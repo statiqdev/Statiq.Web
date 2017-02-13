@@ -44,9 +44,8 @@ namespace Wyam.Core.Modules.Control
     /// or changed metadata, it would be forgotten once the Branch was done.
     /// </example>
     /// <category>Control</category>
-    public class Branch : IModule
+    public class Branch : CollectionModule
     {
-        private readonly IModule[] _modules;
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
         /// <summary>
@@ -55,8 +54,8 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public Branch(params IModule[] modules)
+            : base(modules)
         {
-            _modules = modules;
         }
         
         /// <summary>
@@ -74,12 +73,12 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
-        public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IEnumerable<IDocument> documents = _predicate == null 
                 ? inputs 
                 : inputs.Where(context, x => _predicate(x, context));
-            context.Execute(_modules, documents);
+            context.Execute(this, documents);
             return inputs;
         }
     }

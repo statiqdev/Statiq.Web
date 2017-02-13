@@ -22,7 +22,7 @@ namespace Wyam.Core.Execution
     internal class Pipeline : IPipeline, IDisposable
     {
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
-        private readonly List<IModule> _modules = new List<IModule>();
+        private readonly IModuleCollection _modules = new ModuleCollection();
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
         private readonly Dictionary<FilePath, List<IDocument>> _processedSources; 
@@ -52,76 +52,6 @@ namespace Wyam.Core.Execution
             {
                 _modules.AddRange(modules);
             }
-        }
-
-        public void Add(IModule item)
-        {
-            _modules.Add(item);
-        }
-
-        public void Add(params IModule[] items)
-        {
-            _modules.AddRange(items);
-        }
-
-        public void Clear()
-        {
-            _modules.Clear();
-        }
-
-        public bool Contains(IModule item)
-        {
-            return _modules.Contains(item);
-        }
-
-        public void CopyTo(IModule[] array, int arrayIndex)
-        {
-            _modules.CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(IModule item)
-        {
-            return _modules.Remove(item);
-        }
-
-        public int Count => _modules.Count;
-
-        public bool IsReadOnly => false;
-
-        public IEnumerator<IModule> GetEnumerator()
-        {
-            return _modules.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public int IndexOf(IModule item)
-        {
-            return _modules.IndexOf(item);
-        }
-
-        public void Insert(int index, IModule item)
-        {
-            _modules.Insert(index, item);
-        }
-
-        public void Insert(int index, params IModule[] items)
-        {
-            _modules.InsertRange(index, items);
-        }
-
-        public void RemoveAt(int index)
-        {
-            _modules.RemoveAt(index);
-        }
-
-        public IModule this[int index]
-        {
-            get { return _modules[index]; }
-            set { _modules[index] = value; }
         }
 
         // This is the main execute method called by the engine
@@ -313,5 +243,58 @@ namespace Wyam.Core.Execution
                 Parallel.ForEach(_previouslyProcessedCache.GetValues().SelectMany(x => x), x => x.Dispose());
             }
         }
+        
+        IEnumerator<KeyValuePair<string, IModule>> IEnumerable<KeyValuePair<string, IModule>>.GetEnumerator() => 
+            ((IEnumerable<KeyValuePair<string, IModule>>)_modules).GetEnumerator();
+        
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _modules).GetEnumerator();
+
+        public IEnumerator<IModule> GetEnumerator() => _modules.GetEnumerator();
+
+        public void Add(IModule item) => _modules.Add(item);
+
+        public void Clear() => _modules.Clear();
+
+        public bool Contains(IModule item) => _modules.Contains(item);
+
+        public void CopyTo(IModule[] array, int arrayIndex) => _modules.CopyTo(array, arrayIndex);
+
+        public bool Remove(IModule item) => _modules.Remove(item);
+
+        public int Count => _modules.Count;
+
+        public void Add(params IModule[] modules) => _modules.Add(modules);
+
+        public void Insert(int index, params IModule[] modules) => _modules.Insert(index, modules);
+
+        public int IndexOf(string name) => _modules.IndexOf(name);
+        
+        public bool IsReadOnly => _modules.IsReadOnly;
+
+        public int IndexOf(IModule item) => _modules.IndexOf(item);
+
+        public void Insert(int index, IModule item) => _modules.Insert(index, item);
+
+        public void RemoveAt(int index) => _modules.RemoveAt(index);
+
+        public IModule this[int index]
+        {
+            get { return _modules[index]; }
+            set { _modules[index] = value; }
+        }
+
+        public bool ContainsKey(string key) => _modules.ContainsKey(key);
+
+        public bool TryGetValue(string key, out IModule value) => _modules.TryGetValue(key, out value);
+
+        public IModule this[string key] => _modules[key];
+
+        public IEnumerable<string> Keys => _modules.Keys;
+
+        public IEnumerable<IModule> Values => _modules.Values;
+
+        public void Add(string name, IModule module) => _modules.Add(name, module);
+
+        public void Insert(int index, string name, IModule module) => _modules.Insert(index, name, module);
     }
 }
