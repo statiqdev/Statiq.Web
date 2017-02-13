@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Documents;
-using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 
-namespace Wyam.Common.Util
+namespace Wyam.Common.Execution
 {
     public static class TraceExceptionsExtensions
     {
