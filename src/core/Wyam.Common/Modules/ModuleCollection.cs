@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -101,7 +102,7 @@ namespace Wyam.Common.Modules
                 {
                     return module;
                 }
-                throw new KeyNotFoundException();
+                throw new KeyNotFoundException($"The key \"{key}\" was not present in the dictionary.");
             }
         }
 
@@ -119,7 +120,7 @@ namespace Wyam.Common.Modules
 
         public void Insert(int index, params IModule[] modules)
         {
-            for (int i = index;; i++)
+            for (int i = index; i < index + modules.Length; i++)
             {
                 Insert(i, modules[i - index]);
             }
@@ -136,7 +137,7 @@ namespace Wyam.Common.Modules
             NamedModule namedModule = module as NamedModule;
             if (namedModule != null)
             {
-                if (checkNames && _modules.Any(x => x.Key.Equals(namedModule.Name)))
+                if (checkNames && _modules.Any(x => x.Key != null && x.Key.Equals(namedModule.Name)))
                 {
                     throw new ArgumentException($"A module with the name {namedModule.Name} already exists in the collection");
                 }
