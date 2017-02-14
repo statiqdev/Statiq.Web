@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 
 using Owin;
@@ -78,14 +76,6 @@ namespace Wyam
                 FileSystem = outputFolder,
                 ServeUnknownFileTypes = true
             });
-        }
-
-        private class NullTraceOutputFactory : ITraceOutputFactory
-        {
-            public TextWriter Create(string outputFile)
-            {
-                return StreamWriter.Null;
-            }
         }
     }
 }

@@ -8,8 +8,6 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Hosting;
-using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 using Owin;
 using Wyam.Commands;
@@ -45,7 +43,7 @@ namespace Wyam
         private int Run(string[] args)
         {
             // Add a default trace listener
-            Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
+            Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = TraceOptions.None });
             
             // Output version info
             Trace.Information($"Wyam version {Engine.Version}");
