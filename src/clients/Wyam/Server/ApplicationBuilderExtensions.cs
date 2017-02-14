@@ -7,7 +7,7 @@ using Microsoft.Owin.Builder;
 
 using Owin;
 
-namespace Wyam.Owin
+namespace Wyam.Server
 {
     internal static class ApplicationBuilderExtensions
     {

@@ -4,7 +4,6 @@ using System.IO;
 
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Hosting;
 using Microsoft.Owin.Hosting.Tracing;
 using Microsoft.Owin.StaticFiles;
 
@@ -13,6 +12,7 @@ using Owin;
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Owin;
+using Wyam.Server;
 
 namespace Wyam
 {
@@ -20,16 +20,11 @@ namespace Wyam
     {
         public static IDisposable Start(DirectoryPath path, int port, bool forceExtension, DirectoryPath virtualDirectory)
         {
-            IDisposable server;
+            HttpServer server;
             try
             {
-                StartOptions options = new StartOptions("http://localhost:" + port);
-
-                // Disable built-in owin tracing by using a null trace output
-                // http://stackoverflow.com/questions/17948363/tracelistener-in-owin-self-hosting
-                options.Settings.Add(typeof(ITraceOutputFactory).FullName, typeof(NullTraceOutputFactory).AssemblyQualifiedName);
-
-                server = WebApp.Start(options, app => ConfigureOwin(app, path.Name, forceExtension, virtualDirectory));
+                server = new HttpServer();
+                server.StartServer(port, app => ConfigureOwin(app, path, forceExtension, virtualDirectory));
             }
             catch (Exception ex)
             {

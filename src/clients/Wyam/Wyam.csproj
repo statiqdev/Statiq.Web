@@ -268,7 +268,7 @@
     <Compile Include="Commands\ConfigOptions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
-    <Compile Include="Owin\IApplicationBuilderExtensions.cs" />
+    <Compile Include="Server\ApplicationBuilderExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryExtensions.cs" />
     <Compile Include="Owin\VirtualDirectoryMiddleware.cs" />
     <Compile Include="PreviewServer.cs" />
@@ -296,7 +296,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-	<!-- HACK, required until VS2017 and the new project structure. -->
+    <!-- HACK, required until VS2017 and the new project structure. -->
     <Content Include="..\..\..\packages\Libuv.1.9.1\runtimes\win7-x86\native\libuv.dll">
       <Link>libuv.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

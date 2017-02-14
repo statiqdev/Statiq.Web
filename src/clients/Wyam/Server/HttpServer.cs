@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 
 using Owin;
 
-using Wyam.Owin;
-
 namespace Wyam.Server
 {
     internal class HttpServer : IDisposable
