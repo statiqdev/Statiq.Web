@@ -123,6 +123,11 @@ namespace Wyam.Highlight
                                 else
                                 {
                                     engine.Execute("result = hljs.highlightAuto(input)");
+                                    string detectedLanguage = engine.Evaluate<string>("result.language");
+                                    if (string.IsNullOrWhiteSpace(detectedLanguage) == false)
+                                    {
+                                        element.ClassList.Add("language-" + detectedLanguage);
+                                    }
                                 }
                             }
                             catch (JsRuntimeException jsRuntimeException)

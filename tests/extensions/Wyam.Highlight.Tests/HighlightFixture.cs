@@ -100,6 +100,39 @@ namespace Wyam.Highlight.Tests
             Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
         }
 
+        [Test]
+        public void CanHighlightAutoCodeBlocks()
+        {
+            string input = @"
+<html>
+<head>
+    <title>Foobar</title>
+</head>
+<body>
+    <h1>Title</h1>
+    <p>This is some Foobar text</p>
+    <pre><code>
+        if (foo == bar)
+        {
+            DoTheFooBar();
+        }
+    </code></pre>
+</body>
+</html>";
+
+
+            IDocument document = new TestDocument(input);
+            IExecutionContext context = new TestExecutionContext();
+
+            Highlight highlight = new Highlight();
+
+            // When
+            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
+
+            // Then
+            Assert.IsTrue(results[0].Content.Contains("hljs"));
+        }
+
 
         [Test]
         public void HighlightFailsForMissingLanguage()
