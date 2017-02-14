@@ -53,6 +53,7 @@
     <Compile Include="Configuration\IRecipe.cs" />
     <Compile Include="Modules\CollectionModule.cs" />
     <Compile Include="Modules\IModuleCollection.cs" />
+    <Compile Include="Modules\IModuleCollectionExtensions.cs" />
     <Compile Include="Modules\IReadOnlyModuleCollection.cs" />
     <Compile Include="Modules\ModuleCollection.cs" />
     <Compile Include="Modules\ModuleExtensions.cs" />
