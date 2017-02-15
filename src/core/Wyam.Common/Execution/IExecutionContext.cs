@@ -6,6 +6,7 @@ using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
+using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -298,6 +299,31 @@ namespace Wyam.Common.Execution
         /// <returns>The cloned or new document.</returns>
         IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items);
 
+        /// <summary>
+        /// Gets an engine from the pool. This engine should be returned to the pool via
+        /// <see cref="ReturnJsEngineToPool"/> when you are finished with it.
+        /// If an engine is free, this method returns immediately with the engine.
+        /// If no engines are available creates a new engine. If MaxEngines has been reached, blocks until an engine is
+        /// avaiable again.
+        /// </summary>
+        /// <param name="timeout">
+        /// Maximum time to wait for a free engine. 
+        /// </param>
+        /// <returns>A JavaScript engine</returns>
+        IJsEngine GetJsEngineFromPool(TimeSpan? timeout = null);
+
+
+        /// <summary>
+        /// Returns an engine to the pool so it can be reused
+        /// </summary>
+        /// <param name="engine">Engine to return</param>
+        void ReturnJsEngineToPool(IJsEngine engine);
+
+        /// <summary>
+        /// Disposes all engines in this pool, and creates new engines in their place.
+        /// </summary>
+        void RecycleJsEngines();
+        
         // This provides access to the same enhanced type conversion used to convert metadata types
         bool TryConvert<T>(object value, out T result);
 

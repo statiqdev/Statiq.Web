@@ -104,6 +104,9 @@ namespace Wyam
         {
             try
             {
+                // make sure we clear out anything in the JavaScriptEngineSwitcher instance               
+                Engine.ResetJsEngines();
+
                 // Make sure the root path exists
                 if (!Engine.FileSystem.GetRootDirectory().Exists)
                 {

@@ -55,12 +55,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj">
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\Wyam.Testing.JavaScript\Wyam.Testing.JavaScript.csproj">
+      <Project>{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}</Project>
+      <Name>Wyam.Testing.JavaScript</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj">
       <Project>{7726D040-4192-49C7-B9EA-E192397127C3}</Project>

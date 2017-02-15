@@ -7,6 +7,7 @@ using Wyam.Common.Execution;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
+using Wyam.Testing.JavaScript;
 
 namespace Wyam.Highlight.Tests
 {
@@ -52,7 +53,10 @@ namespace Wyam.Highlight.Tests
 
 
             IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext();
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
 
             Highlight highlight = new Highlight();
 
@@ -89,7 +93,10 @@ namespace Wyam.Highlight.Tests
 
 
             IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext();
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
 
             Highlight highlight = new Highlight();
 
@@ -122,8 +129,11 @@ namespace Wyam.Highlight.Tests
 
 
             IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext();
-
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
+            
             Highlight highlight = new Highlight();
 
             // When
@@ -160,13 +170,17 @@ namespace Wyam.Highlight.Tests
 
 
             IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext();
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
 
             Highlight highlight = new Highlight();
 
             Assert.Throws<AggregateException>(() =>
             {
                 List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                Assert.IsNull(results, "Should never get here due to exception");
             });
         }
 
@@ -196,12 +210,16 @@ namespace Wyam.Highlight.Tests
 
 
             IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext();
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
 
             Highlight highlight = new Highlight()
                 .WithMissingLanguageWarning(false);
 
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();            
+            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
+            CollectionAssert.IsNotEmpty(results);
         }
     }
 }

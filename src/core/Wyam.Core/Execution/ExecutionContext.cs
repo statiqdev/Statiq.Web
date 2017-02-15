@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.Jint;
+using JSPool;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -15,7 +18,9 @@ using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using Wyam.Core.JavaScript;
 using Wyam.Core.Meta;
+using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
 
 namespace Wyam.Core.Execution
 {
@@ -24,7 +29,9 @@ namespace Wyam.Core.Execution
         private readonly Pipeline _pipeline;
 
         private bool _disposed;
-        
+
+        private static Lazy<JsPool<IJsEngine>> JsPool = new Lazy<JsPool<IJsEngine>>(JsPoolFactory);
+
         public Engine Engine { get; }
 
         public IReadOnlyCollection<byte[]> DynamicAssemblies => Engine.DynamicAssemblies;
@@ -281,5 +288,54 @@ namespace Wyam.Core.Execution
         public IReadOnlyList<IDocument> DocumentList(string key) => Settings.DocumentList(key);
 
         public dynamic Dynamic(string key, object defaultValue = null) => Settings.Dynamic(key, defaultValue);
+
+        public IJsEngine GetJsEngineFromPool(TimeSpan? timeout = null)
+        {
+            return JsPool.Value.GetEngine(timeout);
+        }
+
+        public void ReturnJsEngineToPool(IJsEngine engine)
+        {
+            JsPool.Value.ReturnEngineToPool(engine);
+        }
+
+        public void RecycleJsEngines()
+        {
+            JsPool.Value.Recycle();
+        }
+
+        /// <summary>
+        /// Destroys the existing pool and rebuilds it. Useful for configuration
+        /// changes which might adjust the configuration of the javascript engine
+        /// using the JavaScriptEngineSwitcher's Instance singleton
+        /// </summary>
+        public static void ResetJsPool()
+        {
+            JsPool.Value.Dispose();
+            JsPool = new Lazy<JsPool<IJsEngine>>(JsPoolFactory);
+        }
+
+        private static JsPool<IJsEngine> JsPoolFactory()
+        {
+            // builds the default js pool. 
+            // first we need to check if the JsEngineSwitcher has been configured. We'll do this 
+            // by checking the DefaultEngineName being set. If that's there we can safely assume
+            // its been configured somehow (maybe via config.wyam). If not we'll wire up
+            // Jint as the default engine
+            if (string.IsNullOrWhiteSpace(JsEngineSwitcher.Instance.DefaultEngineName))
+            {
+                JsEngineSwitcher.Instance.EngineFactories.Add(new JintJsEngineFactory());
+                JsEngineSwitcher.Instance.DefaultEngineName = JintJsEngine.EngineName;
+            }
+
+            Trace.Information($"Using {JsEngineSwitcher.Instance.DefaultEngineName} for JavaScript engine");
+
+            var pool = new JsPool<IJsEngine>(new JsPoolConfig<IJsEngine>()
+            {
+                EngineFactory = () => new JsEngine(JsEngineSwitcher.Instance.CreateDefaultEngine()),
+            });
+
+            return pool;
+        }
     }
 }
