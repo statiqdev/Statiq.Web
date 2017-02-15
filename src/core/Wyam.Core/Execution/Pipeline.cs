@@ -244,10 +244,7 @@ namespace Wyam.Core.Execution
             }
         }
         
-        IEnumerator<KeyValuePair<string, IModule>> IEnumerable<KeyValuePair<string, IModule>>.GetEnumerator() => 
-            ((IEnumerable<KeyValuePair<string, IModule>>)_modules).GetEnumerator();
-        
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _modules).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IEnumerator<IModule> GetEnumerator() => _modules.GetEnumerator();
 
@@ -260,6 +257,8 @@ namespace Wyam.Core.Execution
         public void CopyTo(IModule[] array, int arrayIndex) => _modules.CopyTo(array, arrayIndex);
 
         public bool Remove(IModule item) => _modules.Remove(item);
+
+        public bool Remove(string name) => _modules.Remove(name);
 
         public int Count => _modules.Count;
 
@@ -283,18 +282,16 @@ namespace Wyam.Core.Execution
             set { _modules[index] = value; }
         }
 
-        public bool ContainsKey(string key) => _modules.ContainsKey(key);
+        public bool Contains(string name) => _modules.Contains(name);
 
-        public bool TryGetValue(string key, out IModule value) => _modules.TryGetValue(key, out value);
+        public bool TryGetValue(string name, out IModule value) => _modules.TryGetValue(name, out value);
 
-        public IModule this[string key] => _modules[key];
-
-        public IEnumerable<string> Keys => _modules.Keys;
-
-        public IEnumerable<IModule> Values => _modules.Values;
+        public IModule this[string name] => _modules[name];
 
         public void Add(string name, IModule module) => _modules.Add(name, module);
 
         public void Insert(int index, string name, IModule module) => _modules.Insert(index, name, module);
+
+        public IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs() => _modules.AsKeyValuePairs();
     }
 }

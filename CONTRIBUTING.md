@@ -57,6 +57,19 @@ Generally, you should only ever have to take a dependency on `Wyam.Common`. If y
 
 Make sure to run all unit tests before creating a pull request. You code should also have reasonable unit test coverage.
 
+The tests in Wyam follow a very specific pattern, please attempt to follow the same pattern in the tests for your code:
+- Tests use [NUnit](https://github.com/nunit). [NSubstitute](http://nsubstitute.github.io/) is also used when mocks are needed, but it's preferred to use stub classes from `Wyam.Testing` instead of mocking.
+- All tests are placed into a fixture class with the name `ObjectNameFixture` where `ObjectName` is the name of the object under test.
+- The fixture class should be placed in the appropriate test project at the same relative path as the primary source file for the object being tested.
+- The fixture class should inherit from `BaseFixture` in the `Wyam.Testing` library.
+- Within the fixture class, tests for each method, property, or other symbol should be placed inside a nested class with the name `SymbolNameTests` where `SymbolName` is the name of the symbol (method, property, etc.) being tested. Tests for overloaded methods can all go in the same test class.
+- The nested symbol test class should inherit from the outer containing fixture class.
+- Test methods for the symbol should be placed in the nested symbol test class and should have explanatory names that follow standard naming conventions. The names of test methods don't have to follow any specific guideline as long as it's reasonably clear what the purpose of the test is.
+- Each test method should contain the comments `\\ Given`, `\\ When`, and `\\ Then` to separate the test code into three clear sections (though these can be combined for simple tests so you might have a comment like `\\ When, Then`).
+- Use the [NUnit constraint-based model](https://github.com/nunit/docs/wiki/Assertions) for assertions in new test code.
+
+If there are any questions about how to format test code just take a look at the existing test code.
+
 ## Updating Documentation
 
 Making updates to the Wyam documentation is just as helpful as writing code (if not more helpful). The Wyam documentation exists in the [Wyam.Web repository](https://github.com/Wyamio/Wyam.Web). Fork and clone the repository as you would the main code repository, but make any changes in the `master` branch. Submit your changes as a pull request. Once it's accepted, the site will automatically rebuild and redeploy. 

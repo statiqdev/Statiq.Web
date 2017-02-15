@@ -3,7 +3,7 @@ using Wyam.Common.Modules;
 
 namespace Wyam.Common.Execution
 {
-    public interface IReadOnlyPipeline : IReadOnlyModuleCollection
+    public interface IReadOnlyPipeline : IReadOnlyModuleList
     {
         string Name { get; }
         bool ProcessDocumentsOnce { get; }

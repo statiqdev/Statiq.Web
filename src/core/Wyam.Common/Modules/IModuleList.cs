@@ -11,14 +11,17 @@ namespace Wyam.Common.Modules
     /// A collection of optionally named modules. Implementations should "unwrap" <see cref="NamedModule"/>
     /// objects to obtain the module name.
     /// </summary>
-    public interface IModuleList : IList<IModule>, IReadOnlyDictionary<string, IModule>
+    public interface IModuleList : IList<IModule>
     {
         void Add(string name, IModule module);
-        void Insert(int index, string name, IModule module);
         void Add(params IModule[] modules);
+        void Insert(int index, string name, IModule module);
         void Insert(int index, params IModule[] modules);
+        bool Remove(string name);
         int IndexOf(string name);
-        new int Count { get; }
-        new IEnumerator<IModule> GetEnumerator();
+        bool Contains(string name);
+        bool TryGetValue(string name, out IModule value);
+        IModule this[string name] { get; }
+        IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs();
     }
 }

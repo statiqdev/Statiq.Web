@@ -54,7 +54,7 @@
     <Compile Include="Modules\ContainerModule.cs" />
     <Compile Include="Modules\IModuleList.cs" />
     <Compile Include="Modules\ModuleListExtensions.cs" />
-    <Compile Include="Modules\IReadOnlyModuleCollection.cs" />
+    <Compile Include="Modules\IReadOnlyModuleList.cs" />
     <Compile Include="Modules\ModuleList.cs" />
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\NamedModule.cs" />

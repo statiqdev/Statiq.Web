@@ -18,30 +18,25 @@ namespace Wyam.Core.Execution
         public string Name => _pipeline.Name;
 
         public bool ProcessDocumentsOnce => _pipeline.ProcessDocumentsOnce;
-
-        IEnumerator<KeyValuePair<string, IModule>> IEnumerable<KeyValuePair<string, IModule>>.GetEnumerator() => 
-            ((IEnumerable<KeyValuePair<string, IModule>>)_pipeline).GetEnumerator();
-
+        
         IEnumerator<IModule> IEnumerable<IModule>.GetEnumerator() => _pipeline.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _pipeline).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IEnumerator<IModule> GetEnumerator() => _pipeline.GetEnumerator();
 
         public int Count => _pipeline.Count;
 
-        public bool ContainsKey(string key) => _pipeline.ContainsKey(key);
+        public bool Contains(string name) => _pipeline.Contains(name);
 
-        public bool TryGetValue(string key, out IModule value) => _pipeline.TryGetValue(key, out value);
+        public bool TryGetValue(string name, out IModule value) => _pipeline.TryGetValue(name, out value);
 
-        public IModule this[string key] => _pipeline[key];
+        public IModule this[string name] => _pipeline[name];
 
         public IModule this[int index] => _pipeline[index];
 
-        public IEnumerable<string> Keys => _pipeline.Keys;
-
-        public IEnumerable<IModule> Values => _pipeline.Values;
-
         public int IndexOf(string name) => _pipeline.IndexOf(name);
+
+        public IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs() => _pipeline.AsKeyValuePairs();
     }
 }
