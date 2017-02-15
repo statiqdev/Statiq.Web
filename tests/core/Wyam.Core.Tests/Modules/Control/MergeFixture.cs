@@ -8,6 +8,7 @@ using Wyam.Core.Execution;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
 using Wyam.Testing.Modules;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
 {

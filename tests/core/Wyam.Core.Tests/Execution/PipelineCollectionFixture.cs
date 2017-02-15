@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Core.Execution;
 using Wyam.Testing;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core.Tests.Execution
 {

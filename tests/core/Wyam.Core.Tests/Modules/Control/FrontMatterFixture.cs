@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
@@ -22,7 +23,7 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -56,7 +57,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -91,7 +92,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -125,7 +126,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -159,7 +160,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -193,7 +194,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -228,7 +229,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -266,7 +267,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -300,7 +301,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -335,7 +336,7 @@ BB
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {
@@ -370,7 +371,7 @@ Content2", documents.First().Content);
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = 
                 {

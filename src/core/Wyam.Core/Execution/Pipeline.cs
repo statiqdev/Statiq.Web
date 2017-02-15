@@ -22,36 +22,51 @@ namespace Wyam.Core.Execution
     internal class Pipeline : IPipeline, IDisposable
     {
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
-        private readonly IModuleList _modules = new ModuleList();
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
-        private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
-        private readonly Dictionary<FilePath, List<IDocument>> _processedSources; 
+        private readonly IModuleList _modules;
+        private Cache<List<IDocument>>  _previouslyProcessedCache;
+        private Dictionary<FilePath, List<IDocument>> _processedSources; 
         private bool _disposed;
 
         public string Name { get; }
-        public bool ProcessDocumentsOnce => _previouslyProcessedCache != null;
 
-        public Pipeline(string name, IModule[] modules)
-            : this(name, false, modules)
+        public Pipeline(string name, params IModule[] modules)
+            : this(name, new ModuleList(modules))
         {
         }
 
-        public Pipeline(string name, bool processDocumentsOnce, IModule[] modules)
+        public Pipeline(string name, IModuleList modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException(nameof(name));
             }
             Name = name;
-            if (processDocumentsOnce)
+            _modules = modules ?? new ModuleList();
+        }
+
+        public bool ProcessDocumentsOnce
+        {
+            get { return _previouslyProcessedCache != null; }
+            set
             {
-                _previouslyProcessedCache = new Cache<List<IDocument>>();
-                _processedSources = new Dictionary<FilePath, List<IDocument>>();
+                if (!value)
+                {
+                    _previouslyProcessedCache = null;
+                    _processedSources = null;
+                }
+                else if (_previouslyProcessedCache == null)
+                {
+                    _previouslyProcessedCache = new Cache<List<IDocument>>();
+                    _processedSources = new Dictionary<FilePath, List<IDocument>>();
+                }
             }
-            if (modules != null)
-            {
-                _modules.AddRange(modules);
-            }
+        }
+
+        public IPipeline WithProcessDocumentsOnce(bool processDocumentsOnce = true)
+        {
+            ProcessDocumentsOnce = processDocumentsOnce;
+            return this;
         }
 
         // This is the main execute method called by the engine

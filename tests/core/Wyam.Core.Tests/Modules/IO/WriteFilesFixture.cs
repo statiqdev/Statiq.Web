@@ -8,6 +8,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Execution;
 using Wyam.Testing;
@@ -31,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine.FileSystem.RootPath = "/";
             Engine.FileSystem.InputPaths.Clear();
             Engine.FileSystem.InputPaths.Add("/TestFiles/Input");
-            Pipeline = new Pipeline("Pipeline", null);
+            Pipeline = new Pipeline("Pipeline", (IModuleList)null);
             Context = new ExecutionContext(Engine, Pipeline);
         }
 

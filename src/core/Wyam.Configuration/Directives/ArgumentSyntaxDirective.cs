@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
+using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 
 namespace Wyam.Configuration.Directives
@@ -63,7 +64,7 @@ namespace Wyam.Configuration.Directives
             }
 
             Process(configurator, settings);
-            return null;
+            return string.Empty;
         }
 
         public string GetHelpText()

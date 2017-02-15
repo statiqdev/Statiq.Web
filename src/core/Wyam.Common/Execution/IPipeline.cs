@@ -6,6 +6,7 @@ namespace Wyam.Common.Execution
     public interface IPipeline : IModuleList
     {
         string Name { get; }
-        bool ProcessDocumentsOnce { get; }
+        bool ProcessDocumentsOnce { get; set; }
+        IPipeline WithProcessDocumentsOnce(bool processDocumentsOnce = true);
     }
 }

@@ -8,6 +8,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;
@@ -25,7 +26,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context, 
                     "root/a/2.txt",
@@ -63,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "a/2.txt",
@@ -100,7 +101,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "a/2.txt",
@@ -127,7 +128,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/2.txt",
@@ -150,7 +151,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/2.txt",
@@ -173,7 +174,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/2.txt",
@@ -196,7 +197,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/2.txt",
@@ -221,7 +222,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/2.txt",
@@ -254,7 +255,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", null);
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = GetDocuments(context,
                     "root/a/b/2.txt",

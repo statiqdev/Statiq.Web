@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Wyam.Common.Execution;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;

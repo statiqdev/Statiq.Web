@@ -10,6 +10,7 @@ using Wyam.Core.Execution;
 using Wyam.Core.Modules.Control;
 using Wyam.Testing;
 using Wyam.Testing.Modules;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core.Tests.Execution
 {
@@ -39,7 +40,7 @@ namespace Wyam.Core.Tests.Execution
                     CloneSource = true,
                     AdditionalOutputs = 3
                 };
-                engine.Pipelines.Add("Count", true, a, b, c);
+                engine.Pipelines.Add("Count", a, b, c).WithProcessDocumentsOnce();
 
                 // When
                 engine.Execute();
@@ -76,7 +77,7 @@ namespace Wyam.Core.Tests.Execution
                 {
                     AdditionalOutputs = 3
                 };
-                engine.Pipelines.Add("Count", true, a, b, c);
+                engine.Pipelines.Add("Count", a, b, c).WithProcessDocumentsOnce();
 
                 // When
                 engine.Execute();
@@ -114,7 +115,7 @@ namespace Wyam.Core.Tests.Execution
                 {
                     AdditionalOutputs = 3
                 };
-                engine.Pipelines.Add("Count", true, a, b, c);
+                engine.Pipelines.Add("Count", a, b, c).WithProcessDocumentsOnce();
 
                 // When
                 engine.Execute();

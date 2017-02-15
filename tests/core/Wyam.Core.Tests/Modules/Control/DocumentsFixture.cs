@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
+using Wyam.Common.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
 {

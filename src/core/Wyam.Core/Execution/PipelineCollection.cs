@@ -10,87 +10,55 @@ namespace Wyam.Core.Execution
 {
     internal class PipelineCollection : IPipelineCollection
     {
-        private readonly List<Pipeline> _pipelines = new List<Pipeline>();
+        private readonly List<IPipeline> _pipelines = new List<IPipeline>();
+        private int _nameCounter = 0;
 
-        public IPipeline Add(params IModule[] modules) => Add(null, false, modules);
-
-        public IPipeline Add(string name, params IModule[] modules) => Add(name, false, modules);
-
-        public IPipeline Add(bool processDocumentsOnce, params IModule[] modules) => Add(null, processDocumentsOnce, modules);
-        
-        public IPipeline Add(string name, bool processDocumentsOnce, params IModule[] modules)
+        public IPipeline Add(string name, ModuleList modules)
         {
-            Pipeline pipeline = CreatePipeline(name, processDocumentsOnce, modules);
+            Pipeline pipeline = CreatePipeline(name, modules);
             _pipelines.Add(pipeline);
             return pipeline;
         }
 
-        public IPipeline InsertBefore(string target, params IModule[] modules) => InsertBefore(target, null, false, modules);
-
-        public IPipeline InsertBefore(string target, string name, params IModule[] modules) => InsertBefore(target, name, false, modules);
-
-        public IPipeline InsertBefore(string target, bool processDocumentsOnce, params IModule[] modules) => 
-            InsertBefore(target, null, processDocumentsOnce, modules);
-
-        public IPipeline InsertBefore(string target, string name, bool processDocumentsOnce, params IModule[] modules)
+        public IPipeline Insert(int index, string name, ModuleList modules)
         {
-            int index = IndexOf(target);
-            if (index < 0)
-            {
-                throw new KeyNotFoundException($"The pipeline {target} was not found.");
-            }
-
-            Pipeline pipeline = CreatePipeline(name, processDocumentsOnce, modules);
+            Pipeline pipeline = CreatePipeline(name, modules);
             _pipelines.Insert(index, pipeline);
             return pipeline;
         }
 
-        public IPipeline InsertAfter(string target, params IModule[] modules) => InsertAfter(target, null, false, modules);
-
-        public IPipeline InsertAfter(string target, string name, params IModule[] modules) => InsertAfter(target, name, false, modules);
-
-        public IPipeline InsertAfter(string target, bool processDocumentsOnce, params IModule[] modules) =>
-            InsertAfter(target, null, processDocumentsOnce, modules);
-
-        public IPipeline InsertAfter(string target, string name, bool processDocumentsOnce, params IModule[] modules)
+        private Pipeline CreatePipeline(string name, ModuleList modules)
         {
-            int index = IndexOf(target);
-            if (index < 0)
-            {
-                throw new KeyNotFoundException($"The pipeline {target} was not found.");
-            }
-
-            Pipeline pipeline = CreatePipeline(name, processDocumentsOnce, modules);
-            if (index + 1 < _pipelines.Count)
-            {
-                _pipelines.Insert(index + 1, pipeline);
-            }
-            else
-            {
-                _pipelines.Add(pipeline);
-            }
-            return pipeline;
-        }
-
-        private Pipeline CreatePipeline(string name, bool processDocumentsOnce, params IModule[] modules)
-        {
+            _nameCounter++;
             if (string.IsNullOrWhiteSpace(name))
             {
-                name = "Pipeline " + (_pipelines.Count + 1);
+                name = "Pipeline " + _nameCounter;
             }
             if (ContainsKey(name))
             {
                 throw new ArgumentException("Pipelines must have a unique name.");
             }
-            return new Pipeline(name, processDocumentsOnce, modules);
+            return new Pipeline(name, modules);
         }
 
+        public bool Remove(string name)
+        {
+            int index = IndexOf(name);
+            if (index >= 0)
+            {
+                RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
+
+        public void RemoveAt(int index) => _pipelines.RemoveAt(index);
+        
         public int IndexOf(string name) => _pipelines.FindIndex(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-        public IEnumerable<Pipeline> Pipelines => _pipelines;
+        public IEnumerable<IPipeline> Pipelines => _pipelines;
 
         public int Count => _pipelines.Count;
-
 
         public bool ContainsKey(string key) => 
             _pipelines.Any(x => string.Equals(key, x.Name, StringComparison.OrdinalIgnoreCase));

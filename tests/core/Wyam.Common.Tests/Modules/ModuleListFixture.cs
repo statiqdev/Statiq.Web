@@ -27,8 +27,7 @@ namespace Wyam.Common.Tests.Modules
                 list.Add(count);
 
                 // Then
-                Assert.That(((IEnumerable<KeyValuePair<string, IModule>>) list).First(),
-                    Is.EqualTo(new KeyValuePair<string, IModule>(null, count)));
+                Assert.That(list.AsKeyValuePairs(), Is.EqualTo(new[] {new KeyValuePair<string, IModule>(null, count)}));
             }
 
             [Test]
@@ -42,8 +41,7 @@ namespace Wyam.Common.Tests.Modules
                 list.Add("Foo", count);
 
                 // Then
-                Assert.That(((IEnumerable<KeyValuePair<string, IModule>>) list).First(),
-                    Is.EqualTo(new KeyValuePair<string, IModule>("Foo", count)));
+                Assert.That(list.AsKeyValuePairs(), Is.EqualTo(new[] { new KeyValuePair<string, IModule>("Foo", count) }));
             }
 
             [Test]
@@ -57,8 +55,7 @@ namespace Wyam.Common.Tests.Modules
                 list.Add(new NamedModule("Foo", count));
 
                 // Then
-                Assert.That(((IEnumerable<KeyValuePair<string, IModule>>) list).First(),
-                    Is.EqualTo(new KeyValuePair<string, IModule>("Foo", count)));
+                Assert.That(list.AsKeyValuePairs(), Is.EqualTo(new[] { new KeyValuePair<string, IModule>("Foo", count) }));
             }
 
             [Test]

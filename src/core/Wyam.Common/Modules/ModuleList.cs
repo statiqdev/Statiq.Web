@@ -23,13 +23,12 @@ namespace Wyam.Common.Modules
 
         public ModuleList(IEnumerable<IModule> modules)
         {
-            if (modules == null)
+            if (modules != null)
             {
-                throw new ArgumentNullException(nameof(modules));
-            }
-            foreach (IModule module in modules)
-            {
-                Add(module);
+                foreach (IModule module in modules)
+                {
+                    Add(module);
+                }
             }
         }
 
@@ -149,7 +148,7 @@ namespace Wyam.Common.Modules
 
         public bool Contains(IModule item) => _modules.Any(x => x.Value.Equals(item));
 
-        public bool Contains(string name) => _modules.Any(x => x.Key.Equals(name));
+        public bool Contains(string name) => _modules.Any(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
         public void CopyTo(IModule[] array, int arrayIndex) => _modules.Select(x => x.Value).ToList().CopyTo(array);
         
@@ -161,7 +160,7 @@ namespace Wyam.Common.Modules
         {
             foreach (KeyValuePair<string, IModule> item in _modules)
             {
-                if (item.Key.Equals(name))
+                if (string.Equals(item.Key, name, StringComparison.OrdinalIgnoreCase))
                 {
                     value = item.Value;
                     return true;
@@ -171,7 +170,7 @@ namespace Wyam.Common.Modules
             return false;
         }
         
-        public int IndexOf(string name) => _modules.FindIndex(x => x.Key.Equals(name));
+        public int IndexOf(string name) => _modules.FindIndex(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
         public IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs() => _modules;
 
@@ -189,7 +188,7 @@ namespace Wyam.Common.Modules
 
         private void CheckName(string name)
         {
-            if (name != null && _modules.Any(x => x.Key != null && x.Key.Equals(name)))
+            if (name != null && _modules.Any(x => x.Key != null && string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new ArgumentException($"A module with the name {name} already exists");
             }

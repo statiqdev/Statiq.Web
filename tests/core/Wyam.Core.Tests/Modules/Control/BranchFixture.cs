@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Control;
