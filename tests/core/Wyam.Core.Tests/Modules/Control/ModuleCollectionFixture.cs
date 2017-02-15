@@ -242,10 +242,10 @@ namespace Wyam.Core.Tests.Modules.Control
                         .WithName("Third")
                 });
 
-                (collection["Third"] as IModuleCollection)
+                (collection["Third"] as IModuleList)
                     .Replace("inner", new CountModule("newsubkey"));
 
-                Assert.AreEqual("newsubkey", ((CountModule) ((IModuleCollection) collection["Third"])["inner"]).ValueKey);
+                Assert.AreEqual("newsubkey", ((CountModule) ((IModuleList) collection["Third"])["inner"]).ValueKey);
             }
         }
     }

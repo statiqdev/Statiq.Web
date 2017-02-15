@@ -37,7 +37,7 @@ namespace Wyam.Core.Modules.Control
     /// </code>
     /// </example>
     /// <category>Control</category>
-    public class ModuleCollection : CollectionModule
+    public class ModuleCollection : ContainerModule
     {
         /// <summary>
         /// Creates a module collection with the specified child modules.

@@ -22,7 +22,7 @@ namespace Wyam.Core.Execution
     internal class Pipeline : IPipeline, IDisposable
     {
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
-        private readonly IModuleCollection _modules = new ModuleCollection();
+        private readonly IModuleList _modules = new ModuleList();
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly Cache<List<IDocument>>  _previouslyProcessedCache;
         private readonly Dictionary<FilePath, List<IDocument>> _processedSources; 

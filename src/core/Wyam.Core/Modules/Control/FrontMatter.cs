@@ -21,7 +21,7 @@ namespace Wyam.Core.Modules.Control
     /// The output document content is set to the original content without the front matter.
     /// </remarks>
     /// <category>Control</category>
-    public class FrontMatter : CollectionModule
+    public class FrontMatter : ContainerModule
     {
         private readonly string _delimiter;
         private bool _ignoreDelimiterOnFirstLine = true;

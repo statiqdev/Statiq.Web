@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.Control
     /// or changed metadata, it would be forgotten once the Branch was done.
     /// </example>
     /// <category>Control</category>
-    public class Branch : CollectionModule
+    public class Branch : ContainerModule
     {
         private Func<IDocument, IExecutionContext, bool> _predicate;
 

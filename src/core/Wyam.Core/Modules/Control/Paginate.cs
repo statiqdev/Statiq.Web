@@ -51,7 +51,7 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="HasNextPage" type="bool">Whether there is another page after this one.</metadata>
     /// <metadata name="HasPreviousPage" type="bool">Whether there is another page before this one.</metadata>
     /// <category>Control</category>
-    public class Paginate : CollectionModule
+    public class Paginate : ContainerModule
     {
         private readonly int _pageSize;
         private Func<IDocument, IExecutionContext, bool> _predicate;

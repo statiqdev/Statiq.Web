@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.Modules
 {
-    public class ModuleCollection : IModuleCollection
+    public class ModuleList : IModuleList
     {
         private readonly List<KeyValuePair<string, IModule>> _modules = new List<KeyValuePair<string, IModule>>();
 
-        public ModuleCollection()
+        public ModuleList()
         {
         }
 
-        public ModuleCollection(IEnumerable<IModule> modules)
+        public ModuleList(IEnumerable<IModule> modules)
         {
             if (modules == null)
             {

@@ -12,18 +12,18 @@ namespace Wyam.Common.Modules
     /// <summary>
     /// A base class for modules that contain a collection of child modules.
     /// </summary>
-    public abstract class CollectionModule : IModule, IModuleCollection
+    public abstract class ContainerModule : IModule, IModuleList
     {
-        private readonly IModuleCollection _modules;
+        private readonly IModuleList _modules;
 
-        protected CollectionModule()
+        protected ContainerModule()
         {
-            _modules = new ModuleCollection();
+            _modules = new ModuleList();
         }
 
-        protected CollectionModule(params IModule[] modules)
+        protected ContainerModule(params IModule[] modules)
         {
-            _modules = new ModuleCollection(modules);
+            _modules = new ModuleList(modules);
         }
 
         public abstract IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context);

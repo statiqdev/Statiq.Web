@@ -15,7 +15,7 @@ namespace Wyam.Core.Modules.Control
     /// original input documents instead of being forgotten.
     /// </summary>
     /// <category>Control</category>
-    public class ConcatBranch : CollectionModule
+    public class ConcatBranch : ContainerModule
     {
         private Func<IDocument, IExecutionContext, bool> _predicate;
 

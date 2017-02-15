@@ -11,7 +11,7 @@ namespace Wyam.Common.Modules
     /// A collection of optionally named modules. Implementations should "unwrap" <see cref="NamedModule"/>
     /// objects to obtain the module name.
     /// </summary>
-    public interface IModuleCollection : IList<IModule>, IReadOnlyDictionary<string, IModule>
+    public interface IModuleList : IList<IModule>, IReadOnlyDictionary<string, IModule>
     {
         void Add(string name, IModule module);
         void Insert(int index, string name, IModule module);

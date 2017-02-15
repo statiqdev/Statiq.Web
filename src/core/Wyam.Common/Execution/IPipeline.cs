@@ -3,7 +3,7 @@ using Wyam.Common.Modules;
 
 namespace Wyam.Common.Execution
 {
-    public interface IPipeline : IModuleCollection
+    public interface IPipeline : IModuleList
     {
         string Name { get; }
         bool ProcessDocumentsOnce { get; }

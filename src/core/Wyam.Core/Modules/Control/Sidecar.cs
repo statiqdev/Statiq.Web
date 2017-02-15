@@ -23,7 +23,7 @@ namespace Wyam.Core.Modules.Control
     /// The output document content is set to the original input document content.
     /// </remarks>
     /// <category>Control</category>
-    public class Sidecar : CollectionModule
+    public class Sidecar : ContainerModule
     {
         private readonly DocumentConfig _sidecarPath;
 

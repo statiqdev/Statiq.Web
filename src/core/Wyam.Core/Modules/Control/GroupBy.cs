@@ -27,7 +27,7 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="GroupDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current group.</metadata>
     /// <metadata name="GroupKey" type="object">The key for the current group.</metadata>
     /// <category>Control</category>
-    public class GroupBy : CollectionModule
+    public class GroupBy : ContainerModule
     {
         private readonly DocumentConfig _key;
         private Func<IDocument, IExecutionContext, bool> _predicate;

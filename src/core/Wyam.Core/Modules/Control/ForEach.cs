@@ -42,7 +42,7 @@ namespace Wyam.Core.Modules.Control
     /// </code>
     /// </example>
     /// <category>Control</category>
-    public class ForEach : CollectionModule
+    public class ForEach : ContainerModule
     {
         /// <summary>
         /// Specifies the modules to execute against the input document one at a time.

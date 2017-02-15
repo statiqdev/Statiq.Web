@@ -15,7 +15,7 @@ namespace Wyam.Core.Modules.Control
     /// results from the specified module sequence.
     /// </remarks>
     /// <category>Control</category>
-    public class Concat : CollectionModule
+    public class Concat : ContainerModule
     {
         /// <summary>
         /// Executes the specified modules with an empty initial input document.

@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules.Control
     /// each input document will be merged with each result document.
     /// </remarks>
     /// <category>Control</category>
-    public class Merge : CollectionModule
+    public class Merge : ContainerModule
     {
         private bool _forEachDocument;
 
@@ -47,7 +47,7 @@ namespace Wyam.Core.Modules.Control
 
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            if (((IModuleCollection)this).Count > 0)
+            if (((IModuleList)this).Count > 0)
             {
                 // Execute the modules for each input document
                 if (_forEachDocument)
