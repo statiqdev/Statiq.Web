@@ -2,12 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.IO;
 using System.Linq;
 using System.Threading;
+
 using Wyam.Common.IO;
+using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
-using Trace = Wyam.Common.Tracing.Trace;
+using Wyam.LiveReload;
 
 namespace Wyam.Commands
 {
@@ -18,7 +19,7 @@ namespace Wyam.Commands
         private readonly InterlockedBool _exit = new InterlockedBool(false);
         private readonly InterlockedBool _newEngine = new InterlockedBool(false);
         private readonly ConfigOptions _configOptions = new ConfigOptions();
-        
+
         private bool _preview = false;
         private int _previewPort = 5080;
         private DirectoryPath _previewVirtualDirectory = null;
@@ -27,7 +28,7 @@ namespace Wyam.Commands
         private bool _verifyConfig = false;
         private DirectoryPath _previewRoot = null;
         private bool _watch = false;
-        
+
         public override string Description => "Runs the build process (this is the default command).";
 
         public override string[] SupportedDirectives => new[]
@@ -106,7 +107,7 @@ namespace Wyam.Commands
         {
             foreach (KeyValuePair<string, object> kvp in MetadataParser.Parse(value))
             {
-               settings[kvp.Key] = kvp.Value;
+                settings[kvp.Key] = kvp.Value;
             }
         }
 
@@ -119,7 +120,7 @@ namespace Wyam.Commands
         {
             // Get the standard input stream
             _configOptions.Stdin = StandardInputReader.Read();
-            
+
             // Fix the root folder and other files
             DirectoryPath currentDirectory = Environment.CurrentDirectory;
             _configOptions.RootPath = _configOptions.RootPath == null ? currentDirectory : currentDirectory.Combine(_configOptions.RootPath);
@@ -162,6 +163,15 @@ namespace Wyam.Commands
 
             bool messagePump = false;
 
+            // Start the LiveReload server.
+            bool runLiveReloadServer = _watch;
+            LiveReloadServer liveReloadServer = null;
+            if (runLiveReloadServer)
+            {
+                liveReloadServer = new LiveReloadServer();
+                liveReloadServer.StartStandaloneHost();
+            }
+
             // Start the preview server
             IDisposable previewServer = null;
             if (_preview)
@@ -170,7 +180,7 @@ namespace Wyam.Commands
                 DirectoryPath previewPath = _previewRoot == null
                     ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
                     : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory);
+                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory, liveReloadServer);
             }
 
             // Start the watchers
@@ -192,7 +202,7 @@ namespace Wyam.Commands
                 {
                     Trace.Information("Watching configuration file {0}", _configOptions.ConfigFilePath);
                     configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                        new[] { _configOptions.ConfigFilePath.Directory }, false, _configOptions.ConfigFilePath.FileName.FullPath, path =>
+                        new[] {_configOptions.ConfigFilePath.Directory}, false, _configOptions.ConfigFilePath.FileName.FullPath, path =>
                         {
                             FilePath filePath = new FilePath(path);
                             if (_configOptions.ConfigFilePath.Equals(filePath))
@@ -228,7 +238,7 @@ namespace Wyam.Commands
                 // Wait for activity
                 while (true)
                 {
-                    _messageEvent.WaitOne();  // Blocks the current thread until a signal
+                    _messageEvent.WaitOne(); // Blocks the current thread until a signal
                     if (_exit)
                     {
                         break;
@@ -283,6 +293,8 @@ namespace Wyam.Commands
                             {
                                 exitCode = ExitCode.ExecutionError;
                             }
+
+                            liveReloadServer?.RebuildCompleted(changedFiles);
                         }
                     }
 
@@ -301,6 +313,7 @@ namespace Wyam.Commands
                 inputFolderWatcher?.Dispose();
                 configFileWatcher?.Dispose();
                 previewServer?.Dispose();
+                liveReloadServer?.Dispose();
             }
 
             return exitCode;

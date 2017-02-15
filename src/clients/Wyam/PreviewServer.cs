@@ -9,6 +9,7 @@ using Owin;
 
 using Wyam.Common.IO;
 using Wyam.Common.Tracing;
+using Wyam.LiveReload;
 using Wyam.Owin;
 using Wyam.Server;
 
@@ -16,13 +17,14 @@ namespace Wyam
 {
     internal static class PreviewServer
     {
-        public static IDisposable Start(DirectoryPath path, int port, bool forceExtension, DirectoryPath virtualDirectory)
+        public static IDisposable Start(DirectoryPath path, int port, bool forceExtension, DirectoryPath virtualDirectory,
+                                        LiveReloadServer liveReloadServer)
         {
             HttpServer server;
             try
             {
                 server = new HttpServer();
-                server.StartServer(port, app => ConfigureOwin(app, path, forceExtension, virtualDirectory));
+                server.StartServer(port, app => ConfigureOwin(app, path, forceExtension, virtualDirectory, liveReloadServer));
             }
             catch (Exception ex)
             {
@@ -35,9 +37,13 @@ namespace Wyam
             return server;
         }
 
-        internal static void ConfigureOwin(IAppBuilder app, DirectoryPath path, bool forceExtension, DirectoryPath virtualDirectory)
+        internal static void ConfigureOwin(IAppBuilder app, DirectoryPath path, bool forceExtension, DirectoryPath virtualDirectory,
+                                           LiveReloadServer liveReloadServer)
         {
             Microsoft.Owin.FileSystems.IFileSystem outputFolder = new PhysicalFileSystem(path.FullPath);
+
+            // Inject LiveReload script tags to html documents, needs to run first as it overrides output stream.
+            liveReloadServer?.AddInjectionMiddleware(app);
 
             // Support for virtual directory
             if (virtualDirectory != null)
@@ -76,6 +82,10 @@ namespace Wyam
                 FileSystem = outputFolder,
                 ServeUnknownFileTypes = true
             });
+
+            // Configure required middleware for the LiveReload protocol.
+            // Run last in the pipeline. We want any user scripts to take precedents.
+            liveReloadServer?.AddHostMiddleware(app);
         }
     }
 }
