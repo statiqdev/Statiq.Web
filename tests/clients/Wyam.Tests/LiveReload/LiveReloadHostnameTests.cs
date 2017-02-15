@@ -10,7 +10,7 @@ using Wyam.LiveReload;
 
 namespace Wyam.Tests.LiveReload
 {
-    [TestFixture]
+    [TestFixture(Category = "ExcludeFromAppVeyor")]
     public class LiveReloadHostnameTests : IDisposable
     {
         private readonly LiveReloadServer _reloadServer = new LiveReloadServer();
