@@ -117,6 +117,7 @@ namespace Wyam.Highlight
                                 }
                                 else
                                 {
+                                    language = "(auto)"; // set this to auto in case there is an exception below
                                     engine.Execute("result = hljs.highlightAuto(input)");
                                     string detectedLanguage = engine.Evaluate<string>("result.language");
                                     if (string.IsNullOrWhiteSpace(detectedLanguage) == false)

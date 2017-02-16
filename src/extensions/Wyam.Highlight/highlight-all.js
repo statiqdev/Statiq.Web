@@ -1284,7 +1284,7 @@ function(hljs) {
     var ID_REGEX = '[A-Za-z](_?[A-Za-z0-9.])*';
 
     // bad chars, only allowed in literals
-    var BAD_CHARS = '[]{}%#\'\"'
+    var BAD_CHARS = '{}%#\'\"'
 
     // Ada doesn't have block comments, only line comments
     var COMMENTS = hljs.COMMENT('--', '$');
@@ -8084,7 +8084,7 @@ module.exports = function(hljs) {
 },{}],88:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
-  var MEC_RE = '\\|[^]*?\\|';
+  var MEC_RE = '\\|[\S\s]*?\\|';
   var LISP_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+(\\.\\d+|\\/\\d+)?((d|e|f|l|s|D|E|F|L|S)(\\+|\\-)?\\d+)?';
   var SHEBANG = {
     className: 'meta',
