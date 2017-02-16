@@ -254,8 +254,11 @@ namespace Wyam.Configuration
         private void AddNamespaces()
         {
             // Add all Wyam.Common namespaces
+            // the JetBrains.Profiler filter is needed due to DotTrace dynamically
+            // adding a reference to that assembly when running under its profiler. We want
+            // to exclude it.
             _engine.Namespaces.AddRange(typeof(IModule).Assembly.GetTypes()
-                .Where(x => !string.IsNullOrWhiteSpace(x.Namespace))
+                .Where(x => !string.IsNullOrWhiteSpace(x.Namespace) && !x.Namespace.StartsWith("JetBrains.Profiler"))
                 .Select(x => x.Namespace)
                 .Distinct());
 
