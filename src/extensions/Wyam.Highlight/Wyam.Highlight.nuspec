@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Wyam.Highlight</id>
+    <version>$version$</version>
+    <title>Wyam.Highlight</title>
+    <authors>Dave Glick</authors>
+    <owners>Dave Glick</owners>
+    <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
+    <iconUrl>https://wyam.io/Content/images/logo-square-64.png</iconUrl>
+    <projectUrl>https://wyam.io</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library performs server side highlighting of code blocks.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Wyam Static StaticContent StaticSite Blog BlogEngine Highlight.js</tags>    
+  </metadata>
+  <files></files>
+</package>

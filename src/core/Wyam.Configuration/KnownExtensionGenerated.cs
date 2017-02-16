@@ -14,6 +14,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Feeds = new KnownExtension("Wyam.Feeds");
 		public static readonly KnownExtension Git = new KnownExtension("Wyam.Git");
 		public static readonly KnownExtension GitHub = new KnownExtension("Wyam.GitHub");
+		public static readonly KnownExtension Highlight = new KnownExtension("Wyam.Highlight");
 		public static readonly KnownExtension Html = new KnownExtension("Wyam.Html");
 		public static readonly KnownExtension Images = new KnownExtension("Wyam.Images");
 		public static readonly KnownExtension Json = new KnownExtension("Wyam.Json");
