@@ -34,7 +34,6 @@ namespace Wyam.Highlight
     {
         private string _codeQuerySelector = "pre code";
         private string _highlightJsFile;
-        private bool _escapeAt = true;
         private bool _warnOnMissingLanguage = true;
 
         /// <summary>
@@ -70,22 +69,9 @@ namespace Wyam.Highlight
             return this;
         }
 
-        /// <summary>
-        /// Specifies whether the <c>@</c> symbol should be escaped (the default is <c>true</c>).
-        /// This is important if the highlighted documents are going to be passed to the Razor module,
-        /// otherwise the Razor processor will interpret the unescaped <c>@</c> symbols as code
-        /// directives.
-        /// </summary>
-        /// <param name="escapeAt">If set to <c>true</c>, <c>@</c> symbols are HTML escaped.</param>
-        /// <returns>The current instance.</returns>
-        public Highlight WithEscapedAt(bool escapeAt = true)
-        {
-            _escapeAt = escapeAt;
-            return this;
-        }
-
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            Trace.Information("Beginning highlighting");
             HtmlParser parser = new HtmlParser();
             
             return inputs.AsParallel().Select(context, input =>
@@ -140,7 +126,8 @@ namespace Wyam.Highlight
                                 }
 
                                 element.ClassList.Add("hljs");
-                                element.InnerHtml = engine.Evaluate<string>("result.value");
+                                string formatted = engine.Evaluate<string>("result.value");
+                                element.InnerHtml = formatted;
                             }
                             catch (Exception innerEx)
                             {
@@ -156,11 +143,7 @@ namespace Wyam.Highlight
                         }
 
                         var content = htmlDocument.ToHtml();
-                        if (_escapeAt)
-                        {
-                            // without this razor has the potential to blow up parsing our code block
-                            content = content.Replace("@", "&#64;");
-                        }
+ 
                         return context.GetDocument(input, content);
                     }
                 }

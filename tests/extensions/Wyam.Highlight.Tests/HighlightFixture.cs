@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
-using Wyam.Testing.Execution;
 using Wyam.Testing.JavaScript;
+using TestExecutionContext = Wyam.Testing.Execution.TestExecutionContext;
 
 namespace Wyam.Highlight.Tests
 {
@@ -107,6 +108,40 @@ namespace Wyam.Highlight.Tests
             Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
         }
 
+        [Test]
+        public void CanHighlightAfterRazor()
+        {
+            // if we execute razor before this, the code block will be escaped.
+            string input = @"
+<html>
+<head>
+    <title>Foobar</title>
+</head>
+<body>
+    <h1>Title</h1>
+    <p>This is some Foobar text</p>
+    <pre><code class=""language-html"">
+    &lt;strong class=&quot;super-strong&quot;&gt;this is strong text&lt;/strong&gt;
+    </code></pre>
+</body>
+</html>";
+
+
+            IDocument document = new TestDocument(input);
+            IExecutionContext context = new TestExecutionContext()
+            {
+                JsEngineFunc = () => new TestJsEngine()
+            };
+
+            Highlight highlight = new Highlight();
+            
+            // When
+            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
+
+            // Then
+            Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
+        }
+        
         [Test]
         [Ignore("fails due to Jint issues with regex")]
         public void CanHighlightAutoCodeBlocks()
