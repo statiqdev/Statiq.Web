@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -273,6 +275,24 @@ namespace Wyam.Testing.Execution
                 inputs = module.Execute(inputs.ToList(), this);
             }
             return inputs.ToList();
+        }
+
+        public Func<IJsEngine> JsEngineFunc = () =>
+        {
+            throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
+        };
+
+        public IJsEngine GetJsEngineFromPool(TimeSpan? timeout = null)
+        {
+            return JsEngineFunc.Invoke();
+        }
+
+        public void ReturnJsEngineToPool(IJsEngine engine)
+        {
+        }
+
+        public void RecycleJsEngines()
+        {
         }
     }
 }

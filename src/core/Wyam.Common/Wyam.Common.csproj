@@ -59,6 +59,7 @@
     <Compile Include="Modules\ModuleList.cs" />
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\NamedModule.cs" />
+    <Compile Include="JavaScript\IJsEngine.cs" />
     <Compile Include="Util\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JavaScriptEngineSwitcher.Core;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -148,6 +149,18 @@ namespace Wyam.Core.Execution
             {
                 Trace.Warning("Error while cleaning output path {0}: {1} - {2}", FileSystem.OutputPath, ex.GetType(), ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Resets the JavaScript Engine pool and clears the JavaScript Engine Switcher
+        /// to an empty list of engine factories and default engine. Useful on configuration
+        /// change where we might have a new configuration.
+        /// </summary>
+        public static void ResetJsEngines()
+        {
+            ExecutionContext.ResetJsPool();
+            JsEngineSwitcher.Instance.EngineFactories.Clear();
+            JsEngineSwitcher.Instance.DefaultEngineName = string.Empty;            
         }
 
         public void Execute()
