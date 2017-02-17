@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "src\clients\Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
@@ -117,6 +117,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Highlight.Tests", "tests\extensions\Wyam.Highlight.Tests\Wyam.Highlight.Tests.csproj", "{A6DE4586-1398-4071-90AB-5CCC1C949720}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Testing.JavaScript", "src\core\Wyam.Testing.JavaScript\Wyam.Testing.JavaScript.csproj", "{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{9B01F618-6AB3-4DCD-A044-4CA58EEF6419}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code style", "code style", "{19466BCF-6877-4C51-8FA8-F968ED67BC91}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		stylecop.json = stylecop.json
+		Wyam.CodeAnalysis.ruleset = Wyam.CodeAnalysis.ruleset
+		Wyam.sln.DotSettings = Wyam.sln.DotSettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -371,5 +381,6 @@ Global
 		{5FE758A2-1221-48FE-8A3C-8B3B9A32AFAB} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 		{A6DE4586-1398-4071-90AB-5CCC1C949720} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
 		{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F} = {4813B17D-EFCA-401D-B0E6-7B24B3946A70}
+		{19466BCF-6877-4C51-8FA8-F968ED67BC91} = {9B01F618-6AB3-4DCD-A044-4CA58EEF6419}
 	EndGlobalSection
 EndGlobal
