@@ -125,7 +125,6 @@ namespace Wyam.Common.Execution
         /// </returns>
         string GetLink(string path, bool includeHost = false);
 
-
         /// <summary>
         /// Converts the path into a string appropriate for use as a link, overriding one or more 
         /// settings from the <see cref="IReadOnlySettings" />.
@@ -298,40 +297,61 @@ namespace Wyam.Common.Execution
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
         IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items);
-
-        /// <summary>
-        /// Gets an engine from the pool. This engine should be returned to the pool via
-        /// <see cref="ReturnJsEngineToPool"/> when you are finished with it.
-        /// If an engine is free, this method returns immediately with the engine.
-        /// If no engines are available creates a new engine. If MaxEngines has been reached, blocks until an engine is
-        /// avaiable again.
-        /// </summary>
-        /// <param name="timeout">
-        /// Maximum time to wait for a free engine. 
-        /// </param>
-        /// <returns>A JavaScript engine</returns>
-        IJsEngine GetJsEngineFromPool(TimeSpan? timeout = null);
-
-
-        /// <summary>
-        /// Returns an engine to the pool so it can be reused
-        /// </summary>
-        /// <param name="engine">Engine to return</param>
-        void ReturnJsEngineToPool(IJsEngine engine);
-
-        /// <summary>
-        /// Disposes all engines in this pool, and creates new engines in their place.
-        /// </summary>
-        void RecycleJsEngines();
         
-        // This provides access to the same enhanced type conversion used to convert metadata types
+        /// <summary>
+        /// Provides access to the same enhanced type conversion used to convert metadata types.
+        /// </summary>
+        /// <typeparam name="T">The destination type.</typeparam>
+        /// <param name="value">The value to convert.</param>
+        /// <param name="result">The result of the conversion.</param>
+        /// <returns><c>true</c> if the conversion could be completed, <c>false</c> otherwise.</returns>
         bool TryConvert<T>(object value, out T result);
-
-        // This executes the specified modules with the specified input documents and returns the result documents
+        
+        /// <summary>
+        /// Executes the specified modules with the specified input documents and returns the result documents.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        /// <param name="inputs">The input documents.</param>
+        /// <returns>The result documents from the executed modules.</returns>
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs);
 
-        // This executes the specified modules with an empty initial input document with optional additional metadata and returns the result documents
+        /// <summary>
+        /// Executes the specified modules with an empty initial input document with optional additional metadata and returns the result documents.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        /// <param name="metadata">The metadata to use.</param>
+        /// <returns>The result documents from the executed modules.</returns>
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> metadata = null);
+        
+        /// <summary>
+        /// Executes the specified modules with an empty initial input document with optional additional metadata and returns the result documents.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        /// <param name="metadata">The metadata to use.</param>
+        /// <returns>The result documents from the executed modules.</returns>
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> metadata);
+
+        /// <summary>
+        /// Gets a new <see cref="IJsEnginePool"/>. The returned engine pool should be disposed
+        /// when no longer needed.
+        /// </summary>
+        /// <param name="initializer">
+        /// The code to run when a new engine is created. This should configure
+		/// the environment and set up any required JavaScript libraries.
+		/// </param>
+        /// <param name="startEngines">The number of engines to initially start when a pool is created.</param>
+        /// <param name="maxEngines">The maximum number of engines that will be created in the pool.</param>
+        /// <param name="maxUsagesPerEngine">The maximum number of times an engine can be reused before it is disposed.</param>
+        /// <param name="engineTimeout">
+        /// The default timeout to use when acquiring an engine from the pool (defaults to 5 seconds).
+		/// If an engine can not be acquired in this timeframe, an exception will be thrown.
+		/// </param>
+        /// <returns>A new JavaScript engine pool.</returns>
+        IJsEnginePool GetJsEnginePool(
+            Action<IJsEngine> initializer = null,
+            int startEngines = 10,
+            int maxEngines = 25,
+            int maxUsagesPerEngine = 100,
+            TimeSpan? engineTimeout = null);
     }
 }

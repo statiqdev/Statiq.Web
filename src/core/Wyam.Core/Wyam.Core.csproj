@@ -175,6 +175,8 @@
     <Compile Include="IO\FileProviders\Local\LocalFileProvider.cs" />
     <Compile Include="IO\VirtualInputDirectory.cs" />
     <Compile Include="JavaScript\JsEngine.cs" />
+    <Compile Include="JavaScript\JsEnginePool.cs" />
+    <Compile Include="JavaScript\PooledJsEngine.cs" />
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />
     <Compile Include="Modules\Contents\ChangeFrequency.cs" />

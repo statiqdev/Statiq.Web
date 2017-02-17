@@ -276,23 +276,48 @@ namespace Wyam.Testing.Execution
             }
             return inputs.ToList();
         }
-
+        
         public Func<IJsEngine> JsEngineFunc = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
         };
 
-        public IJsEngine GetJsEngineFromPool(TimeSpan? timeout = null)
-        {
-            return JsEngineFunc.Invoke();
-        }
+        public IJsEnginePool GetJsEnginePool(Action<IJsEngine> initializer = null,
+            int startEngines = 10, int maxEngines = 25,
+            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) => 
+            new TestJsEnginePool(JsEngineFunc, initializer);
 
-        public void ReturnJsEngineToPool(IJsEngine engine)
+        private class TestJsEnginePool : IJsEnginePool
         {
-        }
+            private readonly Func<IJsEngine> _engineFunc;
+            private readonly Action<IJsEngine> _initializer;
 
-        public void RecycleJsEngines()
-        {
+            public TestJsEnginePool(Func<IJsEngine> engineFunc, Action<IJsEngine> initializer)
+            {
+                _engineFunc = engineFunc;
+                _initializer = initializer;
+            }
+
+            public IJsEngine GetEngine(TimeSpan? timeout = null)
+            {
+                IJsEngine engine = _engineFunc();
+                _initializer?.Invoke(engine);
+                return engine;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public void RecycleEngine(IJsEngine engine)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void RecycleAllEngines()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

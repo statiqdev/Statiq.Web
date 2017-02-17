@@ -13,12 +13,16 @@ using TestExecutionContext = Wyam.Testing.Execution.TestExecutionContext;
 namespace Wyam.Highlight.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class HighlightFixture : BaseFixture
     {
-        [Test]
-        public void CanHighlightCSharp()
+        public class ExecuteTests : HighlightFixture
         {
-            string input = @"
+            [Test]
+            public void CanHighlightCSharp()
+            {
+                // Given
+                string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -53,25 +57,25 @@ namespace Wyam.Highlight.Tests
 </html>";
 
 
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
+
+                Highlight highlight = new Highlight();
+
+                // When
+                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+
+                // Then
+                Assert.IsTrue(results[0].Content.Contains("language-csharp hljs"));
+            }
+
+            [Test]
+            public void CanHighlightHtml()
             {
-                JsEngineFunc = () => new TestJsEngine()
-            };
-
-            Highlight highlight = new Highlight();
-
-            // When
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
-
-            // Then
-            Assert.IsTrue(results[0].Content.Contains("language-csharp hljs"));
-        }
-
-        [Test]
-        public void CanHighlightHtml()
-        {
-            string input = @"
+                string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -93,26 +97,27 @@ namespace Wyam.Highlight.Tests
 </html>";
 
 
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
+
+                Highlight highlight = new Highlight();
+
+                // When
+                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+
+                // Then
+                Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
+            }
+
+            [Test]
+            public void CanHighlightAfterRazor()
             {
-                JsEngineFunc = () => new TestJsEngine()
-            };
-
-            Highlight highlight = new Highlight();
-
-            // When
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
-
-            // Then
-            Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
-        }
-
-        [Test]
-        public void CanHighlightAfterRazor()
-        {
-            // if we execute razor before this, the code block will be escaped.
-            string input = @"
+                // Given
+                // if we execute razor before this, the code block will be escaped.
+                string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -127,25 +132,26 @@ namespace Wyam.Highlight.Tests
 </html>";
 
 
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
+
+                Highlight highlight = new Highlight();
+
+                // When
+                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+
+                // Then
+                Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
+            }
+
+            [Test]
+            public void CanHighlightAutoCodeBlocks()
             {
-                JsEngineFunc = () => new TestJsEngine()
-            };
-
-            Highlight highlight = new Highlight();
-            
-            // When
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
-
-            // Then
-            Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
-        }
-        
-        [Test]
-        public void CanHighlightAutoCodeBlocks()
-        {
-            string input = @"
+                // Given
+                string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -163,66 +169,27 @@ namespace Wyam.Highlight.Tests
 </html>";
 
 
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
-            {
-                JsEngineFunc = () => new TestJsEngine()
-            };
-            
-            Highlight highlight = new Highlight();
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
 
-            // When
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
+                Highlight highlight = new Highlight();
 
-            // Then
-            Assert.IsTrue(results[0].Content.Contains("hljs"));
-        }
-
-
-        [Test]
-        public void HighlightFailsForMissingLanguage()
-        {
-            string input = @"
-<html>
-<head>
-    <title>Foobar</title>
-</head>
-<body>
-    <h1>Title</h1>
-    <p>This is some Foobar text</p>
-    <pre><code class=""language-zorg"">
-    <html>
-    <head>
-    <title>Hi Mom!</title>
-    </head>
-    <body>
-        <p>Hello, world! Pretty me up!
-    </body>
-    </html>
-    </code></pre>
-</body>
-</html>";
-
-
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
-            {
-                JsEngineFunc = () => new TestJsEngine()
-            };
-
-            Highlight highlight = new Highlight();
-
-            Assert.Throws<AggregateException>(() =>
-            {
+                // When
                 List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
-                Assert.IsNull(results, "Should never get here due to exception");
-            });
-        }
 
-        [Test]
-        public void HighlightSucceedsForMissingLanguageWhenConfiguredNotToWarn()
-        {
-            string input = @"
+                // Then
+                Assert.IsTrue(results[0].Content.Contains("hljs"));
+            }
+
+
+            [Test]
+            public void HighlightFailsForMissingLanguage()
+            {
+                // Given
+                string input = @"
 <html>
 <head>
     <title>Foobar</title>
@@ -244,17 +211,63 @@ namespace Wyam.Highlight.Tests
 </html>";
 
 
-            IDocument document = new TestDocument(input);
-            IExecutionContext context = new TestExecutionContext()
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
+
+                Highlight highlight = new Highlight();
+
+                // When, Then
+                Assert.Throws<AggregateException>(() =>
+                {
+                    List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                    Assert.IsNull(results, "Should never get here due to exception");
+                });
+            }
+
+            [Test]
+            public void HighlightSucceedsForMissingLanguageWhenConfiguredNotToWarn()
             {
-                JsEngineFunc = () => new TestJsEngine()
-            };
+                // Given
+                string input = @"
+<html>
+<head>
+    <title>Foobar</title>
+</head>
+<body>
+    <h1>Title</h1>
+    <p>This is some Foobar text</p>
+    <pre><code class=""language-zorg"">
+    <html>
+    <head>
+    <title>Hi Mom!</title>
+    </head>
+    <body>
+        <p>Hello, world! Pretty me up!
+    </body>
+    </html>
+    </code></pre>
+</body>
+</html>";
 
-            Highlight highlight = new Highlight()
-                .WithMissingLanguageWarning(false);
 
-            List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
-            CollectionAssert.IsNotEmpty(results);
+                IDocument document = new TestDocument(input);
+                IExecutionContext context = new TestExecutionContext()
+                {
+                    JsEngineFunc = () => new TestJsEngine()
+                };
+
+                Highlight highlight = new Highlight()
+                    .WithMissingLanguageWarning(false);
+
+                // When
+                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+
+                // Then
+                CollectionAssert.IsNotEmpty(results);
+            }
         }
     }
 }

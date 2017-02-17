@@ -9,16 +9,27 @@ This gives us one big file with all the languages that doesn't need npm or a bro
 
 To rebuild
 
+```
 npm install browserify
 npm install highlight.js
 browserify index.js --standalone hljs -o highlight-all.js
+```
 
-it then needs a few tweaks to be compliant with the .net regex engine. 
- * for ada replace 
-		var BAD_CHARS = '[]{}%#\'\"' 
-	with
-		var BAD_CHARS = '{}%#\'\"'
- * for lisp replace
-		var MEC_RE = '\\|[^]*?\\|';
-	with 
-		var MEC_RE = '\\|[\S\s]*?\\|';
+It then needs a few tweaks to be compliant with the .net regex engine. 
+
+- for ada replace 
+  ```
+  var BAD_CHARS = '[]{}%#\'\"'
+  ```
+  with
+  ```
+  var BAD_CHARS = '{}%#\'\"'
+  ```
+- for lisp replace
+  ```
+  var MEC_RE = '\\|[^]*?\\|';
+  ```
+  with
+  ```
+  var MEC_RE = '\\|[\S\s]*?\\|';
+  ```

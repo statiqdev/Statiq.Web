@@ -71,94 +71,93 @@ namespace Wyam.Highlight
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            Trace.Information("Beginning highlighting");
             HtmlParser parser = new HtmlParser();
-            
-            return inputs.AsParallel().Select(context, input =>
+            using(IJsEnginePool enginePool = context.GetJsEnginePool(x =>
             {
-                IJsEngine engine = context.GetJsEngineFromPool();
                 if (string.IsNullOrWhiteSpace(_highlightJsFile))
                 {
-                    engine.RequireResource("highlight-all.js", typeof(Highlight));
+                    x.ExecuteResource("highlight-all.js", typeof(Highlight));
                 }
                 else
                 {
-                    engine.RequireFile(_highlightJsFile);
+                    x.ExecuteFile(_highlightJsFile);
                 }
-                
-                try
+
+            }))
+            {
+                return inputs.AsParallel().Select(context, input =>
                 {
-                    using (Stream stream = input.GetStream())
-                    using (IHtmlDocument htmlDocument = parser.Parse(stream))
+                    // We materialize the list before exiting the using statement, so safe to access enginePool
+                    // ReSharper disable once AccessToDisposedClosure
+                    using (IJsEngine engine = enginePool.GetEngine())
                     {
-                        foreach (AngleSharp.Dom.IElement element in htmlDocument.QuerySelectorAll(_codeQuerySelector))
+                        try
                         {
-                            // don't highlight anything that potentially is already highlighted
-                            if (element.ClassList.Contains("hljs"))
+                            using (Stream stream = input.GetStream())
+                            using (IHtmlDocument htmlDocument = parser.Parse(stream))
                             {
-                                continue;
-                            }
-
-
-                            // make sure to use TextContent, otherwise you'll get escaped html which 
-                            // highlightjs won't parse
-                            engine.SetVariableValue("input", element.TextContent);
-
-                            // check if they specified a language in their code block
-                            string language = element.ClassList.FirstOrDefault(i => i.StartsWith("language"));
-
-                            try
-                            {
-
-                                if (language != null)
+                                foreach (AngleSharp.Dom.IElement element in htmlDocument.QuerySelectorAll(_codeQuerySelector))
                                 {
-                                    engine.SetVariableValue("language", language.Replace("language-", ""));
-                                    engine.Execute("result = hljs.highlight(language, input)");
-                                }
-                                else
-                                {
-                                    language = "(auto)"; // set this to auto in case there is an exception below
-                                    engine.Execute("result = hljs.highlightAuto(input)");
-                                    string detectedLanguage = engine.Evaluate<string>("result.language");
-                                    if (string.IsNullOrWhiteSpace(detectedLanguage) == false)
+                                    // Don't highlight anything that potentially is already highlighted
+                                    if (element.ClassList.Contains("hljs"))
                                     {
-                                        element.ClassList.Add("language-" + detectedLanguage);
+                                        continue;
+                                    }
+
+
+                                    // Make sure to use TextContent, otherwise you'll get escaped html which highlight.js won't parse
+                                    engine.SetVariableValue("input", element.TextContent);
+
+                                    // Check if they specified a language in their code block
+                                    string language = element.ClassList.FirstOrDefault(i => i.StartsWith("language"));
+
+                                    try
+                                    {
+
+                                        if (language != null)
+                                        {
+                                            engine.SetVariableValue("language", language.Replace("language-", ""));
+                                            engine.Execute("result = hljs.highlight(language, input)");
+                                        }
+                                        else
+                                        {
+                                            language = "(auto)"; // set this to auto in case there is an exception below
+                                            engine.Execute("result = hljs.highlightAuto(input)");
+                                            string detectedLanguage = engine.Evaluate<string>("result.language");
+                                            if (string.IsNullOrWhiteSpace(detectedLanguage) == false)
+                                            {
+                                                element.ClassList.Add("language-" + detectedLanguage);
+                                            }
+                                        }
+
+                                        element.ClassList.Add("hljs");
+                                        string formatted = engine.Evaluate<string>("result.value");
+                                        element.InnerHtml = formatted;
+                                    }
+                                    catch (Exception innerEx)
+                                    {
+                                        if (innerEx.Message.Contains("Unknown language: ") && _warnOnMissingLanguage)
+                                        {
+                                            Trace.Warning("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
+                                        }
+                                        else
+                                        {
+                                            Trace.Information("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
+                                        }
                                     }
                                 }
-
-                                element.ClassList.Add("hljs");
-                                string formatted = engine.Evaluate<string>("result.value");
-                                element.InnerHtml = formatted;
-                            }
-                            catch (Exception innerEx)
-                            {
-                                if (innerEx.Message.Contains("Unknown language: ") && _warnOnMissingLanguage)
-                                {
-                                    Trace.Warning("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
-                                }
-                                else
-                                {
-                                    Trace.Information("Exception while highlighting source code for {0} using language {1}: {2}", input.SourceString(), language, innerEx.Message);
-                                }
+                                string content = htmlDocument.ToHtml();
+                                return context.GetDocument(input, content);
                             }
                         }
-
-                        var content = htmlDocument.ToHtml();
- 
-                        return context.GetDocument(input, content);
+                        catch (Exception ex)
+                        {
+                            Trace.Warning("Exception while highlighting source code for {0}: {1}", input.SourceString(), ex.Message);
+                            return input;
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Trace.Warning("Exception while highlighting source code for {0}: {1}", input.SourceString(),
-                        ex.Message);
-                    return input;
-                }
-                finally
-                {
-                    context.ReturnJsEngineToPool(engine);
-                }
-            });
+                }).ToList();
+            }
         }
     }
 }

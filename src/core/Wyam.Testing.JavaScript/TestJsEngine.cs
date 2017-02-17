@@ -12,8 +12,6 @@ namespace Wyam.Testing.JavaScript
     {
         private readonly JavaScriptEngineSwitcher.Core.IJsEngine _engine;
 
-        private readonly HashSet<string> _registeredScripts = new HashSet<string>();
-
         static TestJsEngine()
         {
             JsEngineSwitcher.Instance.EngineFactories.Add(new JintJsEngineFactory());
@@ -68,27 +66,5 @@ namespace Wyam.Testing.JavaScript
         public void EmbedHostObject(string itemName, object value) => _engine.EmbedHostObject(itemName, value);
 
         public void EmbedHostType(string itemName, Type type) => _engine.EmbedHostType(itemName, type);
-
-        public void RequireResource(string resourceName, Type type)
-        {
-            if (_registeredScripts.Contains(resourceName))
-            {
-                return;
-            }
-
-            ExecuteResource(resourceName, type);
-            _registeredScripts.Add(resourceName);
-        }
-
-        public void RequireFile(string path)
-        {
-            if (_registeredScripts.Contains(path))
-            {
-                return;
-            }
-
-            ExecuteFile(path);
-            _registeredScripts.Add(path);
-        }
     }
 }

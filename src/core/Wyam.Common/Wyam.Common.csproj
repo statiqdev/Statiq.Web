@@ -52,6 +52,7 @@
     <Compile Include="Execution\IEngine.cs" />
     <Compile Include="Configuration\IRecipe.cs" />
     <Compile Include="Execution\PipelineCollectionExtensions.cs" />
+    <Compile Include="JavaScript\IJsEnginePool.cs" />
     <Compile Include="Modules\ContainerModule.cs" />
     <Compile Include="Modules\IModuleList.cs" />
     <Compile Include="Modules\ModuleListExtensions.cs" />

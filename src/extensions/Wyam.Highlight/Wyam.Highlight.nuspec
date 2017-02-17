@@ -4,7 +4,7 @@
     <id>Wyam.Highlight</id>
     <version>$version$</version>
     <title>Wyam.Highlight</title>
-    <authors>Dave Glick</authors>
+    <authors>Phil Scott, Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
     <iconUrl>https://wyam.io/Content/images/logo-square-64.png</iconUrl>

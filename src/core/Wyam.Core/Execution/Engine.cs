@@ -158,7 +158,6 @@ namespace Wyam.Core.Execution
         /// </summary>
         public static void ResetJsEngines()
         {
-            ExecutionContext.ResetJsPool();
             JsEngineSwitcher.Instance.EngineFactories.Clear();
             JsEngineSwitcher.Instance.DefaultEngineName = string.Empty;            
         }
@@ -166,6 +165,8 @@ namespace Wyam.Core.Execution
         public void Execute()
         {
             CheckDisposed();
+
+            Trace.Information($"Using {JsEngineSwitcher.Instance.DefaultEngineName} as the JavaScript engine");
 
             // Make sure we've actually configured some pipelines
             if (_pipelines.Count == 0)
