@@ -76,6 +76,7 @@
     <Compile Include="IO\FileSystemFixture.cs" />
     <Compile Include="IO\Globbing\GlobberFixture.cs" />
     <Compile Include="IO\VirtualInputDirectoryFixture.cs" />
+    <Compile Include="Modules\Contents\JoinFixture.cs" />
     <Compile Include="Modules\Contents\RedirectFixture.cs" />
     <Compile Include="Modules\Control\CombineFixture.cs" />
     <Compile Include="Modules\Control\ConcatBranchFixture.cs" />
