@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Windows", "src\clients\Wyam.Windows\Wyam.Windows.csproj", "{484E1B40-BBC2-4972-AD4C-459B3B76C475}"
 EndProject
@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code style", "code style", "{7487CA91-58C5-4D60-BCD5-ADC78B457C33}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		stylecop.json = stylecop.json
 		Wyam.CodeAnalysis.ruleset = Wyam.CodeAnalysis.ruleset
 		Wyam.Windows.sln.DotSettings = Wyam.Windows.sln.DotSettings
 	EndProjectSection
