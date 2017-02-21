@@ -192,7 +192,7 @@ namespace Wyam.Core.Execution
 
                     // Enumerate pipelines and execute each in order
                     int c = 1;
-                    foreach (Pipeline pipeline in _pipelines.Pipelines)
+                    foreach (IPipeline pipeline in _pipelines.Pipelines)
                     {
                         string pipelineName = pipeline.Name;
                         System.Diagnostics.Stopwatch pipelineStopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -200,7 +200,7 @@ namespace Wyam.Core.Execution
                         {
                             try
                             {
-                                pipeline.Execute(this);
+                                ((Pipeline)pipeline).Execute(this);
                                 pipelineStopwatch.Stop();
                                 Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
                                     pipelineName, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
@@ -219,9 +219,9 @@ namespace Wyam.Core.Execution
                     // but will also mean that callers (and tests) can't access documents and document content after the engine finishes
                     // Easiest way to access content after engine execution is to add a final Meta module and copy content to metadata
                     ExecutionCacheManager.ClearUnhitEntries();
-                    foreach (Pipeline pipeline in _pipelines.Pipelines)
+                    foreach (IPipeline pipeline in _pipelines.Pipelines)
                     {
-                        pipeline.ResetClonedDocuments();
+                        ((Pipeline)pipeline).ResetClonedDocuments();
                     }
 
                     engineStopwatch.Stop();

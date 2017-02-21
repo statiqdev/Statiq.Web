@@ -128,77 +128,80 @@ namespace Wyam.Core.Execution
         }
 
         // This executes the specified modules with the specified input documents
-        public IReadOnlyList<IDocument> Execute(ExecutionContext context, IEnumerable<IModule> modules, ImmutableArray<IDocument> documents)
+        public IReadOnlyList<IDocument> Execute(ExecutionContext context, IEnumerable<IModule> modules, ImmutableArray<IDocument> inputDocuments)
         {
             if (_disposed)
             {
                 throw new ObjectDisposedException(nameof(Pipeline));
             }
 
+            ImmutableArray<IDocument> resultDocuments = ImmutableArray<IDocument>.Empty;
             foreach (IModule module in modules.Where(x => x != null))
             {
                 string moduleName = module.GetType().Name;
                 System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                using (Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, documents.Length))
+                using (Trace.WithIndent().Verbose("Executing module {0} with {1} input document(s)", moduleName, inputDocuments.Length))
                 {
                     try
                     {
                         // Execute the module
-                        IEnumerable<IDocument> outputs;
                         using (ExecutionContext moduleContext = context.Clone(module))
                         {
-                            outputs = module.Execute(documents, moduleContext);
+                            resultDocuments = module.Execute(inputDocuments, moduleContext)?.Where(x => x != null).ToImmutableArray() ?? ImmutableArray<IDocument>.Empty;
                         }
-                        documents = outputs?.Where(x => x != null).ToImmutableArray() ?? ImmutableArray<IDocument>.Empty;
 
                         // Remove any documents that were previously processed (checking will also mark the cache entry as hit)
                         if (_previouslyProcessedCache != null && _processedSources != null)
                         {
                             ImmutableArray<IDocument>.Builder newDocuments = ImmutableArray.CreateBuilder<IDocument>();
-                            foreach (IDocument document in documents)
+                            foreach (IDocument resultDocument in resultDocuments)
                             {
-                                if (_processedSources.ContainsKey(document.Source))
+                                if (_processedSources.ContainsKey(resultDocument.Source))
                                 {
                                     // We've seen this source before and already added it to the processed cache
-                                    newDocuments.Add(document);
+                                    newDocuments.Add(resultDocument);
                                 }
                                 else
                                 {
                                     List<IDocument> processedDocuments;
-                                    if (!_previouslyProcessedCache.TryGetValue(document, out processedDocuments))
+                                    if (!_previouslyProcessedCache.TryGetValue(resultDocument, out processedDocuments))
                                     {
                                         // This document was not previously processed, so add it to the current result and set up a list to track final results
-                                        newDocuments.Add(document);
+                                        newDocuments.Add(resultDocument);
                                         processedDocuments = new List<IDocument>();
-                                        _previouslyProcessedCache.Set(document, processedDocuments);
-                                        _processedSources.Add(document.Source, processedDocuments);
+                                        _previouslyProcessedCache.Set(resultDocument, processedDocuments);
+                                        _processedSources.Add(resultDocument.Source, processedDocuments);
                                     }
                                     // Otherwise, this document was previously processed so don't add it to the results
                                 }
                             }
-                            if (newDocuments.Count != documents.Length)
+                            if (newDocuments.Count != resultDocuments.Length)
                             {
-                                Trace.Verbose("Removed {0} previously processed document(s)", documents.Length - newDocuments.Count);
+                                Trace.Verbose("Removed {0} previously processed document(s)", resultDocuments.Length - newDocuments.Count);
                             }
-                            documents = newDocuments.ToImmutable();
+                            resultDocuments = newDocuments.ToImmutable();
                         }
 
                         // Set results in engine and trace
-                        context.Engine.DocumentCollection.Set(Name, documents);
+                        context.Engine.DocumentCollection.Set(Name, resultDocuments);
                         stopwatch.Stop();
                         Trace.Verbose("Executed module {0} in {1} ms resulting in {2} output document(s)",
-                            moduleName, stopwatch.ElapsedMilliseconds, documents.Length);
+                            moduleName, stopwatch.ElapsedMilliseconds, resultDocuments.Length);
+                        inputDocuments = resultDocuments;
                     }
                     catch (Exception)
                     {
                         Trace.Error("Error while executing module {0}", moduleName);
-                        documents = ImmutableArray<IDocument>.Empty;
-                        context.Engine.DocumentCollection.Set(Name, documents);
+                        resultDocuments = ImmutableArray<IDocument>.Empty;
+                        context.Engine.DocumentCollection.Set(Name, resultDocuments);
                         throw;
                     }
                 }
             }
-            return documents;
+
+            // Set the document collection result one more time just to be sure it matches the result documents
+            context.Engine.DocumentCollection.Set(Name, resultDocuments);
+            return resultDocuments;
         }
 
         private void FlattenResultDocuments(IEnumerable<IDocument> documents, HashSet<IDocument> flattenedResultDocuments)
