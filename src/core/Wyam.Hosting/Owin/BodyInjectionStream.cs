@@ -17,7 +17,7 @@ namespace Wyam.Hosting.Owin
     /// It will look for the last occurrence of the &lt;/body&gt; tag and inject the snippet right before that tag.
     /// An instance of this class should be assigned as a filter to the outgoing response so that the injection can be done once all the rendering is completed.
     /// </summary>
-    internal class BodyCloseInjectionStream : Stream
+    internal class BodyInjectionStream : Stream
     {
         private const string BodyClosingTag = "</body>";
 
@@ -28,7 +28,7 @@ namespace Wyam.Hosting.Owin
 
         private string _unwrittenCharactersFromPreviousCall;
 
-        public BodyCloseInjectionStream(string htmlSnippet, Stream outputStream, Encoding contentEncoding)
+        public BodyInjectionStream(string htmlSnippet, Stream outputStream, Encoding contentEncoding)
         {
             _htmlSnippet = htmlSnippet + BodyClosingTag;
             _outputStream = outputStream;

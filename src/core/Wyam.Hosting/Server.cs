@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Owin;
+using Owin.WebSocket.Extensions;
 using Wyam.Hosting.LiveReload;
 using Wyam.Hosting.Owin;
 
@@ -62,9 +64,14 @@ namespace Wyam.Hosting
             }
 
             _host = new WebHostBuilder()
+                .ConfigureLogging(log => log.AddProvider(new LogActionLoggerProvider(_logAction)))
                 .UseKestrel()
                 .UseUrls($"http://localhost:{port}")
-                .Configure(builder => builder.UseOwinBuilder(OwinBuilder))
+                .Configure(builder =>
+                {
+                    builder.UseWebSockets();
+                    builder.UseOwinBuilder(OwinBuilder);
+                })
                 .Build();
         }
 
@@ -83,8 +90,8 @@ namespace Wyam.Hosting
         /// </summary>
         public void Start()
         {
-            _liveReloadServer?.Start();
             _host.Start();
+            _liveReloadServer?.Start();
         }
 
         public IFeatureCollection ServerFeatures => _host.ServerFeatures;
@@ -108,17 +115,6 @@ namespace Wyam.Hosting
             {
                 // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
                 app.UseScriptInjection("/livereload.js");
-
-                // Host livereload.js
-                Assembly liveReloadAssembly = typeof(LiveReloadServer).Assembly;
-                string rootNamespace = typeof(LiveReloadServer).Namespace;
-                IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = PathString.Empty,
-                    FileSystem = reloadFilesystem,
-                    ServeUnknownFileTypes = true
-                });
             }
 
             // Support for virtual directory
@@ -158,6 +154,9 @@ namespace Wyam.Hosting
                 FileSystem = outputFolder,
                 ServeUnknownFileTypes = true
             });
+
+            // Add the LiveReload middleware
+            _liveReloadServer?.OwinBuilder(app);
         }
     }
 }

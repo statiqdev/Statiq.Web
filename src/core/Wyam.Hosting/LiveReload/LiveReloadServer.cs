@@ -19,7 +19,7 @@ namespace Wyam.Hosting.LiveReload
         private readonly ConcurrentBag<IReloadClient> _clients = new ConcurrentBag<IReloadClient>();
         private readonly Action<string> _logAction;
         private readonly IWebHost _host;
-
+        
         public LiveReloadServer(int port, Action<string> logAction)
         {
             if (port <= 0)
@@ -31,6 +31,7 @@ namespace Wyam.Hosting.LiveReload
             Port = port;
 
             _host = new WebHostBuilder()
+                .ConfigureLogging(log => log.AddProvider(new LogActionLoggerProvider(_logAction)))
                 .UseKestrel()
                 .UseUrls($"http://localhost:{port}")
                 .Configure(builder =>
@@ -43,7 +44,8 @@ namespace Wyam.Hosting.LiveReload
 
         public int Port { get; }
 
-        public IEnumerable<IReloadClient> ReloadClients => _clients;
+        // virtual is required to mock for testing
+        public virtual IEnumerable<IReloadClient> ReloadClients => _clients;
 
         public void Start() => _host.Start();
 
@@ -61,8 +63,20 @@ namespace Wyam.Hosting.LiveReload
             }
         }
 
-        private void OwinBuilder(IAppBuilder app)
+        // This gets applied to both the main server and the LiveReload server
+        internal void OwinBuilder(IAppBuilder app)
         {
+            // Host livereload.js
+            Assembly liveReloadAssembly = typeof(LiveReloadServer).Assembly;
+            string rootNamespace = typeof(LiveReloadServer).Namespace;
+            IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = PathString.Empty,
+                FileSystem = reloadFilesystem,
+                ServeUnknownFileTypes = true
+            });
+
             // Host ws://
             app.MapFleckRoute<ReloadClient>("/livereload", connection =>
             {

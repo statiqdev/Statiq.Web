@@ -39,7 +39,6 @@ namespace Wyam.Hosting.LiveReload
         {
             string json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
             HandleClientMessage(json);
-
             return Task.CompletedTask;
         }
 
@@ -86,10 +85,11 @@ namespace Wyam.Hosting.LiveReload
 
         private void HandleHello(HelloMessage message)
         {
-            string negotiatedVersion = message.Protocols
-                                              .Intersect(_supportedVersion)
-                                              .OrderByDescending(x => x)
-                                              .FirstOrDefault();
+            string negotiatedVersion = message
+                .Protocols
+                .Intersect(_supportedVersion)
+                .OrderByDescending(x => x)
+                .FirstOrDefault();
 
             if (negotiatedVersion == null)
             {
@@ -113,7 +113,6 @@ namespace Wyam.Hosting.LiveReload
             {
                 Protocols = _supportedVersion
             };
-
             SendObject(helloMessage);
         }
 

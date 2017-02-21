@@ -334,9 +334,6 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="LiveReload\LiveReloadHostnameTests.cs" />
-    <Compile Include="LiveReload\LiveReloadInjectTests.cs" />
-    <Compile Include="LiveReload\LiveReloadServerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MetadataParserFixture.cs" />
   </ItemGroup>
@@ -353,6 +350,10 @@
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\Wyam.Hosting\Wyam.Hosting.csproj">
+      <Project>{A3041B22-8A32-4ADB-89F3-A808AC60899B}</Project>
+      <Name>Wyam.Hosting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj">
       <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
       <Name>Wyam.Testing</Name>
@@ -364,12 +365,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="LiveReload\Documents\NonHtmlDocument.css" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="LiveReload\Documents\BasicHtmlDocument.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

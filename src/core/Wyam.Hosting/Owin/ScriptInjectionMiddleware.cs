@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,17 +33,39 @@ namespace Wyam.Hosting.Owin
 
             _next = next;
             _injectionCode = string.Join(Environment.NewLine,
-                scriptUrls.Select(x => $@"<script type=""text/javascript"" src=""{x}"" />"));
+                scriptUrls.Select(x => $@"<script type=""text/javascript"" src=""{x}""></script>"));
         }
 
-        public Task Invoke(IDictionary<string, object> environment)
+        public async Task Invoke(IDictionary<string, object> environment)
         {
             IOwinContext context = new OwinContext(environment);
+
+            // Intercept the original stream
+            Stream originalBody = context.Response.Body;
+            MemoryStream interceptedBody = new MemoryStream();
+            context.Response.Body = interceptedBody;
+
+            // Run the middleware
+            await _next(environment);
+
+            // Write the buffer to the output stream
+            interceptedBody.Position = 0;
             if(string.Equals(context.Response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
             {
-                context.Response.Body = new BodyCloseInjectionStream(_injectionCode, context.Response.Body, Encoding.UTF8);
+                using (StreamReader reader = new StreamReader(interceptedBody))
+                {
+                    string body = await reader.ReadToEndAsync();
+                    int closingTag = body.LastIndexOf("</body>", StringComparison.Ordinal);
+                    if (closingTag > -1)
+                    {
+                        interceptedBody = new MemoryStream(reader.CurrentEncoding.GetBytes(body.Insert(closingTag, _injectionCode)));
+                        context.Response.ContentLength = interceptedBody.Length;
+                    }
+                }
             }
-            return _next(environment);
+            interceptedBody.Position = 0;
+            interceptedBody.CopyTo(originalBody);
+            context.Response.Body = originalBody;
         }
     }
 }

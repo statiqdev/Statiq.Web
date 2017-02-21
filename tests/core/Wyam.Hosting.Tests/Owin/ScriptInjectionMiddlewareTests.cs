@@ -2,37 +2,29 @@
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Owin.Testing;
-
 using NUnit.Framework;
-
 using Owin;
+using Wyam.Hosting.Owin;
 
-using Wyam.LiveReload;
-
-namespace Wyam.Tests.LiveReload
+namespace Wyam.Hosting.Tests.Owin
 {
     [TestFixture]
-    public class LiveReloadInjectTests
+    public class ScriptInjectionMiddlewareTests
     {
-        private static readonly Assembly ContentAssembly = typeof(LiveReloadInjectTests).Assembly;
-        private static readonly string ContentNamespace = $"{typeof(LiveReloadInjectTests).Namespace}.Documents";
-
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly LiveReloadServer _server;
+        private static readonly Assembly ContentAssembly = typeof(ScriptInjectionMiddlewareTests).Assembly;
+        private static readonly string ContentNamespace = $"{typeof(ScriptInjectionMiddlewareTests).Namespace}.Documents";
+        
         private readonly TestServer _host;
 
-        public LiveReloadInjectTests()
+        public ScriptInjectionMiddlewareTests()
         {
-            _server = new LiveReloadServer();
-
             _host = TestServer.Create(app =>
             {
-                _server.AddInjectionMiddleware(app);
+                app.UseScriptInjection("/livereload.js");
                 IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(ContentAssembly, ContentNamespace);
                 app.UseStaticFiles(new StaticFileOptions
                 {
@@ -40,7 +32,6 @@ namespace Wyam.Tests.LiveReload
                     FileSystem = reloadFilesystem,
                     ServeUnknownFileTypes = true
                 });
-                _server.AddHostMiddleware(app);
             });
         }
 
@@ -50,8 +41,7 @@ namespace Wyam.Tests.LiveReload
             const string filename = "BasicHtmlDocument.html";
             HttpResponseMessage response = await _host.CreateRequest(filename).GetAsync();
             string body = await response.Content.ReadAsStringAsync();
-
-            Assert.IsTrue(body.Contains("<script type=\"text/javascript\" src=\"/livereload.js\">"));
+            Assert.IsTrue(body.Contains("<script type=\"text/javascript\" src=\"/livereload.js\"></script></body>"));
         }
 
         [Test]

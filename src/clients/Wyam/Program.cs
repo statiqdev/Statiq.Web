@@ -1,21 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.StaticFiles;
-using Owin;
 using Wyam.Commands;
-using Wyam.Common.IO;
+using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
-using Wyam.Owin;
-using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam
 {
@@ -43,7 +30,7 @@ namespace Wyam
         private int Run(string[] args)
         {
             // Add a default trace listener
-            Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = TraceOptions.None });
+            Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
             
             // Output version info
             Trace.Information($"Wyam version {Engine.Version}");
@@ -73,7 +60,7 @@ namespace Wyam
             catch (Exception ex)
             {
                 Trace.Error("Error while parsing command line: {0}", ex.Message);
-                if (Trace.Level == SourceLevels.Verbose)
+                if (Trace.Level == System.Diagnostics.SourceLevels.Verbose)
                 {
                     Trace.Error("Stack trace:{0}{1}", Environment.NewLine, ex.StackTrace);
                 }

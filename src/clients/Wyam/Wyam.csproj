@@ -282,34 +282,18 @@
     <Compile Include="Commands\ConfigOptions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
-    <Compile Include="LiveReload\LiveReloadScriptInjectionMiddleware.cs" />
-    <Compile Include="LiveReload\LiveReloadScriptInjectionMiddlewareExtensions.cs" />
-    <Compile Include="LiveReload\LiveReloadServer.cs" />
-    <Compile Include="LiveReload\Messages\BasicMessage.cs" />
-    <Compile Include="LiveReload\Messages\HelloMessage.cs" />
-    <Compile Include="LiveReload\Messages\InfoMessage.cs" />
-    <Compile Include="LiveReload\Messages\ILiveReloadMessage.cs" />
-    <Compile Include="LiveReload\ReloadClient.cs" />
-    <Compile Include="LiveReload\Messages\ReloadMessage.cs" />
-    <Compile Include="Server\ApplicationBuilderExtensions.cs" />
-    <Compile Include="Owin\VirtualDirectoryExtensions.cs" />
-    <Compile Include="Owin\VirtualDirectoryMiddleware.cs" />
     <Compile Include="PreviewServer.cs" />
     <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="EngineManager.cs" />
     <Compile Include="ExitCode.cs" />
     <Compile Include="MetadataParser.cs" />
-    <Compile Include="Owin\ExtensionlessUrlsExtensions.cs" />
-    <Compile Include="Owin\ExtensionlessUrlsMiddleware.cs" />
     <Compile Include="InterlockedBool.cs" />
-    <Compile Include="Owin\ExtensionlessUrlsOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CommandParser.cs" />
-    <Compile Include="Server\HttpServer.cs" />
     <Compile Include="SimpleColorConsoleTraceListener.cs" />
     <Compile Include="SimpleFileTraceListener.cs" />
     <Compile Include="StandardInputReader.cs" />
@@ -339,6 +323,10 @@
       <Project>{F40B73E9-C0CC-465C-925E-B51E686C1D5C}</Project>
       <Name>Wyam.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\Wyam.Hosting\Wyam.Hosting.csproj">
+      <Project>{a3041b22-8a32-4adb-89f3-a808ac60899b}</Project>
+      <Name>Wyam.Hosting</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">
@@ -351,9 +339,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="LiveReload\livereload.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

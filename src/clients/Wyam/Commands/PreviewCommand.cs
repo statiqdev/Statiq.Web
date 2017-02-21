@@ -30,7 +30,7 @@ namespace Wyam.Commands
         protected override ExitCode RunCommand(Preprocessor preprocessor)
         {
             _path = new DirectoryPath(Environment.CurrentDirectory).Combine(_path ?? "output");
-            using (PreviewServer.Start(_path, _port, _forceExtension, _virtualDirectory, null))
+            using (PreviewServer.Start(_path, _port, 0, _forceExtension, _virtualDirectory))
             {
                 Trace.Information("Hit any key to exit");
                 Console.ReadKey();
