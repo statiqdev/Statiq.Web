@@ -11,7 +11,7 @@
     <projectUrl>https://wyam.io</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains the docs recipe.</description>
-    <copyright>Copyright 2016</copyright>
+    <copyright>Copyright 2017</copyright>
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>    
     <!-- This is a really crummy way to specify project reference dependencies,
     but since we don't want a dependency on Wyam.Common, it's the only way I

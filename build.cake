@@ -206,7 +206,7 @@ Task("Create-Theme-Packages")
                 ProjectUrl = new Uri("https://wyam.io"),
                 IconUrl = new Uri("https://wyam.io/assets/img/logo-square-64.png"),
                 LicenseUrl = new Uri("https://github.com/Wyamio/Wyam/blob/master/LICENSE"),
-                Copyright = "Copyright 2016",
+                Copyright = "Copyright 2017",
                 Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
                 RequireLicenseAcceptance = false,
                 Symbols = false,
