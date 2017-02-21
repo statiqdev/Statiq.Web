@@ -106,7 +106,39 @@ namespace Wyam.Core.Tests.Modules.Contents
             Assert.AreEqual(null, results.Single().Content);
         }
 
+        [Test]
+        public void TwoDocumentsJoinWithCommaDelimiter()
+        {
+            // Given
+            IDocument first = new TestDocument("Test");
+            IDocument second = new TestDocument("Test2");
 
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(",");
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.AreEqual("Test,Test2", results.Single().Content);
+        }
+
+        [Test]
+        public void TwoDocumentsJoinWithDelimiterInText()
+        {
+            // Given
+            IDocument first = new TestDocument("Test");
+            IDocument second = new TestDocument("Test2");
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join("Test");
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.AreEqual("TestTestTest2", results.Single().Content);
+        }
 
     }
 }
