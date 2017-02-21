@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 
 using Owin;
 
-namespace Wyam.Server
+namespace Wyam.Hosting
 {
     internal class HttpServer : IDisposable
     {
@@ -18,7 +18,7 @@ namespace Wyam.Server
                 .UseUrls($"http://localhost:{port}")
                 .Configure(builder =>
                 {
-                    // Enable websocket support
+                    // Enable WebSocket support
                     builder.UseWebSockets();
 
                     // Support drop-in replacement

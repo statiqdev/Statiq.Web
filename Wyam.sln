@@ -118,6 +118,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Highlight.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Testing.JavaScript", "src\core\Wyam.Testing.JavaScript\Wyam.Testing.JavaScript.csproj", "{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Hosting", "src\core\Wyam.Hosting\Wyam.Hosting.csproj", "{A3041B22-8A32-4ADB-89F3-A808AC60899B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Hosting.Tests", "tests\core\Wyam.Hosting.Tests\Wyam.Hosting.Tests.csproj", "{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -312,6 +316,14 @@ Global
 		{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3041B22-8A32-4ADB-89F3-A808AC60899B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3041B22-8A32-4ADB-89F3-A808AC60899B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3041B22-8A32-4ADB-89F3-A808AC60899B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3041B22-8A32-4ADB-89F3-A808AC60899B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -371,5 +383,7 @@ Global
 		{5FE758A2-1221-48FE-8A3C-8B3B9A32AFAB} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 		{A6DE4586-1398-4071-90AB-5CCC1C949720} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
 		{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F} = {4813B17D-EFCA-401D-B0E6-7B24B3946A70}
+		{A3041B22-8A32-4ADB-89F3-A808AC60899B} = {4813B17D-EFCA-401D-B0E6-7B24B3946A70}
+		{9C59DA3D-6A41-4DC4-A4BB-0927C6978367} = {12931CA5-E734-4CD9-883D-27D897512183}
 	EndGlobalSection
 EndGlobal

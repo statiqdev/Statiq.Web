@@ -11,7 +11,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.LiveReload;
 using Wyam.Owin;
-using Wyam.Server;
+using Wyam.Hosting;
 
 namespace Wyam
 {

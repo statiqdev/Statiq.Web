@@ -53,8 +53,8 @@
       <HintPath>..\..\..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fleck, Version=0.13.0.57, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Fleck.0.13.0.57\lib\net40\Fleck.dll</HintPath>
+    <Reference Include="Fleck, Version=0.14.0.59, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Fleck.0.14.0.59\lib\net40\Fleck.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Hosting, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">

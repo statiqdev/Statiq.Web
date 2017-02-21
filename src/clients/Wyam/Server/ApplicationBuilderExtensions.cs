@@ -7,12 +7,11 @@ using Microsoft.Owin.Builder;
 
 using Owin;
 
-namespace Wyam.Server
+namespace Wyam.Hosting
 {
     internal static class ApplicationBuilderExtensions
     {
         // http://stackoverflow.com/a/30742029/2001966
-
         public static void UseOwinBuilder(this IApplicationBuilder app, Action<IAppBuilder> owinConfiguration)
         {
             app.UseOwin(

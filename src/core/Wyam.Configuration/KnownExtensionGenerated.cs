@@ -5,7 +5,9 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Common = new KnownExtension("Wyam.Common");
 		public static readonly KnownExtension Configuration = new KnownExtension("Wyam.Configuration");
 		public static readonly KnownExtension Core = new KnownExtension("Wyam.Core");
+		public static readonly KnownExtension Hosting = new KnownExtension("Wyam.Hosting");
 		public static readonly KnownExtension Testing = new KnownExtension("Wyam.Testing");
+		public static readonly KnownExtension JavaScript = new KnownExtension("Wyam.Testing.JavaScript");
 		public static readonly KnownExtension All = new KnownExtension("Wyam.All");
 		public static readonly KnownExtension AmazonWebServices = new KnownExtension("Wyam.AmazonWebServices");
 		public static readonly KnownExtension Blog = new KnownExtension("Wyam.Blog");

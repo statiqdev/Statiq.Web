@@ -12,7 +12,7 @@ using Owin;
 using Owin.WebSocket.Extensions;
 
 using Wyam.Common.Tracing;
-using Wyam.Server;
+using Wyam.Hosting;
 
 namespace Wyam.LiveReload
 {
