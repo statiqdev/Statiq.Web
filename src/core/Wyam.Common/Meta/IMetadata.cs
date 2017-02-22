@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.SqlServer.Server;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
 
