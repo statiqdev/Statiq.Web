@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Wyam
+namespace Wyam.Tracing
 {
     // A special trace listener that shows colors in the console and doesn't output the source name or event id
     // This was helpful: http://blog.flimflan.com/ASimpleColorConsoleTraceListener.html

@@ -3,17 +3,17 @@ using System.Net.Sockets;
 using NUnit.Framework;
 using Wyam.Hosting.LiveReload;
 
-namespace Wyam.Hosting.Tests.LiveReload
+namespace Wyam.Hosting.Tests
 {
     [TestFixture(Category = "ExcludeFromAppVeyor")]
-    public class LiveReloadServerHostnameTests
+    public class ServerEndpointTests
     {
         [Test]
         public void ServerShouldBindWithoutUrlReservations()
         {
             int port = GetEphemeralPort();
-            LiveReloadServer server = null;
-            Assert.DoesNotThrow(() => server = new LiveReloadServer(port, null));
+            Server server = null;
+            Assert.DoesNotThrow(() => server = new Server("", port));
             server?.Dispose();
         }
 

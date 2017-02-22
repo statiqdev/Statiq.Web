@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -33,7 +34,7 @@ namespace Wyam.Hosting.LiveReload
 
         public bool IsConnected { get; private set; }
 
-        public Action<string> LogAction { private get; set; }
+        public ILogger Logger { private get; set; }
 
         public override Task OnMessageReceived(ArraySegment<byte> message, WebSocketMessageType type)
         {
@@ -123,9 +124,6 @@ namespace Wyam.Hosting.LiveReload
             SendText(bytes, true);
         }
 
-        private void Log(string message)
-        {
-            LogAction($"{message} (LiveReload client: {_clientId})");
-        }
+        private void Log(string message) => Logger?.LogDebug($"{message} (LiveReload client: {_clientId})");
     }
 }

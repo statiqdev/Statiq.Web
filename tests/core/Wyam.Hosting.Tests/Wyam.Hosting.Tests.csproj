@@ -318,8 +318,8 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="LiveReload\LiveReloadServerHostnameTests.cs" />
-    <Compile Include="LiveReload\LiveReloadServerTests.cs" />
+    <Compile Include="ServerEndpointTests.cs" />
+    <Compile Include="ServerFixture.cs" />
     <Compile Include="Owin\ScriptInjectionMiddlewareTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -331,6 +331,10 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Hosting\Wyam.Hosting.csproj">
       <Project>{a3041b22-8a32-4adb-89f3-a808ac60899b}</Project>
       <Name>Wyam.Hosting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj">
+      <Project>{7726d040-4192-49c7-b9ea-e192397127c3}</Project>
+      <Name>Wyam.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

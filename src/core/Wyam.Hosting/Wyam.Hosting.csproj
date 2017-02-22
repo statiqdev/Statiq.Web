@@ -308,13 +308,11 @@
     </Compile>
     <Compile Include="ApplicationBuilderExtensions.cs" />
     <Compile Include="LiveReload\IReloadClient.cs" />
-    <Compile Include="LiveReload\LiveReloadServer.cs" />
     <Compile Include="LiveReload\Messages\BasicMessage.cs" />
     <Compile Include="LiveReload\Messages\HelloMessage.cs" />
     <Compile Include="LiveReload\Messages\ILiveReloadMessage.cs" />
     <Compile Include="LiveReload\Messages\InfoMessage.cs" />
     <Compile Include="LiveReload\Messages\ReloadMessage.cs" />
-    <Compile Include="LogActionLoggerProvider.cs" />
     <Compile Include="Owin\BodyInjectionStream.cs" />
     <Compile Include="LiveReload\ReloadClient.cs" />
     <Compile Include="Owin\ExtensionlessUrlsExtensions.cs" />

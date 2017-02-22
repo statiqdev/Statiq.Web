@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,25 +24,29 @@ namespace Wyam.Hosting
     /// </summary>
     public class Server : IWebHost
     {
-        private readonly Action<string> _logAction;
+        private readonly ILoggerProvider _loggerProvider;
         private readonly IWebHost _host;
-        private readonly LiveReloadServer _liveReloadServer;
 
         /// <summary>
         /// Creates the HTTP server.
         /// </summary>
         /// <param name="localPath">The local path to serve files from.</param>
         /// <param name="port">The port the server will serve HTTP requests on.</param>
-        /// <param name="liveReloadPort">
-        /// The port the server will use for LiveReload requests. Set to 0 to disable
-        /// LiveReload capabilities.
-        /// </param>
+        public Server(string localPath, int port = 5080)
+            : this(localPath, port, true, null, true, null)
+        {
+        }
+
+        /// <summary>
+        /// Creates the HTTP server.
+        /// </summary>
+        /// <param name="localPath">The local path to serve files from.</param>
+        /// <param name="port">The port the server will serve HTTP requests on.</param>
         /// <param name="extensionless"><c>true</c> if the server should support extensionless URLs, <c>false</c> otherwise.</param>
         /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
-        /// <param name="logAction">An action to call for logging messages.</param>
-        public Server(string localPath, int port = 5080, 
-            int liveReloadPort = 35729, bool extensionless = true, string virtualDirectory = null,
-            Action<string> logAction = null)
+        /// <param name="liveReload">Enables support for LiveReload.</param>
+        /// <param name="loggerProvider">The logger provider to use.</param>
+        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, ILoggerProvider loggerProvider)
         {
             if (localPath == null)
             {
@@ -52,19 +57,25 @@ namespace Wyam.Hosting
                 throw new ArgumentException("The port must be greater than 0");
             }
 
-            _logAction = logAction ?? (_ => {});
+            _loggerProvider = loggerProvider;
             LocalPath = localPath;
             Port = port;
             Extensionless = extensionless;
             VirtualDirectory = virtualDirectory;
 
-            if (liveReloadPort > 0)
+            if (liveReload)
             {
-                _liveReloadServer = new LiveReloadServer(liveReloadPort, _logAction);
+                LiveReloadClients = new ConcurrentBag<IReloadClient>();
             }
 
             _host = new WebHostBuilder()
-                .ConfigureLogging(log => log.AddProvider(new LogActionLoggerProvider(_logAction)))
+                .ConfigureLogging(log =>
+                {
+                    if (loggerProvider != null)
+                    {
+                        log.AddProvider(loggerProvider);
+                    }
+                })
                 .UseKestrel()
                 .UseUrls($"http://localhost:{port}")
                 .Configure(builder =>
@@ -83,37 +94,38 @@ namespace Wyam.Hosting
 
         public string VirtualDirectory { get; }
 
-        public int LiveReloadPort => _liveReloadServer?.Port ?? 0;
+        // internal virtual is required to mock for testing
+        internal virtual ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
 
         /// <summary>
         /// Start listening.
         /// </summary>
-        public void Start()
-        {
-            _host.Start();
-            _liveReloadServer?.Start();
-        }
+        public void Start() => _host.Start();
 
         public IFeatureCollection ServerFeatures => _host.ServerFeatures;
 
         public IServiceProvider Services => _host.Services;
 
-        public void Dispose()
-        {
-            _liveReloadServer?.Dispose();
-            _host.Dispose();
-        }
+        public void Dispose() => _host.Dispose();
 
-        public void TriggerReload() => _liveReloadServer?.TriggerReload();
+        public void TriggerReload()
+        {
+            if (LiveReloadClients != null)
+            {
+                foreach (IReloadClient client in LiveReloadClients.Where(x => x.IsConnected))
+                {
+                    client.NotifyOfChanges();
+                }
+            }
+        }
 
         private void OwinBuilder(IAppBuilder app)
         {
             IFileSystem outputFolder = new PhysicalFileSystem(LocalPath);
-            
-            // LiveReload support
-            if (_liveReloadServer != null)
+
+            // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
+            if (LiveReloadClients != null)
             {
-                // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
                 app.UseScriptInjection("/livereload.js");
             }
 
@@ -156,7 +168,27 @@ namespace Wyam.Hosting
             });
 
             // Add the LiveReload middleware
-            _liveReloadServer?.OwinBuilder(app);
+            if (LiveReloadClients != null)
+            {
+                // Host livereload.js
+                Assembly liveReloadAssembly = typeof(ReloadClient).Assembly;
+                string rootNamespace = typeof(ReloadClient).Namespace;
+                IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    RequestPath = PathString.Empty,
+                    FileSystem = reloadFilesystem,
+                    ServeUnknownFileTypes = true
+                });
+
+                // Host ws://
+                app.MapFleckRoute<ReloadClient>("/livereload", connection =>
+                {
+                    ReloadClient reloadClient = (ReloadClient)connection;
+                    reloadClient.Logger = _loggerProvider?.CreateLogger("LiveReload");
+                    LiveReloadClients.Add(reloadClient);
+                });
+            }
         }
     }
 }

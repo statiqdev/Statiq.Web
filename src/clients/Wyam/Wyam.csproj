@@ -282,6 +282,7 @@
     <Compile Include="Commands\ConfigOptions.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\PreviewCommand.cs" />
+    <Compile Include="Tracing\TraceLoggerProvider.cs" />
     <Compile Include="PreviewServer.cs" />
     <Compile Include="Commands\NewCommand.cs" />
     <Compile Include="EngineManager.cs" />
@@ -294,9 +295,10 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CommandParser.cs" />
-    <Compile Include="SimpleColorConsoleTraceListener.cs" />
-    <Compile Include="SimpleFileTraceListener.cs" />
+    <Compile Include="Tracing\SimpleColorConsoleTraceListener.cs" />
+    <Compile Include="Tracing\SimpleFileTraceListener.cs" />
     <Compile Include="StandardInputReader.cs" />
+    <Compile Include="Tracing\TraceLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Wyam
+namespace Wyam.Tracing
 {
     // A special trace listener that doesn't output the source name or event id
     internal class SimpleFileTraceListener : TextWriterTraceListener

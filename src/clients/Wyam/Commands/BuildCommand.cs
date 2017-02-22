@@ -8,6 +8,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Hosting;
+using Wyam.Tracing;
 
 namespace Wyam.Commands
 {
@@ -27,7 +28,7 @@ namespace Wyam.Commands
         private bool _verifyConfig = false;
         private DirectoryPath _previewRoot = null;
         private bool _watch = false;
-        private int _liveReloadPort = 35729;
+        private bool _noReload = false;
 
         public override string Description => "Runs the build process (this is the default command).";
 
@@ -56,9 +57,9 @@ namespace Wyam.Commands
             {
                 syntax.ReportError("preview-root can only be specified if the preview server is running.");
             }
-            if (syntax.DefineOption("live-reload", ref _liveReloadPort, "The port to use for the LiveReload server (set to 0 to disable LiveReload support).").IsSpecified && !_preview && !_watch)
+            if (syntax.DefineOption("noreload", ref _noReload, "Turns off LiveReload support in the preview server.").IsSpecified && (!_preview || !_watch))
             {
-                syntax.ReportError("live-reload can only be specified if both the preview server is running and watching is enabled.");
+                syntax.ReportError("noreload can only be specified if both the preview server is running and watching is enabled.");
             }
             syntax.DefineOptionList("i|input", ref _configOptions.InputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
             syntax.DefineOption("o|output", ref _configOptions.OutputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
@@ -175,7 +176,7 @@ namespace Wyam.Commands
                 DirectoryPath previewPath = _previewRoot == null
                     ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
                     : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                previewServer = PreviewServer.Start(previewPath, _previewPort, _watch ? _liveReloadPort : 0, _previewForceExtension, _previewVirtualDirectory);
+                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory, _watch && !_noReload);
             }
 
             // Start the watchers

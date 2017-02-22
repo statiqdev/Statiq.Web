@@ -3,6 +3,7 @@ using Wyam.Commands;
 using Wyam.Common.Tracing;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
+using Wyam.Tracing;
 
 namespace Wyam
 {

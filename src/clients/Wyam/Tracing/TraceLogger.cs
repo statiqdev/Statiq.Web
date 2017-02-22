@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Wyam.Common.Util;
 using Trace = Wyam.Common.Tracing.Trace;
 
-namespace Wyam.Razor
+namespace Wyam.Tracing
 {
     internal class TraceLogger : ILogger
     {
@@ -13,8 +13,8 @@ namespace Wyam.Razor
 
         private static readonly Dictionary<LogLevel, SourceLevels> LevelMapping = new Dictionary<LogLevel, SourceLevels>
         {
-            {LogLevel.Trace, SourceLevels.Off},
-            {LogLevel.Debug, SourceLevels.Off},
+            {LogLevel.Trace, SourceLevels.Verbose},
+            {LogLevel.Debug, SourceLevels.Verbose},
             {LogLevel.Information, SourceLevels.Verbose},
             {LogLevel.Warning, SourceLevels.Warning},
             {LogLevel.Error, SourceLevels.Error},
@@ -38,12 +38,12 @@ namespace Wyam.Razor
             _categoryName = categoryName;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
                 Exception exception, Func<TState, Exception, string> formatter)
         {
             if (IsEnabled(logLevel))
             {
-                Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
+                Common.Tracing.Trace.TraceEvent(TraceMapping[logLevel], $"{_categoryName}: {formatter(state, exception)}");
             }
         }
 
