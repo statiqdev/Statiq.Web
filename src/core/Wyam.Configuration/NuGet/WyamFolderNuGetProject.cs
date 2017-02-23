@@ -21,30 +21,33 @@ namespace Wyam.Configuration.NuGet
     // This primarily exists to intercept package installations and store their paths
     internal class WyamFolderNuGetProject : FolderNuGetProject
     {
-        private readonly ConcurrentHashSet<PackageIdentity> _packageIdentities = new ConcurrentHashSet<PackageIdentity>();
         private readonly IFileSystem _fileSystem;
         private readonly AssemblyLoader _assemblyLoader;
         private readonly NuGetFramework _currentFramework;
+        private readonly InstalledPackagesCache _installedPackages;
 
-        public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, string root) : base(root)
+        public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, InstalledPackagesCache installedPackages, string root) : base(root)
         {
             _fileSystem = fileSystem;
             _assemblyLoader = assemblyLoader;
             _currentFramework = currentFramework;
+            _installedPackages = installedPackages;
         }
 
         // This gets called for every package install, including dependencies, and is our only chance to handle dependency PackageIdentity instances
         public override Task<bool> InstallPackageAsync(PackageIdentity packageIdentity, DownloadResourceResult downloadResourceResult,
             INuGetProjectContext nuGetProjectContext, CancellationToken token)
         {
-            _packageIdentities.Add(packageIdentity);
+            _installedPackages.AddPackage(packageIdentity, _currentFramework);
             Trace.Verbose($"Installing package or dependency {packageIdentity.Id} {(packageIdentity.HasVersion ? packageIdentity.Version.ToNormalizedString() : string.Empty)}");
             return base.InstallPackageAsync(packageIdentity, downloadResourceResult, nuGetProjectContext, token);
         }
 
         public void ProcessAssembliesAndContent()
         {
-            List<DirectoryPath> contentPaths = _packageIdentities
+            List<DirectoryPath> contentPaths = _installedPackages
+                .GetInstalledPackagesAndDependencies()
+                .Distinct()
                 .AsParallel()
                 .SelectMany(packageIdentity =>
                 {
@@ -94,6 +97,9 @@ namespace Wyam.Configuration.NuGet
                 }
             }
         }
+
+        public override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync(CancellationToken token) => 
+            Task.Run(() => _installedPackages.GetCachedPackages(), token);
 
         // Probably going to hell for using a region
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class

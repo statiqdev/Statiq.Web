@@ -287,9 +287,11 @@
     <Compile Include="KnownThemeGenerated.cs">
       <DependentUpon>KnownThemeGenerated.csx</DependentUpon>
     </Compile>
+    <Compile Include="NuGet\CachedPackage.cs" />
     <Compile Include="NuGet\Package.cs" />
     <Compile Include="NuGet\PackageInstaller.cs" />
     <Compile Include="Directives\ArgumentSyntaxDirective.cs" />
+    <Compile Include="NuGet\InstalledPackagesCache.cs" />
     <Compile Include="Preprocessing\DirectiveValue.cs" />
     <Compile Include="NuGet\MachineWideSettings.cs" />
     <Compile Include="NuGet\NuGetLogger.cs" />

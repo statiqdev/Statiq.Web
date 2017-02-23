@@ -91,7 +91,7 @@ namespace Wyam.Configuration.NuGet
             _versionMatch = versionMatch;
         }
 
-        public async Task Install(IReadOnlyList<SourceRepository> remoteRepositories, NuGetPackageManager packageManager)
+        public async Task Install(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories, InstalledPackagesCache installedPackages, NuGetPackageManager packageManager)
         {
             if (_versionMatch == null)
             {
@@ -100,13 +100,25 @@ namespace Wyam.Configuration.NuGet
             IReadOnlyList<SourceRepository> sourceRepositories = GetSourceRepositories(remoteRepositories);
             using (Trace.WithIndent().Verbose($"Installing package {_packageId} {_versionMatch.Version}"))
             {
-                ResolutionContext resolutionContext = new ResolutionContext(
-                    DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
-                INuGetProjectContext projectContext = new NuGetProjectContext();
-                await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
-                    new PackageIdentity(_packageId, _versionMatch), resolutionContext, projectContext,
-                    sourceRepositories, Array.Empty<SourceRepository>(), CancellationToken.None);
-                Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+                // Check if this package was already installed in a previous run
+                PackageIdentity packageIdentity = new PackageIdentity(_packageId, _versionMatch);
+                if (installedPackages.VerifyPackage(packageIdentity))
+                {
+                    Trace.Verbose($"Package {_packageId} {_versionMatch.Version} was already installed");
+                    return;
+                }
+
+                // If not, go ahead and install it
+                using (installedPackages.AddPackage(packageIdentity, _currentFramework))
+                {
+                    ResolutionContext resolutionContext = new ResolutionContext(
+                        DependencyBehavior.Lowest, _allowPrereleaseVersions, _allowUnlisted, VersionConstraints.None);
+                    INuGetProjectContext projectContext = new NuGetProjectContext();
+                    await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
+                        packageIdentity, resolutionContext, projectContext,
+                        new[] {localRepository}, sourceRepositories, CancellationToken.None);
+                    Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+                }
             }
         }
 
