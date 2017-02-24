@@ -26,7 +26,7 @@ namespace Wyam.Configuration.ConfigScript
             // Only do the replacement if this is a module ctor or a module fluent method
             ArgumentListSyntax argumentList = node.ArgumentList;
             bool nodeChanged = false;
-            if(IsInvocationAModuleCtorOrFluentMethod(node))
+            if (IsInvocationAModuleCtorOrFluentMethod(node))
             {
                 // Replace @doc and @ctx argument expressions with the appropriate lambda expressions, and stop descending if we hit another module ctor
                 foreach (ArgumentSyntax argument in node.ArgumentList.Arguments)

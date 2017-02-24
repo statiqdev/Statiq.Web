@@ -59,7 +59,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
                 foreach (IDocument document in inputs.Concat(outputs.ToList()))
                 {
-                    ((IDisposable) document).Dispose();
+                    ((IDisposable)document).Dispose();
                 }
 
                 // Then
@@ -102,7 +102,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
                 foreach (IDocument document in inputs.Concat(outputs.ToList()))
                 {
-                    ((IDisposable) document).Dispose();
+                    ((IDisposable)document).Dispose();
                 }
 
                 // Then

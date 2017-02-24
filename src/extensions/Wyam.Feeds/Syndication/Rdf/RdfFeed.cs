@@ -8,17 +8,17 @@ using Wyam.Feeds.Syndication.Extensions;
 namespace Wyam.Feeds.Syndication.Rdf
 {
     /// <summary>
-	/// RDF 1.0 Root
-	///		http://web.resource.org/rss/1.0/spec#s5.2
-	/// </summary>
-	/// <remarks>
-	/// XmlSerializer serializes public fields before public properties
-	/// and serializes base class members before derriving class members.
-	/// Since RssChannel uses a readonly field for Items it must be placed
-	/// in a derriving class in order to make sure items serialize last.
-	/// </remarks>
-	[XmlRoot(RootElement, Namespace=NamespaceRdf)]
-	public class RdfFeed : RdfFeedBase, IFeed
+    /// RDF 1.0 Root
+    ///     http://web.resource.org/rss/1.0/spec#s5.2
+    /// </summary>
+    /// <remarks>
+    /// XmlSerializer serializes public fields before public properties
+    /// and serializes base class members before derriving class members.
+    /// Since RssChannel uses a readonly field for Items it must be placed
+    /// in a derriving class in order to make sure items serialize last.
+    /// </remarks>
+    [XmlRoot(RootElement, Namespace=NamespaceRdf)]
+    public class RdfFeed : RdfFeedBase, IFeed
     {
         public RdfFeed()
         {
@@ -94,20 +94,20 @@ namespace Wyam.Feeds.Syndication.Rdf
         }
 
         [XmlElement("item", Namespace=NamespaceRss10)]
-		public readonly List<RdfItem> Items = new List<RdfItem>();
+        public readonly List<RdfItem> Items = new List<RdfItem>();
 
-	    [XmlIgnore]
-		public bool ItemsSpecified
-		{
-			get { return (Items.Count > 0); }
-			set { }
-		}
+        [XmlIgnore]
+        public bool ItemsSpecified
+        {
+            get { return (Items.Count > 0); }
+            set { }
+        }
 
-		[XmlIgnore]
-		public RdfItem this[int index]
-		{
-			get { return Items[index]; }
-			set { Items[index] = value; }
+        [XmlIgnore]
+        public RdfItem this[int index]
+        {
+            get { return Items[index]; }
+            set { Items[index] = value; }
         }
 
         [XmlIgnore]
@@ -136,26 +136,26 @@ namespace Wyam.Feeds.Syndication.Rdf
         Uri IFeedMetadata.ImageLink => ((IUriProvider)Image).Uri;
 
         public override void AddNamespaces(XmlSerializerNamespaces namespaces)
-		{
-			namespaces.Add("", NamespaceRss10);
-			namespaces.Add("rdf", NamespaceRdf);
+        {
+            namespaces.Add("", NamespaceRss10);
+            namespaces.Add("rdf", NamespaceRdf);
 
-			Channel.AddNamespaces(namespaces);
-			if (ImageSpecified)
-			{
-				Image.AddNamespaces(namespaces);
-			}
-			if (TextInputSpecified)
-			{
-				TextInput.AddNamespaces(namespaces);
-			}
+            Channel.AddNamespaces(namespaces);
+            if (ImageSpecified)
+            {
+                Image.AddNamespaces(namespaces);
+            }
+            if (TextInputSpecified)
+            {
+                TextInput.AddNamespaces(namespaces);
+            }
 
-			foreach (RdfItem item in Items)
-			{
-				item.AddNamespaces(namespaces);
-			}
+            foreach (RdfItem item in Items)
+            {
+                item.AddNamespaces(namespaces);
+            }
 
-			base.AddNamespaces(namespaces);
-		}
-	}
+            base.AddNamespaces(namespaces);
+        }
+    }
 }

@@ -34,7 +34,8 @@ namespace Wyam.Core.Modules.IO
         /// location (including file name) or a path relative to the output folder.
         /// </summary>
         /// <param name="path">A delegate that returns a <c>string</c> with the desired path.</param>
-        public UnwrittenFiles(DocumentConfig path) : base(path)
+        public UnwrittenFiles(DocumentConfig path)
+            : base(path)
         {
         }
 
@@ -44,7 +45,8 @@ namespace Wyam.Core.Modules.IO
         /// for <c>RelativeFilePath</c> to be set (which is done by default by the <see cref="ReadFiles"/> module).
         /// </summary>
         /// <param name="extension">The extension to use for writing the file.</param>
-        public UnwrittenFiles(string extension) : base(extension)
+        public UnwrittenFiles(string extension)
+            : base(extension)
         {
         }
 

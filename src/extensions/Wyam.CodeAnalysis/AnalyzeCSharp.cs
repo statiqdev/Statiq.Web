@@ -359,8 +359,8 @@ namespace Wyam.CodeAnalysis
             {
                 compilation = compilation.AddReferences(assemblyReferences);
                 symbols.AddRange(assemblyReferences
-                    .Select(x => (IAssemblySymbol) compilation.GetAssemblyOrModuleSymbol(x))
-                    .Select(x => _assemblySymbols ? x : (ISymbol) x.GlobalNamespace));
+                    .Select(x => (IAssemblySymbol)compilation.GetAssemblyOrModuleSymbol(x))
+                    .Select(x => _assemblySymbols ? x : (ISymbol)x.GlobalNamespace));
             }
 
             // Get and return the document tree

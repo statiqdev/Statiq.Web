@@ -10,7 +10,8 @@ namespace Wyam.Razor
 {
     internal class RazorHost : MvcRazorHost
     {
-        public RazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver, IBasePageTypeProvider basePageTypeProvider) : base(chunkTreeCache, resolver)
+        public RazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver, IBasePageTypeProvider basePageTypeProvider)
+            : base(chunkTreeCache, resolver)
         {
             // Remove the backtick from generic class names
             string baseClassName = basePageTypeProvider.BasePageType.FullName;
@@ -31,7 +32,8 @@ namespace Wyam.Razor
             }
         }
 
-        public RazorHost(string root) : base(root)
+        public RazorHost(string root)
+            : base(root)
         {
             throw new NotSupportedException();
         }

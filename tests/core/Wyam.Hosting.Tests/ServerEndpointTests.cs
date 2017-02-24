@@ -22,7 +22,7 @@ namespace Wyam.Hosting.Tests
             // Based on http://stackoverflow.com/a/150974/2001966
             TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
-            int port = ((IPEndPoint) listener.LocalEndpoint).Port;
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
             listener.Stop();
             return port;
         }

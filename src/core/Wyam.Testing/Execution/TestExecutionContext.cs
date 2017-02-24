@@ -247,7 +247,7 @@ namespace Wyam.Testing.Execution
         {
             if (value is T)
             {
-                result = (T) value;
+                result = (T)value;
                 return true;
             }
             result = default(T);

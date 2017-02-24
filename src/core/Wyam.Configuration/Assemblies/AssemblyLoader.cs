@@ -101,7 +101,7 @@ namespace Wyam.Configuration.Assemblies
 
         private void LoadAssemblies()
         {
-            foreach(string assemblyDeclaration in _assemblies)
+            foreach (string assemblyDeclaration in _assemblies)
             {
                 string assembly = assemblyDeclaration.Trim().Trim('"');
                 if (assembly.EndsWith(".dll") || assembly.EndsWith(".exe"))

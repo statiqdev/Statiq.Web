@@ -209,7 +209,7 @@ namespace Wyam.Core.Modules.Metadata
 
             // Add links between parent and children (creating empty tree nodes as needed)
             Queue<TreeNode> nodesToProcess = new Queue<TreeNode>(nodes.Values);
-            while(nodesToProcess.Count > 0)
+            while (nodesToProcess.Count > 0)
             {
                 TreeNode node = nodesToProcess.Dequeue();
 

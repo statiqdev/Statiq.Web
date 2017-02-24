@@ -31,7 +31,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A")%3, count);
+                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));
@@ -56,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A")%3, count);
+                GroupBy groupBy = new GroupBy((d, c) => d.Get<int>("A") % 3, count);
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>(Keys.GroupKey));
                 Execute gatherData = new Execute((d, c) =>
                 {

@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.IO
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // If ApplicationInput is empty, return nothing
-            if(string.IsNullOrWhiteSpace(context.ApplicationInput))
+            if (string.IsNullOrWhiteSpace(context.ApplicationInput))
             {
                 return new IDocument[0];
             }

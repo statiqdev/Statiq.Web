@@ -87,7 +87,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                foreach(var o in output)
+                foreach (var o in output)
                 {
                     var headers = o.Item2.FirstOrDefault(x => x.Key == Keys.SourceHeaders).Value as Dictionary<string, string>;
 

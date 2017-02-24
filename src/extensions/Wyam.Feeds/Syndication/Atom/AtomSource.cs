@@ -9,10 +9,10 @@ namespace Wyam.Feeds.Syndication.Atom
     /// </summary>
     /// <remarks>
     /// atomSource : atomBase
-    ///		atomGenerator?
-    ///		atomIcon?
-    ///		atomLogo?
-    ///		atomSubtitle?
+    ///     atomGenerator?
+    ///     atomIcon?
+    ///     atomLogo?
+    ///     atomSubtitle?
     /// </remarks>
     public class AtomSource : AtomBase
     {

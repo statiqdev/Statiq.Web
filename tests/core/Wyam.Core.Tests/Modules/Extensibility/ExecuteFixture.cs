@@ -73,7 +73,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 Execute execute = new Execute((d, c) => null);
 
                 // When
-                IEnumerable<IDocument> outputs = ((IModule) execute).Execute(inputs, context);
+                IEnumerable<IDocument> outputs = ((IModule)execute).Execute(inputs, context);
 
                 // Then
                 CollectionAssert.AreEqual(inputs, outputs);

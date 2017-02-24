@@ -32,7 +32,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 7
                 };
-                GroupByMany groupByMany = new GroupByMany((d, c) => new [] { d.Get<int>("A")%3, 3 }, count);
+                GroupByMany groupByMany = new GroupByMany((d, c) => new [] { d.Get<int>("A") % 3, 3 }, count);
                 Execute gatherData = new Execute((d, c) =>
                 {
                     groupKey.Add(d.Get<int>(Keys.GroupKey));

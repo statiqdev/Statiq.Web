@@ -47,7 +47,7 @@ namespace Wyam.Less
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             DotlessConfiguration config = DotlessConfiguration.GetDefault();
-            config.Logger = typeof (LessLogger);
+            config.Logger = typeof(LessLogger);
             EngineFactory engineFactory = new EngineFactory(config);
             FileSystemReader fileSystemReader = new FileSystemReader(context.FileSystem);
 

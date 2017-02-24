@@ -260,7 +260,8 @@ namespace Wyam.Core.Modules.IO
                 Uri = new Uri(uri);
             }
 
-            public DownloadInstruction(string uri, RequestHeader requestHeader) : this(uri)
+            public DownloadInstruction(string uri, RequestHeader requestHeader)
+                : this(uri)
             {
                 RequestHeader = requestHeader;
             }

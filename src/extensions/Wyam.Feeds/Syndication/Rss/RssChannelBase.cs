@@ -8,7 +8,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Channel
-    ///		http://blogs.law.harvard.edu/tech/rss
+    ///     http://blogs.law.harvard.edu/tech/rss
     /// </summary>
     [Serializable]
     public abstract class RssChannelBase : RssBase, IUriProvider

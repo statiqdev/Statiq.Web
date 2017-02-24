@@ -6,7 +6,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Image
-    ///		http://blogs.law.harvard.edu/tech/rss#ltimagegtSubelementOfLtchannelgt
+    ///     http://blogs.law.harvard.edu/tech/rss#ltimagegtSubelementOfLtchannelgt
     /// </summary>
     [Serializable]
     public class RssImage : RssBase, IUriProvider

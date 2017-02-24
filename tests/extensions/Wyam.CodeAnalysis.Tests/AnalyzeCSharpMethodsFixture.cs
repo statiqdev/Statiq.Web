@@ -294,7 +294,7 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 var x = GetParameter(results, "Yellow", "X", "z");
-                var y = (IDocument) x["Type"];
+                var y = (IDocument)x["Type"];
                 var z = y["Name"];
                 Assert.AreEqual("int[]", ((IDocument)GetParameter(results, "Yellow", "X", "z")["Type"])["Name"]);
             }

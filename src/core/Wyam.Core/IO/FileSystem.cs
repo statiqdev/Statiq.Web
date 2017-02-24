@@ -211,7 +211,7 @@ namespace Wyam.Core.IO
             GetFiles(GetRootDirectory(), patterns);
 
         public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) =>
-            GetFiles(directory, (IEnumerable<string>) patterns);
+            GetFiles(directory, (IEnumerable<string>)patterns);
 
         public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns)
         {

@@ -50,7 +50,7 @@ namespace Wyam.Hosting.Owin
 
             // Write the buffer to the output stream
             interceptedBody.Position = 0;
-            if(string.Equals(context.Response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(context.Response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
             {
                 using (StreamReader reader = new StreamReader(interceptedBody))
                 {

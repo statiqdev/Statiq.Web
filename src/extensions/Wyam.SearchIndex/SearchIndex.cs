@@ -30,7 +30,7 @@ namespace Wyam.SearchIndex
     /// with an ID of <c>#search</c> and a <c>div</c> with an ID of <c>#search-results</c>):
     /// <code>
     /// function runSearch(query) {
-	///     $("#search-results").empty();
+    ///     $("#search-results").empty();
     ///     if (query.length &lt; 2)
     ///     {
     ///         return;
@@ -197,7 +197,7 @@ namespace Wyam.SearchIndex
                     && !string.IsNullOrEmpty(x.Content))
                 .ToArray();
 
-            if( searchIndexItems.Length == 0 )
+            if ( searchIndexItems.Length == 0 )
             {
                 Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
                 return Array.Empty<IDocument>();

@@ -26,7 +26,8 @@ namespace Wyam.Configuration.NuGet
         private readonly NuGetFramework _currentFramework;
         private readonly InstalledPackagesCache _installedPackages;
 
-        public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, InstalledPackagesCache installedPackages, string root) : base(root)
+        public WyamFolderNuGetProject(IFileSystem fileSystem, AssemblyLoader assemblyLoader, NuGetFramework currentFramework, InstalledPackagesCache installedPackages, string root)
+            : base(root)
         {
             _fileSystem = fileSystem;
             _assemblyLoader = assemblyLoader;

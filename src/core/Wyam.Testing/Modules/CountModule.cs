@@ -32,7 +32,7 @@ namespace Wyam.Testing.Modules
                 {
                     OutputCount++;
                     Value++;
-                    if(CloneSource)
+                    if (CloneSource)
                     {
                         yield return context.GetDocument(input, new FilePath(ValueKey + sourceCount++, PathKind.Absolute), input.Content == null ? Value.ToString() : input.Content + Value,
                             new Dictionary<string, object> { { ValueKey, Value } });

@@ -223,7 +223,7 @@ namespace Wyam.AmazonWebServices
             MetaKey = metaKey;
 
             // If they didn't pass in a transformer, just set it to a function which returns the input unchanged
-            Transformer = transformer ?? (o=>o);
+            Transformer = transformer ?? (o => o);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace Wyam.Commands
 {
     internal class ConfigOptions
     {
+#pragma warning disable SA1401 // Fields must be private
         public bool NoClean = false;
         public bool NoCache = false;
         public bool UpdatePackages = false;
@@ -18,5 +19,6 @@ namespace Wyam.Commands
         public DirectoryPath OutputPath = null;
         public FilePath ConfigFilePath = null;
         public IReadOnlyDictionary<string, object> Settings = null;
+#pragma warning restore SA1401 // Fields must be private
     }
 }

@@ -173,7 +173,7 @@ namespace Wyam.Html
             {
                 // Parse the HTML content
                 IHtmlDocument htmlDocument = input.ParseHtml(parser);
-                if(htmlDocument == null)
+                if (htmlDocument == null)
                 {
                     return new [] { input };
                 }
@@ -203,7 +203,7 @@ namespace Wyam.Html
                                     ? context.GetDocument(input, _outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
                                     : context.GetDocument(input, metadata));
                             }
-                            return (IEnumerable<Common.Documents.IDocument>) documents;
+                            return (IEnumerable<Common.Documents.IDocument>)documents;
                         }
                     }
                     return new[] { input };

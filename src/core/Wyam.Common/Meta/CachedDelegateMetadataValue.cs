@@ -17,7 +17,8 @@ namespace Wyam.Common.Meta
         /// The specified delegate should be thread-safe.
         /// </summary>
         /// <param name="value">The delegate that returns the metadata value.</param>
-        public CachedDelegateMetadataValue(Func<IMetadata, object> value) : base(value)
+        public CachedDelegateMetadataValue(Func<IMetadata, object> value)
+            : base(value)
         {
         }
 

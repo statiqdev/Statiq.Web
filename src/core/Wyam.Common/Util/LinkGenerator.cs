@@ -39,7 +39,7 @@ namespace Wyam.Common.Util
 
             // Collapse the link to a string
             string link = string.Empty;
-            if(path != null)
+            if (path != null)
             {
                 link = path.FullPath;
                 if (string.IsNullOrWhiteSpace(link) || link == ".")

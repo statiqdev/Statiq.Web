@@ -199,7 +199,7 @@ namespace Wyam.Html
                     }
                 }
 
-                if (lastNode.IsRoot && CheckAdditonalConditions(s, matchIdx, i-1))
+                if (lastNode.IsRoot && CheckAdditonalConditions(s, matchIdx, i - 1))
                 {
                     // Complete match
                     string key = new string(lastNode.Cumulative.ToArray());

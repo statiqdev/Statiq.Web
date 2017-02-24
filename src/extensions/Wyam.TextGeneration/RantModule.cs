@@ -19,22 +19,26 @@ namespace Wyam.TextGeneration
         private long? _seed;
         private bool _incrementSeed;
 
-        protected RantModule(object template) : base(template)
+        protected RantModule(object template)
+            : base(template)
         {
             SetEngine();
         }
 
-        protected RantModule(ContextConfig template) : base(template)
+        protected RantModule(ContextConfig template)
+            : base(template)
         {
             SetEngine();
         }
 
-        protected RantModule(DocumentConfig template) : base(template)
+        protected RantModule(DocumentConfig template)
+            : base(template)
         {
             SetEngine();
         }
 
-        protected RantModule(params IModule[] modules) : base(modules)
+        protected RantModule(params IModule[] modules)
+            : base(modules)
         {
             SetEngine();
         }
@@ -92,7 +96,7 @@ namespace Wyam.TextGeneration
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
             string output;
-            if(_seed.HasValue)
+            if (_seed.HasValue)
             {
                 output = _engine.Do(content.ToString(), _seed.Value);
                 if (_incrementSeed)

@@ -266,7 +266,7 @@ namespace Wyam.Common.Tests.Modules
                     .Replace("inner", new CountModule("newsubkey"));
 
                 // Then
-                Assert.AreEqual("newsubkey", ((CountModule) ((IModuleList) collection["Third"])["inner"]).ValueKey);
+                Assert.AreEqual("newsubkey", ((CountModule)((IModuleList)collection["Third"])["inner"]).ValueKey);
             }
         }
     }

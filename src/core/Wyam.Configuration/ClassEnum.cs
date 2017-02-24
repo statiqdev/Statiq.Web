@@ -17,7 +17,7 @@ namespace Wyam.Configuration
             Values = typeof(T)
                 .GetFields(BindingFlags.Static | BindingFlags.Public)
                 .Where(x => x.FieldType == typeof(T))
-                .ToDictionary(x => x.Name, x => (T) x.GetValue(null), StringComparer.OrdinalIgnoreCase);
+                .ToDictionary(x => x.Name, x => (T)x.GetValue(null), StringComparer.OrdinalIgnoreCase);
         }
 
         public static IReadOnlyDictionary<string, T> Values { get; }

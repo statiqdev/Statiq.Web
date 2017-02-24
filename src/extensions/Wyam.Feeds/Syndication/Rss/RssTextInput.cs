@@ -6,7 +6,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 TextInput
-    ///		http://blogs.law.harvard.edu/tech/rss#lttextinputgtSubelementOfLtchannelgt
+    ///     http://blogs.law.harvard.edu/tech/rss#lttextinputgtSubelementOfLtchannelgt
     /// </summary>
     [Serializable]
     public class RssTextInput : RssBase

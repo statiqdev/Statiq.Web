@@ -78,7 +78,7 @@ namespace Wyam.Core.Modules.Control
                     IEnumerable caseValues = caseValue.GetType().IsArray ? (IEnumerable)caseValue : Enumerable.Repeat(caseValue, 1);
                     bool matches = caseValues.Cast<object>().Any(cv => object.Equals(switchValue, cv));
 
-                    if(matches)
+                    if (matches)
                     {
                         handled.Add(document);
                     }
@@ -92,7 +92,7 @@ namespace Wyam.Core.Modules.Control
                 documents = unhandled;
             }
 
-            if(_defaultModules != null )
+            if (_defaultModules != null )
             {
                 results.AddRange(context.Execute(_defaultModules, documents));
             }

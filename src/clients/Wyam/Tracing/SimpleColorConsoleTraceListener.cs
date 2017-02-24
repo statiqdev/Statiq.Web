@@ -30,7 +30,7 @@ namespace Wyam.Tracing
             Tuple<ConsoleColor, ConsoleColor?> colors;
             if (!_eventColors.TryGetValue(eventType, out colors))
             {
-                base.WriteLine(string.Format(format, args));
+                WriteLine(string.Format(format, args));
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace Wyam.Tracing
             {
                 Console.BackgroundColor = colors.Item2.Value;
             }
-            base.WriteLine(string.Format(format, args));
+            WriteLine(string.Format(format, args));
             Console.ForegroundColor = originalForegroundColor;
             if (colors.Item2.HasValue)
             {

@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
         public class ExecuteTests : FileNameFixture
         {
             [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
-			    "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
+                "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
             [TestCase("Děku.jemeविकीвики-движка", "děku.jemeविकीвикидвижка")]
             [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].",
                 "this-is-my-title-and-some-clever-piece-of-text-here-ok")]
@@ -48,51 +48,51 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
-		    [Test]
-		    public void FileNameShouldBeLowercase()
-		    {
-			    // Given
-			    string input = "FileName With MiXeD CapS";
-			    string output = "filename-with-mixed-caps";
+            [Test]
+            public void FileNameShouldBeLowercase()
+            {
+                // Given
+                string input = "FileName With MiXeD CapS";
+                string output = "filename-with-mixed-caps";
 
                 Engine engine = new Engine();
-			    Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
-			    IExecutionContext context = new ExecutionContext(engine, pipeline);
-			    IDocument[] inputs = { context.GetDocument(new MetadataItems
-			    {
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                {
                     new MetadataItem(Keys.SourceFileName, new FilePath(input))
-			    }) };
-			    FileName fileName = new FileName();
+                }) };
+                FileName fileName = new FileName();
 
-			    // When
-			    IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+                // When
+                IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
-			    // Then
-			    Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
-		    }
+                // Then
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
+            }
 
-		    [Test]
-		    public void WithAllowedCharactersDoesNotReplaceProvidedCharacters()
-		    {
-			    // Given
-			    string input = "this-is-a-.net-tag";
-			    string output = "this-is-a-.net-tag";
+            [Test]
+            public void WithAllowedCharactersDoesNotReplaceProvidedCharacters()
+            {
+                // Given
+                string input = "this-is-a-.net-tag";
+                string output = "this-is-a-.net-tag";
 
-			    Engine engine = new Engine();
-			    Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
-			    IExecutionContext context = new ExecutionContext(engine, pipeline);
-			    IDocument[] inputs = { context.GetDocument(new MetadataItems
-			    {
+                Engine engine = new Engine();
+                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                {
                     new MetadataItem(Keys.SourceFileName, new FilePath(input))
-			    }) };
-			    FileName fileName = new FileName();
+                }) };
+                FileName fileName = new FileName();
 
-			    // When
-			    fileName = fileName.WithAllowedCharacters(new string[] { "-" });
-			    IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
+                // When
+                fileName = fileName.WithAllowedCharacters(new string[] { "-" });
+                IEnumerable<IDocument> documents = fileName.Execute(inputs, context);
 
-			    // Then
-			    Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
+                // Then
+                Assert.AreEqual(output, documents.First().FilePath(Keys.WriteFileName).FullPath);
             }
 
             [Test]

@@ -206,7 +206,7 @@ namespace Wyam.Core.Execution
 
         private void FlattenResultDocuments(IEnumerable<IDocument> documents, HashSet<IDocument> flattenedResultDocuments)
         {
-            foreach(IDocument document in documents)
+            foreach (IDocument document in documents)
             {
                 if (document == null || !flattenedResultDocuments.Add(document))
                 {
@@ -220,7 +220,7 @@ namespace Wyam.Core.Execution
                         IEnumerable<IDocument> children = value as IEnumerable<IDocument>;
                         if (children == null && value is IDocument)
                         {
-                            children = new[] {(IDocument) value};
+                            children = new[] { (IDocument)value};
                         }
                         return children ?? Enumerable.Empty<IDocument>();
                     }),

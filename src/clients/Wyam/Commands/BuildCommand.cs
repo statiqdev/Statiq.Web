@@ -187,8 +187,12 @@ namespace Wyam.Commands
                 messagePump = true;
 
                 Trace.Information("Watching paths(s) {0}", string.Join(", ", engineManager.Engine.FileSystem.InputPaths));
-                inputFolderWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path), true, "*.*", path =>
+                inputFolderWatcher = new ActionFileSystemWatcher(
+                    engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                    engineManager.Engine.FileSystem.GetInputDirectories().Select(x => x.Path),
+                    true,
+                    "*.*",
+                    path =>
                     {
                         _changedFiles.Enqueue(path);
                         _messageEvent.Set();
@@ -197,8 +201,12 @@ namespace Wyam.Commands
                 if (_configOptions.ConfigFilePath != null)
                 {
                     Trace.Information("Watching configuration file {0}", _configOptions.ConfigFilePath);
-                    configFileWatcher = new ActionFileSystemWatcher(engineManager.Engine.FileSystem.GetOutputDirectory().Path,
-                        new[] {_configOptions.ConfigFilePath.Directory}, false, _configOptions.ConfigFilePath.FileName.FullPath, path =>
+                    configFileWatcher = new ActionFileSystemWatcher(
+                        engineManager.Engine.FileSystem.GetOutputDirectory().Path,
+                        new[] { _configOptions.ConfigFilePath.Directory },
+                        false,
+                        _configOptions.ConfigFilePath.FileName.FullPath,
+                        path =>
                         {
                             FilePath filePath = new FilePath(path);
                             if (_configOptions.ConfigFilePath.Equals(filePath))
@@ -218,7 +226,7 @@ namespace Wyam.Commands
                 if (!Console.IsInputRedirected)
                 {
                     // Start the key listening thread
-                    var thread = new Thread(() =>
+                    Thread thread = new Thread(() =>
                     {
                         Trace.Information("Hit any key to exit");
                         Console.ReadKey();

@@ -6,8 +6,8 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Cloud
-    ///		http://blogs.law.harvard.edu/tech/rss#ltcloudgtSubelementOfLtchannelgt
-    ///		http://blogs.law.harvard.edu/tech/soapMeetsRss#rsscloudInterface
+    ///     http://blogs.law.harvard.edu/tech/rss#ltcloudgtSubelementOfLtchannelgt
+    ///     http://blogs.law.harvard.edu/tech/soapMeetsRss#rsscloudInterface
     /// </summary>
     [Serializable]
     public class RssCloud : RssBase

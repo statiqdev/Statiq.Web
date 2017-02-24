@@ -56,7 +56,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <param name="key">The meta key representing the value to test.</param>
         public ValidateMeta(string key)
         {
-            if(string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -93,7 +93,7 @@ namespace Wyam.Core.Modules.Metadata
                 // Check if the key exists
                 if (!input.Metadata.ContainsKey(_key))
                 {
-                    if(_optional)
+                    if (_optional)
                     {
                         // It doesn't exist, but it wasn't required, so we're good.
                         return input;
@@ -109,7 +109,7 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     // Report the original string, as the value coming out of TryGetValue might not be the same as what went in.
                     string originalStringValue = input.String(_key);
-                    throw GetException($"Value \"{originalStringValue}\" could not be converted to type \"{typeof (T).Name}\".");
+                    throw GetException($"Value \"{originalStringValue}\" could not be converted to type \"{typeof(T).Name}\".");
                 }
 
                 // Check each assertion

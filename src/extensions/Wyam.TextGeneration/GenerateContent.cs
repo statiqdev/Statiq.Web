@@ -20,7 +20,8 @@ namespace Wyam.TextGeneration
         /// The specified text template is processed and added as content for every input document.
         /// </summary>
         /// <param name="template">The template to use.</param>
-        public GenerateContent(object template) : base(template)
+        public GenerateContent(object template)
+            : base(template)
         {
         }
 
@@ -29,7 +30,8 @@ namespace Wyam.TextGeneration
         /// for each document. This allows you to specify different content for each document depending on the context.
         /// </summary>
         /// <param name="template">A delegate that returns the template to use.</param>
-        public GenerateContent(ContextConfig template) : base(template)
+        public GenerateContent(ContextConfig template)
+            : base(template)
         {
         }
 
@@ -38,7 +40,8 @@ namespace Wyam.TextGeneration
         /// each document. This allows you to specify different content for each document depending on the input.
         /// </summary>
         /// <param name="template">A delegate that returns the template to use.</param>
-        public GenerateContent(DocumentConfig template) : base(template)
+        public GenerateContent(DocumentConfig template)
+            : base(template)
         {
         }
 
@@ -48,7 +51,8 @@ namespace Wyam.TextGeneration
         /// content to each input document.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
-        public GenerateContent(params IModule[] modules) : base(modules)
+        public GenerateContent(params IModule[] modules)
+            : base(modules)
         {
         }
 

@@ -6,7 +6,8 @@ namespace Wyam.Tracing
     // A special trace listener that doesn't output the source name or event id
     internal class SimpleFileTraceListener : TextWriterTraceListener
     {
-        public SimpleFileTraceListener(string fileName) : base(fileName)
+        public SimpleFileTraceListener(string fileName)
+            : base(fileName)
         {
             StreamWriter writer = Writer as StreamWriter;
             if (writer != null)
@@ -22,7 +23,7 @@ namespace Wyam.Tracing
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            base.WriteLine(string.Format(format, args));
+            WriteLine(string.Format(format, args));
         }
     }
 }

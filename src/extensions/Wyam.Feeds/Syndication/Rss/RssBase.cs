@@ -3,8 +3,8 @@ using Wyam.Feeds.Syndication.Extensions;
 
 namespace Wyam.Feeds.Syndication.Rss
 {
-	[Serializable]
+    [Serializable]
     public abstract class RssBase : ExtensibleBase
-	{
-	}
+    {
+    }
 }

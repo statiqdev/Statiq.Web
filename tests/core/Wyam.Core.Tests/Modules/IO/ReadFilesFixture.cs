@@ -66,14 +66,14 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ThrowsOnNullPathFunction()
             {
                 // Given, When, Then
-                Assert.Throws<ArgumentNullException>(() => new ReadFiles((DocumentConfig) null));
+                Assert.Throws<ArgumentNullException>(() => new ReadFiles((DocumentConfig)null));
             }
 
             [Test]
             public void ThrowsOnNullPatterns()
             {
                 // Given, When, Then
-                Assert.Throws<ArgumentNullException>(() => new ReadFiles((string[]) null));
+                Assert.Throws<ArgumentNullException>(() => new ReadFiles((string[])null));
             }
         }
 

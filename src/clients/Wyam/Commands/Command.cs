@@ -27,7 +27,7 @@ namespace Wyam.Commands
         public void Parse(ArgumentSyntax syntax, Preprocessor preprocessor)
         {
             // Global options
-            if(GlobalArguments)
+            if (GlobalArguments)
             {
                 syntax.DefineOption("v|verbose", ref _verbose, "Turns on verbose output showing additional trace message useful for debugging.");
                 syntax.DefineOption("attach", ref _attach, "Pause execution at the start of the program until a debugger is attached.");

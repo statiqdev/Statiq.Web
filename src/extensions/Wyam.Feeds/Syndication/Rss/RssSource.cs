@@ -6,7 +6,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Source
-    ///		http://blogs.law.harvard.edu/tech/rss#ltsourcegtSubelementOfLtitemgt
+    ///     http://blogs.law.harvard.edu/tech/rss#ltsourcegtSubelementOfLtitemgt
     /// </summary>
     [Serializable]
     public class RssSource : RssBase

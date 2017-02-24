@@ -52,7 +52,7 @@ namespace Wyam.Feeds.Syndication.Atom
                 {
                     return null;
                 }
-                return _value.Value.ToString("s")+'Z';
+                return _value.Value.ToString("s") + 'Z';
             }
             set
             {

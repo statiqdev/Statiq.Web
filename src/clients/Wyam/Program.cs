@@ -43,7 +43,7 @@ namespace Wyam
             if (Type.GetType("Mono.Runtime") != null)
             {
                 Trace.Critical("The Mono runtime is not supported. Please check the GitHub repository and issue tracker for information on .NET Core support for cross platform execution.");
-                return (int) ExitCode.UnsupportedRuntime;
+                return (int)ExitCode.UnsupportedRuntime;
             }
 
             // Parse the command line
@@ -69,7 +69,7 @@ namespace Wyam
             }
 
             // Run the command
-            return (int) command.Run(preprocessor);
+            return (int)command.Run(preprocessor);
         }
 
         private void OutputLogo()

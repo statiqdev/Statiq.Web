@@ -176,7 +176,7 @@ namespace Wyam.Configuration
             if (!string.IsNullOrEmpty(Theme))
             {
                 KnownTheme knownTheme;
-                if(KnownTheme.Values.TryGetValue(Theme, out knownTheme))
+                if (KnownTheme.Values.TryGetValue(Theme, out knownTheme))
                 {
                     Trace.Verbose($"Theme {Theme} was in the lookup of known themes");
                     inputPath = knownTheme.InputPath;
@@ -189,7 +189,7 @@ namespace Wyam.Configuration
                     }
 
                     // Make sure we're not ignoring theme packages
-                    if(!IgnoreKnownThemePackages)
+                    if (!IgnoreKnownThemePackages)
                     {
                         // Add any packages needed for the theme
                         if (knownTheme.PackageIds != null)

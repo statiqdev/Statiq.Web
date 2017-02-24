@@ -72,7 +72,7 @@ namespace Wyam.Highlight
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            using(IJsEnginePool enginePool = context.GetJsEnginePool(x =>
+            using (IJsEnginePool enginePool = context.GetJsEnginePool(x =>
             {
                 if (string.IsNullOrWhiteSpace(_highlightJsFile))
                 {

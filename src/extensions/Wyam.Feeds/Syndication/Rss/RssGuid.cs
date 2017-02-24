@@ -6,7 +6,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Guid
-    ///		http://blogs.law.harvard.edu/tech/rss#ltguidgtSubelementOfLtitemgt
+    ///     http://blogs.law.harvard.edu/tech/rss#ltguidgtSubelementOfLtitemgt
     /// </summary>
     [Serializable]
     public class RssGuid : RssBase, IUriProvider

@@ -30,9 +30,9 @@ namespace Wyam.Core.Modules.Metadata
     /// <category>Metadata</category>
     public class FileName : IModule
     {
-	    private readonly List<string> _allowedCharacters = new List<string>();
+        private readonly List<string> _allowedCharacters = new List<string>();
 
-	    internal static readonly string[] ReservedChars = new string[]
+        internal static readonly string[] ReservedChars = new string[]
         {
             "-", "_", "~", ":", "/", "?", "#", "[", "]",
             "@", "!", "$", "&", "'", "(", ")", "*", "+", ",",
@@ -195,7 +195,7 @@ namespace Wyam.Core.Modules.Metadata
                         DirectoryPath relativeFileDir = input.DirectoryPath(Keys.RelativeFileDir);
                         if (!string.IsNullOrWhiteSpace(_pathOutputKey) && relativeFileDir != null)
                         {
-							return context.GetDocument(input, new MetadataItems
+                            return context.GetDocument(input, new MetadataItems
                             {
                                 { _outputKey, filePath },
                                 { _pathOutputKey, relativeFileDir.CombineFile(filePath) }

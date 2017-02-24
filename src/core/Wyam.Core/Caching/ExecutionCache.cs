@@ -37,7 +37,7 @@ namespace Wyam.Core.Caching
         {
             object rawValue;
             bool result = base.TryGetValue(key, out rawValue);
-            value = (TValue) rawValue;
+            value = (TValue)rawValue;
             return result;
         }
     }

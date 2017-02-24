@@ -13,7 +13,7 @@ namespace Wyam.Core.Meta
             if (value == null)
             {
                 result = default(T);
-                return !typeof (T).IsValueType
+                return !typeof(T).IsValueType
                     || (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>));
             }
 
@@ -95,7 +95,7 @@ namespace Wyam.Core.Meta
         private static bool TryConvertEnumerable<T>(object value, Func<Type, Type> elementTypeFunc,
             Func<MetadataTypeConverter, IEnumerable, IEnumerable> conversionFunc, out T result)
         {
-            Type elementType = elementTypeFunc(typeof (T));
+            Type elementType = elementTypeFunc(typeof(T));
             IEnumerable enumerable = value is string ? null : value as IEnumerable;
             if (enumerable == null || (elementType.IsInstanceOfType(value) && elementType != typeof(object)))
             {

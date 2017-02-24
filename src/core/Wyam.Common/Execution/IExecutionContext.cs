@@ -109,7 +109,6 @@ namespace Wyam.Common.Execution
         /// </returns>
         string GetLink(IMetadata metadata, string key, bool includeHost = false);
 
-
         /// <summary>
         /// Converts the specified path into a string appropriate for use as a link using default settings from the
         /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
@@ -337,15 +336,15 @@ namespace Wyam.Common.Execution
         /// </summary>
         /// <param name="initializer">
         /// The code to run when a new engine is created. This should configure
-		/// the environment and set up any required JavaScript libraries.
-		/// </param>
+        /// the environment and set up any required JavaScript libraries.
+        /// </param>
         /// <param name="startEngines">The number of engines to initially start when a pool is created.</param>
         /// <param name="maxEngines">The maximum number of engines that will be created in the pool.</param>
         /// <param name="maxUsagesPerEngine">The maximum number of times an engine can be reused before it is disposed.</param>
         /// <param name="engineTimeout">
         /// The default timeout to use when acquiring an engine from the pool (defaults to 5 seconds).
-		/// If an engine can not be acquired in this timeframe, an exception will be thrown.
-		/// </param>
+        /// If an engine can not be acquired in this timeframe, an exception will be thrown.
+        /// </param>
         /// <returns>A new JavaScript engine pool.</returns>
         IJsEnginePool GetJsEnginePool(
             Action<IJsEngine> initializer = null,

@@ -43,7 +43,7 @@ namespace Wyam.Commands
             // Make sure to allow the default help flags to handle help output
             if (args == null || args.Length == 0)
             {
-                args = new[] {commands[0].Item1};
+                args = new[] { commands[0].Item1 };
             }
             else if (args[0] != "-?" && args[0] != "-h" && args[0] != "--help"
                 && commands.All(x => x.Item1 != args[0]))
@@ -53,7 +53,7 @@ namespace Wyam.Commands
             else if (args.Length == 1 && args[0] == "help")
             {
                 // Special case for the help command without any additional arguments, output global help instead
-                args = new[] {"--help"};
+                args = new[] { "--help" };
             }
 
             // Parse the command line arguments

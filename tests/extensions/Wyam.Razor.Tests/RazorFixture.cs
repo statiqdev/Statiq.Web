@@ -408,7 +408,7 @@ namespace Wyam.Razor.Tests
                 FilePath result;
                 context.TryConvert(Arg.Any<object>(), out result).Returns(x =>
                 {
-                    x[1] = (FilePath) x[0];
+                    x[1] = (FilePath)x[0];
                     return true;
                 });
                 return context;

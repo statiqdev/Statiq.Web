@@ -15,19 +15,23 @@ namespace Wyam.Common.Tests.IO
     {
         private class TestPath : NormalizedPath
         {
-            public TestPath(string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(path, pathKind)
+            public TestPath(string path, PathKind pathKind = PathKind.RelativeOrAbsolute)
+                : base(path, pathKind)
             {
             }
 
-            public TestPath(string fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(fileProvider, path, pathKind)
+            public TestPath(string fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute)
+                : base(fileProvider, path, pathKind)
             {
             }
 
-            public TestPath(Uri fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute) : base(fileProvider, path, pathKind)
+            public TestPath(Uri fileProvider, string path, PathKind pathKind = PathKind.RelativeOrAbsolute)
+                : base(fileProvider, path, pathKind)
             {
             }
 
-            public TestPath(Uri path) : base(path)
+            public TestPath(Uri path)
+                : base(path)
             {
             }
         }

@@ -162,7 +162,7 @@ namespace Wyam.Core.Modules.Contents
                 .ToList();  // Need to materialize the parallel operation before creating the additional outputs
 
             // Generate other output documents if requested
-            if(redirects.Count > 0)
+            if (redirects.Count > 0)
             {
                 foreach (KeyValuePair<FilePath, Func<IDictionary<FilePath, string>, string>> additionalOutput in _additionalOutputs)
                 {

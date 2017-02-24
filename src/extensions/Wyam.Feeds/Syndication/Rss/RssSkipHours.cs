@@ -7,7 +7,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 SkipHours
-    ///		http://blogs.law.harvard.edu/tech/skipHoursDays
+    ///     http://blogs.law.harvard.edu/tech/skipHoursDays
     /// </summary>
     [Serializable]
     public class RssSkipHours : RssBase
@@ -23,9 +23,9 @@ namespace Wyam.Feeds.Syndication.Rss
         {
             int i = MinHour;
             HourMasks[i] = BitVector32.CreateMask(0);
-            for (i++; i<=MaxHour; i++)
+            for (i++; i <= MaxHour; i++)
             {
-                HourMasks[i] = BitVector32.CreateMask(HourMasks[i-1]);
+                HourMasks[i] = BitVector32.CreateMask(HourMasks[i - 1]);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Wyam.Feeds.Syndication.Rss
             {
                 List<int> skipped = new List<int>();
 
-                for (int i=MinHour; i<=MaxHour; i++)
+                for (int i = MinHour; i <= MaxHour; i++)
                 {
                     if (this[i])
                         skipped.Add(i);

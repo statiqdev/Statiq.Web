@@ -14,7 +14,7 @@ namespace Wyam.Core.IO.Globbing
     {
         public static IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns)
         {
-            return GetFiles(directory, (IEnumerable<string>) patterns);
+            return GetFiles(directory, (IEnumerable<string>)patterns);
         }
 
         // Initially based on code from Reliak.FileSystemGlobbingExtensions (https://github.com/reliak/Reliak.FileSystemGlobbingExtensions)

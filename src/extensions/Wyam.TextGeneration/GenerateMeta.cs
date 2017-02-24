@@ -24,7 +24,8 @@ namespace Wyam.TextGeneration
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
         /// <param name="template">The template to use.</param>
-        public GenerateMeta(string key, object template) : base(template)
+        public GenerateMeta(string key, object template)
+            : base(template)
         {
             if (key == null)
             {
@@ -39,7 +40,8 @@ namespace Wyam.TextGeneration
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
         /// <param name="template">A delegate that returns the template to use.</param>
-        public GenerateMeta(string key, ContextConfig template) : base(template)
+        public GenerateMeta(string key, ContextConfig template)
+            : base(template)
         {
             if (key == null)
             {
@@ -54,7 +56,8 @@ namespace Wyam.TextGeneration
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
         /// <param name="template">A delegate that returns the template to use.</param>
-        public GenerateMeta(string key, DocumentConfig template) : base(template)
+        public GenerateMeta(string key, DocumentConfig template)
+            : base(template)
         {
             if (key == null)
             {
@@ -69,7 +72,8 @@ namespace Wyam.TextGeneration
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
         /// <param name="modules">The modules to execute.</param>
-        public GenerateMeta(string key, params IModule[] modules) : base(modules)
+        public GenerateMeta(string key, params IModule[] modules)
+            : base(modules)
         {
             if (key == null)
             {

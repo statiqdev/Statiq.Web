@@ -78,6 +78,7 @@ If you need to make a new project, there are a number of things that need to be 
 - Add a .nuspec file if appropriate
 - Apply the code analysis ruleset by opening Analyze, Configure Code Analysis
 - Install the StyleCop.Analyzers NuGet package into the project
+- Enable XML documentation file output in the build settings for the project for *both* Debug and Release configurations
 
 # Updating Documentation
 

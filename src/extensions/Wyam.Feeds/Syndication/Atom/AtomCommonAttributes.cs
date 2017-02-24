@@ -8,12 +8,12 @@ namespace Wyam.Feeds.Syndication.Atom
 {
     /// <summary>
     /// Common shared Atom attributes
-    ///		http://tools.ietf.org/html/rfc4287#section-2
+    ///     http://tools.ietf.org/html/rfc4287#section-2
     /// </summary>
     /// <remarks>
     /// atomCommonAttributes
-    ///		attribute xml:base?
-    ///		attribute xml:lang?
+    ///     attribute xml:base?
+    ///     attribute xml:lang?
     /// </remarks>
     public abstract class AtomCommonAttributes : ExtensibleBase
     {

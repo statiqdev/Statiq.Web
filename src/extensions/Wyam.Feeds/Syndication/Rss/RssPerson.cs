@@ -5,7 +5,7 @@ namespace Wyam.Feeds.Syndication.Rss
 {
     /// <summary>
     /// RSS 2.0 Email
-    ///		http://blogs.law.harvard.edu/tech/rss#ltauthorgtSubelementOfLtitemgt
+    ///     http://blogs.law.harvard.edu/tech/rss#ltauthorgtSubelementOfLtitemgt
     /// </summary>
     [Serializable]
     public class RssPerson : RssBase
@@ -63,7 +63,7 @@ namespace Wyam.Feeds.Syndication.Rss
                     return;
                 }
 
-                _name = value.Substring(start+1, end-start-1);
+                _name = value.Substring(start + 1, end - start - 1);
                 _email = value.Substring(0, start);
             }
         }

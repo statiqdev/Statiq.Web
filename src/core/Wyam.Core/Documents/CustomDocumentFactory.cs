@@ -27,7 +27,7 @@ namespace Wyam.Core.Documents
         public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            CustomDocument customDocument = (CustomDocument) sourceDocument;
+            CustomDocument customDocument = (CustomDocument)sourceDocument;
             IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, source, content, items);
             return GetCustomDocument(customDocument, document);
         }

@@ -79,7 +79,7 @@ namespace Wyam.Git.Tests
                 // Then
                 Assert.AreEqual(1, results.Count);
                 List<IDocument> commits =
-                    ((IEnumerable<IDocument>) results[0].First(x => x.Key == GitKeys.Commits).Value).ToList();
+                    ((IEnumerable<IDocument>)results[0].First(x => x.Key == GitKeys.Commits).Value).ToList();
                 Assert.AreEqual(6, commits.Count);
                 Assert.AreEqual("6274fb76a0380760ab2dc83f90748b7d953aceb4", commits.Last().First(x => x.Key == GitKeys.Sha).Value);
             }

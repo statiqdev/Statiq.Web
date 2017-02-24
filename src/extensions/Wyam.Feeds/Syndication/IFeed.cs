@@ -17,14 +17,14 @@ namespace Wyam.Feeds.Syndication
         /// </summary>
         string MimeType { get; }
 
-		/// <summary>
-		/// Gets the copyright
-		/// </summary>
-		string Copyright { get; }
+        /// <summary>
+        /// Gets the copyright
+        /// </summary>
+        string Copyright { get; }
 
-		/// <summary>
-		/// Gets a list of feed items
-		/// </summary>
-		IList<IFeedItem> Items { get; }
-	}
+        /// <summary>
+        /// Gets a list of feed items
+        /// </summary>
+        IList<IFeedItem> Items { get; }
+    }
 }

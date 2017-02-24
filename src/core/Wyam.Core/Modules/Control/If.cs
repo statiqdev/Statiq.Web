@@ -94,7 +94,7 @@ namespace Wyam.Core.Modules.Control
                 {
                     matched.AddRange(documents);
                 }
-                else if(condition.ContextConfig == null)
+                else if (condition.ContextConfig == null)
                 {
                     context.ForEach(documents, document =>
                     {

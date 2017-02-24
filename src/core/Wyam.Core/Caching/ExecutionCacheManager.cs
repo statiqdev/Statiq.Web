@@ -24,7 +24,7 @@ namespace Wyam.Core.Caching
         {
             return settings.Bool(Keys.UseCache)
                 ? _executionCaches.GetOrAdd(module, new ExecutionCache())
-                : (IExecutionCache) new NoCache();
+                : (IExecutionCache)new NoCache();
         }
 
         public void ResetEntryHits()

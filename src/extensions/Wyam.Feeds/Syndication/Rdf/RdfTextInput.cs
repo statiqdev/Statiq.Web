@@ -6,7 +6,7 @@ namespace Wyam.Feeds.Syndication.Rdf
 {
     /// <summary>
     /// RDF 1.0 TextInput
-    ///		http://web.resource.org/rss/1.0/spec#s5.6
+    ///     http://web.resource.org/rss/1.0/spec#s5.6
     /// </summary>
     [Serializable]
     [XmlType("input", Namespace=RdfFeedBase.NamespaceRss10)]
