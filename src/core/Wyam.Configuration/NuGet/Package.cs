@@ -73,7 +73,7 @@ namespace Wyam.Configuration.NuGet
             }
             if (versionMatch != null)
             {
-                Trace.Verbose($"Package {_packageId}{versionRangeString} is satisfied by version {versionMatch.Version}");
+                Trace.Verbose($"Package {_packageId}{versionRangeString} is satisfied by version {versionMatch.ToNormalizedString()}");
             }
             else
             {
@@ -98,13 +98,13 @@ namespace Wyam.Configuration.NuGet
                 return;
             }
             IReadOnlyList<SourceRepository> sourceRepositories = GetSourceRepositories(remoteRepositories);
-            using (Trace.WithIndent().Verbose($"Installing package {_packageId} {_versionMatch.Version}"))
+            using (Trace.WithIndent().Verbose($"Installing package {_packageId} {_versionMatch.ToNormalizedString()}"))
             {
                 // Check if this package was already installed in a previous run
                 PackageIdentity packageIdentity = new PackageIdentity(_packageId, _versionMatch);
                 if (installedPackages.VerifyPackage(packageIdentity))
                 {
-                    Trace.Verbose($"Package {_packageId} {_versionMatch.Version} was already installed");
+                    Trace.Verbose($"Package {_packageId} {_versionMatch.ToNormalizedString()} was already installed");
                     return;
                 }
 
@@ -116,8 +116,8 @@ namespace Wyam.Configuration.NuGet
                     INuGetProjectContext projectContext = new NuGetProjectContext();
                     await packageManager.InstallPackageAsync(packageManager.PackagesFolderNuGetProject,
                         packageIdentity, resolutionContext, projectContext,
-                        new[] {localRepository}, sourceRepositories, CancellationToken.None);
-                    Trace.Verbose($"Installed package {_packageId} {_versionMatch.Version}");
+                        sourceRepositories, Array.Empty<SourceRepository>(), CancellationToken.None);
+                    Trace.Verbose($"Installed package {_packageId} {_versionMatch.ToNormalizedString()}");
                 }
             }
         }

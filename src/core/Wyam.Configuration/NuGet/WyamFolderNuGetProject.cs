@@ -99,7 +99,7 @@ namespace Wyam.Configuration.NuGet
         }
 
         public override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync(CancellationToken token) => 
-            Task.Run(() => _installedPackages.GetCachedPackages(), token);
+            Task.Run(() => _installedPackages.GetCachedPackages().Distinct(), token);
 
         // Probably going to hell for using a region
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
