@@ -18,15 +18,15 @@ namespace Wyam.Core.Modules.Control
     /// </summary>
     /// <remarks>
     /// This module forms pages from the output documents of the specified modules.
-    /// Each input document is cloned for each page and metadata related 
-    /// to the pages, including the sequence of documents for each page, 
+    /// Each input document is cloned for each page and metadata related
+    /// to the pages, including the sequence of documents for each page,
     /// is added to each clone. For example, if you have 2 input documents
     /// and the result of paging is 3 pages, this module will output 6 documents.
     /// </remarks>
     /// <example>
-    /// If your input document is a Razor template for a blog archive, you can use 
-    /// Paginate to get pages of 10 blog posts each. If you have 50 blog posts, the 
-    /// result of the Paginate module will be 5 copies of your input archive template, 
+    /// If your input document is a Razor template for a blog archive, you can use
+    /// Paginate to get pages of 10 blog posts each. If you have 50 blog posts, the
+    /// result of the Paginate module will be 5 copies of your input archive template,
     /// one for each page. Your configuration file might look something like this:
     /// <code>
     /// Pipelines.Add("Posts",
@@ -57,7 +57,7 @@ namespace Wyam.Core.Modules.Control
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
         /// <summary>
-        /// Partitions the result of the specified modules into the specified number of pages. The 
+        /// Partitions the result of the specified modules into the specified number of pages. The
         /// input documents to Paginate are used as the initial input documents to the specified modules.
         /// </summary>
         /// <param name="pageSize">The number of documents on each page.</param>
@@ -89,7 +89,7 @@ namespace Wyam.Core.Modules.Control
 
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            ImmutableArray<ImmutableArray<IDocument>> partitions 
+            ImmutableArray<ImmutableArray<IDocument>> partitions
                 = Partition(
                     context.Execute(this, inputs)
                         .Where(context, x => _predicate?.Invoke(x, context) ?? true)

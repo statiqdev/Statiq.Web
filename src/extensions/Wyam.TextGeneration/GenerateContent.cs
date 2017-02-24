@@ -25,7 +25,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// Uses a function to determine a text template which is processed and added as content 
+        /// Uses a function to determine a text template which is processed and added as content
         /// for each document. This allows you to specify different content for each document depending on the context.
         /// </summary>
         /// <param name="template">A delegate that returns the template to use.</param>
@@ -34,7 +34,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// Uses a function to determine a text template which is processed and added as content for 
+        /// Uses a function to determine a text template which is processed and added as content for
         /// each document. This allows you to specify different content for each document depending on the input.
         /// </summary>
         /// <param name="template">A delegate that returns the template to use.</param>
@@ -43,8 +43,8 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the resulting content 
-        /// from evaluating the entire child module chain is processed as a text template and added as 
+        /// The specified modules are executed against an empty initial document and the resulting content
+        /// from evaluating the entire child module chain is processed as a text template and added as
         /// content to each input document.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>

@@ -20,7 +20,7 @@ namespace Wyam.Common.JavaScript
         /// available again.
         /// </summary>
         /// <param name="timeout">
-        /// Maximum time to wait for a free engine. If not specified, defaults to the timeout 
+        /// Maximum time to wait for a free engine. If not specified, defaults to the timeout
         /// specified when creating the pool.
         /// </param>
         /// <returns>A JavaScript engine.</returns>

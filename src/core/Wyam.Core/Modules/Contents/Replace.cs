@@ -20,7 +20,7 @@ namespace Wyam.Core.Modules.Contents
         private readonly Func<Match, object> _contentFinder;
 
         /// <summary>
-        /// Replaces all occurrences of the search string in every input document 
+        /// Replaces all occurrences of the search string in every input document
         /// with the string value of the specified object.
         /// </summary>
         /// <param name="search">The string to search for.</param>
@@ -32,8 +32,8 @@ namespace Wyam.Core.Modules.Contents
         }
 
         /// <summary>
-        /// Replaces all occurrences of the search string in every input document with the 
-        /// string value of the returned object. This allows you to specify different content 
+        /// Replaces all occurrences of the search string in every input document with the
+        /// string value of the returned object. This allows you to specify different content
         /// depending on the execution context.
         /// </summary>
         /// <param name="search">The string to search for.</param>
@@ -45,8 +45,8 @@ namespace Wyam.Core.Modules.Contents
         }
 
         /// <summary>
-        /// Replaces all occurrences of the search string in every input document with the 
-        /// string value of the returned object. This allows you to specify different content 
+        /// Replaces all occurrences of the search string in every input document with the
+        /// string value of the returned object. This allows you to specify different content
         /// for each document depending on the input document.
         /// </summary>
         /// <param name="search">The string to search for.</param>
@@ -72,7 +72,7 @@ namespace Wyam.Core.Modules.Contents
 
 
         /// <summary>
-        /// Replaces all occurrences of the search string in every input document 
+        /// Replaces all occurrences of the search string in every input document
         /// with the string value of the objects returned by the delegate. The delegate will be called
         /// for each Match in the supplied regular expression.
         /// </summary>

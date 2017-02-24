@@ -11,7 +11,7 @@ namespace Wyam.Common.Meta
         private readonly Func<IMetadata, object> _value;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateMetadataValue"/> class. 
+        /// Initializes a new instance of the <see cref="DelegateMetadataValue"/> class.
         /// The specified delegate should be thread-safe.
         /// </summary>
         /// <param name="value">The delegate that returns the metadata value.</param>
@@ -21,9 +21,9 @@ namespace Wyam.Common.Meta
         }
 
         /// <summary>
-        /// Lazily loads a metadata value. This method will be called 
+        /// Lazily loads a metadata value. This method will be called
         /// for each request and the return object will
-        /// be processed like any other metadata value. The implementation 
+        /// be processed like any other metadata value. The implementation
         /// of this method must be thread-safe.
         /// </summary>
         /// <param name="metadata">The metadata object requesting the value.</param>

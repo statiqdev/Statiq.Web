@@ -19,8 +19,8 @@ namespace Wyam.Html
     /// Queries HTML content of the input documents and creates new documents with content and metadata from the results.
     /// </summary>
     /// <remarks>
-    /// Once you provide a DOM query selector, the module creates new output documents 
-    /// for each query result and allows you to set the new document content and/or set new 
+    /// Once you provide a DOM query selector, the module creates new output documents
+    /// for each query result and allows you to set the new document content and/or set new
     /// metadata based on the query result.
     /// </remarks>
     /// <metadata name="OuterHtml" type="string">Contains the outer HTML of the query result (unless an alternate metadata key is specified).</metadata>
@@ -32,7 +32,7 @@ namespace Wyam.Html
         private readonly string _querySelector;
         private bool _first;
         private bool? _outerHtmlContent;
-        private readonly List<Action<IElement, Dictionary<string, object>>> _metadataActions 
+        private readonly List<Action<IElement, Dictionary<string, object>>> _metadataActions
             = new List<Action<IElement, Dictionary<string, object>>>();
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Sets the content of the result document(s) to the content of the corresponding query result, 
+        /// Sets the content of the result document(s) to the content of the corresponding query result,
         /// optionally specifying whether inner or outer HTML content should be used. The default is
         /// <c>null</c>, which does not add any content to the result documents (only metadata).
         /// </summary>
@@ -71,7 +71,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets the outer HTML of each query result and sets it in the metadata of the 
+        /// Gets the outer HTML of each query result and sets it in the metadata of the
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the outer HTML.</param>
@@ -85,7 +85,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets the inner HTML of each query result and sets it in the metadata of the 
+        /// Gets the inner HTML of each query result and sets it in the metadata of the
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the inner HTML.</param>
@@ -99,7 +99,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets the text content of each query result and sets it in the metadata of 
+        /// Gets the text content of each query result and sets it in the metadata of
         /// the corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the text content.</param>
@@ -113,9 +113,9 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets the specified attribute value of each query result and sets it in the metadata 
-        /// of the corresponding result document(s). If the attribute is not found for a given 
-        /// query result, no metadata is set. If <c>metadataKey</c> is <c>null</c>, the attribute name will 
+        /// Gets the specified attribute value of each query result and sets it in the metadata
+        /// of the corresponding result document(s). If the attribute is not found for a given
+        /// query result, no metadata is set. If <c>metadataKey</c> is <c>null</c>, the attribute name will
         /// be used as the metadata key, otherwise the specified metadata key will be used.
         /// </summary>
         /// <param name="attributeName">Name of the attribute to get.</param>
@@ -137,7 +137,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets the values for all attributes of each query result and sets them in the 
+        /// Gets the values for all attributes of each query result and sets them in the
         /// metadata of the corresponding result document(s) with keys names equal to the attribute local name.
         /// </summary>
         public HtmlQuery GetAttributeValues()
@@ -153,8 +153,8 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Gets all information for each query result and sets the metadata of the corresponding result 
-        /// document(s). This is equivalent to calling <c>GetOuterHtml()</c>, <c>GetInnerHtml()</c>, 
+        /// Gets all information for each query result and sets the metadata of the corresponding result
+        /// document(s). This is equivalent to calling <c>GetOuterHtml()</c>, <c>GetInnerHtml()</c>,
         /// <c>GetTextContent()</c>, and <c>GetAttributeValues()</c> with default arguments.
         /// </summary>
         public HtmlQuery GetAll()

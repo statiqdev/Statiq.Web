@@ -515,7 +515,7 @@ namespace Wyam.Core.Tests.Meta
                 Assert.IsInstanceOf<FilePath>(result);
                 Assert.AreEqual(expected, ((FilePath)result).FullPath);
             }
-            
+
             [TestCase("/a/b/c.txt", "/a/b/c.txt")]
             [TestCase("a/b/c.txt", "a/b/c.txt")]
             [TestCase("foo:///a/b/c.txt", "/a/b/c.txt")]

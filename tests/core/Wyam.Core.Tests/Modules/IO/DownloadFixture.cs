@@ -85,7 +85,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // When
                 download.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
-            
+
                 // Then
                 foreach(var o in output)
                 {

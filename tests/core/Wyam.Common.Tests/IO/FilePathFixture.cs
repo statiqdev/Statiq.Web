@@ -158,7 +158,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
             }
-            
+
             [TestCase("dat", "temp/hello.txt.dat")]
             [TestCase(".dat", "temp/hello.txt.dat")]
             public void CanAppendExtensionToPath(string extension, string expected)

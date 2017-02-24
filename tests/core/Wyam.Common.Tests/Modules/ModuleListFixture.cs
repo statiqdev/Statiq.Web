@@ -263,7 +263,7 @@ namespace Wyam.Common.Tests.Modules
                 CountModule count = new CountModule("A");
                 CountModule count2 = new CountModule("B");
                 ModuleList list = new ModuleList(
-                    new NamedModule("A", count), 
+                    new NamedModule("A", count),
                     new NamedModule("B", count2));
 
                 // When, Then

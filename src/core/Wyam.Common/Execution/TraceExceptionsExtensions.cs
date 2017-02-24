@@ -54,7 +54,7 @@ namespace Wyam.Common.Execution
         /// <summary>
         /// If an exception is thrown within the action, an error messages will be sent to the trace output
         /// containing information about the current module and the exception message.
-        /// The exception will also be re-thrown once the message has been sent to the trace listeners. 
+        /// The exception will also be re-thrown once the message has been sent to the trace listeners.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="action">The action to evaluate.</param>
@@ -74,7 +74,7 @@ namespace Wyam.Common.Execution
         /// <summary>
         /// If an exception is thrown within the action, an error messages will be sent to the trace output
         /// containing information about the current module and the exception message.
-        /// The exception will also be re-thrown once the message has been sent to the trace listeners. 
+        /// The exception will also be re-thrown once the message has been sent to the trace listeners.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="func">The function to evaluate.</param>
@@ -136,7 +136,7 @@ namespace Wyam.Common.Execution
                 source.Where(x => context.TraceExceptions(x, predicate));
 
         public static ParallelQuery<IDocument> Select(
-            this ParallelQuery<IDocument> query, IExecutionContext context, Func<IDocument, IDocument> selector) => 
+            this ParallelQuery<IDocument> query, IExecutionContext context, Func<IDocument, IDocument> selector) =>
                 query.Select(x => context.TraceExceptions(x, selector));
 
         public static ParallelQuery<IDocument> SelectMany(

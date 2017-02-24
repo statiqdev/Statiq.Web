@@ -23,10 +23,10 @@ namespace Wyam.Html
     /// Replaces occurrences of specified strings with HTML links.
     /// </summary>
     /// <remarks>
-    /// This module is smart enough to only look in specified HTML 
-    /// elements (p by default). You can supply an alternate query selector to 
-    /// narrow the search scope to different container elements or to those elements that contain 
-    /// (or don't contain) a CSS class, etc. It also won't generate an HTML link if the replacement 
+    /// This module is smart enough to only look in specified HTML
+    /// elements (p by default). You can supply an alternate query selector to
+    /// narrow the search scope to different container elements or to those elements that contain
+    /// (or don't contain) a CSS class, etc. It also won't generate an HTML link if the replacement
     /// text is already found in another link.
     /// </remarks>
     /// <category>Content</category>
@@ -47,8 +47,8 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Specifies a dictionary of link mappings. The keys specify strings to search for in the HTML content 
-        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same 
+        /// Specifies a dictionary of link mappings. The keys specify strings to search for in the HTML content
+        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same
         /// link mappings for all input documents.
         /// </summary>
         /// <param name="links">A dictionary of link mappings.</param>
@@ -58,9 +58,9 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Specifies a dictionary of link mappings given an <see cref="IExecutionContext"/>. The return value is expected 
-        /// to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the HTML content 
-        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same 
+        /// Specifies a dictionary of link mappings given an <see cref="IExecutionContext"/>. The return value is expected
+        /// to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the HTML content
+        /// and the values specify what should be placed in the <c>href</c> attribute. This uses the same
         /// link mappings for all input documents.
         /// </summary>
         /// <param name="links">A delegate that returns a dictionary of link mappings.</param>
@@ -70,9 +70,9 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Specifies a dictionary of link mappings given an <see cref="IDocument"/> and <see cref="IExecutionContext"/>. The return 
-        /// value is expected to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the 
-        /// HTML content and the values specify what should be placed in the <c>href</c> attribute. This allows you 
+        /// Specifies a dictionary of link mappings given an <see cref="IDocument"/> and <see cref="IExecutionContext"/>. The return
+        /// value is expected to be a <c>IDictionary&lt;string, string&gt;</c>. The keys specify strings to search for in the
+        /// HTML content and the values specify what should be placed in the <c>href</c> attribute. This allows you
         /// to specify a different mapping for each input document.
         /// </summary>
         /// <param name="links">A delegate that returns a dictionary of link mappings.</param>
@@ -241,7 +241,7 @@ namespace Wyam.Html
             return true;
         }
 
-  
+
         private class Trie<T> where T : IComparable<T>
         {
             public Node Root { get; }

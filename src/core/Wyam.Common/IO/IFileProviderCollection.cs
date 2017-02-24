@@ -19,7 +19,7 @@ namespace Wyam.Common.IO
         /// Removes a file provider by scheme.
         /// </summary>
         /// <param name="scheme">The scheme to remove.</param>
-        /// <returns><c>true</c> if the provider was found and removed, 
+        /// <returns><c>true</c> if the provider was found and removed,
         /// <c>false</c> if the provider was not found.</returns>
         bool Remove(string scheme);
     }

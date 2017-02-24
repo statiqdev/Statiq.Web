@@ -9,7 +9,7 @@ namespace Wyam.Configuration.Preprocessing
         /// Gets the line where the directive was specified
         /// (or <c>null</c> if created outside the configuration file).
         /// </summary>
-        /// 
+        ///
         public int? Line { get; }
 
         /// <summary>

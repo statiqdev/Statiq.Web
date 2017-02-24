@@ -25,7 +25,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -59,7 +59,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -94,7 +94,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -128,7 +128,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -162,7 +162,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -196,7 +196,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -231,7 +231,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                      context.GetDocument(@"FM1
 FM2
@@ -269,7 +269,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"FM1
 FM2
@@ -303,7 +303,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"AA
 -
@@ -338,7 +338,7 @@ BB
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"---
 FM1
@@ -373,7 +373,7 @@ Content2", documents.First().Content);
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(@"---
 FM1

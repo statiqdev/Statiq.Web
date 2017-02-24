@@ -25,9 +25,9 @@ namespace Wyam.Common.Meta
         {
             Pair = new KeyValuePair<string, object>(key, value);
         }
-        
+
         /// <summary>
-        /// This creates a new metadata value based on the specified delegate that will get 
+        /// This creates a new metadata value based on the specified delegate that will get
         /// evaluated on every value request. Note that the delegate function should be thread-safe.
         /// </summary>
         /// <param name="key">The key.</param>

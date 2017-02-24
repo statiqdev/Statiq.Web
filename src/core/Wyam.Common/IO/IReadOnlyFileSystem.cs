@@ -21,7 +21,7 @@ namespace Wyam.Common.IO
         /// The file providers.
         /// </value>
         IReadOnlyFileProviderCollection FileProviders { get; }
-        
+
         /// <summary>
         /// Gets the root path.
         /// </summary>
@@ -33,10 +33,10 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the input paths. These are searched in reverse order for
         /// files and directories. For example, given input paths "A", "B",
-        /// and "C" in that order, "C" will be checked for a requested file 
-        /// or directory first, and then if it doesn't exist in "C", "B" 
+        /// and "C" in that order, "C" will be checked for a requested file
+        /// or directory first, and then if it doesn't exist in "C", "B"
         /// will be checked, and then "A". If none of the input paths contain
-        /// the requested file or directory, the last input path (in this case, 
+        /// the requested file or directory, the last input path (in this case,
         /// "C") will be used as the location of the requested non-existent file
         /// or directory. If you attempt to create it at this point, it will be
         /// created under path "C".
@@ -88,7 +88,7 @@ namespace Wyam.Common.IO
         /// <param name="path">
         /// The path of the input directory. If this is an absolute path,
         /// then a directory representing the specified path is returned.
-        /// If it's a relative path, then the returned directory will 
+        /// If it's a relative path, then the returned directory will
         /// be a virtual directory that aggregates all input
         /// paths. If this is <c>null</c> then a virtual
         /// directory aggregating all input paths is returned.
@@ -105,13 +105,13 @@ namespace Wyam.Common.IO
         /// <summary>
         /// Gets the absolute input path that contains the specified file or directory. If the provided
         /// file or directory path is absolute, this returns the input path that contains the specified
-        /// path (note that the specified file or directory does not need to exist and this just returns 
+        /// path (note that the specified file or directory does not need to exist and this just returns
         /// the input path that would contain the file or directory based only on path information). If
         /// the provided path is relative, this checks all input paths for the existence of the file
         /// or directory and returns the first one where it exists.
         /// </summary>
         /// <param name="path">The file path.</param>
-        /// <returns>The input path that contains the specified file, 
+        /// <returns>The input path that contains the specified file,
         /// or <c>null</c> if no input path does.</returns>
         DirectoryPath GetContainingInputPath(NormalizedPath path);
 
@@ -141,7 +141,7 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>An output file.</returns>
         IFile GetOutputFile(FilePath path);
-        
+
         /// <summary>
         /// Gets a directory representing an output.
         /// </summary>

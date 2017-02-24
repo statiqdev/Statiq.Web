@@ -23,7 +23,7 @@ namespace Cake.Wyam.Tests
                 // When, Then
                 Assert.Throws<CakeException>(() => fixture.Run(), "Wyam: Could not locate executable.");
             }
-            
+
             [TestCase("/bin/tools/Wyam/Wyam.exe", "/bin/tools/Wyam/Wyam.exe")]
             [TestCase("./tools/Wyam/Wyam.exe", "/Working/tools/Wyam/Wyam.exe")]
             public void ShouldUseWyamRunnerFromToolPathIfProvided(string toolPath, string expected)
@@ -38,8 +38,8 @@ namespace Cake.Wyam.Tests
                 // Then
                 Assert.AreEqual(expected, result.Path.FullPath);
             }
-            
-            
+
+
             [TestCase("C:/Wyam/Wyam.exe", "C:/Wyam/Wyam.exe")]
             public void ShouldUseWyamRunnerFromToolPathIfProvidedOnWindows(string toolPath, string expected)
             {

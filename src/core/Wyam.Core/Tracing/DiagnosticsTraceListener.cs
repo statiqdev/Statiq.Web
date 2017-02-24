@@ -26,7 +26,7 @@ namespace Wyam.Core.Tracing
         {
             Wyam.Common.Tracing.Trace.Error(message + " " + detailMessage);
         }
-        
+
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
         {
             this.TraceData(eventCache, source, eventType, id, new object[] { data });

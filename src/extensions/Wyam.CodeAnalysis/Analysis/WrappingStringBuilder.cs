@@ -11,11 +11,11 @@ namespace Wyam.CodeAnalysis.Analysis
     /// </summary>
     internal class WrappingStringBuilder
     {
-        private readonly StringBuilder _masterBuilder 
+        private readonly StringBuilder _masterBuilder
             = new StringBuilder();
 
         // value, wrapBefore, prefixContent
-        private readonly List<Tuple<string, bool, bool>> _segments 
+        private readonly List<Tuple<string, bool, bool>> _segments
             = new List<Tuple<string, bool, bool>>();
 
         private readonly int _maxLineLength;
@@ -32,7 +32,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             if (maxLineLength < 1)
             {
-                throw new ArgumentException(nameof(maxLineLength) 
+                throw new ArgumentException(nameof(maxLineLength)
                     + " must be greater than 0.", nameof(maxLineLength));
             }
             _maxLineLength = maxLineLength;
@@ -45,8 +45,8 @@ namespace Wyam.CodeAnalysis.Analysis
         /// <value>
         /// The length of the string.
         /// </value>
-        // Exclude the prefix content for the next line if there's nothing after it 
-        public int Length => _masterBuilder.Length 
+        // Exclude the prefix content for the next line if there's nothing after it
+        public int Length => _masterBuilder.Length
             + (_segments.Count == 1 && _segments[0].Item3 ? 0 : _segments.Sum(x => x.Item1.Length));
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Wyam.CodeAnalysis.Analysis
         public override string ToString()
         {
             // Exclude the prefix content for the next line if there's nothing after it
-            return _masterBuilder + (_segments.Count == 1 && _segments[0].Item3 
+            return _masterBuilder + (_segments.Count == 1 && _segments[0].Item3
                 ? string.Empty : string.Join("", _segments.Select(x => x.Item1)));
         }
 

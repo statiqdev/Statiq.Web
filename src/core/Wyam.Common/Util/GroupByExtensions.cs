@@ -9,7 +9,7 @@ namespace Wyam.Common.Util
     public static class GroupByExtensions
     {
         /// <summary>
-        /// Groups the elements of a sequence according to a specified key selector function 
+        /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
@@ -25,7 +25,7 @@ namespace Wyam.Common.Util
         }
 
         /// <summary>
-        /// Groups the elements of a sequence according to a specified key selector function 
+        /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys
         /// and compares the keys by using a specified comparer.
         /// </summary>
@@ -44,7 +44,7 @@ namespace Wyam.Common.Util
         }
 
         /// <summary>
-        /// Groups the elements of a sequence according to a specified key selector function 
+        /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys
         /// and projects the elements for each group by using a specified function.
         /// </summary>
@@ -66,7 +66,7 @@ namespace Wyam.Common.Util
         /// <summary>
         /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are projected by using a specified function.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
@@ -103,7 +103,7 @@ namespace Wyam.Common.Util
         }
 
         /// <summary>
-        /// Groups the elements of a sequence according to a specified key selector function 
+        /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys
         /// and projects the elements for each group by using a specified function
         /// that returns a sequence of elements.
@@ -126,7 +126,7 @@ namespace Wyam.Common.Util
         /// <summary>
         /// Groups the elements of a sequence according to a specified key selector function
         /// that returns a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are projected by using a specified function
         /// that returns a sequence of elements.
         /// </summary>

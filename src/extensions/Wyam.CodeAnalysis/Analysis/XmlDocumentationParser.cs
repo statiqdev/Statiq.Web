@@ -22,7 +22,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	    private readonly Compilation _compilation;
 	    private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
-        private List<Action> _processActions; 
+        private List<Action> _processActions;
         private readonly object _processLock = new object();
 
 		public string Example { get; private set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Wyam.CodeAnalysis.Analysis
 		public string Summary { get; private set; } = string.Empty;
 		public string Returns { get; private set; } = string.Empty;
 		public string Value { get; private set; } = string.Empty;
-		public IReadOnlyList<ReferenceComment> Exceptions { get; private set; } 
+		public IReadOnlyList<ReferenceComment> Exceptions { get; private set; }
 			= ImmutableArray<ReferenceComment>.Empty;
 		public IReadOnlyList<ReferenceComment> Permissions { get; private set; }
 			= ImmutableArray<ReferenceComment>.Empty;
@@ -38,7 +38,7 @@ namespace Wyam.CodeAnalysis.Analysis
 			= ImmutableArray<ReferenceComment>.Empty;
 		public IReadOnlyList<ReferenceComment> TypeParams { get; private set; }
 			= ImmutableArray<ReferenceComment>.Empty;
-		public IReadOnlyList<string> SeeAlso { get; private set; } 
+		public IReadOnlyList<string> SeeAlso { get; private set; }
 			= ImmutableArray<string>.Empty;
 		public IReadOnlyDictionary<string, IReadOnlyList<OtherComment>> OtherComments { get; private set; }
 			= ImmutableDictionary<string, IReadOnlyList<OtherComment>>.Empty;
@@ -46,7 +46,7 @@ namespace Wyam.CodeAnalysis.Analysis
 		public XmlDocumentationParser(
             IExecutionContext context,
             ISymbol symbol,
-            Compilation compilation, 
+            Compilation compilation,
             ConcurrentDictionary<ISymbol, IDocument> symbolToDocument,
 			ConcurrentDictionary<string, string> cssClasses)
 		{
@@ -116,7 +116,7 @@ namespace Wyam.CodeAnalysis.Analysis
                                         _processActions.Add(() => Permissions = GetReferenceComments(group, true, elementName));
                                         break;
                                     case "param":
-                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName, 
+                                        _processActions.Add(() => Params = GetReferenceComments(group, false, elementName,
                                             (_symbol as IMethodSymbol)?.Parameters.Select(x => x.Name).ToArray() ?? Array.Empty<string>()));
                                         break;
                                     case "typeparam":
@@ -145,8 +145,8 @@ namespace Wyam.CodeAnalysis.Analysis
             }
 
 	        return Array.Empty<string>();
-        } 
-        
+        }
+
         // Lazily processes all the elements found while parsing (call after walking all symbols so the reference dictionary will be complete)
 		public XmlDocumentationParser Process()
 		{
@@ -230,7 +230,7 @@ namespace Wyam.CodeAnalysis.Analysis
                                 {
                                     string constructorSignature = AnalyzeSymbolVisitor.GetFullName(constructorSymbol);
                                     constructorSignature = constructorSignature.Substring(constructorSignature.IndexOf('('));
-                                    if (signature == constructorSignature 
+                                    if (signature == constructorSignature
                                         && inheritedSymbolCommentIds.Add(constructorSymbol.GetDocumentationCommentId()))
                                     {
                                         inheritedSymbols.Add(constructorSymbol);
@@ -242,7 +242,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	                    {
                             // Override, get overridden method
                             IMethodSymbol overriddenMethodSymbol = currentMethodSymbol.OverriddenMethod;
-	                        if (overriddenMethodSymbol != null 
+	                        if (overriddenMethodSymbol != null
                                 && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
 	                        {
 	                            inheritedSymbols.Add(overriddenMethodSymbol);
@@ -254,7 +254,7 @@ namespace Wyam.CodeAnalysis.Analysis
                             IMethodSymbol interfaceMethodSymbol = currentMethodSymbol.ContainingType.AllInterfaces
                                 .SelectMany(x => x.GetMembers().OfType<IMethodSymbol>())
                                 .FirstOrDefault(x => currentSymbol.Equals(currentSymbol.ContainingType.FindImplementationForInterfaceMember(x)));
-	                        if (interfaceMethodSymbol != null 
+	                        if (interfaceMethodSymbol != null
                                 && inheritedSymbolCommentIds.Add(interfaceMethodSymbol.GetDocumentationCommentId()))
 	                        {
 	                            inheritedSymbols.Add(interfaceMethodSymbol);
@@ -440,7 +440,7 @@ namespace Wyam.CodeAnalysis.Analysis
 	            return obj.Name.ToString().GetHashCode();
 	        }
 	    }
-        
+
         // Returns the name and sets link if one could be found (or null if not)
         // First checks for "href" attribute and then checks for "cref"
 		private string GetRefNameAndLink(XElement element, out string link)
@@ -631,7 +631,7 @@ namespace Wyam.CodeAnalysis.Analysis
 		{
 			listElement.Name = "table";
 			typeAttribute?.Remove();
-			
+
 			foreach (XElement itemElement in listElement.Elements("listheader")
 				.Concat(listElement.Elements("item")).ToList())
 			{

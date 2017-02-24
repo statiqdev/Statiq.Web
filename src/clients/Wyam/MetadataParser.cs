@@ -11,7 +11,7 @@ namespace Wyam
     /// </summary>
     internal static class MetadataParser
     {
-        public static IReadOnlyDictionary<string, object> Parse(IEnumerable<string> args) => 
+        public static IReadOnlyDictionary<string, object> Parse(IEnumerable<string> args) =>
             args.Select(ParsePair).ToDictionary(pair => pair.Key, pair => pair.Value);
 
         public static KeyValuePair<string, object> ParsePair(string arg)

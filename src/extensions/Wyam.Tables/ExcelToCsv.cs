@@ -16,7 +16,7 @@ namespace Wyam.Tables
     /// Transforms Excel content to CSV.
     /// </summary>
     /// <remarks>
-    /// This module reads the content of each input document as Excel OOXML and outputs CSV content. 
+    /// This module reads the content of each input document as Excel OOXML and outputs CSV content.
     /// The output CSV content uses <c>,</c> as separator and encloses every value in <c>"</c>.
     /// </remarks>
     /// <category>Content</category>

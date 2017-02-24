@@ -30,7 +30,7 @@ namespace Wyam.Configuration.NuGet
 
         private NuGetVersion _versionMatch;
 
-        public Package(NuGetFramework currentFramework, string packageId, IReadOnlyList<SourceRepository> sourceRepositories, 
+        public Package(NuGetFramework currentFramework, string packageId, IReadOnlyList<SourceRepository> sourceRepositories,
             string versionRange, bool getLatest, bool allowPrereleaseVersions, bool allowUnlisted, bool exclusive)
         {
             if (packageId == null)
@@ -59,7 +59,7 @@ namespace Wyam.Configuration.NuGet
             _exclusive = exclusive;
         }
 
-        public async Task ResolveVersion(SourceRepository localRepository, 
+        public async Task ResolveVersion(SourceRepository localRepository,
             IReadOnlyList<SourceRepository> remoteRepositories, bool updatePackages, ILogger logger)
         {
             string versionRangeString = _versionRange == null ? string.Empty : " " + _versionRange;

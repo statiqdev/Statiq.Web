@@ -12,7 +12,7 @@ namespace Wyam.Core.JavaScript
     {
         private readonly JavaScriptEngineSwitcher.Core.IJsEngine _engine;
         private bool _disposed = false;
-        
+
         public JsEngine(JavaScriptEngineSwitcher.Core.IJsEngine engine)
         {
             _engine = engine;

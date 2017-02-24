@@ -120,7 +120,7 @@ namespace Wyam.Markdown
         {
             return inputs.AsParallel().Select(context, input =>
             {
-                Trace.Verbose("Processing Markdown {0} for {1}", 
+                Trace.Verbose("Processing Markdown {0} for {1}",
                     string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.SourceString());
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;

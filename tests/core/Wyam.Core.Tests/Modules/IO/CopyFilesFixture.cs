@@ -217,7 +217,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 copyFiles.Execute(Inputs, Context).ToList();
 
             }
-            
+
             [TestCase(Keys.SourceFilePath, "/TestFiles/Input/test-a.txt")]
             [TestCase(Keys.DestinationFilePath, "/output/test-a.txt")]
             public void ShouldSetFilePathMetadata(string key, string expected)

@@ -5,10 +5,10 @@ namespace Wyam.Common.Execution
 {
     public static class PipelineCollectionExtensions
     {
-        public static IPipeline Add(this IPipelineCollection pipelines, ModuleList modules) => 
+        public static IPipeline Add(this IPipelineCollection pipelines, ModuleList modules) =>
             pipelines.Add(null, modules);
 
-        public static IPipeline Add(this IPipelineCollection pipelines, params IModule[] modules) => 
+        public static IPipeline Add(this IPipelineCollection pipelines, params IModule[] modules) =>
             pipelines.Add(null, new ModuleList(modules));
 
         public static IPipeline Add(this IPipelineCollection pipelines, string name, params IModule[] modules) =>
@@ -58,8 +58,8 @@ namespace Wyam.Common.Execution
             {
                 throw new KeyNotFoundException($"Target pipeline {name} was not found");
             }
-            return index + 1 < pipelines.Count 
-                ? pipelines.Insert(index + 1, name, modules) 
+            return index + 1 < pipelines.Count
+                ? pipelines.Insert(index + 1, name, modules)
                 : pipelines.Add(name, modules);
         }
     }

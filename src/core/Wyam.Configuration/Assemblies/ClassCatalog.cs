@@ -47,7 +47,7 @@ namespace Wyam.Configuration.Assemblies
         /// </returns>
         public T GetInstance<T>(string typeName, bool ignoreCase = false)
         {
-            Type type = GetClasses<T>().FirstOrDefault(x => x.Name.Equals(typeName, 
+            Type type = GetClasses<T>().FirstOrDefault(x => x.Name.Equals(typeName,
                 ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
             return type == null ? default(T) : (T)Activator.CreateInstance(type);
         }

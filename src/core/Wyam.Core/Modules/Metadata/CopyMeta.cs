@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules.Metadata
         private readonly string _fromKey;
         private readonly string _toKey;
         private string _format;
-        private Func<string, string> _execute; 
+        private Func<string, string> _execute;
 
         /// <summary>
         /// The specified object in fromKey is copied to toKey. If a format is provided, the fromKey value is processed through string.Format before being copied (if the existing value is a DateTime, the format is passed as the argument to ToString).

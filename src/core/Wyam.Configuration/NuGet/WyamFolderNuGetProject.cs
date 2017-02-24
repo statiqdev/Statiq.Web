@@ -100,7 +100,7 @@ namespace Wyam.Configuration.NuGet
 
         // Probably going to hell for using a region
         // The following methods are originally from the internal MSBuildNuGetProjectSystemUtility class
-        #region MSBuildNuGetProjectSystemUtility  
+        #region MSBuildNuGetProjectSystemUtility
 
         private static FrameworkSpecificGroup GetMostCompatibleGroup(NuGetFramework projectTargetFramework,
             IEnumerable<FrameworkSpecificGroup> itemGroups)

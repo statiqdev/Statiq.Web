@@ -136,7 +136,7 @@ namespace Wyam.Html
             _nesting = true;
             return this;
         }
-        
+
         /// <summary>
         /// Allows you to specify an alternate metadata key for the heading documents.
         /// </summary>

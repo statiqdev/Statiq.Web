@@ -18,7 +18,7 @@ namespace Wyam.Core.Execution
         public string Name => _pipeline.Name;
 
         public bool ProcessDocumentsOnce => _pipeline.ProcessDocumentsOnce;
-        
+
         IEnumerator<IModule> IEnumerable<IModule>.GetEnumerator() => _pipeline.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

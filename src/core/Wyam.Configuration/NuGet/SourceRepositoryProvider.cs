@@ -45,7 +45,7 @@ namespace Wyam.Configuration.NuGet
                 AddDefaultRepository(defaultSource);
             }
         }
-        
+
         /// <summary>
         /// Add the global sources to the default repositories.
         /// </summary>
@@ -55,14 +55,14 @@ namespace Wyam.Configuration.NuGet
                 .Where(x => x.IsEnabled)
                 .Select(x => new SourceRepository(x, _resourceProviders)));
         }
-        
+
         /// <summary>
         /// Adds a default source repository to the front of the list.
         /// </summary>
         public void AddDefaultRepository(string packageSource) => _defaultRepositories.Insert(0, CreateRepository(packageSource));
 
         public IReadOnlyList<SourceRepository> GetDefaultRepositories() => _defaultRepositories;
-        
+
         /// <summary>
         /// Creates or gets a non-default source repository.
         /// </summary>

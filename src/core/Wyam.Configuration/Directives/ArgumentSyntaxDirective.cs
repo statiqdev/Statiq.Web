@@ -69,13 +69,13 @@ namespace Wyam.Configuration.Directives
 
         public string GetHelpText()
         {
-            return string.Join(Environment.NewLine, 
+            return string.Join(Environment.NewLine,
                 Process(null, string.Empty, true)
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
                     .Skip(1)
                     .Where(x => !string.IsNullOrEmpty(x)));
         }
-        
+
         protected abstract void Define(ArgumentSyntax syntax, TSettings settings);
 
         protected abstract void Process(Configurator configurator, TSettings settings);

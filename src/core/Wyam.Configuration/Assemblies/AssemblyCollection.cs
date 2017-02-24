@@ -15,7 +15,7 @@ namespace Wyam.Configuration.Assemblies
         {
             // This is the default set of assemblies that should get loaded during configuration and in other dynamic modules
             Add(Assembly.GetAssembly(typeof(object))); // System
-            Add(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>))); // System.Collections.Generic 
+            Add(Assembly.GetAssembly(typeof(System.Collections.Generic.List<>))); // System.Collections.Generic
             Add(Assembly.GetAssembly(typeof(System.Linq.ImmutableArrayExtensions))); // System.Linq
             Add(Assembly.GetAssembly(typeof(System.Dynamic.DynamicObject))); // System.Core (needed for dynamic)
             Add(Assembly.GetAssembly(typeof(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo))); // Microsoft.CSharp (needed for dynamic)

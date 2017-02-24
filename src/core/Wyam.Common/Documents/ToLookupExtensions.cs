@@ -8,7 +8,7 @@ namespace Wyam.Common.Documents
     public static class ToLookupExtensions
     {
         /// <summary>
-        /// Creates a lookup from a sequence of documents using the values of a specified metadata key. 
+        /// Creates a lookup from a sequence of documents using the values of a specified metadata key.
         /// If a document does not contain the specified metadata key, it is not included in the result set.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -16,14 +16,14 @@ namespace Wyam.Common.Documents
         /// <param name="keyMetadataKey">The key metadata key.</param>
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, IDocument> ToLookup<TKey>(
-            this IEnumerable<IDocument> documents, 
+            this IEnumerable<IDocument> documents,
             string keyMetadataKey)
         {
             return documents.ToLookup<TKey>(keyMetadataKey, null);
         }
 
         /// <summary>
-        /// Creates a lookup from a sequence of documents and the values of a specified metadata key 
+        /// Creates a lookup from a sequence of documents and the values of a specified metadata key
         /// and compares the keys by using a specified comparer.
         /// If a document does not contain the specified metadata key, it is not included in the result set.
         /// </summary>
@@ -33,8 +33,8 @@ namespace Wyam.Common.Documents
         /// <param name="comparer">The comparer.</param>
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, IDocument> ToLookup<TKey>(
-            this IEnumerable<IDocument> documents, 
-            string keyMetadataKey, 
+            this IEnumerable<IDocument> documents,
+            string keyMetadataKey,
             IEqualityComparer<TKey> comparer)
         {
             if (documents == null)
@@ -65,7 +65,7 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookup<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
+            string keyMetadataKey,
             string elementMetadataKey)
         {
             return documents.ToLookup<TKey, TElement>(keyMetadataKey, elementMetadataKey, null);
@@ -86,8 +86,8 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookup<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
-            string elementMetadataKey, 
+            string keyMetadataKey,
+            string elementMetadataKey,
             IEqualityComparer<TKey> comparer)
         {
             if (documents == null)
@@ -110,7 +110,7 @@ namespace Wyam.Common.Documents
         }
 
         /// <summary>
-        /// Creates a lookup from a sequence of documents according to a specified metadata key 
+        /// Creates a lookup from a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -125,7 +125,7 @@ namespace Wyam.Common.Documents
         }
 
         /// <summary>
-        /// Creates a lookup from a sequence of documents according to a specified metadata key 
+        /// Creates a lookup from a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys
         /// and compares the keys by using a specified comparer.
         /// </summary>
@@ -136,7 +136,7 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, IDocument> ToLookupMany<TKey>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
+            string keyMetadataKey,
             IEqualityComparer<TKey> comparer)
         {
             if (documents == null)
@@ -167,7 +167,7 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookupMany<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
+            string keyMetadataKey,
             string elementMetadataKey)
         {
             return documents.ToLookupMany<TKey, TElement>(keyMetadataKey, elementMetadataKey, null);
@@ -176,7 +176,7 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Creates a lookup from a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are obtained by using a specified metadata key.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -188,8 +188,8 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookupMany<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
-            string elementMetadataKey, 
+            string keyMetadataKey,
+            string elementMetadataKey,
             IEqualityComparer<TKey> comparer)
         {
             if (documents == null)
@@ -224,7 +224,7 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookupManyToMany<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
+            string keyMetadataKey,
             string elementMetadataKey)
         {
             return documents.ToLookupManyToMany<TKey, TElement>(keyMetadataKey, elementMetadataKey, null);
@@ -233,7 +233,7 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Creates a lookup from a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are obtained by using a specified metadata key.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -245,8 +245,8 @@ namespace Wyam.Common.Documents
         /// <returns>A lookup.</returns>
         public static ILookup<TKey, TElement> ToLookupManyToMany<TKey, TElement>(
             this IEnumerable<IDocument> documents,
-            string keyMetadataKey, 
-            string elementMetadataKey, 
+            string keyMetadataKey,
+            string elementMetadataKey,
             IEqualityComparer<TKey> comparer)
         {
             if (documents == null)

@@ -226,7 +226,7 @@ namespace Wyam.Feeds.Syndication.Atom
 			}
 		}
 
-		string IFeedMetadata.Description => 
+		string IFeedMetadata.Description =>
             _summary == null ? _content?.StringValue : _summary.StringValue;
 
 	    string IFeedMetadata.Author

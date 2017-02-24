@@ -6,9 +6,9 @@
     public interface IMetadataValue
     {
         /// <summary>
-        /// Lazily loads a metadata value. This method will be called 
+        /// Lazily loads a metadata value. This method will be called
         /// for each request and the return object will
-        /// be processed like any other metadata value. The implementation 
+        /// be processed like any other metadata value. The implementation
         /// of this method must be thread-safe.
         /// </summary>
         /// <param name="metadata">The metadata object requesting the value.</param>

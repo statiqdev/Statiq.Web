@@ -6,7 +6,7 @@ namespace Wyam.Configuration
     public partial class KnownTheme : ClassEnum<KnownTheme>
     {
         // Third-party theme field declarations would go here
-        
+
         // Allows overriding a default theme for a recipe (I.e., set the theme to "none")
         public static readonly KnownTheme None = new KnownTheme(null, null, null);
 

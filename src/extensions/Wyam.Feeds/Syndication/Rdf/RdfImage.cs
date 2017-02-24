@@ -23,7 +23,7 @@ namespace Wyam.Feeds.Syndication.Rdf
 		}
 
 		/// <summary>
-		/// Gets and sets 
+		/// Gets and sets
 		/// </summary>
 		[DefaultValue(null)]
 		[XmlAttribute("about", Namespace=RdfFeedBase.NamespaceRdf)]

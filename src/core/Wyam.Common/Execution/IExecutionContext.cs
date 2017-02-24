@@ -23,7 +23,7 @@ namespace Wyam.Common.Execution
         /// Gets the raw bytes for dynamically compiled assemblies (such as the configuration script).
         /// </summary>
         IReadOnlyCollection<byte[]> DynamicAssemblies { get; }
-        
+
         /// <summary>
         /// Gets a set of namespaces that should be brought into scope for modules that perform dynamic compilation.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Wyam.Common.Execution
         string GetLink();
 
         /// <summary>
-        /// Gets a link for the specified metadata (typically a document) using the 
+        /// Gets a link for the specified metadata (typically a document) using the
         /// "RelativeFilePath" metadata value and the default settings from the
         /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
         /// consistent link generation. Note that you can optionally include the host or not depending
@@ -85,7 +85,7 @@ namespace Wyam.Common.Execution
         /// sites work the same on any server including the preview server.
         /// </summary>
         /// <param name="metadata">The metadata or document to generate a link for.</param>
-        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will
         /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
         /// <returns>
         /// A string representation of the path suitable for a web link.
@@ -93,7 +93,7 @@ namespace Wyam.Common.Execution
         string GetLink(IMetadata metadata, bool includeHost = false);
 
         /// <summary>
-        /// Gets a link for the specified metadata (typically a document) using the 
+        /// Gets a link for the specified metadata (typically a document) using the
         /// specified metadata value (by default, "RelativeFilePath") and the default settings from the
         /// <see cref="IReadOnlySettings" />. This version should be used inside modules to ensure
         /// consistent link generation. Note that you can optionally include the host or not depending
@@ -102,7 +102,7 @@ namespace Wyam.Common.Execution
         /// </summary>
         /// <param name="metadata">The metadata or document to generate a link for.</param>
         /// <param name="key">The key at which a <see cref="FilePath"/> can be found for generating the link.</param>
-        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will
         /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
         /// <returns>
         /// A string representation of the path suitable for a web link.
@@ -118,7 +118,7 @@ namespace Wyam.Common.Execution
         /// sites work the same on any server including the preview server.
         /// </summary>
         /// <param name="path">The path to generate a link for.</param>
-        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will
         /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
         /// <returns>
         /// A string representation of the path suitable for a web link.
@@ -126,7 +126,7 @@ namespace Wyam.Common.Execution
         string GetLink(string path, bool includeHost = false);
 
         /// <summary>
-        /// Converts the path into a string appropriate for use as a link, overriding one or more 
+        /// Converts the path into a string appropriate for use as a link, overriding one or more
         /// settings from the <see cref="IReadOnlySettings" />.
         /// </summary>
         /// <param name="path">The path to generate a link for.</param>
@@ -150,7 +150,7 @@ namespace Wyam.Common.Execution
         /// sites work the same on any server including the preview server.
         /// </summary>
         /// <param name="path">The path to generate a link for.</param>
-        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will 
+        /// <param name="includeHost">If set to <c>true</c> the host configured in the output settings will
         /// be included in the link, otherwise the host will be omitted and only the root path will be included (default).</param>
         /// <returns>
         /// A string representation of the path suitable for a web link.
@@ -158,7 +158,7 @@ namespace Wyam.Common.Execution
         string GetLink(NormalizedPath path, bool includeHost = false);
 
         /// <summary>
-        /// Converts the path into a string appropriate for use as a link, overriding one or more 
+        /// Converts the path into a string appropriate for use as a link, overriding one or more
         /// settings from the <see cref="IReadOnlySettings" />.
         /// </summary>
         /// <param name="path">The path to generate a link for.</param>
@@ -199,8 +199,8 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Gets a new document with the specified source, content stream, and metadata (in addition to the default initial metadata).
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="source">The source.</param>
@@ -212,8 +212,8 @@ namespace Wyam.Common.Execution
 
         /// <summary>
         /// Gets a new document with the specified content stream and metadata (in addition to the default initial metadata).
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="stream">The content stream.</param>
@@ -253,8 +253,8 @@ namespace Wyam.Common.Execution
         /// <summary>
         /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="sourceDocument">The source document.</param>
@@ -268,8 +268,8 @@ namespace Wyam.Common.Execution
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="sourceDocument">The source document.</param>
@@ -297,7 +297,7 @@ namespace Wyam.Common.Execution
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
         IDocument GetDocument(IDocument sourceDocument, IEnumerable<KeyValuePair<string, object>> items);
-        
+
         /// <summary>
         /// Provides access to the same enhanced type conversion used to convert metadata types.
         /// </summary>
@@ -306,7 +306,7 @@ namespace Wyam.Common.Execution
         /// <param name="result">The result of the conversion.</param>
         /// <returns><c>true</c> if the conversion could be completed, <c>false</c> otherwise.</returns>
         bool TryConvert<T>(object value, out T result);
-        
+
         /// <summary>
         /// Executes the specified modules with the specified input documents and returns the result documents.
         /// </summary>
@@ -322,7 +322,7 @@ namespace Wyam.Common.Execution
         /// <param name="metadata">The metadata to use.</param>
         /// <returns>The result documents from the executed modules.</returns>
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> metadata = null);
-        
+
         /// <summary>
         /// Executes the specified modules with an empty initial input document with optional additional metadata and returns the result documents.
         /// </summary>

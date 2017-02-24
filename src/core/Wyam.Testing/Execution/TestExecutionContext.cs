@@ -276,7 +276,7 @@ namespace Wyam.Testing.Execution
             }
             return inputs.ToList();
         }
-        
+
         public Func<IJsEngine> JsEngineFunc = () =>
         {
             throw new NotImplementedException("JavaScript test engine not initialized. Wyam.Testing.JavaScript can be used to return a working JavaScript engine");
@@ -284,7 +284,7 @@ namespace Wyam.Testing.Execution
 
         public IJsEnginePool GetJsEnginePool(Action<IJsEngine> initializer = null,
             int startEngines = 10, int maxEngines = 25,
-            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) => 
+            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) =>
             new TestJsEnginePool(JsEngineFunc, initializer);
 
         private class TestJsEnginePool : IJsEnginePool

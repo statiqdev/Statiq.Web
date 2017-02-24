@@ -9,18 +9,18 @@ using Wyam.Common.Util;
 namespace Wyam.Core.Modules.Control
 {
     /// <summary>
-    /// Evaluates a series of child modules for each input document if a specified condition is met. 
+    /// Evaluates a series of child modules for each input document if a specified condition is met.
     /// </summary>
     /// <remarks>
-    /// Any result documents from the child modules will be returned as the result of the 
-    /// this module. Any input modules that don't match a predicate will be returned as 
+    /// Any result documents from the child modules will be returned as the result of the
+    /// this module. Any input modules that don't match a predicate will be returned as
     /// outputs without modification.
     /// </remarks>
     /// <category>Control</category>
     public class If : IModule
     {
         private readonly List<Condition> _conditions = new List<Condition>();
-        
+
         /// <summary>
         /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
         /// The predicate will be evaluated against every input document individually.
@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// Specifies an alternate condition to be tested on documents that did not satisfy 
+        /// Specifies an alternate condition to be tested on documents that did not satisfy
         /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
         /// The predicate will be evaluated against every input document individually.
         /// </summary>
@@ -57,7 +57,7 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// Specifies an alternate condition to be tested on documents that did not satisfy 
+        /// Specifies an alternate condition to be tested on documents that did not satisfy
         /// previous conditions. You can chain together as many <c>ElseIf</c> calls as needed.
         /// The predicate will be evaluated once for all input documents.
         /// </summary>
@@ -70,7 +70,7 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// This should be at the end of your fluent method chain and will evaluate the 
+        /// This should be at the end of your fluent method chain and will evaluate the
         /// specified child modules on all documents that did not satisfy previous predicates.
         /// The predicate will be evaluated against every input document individually.
         /// </summary>

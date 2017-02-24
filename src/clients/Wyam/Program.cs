@@ -32,7 +32,7 @@ namespace Wyam
         {
             // Add a default trace listener
             Trace.AddListener(new SimpleColorConsoleTraceListener { TraceOutputOptions = System.Diagnostics.TraceOptions.None });
-            
+
             // Output version info
             Trace.Information($"Wyam version {Engine.Version}");
 

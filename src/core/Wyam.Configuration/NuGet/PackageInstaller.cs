@@ -49,7 +49,7 @@ namespace Wyam.Configuration.NuGet
                 ? NuGetFramework.AnyFramework
                 : NuGetFramework.ParseFrameworkName(frameworkName, new DefaultFrameworkNameProvider());
         }
-        
+
         /// <summary>
         /// Adds the specified package source. Sources added this way will be searched before any global sources.
         /// </summary>
@@ -126,7 +126,7 @@ namespace Wyam.Configuration.NuGet
             }
             return packagesPath;
         }
-        
+
         internal void InstallPackages()
         {
             DirectoryPath packagesPath = GetAbsolutePackagesPath();
@@ -147,7 +147,7 @@ namespace Wyam.Configuration.NuGet
                 string packagesFilePath = _fileSystem.RootPath.CombineFile(new FilePath("packages.xml")).FullPath;
                 Trace.Verbose($"Writing packages file to {packagesFilePath}");
                 using (InstalledPackagesCache installedPackages = new InstalledPackagesCache(packagesFilePath, UpdatePackages))
-                { 
+                {
                     // Get the package manager and repositories
                     WyamFolderNuGetProject nuGetProject = new WyamFolderNuGetProject(_fileSystem, _assemblyLoader, _currentFramework, installedPackages, packagesPath.FullPath);
                     NuGetPackageManager packageManager = new NuGetPackageManager(_sourceRepositories, _settings, packagesPath.FullPath)

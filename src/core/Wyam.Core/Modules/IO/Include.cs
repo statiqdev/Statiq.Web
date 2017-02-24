@@ -50,7 +50,7 @@ namespace Wyam.Core.Modules.IO
         private bool ProcessIncludes(ref string content, FilePath source, IExecutionContext context)
         {
             bool modified = false;
-            
+
             int start = 0;
             while (start >= 0)
             {

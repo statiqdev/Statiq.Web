@@ -358,7 +358,7 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("\n    This is\n    <pre><code>with some code</code></pre>\n    a summary\n    <pre><code>more code</code></pre>\n    ", GetResult(results, "Green")["Summary"]);
             }
-            
+
             [Test]
             public void MethodWithParam()
             {
@@ -946,7 +946,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <code><a href=\"link\">Red</a></code> class", 
+                Assert.AreEqual("Check <code><a href=\"link\">Red</a></code> class",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Html);
             }
 

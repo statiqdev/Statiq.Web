@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.Metadata
         private readonly DocumentConfig _fileName = (d, c) => d.String(Keys.SourceFileName);
         private readonly string _outputKey = Keys.WriteFileName;
         private string _pathOutputKey = Keys.WritePath;  // null for no output path
-        
+
         /// <summary>
         /// Sets the metadata key <c>WriteFileName</c> to an optimized version of <c>SourceFileName</c>.
         /// Also sets the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
@@ -52,7 +52,7 @@ namespace Wyam.Core.Modules.Metadata
         public FileName()
         {
         }
-        
+
         /// <summary>
         /// Sets the metadata key <c>WriteFileName</c> to an optimized version of the specified input metadata key.
         /// Also sets the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
@@ -150,7 +150,7 @@ namespace Wyam.Core.Modules.Metadata
             }
             return this;
         }
-        
+
         /// <summary>
         /// Indicates whether to set the specified metadata key to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
         /// </summary>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Wyam.Testing.IO
 {
     // Provides a writeable stream to a StringBuilder
-    // Initially based on code from Simple.Web (https://github.com/markrendle/Simple.Web) 
+    // Initially based on code from Simple.Web (https://github.com/markrendle/Simple.Web)
     public class StringBuilderStream : Stream
     {
         private readonly Random _random = new Random();

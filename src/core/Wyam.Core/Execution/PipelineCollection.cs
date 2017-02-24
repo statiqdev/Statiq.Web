@@ -53,14 +53,14 @@ namespace Wyam.Core.Execution
         }
 
         public void RemoveAt(int index) => _pipelines.RemoveAt(index);
-        
+
         public int IndexOf(string name) => _pipelines.FindIndex(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
         public IEnumerable<IPipeline> Pipelines => _pipelines;
 
         public int Count => _pipelines.Count;
 
-        public bool ContainsKey(string key) => 
+        public bool ContainsKey(string key) =>
             _pipelines.Any(x => string.Equals(key, x.Name, StringComparison.OrdinalIgnoreCase));
 
         public bool TryGetValue(string key, out IPipeline value)
@@ -86,7 +86,7 @@ namespace Wyam.Core.Execution
 
         public IEnumerable<IPipeline> Values => _pipelines;
 
-        public IEnumerator<KeyValuePair<string, IPipeline>> GetEnumerator() => 
+        public IEnumerator<KeyValuePair<string, IPipeline>> GetEnumerator() =>
             _pipelines.Select(x => new KeyValuePair<string, IPipeline>(x.Name, x)).GetEnumerator();
 
         IEnumerator<IPipeline> IEnumerable<IPipeline>.GetEnumerator() => _pipelines.GetEnumerator();

@@ -23,15 +23,15 @@ namespace Wyam.Core.IO
             FileProviders = new FileProviderCollection(new LocalFileProvider());
             InputPaths = new PathCollection<DirectoryPath>(new[]
             {
-                new DirectoryPath("theme"), 
+                new DirectoryPath("theme"),
                 new DirectoryPath("input")
             });
         }
-        
+
         public IFileProviderCollection FileProviders { get; }
 
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
-        
+
         public DirectoryPath RootPath
         {
             get { return _rootPath; }
@@ -107,7 +107,7 @@ namespace Wyam.Core.IO
             return GetFiles(GetInputDirectory(), patterns);
         }
 
-        public IDirectory GetInputDirectory(DirectoryPath path = null) => 
+        public IDirectory GetInputDirectory(DirectoryPath path = null) =>
             path == null
                 ? new VirtualInputDirectory(this, ".")
                 : (path.IsRelative ? new VirtualInputDirectory(this, path) : GetDirectory(path));
@@ -126,7 +126,7 @@ namespace Wyam.Core.IO
                 return InputPaths
                     .Reverse()
                     .Select(x => RootPath.Combine(x))
-                    .FirstOrDefault(x => x.FileProvider == path.FileProvider 
+                    .FirstOrDefault(x => x.FileProvider == path.FileProvider
                         && (path.FullPath == x.Collapse().FullPath || path.FullPath.StartsWith(x.Collapse().FullPath + "/")));
             }
             FilePath filePath = path as FilePath;
@@ -163,12 +163,12 @@ namespace Wyam.Core.IO
                 ? RootPath.Combine(OutputPath)
                 : RootPath.Combine(OutputPath).Combine(path);
 
-        public IFile GetOutputFile(FilePath path) => 
+        public IFile GetOutputFile(FilePath path) =>
             GetFile(GetOutputPath(path));
 
         public IDirectory GetOutputDirectory(DirectoryPath path = null) =>
             GetDirectory(GetOutputPath(path));
-        
+
         public IFile GetRootFile(FilePath path)
         {
             if (path == null)
@@ -179,11 +179,11 @@ namespace Wyam.Core.IO
             return GetFile(RootPath.CombineFile(path));
         }
 
-        public IDirectory GetRootDirectory(DirectoryPath path = null) => 
-            path == null 
-            ? GetDirectory(RootPath) 
+        public IDirectory GetRootDirectory(DirectoryPath path = null) =>
+            path == null
+            ? GetDirectory(RootPath)
             : GetDirectory(RootPath.Combine(path));
-        
+
         public IFile GetFile(FilePath path)
         {
             if (path == null)
@@ -210,7 +210,7 @@ namespace Wyam.Core.IO
         public IEnumerable<IFile> GetFiles(IEnumerable<string> patterns) =>
             GetFiles(GetRootDirectory(), patterns);
 
-        public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) => 
+        public IEnumerable<IFile> GetFiles(IDirectory directory, params string[] patterns) =>
             GetFiles(directory, (IEnumerable<string>) patterns);
 
         public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns)

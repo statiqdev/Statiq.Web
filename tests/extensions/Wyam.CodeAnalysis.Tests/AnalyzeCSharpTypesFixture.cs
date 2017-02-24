@@ -157,7 +157,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "Blue", "Red", "Yellow" }, 
+                CollectionAssert.AreEquivalent(new[] { "Blue", "Red", "Yellow" },
                     results.Single(x => x["Name"].Equals("Green")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             }
 

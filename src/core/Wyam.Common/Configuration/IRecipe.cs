@@ -20,7 +20,7 @@ namespace Wyam.Common.Configuration
         /// Scaffolds an example for the recipe in the specified directory.
         /// </summary>
         /// <param name="configFile">
-        /// The configuration file or <c>null</c> if the user 
+        /// The configuration file or <c>null</c> if the user
         /// chose not to overwrite an existing configuration file. An existing configuration file
         /// will not be automatically deleted, nor will a new configuration file be automatically
         /// created. If new configuration file content needs to be written,

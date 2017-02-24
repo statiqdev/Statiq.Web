@@ -23,10 +23,10 @@ namespace Wyam.Less
             }
         }
 
-        public string GetFileContents(string fileName) => 
+        public string GetFileContents(string fileName) =>
             _fileSystem.GetInputFile(fileName).ReadAllText();
 
-        public bool DoesFileExist(string fileName) => 
+        public bool DoesFileExist(string fileName) =>
             _fileSystem.GetInputFile(fileName).Exists;
 
         public bool UseCacheDependencies => true;

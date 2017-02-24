@@ -13,7 +13,7 @@ namespace Wyam.Core.Meta
             if (value == null)
             {
                 result = default(T);
-                return !typeof (T).IsValueType 
+                return !typeof (T).IsValueType
                     || (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>));
             }
 
@@ -27,7 +27,7 @@ namespace Wyam.Core.Meta
             // Special case if value is an enumerable that hasn't overridden .ToString() and T is a string
             // Otherwise we'd end up doing a .ToString() on the enumerable
             IEnumerable enumerableValue = value is string ? null : value as IEnumerable;
-            if (typeof(T) == typeof(string) && enumerableValue != null 
+            if (typeof(T) == typeof(string) && enumerableValue != null
                 && value.GetType().GetMethod("ToString").DeclaringType == typeof(object))
             {
                 if (TryGetFirstConvertibleItem(enumerableValue, out result))
@@ -56,7 +56,7 @@ namespace Wyam.Core.Meta
             }
 
             // IList<>
-            if (typeof(T).IsConstructedGenericType 
+            if (typeof(T).IsConstructedGenericType
                 && (typeof(T).GetGenericTypeDefinition() == typeof(IList<>)
                     || typeof(T).GetGenericTypeDefinition() == typeof(List<>)))
             {
@@ -64,7 +64,7 @@ namespace Wyam.Core.Meta
             }
 
             // Array
-            if (typeof(Array).IsAssignableFrom(typeof(T)) 
+            if (typeof(Array).IsAssignableFrom(typeof(T))
                 || (typeof(T).IsArray && typeof(T).GetArrayRank() == 1))
             {
                 return TryConvertEnumerable(value, x => x.GetElementType() ?? typeof(object), (x, y) => x.ToArray(y), out result);

@@ -28,7 +28,7 @@ namespace Wyam.Core.Modules.Extensibility
         }
 
         /// <summary>
-        /// Outputs the string value of the returned object to trace. This allows 
+        /// Outputs the string value of the returned object to trace. This allows
         /// you to trace different content depending on the execution context.
         /// </summary>
         /// <param name="content">A delegate that returns the content to trace.</param>
@@ -38,17 +38,17 @@ namespace Wyam.Core.Modules.Extensibility
         }
 
         /// <summary>
-        /// Outputs the string value of the returned object to trace. This allows 
+        /// Outputs the string value of the returned object to trace. This allows
         /// you to trace different content for each document depending on the input document.
         /// </summary>
         /// <param name="content">A delegate that returns the content to trace.</param>
-        public Trace(DocumentConfig content) 
+        public Trace(DocumentConfig content)
             : base(content)
         {
         }
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the 
+        /// The specified modules are executed against an empty initial document and the
         /// resulting document content is output to trace.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>

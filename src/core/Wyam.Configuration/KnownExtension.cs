@@ -1,5 +1,5 @@
 ﻿namespace Wyam.Configuration
-{    
+{
     /// <summary>
      /// Lookup data for all known extensions.
      /// </summary>

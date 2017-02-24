@@ -31,7 +31,7 @@ namespace Wyam.Core.Tests.IO
 
                 // Then
                 CollectionAssert.AreEquivalent(new [] { "theme", "input" }, fileSystem.InputPaths.Select(x => x.FullPath));
-            }     
+            }
         }
 
         public class RootPathTests : FileSystemFixture
@@ -176,7 +176,7 @@ namespace Wyam.Core.Tests.IO
             [Test]
             public void ReturnsVirtualInputDirectoryForRelativePath()
             {
-                // Given 
+                // Given
                 FileSystem fileSystem = new FileSystem();
 
                 // When
@@ -190,7 +190,7 @@ namespace Wyam.Core.Tests.IO
             [Test]
             public void ReturnsVirtualInputDirectoryForAscendingPath()
             {
-                // Given 
+                // Given
                 FileSystem fileSystem = new FileSystem();
 
                 // When
@@ -204,7 +204,7 @@ namespace Wyam.Core.Tests.IO
             [Test]
             public void ReturnsVirtualInputDirectoryForNullPath()
             {
-                // Given 
+                // Given
                 FileSystem fileSystem = new FileSystem();
 
                 // When
@@ -218,7 +218,7 @@ namespace Wyam.Core.Tests.IO
             [Test]
             public void ReturnsDirectoryForAbsolutePath()
             {
-                // Given 
+                // Given
                 FileSystem fileSystem = new FileSystem();
 
                 // When
@@ -272,7 +272,7 @@ namespace Wyam.Core.Tests.IO
                 // When, Then
                 Assert.Throws<ArgumentNullException>(() => fileSystem.GetContainingInputPath(null));
             }
-            
+
             [TestCase("/a/b/c/foo.txt", "/a/b")]
             [TestCase("/a/x/bar.txt", "/a/x")]
             [TestCase("/a/x/baz.txt", "/a/x")]
@@ -297,7 +297,7 @@ namespace Wyam.Core.Tests.IO
                 Assert.AreEqual(expected, inputPathFromFilePath?.FullPath);
                 Assert.AreEqual(expected, inputPathFromDirectoryPath?.FullPath);
             }
-            
+
             [TestCase("/a/b/c/foo.txt", "/a/y/../b")]
             [TestCase("/a/x/bar.txt", "/a/y/../x")]
             [TestCase("/a/x/baz.txt", "/a/y/../x")]

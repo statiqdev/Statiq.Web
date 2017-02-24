@@ -113,7 +113,7 @@ namespace Wyam.Docs
                     .WithPlaceholderFactory(TreePlaceholderFactory)
                     .WithNesting(true, true)
             );
-            
+
             engine.Pipelines.Add(DocsPipelines.BlogPosts,
                 new ReadFiles("blog/*.md"),
                 new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
@@ -372,7 +372,7 @@ namespace Wyam.Docs
                 new If(ctx => ctx.Documents[DocsPipelines.Api].Any() && ctx.Bool(DocsKeys.SearchIndex),
                     new Documents(DocsPipelines.Api),
                     new Where((doc, ctx) => doc.String(CodeAnalysisKeys.Kind) == "NamedType"),
-                    new SearchIndex.SearchIndex((doc, ctx) => 
+                    new SearchIndex.SearchIndex((doc, ctx) =>
                         new SearchIndexItem(
                             ctx.GetLink(doc),
                             doc.String(CodeAnalysisKeys.DisplayName),
@@ -404,7 +404,7 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
                     new WriteFiles()
                 )
             );
-            
+
             engine.Pipelines.Add(DocsPipelines.Less,
                 new ReadFiles("assets/css/*.less"),
                 new Concat(
@@ -453,7 +453,7 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
             );
         }
 
-        private string GetIgnoreFoldersGlob(IExecutionContext context) => 
+        private string GetIgnoreFoldersGlob(IExecutionContext context) =>
             string.Join(",", context
                 .List(DocsKeys.IgnoreFolders, Array.Empty<string>())
                 .Select(x => "!" + x)

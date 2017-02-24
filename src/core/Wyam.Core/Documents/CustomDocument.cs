@@ -19,8 +19,8 @@ namespace Wyam.Core.Documents
         internal IDocument Document { get; set; }
 
         /// <summary>
-        /// Clones this instance of the document. You must return a new instance of your 
-        /// custom document type, even if nothing will change, otherwise the document factory 
+        /// Clones this instance of the document. You must return a new instance of your
+        /// custom document type, even if nothing will change, otherwise the document factory
         /// will throw an exception. The default implementation of this method performs a
         /// <code>object.MemberwiseClone()</code>.
         /// </summary>

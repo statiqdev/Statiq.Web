@@ -16,13 +16,13 @@ namespace Wyam.Core.Modules.Contents
         /// Appends the string value of the specified object to the content of every input document.
         /// </summary>
         /// <param name="content">The content to append.</param>
-        public Append(object content) 
+        public Append(object content)
             : base(content)
         {
         }
 
         /// <summary>
-        /// Appends the string value of the returned object to to content of each document. This 
+        /// Appends the string value of the returned object to to content of each document. This
         /// allows you to specify different content to append depending on the execution context.
         /// </summary>
         /// <param name="content">A delegate that returns the content to append.</param>
@@ -32,19 +32,19 @@ namespace Wyam.Core.Modules.Contents
         }
 
         /// <summary>
-        /// Appends the string value of the returned object to to content of each document. 
-        /// This allows you to specify different content to append for each document depending 
+        /// Appends the string value of the returned object to to content of each document.
+        /// This allows you to specify different content to append for each document depending
         /// on the input document.
         /// </summary>
         /// <param name="content">A delegate that returns the content to append.</param>
-        public Append(DocumentConfig content) 
+        public Append(DocumentConfig content)
             : base(content)
         {
         }
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the results 
-        /// are appended to the content of every input document (possibly creating more 
+        /// The specified modules are executed against an empty initial document and the results
+        /// are appended to the content of every input document (possibly creating more
         /// than one output document for each input document).
         /// </summary>
         /// <param name="modules">The modules to execute.</param>

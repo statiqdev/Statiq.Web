@@ -26,9 +26,9 @@ namespace Wyam.Git
     /// </para>
     /// <para>
     /// Alternatively, by calling <c>ForEachInputDocument()</c>, contributor data is added to every input document
-    /// for which the repository contains an entry. The data is added as an <c>IDocument</c> sequence to the 
+    /// for which the repository contains an entry. The data is added as an <c>IDocument</c> sequence to the
     /// specified metadata key in the input document and each document in the sequence contains the same
-    /// metadata that would have been added in the default mode. All input documents are output from this module 
+    /// metadata that would have been added in the default mode. All input documents are output from this module
     /// (including those that didn't have commit information).
     /// </para>
     /// </remarks>
@@ -131,7 +131,7 @@ namespace Wyam.Git
             }
 
             // Iterate the contributors
-            ImmutableArray<IDocument> contributorDocuments = 
+            ImmutableArray<IDocument> contributorDocuments =
                 contributors.Select(x => context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(GitKeys.ContributorEmail, x.Key),

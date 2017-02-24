@@ -88,7 +88,7 @@ namespace Wyam.Blog
                     }
                     return published;
                 }).OnlyIfNonExisting(),
-                new Where((doc, ctx) => 
+                new Where((doc, ctx) =>
                 {
                     if (!doc.ContainsKey(BlogKeys.Published) || doc.Get(BlogKeys.Published) == null)
                     {
@@ -108,8 +108,8 @@ namespace Wyam.Blog
                     string fileName = doc.Bool("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Bool(BlogKeys.IncludeDateInPostPath) 
-                        ? $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{published:yyyy}/{published:MM}/{fileName}" 
+                    return ctx.Bool(BlogKeys.IncludeDateInPostPath)
+                        ? $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{published:yyyy}/{published:MM}/{fileName}"
                         : $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{fileName}";
                 }),
                 new OrderBy((doc, ctx) => doc.Get<DateTime>(BlogKeys.Published)).Descending()
@@ -118,7 +118,7 @@ namespace Wyam.Blog
             engine.Pipelines.Add(BlogPipelines.Tags,
                 new ReadFiles("tags/tag.cshtml"),
                 new FrontMatter(new Yaml.Yaml()),
-                new Execute(ctx => 
+                new Execute(ctx =>
                     new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts))
                         .WithComparer(ctx.Bool(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
@@ -199,7 +199,7 @@ namespace Wyam.Blog
                     new Where((doc, ctx) =>
                     {
                         FilePath destinationPath = doc.FilePath(Keys.DestinationFilePath);
-                        return destinationPath != null 
+                        return destinationPath != null
                             && (destinationPath.Extension == ".html" || destinationPath.Extension == ".htm");
                     }),
                     new Execute(ctx =>

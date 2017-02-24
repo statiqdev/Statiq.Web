@@ -10,7 +10,7 @@ namespace Wyam.Core.Documents
     {
         private readonly Dictionary<string, IReadOnlyList<IDocument>> _documents
             = new Dictionary<string, IReadOnlyList<IDocument>>();
-        
+
         public void Clear()
         {
             _documents.Clear();

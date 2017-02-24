@@ -25,7 +25,7 @@ namespace Wyam.Core.IO
         }
 
         public IReadOnlyDictionary<string, IFileProvider> Providers => _fileProviders.ToImmutableDictionary();
-        
+
         public void Add(string scheme, IFileProvider provider)
         {
             if (scheme == null)

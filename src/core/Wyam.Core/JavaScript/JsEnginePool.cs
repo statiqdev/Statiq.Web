@@ -22,7 +22,7 @@ namespace Wyam.Core.JavaScript
             int maxUsagesPerEngine,
             TimeSpan engineTimeout)
         {
-            // First we need to check if the JsEngineSwitcher has been configured. We'll do this 
+            // First we need to check if the JsEngineSwitcher has been configured. We'll do this
             // by checking the DefaultEngineName being set. If that's there we can safely assume
             // its been configured somehow (maybe via a configuration file). If not we'll wire up
             // Jint as the default engine.

@@ -58,7 +58,7 @@ namespace Cake.Wyam
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var runner = new WyamRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Globber);
+            WyamRunner runner = new WyamRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools);
             runner.Run(settings);
         }
     }

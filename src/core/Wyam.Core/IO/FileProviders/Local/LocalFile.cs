@@ -47,7 +47,7 @@ namespace Wyam.Core.IO.FileProviders.Local
             {
                 destination.Directory.Create();
             }
-            
+
             // Use the file system APIs if destination is also in the file system
             if (destination is LocalFile)
             {

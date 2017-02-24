@@ -128,7 +128,7 @@ namespace Wyam.Images
 
             if (Contrast.HasValue)
             {
-                suffix += $"-c{Contrast.Value}"; 
+                suffix += $"-c{Contrast.Value}";
             }
 
             return suffix;

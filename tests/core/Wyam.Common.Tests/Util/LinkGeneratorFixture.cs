@@ -34,7 +34,7 @@ namespace Wyam.Common.Tests.Util
                 // Then
                 Assert.AreEqual(expected, link);
             }
-            
+
             [TestCase(null, null, "/foo/bar/abc.html", "/foo/bar/abc.html")]
             [TestCase(null, null, "foo/bar/abc.html", "/foo/bar/abc.html")]
             [TestCase(null, "baz", "/foo/bar/abc.html", "/baz/foo/bar/abc.html")]
@@ -150,7 +150,7 @@ namespace Wyam.Common.Tests.Util
 
                 // When
                 string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "https", null, null);
-                
+
                 // Then
                 Assert.AreEqual("https://www.google.com/foo/bar", link);
             }

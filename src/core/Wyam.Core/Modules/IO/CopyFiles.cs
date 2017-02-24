@@ -19,8 +19,8 @@ namespace Wyam.Core.Modules.IO
     /// Copies the content of files from one path on to another path.
     /// </summary>
     /// <remarks>
-    /// For each output document, several metadata values are set with information about the file. 
-    /// By default, files are copied from the input folder (or a subfolder) to the same relative 
+    /// For each output document, several metadata values are set with information about the file.
+    /// By default, files are copied from the input folder (or a subfolder) to the same relative
     /// location in the output folder, but this doesn't have to be the case. The output of this module are documents
     /// with metadata representing the files copied by the module. Note that the input documents are not output by this
     /// module.
@@ -36,7 +36,7 @@ namespace Wyam.Core.Modules.IO
         private Func<IFile, bool> _predicate = null;
 
         /// <summary>
-        /// Copies all files that match the specified globbing patterns and/or absolute paths. This allows you to specify different 
+        /// Copies all files that match the specified globbing patterns and/or absolute paths. This allows you to specify different
         /// patterns and/or paths depending on the input document.
         /// When this constructor is used, the module is evaluated once for every input document, which may result in copying the same file
         /// more than once (and may also result in IO conflicts since copying is typically done in parallel). It is recommended you only
@@ -54,9 +54,9 @@ namespace Wyam.Core.Modules.IO
         }
 
         /// <summary>
-        /// Copies all files that match the specified globbing patterns and/or absolute paths. When this constructor is used, the module is 
-        /// evaluated only once against empty input document. This makes it possible to string multiple CopyFiles modules together in one pipeline. 
-        /// Keep in mind that the result of the whole pipeline in this case will be documents representing the files copied only by the last CopyFiles 
+        /// Copies all files that match the specified globbing patterns and/or absolute paths. When this constructor is used, the module is
+        /// evaluated only once against empty input document. This makes it possible to string multiple CopyFiles modules together in one pipeline.
+        /// Keep in mind that the result of the whole pipeline in this case will be documents representing the files copied only by the last CopyFiles
         /// module in the pipeline (since the output documents of the previous CopyFiles modules will have been consumed by the last one).
         /// </summary>
         /// <param name="patterns">The globbing patterns and/or absolute paths to read.</param>
@@ -82,12 +82,12 @@ namespace Wyam.Core.Modules.IO
         }
 
         /// <summary>
-        /// Specifies an alternate destination path for each file (by default files are copied to their 
-        /// same relative path in the output directory). The output of the function should be the full 
-        /// file path (including file name) of the destination file. If the delegate returns 
+        /// Specifies an alternate destination path for each file (by default files are copied to their
+        /// same relative path in the output directory). The output of the function should be the full
+        /// file path (including file name) of the destination file. If the delegate returns
         /// <c>null</c> for a particular file, that file will not be copied.
         /// </summary>
-        /// <param name="destinationPath">A delegate that specifies an alternate destination. 
+        /// <param name="destinationPath">A delegate that specifies an alternate destination.
         /// The parameter contains the source <see cref="IFile"/>.</param>
         public CopyFiles To(Func<IFile, FilePath> destinationPath)
         {
@@ -101,14 +101,14 @@ namespace Wyam.Core.Modules.IO
         }
 
         /// <summary>
-        /// Specifies an alternate destination path for each file (by default files are copied to their 
-        /// same relative path in the output directory). The output of the function should be the full 
-        /// file path (including file name) of the destination file. If the delegate returns 
+        /// Specifies an alternate destination path for each file (by default files are copied to their
+        /// same relative path in the output directory). The output of the function should be the full
+        /// file path (including file name) of the destination file. If the delegate returns
         /// <c>null</c> for a particular file, that file will not be copied. This overload allows you to
         /// view the <see cref="IFile"/> where the module would normally have copied the file to and then
         /// manipulate it (or not) as appropriate.
         /// </summary>
-        /// <param name="destinationPath">A delegate that specifies an alternate destination. 
+        /// <param name="destinationPath">A delegate that specifies an alternate destination.
         /// The first parameter contains the source <see cref="IFile"/> and the second contains
         /// an <see cref="IFile"/> representing the calculated destination.</param>
         public CopyFiles To(Func<IFile, IFile, FilePath> destinationPath)

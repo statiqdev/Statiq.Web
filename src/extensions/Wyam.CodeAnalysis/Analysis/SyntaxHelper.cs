@@ -120,7 +120,7 @@ namespace Wyam.CodeAnalysis.Analysis
             string genericConstraints = constraintsLocation == -1 ? string.Empty : symbolDisplayString.Substring(constraintsLocation + 1);
             builder.Append(constraintsLocation == -1 ? symbolDisplayString : symbolDisplayString.Substring(0, constraintsLocation));
 
-            // Insert base types and interfaces if a named type	
+            // Insert base types and interfaces if a named type
             if (namedTypeSymbol != null && namedTypeSymbol.TypeKind != TypeKind.Enum)
             {
                 // Base type (exclude object base)

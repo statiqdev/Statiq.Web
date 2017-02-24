@@ -8,7 +8,7 @@ namespace Wyam.Common.Documents
     public static class GroupByExtensions
     {
         /// <summary>
-        /// Groups the elements of a sequence of documents using the values of a specified metadata key. 
+        /// Groups the elements of a sequence of documents using the values of a specified metadata key.
         /// If a document does not contain the specified metadata key, it is not included in the result set.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -23,7 +23,7 @@ namespace Wyam.Common.Documents
         }
 
         /// <summary>
-        /// Groups the elements of a sequence of documents and the values of a specified metadata key 
+        /// Groups the elements of a sequence of documents and the values of a specified metadata key
         /// and compares the keys by using a specified comparer.
         /// If a document does not contain the specified metadata key, it is not included in the result set.
         /// </summary>
@@ -110,7 +110,7 @@ namespace Wyam.Common.Documents
         }
 
         /// <summary>
-        /// Groups the elements of a sequence of documents according to a specified metadata key 
+        /// Groups the elements of a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -125,7 +125,7 @@ namespace Wyam.Common.Documents
         }
 
         /// <summary>
-        /// Groups the elements of a sequence of documents according to a specified metadata key 
+        /// Groups the elements of a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys
         /// and compares the keys by using a specified comparer.
         /// </summary>
@@ -176,7 +176,7 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Groups the elements of a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are obtained by using a specified metadata key.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>
@@ -233,7 +233,7 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Groups the elements of a sequence of documents according to a specified metadata key
         /// that contains a sequence of keys.
-        /// The keys are compared by using a comparer and each group's elements 
+        /// The keys are compared by using a comparer and each group's elements
         /// are obtained by using a specified metadata key.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>

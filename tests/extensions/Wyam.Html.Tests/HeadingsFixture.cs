@@ -102,7 +102,7 @@ namespace Wyam.Html.Tests
                 List<IDocument> results = headings.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                
+
                 CollectionAssert.AreEqual(
                     new string[] { null, null },
                     results[0].DocumentList(HtmlKeys.Headings).Select(x => x.String("HContent")).ToArray());

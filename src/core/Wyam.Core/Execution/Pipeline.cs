@@ -25,7 +25,7 @@ namespace Wyam.Core.Execution
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly IModuleList _modules;
         private Cache<List<IDocument>>  _previouslyProcessedCache;
-        private Dictionary<FilePath, List<IDocument>> _processedSources; 
+        private Dictionary<FilePath, List<IDocument>> _processedSources;
         private bool _disposed;
 
         public string Name { get; }
@@ -212,7 +212,7 @@ namespace Wyam.Core.Execution
                 {
                     continue;
                 }
-                
+
                 FlattenResultDocuments(
                     document.Keys.SelectMany(x =>
                     {
@@ -261,7 +261,7 @@ namespace Wyam.Core.Execution
                 Parallel.ForEach(_previouslyProcessedCache.GetValues().SelectMany(x => x), x => x.Dispose());
             }
         }
-        
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IEnumerator<IModule> GetEnumerator() => _modules.GetEnumerator();
@@ -285,7 +285,7 @@ namespace Wyam.Core.Execution
         public void Insert(int index, params IModule[] modules) => _modules.Insert(index, modules);
 
         public int IndexOf(string name) => _modules.IndexOf(name);
-        
+
         public bool IsReadOnly => _modules.IsReadOnly;
 
         public int IndexOf(IModule item) => _modules.IndexOf(item);

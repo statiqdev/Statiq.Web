@@ -21,7 +21,7 @@ namespace Wyam.Xslt2
     /// package.
     /// </summary>
     /// <remarks>
-    /// This module uses Saxon with default settings. For more information 
+    /// This module uses Saxon with default settings. For more information
     /// see the <a href="http://www.saxonica.com">Saxonica website</a>.
     /// </remarks>
     /// <category>Templates</category>

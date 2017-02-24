@@ -42,8 +42,8 @@ namespace Wyam.CodeAnalysis.Analysis
         public AnalyzeSymbolVisitor(
             Compilation compilation,
             IExecutionContext context,
-            Func<ISymbol, bool> symbolPredicate, 
-            Func<IMetadata, FilePath> writePath, 
+            Func<ISymbol, bool> symbolPredicate,
+            Func<IMetadata, FilePath> writePath,
             ConcurrentDictionary<string, string> cssClasses,
             bool docsForImplicitSymbols,
             bool assemblySymbols)
@@ -221,7 +221,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 });
             }
         }
-   
+
         public override void VisitField(IFieldSymbol symbol)
         {
             if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
@@ -274,7 +274,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within)
         {
             List<ISymbol> members = ((IEnumerable<ISymbol>)_getAccessibleMembersInThisAndBaseTypes.Invoke(null, new object[] { containingType, within })).ToList();
-           
+
             // Remove overridden symbols
             ImmutableHashSet<ISymbol> remove = members
                 .Select(x => (ISymbol)(x as IMethodSymbol)?.OverriddenMethod ?? (x as IPropertySymbol)?.OverriddenProperty)
@@ -367,7 +367,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 new MetadataItem(CodeAnalysisKeys.IsVirtual, _ => symbol.IsVirtual ),
                 new MetadataItem(CodeAnalysisKeys.IsOverride, _ => symbol.IsOverride )
             });
-            
+
             // Add metadata that's specific to initially-processed symbols
             if (!_finished)
             {
@@ -391,7 +391,7 @@ namespace Wyam.CodeAnalysis.Analysis
             }
 
             // Create the document and add it to caches
-            IDocument document = _symbolToDocument.GetOrAdd(symbol, 
+            IDocument document = _symbolToDocument.GetOrAdd(symbol,
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), null, items));
 
             return document;
@@ -424,7 +424,7 @@ namespace Wyam.CodeAnalysis.Analysis
             });
 
             // Add other HTML elements with keys of [ElementName]Html
-            metadata.AddRange(otherHtmlElementNames.Select(x => 
+            metadata.AddRange(otherHtmlElementNames.Select(x =>
                 new MetadataItem(FirstLetterToUpper(x) + "Comments",
                     _ => xmlDocumentationParser.Process().OtherComments[x])));
         }
@@ -507,7 +507,7 @@ namespace Wyam.CodeAnalysis.Analysis
             return symbol.ToDisplayString(new SymbolDisplayFormat(
                 typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
                 genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-                parameterOptions: SymbolDisplayParameterOptions.IncludeType, 
+                parameterOptions: SymbolDisplayParameterOptions.IncludeType,
                 memberOptions: SymbolDisplayMemberOptions.IncludeParameters,
                 miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
         }

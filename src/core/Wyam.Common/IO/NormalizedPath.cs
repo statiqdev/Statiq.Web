@@ -224,7 +224,7 @@ namespace Wyam.Common.IO
             return Tuple.Create(uriPath, stringPath);
         }
 
-        private static string GetLeftPart(Uri uri) => 
+        private static string GetLeftPart(Uri uri) =>
             uri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.PathAndQuery & ~UriComponents.Fragment, UriFormat.Unescaped);
 
         private static string GetRightPart(Uri uri) =>
@@ -288,7 +288,7 @@ namespace Wyam.Common.IO
                 return new DirectoryPath(FileProvider, directory);
             }
         }
-        
+
         internal static string Collapse(NormalizedPath path)
         {
             if (path == null)
@@ -367,9 +367,9 @@ namespace Wyam.Common.IO
             return other != null && ((IEquatable<NormalizedPath>)this).Equals(other);
         }
 
-        bool IEquatable<NormalizedPath>.Equals(NormalizedPath other) => 
-            other != null 
-            && FileProvider?.ToString() == other.FileProvider?.ToString() 
+        bool IEquatable<NormalizedPath>.Equals(NormalizedPath other) =>
+            other != null
+            && FileProvider?.ToString() == other.FileProvider?.ToString()
             && FullPath == other.FullPath;
 
         public int CompareTo(object obj)
@@ -389,7 +389,7 @@ namespace Wyam.Common.IO
             {
                 throw new ArgumentException("Paths are not the same type");
             }
-            
+
             int providerCompare = string.Compare(FileProvider?.ToString(), other.FileProvider?.ToString(), StringComparison.Ordinal);
             return providerCompare == 0
                 ? string.Compare(FullPath, other.FullPath, StringComparison.Ordinal)

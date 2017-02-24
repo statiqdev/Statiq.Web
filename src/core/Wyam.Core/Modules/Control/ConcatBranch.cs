@@ -20,7 +20,7 @@ namespace Wyam.Core.Modules.Control
         private Func<IDocument, IExecutionContext, bool> _predicate;
 
         /// <summary>
-        /// Evaluates the specified modules with each input document as the initial 
+        /// Evaluates the specified modules with each input document as the initial
         /// document and then outputs the original input documents without modification concatenated with the result documents
         /// from the specified modules.
         /// </summary>
@@ -31,8 +31,8 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// Limits the documents passed to the child modules to those that satisfy the 
-        /// supplied predicate. All original input documents are output without 
+        /// Limits the documents passed to the child modules to those that satisfy the
+        /// supplied predicate. All original input documents are output without
         /// modification regardless of whether they satisfy the predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
@@ -47,8 +47,8 @@ namespace Wyam.Core.Modules.Control
 
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            IEnumerable<IDocument> documents = _predicate == null 
-                ? inputs 
+            IEnumerable<IDocument> documents = _predicate == null
+                ? inputs
                 : inputs.Where(context, x => _predicate(x, context));
             return inputs.Concat(context.Execute(this, documents));
         }

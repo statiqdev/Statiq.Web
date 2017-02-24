@@ -182,7 +182,7 @@ namespace Wyam.Core.IO.Globbing
             string member = "";
             escaping = false;
 
-            for (i = 1 /* skip the \{ */ ; i < pattern.Length && depth > 0; i++) 
+            for (i = 1 /* skip the \{ */ ; i < pattern.Length && depth > 0; i++)
             {
                 char c = pattern[i];
                 // console.error("", i, c)

@@ -57,7 +57,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string usingStatements = "using Foo.Bar;";
-                string scriptCode = 
+                string scriptCode =
 $@"#line 1
 {output}";
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, string.Empty, string.Empty);
@@ -76,7 +76,7 @@ $@"#line 1
                 ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
-                string input = 
+                string input =
 @"public class Foo
 {
     int X { get; set; }
@@ -97,7 +97,7 @@ public class Baz
 {
 }";
                 string usingStatements = "using Foo.Bar;";
-                string scriptCode = 
+                string scriptCode =
 @"#line 13
 
 int x = 1 + 2;
@@ -340,7 +340,7 @@ public string Self(string x)
                 // Then
                 Assert.AreEqual(expected, actual);
             }
-            
+
             // Assumes just the Content module is used
             private string GetExpected(string usingStatements, string usingDirectives, string scriptCode, string methodDeclarations, string typeDeclarations, string extensionMethodDeclarations)
             {

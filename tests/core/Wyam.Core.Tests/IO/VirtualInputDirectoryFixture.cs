@@ -232,7 +232,7 @@ namespace Wyam.Core.Tests.IO
             {
                 // Given
                 VirtualInputDirectory directory = GetVirtualInputDirectory(virtualPath);
-                
+
                 // When, Then
                 Assert.IsTrue(directory.Exists);
             }

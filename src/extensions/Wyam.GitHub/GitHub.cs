@@ -28,7 +28,7 @@ namespace Wyam.GitHub
     {
         private readonly Credentials _credentials;
         private Uri _url;
-        private readonly Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>> _requests 
+        private readonly Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>> _requests
             = new Dictionary<string, Func<IDocument, IExecutionContext, GitHubClient, object>>();
 
         /// <summary>

@@ -34,9 +34,9 @@ namespace Wyam.Core.Modules.Contents
     /// <para>This module outputs any meta refresh pages as well as any additional redirect files
     /// you specify. It does not output the original input files.</para>
     /// </remarks>
-    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output meta refresh 
+    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output meta refresh
     /// page or output redirect listing file.</metadata>
-    /// <metadata name="WritePath" type="FilePath">Relative path to the meta refresh page or 
+    /// <metadata name="WritePath" type="FilePath">Relative path to the meta refresh page or
     /// output redirect listing file (primarily to support the WriteFiles module).</metadata>
     /// <category>Content</category>
     public class Redirect : IModule
@@ -47,7 +47,7 @@ namespace Wyam.Core.Modules.Contents
         private DocumentConfig _paths = (doc, ctx) => doc.List<FilePath>(Keys.RedirectFrom);
         private bool _metaRefreshPages = true;
         private bool _includeHost = false;
-        
+
         /// <summary>
         /// Controls where the redirected paths come from. By default, values from the metadata
         /// key <c>RedirectFrom</c> are used.
@@ -132,7 +132,7 @@ namespace Wyam.Core.Modules.Contents
                             // Record the redirect for additional processing
                             string url = context.GetLink(input, _includeHost);
                             redirects.TryAdd(fromPath, url);
-                            
+
                             // Meta refresh documents
                             FilePath outputPath = fromPath.ChangeExtension(".html");
                             if (_metaRefreshPages)

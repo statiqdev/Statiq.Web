@@ -16,7 +16,7 @@ namespace Wyam.Razor
     internal class FileSystemFileProvider : IFileProvider
     {
         private readonly IReadOnlyFileSystem _fileSystem;
-        
+
         public FileSystemFileProvider(IReadOnlyFileSystem fileSystem)
         {
             if (fileSystem == null)
@@ -25,7 +25,7 @@ namespace Wyam.Razor
             }
             _fileSystem = fileSystem;
         }
-        
+
         public IFileInfo GetFileInfo(string subpath)
         {
             if (string.IsNullOrEmpty(subpath))
@@ -39,7 +39,7 @@ namespace Wyam.Razor
             IFile file = _fileSystem.GetInputFile(subpath);
             return new WyamFileInfo(file);
         }
-        
+
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
             if (subpath == null)
@@ -115,7 +115,7 @@ namespace Wyam.Razor
             public DateTimeOffset LastModified => DateTimeOffset.Now;
 
             public bool IsDirectory => true;
-            
+
             public Stream CreateReadStream()
             {
                 throw new InvalidOperationException("Cannot create a stream for a directory.");

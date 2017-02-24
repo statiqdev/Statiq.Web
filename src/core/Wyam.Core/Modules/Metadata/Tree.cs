@@ -31,15 +31,15 @@ namespace Wyam.Core.Modules.Metadata
     /// by rerunning this module on all the newly created documents again.
     /// </para>
     /// </remarks>
-    /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata> 
-    /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata> 
-    /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children 
+    /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata>
+    /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata>
+    /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children
     /// collection of the parent or <c>null</c> if this is the first node in the collection or the parent is null.</metadata>
-    /// <metadata name="NextSibling" type="IDocument">The next sibling, that is the next node in the children collection 
+    /// <metadata name="NextSibling" type="IDocument">The next sibling, that is the next node in the children collection
     /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.</metadata>
-    /// <metadata name="Next" type="IDocument">The next node in the tree using a depth-first 
-    /// search or <c>null</c> if this was the last node.</metadata> 
-    /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first 
+    /// <metadata name="Next" type="IDocument">The next node in the tree using a depth-first
+    /// search or <c>null</c> if this was the last node.</metadata>
+    /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first
     /// search or <c>null</c> if this was the first node.</metadata>
     /// <metadata name="TreePath" type="object[]">The path that represents this node in the tree.</metadata>
     /// <category>Metadata</category>
@@ -162,9 +162,9 @@ namespace Wyam.Core.Modules.Metadata
         /// Changes the standard metadata keys used by this module.
         /// </summary>
         public Tree WithMetadataNames(
-            string parentKey = Keys.Parent, 
-            string childrenKey = Keys.Children, 
-            string previousSiblingKey = Keys.PreviousSibling, 
+            string parentKey = Keys.Parent,
+            string childrenKey = Keys.Children,
+            string previousSiblingKey = Keys.PreviousSibling,
             string nextSiblingKey = Keys.NextSibling,
             string previousKey = Keys.Previous,
             string nextKey = Keys.Next,
@@ -214,7 +214,7 @@ namespace Wyam.Core.Modules.Metadata
                 TreeNode node = nodesToProcess.Dequeue();
 
                 // Skip root nodes
-                if (node.TreePath.Length == 0 
+                if (node.TreePath.Length == 0
                     || (node.InputDocument != null && _isRoot.Invoke<bool>(node.InputDocument, context)))
                 {
                     continue;

@@ -63,7 +63,7 @@ namespace Wyam.Configuration.NuGet
         /// <summary>
         /// Gets all installed packages from this session and their dependencies.
         /// </summary>
-        public IEnumerable<PackageIdentity> GetInstalledPackagesAndDependencies() => 
+        public IEnumerable<PackageIdentity> GetInstalledPackagesAndDependencies() =>
             _installedPackages.Select(x => x.PackageReference.PackageIdentity)
                 .Concat(_installedPackages.SelectMany(x => x.Dependencies.Select(dep => dep.PackageIdentity)));
 
@@ -85,7 +85,7 @@ namespace Wyam.Configuration.NuGet
             }
             return false;
         }
-        
+
         public IDisposable AddPackage(PackageIdentity identity, NuGetFramework targetFramework)
         {
             if (_currentlyInstallingPackage != null && _currentlyInstallingPackage.CurrentlyInstalling)
@@ -107,7 +107,7 @@ namespace Wyam.Configuration.NuGet
             return _currentlyInstallingPackage;
         }
 
-        public void Dispose() => 
+        public void Dispose() =>
             new XDocument(
                 new XElement(CachedPackage.PackagesElementName,
                     _installedPackages.Select(x => (object)x.Element).ToArray())).Save(_fullPath);

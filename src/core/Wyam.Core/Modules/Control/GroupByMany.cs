@@ -25,8 +25,8 @@ namespace Wyam.Core.Modules.Control
     /// will become one of the grouping keys. If a document contains multiple group keys, it will
     /// be included in multiple groups. A good example is a tag engine where each document can contain
     /// any number of tags and you want to make groups for each tag including all the documents with that tag.
-    /// Each input document is cloned for each group and metadata related 
-    /// to the groups, including the sequence of documents for each group, 
+    /// Each input document is cloned for each group and metadata related
+    /// to the groups, including the sequence of documents for each group,
     /// is added to each clone. For example, if you have 2 input documents
     /// and the result of grouping is 3 groups, this module will output 6 documents.
     /// </remarks>
@@ -40,9 +40,9 @@ namespace Wyam.Core.Modules.Control
         private IEqualityComparer<object> _comparer;
 
         /// <summary>
-        /// Partitions the result of the specified modules into groups with matching keys 
+        /// Partitions the result of the specified modules into groups with matching keys
         /// based on the key delegate.
-        /// The input documents to GroupBy are used as 
+        /// The input documents to GroupBy are used as
         /// the initial input documents to the specified modules.
         /// </summary>
         /// <param name="key">A delegate that returns the group keys.</param>
@@ -59,10 +59,10 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// Partitions the result of the specified modules into groups with matching keys 
+        /// Partitions the result of the specified modules into groups with matching keys
         /// based on the value at the specified metadata key.
         /// If a document to group does not contain the specified metadata key, it is not included in any output groups.
-        /// The input documents to GroupBy are used as 
+        /// The input documents to GroupBy are used as
         /// the initial input documents to the specified modules.
         /// </summary>
         /// <param name="keyMetadataKey">The key metadata key.</param>
@@ -120,7 +120,7 @@ namespace Wyam.Core.Modules.Control
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(this, inputs)
-                .Where(context, x => _predicate?.Invoke(x, context) ?? true)    
+                .Where(context, x => _predicate?.Invoke(x, context) ?? true)
                 .GroupByMany(x => _key.Invoke<IEnumerable<object>>(x, context), _comparer)
                 .ToImmutableArray();
             if (groupings.Length == 0)

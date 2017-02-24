@@ -59,7 +59,7 @@ namespace Wyam.Core.Meta
             T value;
             return TryGetValue(key, out value);
         }
-        
+
         public T this[string key]
         {
             get

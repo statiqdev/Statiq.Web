@@ -21,14 +21,14 @@ namespace Wyam.Html
     /// </summary>
     /// <remarks>
     /// This module is useful for situations like displaying the first paragraph of your most recent
-    /// blog posts or generating RSS and Atom feeds. 
+    /// blog posts or generating RSS and Atom feeds.
     /// This module looks for the first occurrence of an excerpt separator (default of <c>more</c> or <c>excerpt</c>)
     /// contained within an HTML comment (<c>&lt;!--more--&gt;</c>). If a separator comment isn't found, the module
     /// will fallback to looking for the first occurrence of a specific HTML element (<c>p</c> paragraph elements by default)
     /// and will use the outer HTML content. In both cases, the excerpt is placed in metadata with a key of <c>Excerpt</c>.
     /// The content of the original input document is left unchanged.
     /// </remarks>
-    /// <metadata name="Excerpt" type="string">Contains the content of the first result from the query 
+    /// <metadata name="Excerpt" type="string">Contains the content of the first result from the query
     /// selector (unless an alternate metadata key is specified).</metadata>
     /// <category>Metadata</category>
     public class Excerpt : IModule
@@ -100,8 +100,8 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Controls whether the inner HTML (not including the containing element's HTML) or 
-        /// outer HTML (including the containing element's HTML) of the first result from 
+        /// Controls whether the inner HTML (not including the containing element's HTML) or
+        /// outer HTML (including the containing element's HTML) of the first result from
         /// the query selector is added to metadata. The default is to get outer HTML content.
         /// This setting has no effect if a separator comment is found.
         /// </summary>
@@ -147,7 +147,7 @@ namespace Wyam.Html
                 return input;
             });
         }
-        
+
         private string GetQueryExcerpt(IHtmlDocument htmlDocument)
         {
             if (!string.IsNullOrEmpty(_querySelector))
@@ -192,11 +192,11 @@ namespace Wyam.Html
                         {
                             remove = true;
                         }
-                        if (remove || 
+                        if (remove ||
                             // Also remove if it's a top-level element that doesn't match the query selector
-                            (node.Parent == parent 
-                            && node is IElement 
-                            && !string.IsNullOrEmpty(_querySelector) 
+                            (node.Parent == parent
+                            && node is IElement
+                            && !string.IsNullOrEmpty(_querySelector)
                             && !((IElement)node).Matches(_querySelector)))
                         {
                             removeStack.Push(node);

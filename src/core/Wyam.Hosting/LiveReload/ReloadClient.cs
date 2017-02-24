@@ -94,7 +94,7 @@ namespace Wyam.Hosting.LiveReload
 
             if (negotiatedVersion == null)
             {
-                string incompatibleMessage = 
+                string incompatibleMessage =
                     "LiveReload client is not compatible with this server, aborting connection " +
                     $"(client: {string.Join(",", message.Protocols)}, " +
                     $"server: {string.Join(",", _supportedVersion)})";

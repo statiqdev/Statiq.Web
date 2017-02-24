@@ -16,7 +16,7 @@ namespace Cake.Wyam.Tests
 
         protected override void RunTool()
         {
-            WyamRunner tool = new WyamRunner(FileSystem, Environment, ProcessRunner, Globber);
+            WyamRunner tool = new WyamRunner(FileSystem, Environment, ProcessRunner, Tools);
             tool.Run(Settings);
         }
     }

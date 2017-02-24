@@ -30,7 +30,7 @@ namespace Wyam.Common.Tracing
             get { return TraceSource.Switch.Level; }
             set { TraceSource.Switch.Level = value; }
         }
-        
+
         public static void AddListener(TraceListener listener)
         {
             TraceSource.Listeners.Add(listener);
@@ -43,25 +43,25 @@ namespace Wyam.Common.Tracing
             TraceSource.Listeners.Remove(listener);
         }
 
-        public static IEnumerable<TraceListener> Listeners => 
+        public static IEnumerable<TraceListener> Listeners =>
             TraceSource.Listeners.OfType<TraceListener>();
 
         // Stops the application
-        public static void Critical(string messageOrFormat, params object[] args) => 
+        public static void Critical(string messageOrFormat, params object[] args) =>
             TraceEvent(TraceEventType.Critical, messageOrFormat, args);
 
         // Prevents expected behavior
-        public static void Error(string messageOrFormat, params object[] args) => 
+        public static void Error(string messageOrFormat, params object[] args) =>
             TraceEvent(TraceEventType.Error, messageOrFormat, args);
 
         // Unexpected behavior that does not prevent expected behavior
-        public static void Warning(string messageOrFormat, params object[] args) => 
+        public static void Warning(string messageOrFormat, params object[] args) =>
             TraceEvent(TraceEventType.Warning, messageOrFormat, args);
 
-        public static void Information(string messageOrFormat, params object[] args) => 
+        public static void Information(string messageOrFormat, params object[] args) =>
             TraceEvent(TraceEventType.Information, messageOrFormat, args);
 
-        public static void Verbose(string messageOrFormat, params object[] args) => 
+        public static void Verbose(string messageOrFormat, params object[] args) =>
             TraceEvent(TraceEventType.Verbose, messageOrFormat, args);
 
         public static void TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args)
@@ -111,22 +111,22 @@ namespace Wyam.Common.Tracing
 
         IEnumerable<TraceListener> ITrace.Listeners => Listeners;
 
-        void ITrace.Critical(string messageOrFormat, params object[] args) => 
+        void ITrace.Critical(string messageOrFormat, params object[] args) =>
             Critical(messageOrFormat, args);
 
-        void ITrace.Error(string messageOrFormat, params object[] args) => 
+        void ITrace.Error(string messageOrFormat, params object[] args) =>
             Error(messageOrFormat, args);
 
-        void ITrace.Warning(string messageOrFormat, params object[] args) => 
+        void ITrace.Warning(string messageOrFormat, params object[] args) =>
             Warning(messageOrFormat, args);
 
-        void ITrace.Information(string messageOrFormat, params object[] args) => 
+        void ITrace.Information(string messageOrFormat, params object[] args) =>
             Information(messageOrFormat, args);
 
-        void ITrace.Verbose(string messageOrFormat, params object[] args) => 
+        void ITrace.Verbose(string messageOrFormat, params object[] args) =>
             Verbose(messageOrFormat, args);
 
-        void ITrace.TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args) => 
+        void ITrace.TraceEvent(TraceEventType eventType, string messageOrFormat, params object[] args) =>
             TraceEvent(eventType, messageOrFormat, args);
 
         int ITrace.Indent() => Indent();

@@ -24,8 +24,8 @@ namespace Wyam.Core.Modules.Control
         private bool _forEachDocument;
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the results 
-        /// are applied to every input document (possibly creating more than one output 
+        /// The specified modules are executed against an empty initial document and the results
+        /// are applied to every input document (possibly creating more than one output
         /// document for each input document).
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
@@ -36,7 +36,7 @@ namespace Wyam.Core.Modules.Control
 
         /// <summary>
         /// Specifies that the whole sequence of modules should be executed for every input document
-        /// (as opposed to the default behavior of the sequence of modules only being executed once 
+        /// (as opposed to the default behavior of the sequence of modules only being executed once
         /// with an empty initial document). This method has no effect if no modules are specified.
         /// </summary>
         public Merge ForEachDocument()

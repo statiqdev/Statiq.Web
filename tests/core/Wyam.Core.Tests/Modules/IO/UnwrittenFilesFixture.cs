@@ -40,7 +40,7 @@ namespace Wyam.Core.Tests.Modules.IO
 
             fileProvider.AddDirectory("/");
             fileProvider.AddDirectory("/output");
-            
+
             fileProvider.AddFile("/output/test.md");
 
             return fileProvider;

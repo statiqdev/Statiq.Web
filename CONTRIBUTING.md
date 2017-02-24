@@ -1,8 +1,6 @@
-# How to contribute
-
 Thanks for your interest in getting involved with Wyam! This project was always envisioned as a community effort. Any contributions you're able to make are **greatly appreciated**.
 
-## Where To Start?
+# Where To Start?
 
 Here are a few ways you could get involved:
 
@@ -16,25 +14,25 @@ If you need help with any of these things, **please don't hesitate to ask**. Wya
 
 Build instructions are in the `BUILDING.md` file at the root of the repository.
 
-## Submitting Code
+# Submitting Code
 
 If you would like to submit code to Wyam, please follow the guidelines below. If your change is small, go ahead and submit a pull request and any questions can be discussed in the request. If it's a larger change, you should probably open an issue first so that it can be discussed before you start spending time coding.
 
 Also note that most code contributions are going to be related to module development. If that's the case for your contribution, then please read [this article on module development](https://wyam.io/docs/extensibility/writing-a-module) first.
 
-### Making Changes
+## Making Changes
 
 [Fork](http://help.github.com/forking/) the Wyam repository on GitHub. Please do your work in feature branches based on `develop`. `develop` is the main development branch and is where all code is pushed before making a release.
 
-### Handling Updates from Upstream/Master
+## Handling Updates from Upstream/Master
 
 While you're working away in your branch it's quite possible that your upstream master (most likely the canonical Wyam repository) may be updated. If this happens you should rebase your local branch to pull in the changes. If you're working on a long running feature then you may want to do this quite often, rather than run the risk of potential merge issues further down the line.
 
-### Sending a Pull Request
+## Sending a Pull Request
 
 While working on your feature you may well create several branches, which is fine, but before you send a pull request you should ensure that you have rebased back to a single feature branch. When you're ready to go you should confirm that you are up to date and rebased with upstream/master (see above).
 
-### Style Guidelines
+## Style Guidelines
 
 Wyam generally follows accepted .NET coding styles (see the [Framework Design Guidelines](https://msdn.microsoft.com/en-us/library/ms229042%28v=vs.110%29.aspx)). Please note the following differences or points:
 
@@ -49,11 +47,11 @@ Wyam generally follows accepted .NET coding styles (see the [Framework Design Gu
 - Avoid `#region`. There is debate on whether regions are valuable, but one of the perks of being a benevolent dictator is that I can restrict their use in this code.
 - Constants should be TitleCase and should be placed at the top of their containing class.
 
-### Dependencies
+## Dependencies
 
 Generally, you should only ever have to take a dependency on `Wyam.Common`. If you find yourself needing to depend on other Wyam libraries like `Wyam.Core`, please open an issue so the needed functionality can be moved into the common assembly.
 
-### Unit Tests
+## Unit Tests
 
 Make sure to run all unit tests before creating a pull request. You code should also have reasonable unit test coverage.
 
@@ -70,11 +68,22 @@ The tests in Wyam follow a very specific pattern, please attempt to follow the s
 
 If there are any questions about how to format test code just take a look at the existing test code.
 
-## Updating Documentation
+## New Project Checklist
+
+If you need to make a new project, there are a number of things that need to be done:
+
+- Create the project in the appropriate location
+- Edit the AssemblyInfo.cs file to remove everything but `AssemblyTitle`, `AssemblyDescription`, `ComVisible`, and `Guid`
+- Add *a link* to the SolutionInfo.cs file inside the project Properties folder (the link won't actually be added to the file system)
+- Add a .nuspec file if appropriate
+- Apply the code analysis ruleset by opening Analyze, Configure Code Analysis
+- Install the StyleCop.Analyzers NuGet package into the project
+
+# Updating Documentation
 
 Making updates to the Wyam documentation is just as helpful as writing code (if not more helpful). The Wyam documentation exists in the [Wyam.Web repository](https://github.com/Wyamio/Wyam.Web). Fork and clone the repository as you would the main code repository, but make any changes in the `master` branch. Submit your changes as a pull request. Once it's accepted, the site will automatically rebuild and redeploy. 
 
-## License
+# License
 By contributing to Wyam, you assert that:
 
 * The contribution is your own original work.

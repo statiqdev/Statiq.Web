@@ -90,14 +90,14 @@ namespace Wyam.Core.Execution
         public IDocumentCollection Documents => DocumentCollection;
 
         internal DocumentCollection DocumentCollection { get; } = new DocumentCollection();
-        
+
         /// <summary>
         /// Gets the namespaces that should be brought in scope by modules that support dynamic compilation.
         /// </summary>
         public INamespacesCollection Namespaces { get; } = new NamespaceCollection();
 
         /// <summary>
-        /// Gets a collection of all the raw assemblies that should be referenced by modules 
+        /// Gets a collection of all the raw assemblies that should be referenced by modules
         /// that support dynamic compilation (such as configuration assemblies).
         /// </summary>
         public IRawAssemblyCollection DynamicAssemblies { get; } = new RawAssemblyCollection();
@@ -159,7 +159,7 @@ namespace Wyam.Core.Execution
         public static void ResetJsEngines()
         {
             JsEngineSwitcher.Instance.EngineFactories.Clear();
-            JsEngineSwitcher.Instance.DefaultEngineName = string.Empty;            
+            JsEngineSwitcher.Instance.DefaultEngineName = string.Empty;
         }
 
         public void Execute()

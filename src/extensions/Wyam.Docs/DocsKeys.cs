@@ -44,7 +44,7 @@ namespace Wyam.Docs
         /// one (or more) globbing pattern(s).
         /// </summary>
         /// <scope>Global</scope>
-        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type> 
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string AssemblyFiles = nameof(AssemblyFiles);
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Wyam.Docs
         /// want the primary content page pipelines to pick them up.
         /// </summary>
         /// <scope>Global</scope>
-        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type> 
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string IgnoreFolders = nameof(IgnoreFolders);
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Wyam.Docs
         /// <scope>Document</scope>
         /// <type><see cref="int"/></type>
         public const string Order = nameof(Order);
-        
+
         /// <summary>
         /// Setting this to <c>true</c> for a document will remove the
         /// sidebar from the page.

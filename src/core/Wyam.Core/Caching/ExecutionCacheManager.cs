@@ -16,7 +16,7 @@ namespace Wyam.Core.Caching
 {
     internal class ExecutionCacheManager
     {
-        private readonly ConcurrentDictionary<IModule, ExecutionCache> _executionCaches 
+        private readonly ConcurrentDictionary<IModule, ExecutionCache> _executionCaches
             = new ConcurrentDictionary<IModule, ExecutionCache>();
 
         // Creates one if it doesn't exist

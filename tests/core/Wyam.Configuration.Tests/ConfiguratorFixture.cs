@@ -269,7 +269,7 @@ SetCustomDocumentType<MyDocument>();
                     { "Foo", "Baz" }
                 };
 
-                // When 
+                // When
                 configurator.Configure(string.Empty);
 
                 // Then

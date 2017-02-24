@@ -20,9 +20,9 @@ namespace Wyam.Images
     /// This module manipulates images by applying a variety of operations.
     /// </summary>
     /// <remarks>
-    /// <para>This module manipulates images by applying operations such as resizing, darken/lighten, etc. This image module 
-    /// does not modify your original images in anyway.It will create a copy of your images and produce images in the 
-    /// same image format as the original. It relies on other modules such as <c>ReadFiles</c> to read the actual images as 
+    /// <para>This module manipulates images by applying operations such as resizing, darken/lighten, etc. This image module
+    /// does not modify your original images in anyway.It will create a copy of your images and produce images in the
+    /// same image format as the original. It relies on other modules such as <c>ReadFiles</c> to read the actual images as
     /// input and <c>WriteFiles</c> to write images to disk.</para>
     /// <code>
     /// Pipelines.Add("Images",
@@ -33,8 +33,8 @@ namespace Wyam.Images
     ///   WriteFiles("*")
     /// );
     /// </code>
-    /// <para>It will produce image with similar file name as the original image with addition of suffix indicating operations 
-    /// that have performed, e.g. "hello-world.jpg" can result in "hello-world-w100.jpg". The module allows you to perform more 
+    /// <para>It will produce image with similar file name as the original image with addition of suffix indicating operations
+    /// that have performed, e.g. "hello-world.jpg" can result in "hello-world-w100.jpg". The module allows you to perform more
     /// than one set of processing instructions by using the fluent property <c>And</c>.</para>
     /// <code>
     /// Pipelines.Add("Images",
@@ -74,14 +74,14 @@ namespace Wyam.Images
         }
 
         /// <summary>
-        /// Resizes the image to a certain width and height. It will crop the image whenever necessary. The module will not perform 
-        /// any image resizing if both width and height are set to <c>null</c>. If the source image is smaller than the specified 
+        /// Resizes the image to a certain width and height. It will crop the image whenever necessary. The module will not perform
+        /// any image resizing if both width and height are set to <c>null</c>. If the source image is smaller than the specified
         /// width and height, the image will be enlarged.
         /// </summary>
         /// <param name="width">The desired width. If set to <c>null</c> or <c>0</c>, the image will be resized to its height.</param>
         /// <param name="height">The desired height. If set to <c>null</c> or <c>0</c>, the image will be resized to its width.</param>
         /// <param name="anchor">The anchor position to use for cropping (if necessary). The available values are:
-        /// <list type="bullet"> 
+        /// <list type="bullet">
         /// <item><description>AnchorPosition.Center</description></item>
         /// <item><description>AnchorPosition.Top</description></item>
         /// <item><description>AnchorPosition.Bottom</description></item>
@@ -105,7 +105,7 @@ namespace Wyam.Images
         }
 
         /// <summary>
-        /// Constrains the image to a specified size. If the image is larger than the specified <c>width</c> and <c>height</c>, it will 
+        /// Constrains the image to a specified size. If the image is larger than the specified <c>width</c> and <c>height</c>, it will
         /// be resized down. If the image is smaller than the specified <c>width</c> and <c>height</c>, it will not be resized.
         /// </summary>
         /// <param name="width">The maximum desired width.</param>
@@ -133,8 +133,8 @@ namespace Wyam.Images
         /// <item><description>ImageFilter.Polaroid</description></item>
         /// <item><description>ImageFilter.Sepia</description></item>
         /// </list>
-        /// These filter values map directly to filters provided by ImageProcessor library. 
-        /// <a href="http://imageprocessor.org/imageprocessor/imagefactory/filter/">You can see the effects of 
+        /// These filter values map directly to filters provided by ImageProcessor library.
+        /// <a href="http://imageprocessor.org/imageprocessor/imagefactory/filter/">You can see the effects of
         /// these filters here</a>.
         /// </summary>
         /// <param name="filters">The filters to apply.</param>
@@ -217,8 +217,8 @@ namespace Wyam.Images
         }
 
         /// <summary>
-        /// Tints the image to the specified color, e.g. <c>Color.Aqua</c>. 
-        /// <a href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Please 
+        /// Tints the image to the specified color, e.g. <c>Color.Aqua</c>.
+        /// <a href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Please
         /// check here for more color values</a>.
         /// </summary>
         /// <param name="color">The color to tint the image to.</param>
@@ -300,7 +300,7 @@ namespace Wyam.Images
         }
 
         /// <summary>
-        /// Set the suffix of the generated image, e.g. <c>SetSuffix("-medium")</c> will transform original 
+        /// Set the suffix of the generated image, e.g. <c>SetSuffix("-medium")</c> will transform original
         /// filename "hello-world.jpg" to "hello-world-medium.jpg".
         /// </summary>
         /// <param name="suffix">The suffix to use.</param>
@@ -315,7 +315,7 @@ namespace Wyam.Images
         }
 
         /// <summary>
-        /// Set the prefix of the generated image, e.g. <c>SetPrefix("medium-")</c> will transform original 
+        /// Set the prefix of the generated image, e.g. <c>SetPrefix("medium-")</c> will transform original
         /// filename "hello-world.jpg" to "medium-hello-world.jpg".
         /// </summary>
         /// <param name="prefix">The prefix to use.</param>

@@ -120,8 +120,8 @@ namespace Wyam.Core.Modules.Metadata
 
                     // Calculate the new title
                     string title = _title.Invoke<string>(input, context);
-                    return title == null 
-                        ? input 
+                    return title == null
+                        ? input
                         : context
                             .GetDocument(input, new MetadataItems
                             {

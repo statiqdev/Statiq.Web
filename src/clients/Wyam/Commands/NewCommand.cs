@@ -60,7 +60,7 @@ namespace Wyam.Commands
                 {
                     return ExitCode.CommandLineError;
                 }
-                
+
                 // Check to make sure the directory is empty (and provide option to clear it)
                 IDirectory inputDirectory = engineManager.Engine.FileSystem.GetRootDirectory(_inputPath);
                 if (inputDirectory.Exists)
@@ -118,7 +118,7 @@ namespace Wyam.Commands
                     Trace.Critical("Error while configuring engine: {0}", ex.Message);
                     return ExitCode.ConfigurationError;
                 }
-                
+
                 // Scaffold the recipe
                 engineManager.Configurator.Recipe.Scaffold(configFile, inputDirectory);
             }

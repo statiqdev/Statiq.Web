@@ -16,7 +16,7 @@ namespace Wyam.Core.Modules.Metadata
     public class Meta : IModule
     {
         private readonly string _key;
-        private readonly ConfigHelper<object> _metadata; 
+        private readonly ConfigHelper<object> _metadata;
         private readonly IModule[] _modules;
         private bool _forEachDocument;
         private bool _ignoreNull;
@@ -38,7 +38,7 @@ namespace Wyam.Core.Modules.Metadata
         }
 
         /// <summary>
-        /// Uses a function to determine an object to be added as metadata for each document. 
+        /// Uses a function to determine an object to be added as metadata for each document.
         /// This allows you to specify different metadata for each document depending on the context.
         /// </summary>
         /// <param name="key">The metadata key to set.</param>
@@ -54,7 +54,7 @@ namespace Wyam.Core.Modules.Metadata
         }
 
         /// <summary>
-        /// Uses a function to determine an object to be added as metadata for each document. 
+        /// Uses a function to determine an object to be added as metadata for each document.
         /// This allows you to specify different metadata for each document depending on the input.
         /// </summary>
         /// <param name="key">The metadata key to set.</param>
@@ -68,9 +68,9 @@ namespace Wyam.Core.Modules.Metadata
             _key = key;
             _metadata = new ConfigHelper<object>(metadata);
         }
-        
+
         /// <summary>
-        /// The specified modules are executed against an empty initial document and all metadata that exist in all of the result documents 
+        /// The specified modules are executed against an empty initial document and all metadata that exist in all of the result documents
         /// are added as metadata to each input document.
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
@@ -81,7 +81,7 @@ namespace Wyam.Core.Modules.Metadata
 
         /// <summary>
         /// Specifies that the whole sequence of modules should be executed for every input document
-        /// (as opposed to the default behavior of the sequence of modules only being executed once 
+        /// (as opposed to the default behavior of the sequence of modules only being executed once
         /// with an empty initial document). This method has no effect if no modules are specified.
         /// </summary>
         /// <param name="forEachDocument"><c>true</c> to execute for every input document.</param>
@@ -133,7 +133,7 @@ namespace Wyam.Core.Modules.Metadata
                                 }
                             }
                         }
-                        return context.GetDocument(input, 
+                        return context.GetDocument(input,
                             _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata);
                     });
                 }
@@ -147,12 +147,12 @@ namespace Wyam.Core.Modules.Metadata
                         metadata[kvp.Key] = kvp.Value;
                     }
                 }
-                return inputs.Select(context, input => context.GetDocument(input, 
+                return inputs.Select(context, input => context.GetDocument(input,
                     _onlyIfNonExisting ? metadata.Where(x => !input.ContainsKey(x.Key)) : metadata));
             }
 
-            return inputs.Select(context, x => _onlyIfNonExisting && x.ContainsKey(_key) 
-                ? x 
+            return inputs.Select(context, x => _onlyIfNonExisting && x.ContainsKey(_key)
+                ? x
                 : context.GetDocument(x, new[] { new KeyValuePair<string, object>(_key, _metadata.GetValue(x, context)) }));
         }
     }

@@ -7,33 +7,33 @@ using Wyam.Common.IO;
 namespace Wyam.CodeAnalysis
 {
     /// <summary>
-    /// Reads all the source files from a specified msbuild project. 
-    /// This module will be executed once and input documents will be ignored if a search path is 
-    /// specified. Otherwise, if a delegate is specified the module will be executed once per input 
+    /// Reads all the source files from a specified msbuild project.
+    /// This module will be executed once and input documents will be ignored if a search path is
+    /// specified. Otherwise, if a delegate is specified the module will be executed once per input
     /// document and the resulting output documents will be aggregated.
     /// Note that this requires the MSBuild tools to be installed (included with Visual Studio).
     /// </summary>
     /// <remarks>
     /// The output of this module is similar to executing the ReadFiles module on all source files in the project.
     /// </remarks>
-    /// <metadata name="SourceFileRoot" type="DirectoryPath">The absolute root search path without any nested directories 
+    /// <metadata name="SourceFileRoot" type="DirectoryPath">The absolute root search path without any nested directories
     /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
     /// <metadata name="SourceFilePath" type="FilePath">The full absolute path of the file (including file name).</metadata>
-    /// <metadata name="SourceFilePathBase" type="FilePath">The full absolute path of the file (including file name) 
+    /// <metadata name="SourceFilePathBase" type="FilePath">The full absolute path of the file (including file name)
     /// without the file extension.</metadata>
-    /// <metadata name="SourceFileBase" type="FilePath">The file name without any extension. Equivalent 
+    /// <metadata name="SourceFileBase" type="FilePath">The file name without any extension. Equivalent
     /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileExt" type="string">The extension of the file. Equivalent 
+    /// <metadata name="SourceFileExt" type="string">The extension of the file. Equivalent
     /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileName" type="FilePath">The full file name. Equivalent 
+    /// <metadata name="SourceFileName" type="FilePath">The full file name. Equivalent
     /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileDir" type="DirectoryPath">The full absolute directory of the file. 
+    /// <metadata name="SourceFileDir" type="DirectoryPath">The full absolute directory of the file.
     /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
     /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam input folder.</metadata>
     /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
     /// from the Wyam input folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file 
+    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file
     /// from the Wyam input folder.</metadata>
     /// <category>Input/Output</category>
     public class ReadProject : ReadWorkspace

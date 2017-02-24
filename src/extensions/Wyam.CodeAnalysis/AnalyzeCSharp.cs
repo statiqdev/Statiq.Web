@@ -25,7 +25,7 @@ namespace Wyam.CodeAnalysis
     /// <remarks>
     /// This module acts as the basis for code analysis scenarios such as generating source code documentation.
     /// All input documents are assumed to contain C# source in their content and are used to create a Roslyn
-    /// compilation. All symbols (namespaces, types, members, etc.) in the compilation are then recursively 
+    /// compilation. All symbols (namespaces, types, members, etc.) in the compilation are then recursively
     /// processed and output from this module as documents, one per symbol. The output documents have empty content
     /// and all information about the symbol is contained in the metadata. This lets you pass the output documents
     /// for each symbol on to a template engine like Razor and generate pages for each symbol by having the
@@ -178,7 +178,7 @@ namespace Wyam.CodeAnalysis
                 return predicate(namespaceSymbol.ToString());
             });
         }
-        
+
         /// <summary>
         /// Limits symbols in the initial result set to those that are public (and optionally protected)
         /// </summary>
@@ -196,13 +196,13 @@ namespace Wyam.CodeAnalysis
                     || x.DeclaredAccessibility == Accessibility.NotApplicable;
             });
         }
-        
+
         /// <summary>
         /// While converting XML documentation to HTML, any tags with the specified name will get the specified CSS class(s).
         /// This is helpful to style your XML documentation comment rendering to support the stylesheet of your site.
         /// </summary>
         /// <param name="tagName">Name of the tag.</param>
-        /// <param name="cssClasses">The CSS classes to set for the specified tag name. Separate multiple CSS classes 
+        /// <param name="cssClasses">The CSS classes to set for the specified tag name. Separate multiple CSS classes
         /// with a space (just like you would in HTML).</param>
         public AnalyzeCSharp WithCssClasses(string tagName, string cssClasses)
         {
@@ -230,25 +230,25 @@ namespace Wyam.CodeAnalysis
             _assemblySymbols = assemblySymbols;
             return WhereSymbol(x => !(x is IAssemblySymbol) || (_assemblySymbols && x.Name != CompilationAssemblyName));
         }
-        
+
         /// <summary>
-        /// This changes the default behavior for the generated <c>WritePath</c> metadata value, which is to place files in a path 
-        /// with the same name as their containing namespace. Namespace documents will be named "index.html" while other type documents 
-        /// will get a name equal to their SymbolId. Member documents will get the same name as their containing type plus an 
-        /// anchor to their SymbolId. Note that the default scheme makes the assumption that members will not have their own files, 
+        /// This changes the default behavior for the generated <c>WritePath</c> metadata value, which is to place files in a path
+        /// with the same name as their containing namespace. Namespace documents will be named "index.html" while other type documents
+        /// will get a name equal to their SymbolId. Member documents will get the same name as their containing type plus an
+        /// anchor to their SymbolId. Note that the default scheme makes the assumption that members will not have their own files,
         /// if that's not the case a new WritePath function will have to be supplied using this method.
         /// </summary>
-        /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>FilePath</c> to 
+        /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>FilePath</c> to
         /// use for the <c>WritePath</c> metadata value.</param>
         public AnalyzeCSharp WithWritePath(Func<IMetadata, FilePath> writePath)
         {
             _writePath = writePath;
             return this;
         }
-        
+
         /// <summary>
-        /// This lets you add a prefix to the default <c>WritePath</c> behavior (such as nesting symbol documents inside 
-        /// a folder like "api/"). Whatever you supply will be combined with the <c>WritePath</c>. This method has no 
+        /// This lets you add a prefix to the default <c>WritePath</c> behavior (such as nesting symbol documents inside
+        /// a folder like "api/"). Whatever you supply will be combined with the <c>WritePath</c>. This method has no
         /// effect if you've supplied a custom <c>WritePath</c> behavior.
         /// </summary>
         /// <param name="prefix">The prefix to use for each generated <c>WritePath</c>.</param>
@@ -366,7 +366,7 @@ namespace Wyam.CodeAnalysis
             // Get and return the document tree
             symbols.Add(compilation.Assembly.GlobalNamespace);
             AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(compilation, context, _symbolPredicate,
-                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)), 
+                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)),
                 _cssClasses, _docsForImplicitSymbols, _assemblySymbols);
             foreach (ISymbol symbol in symbols)
             {

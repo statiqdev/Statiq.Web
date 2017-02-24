@@ -13,8 +13,8 @@ namespace Wyam.Commands
         private static readonly Command[] Commands =
         {
             new BuildCommand(),
-            new NewCommand(), 
-            new PreviewCommand(), 
+            new NewCommand(),
+            new PreviewCommand(),
             new HelpCommand()
         };
 

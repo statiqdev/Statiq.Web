@@ -15,11 +15,11 @@ namespace Wyam.Core.Modules.Control
     /// Extracts the content of a Sidecar file for each document and sends it to a child module for processing.
     /// </summary>
     /// <remarks>
-    /// This module is typically used in conjunction with the Yaml module to enable putting YAML in a Sidecar file. 
-    /// First, an attempt is made to find the specified sidecar file for each input document. Once found, the 
+    /// This module is typically used in conjunction with the Yaml module to enable putting YAML in a Sidecar file.
+    /// First, an attempt is made to find the specified sidecar file for each input document. Once found, the
     /// content in this file is passed to the specified child module(s). Any metadata from the child
-    /// module output document(s) is added to the input document. Note that if the child module(s) result 
-    /// in more than one output document, multiple clones of the input document will be made for each one. 
+    /// module output document(s) is added to the input document. Note that if the child module(s) result
+    /// in more than one output document, multiple clones of the input document will be made for each one.
     /// The output document content is set to the original input document content.
     /// </remarks>
     /// <category>Control</category>
@@ -50,7 +50,7 @@ namespace Wyam.Core.Modules.Control
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(extension));
             }
-            
+
             _sidecarPath = (d, c) => d.FilePath(Common.Meta.Keys.SourceFilePath)?.AppendExtension(extension);
         }
 

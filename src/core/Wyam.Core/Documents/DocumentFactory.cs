@@ -28,7 +28,7 @@ namespace Wyam.Core.Documents
             return new Document(_initialMetadata, null, null, null, null, true);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
@@ -48,7 +48,7 @@ namespace Wyam.Core.Documents
             return new Document((Document)sourceDocument, source, items);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
@@ -58,7 +58,7 @@ namespace Wyam.Core.Documents
             return new Document((Document)sourceDocument, content, items);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, Stream stream,
             IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
@@ -68,7 +68,7 @@ namespace Wyam.Core.Documents
             return new Document((Document)sourceDocument, source, stream, items, disposeStream);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream,
             IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))

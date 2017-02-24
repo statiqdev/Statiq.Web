@@ -34,7 +34,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// Uses a function to determine a text template which is processed and added as metadata for 
+        /// Uses a function to determine a text template which is processed and added as metadata for
         /// each document. This allows you to specify different metadata for each document depending on the context.
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
@@ -49,7 +49,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// Uses a function to determine a text template which is processed and added as metadata for each document. 
+        /// Uses a function to determine a text template which is processed and added as metadata for each document.
         /// This allows you to specify different metadata for each document depending on the input.
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>
@@ -64,7 +64,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the resulting content from 
+        /// The specified modules are executed against an empty initial document and the resulting content from
         /// evaluating the entire child module chain is processed as a text template and added as metadata to each input document.
         /// </summary>
         /// <param name="key">The metadata key for the generated text.</param>

@@ -22,7 +22,7 @@ namespace Wyam.Core.Modules.IO
     /// Downloads from HTTP and outputs the results as new documents.
     /// </summary>
     /// <remarks>
-    /// The original input documents are ignored and are not part of the output 
+    /// The original input documents are ignored and are not part of the output
     /// of this module. If you want to retain the original input documents, consider using the
     /// <see cref="ConcatBranch"/> module.
     /// </remarks>
@@ -90,7 +90,7 @@ namespace Wyam.Core.Modules.IO
             List<Task<DownloadResult>> tasks = _urls.Select(DownloadUrl).ToList();
 
             Task.WhenAll(tasks).Wait();
-            
+
             return tasks.Where(x => !x.IsFaulted).Select(t =>
             {
                 string key = t.Result.Uri.ToString();

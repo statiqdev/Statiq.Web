@@ -19,8 +19,8 @@ namespace Wyam.CodeAnalysis
 {
     /// <summary>
     /// Reads an MSBuild solution or project file and returns all referenced source files as documents.
-    /// This module will be executed once and input documents will be ignored if a search path is 
-    /// specified. Otherwise, if a delegate is specified the module will be executed once per input 
+    /// This module will be executed once and input documents will be ignored if a search path is
+    /// specified. Otherwise, if a delegate is specified the module will be executed once per input
     /// document and the resulting output documents will be aggregated.
     /// Note that this requires the MSBuild tools to be installed (included with Visual Studio).
     /// See https://github.com/dotnet/roslyn/issues/212 and https://roslyn.codeplex.com/workitem/218.
@@ -50,7 +50,7 @@ namespace Wyam.CodeAnalysis
             }
             _pathDelegate = path;
         }
-        
+
         /// <summary>
         /// Filters the project based on name.
         /// </summary>
@@ -72,7 +72,7 @@ namespace Wyam.CodeAnalysis
             _whereFile = currentPredicate == null ? predicate : x => currentPredicate(x) && predicate(x);
             return this;
         }
-        
+
         /// <summary>
         /// Filters the source code files based on extension.
         /// </summary>
@@ -97,7 +97,7 @@ namespace Wyam.CodeAnalysis
         private IEnumerable<IDocument> Execute(IDocument input, FilePath projectPath, IExecutionContext context)
         {
             return context.TraceExceptions<IEnumerable<IDocument>>(input, i =>
-            { 
+            {
                 if (projectPath != null)
                 {
                     IFile projectFile = context.FileSystem.GetInputFile(projectPath);

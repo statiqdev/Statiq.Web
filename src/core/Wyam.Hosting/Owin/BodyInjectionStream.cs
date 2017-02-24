@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Wyam.Hosting.Owin
 {
-    /// Thanks to the project Glimpse : 
+    /// Thanks to the project Glimpse :
     /// https://github.com/Glimpse/Glimpse/blob/version-2/source/Glimpse.Core/PreBodyTagInjectionStream.cs
     /// And to Owin.GoogleAnalytics:
     /// https://github.com/serbrech/Owin.GoogleAnalytics/blob/master/src/Owin.GoogleAnalytics/PreBodyTagInjectionStream.cs
@@ -73,9 +73,9 @@ namespace Wyam.Hosting.Owin
         public override void Write(byte[] buffer, int offset, int count)
         {
             // There are different cases we need to deal with
-            // Normally you would expect the contentInBuffer to contain the complete HTML code to return, but this is not always true because it is possible that 
+            // Normally you would expect the contentInBuffer to contain the complete HTML code to return, but this is not always true because it is possible that
             // the content that will be send back is larger than the buffer foreseen by ASP.NET (currently the buffer seems to be a little bit less than 16K)
-            // and in that case this method will be called multiple times, which might result in false positives being written to the logs for not finding a </body> 
+            // and in that case this method will be called multiple times, which might result in false positives being written to the logs for not finding a </body>
             // in the current chunk.
 
             // So we need to be able to deal with the following cases without writing those false positives
@@ -90,7 +90,7 @@ namespace Wyam.Hosting.Owin
             // output stream and keep that </body> tag and everything that follows it (normally only a </html> tag but it can also be a 2.4 case) for the next call.
             // In case there is no match for the </body> tag, then we write everything to the output stream except for the last 10 characters (normally the last 6 would suffice, but we take a little margin to reassure us somehow ;-)) which we keep until the next call.
 
-            // If there is a next call, then we first prepend the characters we kept from the previous call to the content inside the buffer (which might complete a chunked </body> tag for instance) 
+            // If there is a next call, then we first prepend the characters we kept from the previous call to the content inside the buffer (which might complete a chunked </body> tag for instance)
             // and start our check all over again (which might result in finding a </body> tag or discarding a previously found </body> tag because that one was not the last one.
             // Anyhow, as long as we are not a the end and a </body> tag has been found previously, the output will be buffered, just to make sure there is no other </body> tag further down the stream.
 
@@ -125,7 +125,7 @@ namespace Wyam.Hosting.Owin
                 // therefore we'll write everything except the last 10 characters to the output stream and we'll keep the last 10 characters for the next call or the Flush method
                 if (contentInBuffer.Length <= 10)
                 {
-                    // the content has a maximum length of 10 characters, so we don't need to write anything to the output stream and we'll keep those 
+                    // the content has a maximum length of 10 characters, so we don't need to write anything to the output stream and we'll keep those
                     // characters for the next call (most likely the Flush)
                     _unwrittenCharactersFromPreviousCall = contentInBuffer;
                 }

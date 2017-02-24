@@ -22,9 +22,9 @@ namespace Cake.Wyam
         /// <param name="fileSystem">The file system.</param>
         /// <param name="environment">The environment.</param>
         /// <param name="processRunner">The process runner.</param>
-        /// <param name="globber">The globber.</param>
-        public WyamRunner(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IGlobber globber)
-            : base(fileSystem, environment, processRunner, globber)
+        /// <param name="locator">The tool locator.</param>
+        public WyamRunner(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IToolLocator locator)
+            : base(fileSystem, environment, processRunner, locator)
         {
             _environment = environment;
         }
@@ -284,7 +284,7 @@ namespace Cake.Wyam
 
             return builder;
         }
-        
+
         private static void SetMetadata(ProcessArgumentBuilder builder, string argument, IDictionary<string, object> values)
         {
             foreach (KeyValuePair<string, object> metadata in values)
@@ -301,7 +301,7 @@ namespace Cake.Wyam
                         {
                             valueBuilder.Append(",");
                         }
-                        valueBuilder.Append($"{EscapeMetadata(value.ToString()).Replace(",","\\,")}");
+                        valueBuilder.Append($"{EscapeMetadata(value.ToString()).Replace(",", "\\,")}");
                     }
                     builder.Append($"\"{EscapeMetadata(metadata.Key)}=[{valueBuilder}]\"");
                 }

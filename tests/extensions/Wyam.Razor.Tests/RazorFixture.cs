@@ -162,7 +162,7 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/Layout/Test.cshtml", 
+                IDocument document = GetDocument(@"/Layout/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -174,7 +174,7 @@ namespace Wyam.Razor.Tests
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, 
+                context.Received().GetDocument(document,
 @"LAYOUT
 <p>This is a test</p>");
             }

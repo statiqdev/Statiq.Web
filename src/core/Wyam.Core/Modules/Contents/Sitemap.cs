@@ -50,7 +50,7 @@ namespace Wyam.Core.Modules.Contents
         /// contains the location for each input document or a <c>SitemapItem</c> instance with the location
         /// and other information.
         /// </summary>
-        /// <param name="sitemapItemOrLocationMetadataKey">A metadata key that contains either a <c>SitemapItem</c> or 
+        /// <param name="sitemapItemOrLocationMetadataKey">A metadata key that contains either a <c>SitemapItem</c> or
         /// a <c>string</c> location for each input document.</param>
         /// <param name="locationFormatter">A location formatter that will be applied to the location of each input after
         /// getting the value of the specified metadata key.</param>
@@ -68,7 +68,7 @@ namespace Wyam.Core.Modules.Contents
         /// contains the location for each input document or a <c>SitemapItem</c> instance with the location
         /// and other information.
         /// </summary>
-        /// <param name="sitemapItemOrLocation">A delegate that either returns a <c>SitemapItem</c> instance or a <c>string</c> 
+        /// <param name="sitemapItemOrLocation">A delegate that either returns a <c>SitemapItem</c> instance or a <c>string</c>
         /// with the desired item location. If the delegate returns <c>null</c>, the input document is not added to the sitemap.</param>
         /// <param name="locationFormatter">A location formatter that will be applied to the location of each input after
         /// getting the value of the specified metadata key.</param>

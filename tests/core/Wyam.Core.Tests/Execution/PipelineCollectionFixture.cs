@@ -20,7 +20,7 @@ namespace Wyam.Core.Tests.Execution
             [TestCase("")]
             public void AutoGeneratesNameForNullOrEmpty(string name)
             {
-                // Given 
+                // Given
                 PipelineCollection pipelines = new PipelineCollection();
                 pipelines.Add("First");
 
@@ -34,7 +34,7 @@ namespace Wyam.Core.Tests.Execution
             [Test]
             public void ThrowsForDuplicateName()
             {
-                // Given 
+                // Given
                 PipelineCollection pipelines = new PipelineCollection();
                 pipelines.Add("Foo");
 
@@ -45,7 +45,7 @@ namespace Wyam.Core.Tests.Execution
             [Test]
             public void ThrowsForDuplicateNameWithDifferentCase()
             {
-                // Given 
+                // Given
                 PipelineCollection pipelines = new PipelineCollection();
                 pipelines.Add("Foo");
 

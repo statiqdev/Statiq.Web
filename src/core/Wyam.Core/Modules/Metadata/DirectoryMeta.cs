@@ -29,15 +29,15 @@ namespace Wyam.Core.Modules.Metadata
     /// used to determine which metadata value will get set in the target output documents:
     /// <list type="bullet">
     /// <item><description>
-    /// Pre-existing metadata in the target document (common metadata will 
+    /// Pre-existing metadata in the target document (common metadata will
     /// not overwrite existing metadata unless the <c>replace</c> flag is set).
     /// </description></item>
     /// <item><description>
-    /// Common metadata documents in the same directory as the target document 
+    /// Common metadata documents in the same directory as the target document
     /// (those registered first have a higher priority).
     /// </description></item>
     /// <item><description>
-    /// Common metadata documents in parent directories of the target document (but only if the <c>inherited</c> flag 
+    /// Common metadata documents in parent directories of the target document (but only if the <c>inherited</c> flag
     /// is set and those closer to the target document have a higher priority).
     /// </description></item>
     /// </list>
@@ -53,10 +53,10 @@ namespace Wyam.Core.Modules.Metadata
         private bool _preserveMetadataFiles;
         private readonly List<MetaFileEntry> _metadataFile = new List<MetaFileEntry>();
 
-        /// <summary>  
-        /// Preserves the files that hold the common metadata and ensures they are included in the module output. Without this option, theses documents will 
-        /// be consumed by this module and will not be present in the module output.  
-        /// </summary>  
+        /// <summary>
+        /// Preserves the files that hold the common metadata and ensures they are included in the module output. Without this option, theses documents will
+        /// be consumed by this module and will not be present in the module output.
+        /// </summary>
         public DirectoryMeta WithPreserveMetadataFiles()
         {
             _preserveMetadataFiles = true;
@@ -147,7 +147,7 @@ namespace Wyam.Core.Modules.Metadata
                             {
                                 if (!firstLevel && !metadataEntry.MetadataFileEntry.Inherited)
                                 {
-                                    continue; // If we are not in the same directory and inherited isn't activated 
+                                    continue; // If we are not in the same directory and inherited isn't activated
                                 }
 
                                 foreach (KeyValuePair<string, object> keyValuePair in metadataEntry.Metadata)

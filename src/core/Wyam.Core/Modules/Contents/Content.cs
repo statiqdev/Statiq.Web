@@ -10,7 +10,7 @@ namespace Wyam.Core.Modules.Contents
     /// Replaces the content of each input document with the string value of the specified content object.
     /// </summary>
     /// <remarks>
-    /// In the case where modules are provided, they are executed against an 
+    /// In the case where modules are provided, they are executed against an
     /// empty initial document and the results are applied to each input document.
     /// </remarks>
     /// <category>Content</category>
@@ -26,7 +26,7 @@ namespace Wyam.Core.Modules.Contents
         }
 
         /// <summary>
-        /// Uses the string value of the returned object as the new content for each document. 
+        /// Uses the string value of the returned object as the new content for each document.
         /// This allows you to specify different content depending on the execution context.
         /// </summary>
         /// <param name="content">A delegate that gets the new content to use.</param>
@@ -36,18 +36,18 @@ namespace Wyam.Core.Modules.Contents
         }
 
         /// <summary>
-        /// Uses the string value of the returned object as the new content for each document. This 
+        /// Uses the string value of the returned object as the new content for each document. This
         /// allows you to specify different content for each document depending on the input document.
         /// </summary>
         /// <param name="content">A delegate that gets the new content to use.</param>
-        public Content(DocumentConfig content) 
+        public Content(DocumentConfig content)
             : base(content)
         {
         }
 
         /// <summary>
-        /// The specified modules are executed against an empty initial document and the results 
-        /// are applied to every input document (possibly creating more than one output 
+        /// The specified modules are executed against an empty initial document and the results
+        /// are applied to every input document (possibly creating more than one output
         /// document for each input document).
         /// </summary>
         /// <param name="modules">The modules to execute.</param>

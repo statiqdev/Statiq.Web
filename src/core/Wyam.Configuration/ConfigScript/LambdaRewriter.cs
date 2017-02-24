@@ -70,7 +70,7 @@ namespace Wyam.Configuration.ConfigScript
             return base.VisitInvocationExpression(nodeChanged ? node.WithArgumentList(argumentList) : node);
         }
 
-        private bool IsInvocationAModuleCtorOrFluentMethod(InvocationExpressionSyntax invocation) => 
+        private bool IsInvocationAModuleCtorOrFluentMethod(InvocationExpressionSyntax invocation) =>
             IsInvocationAModuleCtor(invocation) || IsInvocationAFluentMethod(invocation);
 
         private bool IsInvocationAModuleCtor(InvocationExpressionSyntax invocation)
@@ -83,7 +83,7 @@ namespace Wyam.Configuration.ConfigScript
             return name != null && _moduleTypeNames.Contains(name.Identifier.Text);
         }
 
-        private bool IsInvocationAFluentMethod(InvocationExpressionSyntax invocation) => 
+        private bool IsInvocationAFluentMethod(InvocationExpressionSyntax invocation) =>
             IsInvocationAModuleCtor(invocation?.DescendantNodes()
                 .TakeWhile(x => x is InvocationExpressionSyntax || x is MemberAccessExpressionSyntax)
                 .OfType<InvocationExpressionSyntax>()

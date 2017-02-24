@@ -123,7 +123,7 @@ namespace Wyam.Core.Meta
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public int Count => Stack.Sum(x => x.Count);
-        
+
         /// <summary>
         /// This resolves the metadata value by recursively expanding IMetadataValue.
         /// </summary>
@@ -132,7 +132,7 @@ namespace Wyam.Core.Meta
             IMetadataValue metadataValue = originalValue as IMetadataValue;
             return metadataValue != null ? GetValue(metadataValue.Get(this)) : originalValue;
         }
-        
+
         /// <summary>
         /// This resolves the metadata value by expanding IMetadataValue.
         /// </summary>

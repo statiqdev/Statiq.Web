@@ -14,7 +14,7 @@ namespace Wyam.Testing.IO
         public ICollection<string> Directories { get; } = new ConcurrentHashSet<string>();
         public ConcurrentDictionary<string, StringBuilder> Files { get; } = new ConcurrentDictionary<string, StringBuilder>();
 
-        public IDirectory GetDirectory(DirectoryPath path) => 
+        public IDirectory GetDirectory(DirectoryPath path) =>
             new TestDirectory(this, path.Collapse().FullPath);
 
         public IFile GetFile(FilePath path) =>

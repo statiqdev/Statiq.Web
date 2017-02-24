@@ -13,11 +13,11 @@ namespace Wyam.Core.Modules.Control
     /// </summary>
     /// <remarks>
     /// This module is typically used in conjunction with the Yaml module to enable putting YAML front
-    /// matter in a file. First, the content of each input document is scanned for a line that consists 
-    /// entirely of the delimiter character or (- by default) or the delimiter string. Once found, the 
+    /// matter in a file. First, the content of each input document is scanned for a line that consists
+    /// entirely of the delimiter character or (- by default) or the delimiter string. Once found, the
     /// content before the delimiter is passed to the specified child modules. Any metadata from the child
-    /// module output document(s) is added to the input document. Note that if the child modules result 
-    /// in more than one output document, multiple clones of the input document will be made for each one. 
+    /// module output document(s) is added to the input document. Note that if the child modules result
+    /// in more than one output document, multiple clones of the input document will be made for each one.
     /// The output document content is set to the original content without the front matter.
     /// </remarks>
     /// <category>Control</category>

@@ -102,7 +102,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual("my awesome shaders/basic", path.FullPath);
             }
-            
+
             [TestCase("/Hello/World/", "/Hello/World")]
             [TestCase("\\Hello\\World\\", "/Hello/World")]
             [TestCase("file.txt/", "file.txt")]
@@ -119,7 +119,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
             }
-            
+
             [TestCase("\\")]
             [TestCase("/")]
             public void ShouldNotRemoveSingleTrailingSlash(string value)
@@ -130,7 +130,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual("/", path.FullPath);
             }
-            
+
             [TestCase("./Hello/World/", "Hello/World")]
             [TestCase(".\\Hello/World/", "Hello/World")]
             [TestCase("./file.txt", "file.txt")]
@@ -143,7 +143,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path.FullPath);
             }
-            
+
             [TestCase("\\")]
             [TestCase("/")]
             public void ShouldNotRemoveOnlyRelativePart(string value)
@@ -439,7 +439,7 @@ namespace Wyam.Common.Tests.IO
             }
 #endif
         }
-        
+
         public class ToStringTests : NormalizedPathFixture
         {
             [TestCase(null, "temp/hello", "temp/hello")]
@@ -471,7 +471,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.Throws<ArgumentNullException>(test);
             }
-            
+
             [TestCase("hello/temp/test/../../world", "hello/world")]
             [TestCase("hello/temp/../temp2/../world", "hello/world")]
             [TestCase("/hello/temp/test/../../world", "/hello/world")]
@@ -500,7 +500,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path);
             }
-            
+
             [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
 #if !UNIX
             [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
@@ -554,7 +554,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.True(path.Equals(path));
             }
-            
+
             [TestCase(true)]
             [TestCase(false)]
             public void PathsAreConsideredInequalIfAnyIsNull(bool isCaseSensitive)
@@ -565,7 +565,7 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.False(result);
             }
-            
+
             [TestCase(true)]
             [TestCase(false)]
             public void SamePathsAreConsideredEqual(bool isCaseSensitive)

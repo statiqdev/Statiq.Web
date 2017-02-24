@@ -36,7 +36,7 @@ namespace Wyam.Testing.JavaScript
         public string Name => _engine.Name;
 
         public string Version => _engine.Version;
-        
+
         public object Evaluate(string expression) => _engine.Evaluate(expression);
 
         public T Evaluate<T>(string expression) => _engine.Evaluate<T>(expression);

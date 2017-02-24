@@ -322,7 +322,7 @@ namespace Wyam.Tables.Tests
 <td>156</td>
 <td>182</td>
 </tr>
-</table>"; 
+</table>";
                 #endregion
                 IDocument document = Substitute.For<IDocument>();
 

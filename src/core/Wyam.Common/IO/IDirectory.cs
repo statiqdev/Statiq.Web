@@ -24,7 +24,7 @@ namespace Wyam.Common.IO
         /// Gets the parent directory or <c>null</c> if the directory is a root.
         /// </summary>
         IDirectory Parent { get; }
-        
+
         /// <summary>
         /// Creates the directory, including any necessary parent directories.
         /// </summary>
@@ -40,7 +40,7 @@ namespace Wyam.Common.IO
         /// Gets directories matching the specified filter and scope.
         /// </summary>
         /// <param name="searchOption">
-        /// Specifies whether the operation should include only 
+        /// Specifies whether the operation should include only
         /// the current directory or should include all subdirectories.
         /// </param>
         /// <returns>Directories matching the filter and scope.</returns>
@@ -50,7 +50,7 @@ namespace Wyam.Common.IO
         /// Gets files matching the specified filter and scope.
         /// </summary>
         /// <param name="searchOption">
-        /// Specifies whether the operation should include only 
+        /// Specifies whether the operation should include only
         /// the current directory or should include all subdirectories.
         /// </param>
         /// <returns>Files matching the specified filter and scope.</returns>

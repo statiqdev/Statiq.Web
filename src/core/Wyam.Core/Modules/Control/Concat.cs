@@ -10,8 +10,8 @@ namespace Wyam.Core.Modules.Control
     /// Executes modules and concatenates their output with the input documents.
     /// </summary>
     /// <remarks>
-    /// The specified modules are executed with an empty initial document and then 
-    /// outputs the original input documents without modification concatenated with the 
+    /// The specified modules are executed with an empty initial document and then
+    /// outputs the original input documents without modification concatenated with the
     /// results from the specified module sequence.
     /// </remarks>
     /// <category>Control</category>

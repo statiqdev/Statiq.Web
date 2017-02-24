@@ -50,7 +50,7 @@ namespace Wyam.TextGeneration
         }
 
         /// <summary>
-        /// This allows you to set the seed used for text generation which can be handy 
+        /// This allows you to set the seed used for text generation which can be handy
         /// for ensuring repeatable generations.
         /// </summary>
         /// <param name="seed">The seed to use.</param>
@@ -60,9 +60,9 @@ namespace Wyam.TextGeneration
             _incrementSeed = true;
             return this;
         }
-        
+
         /// <summary>
-        /// Specifies whether to increment the seed for each document. If incrementing 
+        /// Specifies whether to increment the seed for each document. If incrementing
         /// is not used, every document will get the same content for the same template.
         /// </summary>
         /// <param name="increment">If set to <c>true</c> the seed will be incremented for each document.</param>

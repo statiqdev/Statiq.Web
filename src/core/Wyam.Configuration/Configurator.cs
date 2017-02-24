@@ -69,7 +69,7 @@ namespace Wyam.Configuration
         {
             _engine = engine;
             _preprocessor = preprocessor;
-            _assemblyResolver = new AssemblyResolver(_scriptManager); 
+            _assemblyResolver = new AssemblyResolver(_scriptManager);
             AssemblyLoader = new AssemblyLoader(engine.FileSystem, _assemblyResolver);
             PackageInstaller = new PackageInstaller(engine.FileSystem, AssemblyLoader);
             ClassCatalog = new ClassCatalog();
@@ -116,7 +116,7 @@ namespace Wyam.Configuration
 
             // Process preprocessor directives
             _preprocessor.ProcessDirectives(this, directiveParser.DirectiveValues);
-            
+
             // Initialize everything (order here is very important)
             AddRecipePackageAndSetTheme();
             AddThemePackagesAndPath();

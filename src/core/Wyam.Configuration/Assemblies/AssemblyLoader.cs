@@ -22,7 +22,7 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _assemblies = new ConcurrentHashSet<string>();
         private readonly ConcurrentQueue<string> _referencedAssemblyNames = new ConcurrentQueue<string>();
-        
+
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly AssemblyResolver _assemblyResolver;
         private readonly IDirectory _entryAssemblyDirectory;
@@ -143,7 +143,7 @@ namespace Wyam.Configuration.Assemblies
         private Assembly LoadAssemblyFromFile(string assemblyFile)
         {
             using (Trace.WithIndent().Verbose($"Loading assembly file {assemblyFile}"))
-            { 
+            {
 
                 // First load the name so we can check if it's already loaded
                 AssemblyName assemblyName = null;
@@ -199,7 +199,7 @@ namespace Wyam.Configuration.Assemblies
         private Assembly LoadAssemblyFromFullName(string name)
         {
             using (Trace.WithIndent().Verbose($"Loading assembly {name} by full name"))
-            { 
+            {
                 Assembly assembly = null;
                 if (_assemblyCollection.TryGetAssembly(name, out assembly))
                 {
@@ -272,7 +272,7 @@ namespace Wyam.Configuration.Assemblies
                 {
                     loadedAssemblies.Add(assemblyName);
                     using (Trace.WithIndent().Verbose($"Loading referenced assembly {assemblyName}"))
-                    { 
+                    {
                         try
                         {
                             Assembly assembly = Assembly.Load(assemblyName);

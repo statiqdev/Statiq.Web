@@ -11,13 +11,13 @@ namespace Wyam.Core.Modules.Control
     /// Executes the input documents one at a time against the specified child modules.
     /// </summary>
     /// <remarks>
-    /// Normally, documents are executed in a breadth-first traversal where all documents 
-    /// are executed against a module before continuing with the next module. This module 
-    /// allows you to conduct a depth-first traversal instead by executing each document 
-    /// one at a time against the child modules before continuing with the next document. 
-    /// It can be especially helpful when trying to control memory usage for large 
-    /// documents such as images because it lets you move the documents through the 
-    /// pipeline one at a time. The aggregate outputs from each sequence of child modules 
+    /// Normally, documents are executed in a breadth-first traversal where all documents
+    /// are executed against a module before continuing with the next module. This module
+    /// allows you to conduct a depth-first traversal instead by executing each document
+    /// one at a time against the child modules before continuing with the next document.
+    /// It can be especially helpful when trying to control memory usage for large
+    /// documents such as images because it lets you move the documents through the
+    /// pipeline one at a time. The aggregate outputs from each sequence of child modules
     /// executed against each document will be output.
     /// </remarks>
     /// <example>
@@ -53,7 +53,7 @@ namespace Wyam.Core.Modules.Control
         {
         }
 
-        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context) 
+        public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.SelectMany(context, x => context.Execute(this, new[] { x }));
         }

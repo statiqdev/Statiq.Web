@@ -72,7 +72,7 @@ namespace Wyam.Core.Tests.Meta
                 Assert.IsTrue(convert);
                 CollectionAssert.AreEqual(value, result);
             }
-        
+
             [Test]
             public void ConvertsEnumerableToArray()
             {

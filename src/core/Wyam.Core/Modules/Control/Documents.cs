@@ -13,12 +13,12 @@ namespace Wyam.Core.Modules.Control
     /// Inserts documents into the current pipeline.
     /// </summary>
     /// <remarks>
-    /// Documents can be inserted either by replacing pipeline documents with previously 
-    /// processed ones or by creating new ones. If getting previously processed documents from another pipeline, 
-    /// this module copies the documents and places them into the current pipeline. Note that because this module 
-    /// does not remove the documents from their original pipeline it's likely you will end up with documents that 
-    /// have the same content and metadata in two different pipelines. This module does not include the input 
-    /// documents as part of it's output. If you want to concatenate the result of this module with the input 
+    /// Documents can be inserted either by replacing pipeline documents with previously
+    /// processed ones or by creating new ones. If getting previously processed documents from another pipeline,
+    /// this module copies the documents and places them into the current pipeline. Note that because this module
+    /// does not remove the documents from their original pipeline it's likely you will end up with documents that
+    /// have the same content and metadata in two different pipelines. This module does not include the input
+    /// documents as part of it's output. If you want to concatenate the result of this module with the input
     /// documents, wrap it with the <see cref="Concat"/> module.
     /// </remarks>
     /// <category>Control</category>
@@ -28,7 +28,7 @@ namespace Wyam.Core.Modules.Control
         private readonly ContextConfig _contextDocuments;
         private readonly DocumentConfig _documentDocuments;
         private Func<IDocument, IExecutionContext, bool> _predicate;
-        
+
         /// <summary>
         /// This outputs all existing documents from all pipelines (except the current one).
         /// </summary>
@@ -47,11 +47,11 @@ namespace Wyam.Core.Modules.Control
 
         /// <summary>
         /// This will get documents based on the context so you can perform custom document
-        /// fetching behavior. The delegate will only be called once, 
-        /// regardless of the number of input documents. The return value 
+        /// fetching behavior. The delegate will only be called once,
+        /// regardless of the number of input documents. The return value
         /// is expected to be a <c>IEnumerable&lt;IDocument&gt;</c>.
         /// </summary>
-        /// <param name="documents">A delegate that should return 
+        /// <param name="documents">A delegate that should return
         /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to output.</param>
         public Documents(ContextConfig documents)
         {
@@ -63,12 +63,12 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
-        /// This will get documents based on each input document. The output will be the 
-        /// aggregate of all returned documents for each input document. The return value 
+        /// This will get documents based on each input document. The output will be the
+        /// aggregate of all returned documents for each input document. The return value
         /// is expected to be a <c>IEnumerable&lt;IDocument&gt;</c>.
         /// </summary>
-        /// <param name="documents">A delegate that should return 
-        /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to 
+        /// <param name="documents">A delegate that should return
+        /// a <c>IEnumerable&lt;IDocument&gt;</c> containing the documents to
         /// output for each input document.</param>
         public Documents(DocumentConfig documents)
         {
@@ -104,7 +104,7 @@ namespace Wyam.Core.Modules.Control
         {
             _contextDocuments = ctx => content.Select(x => ctx.GetDocument(x));
         }
-        
+
         /// <summary>
         /// Generates new documents with the specified metadata.
         /// </summary>

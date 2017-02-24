@@ -17,7 +17,7 @@ namespace Wyam.Configuration.ConfigScript
     {
         public const string AssemblyName = "WyamConfig";
         public const string ScriptClassName = "Script";
-         
+
         public string Code { get; private set; }
 
         public Assembly Assembly { get; private set; }
@@ -25,7 +25,7 @@ namespace Wyam.Configuration.ConfigScript
         public string AssemblyFullName { get; private set; }
 
         public byte[] RawAssembly { get; private set; }
-        
+
         internal void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             Code = Parse(code, moduleTypes, namespaces);
@@ -52,7 +52,7 @@ namespace Wyam.Configuration.ConfigScript
                 moduleTypes.Select(x => GenerateModuleConstructorMethods(x, moduleNames)));
 
             // Return the fully parsed script
-            return 
+            return
                 $@"// Generated: bring all module namespaces in scope
                 {usingStatements}
 

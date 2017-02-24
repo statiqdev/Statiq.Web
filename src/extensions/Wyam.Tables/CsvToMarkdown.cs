@@ -15,10 +15,10 @@ namespace Wyam.Tables
     /// Converts CSV content to Markdown tables.
     /// </summary>
     /// <remarks>
-    /// This module reads the content of each input document as CSV and outputs an Markdown table 
-    /// containing the CSV content. The input CSV content must use <c>,</c> as separator and enclose 
+    /// This module reads the content of each input document as CSV and outputs an Markdown table
+    /// containing the CSV content. The input CSV content must use <c>,</c> as separator and enclose
     /// every value in <c>"</c>. The output table has the format
-    /// 
+    ///
     /// +--------------+-------------+
     /// | Test value 1 | TestValue 2 |
     /// +--------------+-------------+

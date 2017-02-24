@@ -49,7 +49,7 @@ namespace Wyam.Common.Modules
             Add(ExpandNamedModule(item));
         }
 
-        public void Add(string name, IModule module) => 
+        public void Add(string name, IModule module) =>
             Add(new KeyValuePair<string, IModule>(name, module));
 
         private void Add(KeyValuePair<string, IModule> namedModule)
@@ -79,7 +79,7 @@ namespace Wyam.Common.Modules
             Insert(index, ExpandNamedModule(item));
         }
 
-        public void Insert(int index, string name, IModule module) => 
+        public void Insert(int index, string name, IModule module) =>
             Insert(index, new KeyValuePair<string, IModule>(name, module));
 
         private void Insert(int index, KeyValuePair<string, IModule> namedModule)
@@ -151,7 +151,7 @@ namespace Wyam.Common.Modules
         public bool Contains(string name) => _modules.Any(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
         public void CopyTo(IModule[] array, int arrayIndex) => _modules.Select(x => x.Value).ToList().CopyTo(array);
-        
+
         public bool IsReadOnly => false;
 
         public int IndexOf(IModule item) => _modules.FindIndex(x => x.Value.Equals(item));
@@ -169,7 +169,7 @@ namespace Wyam.Common.Modules
             value = null;
             return false;
         }
-        
+
         public int IndexOf(string name) => _modules.FindIndex(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
         public IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs() => _modules;
@@ -181,8 +181,8 @@ namespace Wyam.Common.Modules
         private KeyValuePair<string, IModule> ExpandNamedModule(IModule module)
         {
             NamedModule namedModule = module as NamedModule;
-            return namedModule != null 
-                ? new KeyValuePair<string, IModule>(namedModule.Name, namedModule.Module) 
+            return namedModule != null
+                ? new KeyValuePair<string, IModule>(namedModule.Name, namedModule.Module)
                 : new KeyValuePair<string, IModule>(null, module);
         }
 

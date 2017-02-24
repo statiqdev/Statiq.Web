@@ -10,7 +10,7 @@ namespace Wyam.Configuration.Preprocessing
 {
     public class Preprocessor : IPreprocessor
     {
-        private static readonly ConcurrentDictionary<string, IDirective> AllDirectives 
+        private static readonly ConcurrentDictionary<string, IDirective> AllDirectives
             = new ConcurrentDictionary<string, IDirective>(StringComparer.OrdinalIgnoreCase);
 
         private readonly List<DirectiveValue> _values = new List<DirectiveValue>();
@@ -41,7 +41,7 @@ namespace Wyam.Configuration.Preprocessing
                 AllDirectives.TryAdd(directive.ShortName, directive);
             }
         }
-        
+
         public bool ContainsDirective(string name) => AllDirectives.ContainsKey(name);
 
         public IEnumerable<IDirective> Directives => AllDirectives.Values.Distinct();

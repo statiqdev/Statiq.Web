@@ -132,7 +132,7 @@ namespace Wyam.Commands
             _logFilePath = _logFilePath == null ? null : _configOptions.RootPath.CombineFile(_logFilePath);
             _configOptions.ConfigFilePath = _configOptions.RootPath.CombineFile(_configOptions.ConfigFilePath ?? "config.wyam");
 
-            // Set up the log file         
+            // Set up the log file
             if (_logFilePath != null)
             {
                 Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
@@ -167,7 +167,7 @@ namespace Wyam.Commands
             }
 
             bool messagePump = false;
-            
+
             // Start the preview server
             Server previewServer = null;
             if (_preview)

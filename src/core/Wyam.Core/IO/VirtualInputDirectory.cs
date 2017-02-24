@@ -127,7 +127,7 @@ namespace Wyam.Core.IO
         /// </value>
         public bool Exists => GetExistingDirectories().Any();
 
-        private IEnumerable<IDirectory> GetExistingDirectories() => 
+        private IEnumerable<IDirectory> GetExistingDirectories() =>
             _fileSystem.InputPaths
                 .Select(x => _fileSystem.GetRootDirectory(x.Combine(_path)))
                 .Where(x => x.Exists);

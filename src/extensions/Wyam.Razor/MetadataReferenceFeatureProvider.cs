@@ -17,7 +17,7 @@ namespace Wyam.Razor
         {
             _executionContext = executionContext;
         }
-        
+
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
         {
             if (parts == null)

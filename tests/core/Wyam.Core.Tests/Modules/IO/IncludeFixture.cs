@@ -145,7 +145,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 IDocument[] documents =
                 {
                     Context.GetDocument(
-                        new FilePath("/TestFiles/Input/test.txt"), 
+                        new FilePath("/TestFiles/Input/test.txt"),
                         "x ^\"test-a.txt\" y ^\"test-b.txt\" z")
                 };
                 Include include = new Include();
@@ -259,7 +259,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 FileProvider.AddFile(
-                    "/TestFiles/Input/test-outer.txt", 
+                    "/TestFiles/Input/test-outer.txt",
                     "3 ^\"test-a.txt\" 4");
                 IDocument[] documents =
                 {

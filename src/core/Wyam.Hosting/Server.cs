@@ -89,7 +89,7 @@ namespace Wyam.Hosting
         public string LocalPath { get; }
 
         public int Port { get; }
-        
+
         public bool Extensionless { get; }
 
         public string VirtualDirectory { get; }

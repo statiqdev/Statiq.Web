@@ -152,7 +152,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Then
                 Assert.AreEqual("aaa", document.Content);
             }
-            
+
             [TestCase(Keys.SourceFileBase, "test-c")]
             [TestCase(Keys.SourceFileName, "test-c.txt")]
             [TestCase(Keys.SourceFilePath, "/TestFiles/Input/Subfolder/test-c.txt")]

@@ -15,20 +15,20 @@ namespace Wyam.Feeds.Syndication
 	{
 	    /*
 		 * From MSDN:
-		 * 
+		 *
 		 * To increase performance, the XML serialization infrastructure dynamically generates
 		 * assemblies to serialize and deserialize specified types. The infrastructure finds and
 		 * reuses those assemblies. This behavior occurs only when using the following constructors:
-		 * 
-		 *		System.Xml.Serialization.XmlSerializer(Type) 
-		 *		System.Xml.Serialization.XmlSerializer(Type,String) 
-		 * 
+		 *
+		 *		System.Xml.Serialization.XmlSerializer(Type)
+		 *		System.Xml.Serialization.XmlSerializer(Type,String)
+		 *
 		 * If you use any of the other constructors, multiple versions of the same assembly are generated
 		 * and never unloaded, resulting in a memory leak and poor performance. The simplest solution is
 		 * to use one of the two constructors above. Otherwise, you must cache the assemblies in a Hashtable,
 		 * as shown in the following example.
 		 */
-         
+
 		public static IFeed DeserializeXml(Stream input)
 		{
 			XmlReaderSettings settings = new XmlReaderSettings();
@@ -53,10 +53,10 @@ namespace Wyam.Feeds.Syndication
         public static void SerializeXml(FeedType feedType, IFeed feed, Stream output) =>
             SerializeXml(feedType, feed, output, null);
 
-        public static void SerializeXml(IFeed feed, Stream output, string xsltUrl) => 
+        public static void SerializeXml(IFeed feed, Stream output, string xsltUrl) =>
             SerializeXml(feed, output, xsltUrl, true);
 
-        public static void SerializeXml(FeedType feedType, IFeed feed, Stream output, string xsltUrl) => 
+        public static void SerializeXml(FeedType feedType, IFeed feed, Stream output, string xsltUrl) =>
             SerializeXml(feedType, feed, output, xsltUrl, true);
 
         public static void SerializeXml(IFeed feed, Stream output, string xsltUrl, bool prettyPrint) =>

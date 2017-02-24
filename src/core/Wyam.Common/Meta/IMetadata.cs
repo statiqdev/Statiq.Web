@@ -16,9 +16,9 @@ namespace Wyam.Common.Meta
         /// <typeparam name="T">The type metadata values should be converted to.</typeparam>
         /// <returns>A strongly-typed <see cref="IMetadata"/> object that returns values converted to type T.</returns>
         IMetadata<T> MetadataAs<T>();
-        
+
         /// <summary>
-        /// Gets the value for the specified key. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key. This method never throws an exception. It will return the specified
         /// default value or null if the key is not found.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -36,7 +36,7 @@ namespace Wyam.Common.Meta
         object GetRaw(string key);
 
         /// <summary>
-        /// Gets the value for the specified key converted to the specified type. 
+        /// Gets the value for the specified key converted to the specified type.
         /// This method never throws an exception. It will return default(T) if the key is not found
         /// or the value cannot be converted to T.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Wyam.Common.Meta
         T Get<T>(string key);
 
         /// <summary>
-        /// Gets the value for the specified key. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -54,7 +54,7 @@ namespace Wyam.Common.Meta
         T Get<T>(string key, T defaultValue);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a string. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key converted to a string. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -63,7 +63,7 @@ namespace Wyam.Common.Meta
         string String(string key, string defaultValue = null);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a bool. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key converted to a bool. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -72,7 +72,7 @@ namespace Wyam.Common.Meta
         bool Bool(string key, bool defaultValue = false);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a <see cref="DateTime"/>. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key converted to a <see cref="DateTime"/>. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -99,7 +99,7 @@ namespace Wyam.Common.Meta
         DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{T}"/>. This method never throws an exception. It will return the specified 
+        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{T}"/>. This method never throws an exception. It will return the specified
         /// default value if the key is not found. Note that if the value is atomic, the conversion operation will succeed and return a list with one item.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
@@ -108,7 +108,7 @@ namespace Wyam.Common.Meta
         IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a <see cref="IDocument"/>. This method never throws an exception. 
+        /// Gets the value for the specified key converted to a <see cref="IDocument"/>. This method never throws an exception.
         /// It will return null if the key is not found.
         /// </summary>
         /// <param name="key">The key of the document to get.</param>
@@ -116,7 +116,7 @@ namespace Wyam.Common.Meta
         IDocument Document(string key);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{IDocument}"/>. This method never throws an exception. 
+        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{IDocument}"/>. This method never throws an exception.
         /// It will return null if the key is not found and an empty list if the key is found but contains no items that can be converted to <see cref="IDocument"/>.
         /// </summary>
         /// <param name="key">The key of the documents to get.</param>

@@ -44,7 +44,7 @@ namespace Wyam.Common.JavaScript
         void Execute(string code);
 
         /// <summary>
-        /// Executes code from JavaScript file. If the file should only be loaded once per lifetime of the 
+        /// Executes code from JavaScript file. If the file should only be loaded once per lifetime of the
         /// engine, see <see cref="RequireFile"/>.
         /// </summary>
         /// <param name="path">Path to the JavaScript file.</param>
@@ -52,7 +52,7 @@ namespace Wyam.Common.JavaScript
         void ExecuteFile(string path, Encoding encoding = null);
 
         /// <summary>
-        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the 
+        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the
         /// engine, see <see cref="RequireResource"/>.
         /// </summary>
         /// <param name="resourceName">The case-sensitive resource name without the namespace of the specified type.</param>
@@ -61,7 +61,7 @@ namespace Wyam.Common.JavaScript
         void ExecuteResource(string resourceName, Type type);
 
         /// <summary>
-        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the 
+        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the
         /// engine, see <see cref="RequireResource"/>.
         /// </summary>
         /// <param name="resourceName">The case-sensitive resource name.</param>

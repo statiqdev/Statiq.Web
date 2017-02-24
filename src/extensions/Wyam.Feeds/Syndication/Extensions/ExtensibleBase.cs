@@ -85,7 +85,7 @@ namespace Wyam.Feeds.Syndication.Extensions
 			adapter.SetAttributeEntensions(AttributeExtensions);
 			adapter.SetElementExtensions(ElementExtensions);
 		}
-        
+
 		public virtual void AddNamespaces(XmlSerializerNamespaces namespaces)
 		{
 			foreach (XmlAttribute node in AttributeExtensions)
@@ -123,7 +123,7 @@ namespace Wyam.Feeds.Syndication.Extensions
 			return dateTime;
 		}
 
-	    protected static string ConvertToString(Uri uri) => 
+	    protected static string ConvertToString(Uri uri) =>
             uri == null ? null : Uri.EscapeUriString(uri.ToString());
 
 	    protected static Uri ConvertToUri(string value)

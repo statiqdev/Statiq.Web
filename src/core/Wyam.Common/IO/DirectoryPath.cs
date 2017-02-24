@@ -223,7 +223,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <returns>A collapsed <see cref="DirectoryPath"/>.</returns>
         public DirectoryPath Collapse() => new DirectoryPath(FileProvider, Collapse(this));
-        
+
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.
         /// </summary>
@@ -236,7 +236,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
-        public static DirectoryPath FromString(string path) => 
+        public static DirectoryPath FromString(string path) =>
             string.IsNullOrWhiteSpace(path) ? null : new DirectoryPath(path);
 
         /// <summary>

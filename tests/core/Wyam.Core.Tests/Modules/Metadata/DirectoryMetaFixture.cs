@@ -234,15 +234,15 @@ namespace Wyam.Core.Tests.Modules.Metadata
         /// </param>
         /// <remarks>
         /// Each document will be generated with metadata.
-        /// 
+        ///
         /// The Value of the Metadata is always
         /// the index that would be returned by the <paramref name="documentsIndexLookup"/>
         /// for this Document.
-        /// 
+        ///
         /// The Key is a string that starts with m and is followed by a number. The total
         /// number of all different keywords is 2^Number of Documents. And an Document has metadata for all
         /// Keywords where where the binary representation of the number followed by the m has the nth bit set.
-        /// For every document n is its documentsIndex. 
+        /// For every document n is its documentsIndex.
         /// </remarks>
         private void Setup(out IExecutionContext context, out IDictionary<string, IDocument> documents, out IDictionary<IDocument, int> documentsIndexLookup, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary, params string[] pathArray)
         {

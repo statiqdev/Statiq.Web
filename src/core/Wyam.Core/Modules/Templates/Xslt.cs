@@ -18,8 +18,8 @@ namespace Wyam.Core.Modules.Templates
     /// Transforms input documents using a supplied XSLT template.
     /// </summary>
     /// <remarks>
-    /// This module uses <see cref="System.Xml.Xsl.XslCompiledTransform"/> with default settings. This means that the 
-    /// XSLT <c>document()</c> function and embedded scripts are disabled. For more information 
+    /// This module uses <see cref="System.Xml.Xsl.XslCompiledTransform"/> with default settings. This means that the
+    /// XSLT <c>document()</c> function and embedded scripts are disabled. For more information
     /// see the <a href="https://msdn.microsoft.com/en-us/library/system.xml.xsl.xslcompiledtransform.aspx">MSDN documentation</a>.
     /// </remarks>
     /// <category>Templates</category>

@@ -10,7 +10,7 @@ using Wyam.Common.Execution;
 namespace Wyam.Core.Modules.Control
 {
     /// <summary>
-    /// Executes child modules enabling better reuse. 
+    /// Executes child modules enabling better reuse.
     /// </summary>
     /// <remarks>
     /// All child modules will be executed as if they were inline. This enables you to specify
@@ -21,14 +21,14 @@ namespace Wyam.Core.Modules.Control
     /// <example>
     /// <code>
     /// ModuleCollection common = ModuleCollection(ModuleA(), ModuleB(), ModuleC());
-    /// 
+    ///
     /// Piplines.Add("A",
     ///     ModuleX(),
     ///     ModuleY(),
     ///     common,
     ///     ModuleZ()
     /// );
-    /// 
+    ///
     /// Piplines.Add("B",
     ///     ModuleX(),
     ///     common,

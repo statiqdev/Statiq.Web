@@ -40,7 +40,7 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument,
             string content, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
@@ -56,15 +56,15 @@ namespace Wyam.Core.Documents
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, Stream stream,
             IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
-        { 
+        {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
             IDocument document = _documentFactory.GetDocument(context, customDocument?.Document, stream, items, disposeStream);
             return GetCustomDocument(customDocument, document);
         }
 
-        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, 
+        public IDocument GetDocument(IExecutionContext context, IDocument sourceDocument,
             IEnumerable<KeyValuePair<string, object>> items)
         {
             CustomDocument customDocument = (CustomDocument)sourceDocument;
@@ -74,8 +74,8 @@ namespace Wyam.Core.Documents
 
         private IDocument GetCustomDocument(CustomDocument customDocument, IDocument document)
         {
-            CustomDocument newCustomDocument = customDocument == null 
-                ? Activator.CreateInstance<T>() 
+            CustomDocument newCustomDocument = customDocument == null
+                ? Activator.CreateInstance<T>()
                 : customDocument.Clone();
             if (newCustomDocument == null || newCustomDocument == customDocument)
             {

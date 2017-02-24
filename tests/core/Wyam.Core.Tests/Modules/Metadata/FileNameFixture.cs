@@ -132,7 +132,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string manyCharactersWow = new String(character[0], 10);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
-                    new MetadataItem(Keys.SourceFileName, 
+                    new MetadataItem(Keys.SourceFileName,
                         string.Format("testing {0} some of {0} these {0}", manyCharactersWow))
                 }) };
                 FileName fileName = new FileName();
@@ -176,7 +176,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = 
+                IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
                     {

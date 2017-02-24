@@ -128,8 +128,8 @@ namespace Wyam.Common.IO
                     return this;
                 }
                 DirectoryPath root = Root;
-                return root.FullPath == "." 
-                    ? this 
+                return root.FullPath == "."
+                    ? this
                     : new FilePath(FullPath.Substring(root.FullPath.Length), PathKind.Relative);
             }
         }
@@ -138,7 +138,7 @@ namespace Wyam.Common.IO
         /// Gets the filename.
         /// </summary>
         /// <value>The filename.</value>
-        public FilePath FileName => 
+        public FilePath FileName =>
             new FilePath(System.IO.Path.GetFileName(FullPath));
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Wyam.Common.IO
                 return string.IsNullOrEmpty(fileName) ? null : new FilePath(System.IO.Path.GetFileNameWithoutExtension(FullPath));
             }
         }
-            
+
 
         /// <summary>
         /// Gets the file extension (including the preceding ".").
@@ -173,7 +173,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="extension">The new extension.</param>
         /// <returns>A new <see cref="FilePath"/> with a new extension.</returns>
-        public FilePath ChangeExtension(string extension) => 
+        public FilePath ChangeExtension(string extension) =>
             new FilePath(FileProvider, System.IO.Path.ChangeExtension(FullPath, extension));
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Wyam.Common.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>
-        public static FilePath FromString(string path) => 
+        public static FilePath FromString(string path) =>
             string.IsNullOrWhiteSpace(path) ? null : new FilePath(path);
 
         /// <summary>

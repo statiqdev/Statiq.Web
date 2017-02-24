@@ -48,18 +48,18 @@ namespace Wyam.Razor
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Razor is the template language used by ASP.NET MVC. This module can parse and compile Razor 
-    /// templates and then render them to HTML. While a bit 
-    /// outdated, <a href="http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/">this guide</a> 
+    /// Razor is the template language used by ASP.NET MVC. This module can parse and compile Razor
+    /// templates and then render them to HTML. While a bit
+    /// outdated, <a href="http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx/">this guide</a>
     /// is a good quick reference for the Razor language syntax. This module uses the Razor engine from ASP.NET Core.
     /// </para>
     /// <para>
-    /// Whenever possible, the same conventions as the Razor engine in ASP.NET MVC were used. It's 
-    /// important to keep in mind however, that this is <em>not</em> ASP.NET MVC. Many features you may 
-    /// be used to will not work (like most of the <c>HtmlHelper</c> extensions) and others just don't 
-    /// make sense (like the concept of <em>actions</em> and <em>controllers</em>). Also, while property names and 
-    /// classes in the two engines have similar names(such as <c>HtmlHelper</c>) they are not the same, 
-    /// and code intended to extend the capabilities of Razor in ASP.NET MVC probably won't work. 
+    /// Whenever possible, the same conventions as the Razor engine in ASP.NET MVC were used. It's
+    /// important to keep in mind however, that this is <em>not</em> ASP.NET MVC. Many features you may
+    /// be used to will not work (like most of the <c>HtmlHelper</c> extensions) and others just don't
+    /// make sense (like the concept of <em>actions</em> and <em>controllers</em>). Also, while property names and
+    /// classes in the two engines have similar names(such as <c>HtmlHelper</c>) they are not the same,
+    /// and code intended to extend the capabilities of Razor in ASP.NET MVC probably won't work.
     /// That said, a lot of functionality does function the same as it does in ASP.NET MVC.
     /// </para>
     /// </remarks>
@@ -75,7 +75,7 @@ namespace Wyam.Razor
         private string _ignorePrefix = "_";
 
         /// <summary>
-        /// Parses Razor templates in each input document and outputs documents with rendered HTML content. 
+        /// Parses Razor templates in each input document and outputs documents with rendered HTML content.
         /// If <c>basePageType</c> is specified, it will be used as the base type for Razor pages. The new base
         /// type must derive from <see cref="WyamRazorPage{TModel}"/>.
         /// </summary>
@@ -115,12 +115,12 @@ namespace Wyam.Razor
         }
 
         /// <summary>
-        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module. This 
-        /// lets you specify a different ViewStart file for each document. For example, you could return a 
-        /// ViewStart based on document location or document metadata. Returning <c>null</c> from the 
+        /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module. This
+        /// lets you specify a different ViewStart file for each document. For example, you could return a
+        /// ViewStart based on document location or document metadata. Returning <c>null</c> from the
         /// function reverts back to the default ViewStart search behavior for that document.
         /// </summary>
-        /// <param name="path">A delegate that should return the ViewStart path as a <c>FilePath</c>, 
+        /// <param name="path">A delegate that should return the ViewStart path as a <c>FilePath</c>,
         /// or <c>null</c> for the default ViewStart search behavior.</param>
         public Razor WithViewStart(DocumentConfig path)
         {
@@ -139,7 +139,7 @@ namespace Wyam.Razor
         }
 
         /// <summary>
-        /// Specifies a layout file to use for all Razor pages processed by this module. This 
+        /// Specifies a layout file to use for all Razor pages processed by this module. This
         /// lets you specify a different layout file for each document.
         /// </summary>
         /// <param name="path">A delegate that should return the layout path as a <c>FilePath</c>.</param>
@@ -171,9 +171,9 @@ namespace Wyam.Razor
         }
 
         /// <summary>
-        /// Specifies a file prefix to ignore. If a document has a metadata value for <c>SourceFileName</c> and 
-        /// that metadata value starts with the specified prefix, that document will not be processed or 
-        /// output by the module. By default, the Razor module ignores all documents prefixed with 
+        /// Specifies a file prefix to ignore. If a document has a metadata value for <c>SourceFileName</c> and
+        /// that metadata value starts with the specified prefix, that document will not be processed or
+        /// output by the module. By default, the Razor module ignores all documents prefixed with
         /// an underscore (_). Specifying <c>null</c> will result in no documents being ignored.
         /// </summary>
         /// <param name="prefix">The file prefix to ignore.</param>
@@ -206,18 +206,18 @@ namespace Wyam.Razor
                 .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(WyamRazorPage<>)))
                 .AddScoped<IMvcRazorHost, RazorHost>();
             IServiceProvider services = serviceCollection.BuildServiceProvider();
-            
+
             // Eliminate input documents that we shouldn't process
             List<IDocument> validInputs = inputs
-                .Where(context, x => _ignorePrefix == null 
-                    || !x.ContainsKey(Keys.SourceFileName) 
+                .Where(context, x => _ignorePrefix == null
+                    || !x.ContainsKey(Keys.SourceFileName)
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
             if (validInputs.Count < inputs.Count)
             {
                 Trace.Information($"Ignoring {inputs.Count - validInputs.Count} inputs due to source file name prefix");
             }
-            
+
             // Compile and evaluate the pages in parallel
             IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
             return validInputs.AsParallel().Select(context, input =>
@@ -244,12 +244,12 @@ namespace Wyam.Razor
                         view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
                             htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
                     }
-                    
+
                     // Render the view
                     object model = _model == null ? input : _model.Invoke(input, context);
                     using (StringWriter output = new StringWriter())
                     {
-                        Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = 
+                        Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext =
                             GetViewContext(scope.ServiceProvider, view, model, input, context, output);
                         viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
                         return context.GetDocument(input, output.ToString());
@@ -257,7 +257,7 @@ namespace Wyam.Razor
                 }
             });
         }
-        
+
         private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(
             IServiceProvider services, IView view, object model,
             IDocument document, IExecutionContext executionContext, TextWriter output)
@@ -289,7 +289,7 @@ namespace Wyam.Razor
             IRazorPageFactoryProvider pageFactoryProvider, IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
         {
             IEnumerable<string> viewStartLocations = viewStartLocation != null
-                ? new [] { viewStartLocation } 
+                ? new [] { viewStartLocation }
                 : ViewHierarchyUtility.GetViewStartLocations(relativePath);
             List<IRazorPage> viewStartPages = viewStartLocations
                 .Select(pageFactoryProvider.CreateFactory)
@@ -307,7 +307,7 @@ namespace Wyam.Razor
 
         /// <summary>
         /// Gets the Razor page for an input document stream. This is roughly modeled on
-        /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother 
+        /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother
         /// with caching the page if it's from a live stream.
         /// </summary>
         private IRazorPage GetPageFromStream(string relativePath, string viewStartLocation, string layoutLocation, Stream stream,
@@ -329,7 +329,7 @@ namespace Wyam.Razor
                 ? _compilationCache.GetOrAdd(
                     viewStartLocation == null
                         ? (layoutLocation ?? relativePath)
-                        : (layoutLocation == null ? viewStartLocation : viewStartLocation + layoutLocation), 
+                        : (layoutLocation == null ? viewStartLocation : viewStartLocation + layoutLocation),
                     _ => GetCompilation(relativeFileInfo, razorCompilationService))
                 : GetCompilation(relativeFileInfo, razorCompilationService);
 

@@ -50,12 +50,12 @@ namespace Wyam.Less
             config.Logger = typeof (LessLogger);
             EngineFactory engineFactory = new EngineFactory(config);
             FileSystemReader fileSystemReader = new FileSystemReader(context.FileSystem);
-            
+
             return inputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Less for {0}", input.SourceString());
                 ILessEngine engine = engineFactory.GetEngine();
-                
+
                 // TODO: Get rid of RefelectionMagic and this ugly hack as soon as dotless gets better external DI support
                 engine.AsDynamic().Underlying.Cache = new LessCache(context.ExecutionCache);
                 engine.AsDynamic().Underlying.Underlying.Parser.Importer.FileReader = fileSystemReader;

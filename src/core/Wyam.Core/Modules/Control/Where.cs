@@ -17,7 +17,7 @@ namespace Wyam.Core.Modules.Control
         private readonly DocumentConfig _predicate;
 
         /// <summary>
-        /// Specifies the predicate to use for filtering documents. 
+        /// Specifies the predicate to use for filtering documents.
         /// Only input documents for which the predicate returns <c>true</c> will be output.
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>

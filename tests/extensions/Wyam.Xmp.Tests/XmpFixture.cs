@@ -50,8 +50,8 @@ namespace Wyam.Xmp.Tests
                 IDocument[] documents;
                 IExecutionContext context;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                Setup(out context, out documents, out cloneDictionary, 
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"), 
+                Setup(out context, out documents, out cloneDictionary,
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"),
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
                 System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");
@@ -74,8 +74,8 @@ namespace Wyam.Xmp.Tests
                 IDocument[] documents;
                 IExecutionContext context;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                Setup(out context, out documents, out cloneDictionary, 
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"), 
+                Setup(out context, out documents, out cloneDictionary,
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"),
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
                 System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("en");

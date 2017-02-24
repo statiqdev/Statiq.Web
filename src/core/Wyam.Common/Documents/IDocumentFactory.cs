@@ -56,8 +56,8 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="context">The current execution context.</param>
@@ -72,8 +72,8 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
-        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided 
-        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the 
+        /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
+        /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
         /// </summary>
         /// <param name="context">The current execution context.</param>

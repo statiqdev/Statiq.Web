@@ -42,7 +42,7 @@ namespace Wyam.Html.Tests
                 Assert.That(links.Count, Is.EqualTo(1));
                 Assert.That(links.First().Key, Is.EqualTo(link));
             }
-            
+
             [TestCase("<link href=\"/foo/bar.css\" rel=\"stylesheet\" />", "/foo/bar.css")]
             [TestCase("<link href=\"http://foo.com/bar.css\" rel=\"stylesheet\" />", "http://foo.com/bar.css")]
             [TestCase("<link rel=\"icon\" href=\"/foo/favicon.ico\" type=\"image/x-icon\">", "/foo/favicon.ico")]

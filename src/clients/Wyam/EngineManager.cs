@@ -19,7 +19,7 @@ namespace Wyam
 
         public Engine Engine { get; }
         public Configurator Configurator { get; }
-        
+
         public static EngineManager Get(Preprocessor preprocessor, ConfigOptions configOptions)
         {
             try
@@ -38,7 +38,7 @@ namespace Wyam
             _configOptions = configOptions;
             Engine = new Engine();
             Configurator = new Configurator(Engine, preprocessor);
-            
+
             // Set no cache if requested
             if (_configOptions.NoCache)
             {
@@ -104,7 +104,7 @@ namespace Wyam
         {
             try
             {
-                // make sure we clear out anything in the JavaScriptEngineSwitcher instance               
+                // make sure we clear out anything in the JavaScriptEngineSwitcher instance
                 Engine.ResetJsEngines();
 
                 // Make sure the root path exists
@@ -114,7 +114,7 @@ namespace Wyam
                         $"The root path {Engine.FileSystem.RootPath.FullPath} does not exist.");
                 }
 
-                // If we have a configuration file use it, otherwise configure with defaults  
+                // If we have a configuration file use it, otherwise configure with defaults
                 IFile configFile = Engine.FileSystem.GetRootFile(_configOptions.ConfigFilePath);
                 if (configFile.Exists)
                 {

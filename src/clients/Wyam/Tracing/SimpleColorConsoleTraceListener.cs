@@ -19,12 +19,12 @@ namespace Wyam.Tracing
                 { TraceEventType.Start, Tuple.Create(ConsoleColor.DarkCyan, (ConsoleColor?)null) },
                 { TraceEventType.Stop, Tuple.Create(ConsoleColor.DarkCyan, (ConsoleColor?)null) }
             };
- 
+
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
             TraceEvent(eventCache, source, eventType, id, "{0}", message);
         }
- 
+
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
             Tuple<ConsoleColor, ConsoleColor?> colors;

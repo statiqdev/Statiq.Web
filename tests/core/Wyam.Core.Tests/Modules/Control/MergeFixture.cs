@@ -31,7 +31,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     Value = 20
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b), 
+                engine.Pipelines.Add("Test", a, new Merge(b),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When

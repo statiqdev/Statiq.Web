@@ -19,8 +19,8 @@ namespace Wyam.Yaml
     /// Parses YAML content for each input document and stores the result in it's metadata.
     /// </summary>
     /// <remarks>
-    /// Parses the content for each input document and then stores a dynamic object 
-    /// representing the first YAML document in metadata with the specified key. If no key is specified, 
+    /// Parses the content for each input document and then stores a dynamic object
+    /// representing the first YAML document in metadata with the specified key. If no key is specified,
     /// then the dynamic object is not added. You can also flatten the YAML to add top-level pairs directly
     /// to the document metadata.
     /// </remarks>
@@ -31,7 +31,7 @@ namespace Wyam.Yaml
         private readonly string _key;
 
         /// <summary>
-        /// The content of the input document is parsed as YAML. All root-level scalars are added to the input document's 
+        /// The content of the input document is parsed as YAML. All root-level scalars are added to the input document's
         /// metadata. Any more complex YAML structures are ignored. This is best for simple key-value YAML documents.
         /// </summary>
         public Yaml()
@@ -40,9 +40,9 @@ namespace Wyam.Yaml
         }
 
         /// <summary>
-        /// The content of the input document is parsed as YAML. A dynamic object representing the first YAML 
-        /// document is set as the value for the given metadata key. See YamlDotNet.Dynamic for more details 
-        /// about the dynamic YAML object. If flatten is true, all root-level scalars are also added 
+        /// The content of the input document is parsed as YAML. A dynamic object representing the first YAML
+        /// document is set as the value for the given metadata key. See YamlDotNet.Dynamic for more details
+        /// about the dynamic YAML object. If flatten is true, all root-level scalars are also added
         /// to the input document's metadata.
         /// </summary>
         /// <param name="key">The metadata key in which to set the dynamic YAML object.</param>
@@ -104,7 +104,7 @@ namespace Wyam.Yaml
                 }
 
                 // Map scalar-to-scalar children
-                foreach (KeyValuePair<YamlNode, YamlNode> child in 
+                foreach (KeyValuePair<YamlNode, YamlNode> child in
                     mappingNode.Children.Where(y => y.Key is YamlScalarNode && y.Value is YamlScalarNode))
                 {
                     metadata[((YamlScalarNode)child.Key).Value] = ((YamlScalarNode)child.Value).Value;

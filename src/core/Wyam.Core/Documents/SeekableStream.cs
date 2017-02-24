@@ -11,7 +11,7 @@ namespace Wyam.Core.Documents
         private readonly MemoryStream _memoryStream = new MemoryStream();
         private bool _endOfStream = false;
         private bool _disposed = false;
-        
+
         public SeekableStream(Stream stream, bool disposeStream)
         {
             if (!stream.CanRead)
@@ -21,16 +21,16 @@ namespace Wyam.Core.Documents
             _stream = stream;
             _disposeStream = disposeStream;
         }
-        
+
         public override bool CanRead => true;
         public override bool CanSeek => true;
         public override bool CanWrite => false;
-        
+
         public override void Flush()
         {
             _stream.Flush();
         }
-        
+
         public override long Length
         {
             get
@@ -43,7 +43,7 @@ namespace Wyam.Core.Documents
                 return _memoryStream.Length;
             }
         }
-        
+
         public override long Position
         {
             get
@@ -57,7 +57,7 @@ namespace Wyam.Core.Documents
                 Seek(value, SeekOrigin.Begin);
             }
         }
-        
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             CheckDisposed();
@@ -76,7 +76,7 @@ namespace Wyam.Core.Documents
             }
             return memoryBytes + streamBytes;
         }
-        
+
         public override long Seek(long offset, SeekOrigin origin)
         {
             CheckDisposed();
@@ -114,17 +114,17 @@ namespace Wyam.Core.Documents
             _memoryStream.Position = (newPosition <= _memoryStream.Length) ? newPosition : _memoryStream.Length;
             return 0;
         }
-        
+
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
         }
-        
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
         }
-        
+
         private void Fill()
         {
             if (_endOfStream)

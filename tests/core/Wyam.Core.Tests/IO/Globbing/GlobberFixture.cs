@@ -188,7 +188,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             fileProvider.AddFile("/a/x/foo.doc");
             fileProvider.AddFile("/a/foo/bar/a.txt");
             fileProvider.AddFile("/a/foo/baz/b.txt");
-            
+
             return fileProvider;
         }
     }

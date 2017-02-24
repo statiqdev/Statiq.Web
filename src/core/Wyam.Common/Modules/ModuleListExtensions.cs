@@ -8,10 +8,10 @@ namespace Wyam.Common.Modules
 {
     public static class ModuleListExtensions
     {
-        public static void InsertAfter(this IModuleList moduleList, string name, params IModule[] modules) 
+        public static void InsertAfter(this IModuleList moduleList, string name, params IModule[] modules)
             => moduleList.Insert(moduleList.GuardIndexOf(name) + 1, modules);
 
-        public static void InsertBefore(this IModuleList moduleList, string name, params IModule[] modules) 
+        public static void InsertBefore(this IModuleList moduleList, string name, params IModule[] modules)
             => moduleList.Insert(moduleList.GuardIndexOf(name), modules);
 
         public static void InsertBeforeFirst<T>(this IModuleList moduleList, params IModule[] modules)
@@ -79,7 +79,7 @@ namespace Wyam.Common.Modules
             moduleList.RemoveAt(index);
             moduleList.Insert(index, name, module);
         }
-        
+
         private static int GuardIndexOfLast<T>(this IModuleList moduleList, Predicate<T> filter)
             where T : class, IModule
         {

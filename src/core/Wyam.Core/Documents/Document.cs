@@ -247,7 +247,7 @@ namespace Wyam.Core.Documents
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Document), 
+                throw new ObjectDisposedException(nameof(Document),
                     $"Attempted to access disposed document with ID {Id} and source {SourceString()}");
             }
         }

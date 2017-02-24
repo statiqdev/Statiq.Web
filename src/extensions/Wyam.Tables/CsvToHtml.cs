@@ -15,7 +15,7 @@ namespace Wyam.Tables
     /// Converts CSV content to HTML tables.
     /// </summary>
     /// <remarks>
-    /// This module reads the content of each input document as CSV and outputs an HTML <c>&lt;table&gt;</c> tag 
+    /// This module reads the content of each input document as CSV and outputs an HTML <c>&lt;table&gt;</c> tag
     /// containing the CSV content. No <c>&lt;html&gt;</c> or <c>&lt;body&gt;</c> tags are output. The input CSV
     /// content must use <c>,</c> as separator and enclose every value in <c>"</c>.
     /// </remarks>

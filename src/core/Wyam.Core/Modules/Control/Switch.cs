@@ -77,7 +77,7 @@ namespace Wyam.Core.Modules.Control
                     object caseValue = c.Item1 ?? Array.Empty<object>();
                     IEnumerable caseValues = caseValue.GetType().IsArray ? (IEnumerable)caseValue : Enumerable.Repeat(caseValue, 1);
                     bool matches = caseValues.Cast<object>().Any(cv => object.Equals(switchValue, cv));
-                    
+
                     if(matches)
                     {
                         handled.Add(document);

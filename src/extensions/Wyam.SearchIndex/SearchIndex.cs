@@ -50,10 +50,10 @@ namespace Wyam.SearchIndex
     ///             listHtml += "&lt;li&gt;&lt;a href='" + res.url + "'&gt;" + res.title + "&lt;/a&gt;&lt;/li&gt;";
     ///         }
     ///     }
-    ///     listHtml += "&lt;/ul&gt;";				
+    ///     listHtml += "&lt;/ul&gt;";
     ///     $("#search-results").append(listHtml);
     /// }
-    /// 
+    ///
     /// $(document).ready(function() {
     ///     $("#search").on('input propertychange paste', function() {
     ///         runSearch($("#search").val());
@@ -75,7 +75,7 @@ namespace Wyam.SearchIndex
         private Func<StringBuilder, IExecutionContext, string> _script = (builder, _) => builder.ToString();
 
         /// <summary>
-        /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that 
+        /// Creates the search index by looking for a <c>SearchIndexItem</c> metadata key in each input document that
         /// contains a <c>SearchIndexItem</c> instance.
         /// </summary>
         /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
@@ -86,7 +86,7 @@ namespace Wyam.SearchIndex
         }
 
         /// <summary>
-        /// Creates the search index by looking for a specified metadata key in each input document that 
+        /// Creates the search index by looking for a specified metadata key in each input document that
         /// contains a <c>SearchIndexItem</c> instance.
         /// </summary>
         /// <param name="searchIndexItemMetadataKey">The metadata key that contains the <c>SearchIndexItem</c> instance.</param>
@@ -191,9 +191,9 @@ namespace Wyam.SearchIndex
         {
             SearchIndexItem[] searchIndexItems = inputs
                 .Select(context, x => _searchIndexItem.TryInvoke<SearchIndexItem>(x, context))
-                .Where(x => x != null 
-                    && !string.IsNullOrEmpty(x.Url) 
-                    && !string.IsNullOrEmpty(x.Title) 
+                .Where(x => x != null
+                    && !string.IsNullOrEmpty(x.Url)
+                    && !string.IsNullOrEmpty(x.Title)
                     && !string.IsNullOrEmpty(x.Content))
                 .ToArray();
 
@@ -202,7 +202,7 @@ namespace Wyam.SearchIndex
                 Trace.Warning("It's not possible to build the search index because no documents contain the necessary metadata.");
                 return Array.Empty<IDocument>();
             }
-            
+
             string[] stopwords = GetStopwords(context);
             StringBuilder scriptBuilder = BuildScript(searchIndexItems, stopwords, context);
             string script = _script(scriptBuilder, context);
@@ -226,7 +226,7 @@ namespace Wyam.SearchIndex
 
             return new []{ context.GetDocument(script, metadata) };
         }
-        
+
         private StringBuilder BuildScript(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
         {
             StringBuilder scriptBuilder = new StringBuilder($@"
@@ -292,7 +292,7 @@ var searchModule = function() {{
             {
                 return "''";
             }
-            
+
             string clean = StripHtmlAndSpecialChars.Replace(input, " ").Trim();
             clean = Regex.Replace(clean, @"\s{2,}", " ");
             clean = string.Join(" ", clean.Split(' ').Where(f => f.Length > 1 && !stopwords.Contains(f, StringComparer.InvariantCultureIgnoreCase)).ToArray());

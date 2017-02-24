@@ -20,10 +20,10 @@ namespace Wyam.Xmp
 {
 
     /// <summary>
-    /// Reads XMP data from the input documents and adds it to the document metadata.  
+    /// Reads XMP data from the input documents and adds it to the document metadata.
     /// </summary>
     /// <remarks>
-    /// The <c>SourceFilePath</c> metadata key of each input document will be used to 
+    /// The <c>SourceFilePath</c> metadata key of each input document will be used to
     /// locate any sidecar files.
     /// </remarks>
     /// <category>Metadata</category>
@@ -48,7 +48,7 @@ namespace Wyam.Xmp
         /// Reads XMP data from the input documents and adds it to the document metadata with the specified options.
         /// </summary>
         /// <param name="skipElementOnMissingMandatoryData">If mandatory data is missing, the element will be skipped.</param>
-        /// <param name="errorsOnDoubleKeys">If <c>true</c> (the default), an error will be produced if the XML metadata would overwrite existing 
+        /// <param name="errorsOnDoubleKeys">If <c>true</c> (the default), an error will be produced if the XML metadata would overwrite existing
         /// document metadata. If <c>false</c>, the XMP metadata overrides the existing metadata.</param>
         /// <param name="delocalizing">If <c>true</c> (the default), when multiple elements with different languages are present, the local language will be used to choose the correct element.</param>
         /// <param name="flatten">If <c>true</c> (the default), when an array has only one element the output metadata is reduced to the single element.</param>

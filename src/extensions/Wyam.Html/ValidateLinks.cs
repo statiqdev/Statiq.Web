@@ -48,7 +48,7 @@ namespace Wyam.Html
         }
 
         /// <summary>
-        /// Validates relative links, which is activated by default. 
+        /// Validates relative links, which is activated by default.
         /// </summary>
         /// <param name="validateRelativeLinks"><c>true</c> to validate relative links.</param>
         public ValidateLinks ValidateRelativeLinks(bool validateRelativeLinks = true)
@@ -184,9 +184,9 @@ namespace Wyam.Html
             {
                 return true;
             }
-            
+
             // Remove the link root if there is one and remove the preceding slash
-            if (context.Settings.DirectoryPath(Keys.LinkRoot) != null 
+            if (context.Settings.DirectoryPath(Keys.LinkRoot) != null
                 && normalizedPath.StartsWith(context.Settings.DirectoryPath(Keys.LinkRoot).FullPath))
             {
                 normalizedPath = normalizedPath.Substring(context.Settings.DirectoryPath(Keys.LinkRoot).FullPath.Length);
@@ -201,13 +201,13 @@ namespace Wyam.Html
             {
                 checkPaths.Add(new FilePath(normalizedPath));
             }
-            
+
             // Add filenames
             checkPaths.AddRange(LinkGenerator.DefaultHidePages.Select(x => new FilePath(normalizedPath == string.Empty ? x : $"{normalizedPath}/{x}")));
 
             // Add extensions
             checkPaths.AddRange(LinkGenerator.DefaultHideExtensions.SelectMany(x => checkPaths.Select(y => y.AppendExtension(x))).ToArray());
-            
+
             // Check all the candidate paths
             FilePath validatedPath = checkPaths.FirstOrDefault(x =>
             {

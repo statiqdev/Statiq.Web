@@ -49,7 +49,7 @@ namespace Wyam.Feeds.Syndication.Atom
             {
                 SubTitle = description;
             }
-            
+
             // Author
             string author = source.Author;
             if (!string.IsNullOrEmpty(author))
@@ -127,7 +127,7 @@ namespace Wyam.Feeds.Syndication.Atom
 	    string IFeed.Copyright => Rights?.StringValue;
 
 	    IList<IFeedItem> IFeed.Items => Entries.Cast<IFeedItem>().ToList();
-        
+
         Uri IFeedMetadata.ID => ((IUriProvider) this).Uri;
 
 	    string IFeedMetadata.Title => Title?.StringValue;

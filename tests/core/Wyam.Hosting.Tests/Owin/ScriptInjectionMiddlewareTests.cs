@@ -17,7 +17,7 @@ namespace Wyam.Hosting.Tests.Owin
     {
         private static readonly Assembly ContentAssembly = typeof(ScriptInjectionMiddlewareTests).Assembly;
         private static readonly string ContentNamespace = $"{typeof(ScriptInjectionMiddlewareTests).Namespace}.Documents";
-        
+
         private readonly TestServer _host;
 
         public ScriptInjectionMiddlewareTests()

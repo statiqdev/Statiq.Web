@@ -39,7 +39,7 @@ namespace Wyam.Configuration.Assemblies
             _disposed = true;
         }
 
-        public bool TryGet(string name, out Assembly assembly) => 
+        public bool TryGet(string name, out Assembly assembly) =>
             _fullNameCache.TryGetValue(name, out assembly) || _nameCache.TryGetValue(name, out assembly);
 
         private void OnAssemblyLoad(object sender, AssemblyLoadEventArgs args) => AddToCache(args.LoadedAssembly);
@@ -59,7 +59,7 @@ namespace Wyam.Configuration.Assemblies
                 // Return the dynamically compiled config assembly if given it's name
                 return _scriptManager.Assembly;
             }
-            
+
             // Return an assembly from the cache (check for a full name first)
             Assembly assembly;
             return TryGet(args.Name, out assembly) ? assembly : null;

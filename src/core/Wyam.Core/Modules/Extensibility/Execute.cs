@@ -31,7 +31,7 @@ namespace Wyam.Core.Modules.Extensibility
         /// returns a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>, the document(s) will be the
         /// output(s) of this module. If the delegate returns a <see cref="IEnumerable{IModule}"/> or
         /// <see cref="IModule"/>, the module(s) will be executed with each input document as their input
-        /// and the results will be the output of this module. If the delegate returns null, 
+        /// and the results will be the output of this module. If the delegate returns null,
         /// this module will just output the input document. If anything else is returned, the input
         /// document will be output with the string value of the delegate result as it's content.
         /// </summary>
@@ -50,7 +50,7 @@ namespace Wyam.Core.Modules.Extensibility
         /// returns a <see cref="IEnumerable{IDocument}"/> or <see cref="IDocument"/>, the document(s) will be the
         /// output(s) of this module. If the delegate returns a <see cref="IEnumerable{IModule}"/> or
         /// <see cref="IModule"/>, the module(s) will be executed with the input documents as their input
-        /// and the results will be the output of this module. If the delegate returns null, 
+        /// and the results will be the output of this module. If the delegate returns null,
         /// this module will just output the input documents. If anything else is returned, an exception will be thrown.
         /// </summary>
         /// <param name="execute">A delegate to invoke that should return a <see cref="IEnumerable{IDocument}"/>,
@@ -106,8 +106,8 @@ namespace Wyam.Core.Modules.Extensibility
                            ?? ExecuteModules(documentResult, context, new[] {input})
                            ?? ChangeContent(documentResult, context, input);
                 };
-                return _parallel 
-                    ? inputs.AsParallel().SelectMany(context, selectMany) 
+                return _parallel
+                    ? inputs.AsParallel().SelectMany(context, selectMany)
                     : inputs.SelectMany(context, selectMany);
             }
 
@@ -150,7 +150,7 @@ namespace Wyam.Core.Modules.Extensibility
             return modules != null ? context.Execute(modules, inputs) : null;
         }
 
-        private IEnumerable<IDocument> ChangeContent(object result, IExecutionContext context, IDocument document) => 
+        private IEnumerable<IDocument> ChangeContent(object result, IExecutionContext context, IDocument document) =>
             new[] {context.GetDocument(document, result.ToString())};
 
         private IEnumerable<IDocument> ThrowInvalidDelegateResult(object result)

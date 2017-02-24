@@ -30,11 +30,11 @@ namespace Wyam.Core.Execution
         private readonly Pipeline _pipeline;
 
         private bool _disposed;
-        
+
         public Engine Engine { get; }
 
         public IReadOnlyCollection<byte[]> DynamicAssemblies => Engine.DynamicAssemblies;
-        
+
         public IReadOnlyCollection<string> Namespaces => Engine.Namespaces;
 
         public IReadOnlyPipeline Pipeline => new ReadOnlyPipeline(_pipeline);
@@ -52,7 +52,7 @@ namespace Wyam.Core.Execution
         public string ApplicationInput => Engine.ApplicationInput;
 
         [Obsolete]
-        public IMetadata GlobalMetadata => Engine.GlobalMetadata; 
+        public IMetadata GlobalMetadata => Engine.GlobalMetadata;
 
         public ExecutionContext(Engine engine, Pipeline pipeline)
         {
@@ -95,10 +95,10 @@ namespace Wyam.Core.Execution
 
         // GetLink
 
-        public string GetLink() => 
+        public string GetLink() =>
             GetLink((NormalizedPath)null, Settings.String(Common.Meta.Keys.Host), Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), Settings.Bool(Common.Meta.Keys.LinksUseHttps), false, false);
 
-        public string GetLink(IMetadata metadata, bool includeHost = false) => 
+        public string GetLink(IMetadata metadata, bool includeHost = false) =>
             GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
 
         public string GetLink(IMetadata metadata, string key, bool includeHost = false)
@@ -106,39 +106,39 @@ namespace Wyam.Core.Execution
             FilePath filePath = metadata?.FilePath(key);
             return filePath != null ? GetLink(filePath, includeHost) : null;
         }
-        
+
         public string GetLink(string path, bool includeHost = false) =>
-            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), 
+            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
                 Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
             GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
 
-        public string GetLink(NormalizedPath path, bool includeHost = false) => 
+        public string GetLink(NormalizedPath path, bool includeHost = false) =>
             GetLink(path, includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
                 Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) => 
-            LinkGenerator.GetLink(path, host, root, 
-                useHttps ? "https" : null, 
-                hideIndexPages ? LinkGenerator.DefaultHidePages : null, 
+        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
+            LinkGenerator.GetLink(path, host, root,
+                useHttps ? "https" : null,
+                hideIndexPages ? LinkGenerator.DefaultHidePages : null,
                 hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
 
         // GetDocument
 
-        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null) => 
+        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null) =>
             GetDocument((IDocument)null, source, content, items);
 
-        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null) => 
+        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null) =>
             GetDocument((IDocument)null, content, items);
 
-        public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
+        public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) =>
             GetDocument((IDocument)null, source, stream, items, disposeStream);
 
-        public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) => 
+        public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) =>
             GetDocument((IDocument)null, stream, items, disposeStream);
 
-        public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items) => 
+        public IDocument GetDocument(IEnumerable<KeyValuePair<string, object>> items) =>
             GetDocument((IDocument)null, items);
 
         // IDocumentFactory
@@ -214,14 +214,14 @@ namespace Wyam.Core.Execution
             return document;
         }
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) => 
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs) =>
             Execute(modules, inputs, null);
 
         // Executes the module with an empty document containing the specified metadata items
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) => 
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<KeyValuePair<string, object>> items = null) =>
             Execute(modules, null, items);
 
-        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items) => 
+        public IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> items) =>
             Execute(modules, items?.Select(x => x.Pair));
 
         private IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<IDocument> inputs, IEnumerable<KeyValuePair<string, object>> items)

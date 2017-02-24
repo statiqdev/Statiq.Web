@@ -12,7 +12,7 @@ namespace Wyam.Core.Modules.Metadata
     /// Tests metadata for existence, typing, and supplied assertions.
     /// </summary>
     /// <remarks>
-    /// This module performs tests on metadata. It can ensure metadata exists, that it can be converted to the correct type, and that is passes 
+    /// This module performs tests on metadata. It can ensure metadata exists, that it can be converted to the correct type, and that is passes
     /// arbitrary tests (delegates) to ensure validity. Metadata can be specified as optional, in which case, typing and assertion testing
     /// will only be run if the metadata exists. If any check fails, this module throws an exception with a descriptive error message then
     /// halts further execution.
@@ -120,7 +120,7 @@ namespace Wyam.Core.Modules.Metadata
                         throw GetException(assertion.Message);
                     }
                 }
-                
+
                 return input;
             });
         }
