@@ -173,13 +173,13 @@ namespace Wyam.Configuration.NuGet
                     // Install the packages (doing this synchronously since doing it in parallel triggers file lock errors in NuGet on a clean system)
                     try
                     {
-                        InstallPackages(packageManager, localRepository, installationRepositories, installedPackages);
+                        InstallPackages(packageManager, installationRepositories, installedPackages);
                     }
                     catch (Exception ex)
                     {
                         Trace.Verbose($"Exception while installing packages: {(ex is AggregateException ? string.Join("; ", ((AggregateException)ex).InnerExceptions.Select(x => x.Message)) : ex.Message)}");
                         Trace.Warning("Error while installing packages, attempting without remote repositories");
-                        InstallPackages(packageManager, localRepository, Array.Empty<SourceRepository>(), installedPackages);
+                        InstallPackages(packageManager, Array.Empty<SourceRepository>(), installedPackages);
                     }
 
                     // Process the package (do this after all packages have been installed)
@@ -196,11 +196,11 @@ namespace Wyam.Configuration.NuGet
         private void ResolveVersions(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories) =>
             Task.WaitAll(_packages.Values.Select(x => x.ResolveVersion(localRepository, remoteRepositories, UpdatePackages, _logger)).ToArray());
 
-        private void InstallPackages(NuGetPackageManager packageManager, SourceRepository localRepository, IReadOnlyList<SourceRepository> installationRepositories, InstalledPackagesCache installedPackages)
+        private void InstallPackages(NuGetPackageManager packageManager, IReadOnlyList<SourceRepository> installationRepositories, InstalledPackagesCache installedPackages)
         {
             foreach (Package package in _packages.Values)
             {
-                package.Install(localRepository, installationRepositories, installedPackages, packageManager).Wait();
+                package.Install(installationRepositories, installedPackages, packageManager).Wait();
             }
         }
     }

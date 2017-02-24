@@ -6,15 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 
 namespace Wyam.Configuration.NuGet
 {
     internal class InstalledPackagesCache : IDisposable
     {
-        private List<CachedPackage> _installedPackages = new List<CachedPackage>(); // The packages installed during this session
+        private readonly List<CachedPackage> _installedPackages = new List<CachedPackage>(); // The packages installed during this session
         private readonly string _fullPath;
         private readonly CachedPackage[] _cachedPackages;
 
@@ -59,11 +61,6 @@ namespace Wyam.Configuration.NuGet
         }
 
         /// <summary>
-        /// Gets all top-level installed packages from the incoming cache file.
-        /// </summary>
-        public IEnumerable<PackageReference> GetCachedPackages() => _cachedPackages.Select(x => x.PackageReference);
-
-        /// <summary>
         /// Gets all installed packages from this session and their dependencies.
         /// </summary>
         public IEnumerable<PackageIdentity> GetInstalledPackagesAndDependencies() => 
@@ -71,18 +68,17 @@ namespace Wyam.Configuration.NuGet
                 .Concat(_installedPackages.SelectMany(x => x.Dependencies.Select(dep => dep.PackageIdentity)));
 
         /// <summary>
-        /// Verifies that a package has been previously installed and if so,
+        /// Verifies that a package has been previously installed as well as
+        /// currently existing locally with all dependencies, and if so,
         /// adds it back to the outgoing cache file along with all it's
         /// previously calculated dependencies.
         /// </summary>
-        /// <param name="packageIdentity">The identity of the package to verify.</param>
-        /// <returns><c>true</c> if the package was previously installed and cached, <c>false</c> otherwise</returns>
-        public bool VerifyPackage(PackageIdentity packageIdentity)
+        public bool VerifyPackage(PackageIdentity packageIdentity, NuGetPackageManager packageManager)
         {
             CachedPackage cached = _cachedPackages.FirstOrDefault(x =>
                 x.PackageReference.PackageIdentity.Id.Equals(packageIdentity.Id, StringComparison.OrdinalIgnoreCase)
                 && x.PackageReference.PackageIdentity.Version.Equals(packageIdentity.Version));
-            if (cached != null)
+            if (cached != null && cached.VerifyPackage(packageManager))
             {
                 _installedPackages.Add(cached);
                 return true;
@@ -95,9 +91,13 @@ namespace Wyam.Configuration.NuGet
             if (_currentlyInstallingPackage != null && _currentlyInstallingPackage.CurrentlyInstalling)
             {
                 // We're currently installing a package, so add the dependency to that one
-                _currentlyInstallingPackage.CachedPackage.AddDependency(
-                    new CachedPackage(identity, targetFramework));
-                return _currentlyInstallingPackage;
+                // Make sure this isn't the actual top-level package
+                if (!_currentlyInstallingPackage.CachedPackage.PackageReference.PackageIdentity.Equals(identity)
+                    || !_currentlyInstallingPackage.CachedPackage.PackageReference.TargetFramework.Equals(targetFramework))
+                {
+                    _currentlyInstallingPackage.CachedPackage.AddDependency(new CachedPackage(identity, targetFramework));
+                }
+                return EmptyDisposable.Instance;
             }
 
             // This is a new top-level installation, so add to the root

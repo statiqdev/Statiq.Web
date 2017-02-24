@@ -7,6 +7,8 @@ namespace Wyam.Common.Util
     /// </summary>
     public class EmptyDisposable : IDisposable
     {
+        public static EmptyDisposable Instance = new EmptyDisposable();
+
         public void Dispose()
         {
             // Do nothing

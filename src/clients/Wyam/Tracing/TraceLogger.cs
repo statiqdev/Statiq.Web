@@ -49,6 +49,6 @@ namespace Wyam.Tracing
 
         public bool IsEnabled(LogLevel logLevel) => LevelMapping[logLevel].HasFlag(Trace.Level);
 
-        public IDisposable BeginScope<TState>(TState state) => new EmptyDisposable();
+        public IDisposable BeginScope<TState>(TState state) => EmptyDisposable.Instance;
     }
 }

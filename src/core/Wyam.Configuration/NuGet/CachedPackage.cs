@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
+using Wyam.Common.Tracing;
 
 namespace Wyam.Configuration.NuGet
 {
@@ -41,6 +43,9 @@ namespace Wyam.Configuration.NuGet
 
         public CachedPackage(PackageIdentity identity, NuGetFramework targetFramework)
         {
+            PackageReference = new PackageReference(identity, targetFramework);
+            _dependencies = new List<CachedPackage>();
+
             // Create the element
             Element = new XElement(PackageElementName,
                 new XAttribute(IdAttributeName, identity.Id),
@@ -53,16 +58,40 @@ namespace Wyam.Configuration.NuGet
                     Element.Add(new XAttribute(TargetFrameworkAttributeName, frameworkShortName));
                 }
             }
-
-            // Construct the package reference and dependencies
-            PackageReference = new PackageReference(identity, targetFramework);
-            _dependencies = new List<CachedPackage>();
         }
 
         public void AddDependency(CachedPackage cachedPackage)
         {
             Element.Add(cachedPackage.Element);
             _dependencies.Add(cachedPackage);
+        }
+
+        /// <summary>
+        /// Verifies that the package and all of it's dependencies exist locally
+        /// </summary>
+        public bool VerifyPackage(NuGetPackageManager packageManager)
+        {
+            bool verified = true;
+
+            // Check this package
+            if (!packageManager.PackageExistsInPackagesFolder(PackageReference.PackageIdentity))
+            {
+                Trace.Warning($"Cached package {PackageReference.PackageIdentity.Id} {PackageReference.PackageIdentity.Version.ToNormalizedString()} does not exist in packages folder");
+                verified = false;
+            }
+
+            // Check dependencies
+            foreach (PackageReference dependency in Dependencies)
+            {
+                if (!packageManager.PackageExistsInPackagesFolder(dependency.PackageIdentity))
+                {
+                    Trace.Warning($"Cached package dependency {dependency.PackageIdentity.Id} {dependency.PackageIdentity.Version.ToNormalizedString()} "
+                        + $"of {PackageReference.PackageIdentity.Id} {PackageReference.PackageIdentity.Version.ToNormalizedString()} does not exist in packages folder");
+                    verified = false;
+                }
+            }
+
+            return verified;
         }
 
         private string GetAttributeValue(XElement element, string name)

@@ -91,7 +91,7 @@ namespace Wyam.Configuration.NuGet
             _versionMatch = versionMatch;
         }
 
-        public async Task Install(SourceRepository localRepository, IReadOnlyList<SourceRepository> remoteRepositories, InstalledPackagesCache installedPackages, NuGetPackageManager packageManager)
+        public async Task Install(IReadOnlyList<SourceRepository> remoteRepositories, InstalledPackagesCache installedPackages, NuGetPackageManager packageManager)
         {
             if (_versionMatch == null)
             {
@@ -102,7 +102,7 @@ namespace Wyam.Configuration.NuGet
             {
                 // Check if this package was already installed in a previous run
                 PackageIdentity packageIdentity = new PackageIdentity(_packageId, _versionMatch);
-                if (installedPackages.VerifyPackage(packageIdentity))
+                if (installedPackages.VerifyPackage(packageIdentity, packageManager))
                 {
                     Trace.Verbose($"Package {_packageId} {_versionMatch.ToNormalizedString()} was already installed");
                     return;
