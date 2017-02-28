@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Modules.Contents
     public class JoinFixture : BaseFixture
     {
         [Test]
-        public void TwoDocumentsJoinWithNoDelimiter()
+        public void JoinTwoDocumentsJoinWithNoDelimiter()
         {
             // Given
             IDocument first = new TestDocument("Test");
@@ -38,7 +38,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         }
 
         [Test]
-        public void ThreeDocumentsJoinWithNoDelimiter()
+        public void JoinThreeDocumentsJoinWithNoDelimiter()
         {
             // Given
             IDocument first = new TestDocument("Test");
@@ -56,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         }
 
         [Test]
-        public void ThreeDocumentsJoinWithNoDelimiter_firstnull()
+        public void JoinThreeDocumentsJoinWithNoDelimiter_firstnull()
         {
             // Given
             IDocument first = null;
@@ -74,7 +74,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         }
 
         [Test]
-        public void ThreeDocumentsJoinWithNoDelimiter_secondnull()
+        public void JoinThreeDocumentsJoinWithNoDelimiter_secondnull()
         {
             // Given
             IDocument first = new TestDocument("Test");
@@ -93,7 +93,7 @@ namespace Wyam.Core.Tests.Modules.Contents
 
 
         [Test]
-        public void nullPassedInAsDocumentList()
+        public void JoinnullPassedInAsDocumentList()
         {
             // Given
             IExecutionContext context = new TestExecutionContext();
@@ -107,7 +107,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         }
 
         [Test]
-        public void TwoDocumentsJoinWithCommaDelimiter()
+        public void JoinTwoDocumentsJoinWithCommaDelimiter()
         {
             // Given
             IDocument first = new TestDocument("Test");
@@ -124,7 +124,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         }
 
         [Test]
-        public void TwoDocumentsJoinWithDelimiterInText()
+        public void JoinTwoDocumentsJoinWithDelimiterInText()
         {
             // Given
             IDocument first = new TestDocument("Test");
@@ -140,19 +140,128 @@ namespace Wyam.Core.Tests.Modules.Contents
             Assert.AreEqual("TestTestTest2", results.Single().Content);
         }
 
+        [Test]
+        public void JoinTwoDocumentsWithKeepFirstMetaDataReturnKeepsFirstMetaData()
+        {
+            // Given
+            IDocument first = new TestDocument("Test", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "two") });
+            IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("three", "four") });
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(Join.JoinMetaDataOptions.FirstDocument);
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.True(results.Single().Keys.Contains("one"));
+            Assert.False(results.Single().Keys.Contains("three"));
+        }
+
+        [Test]
+        public void JoinTwoDocumentsWithMetaDataReturnDefaultMetaData()
+        {
+            // Given
+            IDocument first = new TestDocument("Test", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "two") });
+            IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("three", "four") });
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join();
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.False(results.Single().Keys.Contains("one"));
+            Assert.False(results.Single().Keys.Contains("three"));
+        }
+
+        [Test]
+        public void JoinTwoDocumentsWithKeepLastMetaDataReturnKeepsLastMetaData()
+        {
+            // Given
+            IDocument first = new TestDocument("Test", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "two") });
+            IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("three", "four") });
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(Join.JoinMetaDataOptions.LastDocument);
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.True(results.Single().Keys.Contains("three"));
+            Assert.False(results.Single().Keys.Contains("one"));
+        }
+
+        [Test]
+        public void JoinTwoDocumentsWithAllKeepFirstMetaData()
+        {
+            // Given
+            IDocument first = new TestDocument("Test", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "two") });
+            IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "seven"),  new KeyValuePair<string, object>("three", "four") });
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(Join.JoinMetaDataOptions.All_KeepFirstRepeats);
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.True(results.Single().Values.Contains("two"));
+            Assert.False(results.Single().Values.Contains("seven"));
+
+            Assert.True(results.Single().Keys.Contains("three"));
+        }
+
+        [Test]
+        public void JoinTwoDocumentsWithAllKeepLastMetaData()
+        {
+            // Given
+            IDocument first = new TestDocument("Test", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "two") });
+            IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "seven"), new KeyValuePair<string, object>("three", "four") });
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(Join.JoinMetaDataOptions.All_KeepLastRepeats);
+
+            // When
+            List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
+
+            // Then
+            Assert.False(results.Single().Values.Contains("two"));
+            Assert.True(results.Single().Values.Contains("seven"));
+
+            Assert.True(results.Single().Keys.Contains("three"));
+        }
+
+        [Test]
+        public void EmptyListDoesNotError()
+        {
+            // Given
+            
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join();
+
+            // When
+            List<IDocument> results = join.Execute(new IDocument[0], context).ToList();
+
+            // Then
+            Assert.AreEqual(null, results.Single().Content);
+        }
+
+        [Test]
+        public void EmptyListWithDelimitorDoesNotError()
+        {
+            // Given
+
+            IExecutionContext context = new TestExecutionContext();
+            Join join = new Join(",");
+
+            // When
+            List<IDocument> results = join.Execute(new IDocument[0], context).ToList();
+
+            // Then
+            Assert.AreEqual(null, results.Single().Content);
+        }
     }
 }
-
-/*
- * TODO metadata unit test 
-
-- how should it work
-
-
-based on first file?
-or be all files?
-
-or should it be default
-
- * 
- * */
