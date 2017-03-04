@@ -116,19 +116,16 @@ namespace Wyam.Sass
             return inputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Sass for {0}", input.SourceString());
-                
-                FilePath path = input.FilePath(Keys.SourceFilePath);
-                if (path != null)
-                {
-                    _includePaths.Add(path.Directory.FullPath);
-                }
 
+                FilePath path = input.FilePath(Keys.SourceFilePath);
                 SassOptions sassOptions = new SassOptions
-                {                    
+                {
                     Data = input.Content,
-                    IncludePaths = _includePaths.ToArray(),
                     IncludeSourceComments = _includeSourceComments,
-                    OutputStyle = _outputStyle
+                    OutputStyle = _outputStyle,
+                    IncludePaths = path == null
+                        ? _includePaths.ToArray()
+                        : new List<string>(_includePaths) { path.Directory.FullPath }.ToArray()
                 };
 
                 SassCompiler sassCompiler = new SassCompiler(sassOptions);
