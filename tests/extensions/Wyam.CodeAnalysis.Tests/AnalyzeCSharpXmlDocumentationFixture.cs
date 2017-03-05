@@ -360,6 +360,46 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void SummaryOnPartialClasses()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>
+                        /// This is a summary repeated for each partial class
+                        /// </summary>
+                        partial class Green
+                        {
+                        }
+
+                        /// <summary>
+                        /// This is a summary repeated for each partial class
+                        /// </summary>
+                        partial class Green
+                        {
+                        }
+
+                        /// <summary>
+                        /// This is a summary repeated for each partial class
+                        /// </summary>
+                        partial class Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("\n    This is a summary repeated for each partial class\n    ", GetResult(results, "Green")["Summary"]);
+            }
+
+            [Test]
             public void MethodWithParam()
             {
                 // Given
