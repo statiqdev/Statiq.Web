@@ -148,7 +148,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("three", "four") });
 
             IExecutionContext context = new TestExecutionContext();
-            Join join = new Join(Join.JoinMetaDataOptions.FirstDocument);
+            Join join = new Join(JoinedMetadata.FirstDocument);
 
             // When
             List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
@@ -184,7 +184,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("three", "four") });
 
             IExecutionContext context = new TestExecutionContext();
-            Join join = new Join(Join.JoinMetaDataOptions.LastDocument);
+            Join join = new Join(JoinedMetadata.LastDocument);
 
             // When
             List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
@@ -202,7 +202,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "seven"),  new KeyValuePair<string, object>("three", "four") });
 
             IExecutionContext context = new TestExecutionContext();
-            Join join = new Join(Join.JoinMetaDataOptions.All_KeepFirstRepeats);
+            Join join = new Join(JoinedMetadata.AllWithFirstDuplicates);
 
             // When
             List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
@@ -222,7 +222,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             IDocument second = new TestDocument("Test2", new List<KeyValuePair<string, object>>() { new KeyValuePair<string, object>("one", "seven"), new KeyValuePair<string, object>("three", "four") });
 
             IExecutionContext context = new TestExecutionContext();
-            Join join = new Join(Join.JoinMetaDataOptions.All_KeepLastRepeats);
+            Join join = new Join(JoinedMetadata.AllWithLastDuplicates);
 
             // When
             List<IDocument> results = join.Execute(new[] { first, second }, context).ToList();
@@ -238,7 +238,6 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void EmptyListDoesNotError()
         {
             // Given
-            
             IExecutionContext context = new TestExecutionContext();
             Join join = new Join();
 

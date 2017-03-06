@@ -2,6 +2,9 @@ using System;
 
 namespace Wyam.Core.Modules.Contents
 {
+    /// <summary>
+    /// Represents an item in the site map.
+    /// </summary>
     public class SitemapItem
     {
         public string Location { get; set; }

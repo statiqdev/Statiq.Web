@@ -10,56 +10,37 @@ using Wyam.Common.Modules;
 namespace Wyam.Core.Modules.Contents
 {
     /// <summary>
-    /// Joins documents together with an optional deliminator to form one document
+    /// Joins documents together with an optional delimiter to form one document.
     /// </summary>
     /// <category>Content</category>
     public class Join : IModule
     {
-        public enum JoinMetaDataOptions
-        {
-            DefaultOnly,
-            FirstDocument,
-            LastDocument,
-            All_KeepFirstRepeats,
-            All_KeepLastRepeats
-        }
-
-
         private readonly string _delimiter;
-        private readonly JoinMetaDataOptions _metaDataMode;
+        private readonly JoinedMetadata _metaDataMode;
 
         /// <summary>
         /// Concatenates multiple documents together to form a single document without a delimiter and with the default metadata only
-        /// </summary>        
-        public Join() : this("")
+        /// </summary>
+        public Join()
+            : this(string.Empty)
         {
-            
         }
 
         /// <summary>
         /// Concatenates multiple documents together to form a single document without a delimiter using the specified meta data mode
         /// </summary>
-        /// <param name="metaDataMode">The specified metaData mode</param>
-        public Join(JoinMetaDataOptions metaDataMode) : this("", metaDataMode)
+        /// <param name="metaDataMode">The specified metadata mode</param>
+        public Join(JoinedMetadata metaDataMode)
+            : this(string.Empty, metaDataMode)
         {
-
-        }
-
-        /// <summary>
-        /// Concatanetes multiple documents together to form a single document with a specified delimiter and with the default metadata only
-        /// </summary>
-        /// <param name="delimiter">The string to use as a seperator between documents</param>
-        public Join(string delimiter) : this(delimiter, JoinMetaDataOptions.DefaultOnly)
-        {
-                        
         }
 
         /// <summary>
         /// Concatenates multiple documents together to form a single document with a specified delimiter using the specified meta data mode
         /// </summary>
-        /// <param name="delimiter">The string to use as a seperator between documents</param>
-        /// <param name="metaDataMode">The specified metaData mode</param>
-        public Join(string delimiter, JoinMetaDataOptions metaDataMode)
+        /// <param name="delimiter">The string to use as a separator between documents</param>
+        /// <param name="metaDataMode">The specified metadata mode</param>
+        public Join(string delimiter, JoinedMetadata metaDataMode = JoinedMetadata.DefaultOnly)
         {
             _delimiter = delimiter;
             _metaDataMode = metaDataMode;
@@ -78,48 +59,50 @@ namespace Wyam.Core.Modules.Contents
                 return new List<IDocument>() { context.GetDocument() };
             }
 
-            foreach(var document in inputs)
+            foreach (var document in inputs)
             {
-                if (document == null) continue;
+                if (document == null)
+                {
+                    continue;
+                }
 
                 contentBuilder.Append(document.Content);
                 contentBuilder.Append(_delimiter);
             }
 
             contentBuilder.Remove(contentBuilder.Length - _delimiter.Length, _delimiter.Length);
-            
-            return new List<IDocument>() { context.GetDocument(contentBuilder.ToString(), MetaDataForOutputDocument(inputs)) };
+
+            return new List<IDocument>() { context.GetDocument(contentBuilder.ToString(), MetadataForOutputDocument(inputs)) };
         }
 
         /// <summary>
         /// returns the correct metadata for the new document based on the provided list of documents and the selected metadata mode
         /// </summary>
         /// <param name="inputs">The list of input documents</param>
-        /// <returns></returns>
-        private IEnumerable<KeyValuePair<string, object>> MetaDataForOutputDocument(IReadOnlyList<IDocument> inputs)
+        private IEnumerable<KeyValuePair<string, object>> MetadataForOutputDocument(IReadOnlyList<IDocument> inputs)
         {
             switch (_metaDataMode)
             {
-                case JoinMetaDataOptions.FirstDocument:
+                case JoinedMetadata.FirstDocument:
                     return inputs.First().Metadata.ToList();
 
-                case JoinMetaDataOptions.LastDocument:
+                case JoinedMetadata.LastDocument:
                     return inputs.Last().Metadata.ToList();
 
-                case JoinMetaDataOptions.All_KeepFirstRepeats:
+                case JoinedMetadata.AllWithFirstDuplicates:
                     {
-                        return inputs.SelectMany(a => a.Metadata).GroupBy(b => b.Key).ToDictionary(g => g.Key, g => g.First().Value).ToArray();                        
+                        return inputs.SelectMany(a => a.Metadata).GroupBy(b => b.Key).ToDictionary(g => g.Key, g => g.First().Value).ToArray();
                     }
 
-                case JoinMetaDataOptions.All_KeepLastRepeats:
+                case JoinedMetadata.AllWithLastDuplicates:
                     {
                         return inputs.SelectMany(a => a.Metadata).GroupBy(b => b.Key).ToDictionary(g => g.Key, g => g.Last().Value).ToArray();
                     }
-                case JoinMetaDataOptions.DefaultOnly:
+                case JoinedMetadata.DefaultOnly:
                     return new List<KeyValuePair<string, object>>();
 
                 default:
-                    throw new ArgumentOutOfRangeException("Join Metadata option was not expected.");
+                    throw new ArgumentOutOfRangeException($"{nameof(JoinedMetadata)} option was not expected.");
             }
         }
     }
