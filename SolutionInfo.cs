@@ -6,8 +6,8 @@
 using System.Reflection;
 
 [assembly: AssemblyProduct("Wyam")]
-[assembly: AssemblyVersion("0.16.3")]
-[assembly: AssemblyFileVersion("0.16.3")]
-[assembly: AssemblyInformationalVersion("0.16.3")]
+[assembly: AssemblyVersion("0.17.0")]
+[assembly: AssemblyFileVersion("0.17.0")]
+[assembly: AssemblyInformationalVersion("0.17.0")]
 [assembly: AssemblyCopyright("Copyright © Wyam Contributors")]
 

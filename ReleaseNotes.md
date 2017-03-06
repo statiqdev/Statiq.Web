@@ -1,3 +1,25 @@
+# 0.17.0
+
+- [Fix] `CodeAnalysis` module only displays duplicate comments once for partial classes (#460, #463, thanks @M-Zuber)
+- [Feature] New `Join` module for joining documents together (#461, #23, thanks @JamesaFlanagan)
+- [Feature] Implemented a NuGet dependency cache making subsiquent generations *much* faster (#317)
+- [Refactoring] Updated Cake to 0.17.0 (#457, thanks @pascalberger)
+- [Refactoring] Ported hosting code to new `Wyam.Hosting` library that can be used outside Wyam (#385)
+- [Fix] Ensures result documents get set, even for empty pipelines (#455)
+- [Feature] New `Highlight` module for generation-time highlight.js highlighting (#452, thanks @enkafan)
+- [Feature] Implements a new JavaScript engine framework including runtime engine switching for modules to use JavaScript libraries! (#452, thanks @enkafan)
+- [Refactoring] Filters JetBrains assembly from loaded namespace list (#453, thanks @enkafan)
+- [Feature] Adds LiveReload support for the preview server! (#420, thanks @Silvenga)
+- **[Breaking Change]** [Refactoring] Removed `IPipelineCollection` overloads for specifying documents should be processed once to use a fluent method instead
+- [Refactoring] Refactoring of `IPipelineCollection` to move a bunch of implementation logic into extension methods
+- [Refactoring] Changed preview web server from Katana to Kestrel (#449, thanks @Silvenga)
+- [Refactoring] Updated LibGit2Sharp to 0.23.1 (#450, thanks @pauldotknopf)
+- [Feature] Adds extension methods to `IModuleList` to help tweak recipes (#445, thanks @enkafan)
+- [Refactoring] Implements a new `IModuleList` interface and implementations that support named module collections and applies the concept to control modules as appropriate (#447, #448)
+- [Refactoring] Moved `TraceExceptionsExtensions` to `Wyam.Common.Execution`
+- [Feature] Added several code quality checkers and rulesets (#443, #444, thanks @Silvenga)
+- [Fix] Relative URLs are now unescaped in `ValidateLinks` module
+
 # 0.16.3
 
 - [Feature] Docs recipe now checks for an "src" folder both inside and alongside the "input" folder (#436)

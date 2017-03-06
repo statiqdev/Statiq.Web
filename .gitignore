@@ -30,3 +30,4 @@ ipch
 .vs/*
 TestResult.xml
 /debug.log
+/packages.xml
