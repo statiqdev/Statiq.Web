@@ -182,7 +182,7 @@ namespace Wyam.Testing.Documents
 
         public IMetadata Metadata
         {
-            get { throw new NotImplementedException(); }
+            get { return this; }
         }
 
         public IMetadata<T> MetadataAs<T>()
