@@ -366,7 +366,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     XmlReader reader = element.CreateReader();
                     reader.MoveToContent();
                     return reader.ReadInnerXml();
-                }));
+                }).Distinct());
             }
             catch (Exception ex)
             {
