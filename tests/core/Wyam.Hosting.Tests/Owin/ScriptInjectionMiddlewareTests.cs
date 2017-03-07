@@ -55,6 +55,17 @@ namespace Wyam.Hosting.Tests.Owin
             Assert.AreEqual(expected, body);
         }
 
+        [Test]
+        public async Task WhenServingHtmlWithoutBodyDoNotModify()
+        {
+            const string filename = "BasicHtmlDocumentNoBodyEnd.html";
+            HttpResponseMessage response = await _host.CreateRequest(filename).GetAsync();
+            string body = await response.Content.ReadAsStringAsync();
+
+            string expected = ReadFile(filename);
+            Assert.AreEqual(expected, body);
+        }
+
         private string ReadFile(string filename)
         {
             string resourceName = $"{ContentNamespace}.{filename}";
