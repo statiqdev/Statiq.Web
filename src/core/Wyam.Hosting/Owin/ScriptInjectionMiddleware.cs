@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+
 using Microsoft.Owin;
-using Wyam.Hosting.LiveReload;
 
 namespace Wyam.Hosting.Owin
 {
@@ -52,15 +50,13 @@ namespace Wyam.Hosting.Owin
             interceptedBody.Position = 0;
             if (string.Equals(context.Response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
             {
-                using (StreamReader reader = new StreamReader(interceptedBody))
+                StreamReader reader = new StreamReader(interceptedBody);
+                string body = await reader.ReadToEndAsync();
+                int closingTag = body.LastIndexOf("</body>", StringComparison.Ordinal);
+                if (closingTag > -1)
                 {
-                    string body = await reader.ReadToEndAsync();
-                    int closingTag = body.LastIndexOf("</body>", StringComparison.Ordinal);
-                    if (closingTag > -1)
-                    {
-                        interceptedBody = new MemoryStream(reader.CurrentEncoding.GetBytes(body.Insert(closingTag, _injectionCode)));
-                        context.Response.ContentLength = interceptedBody.Length;
-                    }
+                    interceptedBody = new MemoryStream(reader.CurrentEncoding.GetBytes(body.Insert(closingTag, _injectionCode)));
+                    context.Response.ContentLength = interceptedBody.Length;
                 }
             }
             interceptedBody.Position = 0;
