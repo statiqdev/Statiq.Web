@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Wyam Rules" Description="These rules expand on the basic design guideline rules to maximize the usability and maintainability issues that are reported. Extra emphasis is placed on naming guidelines. Consider including this rule set if your project includes library code or if you want to enforce the highest standards for writing maintainable code." ToolsVersion="14.0">
+<RuleSet Name="Wyam Test Rules" Description="These rules apply to all Wyam test projects and contain a relaxed set of rules (for example, no documentation comments are required)." ToolsVersion="14.0">
   <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1020" Action="Warning" />
@@ -34,6 +34,27 @@
     <Rule Id="CA1726" Action="Warning" />
     <Rule Id="CA2204" Action="Warning" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS1570" Action="None" />
+    <Rule Id="CS1571" Action="None" />
+    <Rule Id="CS1572" Action="None" />
+    <Rule Id="CS1573" Action="None" />
+    <Rule Id="CS1574" Action="None" />
+    <Rule Id="CS1580" Action="None" />
+    <Rule Id="CS1581" Action="None" />
+    <Rule Id="CS1584" Action="None" />
+    <Rule Id="CS1587" Action="None" />
+    <Rule Id="CS1589" Action="None" />
+    <Rule Id="CS1590" Action="None" />
+    <Rule Id="CS1591" Action="None" />
+    <Rule Id="CS1592" Action="None" />
+    <Rule Id="CS1710" Action="None" />
+    <Rule Id="CS1711" Action="None" />
+    <Rule Id="CS1712" Action="None" />
+    <Rule Id="CS1723" Action="None" />
+    <Rule Id="CS1734" Action="None" />
+    <Rule Id="CS1735" Action="None" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1200" Action="None" />
@@ -55,6 +76,7 @@
     <Rule Id="SA1623" Action="None" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1642" Action="None" />
+    <Rule Id="SA1652" Action="None" />
     <Rule Id="SX1309" Action="Warning" />
   </Rules>
 </RuleSet>
