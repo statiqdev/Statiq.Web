@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Wyam.Common.Documents;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 
-namespace Wyam.Core.Modules.Control
+namespace Wyam.Core.Modules.Extensibility
 {
     /// <summary>
     /// Executes child modules enabling better reuse.
@@ -36,7 +32,7 @@ namespace Wyam.Core.Modules.Control
     /// );
     /// </code>
     /// </example>
-    /// <category>Control</category>
+    /// <category>Extensibility</category>
     public class ModuleCollection : ContainerModule
     {
         /// <summary>

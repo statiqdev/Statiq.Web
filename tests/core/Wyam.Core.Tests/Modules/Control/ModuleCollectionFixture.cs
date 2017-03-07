@@ -8,6 +8,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Control;
+using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Testing;
 using Wyam.Testing.Modules;
@@ -37,7 +38,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     AdditionalOutputs = 3
                 };
-                engine.Pipelines.Add(a, new Core.Modules.Control.ModuleCollection(b, c));
+                engine.Pipelines.Add(a, new ModuleCollection(b, c));
 
                 // When
                 engine.Execute();
