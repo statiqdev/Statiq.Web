@@ -85,6 +85,7 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IOrderedEnumerable<IDocument> orderdList = null;

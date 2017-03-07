@@ -197,6 +197,7 @@ namespace Wyam.Core.Modules.Metadata
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Create a dictionary of tree nodes

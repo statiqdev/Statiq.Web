@@ -355,6 +355,7 @@ namespace Wyam.Feeds
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Get the feed

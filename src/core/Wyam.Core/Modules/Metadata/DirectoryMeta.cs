@@ -86,6 +86,7 @@ namespace Wyam.Core.Modules.Metadata
             return WithMetadataFile((x, y) => x.Source != null && x.Source.FileName.Equals(metadataFileName), inherited, replace);
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             //Find metadata files

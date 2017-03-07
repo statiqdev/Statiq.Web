@@ -111,6 +111,7 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IGrouping<object, IDocument>> groupings = context.Execute(this, inputs)

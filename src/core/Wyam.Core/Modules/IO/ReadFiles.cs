@@ -111,6 +111,7 @@ namespace Wyam.Core.Modules.IO
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _contextPatterns != null

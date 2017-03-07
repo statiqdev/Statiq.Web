@@ -108,6 +108,7 @@ namespace Wyam.Core.Modules.Contents
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Iterate redirects and generate all of the per-redirect documents (I.e., meta refresh pages)

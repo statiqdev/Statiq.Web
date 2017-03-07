@@ -59,6 +59,7 @@ namespace Wyam.Core.Modules.IO
         {
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs

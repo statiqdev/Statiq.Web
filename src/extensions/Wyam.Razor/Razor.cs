@@ -183,6 +183,7 @@ namespace Wyam.Razor
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Register all the MVC and Razor services

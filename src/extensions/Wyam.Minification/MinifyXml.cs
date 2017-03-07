@@ -82,6 +82,7 @@ namespace Wyam.Minification
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             XmlMinifier minifier = new XmlMinifier(_minificationSettings);

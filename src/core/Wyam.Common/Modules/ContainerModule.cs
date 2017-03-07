@@ -35,6 +35,7 @@ namespace Wyam.Common.Modules
             _modules = modules;
         }
 
+        /// <inheritdoc />
         public abstract IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

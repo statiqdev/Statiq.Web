@@ -26,6 +26,7 @@ namespace Wyam.Core.Modules.Control
         {
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Concat(context.Execute(this));

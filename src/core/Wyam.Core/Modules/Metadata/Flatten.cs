@@ -24,6 +24,7 @@ namespace Wyam.Core.Modules.Metadata
             _childrenKey = childrenKey;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Use a stack so we don't overflow the call stack with recursive calls for deep trees

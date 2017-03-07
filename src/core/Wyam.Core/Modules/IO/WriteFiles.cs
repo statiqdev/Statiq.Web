@@ -225,6 +225,7 @@ namespace Wyam.Core.Modules.IO
             return path ?? _path.Invoke<FilePath>(input, context, "while getting path");
         }
 
+        /// <inheritdoc />
         public virtual IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Get the output file path for each file in sequence and set up action chains

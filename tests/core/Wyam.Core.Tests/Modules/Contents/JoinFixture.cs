@@ -252,7 +252,6 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void EmptyListWithDelimitorDoesNotError()
         {
             // Given
-
             IExecutionContext context = new TestExecutionContext();
             Join join = new Join(",");
 

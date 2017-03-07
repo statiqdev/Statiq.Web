@@ -71,6 +71,7 @@ namespace Wyam.Core.Modules.Control
             _sidecarPath = sidecarPath;
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<IDocument> results = new List<IDocument>();

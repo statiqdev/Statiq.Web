@@ -43,6 +43,7 @@ namespace Wyam.Common.Modules
             Module = module;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Passes execution to the wrapped module.
         /// </summary>

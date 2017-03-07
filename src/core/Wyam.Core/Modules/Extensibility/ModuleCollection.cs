@@ -44,6 +44,7 @@ namespace Wyam.Core.Modules.Extensibility
         {
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return context.Execute(this, inputs);

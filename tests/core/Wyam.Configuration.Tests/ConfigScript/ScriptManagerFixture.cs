@@ -462,6 +462,7 @@ public string Self(string x)
 
             }
 
+            /// <inheritdoc />
             public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
             {
                 throw new NotImplementedException();

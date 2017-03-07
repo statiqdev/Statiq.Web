@@ -61,7 +61,7 @@ If you need to make a new project, there are a number of things that need to be 
 - Add a .nuspec file if appropriate
 - Apply the "Wyam Rules" code analysis ruleset by opening Analyze, Configure Code Analysis (apply the "Wyam Test Rules" ruleset to test projects)
 - Install the StyleCop.Analyzers NuGet package into the project
-- Enable XML documentation file output in the build settings for the project for *both* Debug and Release configurations
+- Enable XML documentation file output in the build settings for the project for *both* Debug and Release configurations (but not for test projects)
 
 ## Unit Tests
 

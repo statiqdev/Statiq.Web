@@ -147,6 +147,7 @@ namespace Wyam.Html
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<Common.Documents.IDocument> Execute(IReadOnlyList<Common.Documents.IDocument> inputs, IExecutionContext context)
         {
             if (string.IsNullOrWhiteSpace(_metadataKey))

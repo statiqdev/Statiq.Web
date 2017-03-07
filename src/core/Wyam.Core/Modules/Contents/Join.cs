@@ -46,6 +46,7 @@ namespace Wyam.Core.Modules.Contents
             _metaDataMode = metaDataMode;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Returns a single document containing the concatenated content of all input documents with an optional delimiter and configurable metadata options
         /// </summary>

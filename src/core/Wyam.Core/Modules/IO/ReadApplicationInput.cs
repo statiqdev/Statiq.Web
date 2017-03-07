@@ -41,6 +41,7 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class ReadApplicationInput : IModule
     {
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // If ApplicationInput is empty, return nothing

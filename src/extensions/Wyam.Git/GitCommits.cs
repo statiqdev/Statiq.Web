@@ -79,6 +79,7 @@ namespace Wyam.Git
             return this;
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             ImmutableArray<IDocument> commitDocuments = GetCommitDocuments(inputs, context);

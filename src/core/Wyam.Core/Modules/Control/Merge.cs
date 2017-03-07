@@ -45,6 +45,7 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (((IModuleList)this).Count > 0)

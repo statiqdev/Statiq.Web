@@ -44,6 +44,7 @@ namespace Wyam.Less
     /// <category>Templates</category>
     public class Less : IModule
     {
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             DotlessConfiguration config = DotlessConfiguration.GetDefault();

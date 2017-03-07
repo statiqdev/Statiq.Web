@@ -53,6 +53,7 @@ namespace Wyam.Yaml
             _flatten = flatten;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs

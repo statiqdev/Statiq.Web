@@ -82,6 +82,7 @@ namespace Wyam.Core.Modules.Contents
             _locationFormatter = locationFormatter;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             StringBuilder sb = new StringBuilder();

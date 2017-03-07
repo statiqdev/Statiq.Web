@@ -86,6 +86,7 @@ namespace Wyam.CodeAnalysis
 
         protected abstract IEnumerable<Project> GetProjects(IFile file);
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return _path != null

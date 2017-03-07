@@ -21,6 +21,7 @@ namespace Wyam.Testing.Modules
             ValueKey = valueKey;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             int sourceCount = 0;

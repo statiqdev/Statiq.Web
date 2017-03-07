@@ -127,6 +127,7 @@ namespace Wyam.GitHub
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             GitHubClient github = new GitHubClient(new ProductHeaderValue("Wyam"), _url ?? GitHubClient.GitHubApiUrl);

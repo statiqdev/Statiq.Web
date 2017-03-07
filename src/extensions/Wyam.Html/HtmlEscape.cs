@@ -189,6 +189,7 @@ namespace Wyam.Html
             return $"&#{(int)c};";
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(context, input =>

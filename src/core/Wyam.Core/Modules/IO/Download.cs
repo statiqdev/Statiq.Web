@@ -85,6 +85,7 @@ namespace Wyam.Core.Modules.IO
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<Task<DownloadResult>> tasks = _urls.Select(DownloadUrl).ToList();

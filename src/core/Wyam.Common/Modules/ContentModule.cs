@@ -39,6 +39,7 @@ namespace Wyam.Common.Modules
             _modules = modules;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (_modules != null)

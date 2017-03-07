@@ -49,6 +49,7 @@ namespace Wyam.Minification
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             CrockfordJsMinifier minifier = new CrockfordJsMinifier();

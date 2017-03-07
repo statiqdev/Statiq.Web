@@ -187,6 +187,7 @@ namespace Wyam.SearchIndex
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             SearchIndexItem[] searchIndexItems = inputs

@@ -23,6 +23,7 @@ namespace Wyam.Core.Modules.Control
     /// <category>Control</category>
     public class Combine : IModule
     {
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             IDocument result = null;

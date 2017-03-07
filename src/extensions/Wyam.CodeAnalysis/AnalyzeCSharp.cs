@@ -302,6 +302,7 @@ namespace Wyam.CodeAnalysis
             return writePath;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<ISymbol> symbols = new List<ISymbol>();

@@ -17,12 +17,13 @@ namespace Wyam.Core.Modules.Control
         /// <summary>
         /// Takes the first X documents from the current pipeline and discards the rest.
         /// </summary>
-        /// <param name="x">An integer represeting the number of documents to preserve from the current pipeline.</param>
+        /// <param name="x">An integer representing the number of documents to preserve from the current pipeline.</param>
         public Take(int x)
         {
             _x = x;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Take(_x);

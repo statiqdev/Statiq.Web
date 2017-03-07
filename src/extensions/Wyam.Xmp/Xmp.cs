@@ -106,6 +106,7 @@ namespace Wyam.Xmp
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Select(context, input =>

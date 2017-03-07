@@ -26,6 +26,7 @@ namespace Wyam.Core.Modules.Control
             _predicate = predicate;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Where(context, x => _predicate.Invoke<bool>(x, context));

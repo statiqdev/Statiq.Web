@@ -77,6 +77,7 @@ namespace Wyam.Core.Modules.Extensibility
             _parallel = parallel;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Specifies a delegate that should be invoked once for all input documents.
         /// The output from this module will be the input documents.

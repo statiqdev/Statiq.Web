@@ -356,6 +356,7 @@ namespace Wyam.Images
             return format;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.SelectMany(context, input =>

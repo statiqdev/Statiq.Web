@@ -148,6 +148,7 @@ namespace Wyam.Git
             public ChangeKind Status { get; set; }
         }
 
+        /// <inheritdoc />
         public abstract IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context);
     }
 }

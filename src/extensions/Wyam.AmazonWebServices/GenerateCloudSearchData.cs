@@ -101,10 +101,11 @@ namespace Wyam.AmazonWebServices
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            var sb = new StringBuilder();
-            var sw = new StringWriter(sb);
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
 
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
@@ -149,7 +150,7 @@ namespace Wyam.AmazonWebServices
                             continue;
                         }
 
-                        var value = doc.Get(field.MetaKey);
+                        object value = doc.Get(field.MetaKey);
                         if (value == null)
                         {
                             // Null fields are not written

@@ -50,6 +50,7 @@ namespace Wyam.Json
             _flatten = flatten;
         }
 
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             // Don't use the built-in exception tracing so that we can return the original document on error

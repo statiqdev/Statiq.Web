@@ -16,6 +16,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <category>Metadata</category>
     public class Index : IModule
     {
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.Select((x, i) => context.GetDocument(x, new MetadataItems {{Keys.Index, i + 1}}));

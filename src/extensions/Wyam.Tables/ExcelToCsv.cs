@@ -22,6 +22,7 @@ namespace Wyam.Tables
     /// <category>Content</category>
     public class ExcelToCsv : IModule
     {
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             return inputs.AsParallel().Select(context, input =>

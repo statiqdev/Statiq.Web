@@ -166,6 +166,7 @@ namespace Wyam.Html
             return this;
         }
 
+        /// <inheritdoc />
         public IEnumerable<Common.Documents.IDocument> Execute(IReadOnlyList<Common.Documents.IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
