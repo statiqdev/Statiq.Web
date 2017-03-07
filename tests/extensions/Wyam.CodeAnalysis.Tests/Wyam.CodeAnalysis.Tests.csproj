@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\Wyam.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\Wyam.CodeAnalysis.Tests.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,7 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\Wyam.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\Wyam.CodeAnalysis.Tests.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>

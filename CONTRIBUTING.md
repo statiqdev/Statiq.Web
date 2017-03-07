@@ -51,6 +51,18 @@ Wyam generally follows accepted .NET coding styles (see the [Framework Design Gu
 
 Generally, you should only ever have to take a dependency on `Wyam.Common`. If you find yourself needing to depend on other Wyam libraries like `Wyam.Core`, please open an issue so the needed functionality can be moved into the common assembly.
 
+## New Project Checklist
+
+If you need to make a new project, there are a number of things that need to be done:
+
+- Create the project in the appropriate location
+- Edit the AssemblyInfo.cs file to remove everything but `AssemblyTitle`, `AssemblyDescription`, `ComVisible`, and `Guid`
+- Add *a link* to the SolutionInfo.cs file inside the project Properties folder (the link won't actually be added to the file system)
+- Add a .nuspec file if appropriate
+- Apply the "Wyam Rules" code analysis ruleset by opening Analyze, Configure Code Analysis (apply the "Wyam Test Rules" ruleset to test projects)
+- Install the StyleCop.Analyzers NuGet package into the project
+- Enable XML documentation file output in the build settings for the project for *both* Debug and Release configurations
+
 ## Unit Tests
 
 Make sure to run all unit tests before creating a pull request. You code should also have reasonable unit test coverage.
@@ -67,18 +79,6 @@ The tests in Wyam follow a very specific pattern, please attempt to follow the s
 - Use the [NUnit constraint-based model](https://github.com/nunit/docs/wiki/Assertions) for assertions in new test code.
 
 If there are any questions about how to format test code just take a look at the existing test code.
-
-## New Project Checklist
-
-If you need to make a new project, there are a number of things that need to be done:
-
-- Create the project in the appropriate location
-- Edit the AssemblyInfo.cs file to remove everything but `AssemblyTitle`, `AssemblyDescription`, `ComVisible`, and `Guid`
-- Add *a link* to the SolutionInfo.cs file inside the project Properties folder (the link won't actually be added to the file system)
-- Add a .nuspec file if appropriate
-- Apply the code analysis ruleset by opening Analyze, Configure Code Analysis
-- Install the StyleCop.Analyzers NuGet package into the project
-- Enable XML documentation file output in the build settings for the project for *both* Debug and Release configurations
 
 # Updating Documentation
 

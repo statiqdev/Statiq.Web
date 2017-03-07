@@ -126,7 +126,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{9B01F618-6
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		stylecop.json = stylecop.json
-		Wyam.ruleset = Wyam.ruleset
+		test.ruleset = test.ruleset
+		wyam.ruleset = wyam.ruleset
 		Wyam.sln.DotSettings = Wyam.sln.DotSettings
 	EndProjectSection
 EndProject
