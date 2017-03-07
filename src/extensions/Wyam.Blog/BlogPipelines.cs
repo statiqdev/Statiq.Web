@@ -54,15 +54,5 @@ namespace Wyam.Blog
         /// Validates links.
         /// </summary>
         public const string ValidateLinks = nameof(ValidateLinks);
-
-        public static class PagesModules
-        {
-            public const string ReadMarkdownFiles = nameof(ReadMarkdownFiles);
-            public const string ProcessMarkdownFilesFrontMatter = nameof(ProcessMarkdownFilesFrontMatter);
-            public const string RenderMarkdown = nameof(RenderMarkdown);
-            public const string ConcatRazorFiles = nameof(ConcatRazorFiles);
-            public const string ReadRazorFiles = nameof(ReadRazorFiles);
-            public const string ProcessRazorFilesFrontMatter = nameof(ProcessRazorFilesFrontMatter);
-        }
     }
 }

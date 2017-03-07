@@ -24,14 +24,23 @@ namespace Wyam.Core.Modules.Control
     public class FrontMatter : ContainerModule
     {
         private readonly string _delimiter;
-        private bool _ignoreDelimiterOnFirstLine = true;
         private readonly bool _repeated;
+        private bool _ignoreDelimiterOnFirstLine = true;
 
         /// <summary>
         /// Uses the default delimiter character and passes any front matter to the specified child modules for processing.
         /// </summary>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Uses the default delimiter character and passes any front matter to the specified child modules for processing.
+        /// </summary>
+        /// <param name="modules">The modules to execute against the front matter.</param>
+        public FrontMatter(IEnumerable<IModule> modules)
             : base(modules)
         {
             _delimiter = "-";
@@ -44,6 +53,16 @@ namespace Wyam.Core.Modules.Control
         /// <param name="delimiter">The delimiter to use.</param>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(string delimiter, params IModule[] modules)
+            : this(delimiter, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Uses the specified delimiter string and passes any front matter to the specified child modules for processing.
+        /// </summary>
+        /// <param name="delimiter">The delimiter to use.</param>
+        /// <param name="modules">The modules to execute against the front matter.</param>
+        public FrontMatter(string delimiter, IEnumerable<IModule> modules)
             : base(modules)
         {
             _delimiter = delimiter;
@@ -56,6 +75,16 @@ namespace Wyam.Core.Modules.Control
         /// <param name="delimiter">The delimiter to use.</param>
         /// <param name="modules">The modules to execute against the front matter.</param>
         public FrontMatter(char delimiter, params IModule[] modules)
+            : this(delimiter, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Uses the specified delimiter character and passes any front matter to the specified child modules for processing.
+        /// </summary>
+        /// <param name="delimiter">The delimiter to use.</param>
+        /// <param name="modules">The modules to execute against the front matter.</param>
+        public FrontMatter(char delimiter, IEnumerable<IModule> modules)
             : base(modules)
         {
             _delimiter = new string(delimiter, 1);

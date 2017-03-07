@@ -26,6 +26,17 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public ConcatBranch(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Evaluates the specified modules with each input document as the initial
+        /// document and then outputs the original input documents without modification concatenated with the result documents
+        /// from the specified modules.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        public ConcatBranch(IEnumerable<IModule> modules)
             : base(modules)
         {
         }

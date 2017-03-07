@@ -42,6 +42,19 @@ namespace Wyam.Core.Modules.Control
         /// <param name="key">A delegate that returns the group key.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
         public GroupBy(DocumentConfig key, params IModule[] modules)
+            : this(key, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Partitions the result of the specified modules into groups with matching keys
+        /// based on the key delegate.
+        /// The input documents to GroupBy are used as
+        /// the initial input documents to the specified modules.
+        /// </summary>
+        /// <param name="key">A delegate that returns the group key.</param>
+        /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
+        public GroupBy(DocumentConfig key, IEnumerable<IModule> modules)
             : base(modules)
         {
             if (key == null)
@@ -62,6 +75,20 @@ namespace Wyam.Core.Modules.Control
         /// <param name="keyMetadataKey">The key metadata key.</param>
         /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
         public GroupBy(string keyMetadataKey, params IModule[] modules)
+            : this(keyMetadataKey, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Partitions the result of the specified modules into groups with matching keys
+        /// based on the value at the specified metadata key.
+        /// If a document to group does not contain the specified metadata key, it is not included in any output groups.
+        /// The input documents to GroupBy are used as
+        /// the initial input documents to the specified modules.
+        /// </summary>
+        /// <param name="keyMetadataKey">The key metadata key.</param>
+        /// <param name="modules">Modules to execute on the input documents prior to grouping.</param>
+        public GroupBy(string keyMetadataKey, IEnumerable<IModule> modules)
             : base(modules)
         {
             if (keyMetadataKey == null)

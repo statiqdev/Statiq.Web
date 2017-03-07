@@ -30,6 +30,17 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public Merge(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// The specified modules are executed against an empty initial document and the results
+        /// are applied to every input document (possibly creating more than one output
+        /// document for each input document).
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        public Merge(IEnumerable<IModule> modules)
             : base(modules)
         {
         }

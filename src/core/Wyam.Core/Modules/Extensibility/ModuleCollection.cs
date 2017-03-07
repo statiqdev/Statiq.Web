@@ -40,6 +40,15 @@ namespace Wyam.Core.Modules.Extensibility
         /// </summary>
         /// <param name="modules">The child modules.</param>
         public ModuleCollection(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Creates a module collection with the specified child modules.
+        /// </summary>
+        /// <param name="modules">The child modules.</param>
+        public ModuleCollection(IEnumerable<IModule> modules)
             : base(modules)
         {
         }

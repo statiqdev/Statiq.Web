@@ -33,6 +33,16 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute against the sidecar file.</param>
         public Sidecar(params IModule[] modules)
+            : this(".meta", (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Searches for sidecar files at the same path as the input document SourceFilePath with the additional extension .meta.
+        /// If a sidecar file is found, it's content is passed to the specified child modules for processing.
+        /// </summary>
+        /// <param name="modules">The modules to execute against the sidecar file.</param>
+        public Sidecar(IEnumerable<IModule> modules)
             : this(".meta", modules)
         {
         }
@@ -44,6 +54,17 @@ namespace Wyam.Core.Modules.Control
         /// <param name="extension">The extension to search.</param>
         /// <param name="modules">The modules to execute against the sidecar file.</param>
         public Sidecar(string extension, params IModule[] modules)
+            : this(extension, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Searches for sidecar files at the same path as the input document SourceFilePath with the specified additional extension.
+        /// If a sidecar file is found, it's content is passed to the specified child modules for processing.
+        /// </summary>
+        /// <param name="extension">The extension to search.</param>
+        /// <param name="modules">The modules to execute against the sidecar file.</param>
+        public Sidecar(string extension, IEnumerable<IModule> modules)
             : base(modules)
         {
             if (string.IsNullOrEmpty(extension))
@@ -61,6 +82,17 @@ namespace Wyam.Core.Modules.Control
         /// <param name="sidecarPath">A delegate that returns a <see cref="FilePath"/> with the desired sidecar path.</param>
         /// <param name="modules">The modules to execute against the sidecar file.</param>
         public Sidecar(DocumentConfig sidecarPath, params IModule[] modules)
+            : this(sidecarPath, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Uses a delegate to describe where to find the sidecar file for each input document.
+        /// If a sidecar file is found, it's content is passed to the specified child modules for processing.
+        /// </summary>
+        /// <param name="sidecarPath">A delegate that returns a <see cref="FilePath"/> with the desired sidecar path.</param>
+        /// <param name="modules">The modules to execute against the sidecar file.</param>
+        public Sidecar(DocumentConfig sidecarPath, IEnumerable<IModule> modules)
             : base(modules)
         {
             if (sidecarPath == null)

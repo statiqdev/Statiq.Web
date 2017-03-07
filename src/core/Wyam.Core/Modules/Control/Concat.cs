@@ -22,6 +22,15 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public Concat(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Executes the specified modules with an empty initial input document.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        public Concat(IEnumerable<IModule> modules)
             : base(modules)
         {
         }

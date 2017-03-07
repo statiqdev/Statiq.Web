@@ -1,5 +1,5 @@
 @{
-    var pages = Documents[BlogPipelines.Pages]
+    var pages = Documents[Blog.Pages]
         .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
         .Select(x => Tuple.Create(x.WithoutSettings.String(BlogKeys.Title), Context.GetLink(x)))
         .Where(x => !string.IsNullOrEmpty(x.Item1))

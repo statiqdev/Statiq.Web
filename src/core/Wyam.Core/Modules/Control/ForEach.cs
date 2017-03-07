@@ -49,6 +49,15 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="modules">The modules to execute.</param>
         public ForEach(params IModule[] modules)
+            : this((IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Specifies the modules to execute against the input document one at a time.
+        /// </summary>
+        /// <param name="modules">The modules to execute.</param>
+        public ForEach(IEnumerable<IModule> modules)
             : base(modules)
         {
         }

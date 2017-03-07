@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\IRawAssemblyCollection.cs" />
+    <Compile Include="Configuration\Recipe.cs" />
+    <Compile Include="Configuration\RecipePipeline.cs" />
     <Compile Include="Documents\GroupByExtensions.cs" />
     <Compile Include="Documents\ToLookupExtensions.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="Util\GroupByExtensions.cs" />
     <Compile Include="Execution\TraceExceptionsExtensions.cs" />
+    <Compile Include="Util\SourceInfoAttribute.cs" />
     <Compile Include="Util\ToLookupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

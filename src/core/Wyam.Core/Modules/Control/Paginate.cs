@@ -62,8 +62,18 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="pageSize">The number of documents on each page.</param>
         /// <param name="modules">The modules to execute to get the documents to page.</param>
-        /// <exception cref="System.ArgumentException"></exception>
         public Paginate(int pageSize, params IModule[] modules)
+            : this(pageSize, (IEnumerable<IModule>)modules)
+        {
+        }
+
+        /// <summary>
+        /// Partitions the result of the specified modules into the specified number of pages. The
+        /// input documents to Paginate are used as the initial input documents to the specified modules.
+        /// </summary>
+        /// <param name="pageSize">The number of documents on each page.</param>
+        /// <param name="modules">The modules to execute to get the documents to page.</param>
+        public Paginate(int pageSize, IEnumerable<IModule> modules)
             : base(modules)
         {
             if (pageSize <= 0)

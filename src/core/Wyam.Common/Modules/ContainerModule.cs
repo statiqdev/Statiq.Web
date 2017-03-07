@@ -16,23 +16,13 @@ namespace Wyam.Common.Modules
     {
         private readonly IModuleList _modules;
 
-        protected ContainerModule()
-        {
-            _modules = new ModuleList();
-        }
-
-        protected ContainerModule(params IModule[] modules)
-        {
-            _modules = new ModuleList(modules);
-        }
-
-        protected ContainerModule(ModuleList modules)
+        protected ContainerModule(IEnumerable<IModule> modules)
         {
             if (modules == null)
             {
                 throw new ArgumentNullException(nameof(modules));
             }
-            _modules = modules;
+            _modules = (modules as IModuleList) ?? new ModuleList(modules);
         }
 
         /// <inheritdoc />
