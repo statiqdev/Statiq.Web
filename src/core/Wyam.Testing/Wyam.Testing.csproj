@@ -138,6 +138,7 @@
     </Compile>
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Documents\TestDocument.cs" />
+    <Compile Include="ExecutionHelper.cs" />
     <Compile Include="Execution\TestExecutionContext.cs" />
     <Compile Include="Modules\CountModule.cs" />
     <Compile Include="IO\StringBuilderStream.cs" />
