@@ -40,9 +40,6 @@ namespace Wyam.Blog.Pipelines
         public string OrderByPublished { get; } = nameof(OrderByPublished);
 
         /// <inheritdoc />
-        public override string Name => nameof(Blog.RawPosts);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             {

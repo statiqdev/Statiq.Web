@@ -48,9 +48,6 @@ namespace Wyam.Blog.Pipelines
         public string WriteFileMetadata { get; } = nameof(WriteFileMetadata);
 
         /// <inheritdoc />
-        public override string Name => nameof(Blog.Pages);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             {

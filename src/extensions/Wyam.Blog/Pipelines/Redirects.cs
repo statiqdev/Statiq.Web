@@ -30,9 +30,6 @@ namespace Wyam.Blog.Pipelines
         public string WriteFiles { get; } = nameof(WriteFiles);
 
         /// <inheritdoc />
-        public override string Name => nameof(Blog.Redirects);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             {

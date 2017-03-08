@@ -11,9 +11,6 @@ namespace Wyam.Blog.Pipelines
     public class Resources : RecipePipeline
     {
         /// <inheritdoc />
-        public override string Name => nameof(Blog.Resources);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             new CopyFiles("**/*{!.cshtml,!.md,}")

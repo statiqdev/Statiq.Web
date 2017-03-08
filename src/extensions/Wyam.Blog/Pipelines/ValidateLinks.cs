@@ -14,9 +14,6 @@ namespace Wyam.Blog.Pipelines
     public class ValidateLinks : RecipePipeline
     {
         /// <inheritdoc />
-        public override string Name => nameof(Blog.ValidateLinks);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             new If(

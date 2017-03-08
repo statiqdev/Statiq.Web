@@ -13,9 +13,6 @@ namespace Wyam.Blog.Pipelines
     public class Feed : RecipePipeline
     {
         /// <inheritdoc />
-        public override string Name => nameof(Blog.Feed);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             new Documents(BlogPipelines.Posts),

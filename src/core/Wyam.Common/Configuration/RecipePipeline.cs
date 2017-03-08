@@ -11,7 +11,10 @@ namespace Wyam.Common.Configuration
     /// <summary>
     /// A utility base class for encapsulating modules for a specific pipeline in a recipe. The
     /// primary benefit of this class is that it implements a standard
-    /// method for getting modules that can be used by <see cref="Recipe"/>.
+    /// method for getting modules that can be used by <see cref="Recipe"/>. Instances of this class
+    /// are typically assigned to read-only properties in a <see cref="RecipePipeline"/> class and by
+    /// convention the class name should match the property name (an exception will be thrown during
+    /// recipe application if not).
     /// </summary>
     public abstract class RecipePipeline
     {
@@ -22,9 +25,10 @@ namespace Wyam.Common.Configuration
         public abstract ModuleList GetModules();
 
         /// <summary>
-        /// Gets the name of the pipeline.
+        /// Gets the name of the pipeline. If not overridden, this is the same as
+        /// the class name.
         /// </summary>
-        public abstract string Name { get; }
+        public virtual string Name => GetType().Name;
 
         /// <summary>
         /// Provides the name for the pipeline when converted to a string.

@@ -12,9 +12,6 @@ namespace Wyam.Blog.Pipelines
     public class RenderPages : RecipePipeline
     {
         /// <inheritdoc />
-        public override string Name => nameof(Blog.RenderPages);
-
-        /// <inheritdoc />
         public override ModuleList GetModules() => new ModuleList
         {
             new Documents(BlogPipelines.Pages),
