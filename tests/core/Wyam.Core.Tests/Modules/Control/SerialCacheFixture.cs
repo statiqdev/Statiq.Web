@@ -29,10 +29,10 @@ namespace Wyam.Core.Tests.Modules.Control
                 CacheTesterModule appender = Autofixture.Create<CacheTesterModule>();
                 IDocument input = new TestDocument(Autofixture.Create<string>());
 
-                SerialCache combine = new SerialCache(appender);
+                SerialCache cache = new SerialCache(appender);
 
                 // When
-                IDocument result = combine.Execute(new[] {input}, context).Single();
+                IDocument result = cache.Execute(new[] {input}, context).Single();
 
                 // Then
                 CollectionAssert.AreEqual(input.Content + appender.Text, result.Content);
@@ -46,11 +46,11 @@ namespace Wyam.Core.Tests.Modules.Control
                 CacheTesterModule appender = Autofixture.Create<CacheTesterModule>();
                 IDocument input = new TestDocument(Autofixture.Create<string>());
 
-                SerialCache combine = new SerialCache(appender);
-                combine.Execute(new[] { input }, context).Enumerate();
+                SerialCache cache = new SerialCache(appender);
+                cache.Execute(new[] { input }, context).Enumerate();
 
                 // When
-                IDocument result = combine.Execute(new[] { input }, context).Single();
+                IDocument result = cache.Execute(new[] { input }, context).Single();
 
                 // Then
                 CollectionAssert.AreEqual(input.Content + appender.Text, result.Content);
@@ -64,11 +64,11 @@ namespace Wyam.Core.Tests.Modules.Control
                 CacheTesterModule appender = Autofixture.Create<CacheTesterModule>();
                 IDocument input = new TestDocument(Autofixture.Create<string>());
 
-                SerialCache combine = new SerialCache(appender);
-                combine.Execute(new[] { input }, context).Enumerate();
+                SerialCache cache = new SerialCache(appender);
+                cache.Execute(new[] { input }, context).Enumerate();
 
                 // When
-                combine.Execute(new[] { input }, context).Enumerate();
+                cache.Execute(new[] { input }, context).Enumerate();
 
                 // Then
                 Assert.AreEqual(1, appender.ExecuteCount);
