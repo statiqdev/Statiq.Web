@@ -28,16 +28,16 @@ namespace Wyam.Common.Configuration
         /// <param name="engine">The engine.</param>
         public virtual void Apply(IEngine engine)
         {
-            IEnumerable<RecipePipeline> pipelines = GetType()
+            IEnumerable<Pipeline> pipelines = GetType()
                 .GetProperties(BindingFlags.Static | BindingFlags.Public)
-                .Where(x => typeof(RecipePipeline).IsAssignableFrom(x.PropertyType))
+                .Where(x => typeof(Pipeline).IsAssignableFrom(x.PropertyType))
                 .Select(x =>
                 {
                     // Check for a source info attribute
                     SourceInfoAttribute sourceInfo = x.GetCustomAttributes(typeof(SourceInfoAttribute), false).SingleOrDefault() as SourceInfoAttribute;
                     if (sourceInfo == null)
                     {
-                        throw new Exception($"{nameof(RecipePipeline)} property {x.Name} in {GetType().Name} requires a {nameof(SourceInfoAttribute)} for correct ordering.");
+                        throw new Exception($"{nameof(Pipeline)} property {x.Name} in {GetType().Name} requires a {nameof(SourceInfoAttribute)} for correct ordering.");
                     }
 
                     return new
@@ -51,16 +51,16 @@ namespace Wyam.Common.Configuration
                 .Select(x =>
                 {
                     // Validate that the pipeline name matches the property name
-                    RecipePipeline pipeline = (RecipePipeline)x.Property.GetValue(null, null);
+                    Pipeline pipeline = (Pipeline)x.Property.GetValue(null, null);
                     if (x.Property.Name != pipeline.Name)
                     {
-                        throw new Exception($"{nameof(RecipePipeline)} property {x.Property.Name} in {GetType().Name} does not match the name of the pipeline.");
+                        throw new Exception($"{nameof(Pipeline)} property {x.Property.Name} in {GetType().Name} does not match the name of the pipeline.");
                     }
                     return pipeline;
                 });
-            foreach (RecipePipeline pipeline in pipelines)
+            foreach (Pipeline pipeline in pipelines)
             {
-                engine.Pipelines.Add(pipeline.Name, pipeline.GetModules());
+                engine.Pipelines.Add(pipeline);
             }
         }
 

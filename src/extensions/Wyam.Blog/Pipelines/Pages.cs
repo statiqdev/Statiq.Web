@@ -1,5 +1,6 @@
 using System;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
@@ -15,40 +16,44 @@ namespace Wyam.Blog.Pipelines
     /// to following pipelines like the RSS feed generator. This does not render the
     /// pages or write them to disk (that is performed in following pipelines).
     /// </summary>
-    public class Pages : RecipePipeline
+    public class Pages : Pipeline
     {
         /// <summary>
         /// Reads all markdown files, processes their front matter, and renders them to HTML.
         /// </summary>
-        public string MarkdownFiles { get; } = nameof(MarkdownFiles);
+        public const string MarkdownFiles = nameof(MarkdownFiles);
 
         /// <summary>
         /// Reads all Razor files and processes their front matter (but does not render them to HTML).
         /// </summary>
-        public string RazorFiles { get; } = nameof(RazorFiles);
+        public const string RazorFiles = nameof(RazorFiles);
 
         /// <summary>
         /// Reads the posts index file and processes it's front matter.
         /// </summary>
-        public string PostsIndex { get; } = nameof(PostsIndex);
+        public const string PostsIndex = nameof(PostsIndex);
 
         /// <summary>
         /// Reads the tags index file and processes it's front matter.
         /// </summary>
-        public string TagsIndex { get; } = nameof(TagsIndex);
+        public const string TagsIndex = nameof(TagsIndex);
 
         /// <summary>
         /// Copy the index page image and header text color from settings metadata (if set) to the document metadata.
         /// </summary>
-        public string HomePageStyles { get; } = nameof(HomePageStyles);
+        public const string HomePageStyles = nameof(HomePageStyles);
 
         /// <summary>
         /// Writes the file metadata to the documents (such as relative output path).
         /// </summary>
-        public string WriteFileMetadata { get; } = nameof(WriteFileMetadata);
+        public const string WriteFileMetadata = nameof(WriteFileMetadata);
 
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Pages()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             {
                 MarkdownFiles,
@@ -65,7 +70,8 @@ namespace Wyam.Blog.Pipelines
                 RazorFiles,
                 new Concat
                 {
-                    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
+                    new ReadFiles(
+                        ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())
                 }
             },
@@ -75,7 +81,9 @@ namespace Wyam.Blog.Pipelines
                 {
                     new ReadFiles("posts/index.cshtml"),
                     new FrontMatter(new Yaml.Yaml()),
-                    new Meta(Keys.RelativeFilePath, ctx => ctx.DirectoryPath(BlogKeys.PostsPath).CombineFile("index.cshtml"))
+                    new Meta(
+                        Keys.RelativeFilePath,
+                        ctx => ctx.DirectoryPath(BlogKeys.PostsPath).CombineFile("index.cshtml"))
                 }
             },
             {
@@ -91,10 +99,12 @@ namespace Wyam.Blog.Pipelines
                 new ModuleCollection
                 {
                     new If(
-                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.Image),
+                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml"))
+                                      && ctx.ContainsKey(BlogKeys.Image),
                         new Meta(BlogKeys.Image, ctx => ctx[BlogKeys.Image])),
                     new If(
-                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.HeaderTextColor),
+                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml"))
+                                      && ctx.ContainsKey(BlogKeys.HeaderTextColor),
                         new Meta(BlogKeys.HeaderTextColor, ctx => ctx[BlogKeys.HeaderTextColor]))
                 }
             },

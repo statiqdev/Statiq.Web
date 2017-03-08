@@ -241,7 +241,7 @@
     <Compile Include="Modules\Metadata\Meta.cs" />
     <Compile Include="Modules\Contents\Prepend.cs" />
     <Compile Include="Modules\IO\WriteFiles.cs" />
-    <Compile Include="Execution\Pipeline.cs" />
+    <Compile Include="Execution\ExecutionPipeline.cs" />
     <Compile Include="Execution\PipelineCollection.cs" />
     <Compile Include="Documents\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

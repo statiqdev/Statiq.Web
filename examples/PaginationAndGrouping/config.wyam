@@ -21,7 +21,7 @@ Pipelines.Add("Archive",
 		Documents("Content")
 	),
 	ForEach(
-		Paginate(2,
+		(IModule)Paginate(2,
 			Documents(@doc["GroupDocuments"]),
 			OrderBy(@doc["SourceFileBase"])
 		)

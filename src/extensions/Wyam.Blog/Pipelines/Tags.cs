@@ -1,6 +1,7 @@
 using System;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
@@ -13,35 +14,39 @@ namespace Wyam.Blog.Pipelines
     /// <summary>
     /// Generates tag groups from the tags on blog posts.
     /// </summary>
-    public class Tags : RecipePipeline
+    public class Tags : Pipeline
     {
         /// <summary>
         /// Reads the common tag file and processes it's front matter.
         /// </summary>
-        public string TagFile { get; } = nameof(TagFile);
+        public const string TagFile = nameof(TagFile);
 
         /// <summary>
         /// Gets a document for each tag.
         /// </summary>
-        public string TagDocuments { get; } = nameof(TagDocuments);
+        public const string TagDocuments = nameof(TagDocuments);
 
         /// <summary>
         /// Sets the relative file path for each tag document in metadata.
         /// </summary>
-        public string RelativeFilePath { get; } = nameof(RelativeFilePath);
+        public const string RelativeFilePath = nameof(RelativeFilePath);
 
         /// <summary>
         /// Renders each tag document.
         /// </summary>
-        public string Render { get; } = nameof(Render);
+        public const string Render = nameof(Render);
 
         /// <summary>
         /// Writes the documents to the file system.
         /// </summary>
-        public string WriteFiles { get; } = nameof(WriteFiles);
+        public const string WriteFiles = nameof(WriteFiles);
 
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Tags()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             {
                 TagFile,
@@ -56,7 +61,7 @@ namespace Wyam.Blog.Pipelines
                 new ModuleCollection
                 {
                     new Execute(ctx =>
-                        new GroupByMany(BlogKeys.Tags, new Documents(BlogPipelines.RawPosts))
+                        new GroupByMany(BlogKeys.Tags, new Documents(Blog.RawPosts))
                             .WithComparer(ctx.Bool(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                     new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                     new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),

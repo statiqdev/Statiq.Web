@@ -13,21 +13,37 @@ namespace Wyam.Core.Execution
         private readonly List<IPipeline> _pipelines = new List<IPipeline>();
         private int _nameCounter = 0;
 
-        public IPipeline Add(string name, ModuleList modules)
+        public IPipeline Add(string name, IModuleList modules)
         {
-            Pipeline pipeline = CreatePipeline(name, modules);
-            _pipelines.Add(pipeline);
-            return pipeline;
+            ExecutionPipeline executionPipeline = CreatePipeline(name, modules);
+            _pipelines.Add(executionPipeline);
+            return executionPipeline;
         }
 
-        public IPipeline Insert(int index, string name, ModuleList modules)
+        public IPipeline Add(IPipeline pipeline)
         {
-            Pipeline pipeline = CreatePipeline(name, modules);
-            _pipelines.Insert(index, pipeline);
-            return pipeline;
+            ExecutionPipeline executionPipeline = CreatePipeline(pipeline.Name, pipeline);
+            executionPipeline.ProcessDocumentsOnce = pipeline.ProcessDocumentsOnce;
+            _pipelines.Add(executionPipeline);
+            return executionPipeline;
         }
 
-        private Pipeline CreatePipeline(string name, ModuleList modules)
+        public IPipeline Insert(int index, string name, IModuleList modules)
+        {
+            ExecutionPipeline executionPipeline = CreatePipeline(name, modules);
+            _pipelines.Insert(index, executionPipeline);
+            return executionPipeline;
+        }
+
+        public IPipeline Insert(int index, IPipeline pipeline)
+        {
+            ExecutionPipeline executionPipeline = CreatePipeline(pipeline.Name, pipeline);
+            executionPipeline.ProcessDocumentsOnce = pipeline.ProcessDocumentsOnce;
+            _pipelines.Insert(index, executionPipeline);
+            return executionPipeline;
+        }
+
+        private ExecutionPipeline CreatePipeline(string name, IModuleList modules)
         {
             _nameCounter++;
             if (string.IsNullOrWhiteSpace(name))
@@ -38,7 +54,7 @@ namespace Wyam.Core.Execution
             {
                 throw new ArgumentException("Pipelines must have a unique name.");
             }
-            return new Pipeline(name, modules);
+            return new ExecutionPipeline(name, modules);
         }
 
         public bool Remove(string name)

@@ -29,55 +29,55 @@ namespace Wyam.Blog
         /// The <see cref="Pages"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Pages { get; } = new Pages();
+        public static Pipeline Pages { get; } = new Pages();
 
         /// <summary>
         /// The <see cref="RawPosts"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline RawPosts { get; } = new RawPosts();
+        public static Pipeline RawPosts { get; } = new RawPosts();
 
         /// <summary>
         /// The <see cref="Tags"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Tags { get; } = new Tags();
+        public static Pipeline Tags { get; } = new Tags();
 
         /// <summary>
         /// The <see cref="Posts"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Posts { get; } = new Posts();
+        public static Pipeline Posts { get; } = new Posts();
 
         /// <summary>
         /// The <see cref="Feed"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Feed { get; } = new Feed();
+        public static Pipeline Feed { get; } = new Feed();
 
         /// <summary>
         /// The <see cref="RenderPages"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline RenderPages { get; } = new RenderPages();
+        public static Pipeline RenderPages { get; } = new RenderPages();
 
         /// <summary>
         /// The <see cref="Redirects"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Redirects { get; } = new Redirects();
+        public static Pipeline Redirects { get; } = new Redirects();
 
         /// <summary>
         /// The <see cref="Resources"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline Resources { get; } = new Resources();
+        public static Pipeline Resources { get; } = new Resources();
 
         /// <summary>
         /// The <see cref="ValidateLinks"/> pipeline.
         /// </summary>
         [SourceInfo]
-        public static RecipePipeline ValidateLinks { get; } = new ValidateLinks();
+        public static Pipeline ValidateLinks { get; } = new ValidateLinks();
 
         /// <inheritdoc/>
         public override void Apply(IEngine engine)

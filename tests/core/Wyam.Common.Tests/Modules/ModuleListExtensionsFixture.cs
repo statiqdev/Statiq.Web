@@ -24,7 +24,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertAfterFirst()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new ReadFiles(ctx => "*.md"),
@@ -48,7 +48,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertBeforeFirst()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new ReadFiles(ctx => "*.md"),
@@ -72,7 +72,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertAfterLast()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new ReadFiles(ctx => "*.md"),
@@ -96,7 +96,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertBeforeLast()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new ReadFiles(ctx => "*.md"),
@@ -120,7 +120,7 @@ namespace Wyam.Common.Tests.Modules
             public void ReplaceFirst()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new CountModule("mykey1"),
@@ -143,7 +143,7 @@ namespace Wyam.Common.Tests.Modules
             public void ReplaceLast()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new IModule[]
+                IPipeline collection = new ExecutionPipeline("Test", new IModule[]
                 {
                     new ReadFiles(ctx => "*.md"),
                     new CountModule("mykey1"),
@@ -166,7 +166,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertMultiple()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new[]
+                IPipeline collection = new ExecutionPipeline("Test", new[]
                 {
                     new CountModule("mykey1").WithName("First"),
                     new CountModule("mykey2").WithName("Second")
@@ -189,7 +189,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertBeforeWithName()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new[]
+                IPipeline collection = new ExecutionPipeline("Test", new[]
                 {
                     new CountModule("mykey1").WithName("First"),
                     new CountModule("mykey2").WithName("Second")
@@ -211,7 +211,7 @@ namespace Wyam.Common.Tests.Modules
             public void InsertAfterWithName()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new[]
+                IPipeline collection = new ExecutionPipeline("Test", new[]
                 {
                     new CountModule("mykey1").WithName("First"),
                     new CountModule("mykey2").WithName("Second")
@@ -233,7 +233,7 @@ namespace Wyam.Common.Tests.Modules
             public void ReplaceWithName()
             {
                 // Given
-                IPipeline collection = new Pipeline("Test", new[]
+                IPipeline collection = new ExecutionPipeline("Test", new[]
                 {
                     new CountModule("mykey1").WithName("First"),
                     new CountModule("mykey2").WithName("Second")
@@ -251,7 +251,7 @@ namespace Wyam.Common.Tests.Modules
             public void AlsoWorksWithModules()
             {
                 // Given
-                IPipeline collection  = new Pipeline("Test", new []
+                IPipeline collection = new ExecutionPipeline("Test", new []
                 {
                     new CountModule("mykey1")
                         .WithName("First"),

@@ -200,7 +200,7 @@ namespace Wyam.Core.Execution
                         {
                             try
                             {
-                                ((Pipeline)pipeline).Execute(this);
+                                ((ExecutionPipeline)pipeline).Execute(this);
                                 pipelineStopwatch.Stop();
                                 Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
                                     pipelineName, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
@@ -221,7 +221,7 @@ namespace Wyam.Core.Execution
                     ExecutionCacheManager.ClearUnhitEntries();
                     foreach (IPipeline pipeline in _pipelines.Pipelines)
                     {
-                        ((Pipeline)pipeline).ResetClonedDocuments();
+                        ((ExecutionPipeline)pipeline).ResetClonedDocuments();
                     }
 
                     engineStopwatch.Stop();
@@ -244,7 +244,7 @@ namespace Wyam.Core.Execution
                 return;
             }
 
-            foreach (Pipeline pipeline in _pipelines.Pipelines)
+            foreach (ExecutionPipeline pipeline in _pipelines.Pipelines)
             {
                 pipeline.Dispose();
             }

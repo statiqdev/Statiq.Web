@@ -1,5 +1,6 @@
 ﻿using System;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.IO;
 
@@ -8,10 +9,14 @@ namespace Wyam.Blog.Pipelines
     /// <summary>
     /// Copies all other resources to the output path.
     /// </summary>
-    public class Resources : RecipePipeline
+    public class Resources : Pipeline
     {
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Resources()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             new CopyFiles("**/*{!.cshtml,!.md,}")
         };

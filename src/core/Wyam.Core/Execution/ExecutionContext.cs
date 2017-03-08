@@ -27,7 +27,7 @@ namespace Wyam.Core.Execution
 {
     internal class ExecutionContext : IExecutionContext, IDisposable
     {
-        private readonly Pipeline _pipeline;
+        private readonly ExecutionPipeline _pipeline;
 
         private bool _disposed;
 
@@ -54,7 +54,7 @@ namespace Wyam.Core.Execution
         [Obsolete]
         public IMetadata GlobalMetadata => Engine.GlobalMetadata;
 
-        public ExecutionContext(Engine engine, Pipeline pipeline)
+        public ExecutionContext(Engine engine, ExecutionPipeline pipeline)
         {
             Engine = engine;
             _pipeline = pipeline;

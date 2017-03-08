@@ -33,7 +33,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
@@ -56,7 +56,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string output = "filename-with-mixed-caps";
 
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string output = "this-is-a-.net-tag";
 
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
@@ -103,7 +103,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string output = "thisisa.";
 
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
@@ -127,7 +127,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 string manyCharactersWow = new String(character[0], 10);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
@@ -151,7 +151,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
             {
                 // Given
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs = { context.GetDocument(new MetadataItems
                 {
@@ -174,7 +174,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string output = "myfile.html";
 
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs =
                 {
@@ -200,7 +200,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 string output = "myfile.html";
 
                 Engine engine = new Engine();
-                Pipeline pipeline = new Pipeline("Pipeline", (IModuleList)null);
+                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
                 IDocument[] inputs =
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
@@ -12,35 +13,39 @@ namespace Wyam.Blog.Pipelines
     /// <summary>
     /// Loads blog posts from Markdown and/or Razor files.
     /// </summary>
-    public class RawPosts : RecipePipeline
+    public class RawPosts : Pipeline
     {
         /// <summary>
         /// Reads all markdown posts, processes their front matter, and renders them to HTML.
         /// </summary>
-        public string MarkdownPosts { get; } = nameof(MarkdownPosts);
+        public const string MarkdownPosts = nameof(MarkdownPosts);
 
         /// <summary>
         /// Reads all Razor posts and processes their front matter (but does not render them to HTML).
         /// </summary>
-        public string RazorPosts { get; } = nameof(RazorPosts);
+        public const string RazorPosts = nameof(RazorPosts);
 
         /// <summary>
         /// Sets a published date for each post.
         /// </summary>
-        public string Published { get; } = nameof(Published);
+        public const string Published = nameof(Published);
 
         /// <summary>
         /// Sets the relative file path for each post in metadata.
         /// </summary>
-        public string RelativeFilePath { get; } = nameof(RelativeFilePath);
+        public const string RelativeFilePath = nameof(RelativeFilePath);
 
         /// <summary>
         /// Orders the posts by their published date.
         /// </summary>
-        public string OrderByPublished { get; } = nameof(OrderByPublished);
+        public const string OrderByPublished = nameof(OrderByPublished);
 
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal RawPosts()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             {
                 MarkdownPosts,

@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Modules.IO
     public class UnwrittenFilesFixture : BaseFixture
     {
         private Engine Engine { get; set; }
-        private Pipeline Pipeline { get; set; }
+        private ExecutionPipeline Pipeline { get; set; }
         private IExecutionContext Context { get; set; }
 
         [SetUp]
@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine = new Engine();
             Engine.FileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
             Engine.FileSystem.RootPath = "/";
-            Pipeline = new Pipeline("Pipeline", (IModuleList)null);
+            Pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
             Context = new ExecutionContext(Engine, Pipeline);
         }
 

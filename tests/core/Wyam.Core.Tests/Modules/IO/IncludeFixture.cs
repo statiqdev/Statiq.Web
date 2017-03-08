@@ -21,7 +21,7 @@ namespace Wyam.Core.Tests.Modules.IO
     {
         private TestFileProvider FileProvider { get; set; }
         private Engine Engine { get; set; }
-        private Pipeline Pipeline { get; set; }
+        private ExecutionPipeline Pipeline { get; set; }
         private IExecutionContext Context { get; set; }
 
         [SetUp]
@@ -33,7 +33,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine.FileSystem.RootPath = "/";
             Engine.FileSystem.InputPaths.Clear();
             Engine.FileSystem.InputPaths.Add("/TestFiles/Input");
-            Pipeline = new Pipeline("Pipeline", (IModuleList)null);
+            Pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
             Context = new ExecutionContext(Engine, Pipeline);
         }
 

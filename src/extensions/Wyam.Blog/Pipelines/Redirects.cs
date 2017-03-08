@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
@@ -12,34 +13,38 @@ namespace Wyam.Blog.Pipelines
     /// <summary>
     /// Generates any redirect placeholders and files.
     /// </summary>
-    public class Redirects : RecipePipeline
+    public class Redirects : Pipeline
     {
         /// <summary>
         /// Gets both rendered pages and posts.
         /// </summary>
-        public string GetDocuments { get; } = nameof(GetDocuments);
+        public const string GetDocuments = nameof(GetDocuments);
 
         /// <summary>
         /// Generate the redirect files.
         /// </summary>
-        public string GenerateRedirects { get; } = nameof(GenerateRedirects);
+        public const string GenerateRedirects = nameof(GenerateRedirects);
 
         /// <summary>
         /// Writes the documents to the file system.
         /// </summary>
-        public string WriteFiles { get; } = nameof(WriteFiles);
+        public const string WriteFiles = nameof(WriteFiles);
 
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Redirects()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             {
                 GetDocuments,
                 new ModuleCollection
                 {
-                    new Documents(BlogPipelines.RenderPages),
+                    new Documents(Blog.RenderPages),
                     new Concat
                     {
-                        new Documents(BlogPipelines.Posts)
+                        new Documents(Blog.Posts)
                     }
                 }
             },

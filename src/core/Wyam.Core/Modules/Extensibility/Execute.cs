@@ -77,7 +77,6 @@ namespace Wyam.Core.Modules.Extensibility
             _parallel = parallel;
         }
 
-        /// <inheritdoc />
         /// <summary>
         /// Specifies a delegate that should be invoked once for all input documents.
         /// The output from this module will be the input documents.
@@ -139,14 +138,16 @@ namespace Wyam.Core.Modules.Extensibility
 
         private IEnumerable<IDocument> ExecuteModules(object results, IExecutionContext context, IEnumerable<IDocument> inputs)
         {
-            IEnumerable<IModule> modules = results as IEnumerable<IModule>;
-            if (modules == null)
+            // Check for a single IModule first since some modules also implement IEnumerable<IModule>
+            IEnumerable<IModule> modules;
+            IModule module = results as IModule;
+            if (module != null)
             {
-                IModule module = results as IModule;
-                if (module != null)
-                {
-                    modules = new[] {module};
-                }
+                modules = new[] { module };
+            }
+            else
+            {
+                modules = results as IEnumerable<IModule>;
             }
             return modules != null ? context.Execute(modules, inputs) : null;
         }

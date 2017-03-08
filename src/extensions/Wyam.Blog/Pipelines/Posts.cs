@@ -1,5 +1,6 @@
 ﻿using System;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
@@ -13,37 +14,41 @@ namespace Wyam.Blog.Pipelines
     /// pipeline so that the listing of tags on each blog post page
     /// will have the correct counts.
     /// </summary>
-    public class Posts : RecipePipeline
+    public class Posts : Pipeline
     {
         /// <summary>
         /// Renders the posts from the <see cref="RawPosts"/> pipeline.
         /// </summary>
-        public string Render { get; } = nameof(Render);
+        public const string Render = nameof(Render);
 
         /// <summary>
         /// Gets excerpts for each document.
         /// </summary>
-        public string Excerpts { get; } = nameof(Excerpts);
+        public const string Excerpts = nameof(Excerpts);
 
         /// <summary>
         /// Writes the documents to the file system.
         /// </summary>
-        public string WriteFiles { get; } = nameof(WriteFiles);
+        public const string WriteFiles = nameof(WriteFiles);
 
         /// <summary>
         /// Orders the posts by their published date. We need to do this
         /// again since the order would have gotten messed up by the concurrent Razor rendering.
         /// </summary>
-        public string OrderByPublished { get; } = nameof(OrderByPublished);
+        public const string OrderByPublished = nameof(OrderByPublished);
 
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Posts()
+            : base(GetModules())
+        {
+        }
+
+        private static ModuleList GetModules() => new ModuleList
         {
             {
                 Render,
                 new ModuleCollection
                 {
-                    new Documents(BlogPipelines.RawPosts),
+                    new Documents(Blog.RawPosts),
                     new Razor.Razor()
                         .WithLayout("/_PostLayout.cshtml")
                 }

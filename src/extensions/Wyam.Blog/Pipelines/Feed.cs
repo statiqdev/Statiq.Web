@@ -1,5 +1,6 @@
 using System;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.IO;
@@ -10,12 +11,16 @@ namespace Wyam.Blog.Pipelines
     /// <summary>
     /// Generates the blog RSS, Atom, and/or RDF feeds.
     /// </summary>
-    public class Feed : RecipePipeline
+    public class Feed : Pipeline
     {
-        /// <inheritdoc />
-        public override ModuleList GetModules() => new ModuleList
+        internal Feed()
+            : base(GetModules())
         {
-            new Documents(BlogPipelines.Posts),
+        }
+
+        private static ModuleList GetModules() => new ModuleList
+        {
+            new Documents(Blog.Posts),
             new GenerateFeeds()
                 .WithRssPath(ctx => ctx.FilePath(BlogKeys.RssPath))
                 .WithAtomPath(ctx => ctx.FilePath(BlogKeys.AtomPath))

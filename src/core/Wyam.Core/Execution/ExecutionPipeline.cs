@@ -19,23 +19,23 @@ using Wyam.Core.Meta;
 
 namespace Wyam.Core.Execution
 {
-    internal class Pipeline : IPipeline, IDisposable
+    internal class ExecutionPipeline : IPipeline, IDisposable
     {
-        private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly IModuleList _modules;
+        private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
         private Cache<List<IDocument>>  _previouslyProcessedCache;
         private Dictionary<FilePath, List<IDocument>> _processedSources;
         private bool _disposed;
 
         public string Name { get; }
 
-        public Pipeline(string name, params IModule[] modules)
+        public ExecutionPipeline(string name, params IModule[] modules)
             : this(name, new ModuleList(modules))
         {
         }
 
-        public Pipeline(string name, IModuleList modules)
+        public ExecutionPipeline(string name, IModuleList modules)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -63,18 +63,12 @@ namespace Wyam.Core.Execution
             }
         }
 
-        public IPipeline WithProcessDocumentsOnce(bool processDocumentsOnce = true)
-        {
-            ProcessDocumentsOnce = processDocumentsOnce;
-            return this;
-        }
-
         // This is the main execute method called by the engine
         public void Execute(Engine engine)
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Pipeline));
+                throw new ObjectDisposedException(nameof(ExecutionPipeline));
             }
 
             // Setup for pipeline execution
@@ -132,7 +126,7 @@ namespace Wyam.Core.Execution
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Pipeline));
+                throw new ObjectDisposedException(nameof(ExecutionPipeline));
             }
 
             ImmutableArray<IDocument> resultDocuments = ImmutableArray<IDocument>.Empty;
@@ -252,7 +246,7 @@ namespace Wyam.Core.Execution
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(Pipeline));
+                throw new ObjectDisposedException(nameof(ExecutionPipeline));
             }
             _disposed = true;
             ResetClonedDocuments();

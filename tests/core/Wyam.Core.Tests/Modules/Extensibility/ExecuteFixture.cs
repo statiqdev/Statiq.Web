@@ -201,26 +201,6 @@ namespace Wyam.Core.Tests.Modules.Extensibility
             }
 
             [Test]
-            public void ExecuteRunsModuleAgainstInputDocuments()
-            {
-                // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument[] inputs =
-                {
-                    Substitute.For<IDocument>(),
-                    Substitute.For<IDocument>()
-                };
-                IModule module = Substitute.For<IModule>();
-                Execute execute = new Execute(c => module);
-
-                // When
-                ((IModule)execute).Execute(inputs, context).ToList();
-
-                // Then
-                context.Received(1).Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>());
-            }
-
-            [Test]
             public void SetsNewContentForInputDocuments()
             {
                 // Given

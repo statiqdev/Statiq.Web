@@ -49,13 +49,14 @@
     <Compile Include="Configuration\INamespacesCollection.cs" />
     <Compile Include="Configuration\IRawAssemblyCollection.cs" />
     <Compile Include="Configuration\Recipe.cs" />
-    <Compile Include="Configuration\RecipePipeline.cs" />
     <Compile Include="Documents\GroupByExtensions.cs" />
     <Compile Include="Documents\ToLookupExtensions.cs" />
     <Compile Include="Documents\IDocumentFactory.cs" />
     <Compile Include="Execution\IEngine.cs" />
     <Compile Include="Configuration\IRecipe.cs" />
+    <Compile Include="Execution\Pipeline.cs" />
     <Compile Include="Execution\PipelineCollectionExtensions.cs" />
+    <Compile Include="Execution\PipelineExtensions.cs" />
     <Compile Include="JavaScript\IJsEnginePool.cs" />
     <Compile Include="Modules\ContainerModule.cs" />
     <Compile Include="Modules\IModuleList.cs" />

@@ -1,7 +1,7 @@
 Title: All Tags
 ---
 <ul class="actions small">           
-    @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
+    @foreach (IDocument tagDocument in Documents[Blog.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
     {
         string tag = tagDocument.String(BlogKeys.Tag);
         string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
