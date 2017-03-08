@@ -145,6 +145,24 @@
     <Compile Include="DocsPipelines.cs" />
     <Compile Include="DocsTable.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Pipelines\Api.cs" />
+    <Compile Include="Pipelines\ApiIndex.cs" />
+    <Compile Include="Pipelines\ApiSearchIndex.cs" />
+    <Compile Include="Pipelines\BlogArchives.cs" />
+    <Compile Include="Pipelines\BlogAuthors.cs" />
+    <Compile Include="Pipelines\BlogCategories.cs" />
+    <Compile Include="Pipelines\BlogFeed.cs" />
+    <Compile Include="Pipelines\BlogIndexes.cs" />
+    <Compile Include="Pipelines\BlogPosts.cs" />
+    <Compile Include="Pipelines\Code.cs" />
+    <Compile Include="Pipelines\Less.cs" />
+    <Compile Include="Pipelines\Pages.cs" />
+    <Compile Include="Pipelines\Redirects.cs" />
+    <Compile Include="Pipelines\RenderApi.cs" />
+    <Compile Include="Pipelines\RenderBlogPosts.cs" />
+    <Compile Include="Pipelines\RenderPages.cs" />
+    <Compile Include="Pipelines\Resources.cs" />
+    <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +216,7 @@
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

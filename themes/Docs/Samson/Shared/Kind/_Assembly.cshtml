@@ -1,5 +1,5 @@
 @foreach(IGrouping<string, IDocument> typeGroup 
-    in Documents.FromPipeline(DocsPipelines.Api)
+    in Documents.FromPipeline(Docs.Api)
         .Where(x => x.Bool("IsResult") && x["Kind"].Equals("NamedType") && x.Document("ContainingAssembly") == Model)
         .GroupBy(x => x.String("SpecificKind"))
         .OrderBy(x => x.Key))

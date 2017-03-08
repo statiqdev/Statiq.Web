@@ -25,53 +25,33 @@ namespace Wyam.Blog
     /// </summary>
     public class Blog : Recipe
     {
-        /// <summary>
-        /// The <see cref="Pages"/> pipeline.
-        /// </summary>
+#pragma warning disable 1591
+
         [SourceInfo]
         public static Pipeline Pages { get; } = new Pages();
 
-        /// <summary>
-        /// The <see cref="RawPosts"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline RawPosts { get; } = new RawPosts();
 
-        /// <summary>
-        /// The <see cref="Tags"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline Tags { get; } = new Tags();
 
-        /// <summary>
-        /// The <see cref="Posts"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline Posts { get; } = new Posts();
 
-        /// <summary>
-        /// The <see cref="Feed"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline Feed { get; } = new Feed();
 
-        /// <summary>
-        /// The <see cref="RenderPages"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline RenderPages { get; } = new RenderPages();
 
-        /// <summary>
-        /// The <see cref="Redirects"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline Redirects { get; } = new Redirects();
 
-        /// <summary>
-        /// The <see cref="Resources"/> pipeline.
-        /// </summary>
         [SourceInfo]
         public static Pipeline Resources { get; } = new Resources();
+
+#pragma warning restore 1591
 
         /// <summary>
         /// The <see cref="ValidateLinks"/> pipeline.

@@ -1,7 +1,7 @@
 <li class="header">Assemblies</li>   
 @{
     IReadOnlyList<IDocument> assemblies = 
-        Documents.FromPipeline(DocsPipelines.Api)
+        Documents.FromPipeline(Docs.Api)
 			.Where(x => x.String("Kind") == "Assembly")
             .OrderBy(x => x.String("DisplayName"))
             .ToList();

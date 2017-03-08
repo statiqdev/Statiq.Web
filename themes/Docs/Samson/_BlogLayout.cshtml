@@ -4,7 +4,7 @@
 
 @section Sidebar {
     <li class="header"><i class="fa fa-bookmark"></i> Categories</li>    
-    @foreach(string category in Documents[DocsPipelines.BlogPosts]
+    @foreach(string category in Documents[Docs.BlogPosts]
         .Select(x => x.String(DocsKeys.Category))
         .Distinct()
         .OrderBy(x => x))
@@ -15,7 +15,7 @@
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
-    @foreach(DateTime published in Documents[DocsPipelines.BlogPosts]
+    @foreach(DateTime published in Documents[Docs.BlogPosts]
         .Select(x => x.Get<DateTime>(DocsKeys.Published))
         .Select(x => new DateTime(x.Year, x.Month, 1))
         .Distinct()
@@ -27,7 +27,7 @@
     }
     
     <li class="header"><i class="fa fa-user"></i> Authors</li>    
-    @foreach(string author in Documents[DocsPipelines.BlogPosts]
+    @foreach(string author in Documents[Docs.BlogPosts]
         .Select(x => x.String(DocsKeys.Author))
         .Distinct()
         .OrderBy(x => x))

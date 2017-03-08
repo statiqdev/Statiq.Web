@@ -1,15 +1,15 @@
 @{
     List<Tuple<string, string>> pages = Context
-        .Documents[DocsPipelines.Pages]
+        .Documents[Docs.Pages]
         .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
         .Select(x => Tuple.Create(x.WithoutSettings.String(Keys.Title), Context.GetLink(x)))
         .OrderBy(x => x.Item1)
         .ToList();
-    if(Documents[DocsPipelines.BlogPosts].Any())
+    if(Documents[Docs.BlogPosts].Any())
     {
         pages.Add(Tuple.Create("Blog", Context.GetLink("blog")));
     }
-    if(Documents[DocsPipelines.Api].Any())
+    if(Documents[Docs.Api].Any())
     {
         pages.Add(Tuple.Create("API", Context.GetLink("api")));
     }
