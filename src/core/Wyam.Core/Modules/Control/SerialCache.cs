@@ -3,8 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 
+using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
@@ -21,12 +21,15 @@ namespace Wyam.Core.Modules.Control
         // Considerations
         // - This module assumes a single input/multiple outputs
         // - Should we cache selectively?
-        // TO.DO
+        // - Should we cache into memory for smaller files?
+        // TO-DO
         // Consider cacheability based on metadata and source path, not just content.
+        // Get a meta key from the user for cache breakage.
 
         // TODO Move this to key object
         private const string InputHashKey = "SerialCache.InputHash";
         private const string FromCacheKey = "SerialCache.FromCache";
+        private const string TemporaryFolderName = @"Wyam\SerialCache";
 
         private readonly ConcurrentDictionary<string, IList<CachedDocument>> _cachePerHash = new ConcurrentDictionary<string, IList<CachedDocument>>();
 
@@ -58,19 +61,36 @@ namespace Wyam.Core.Modules.Control
                 IEnumerable<IDocument> inputs = ToSingleEnumerable(input);
 
                 List<IDocument> outputs = context.Execute(this, inputs).ToList();
-                return outputs.Select(CachedDocument.Create).ToList();
+                return outputs.Select(Create).ToList();
             };
             IList<CachedDocument> result = _cachePerHash.GetOrAdd(hashKey, s => lazyExecute());
 
             // Added possibly helpful metadata.
-            var extaMetaData = new Dictionary<string, object>
+            Dictionary<string, object> extaMetaData = new Dictionary<string, object>
             {
                 {InputHashKey, hashKey},
                 {FromCacheKey, fromCache}
             };
             foreach (CachedDocument output in result)
             {
-                yield return context.GetDocument(output.FileSource, new MemoryStream(output.Content), output.MetaData.Concat(extaMetaData));
+                yield return context.GetDocument(output.FileSource, output.ContentStream, output.MetaData.Concat(extaMetaData));
+            }
+        }
+
+        private static CachedDocument Create(IDocument document)
+        {
+            using (Stream stream = document.GetStream())
+            {
+                string tempFolder = Path.Combine(Path.GetTempPath(), TemporaryFolderName);
+                Directory.CreateDirectory(tempFolder);
+                string tempFile = Path.Combine(tempFolder, $"{Guid.NewGuid()}.cache");
+
+                // Copy to cache file
+                using (FileStream cacheFile = File.OpenWrite(tempFile))
+                {
+                    stream.CopyTo(cacheFile);
+                }
+                return new CachedDocument(document.Source, tempFile, document.Metadata);
             }
         }
 
@@ -91,34 +111,37 @@ namespace Wyam.Core.Modules.Control
 
         private static string GetHashKey(string key, Stream stream)
         {
-            using (MD5 md5 = MD5.Create())
-            {
-                byte[] hashedBytes = md5.ComputeHash(stream);
-                return key + BitConverter.ToString(md5.ComputeHash(hashedBytes));
-            }
+            string hash = Crc32.Calculate(stream).ToString("x8");
+            return key + hash;
         }
 
-        private class CachedDocument
+        private class CachedDocument : IDisposable
         {
-            public FilePath FileSource { get; private set; }
+            // Keep a lock as other Wyam instances may be sharing this directory of cache.
+            private readonly FileStream _lock;
 
-            public byte[] Content { get; private set; }
+            public FilePath FileSource { get; }
 
-            public IMetadata MetaData { get; private set; }
+            public string ContentPath { get; }
 
-            public static CachedDocument Create(IDocument document)
+            public Stream ContentStream => File.OpenRead(ContentPath);
+
+            public IMetadata MetaData { get; }
+
+            public CachedDocument(FilePath fileSource, string contentPath, IMetadata metaData, bool lockFile = true)
             {
-                using (Stream stream = document.GetStream())
+                FileSource = fileSource;
+                ContentPath = contentPath;
+                MetaData = metaData;
+                if (lockFile)
                 {
-                    MemoryStream memory = new MemoryStream();
-                    stream.CopyTo(memory);
-                    return new CachedDocument
-                    {
-                        Content = memory.ToArray(),
-                        FileSource = document.Source,
-                        MetaData = document.Metadata
-                    };
+                    _lock = new FileStream(contentPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 }
+            }
+
+            public void Dispose()
+            {
+                _lock.Dispose();
             }
         }
     }
