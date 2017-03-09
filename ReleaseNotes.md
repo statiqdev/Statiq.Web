@@ -1,3 +1,11 @@
+# 0.17.1
+
+- [Fix] Fixed regression in `Execute` module that caused tags not to be output in Blog recipe
+- [Feature] Added a new `Pipeline` class in `Wyam.Common` to use as base for predefined pipelines (I.e., in recipes)
+- [Refactoring] Moved `ModuleCollection` module to `Extensibility` namespace
+- [Refactoring] Code quality ruleset updates
+- [Fix] Resolves server errors with LiveReload (#465, thanks @Silvenga)
+
 # 0.17.0
 
 - [Fix] `CodeAnalysis` module only displays duplicate comments once for partial classes (#460, #463, thanks @M-Zuber)
