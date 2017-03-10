@@ -60,12 +60,12 @@ namespace Wyam.Blog.Pipelines
                             .WithComparer(ctx.Bool(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                     new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                     new ForEach(
-                        new Paginate(10,
-                            new Documents((doc, ctx) => doc[Keys.GroupDocuments])
-                        ),
+                        new Execute(ctx =>
+                            new Paginate(
+                                ctx.Get(BlogKeys.TagPageSize, int.MaxValue),
+                                new Documents((doc, _) => doc[Keys.GroupDocuments]))),
                         new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
                         new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
-                        new Meta(BlogKeys.TagsItemsCount, (doc, ctx) => doc.DocumentList(Keys.GroupDocuments).Count),
                         new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                         {
                             string tag = doc.String(Keys.GroupKey).ToLowerInvariant().Replace(' ', '-');
@@ -73,8 +73,7 @@ namespace Wyam.Blog.Pipelines
                             return doc.Get<int>(Keys.CurrentPage) == 1
                                 ? $"tags/{tag}.html"
                                 : $"tags/{tag}{doc[Keys.CurrentPage]}.html";
-                        })
-                    )
+                        }))
                 }
             },
             {

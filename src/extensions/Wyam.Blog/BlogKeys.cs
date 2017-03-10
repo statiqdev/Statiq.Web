@@ -168,6 +168,13 @@ namespace Wyam.Blog
         /// <type><see cref="bool"/></type>
         public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
 
+        /// <summary>
+        /// The page size for tag archive pages (if not specified, no paging will be used).
+        /// </summary>
+        /// <scope>Global</scope>
+        /// <type><see cref="int"/></type>
+        public const string TagPageSize = nameof(TagPageSize);
+
         // ***Document
 
         /// <summary>
@@ -183,14 +190,7 @@ namespace Wyam.Blog
         /// <scope>Document</scope>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string Tags = nameof(Tags);
-
-        /// <summary>
-        /// The number of posts per tag.
-        /// </summary>
-        /// <scope>Document</scope>
-        /// <type><see cref="int"/></type>
-        public const string TagsItemsCount = nameof(TagsItemsCount);
-
+        
         /// <summary>
         /// A short description of a particular blog post.
         /// </summary>

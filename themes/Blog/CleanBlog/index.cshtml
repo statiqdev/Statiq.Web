@@ -34,10 +34,10 @@
         <div>
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
                                                 .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(BlogKeys.TagsItemsCount)).Take(10))
+                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
             {
                 string tag = tagDocument.String(BlogKeys.Tag);
-                string postCount = tagDocument.String(BlogKeys.TagsItemsCount);
+                string postCount = tagDocument.String(Keys.TotalItems);
                 <a role="button" href="@Context.GetLink(tagDocument)" class="btn btn-default btn-sm"> @tag (@postCount)</a>
             }
         </div>
