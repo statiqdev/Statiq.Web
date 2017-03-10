@@ -190,7 +190,7 @@ namespace Wyam.Blog
         /// <scope>Document</scope>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string Tags = nameof(Tags);
-        
+
         /// <summary>
         /// A short description of a particular blog post.
         /// </summary>

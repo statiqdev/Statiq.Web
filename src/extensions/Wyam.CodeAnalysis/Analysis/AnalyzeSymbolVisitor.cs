@@ -25,7 +25,6 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>> _namespaceDisplayNameToSymbols = new ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>>();
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
         private readonly ConcurrentHashSet<IMethodSymbol> _extensionMethods = new ConcurrentHashSet<IMethodSymbol>();
-        private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
 
         private readonly Compilation _compilation;
         private readonly IExecutionContext _context;
@@ -37,6 +36,8 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly MethodInfo _getAccessibleMembersInThisAndBaseTypes;
         private readonly Type _documentationCommentCompiler;
         private readonly MethodInfo _documentationCommentCompilerDefaultVisit;
+
+        private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
 
         public AnalyzeSymbolVisitor(
@@ -144,16 +145,16 @@ namespace Wyam.CodeAnalysis.Analysis
                     { CodeAnalysisKeys.BaseTypes, DocumentsFor(GetBaseTypes(symbol)) },
                     { CodeAnalysisKeys.AllInterfaces, DocumentsFor(symbol.AllInterfaces) },
                     { CodeAnalysisKeys.Members, DocumentsFor(GetAccessibleMembersInThisAndBaseTypes(symbol, symbol).Where(MemberPredicate)) },
+                    { CodeAnalysisKeys.Operators, DocumentsFor(GetAccessibleMembersInThisAndBaseTypes(symbol, symbol).Where(OperatorPredicate)) },
                     { CodeAnalysisKeys.ExtensionMethods, _ => DocumentsFor(_extensionMethods.Where(x => x.ReduceExtensionMethod(symbol) != null)) },
-                    { CodeAnalysisKeys.Constructors,
-                        DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
+                    { CodeAnalysisKeys.Constructors, DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
                     { CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString() },
                     { CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol) }
                 };
                 if (!_finished)
                 {
-                    metadata.AddRange(new []
+                    metadata.AddRange(new[]
                     {
                         new MetadataItem(CodeAnalysisKeys.DerivedTypes, _ => GetDerivedTypes(symbol), true),
                         new MetadataItem(CodeAnalysisKeys.ImplementingTypes, _ => GetImplementingTypes(symbol), true)
@@ -164,7 +165,8 @@ namespace Wyam.CodeAnalysis.Analysis
                 // Descend if not finished, and only if this type was included
                 if (!_finished)
                 {
-                    Parallel.ForEach(symbol.GetMembers()
+                    Parallel.ForEach(
+                        symbol.GetMembers()
                         .Where(MemberPredicate)
                         .Concat(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)),
                         s => s.Accept(this));
@@ -210,8 +212,7 @@ namespace Wyam.CodeAnalysis.Analysis
             {
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
-                    new MetadataItem(CodeAnalysisKeys.SpecificKind,
-                        _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
+                    new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
@@ -303,6 +304,12 @@ namespace Wyam.CodeAnalysis.Analysis
                 return true;
             }
             return symbol.CanBeReferencedByName && !symbol.IsImplicitlyDeclared;
+        }
+
+        private bool OperatorPredicate(ISymbol symbol)
+        {
+            IMethodSymbol method = symbol as IMethodSymbol;
+            return method != null && (method.MethodKind == MethodKind.Conversion || method.MethodKind == MethodKind.UserDefinedOperator);
         }
 
         private IDocument AddMemberDocument(ISymbol symbol, bool xmlDocumentation, MetadataItems items)

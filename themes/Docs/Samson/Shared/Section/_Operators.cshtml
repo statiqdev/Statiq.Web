@@ -1,0 +1,43 @@
+@using Microsoft.AspNetCore.Html;
+@{
+	IList<IDocument> operators = Model.List<IDocument>(CodeAnalysisKeys.Operators)
+		.OrderBy(x => x["DisplayName"])
+		.ToList();
+	if(operators.Count > 0)
+	{
+		<text>
+			<h1 id="Operators">Operators</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover three-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Summary</th>
+							</tr>
+						</thead>
+						@foreach(IDocument op in operators)
+						{
+							IDocument returnType = op.Get<IDocument>("ReturnType");
+							<tr>
+								<td>@Context.GetTypeLink(op)</td>
+								<td>@(returnType == null ? new HtmlString(string.Empty) : Context.GetTypeLink(returnType))</td>
+								<td>
+									<div>@Html.Raw(op.Get("Summary"))</div>
+									@{
+										IDocument containingType = op.Document(CodeAnalysisKeys.ContainingType);
+										if(containingType != Model)
+										{
+											<div><small><em>Inherited from @Context.GetTypeLink(containingType)</em></small></div>
+										}
+									}
+								</td>
+							</tr>
+						}
+					</table>
+				</div>
+			</div>
+		</text>
+	}
+}

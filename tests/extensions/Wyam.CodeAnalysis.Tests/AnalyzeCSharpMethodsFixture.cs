@@ -53,6 +53,38 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void ClassOperatorsContainsOperators()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public class Blue
+                        {
+	                        public static Blue operator +(Blue a1, Blue a2)
+	                        {
+		                        return null;
+	                        }
+                            public static explicit operator string(Blue b)
+	                        {
+	                            return null;
+	                        }
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                CollectionAssert.AreEquivalent(new[] { "op_Addition", "op_Explicit" },
+                    GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Operators").Select(x => x["Name"]));
+            }
+
+            [Test]
             public void ContainingTypeIsCorrect()
             {
                 // Given
