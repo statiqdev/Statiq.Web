@@ -27,11 +27,6 @@ namespace Wyam.Blog.Pipelines
         public const string TagDocuments = nameof(TagDocuments);
 
         /// <summary>
-        /// Sets the relative file path for each tag document in metadata.
-        /// </summary>
-        public const string RelativeFilePath = nameof(RelativeFilePath);
-
-        /// <summary>
         /// Renders each tag document.
         /// </summary>
         public const string Render = nameof(Render);
@@ -64,18 +59,23 @@ namespace Wyam.Blog.Pipelines
                         new GroupByMany(BlogKeys.Tags, new Documents(Blog.RawPosts))
                             .WithComparer(ctx.Bool(BlogKeys.CaseInsensitiveTags) ? StringComparer.OrdinalIgnoreCase : null)),
                     new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
-                    new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
-                    new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
-                    new Meta(BlogKeys.Posts, (doc, ctx) => doc.List<IDocument>(Keys.GroupDocuments))
+                    new ForEach(
+                        new Paginate(10,
+                            new Documents((doc, ctx) => doc[Keys.GroupDocuments])
+                        ),
+                        new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
+                        new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
+                        new Meta(BlogKeys.TagsItemsCount, (doc, ctx) => doc.DocumentList(Keys.GroupDocuments).Count),
+                        new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                        {
+                            string tag = doc.String(Keys.GroupKey).ToLowerInvariant().Replace(' ', '-');
+                            tag = tag.StartsWith(".") ? tag.Substring(1) : tag;
+                            return doc.Get<int>(Keys.CurrentPage) == 1
+                                ? $"tags/{tag}.html"
+                                : $"tags/{tag}{doc[Keys.CurrentPage]}.html";
+                        })
+                    )
                 }
-            },
-            {
-                RelativeFilePath,
-                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                {
-                    string tag = doc.String(Keys.GroupKey);
-                    return $"tags/{(tag.StartsWith(".") ? tag.Substring(1) : tag).ToLowerInvariant().Replace(' ', '-')}.html";
-                })
             },
             {
                 Render,
