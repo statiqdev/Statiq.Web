@@ -2,17 +2,43 @@ Title: All Tags
 ---
 <div class="row">
     <div class="8u 12u$(medium)">
-        @Html.Partial("_PostList", Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
+        @Html.Partial("_PostList", Model.DocumentList(Keys.PageDocuments).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
+
+        <nav>
+            @{
+                string tag = Model.String(BlogKeys.Tag).ToLowerInvariant().Replace(' ', '-');
+                tag = tag.StartsWith(".") ? tag.Substring(1) : tag;
+            }
+            <ul class="pager">
+                <li class="previous">            
+                    @if(Model.Bool(Keys.HasPreviousPage))
+                    {
+                        string previousPage = Model.Get<int>(Keys.CurrentPage) == 2
+                            ? $"/tags/{tag}.html" : $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) - 1}";
+                        <a href="@previousPage"><span aria-hidden="true">&larr;</span> Newer</a>
+                    }                
+                </li>
+                <li class="next">
+                    @if(Model.Bool(Keys.HasNextPage))
+                    {
+                        string nextPage = $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) + 1}";
+                        <a href="@nextPage">Older <span aria-hidden="true">&rarr;</span></a>
+                    }
+                </li>
+            </ul>
+        </nav>
     </div>
     
     <div class="4u 12u$(medium)">
         <ul class="actions small">
-            @foreach (IDocument tagDocument in Documents[Blog.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                                                .OrderByDescending(x => x.Get<int>(BlogKeys.TagsItemsCount)))
             {
-                string tag = tagDocument.String(BlogKeys.Tag);
-                string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
-                string buttonStyle = tag == Model.String(BlogKeys.Tag) ? "special" : string.Empty;
-                <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small @buttonStyle">@tag (@postCount)</a></li>
+                string tagName = tagDocument.String(BlogKeys.Tag);
+                string postCount = tagDocument.String(BlogKeys.TagsItemsCount);
+                string buttonStyle = tagName == Model.String(BlogKeys.Tag) ? "special" : string.Empty;
+                <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small @buttonStyle">@tagName (@postCount)</a></li>
             }
         </ul>
     </div>
