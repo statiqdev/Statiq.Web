@@ -25,39 +25,41 @@ namespace Wyam.Blog
     /// </summary>
     public class Blog : Recipe
     {
-#pragma warning disable 1591
-
+        /// <inheritdoc cref="Pipelines.Pages" />
         [SourceInfo]
-        public static Pipeline Pages { get; } = new Pages();
+        public static Pages Pages { get; } = new Pages();
 
+        /// <inheritdoc cref="Pipelines.RawPosts" />
         [SourceInfo]
-        public static Pipeline RawPosts { get; } = new RawPosts();
+        public static RawPosts RawPosts { get; } = new RawPosts();
 
+        /// <inheritdoc cref="Pipelines.Tags" />
         [SourceInfo]
-        public static Pipeline Tags { get; } = new Tags();
+        public static Tags Tags { get; } = new Tags();
 
+        /// <inheritdoc cref="Pipelines.Posts" />
         [SourceInfo]
-        public static Pipeline Posts { get; } = new Posts();
+        public static Posts Posts { get; } = new Posts();
 
+        /// <inheritdoc cref="Pipelines.Feed" />
         [SourceInfo]
-        public static Pipeline Feed { get; } = new Feed();
+        public static Feed Feed { get; } = new Feed();
 
+        /// <inheritdoc cref="Pipelines.RenderPages" />
         [SourceInfo]
-        public static Pipeline RenderPages { get; } = new RenderPages();
+        public static RenderPages RenderPages { get; } = new RenderPages();
 
+        /// <inheritdoc cref="Pipelines.Redirects" />
         [SourceInfo]
-        public static Pipeline Redirects { get; } = new Redirects();
+        public static Redirects Redirects { get; } = new Redirects();
 
+        /// <inheritdoc cref="Pipelines.Resources" />
         [SourceInfo]
-        public static Pipeline Resources { get; } = new Resources();
+        public static Resources Resources { get; } = new Resources();
 
-#pragma warning restore 1591
-
-        /// <summary>
-        /// The <see cref="ValidateLinks"/> pipeline.
-        /// </summary>
+        /// <inheritdoc cref="Pipelines.ValidateLinks" />
         [SourceInfo]
-        public static Pipeline ValidateLinks { get; } = new ValidateLinks();
+        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
 
         /// <inheritdoc/>
         public override void Apply(IEngine engine)

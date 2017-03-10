@@ -24,63 +24,77 @@ namespace Wyam.Docs
     {
         private static readonly ConcurrentDictionary<string, string> TypeNamesToLink = new ConcurrentDictionary<string, string>();
 
-#pragma warning disable 1591
-
+        /// <inheritdoc cref="Pipelines.Code" />
         [SourceInfo]
-        public static Pipeline Code { get; } = new Code();
+        public static Code Code { get; } = new Code();
 
+        /// <inheritdoc cref="Pipelines.Api" />
         [SourceInfo]
-        public static Pipeline Api { get; } = new Api(TypeNamesToLink);
+        public static Api Api { get; } = new Api(TypeNamesToLink);
 
+        /// <inheritdoc cref="Pipelines.Pages" />
         [SourceInfo]
-        public static Pipeline Pages { get; } = new Pages(TypeNamesToLink);
+        public static Pages Pages { get; } = new Pages(TypeNamesToLink);
 
+        /// <inheritdoc cref="Pipelines.BlogPosts" />
         [SourceInfo]
-        public static Pipeline BlogPosts { get; } = new BlogPosts(TypeNamesToLink);
+        public static BlogPosts BlogPosts { get; } = new BlogPosts(TypeNamesToLink);
 
+        /// <inheritdoc cref="Pipelines.BlogIndexes" />
         [SourceInfo]
-        public static Pipeline BlogIndexes { get; } = new BlogIndexes();
+        public static BlogIndexes BlogIndexes { get; } = new BlogIndexes();
 
+        /// <inheritdoc cref="Pipelines.BlogCategories" />
         [SourceInfo]
-        public static Pipeline BlogCategories { get; } = new BlogCategories();
+        public static BlogCategories BlogCategories { get; } = new BlogCategories();
 
+        /// <inheritdoc cref="Pipelines.BlogArchives" />
         [SourceInfo]
-        public static Pipeline BlogArchives { get; } = new BlogArchives();
+        public static BlogArchives BlogArchives { get; } = new BlogArchives();
 
+        /// <inheritdoc cref="Pipelines.BlogAuthors" />
         [SourceInfo]
-        public static Pipeline BlogAuthors { get; } = new BlogAuthors();
+        public static BlogAuthors BlogAuthors { get; } = new BlogAuthors();
 
+        /// <inheritdoc cref="Pipelines.BlogFeed" />
         [SourceInfo]
-        public static Pipeline BlogFeed { get; } = new BlogFeed();
+        public static BlogFeed BlogFeed { get; } = new BlogFeed();
 
+        /// <inheritdoc cref="Pipelines.RenderPages" />
         [SourceInfo]
-        public static Pipeline RenderPages { get; } = new RenderPages();
+        public static RenderPages RenderPages { get; } = new RenderPages();
 
+        /// <inheritdoc cref="Pipelines.RenderBlogPosts" />
         [SourceInfo]
-        public static Pipeline RenderBlogPosts { get; } = new RenderBlogPosts();
+        public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts();
 
+        /// <inheritdoc cref="Pipelines.Redirects" />
         [SourceInfo]
-        public static Pipeline Redirects { get; } = new Redirects();
+        public static Redirects Redirects { get; } = new Redirects();
 
+        /// <inheritdoc cref="Pipelines.RenderApi" />
         [SourceInfo]
-        public static Pipeline RenderApi { get; } = new RenderApi();
+        public static RenderApi RenderApi { get; } = new RenderApi();
 
+        /// <inheritdoc cref="Pipelines.ApiIndex" />
         [SourceInfo]
-        public static Pipeline ApiIndex { get; } = new ApiIndex();
+        public static ApiIndex ApiIndex { get; } = new ApiIndex();
 
+        /// <inheritdoc cref="Pipelines.ApiSearchIndex" />
         [SourceInfo]
-        public static Pipeline ApiSearchIndex { get; } = new ApiSearchIndex();
+        public static ApiSearchIndex ApiSearchIndex { get; } = new ApiSearchIndex();
 
+        /// <inheritdoc cref="Pipelines.Less" />
         [SourceInfo]
-        public static Pipeline Less { get; } = new Pipelines.Less();
+        public static Pipelines.Less Less { get; } = new Pipelines.Less();
 
+        /// <inheritdoc cref="Pipelines.Resources" />
         [SourceInfo]
-        public static Pipeline Resources { get; } = new Resources();
+        public static Resources Resources { get; } = new Resources();
 
+        /// <inheritdoc cref="Pipelines.ValidateLinks" />
         [SourceInfo]
-        public static Pipeline ValidateLinks { get; } = new ValidateLinks();
-
-#pragma warning restore 1591
+        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)

@@ -14,13 +14,13 @@ namespace Wyam.Common.Configuration
     /// A utility class that can be used as the base for recipes. It is not necessary to
     /// derive from this class to create a recipe, implementing <see cref="IRecipe"/> is
     /// sufficient. However, this class does provide some helpful functionality such as
-    /// using reflection to automatically iterate and add all <see cref="RecipePipeline"/>
+    /// using reflection to automatically iterate and add all <see cref="Pipeline"/>
     /// static properties.
     /// </summary>
     public abstract class Recipe : IRecipe
     {
         /// <summary>
-        /// This will reflect over all static <see cref="RecipePipeline"/> properties in the
+        /// This will reflect over all static <see cref="Pipeline"/> properties in the
         /// derived class and will add their modules as pipelines to the engine. This operation
         /// depends on <see cref="SourceInfoAttribute"/> having been applied to all the properties
         /// in order to ensure proper ordering.
