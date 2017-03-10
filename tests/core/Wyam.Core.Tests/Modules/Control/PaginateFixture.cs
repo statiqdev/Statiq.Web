@@ -26,6 +26,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Given
                 List<int> currentPage = new List<int>();
                 List<int> totalPages = new List<int>();
+                List<int> totalItems = new List<int>();
                 List<bool> hasNextPage = new List<bool>();
                 List<bool> hasPreviousPage = new List<bool>();
                 Engine engine = new Engine();
@@ -38,6 +39,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     currentPage.Add(d.Get<int>(Keys.CurrentPage));
                     totalPages.Add(d.Get<int>(Keys.TotalPages));
+                    totalItems.Add(d.Get<int>(Keys.TotalItems));
                     hasNextPage.Add(d.Bool(Keys.HasNextPage));
                     hasPreviousPage.Add(d.Bool(Keys.HasPreviousPage));
                     return null;
@@ -48,10 +50,11 @@ namespace Wyam.Core.Tests.Modules.Control
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEqual(new[] {1, 2, 3}, currentPage);
-                CollectionAssert.AreEqual(new[] {3, 3, 3}, totalPages);
-                CollectionAssert.AreEqual(new[] {true, true, false}, hasNextPage);
-                CollectionAssert.AreEqual(new[] {false, true, true}, hasPreviousPage);
+                CollectionAssert.AreEqual(new[] { 1, 2, 3 }, currentPage);
+                CollectionAssert.AreEqual(new[] { 3, 3, 3 }, totalPages);
+                CollectionAssert.AreEqual(new[] { 8, 8, 8 }, totalItems);
+                CollectionAssert.AreEqual(new[] { true, true, false }, hasNextPage);
+                CollectionAssert.AreEqual(new[] { false, true, true }, hasPreviousPage);
             }
 
             [Test]

@@ -114,6 +114,7 @@ namespace Wyam.Common.Meta
         public const string PageDocuments = nameof(PageDocuments);
         public const string CurrentPage = nameof(CurrentPage);
         public const string TotalPages = nameof(TotalPages);
+        public const string TotalItems = nameof(TotalItems);
         public const string HasNextPage = nameof(HasNextPage);
         public const string HasPreviousPage = nameof(HasPreviousPage);
 

@@ -48,6 +48,7 @@ namespace Wyam.Core.Modules.Control
     /// <metadata name="PageDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current page.</metadata>
     /// <metadata name="CurrentPage" type="int">The index of the current page (1 based).</metadata>
     /// <metadata name="TotalPages" type="int">The total number of pages.</metadata>
+    /// <metadata name="TotalItems" type="int">The total number of items across all pages.</metadata>
     /// <metadata name="HasNextPage" type="bool">Whether there is another page after this one.</metadata>
     /// <metadata name="HasPreviousPage" type="bool">Whether there is another page before this one.</metadata>
     /// <category>Control</category>
@@ -92,7 +93,7 @@ namespace Wyam.Core.Modules.Control
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null
-                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                ? (Func<IDocument, IExecutionContext, bool>)predicate.Invoke<bool>
                 : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
@@ -111,18 +112,20 @@ namespace Wyam.Core.Modules.Control
             {
                 return inputs;
             }
+            int totalItems = partitions.Sum(x => x.Length);
             return inputs.SelectMany(context, input =>
             {
-                return partitions.Select((x, i) => context.GetDocument(input,
+                return partitions.Select((x, i) => context.GetDocument(
+                    input,
                     new Dictionary<string, object>
                     {
-                        {Common.Meta.Keys.PageDocuments, partitions[i]},
-                        {Common.Meta.Keys.CurrentPage, i + 1},
-                        {Common.Meta.Keys.TotalPages, partitions.Length},
-                        {Common.Meta.Keys.HasNextPage, partitions.Length > i + 1},
-                        {Common.Meta.Keys.HasPreviousPage, i != 0}
-                    })
-                );
+                        { Keys.PageDocuments, partitions[i] },
+                        { Keys.CurrentPage, i + 1 },
+                        { Keys.TotalPages, partitions.Length },
+                        { Keys.TotalItems, totalItems },
+                        { Keys.HasNextPage, partitions.Length > i + 1 },
+                        { Keys.HasPreviousPage, i != 0 }
+                    }));
             });
         }
 
