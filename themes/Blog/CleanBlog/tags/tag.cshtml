@@ -3,17 +3,43 @@ Title: All Tags
 <div class="container-sm-height">
     <div class="row row-sm-height">
         <div class="col-sm-8 right-border col-sm-height">
-            @Html.Partial("_PostList", Model.DocumentList(BlogKeys.Posts).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
+            @Html.Partial("_PostList", Model.DocumentList(Keys.PageDocuments).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
+
+            <nav>
+                @{
+                    string tag = Model.String(BlogKeys.Tag).ToLowerInvariant().Replace(' ', '-');
+                    tag = tag.StartsWith(".") ? tag.Substring(1) : tag;
+                }
+                <ul class="pager">
+                    <li class="previous">                
+                        @if(Model.Bool(Keys.HasPreviousPage))
+                        {
+                            string previousPage = Model.Get<int>(Keys.CurrentPage) == 2
+                                ? $"/tags/{tag}.html" : $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) - 1}";
+                            <a href="@previousPage"><span aria-hidden="true">&larr;</span> Newer</a>
+                        }                
+                    </li>
+                    <li class="next">
+                        @if(Model.Bool(Keys.HasNextPage))
+                        {
+                            string nextPage = $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) + 1}";
+                            <a href="@nextPage">Older <span aria-hidden="true">&rarr;</span></a>
+                        }
+                    </li>
+                </ul>
+            </nav>
             <hr class="visible-xs-block" />
         </div>
 		
         <div class="col-sm-4 col-sm-height">
-            @foreach (IDocument tagDocument in Documents[Blog.Tags].OrderBy(x => x.String(BlogKeys.Tag)))
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                                                .OrderByDescending(x => x.Get<int>(BlogKeys.TagsItemsCount)))
             {
-                string tag = tagDocument.String(BlogKeys.Tag);
-                string postCount = tagDocument.DocumentList(BlogKeys.Posts).Count().ToString();
-                string buttonStyle = tag == Model.String(BlogKeys.Tag) ? "btn-primary" : "btn-default";
-                <a role="button" href="@Context.GetLink(tagDocument)" class="btn @buttonStyle btn-xs"> @tag (@postCount)</a>
+                string tagName = tagDocument.String(BlogKeys.Tag);
+                string postCount = tagDocument.String(BlogKeys.TagsItemsCount);
+                string buttonStyle = tagName == Model.String(BlogKeys.Tag) ? "btn-primary" : "btn-default";
+                <a role="button" href="@Context.GetLink(tagDocument)" class="btn @buttonStyle btn-xs">@tagName (@postCount)</a>
             }
         </div>
     </div>

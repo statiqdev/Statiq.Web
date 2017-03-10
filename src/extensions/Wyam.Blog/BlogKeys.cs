@@ -185,6 +185,13 @@ namespace Wyam.Blog
         public const string Tags = nameof(Tags);
 
         /// <summary>
+        /// The number of posts per tag.
+        /// </summary>
+        /// <scope>Document</scope>
+        /// <type><see cref="int"/></type>
+        public const string TagsItemsCount = nameof(TagsItemsCount);
+
+        /// <summary>
         /// A short description of a particular blog post.
         /// </summary>
         /// <scope>Document</scope>
