@@ -37,9 +37,8 @@
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Markdig, Version=0.10.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Markdig.0.10.4\lib\net40\Markdig.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Markdig, Version=0.10.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Markdig.0.10.6\lib\net40\Markdig.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

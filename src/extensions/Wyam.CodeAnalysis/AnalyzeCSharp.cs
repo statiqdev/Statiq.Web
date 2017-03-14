@@ -349,7 +349,7 @@ namespace Wyam.CodeAnalysis
                         {
                             xmlStream.CopyTo(xmlBytes);
                             return MetadataReference.CreateFromStream(assemblyFile.OpenRead(),
-                                documentation: XmlDocumentationProvider.CreateFromBytes(xmlBytes.ToArray()));
+                                documentation: Wyam.CodeAnalysis.Analysis.XmlDocumentationProvider.CreateFromBytes(xmlBytes.ToArray()));
                         }
                     }
                 }

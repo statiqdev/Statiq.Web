@@ -11,6 +11,7 @@ using Wyam.Common.Execution;
 using MetadataExtractor.Formats.Xmp;
 using XmpCore;
 using System.Globalization;
+using System.IO;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
@@ -132,8 +133,12 @@ namespace Wyam.Xmp
                          IFile sidecarFile = context.FileSystem.GetInputFile(sourceFilePath.FullPath + ".xmp");
                          if (sidecarFile.Exists)
                          {
-                             string xmpXml = sidecarFile.ReadAllText();
-                             xmpDirectory = new XmpReader().Extract(xmpXml);
+                             MemoryStream xmpBytes = new MemoryStream();
+                             using (Stream xmpStream = sidecarFile.OpenRead())
+                             {
+                                 xmpStream.CopyTo(xmpBytes);
+                             }
+                             xmpDirectory = new XmpReader().Extract(xmpBytes.ToArray());
                          }
                      }
                  }

@@ -43,5 +43,7 @@ namespace Wyam.Configuration.NuGet
         }
 
         public NuGetActionType ActionType { get; set; }
+
+        public TelemetryServiceHelper TelemetryService { get; set; }
     }
 }

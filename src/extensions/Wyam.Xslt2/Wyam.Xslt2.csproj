@@ -37,9 +37,8 @@
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="saxon9he-api, Version=9.7.0.8, Culture=neutral, PublicKeyToken=e1fdd002d5083fe6, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Saxon-HE.9.7.0.8\lib\net40\saxon9he-api.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="saxon9he-api, Version=9.7.0.15, Culture=neutral, PublicKeyToken=e1fdd002d5083fe6, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Saxon-HE.9.7.0.15\lib\net40\saxon9he-api.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
