@@ -49,11 +49,11 @@ namespace Wyam.Commands
             {
                 syntax.ReportError("force-ext can only be specified if the preview server is running.");
             }
-            if (syntax.DefineOption("virtual-dir", ref _previewVirtualDirectory, DirectoryPath.FromString, "Serve files in the preview web server under the specified virtual directory.").IsSpecified && !_preview)
+            if (syntax.DefineOption("virtual-dir", ref _previewVirtualDirectory, DirectoryPathFromArg, "Serve files in the preview web server under the specified virtual directory.").IsSpecified && !_preview)
             {
                 syntax.ReportError("virtual-dir can only be specified if the preview server is running.");
             }
-            if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPath.FromString, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
+            if (syntax.DefineOption("preview-root", ref _previewRoot, DirectoryPathFromArg, "The path to the root of the preview server, if not the output folder.").IsSpecified && !_preview)
             {
                 syntax.ReportError("preview-root can only be specified if the preview server is running.");
             }
@@ -61,13 +61,13 @@ namespace Wyam.Commands
             {
                 syntax.ReportError("noreload can only be specified if both the preview server is running and watching is enabled.");
             }
-            syntax.DefineOptionList("i|input", ref _configOptions.InputPaths, DirectoryPath.FromString, "The path(s) of input files, can be absolute or relative to the current folder.");
-            syntax.DefineOption("o|output", ref _configOptions.OutputPath, DirectoryPath.FromString, "The path to output files, can be absolute or relative to the current folder.");
+            syntax.DefineOptionList("i|input", ref _configOptions.InputPaths, DirectoryPathFromArg, "The path(s) of input files, can be absolute or relative to the current folder.");
+            syntax.DefineOption("o|output", ref _configOptions.OutputPath, DirectoryPathFromArg, "The path to output files, can be absolute or relative to the current folder.");
             syntax.DefineOption("c|config", ref _configOptions.ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
             syntax.DefineOption("u|update-packages", ref _configOptions.UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
-            syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
+            syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPathFromArg, "The packages path to use (only if use-local is true).");
             syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging.");
             syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
             syntax.DefineOption("noclean", ref _configOptions.NoClean, "Prevents cleaning of the output path on each execution.");

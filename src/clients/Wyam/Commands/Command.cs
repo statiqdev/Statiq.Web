@@ -123,7 +123,7 @@ namespace Wyam.Commands
         // Used by both build and new
         protected static void ParseRootPathParameter(ArgumentSyntax syntax, ConfigOptions configOptions)
         {
-            if (syntax.DefineParameter("root", ref configOptions.RootPath, DirectoryPath.FromString, "The folder (or config file) to use.").IsSpecified)
+            if (syntax.DefineParameter("root", ref configOptions.RootPath, DirectoryPathFromArg, "The folder (or config file) to use.").IsSpecified)
             {
                 // If a root folder was defined, but it actually points to a file, set the root folder to the directory
                 // and use the specified file as the config file (if a config file was already specified, it's an error)
@@ -143,5 +143,13 @@ namespace Wyam.Commands
                 }
             }
         }
+
+        /// <summary>
+        /// This helper method is needed due to the escape behavior of command line argument parsing and the
+        /// way PowerShell handles tab completion of directory paths. See https://github.com/Wyamio/Wyam/issues/472#issuecomment-286884482
+        /// </summary>
+        /// <param name="arg">The command line argument containing the path</param>
+        /// <returns>A <see cref="DirectoryPath"/></returns>
+        protected static DirectoryPath DirectoryPathFromArg(string arg) => DirectoryPath.FromString(arg.TrimEnd(new[] { '"', '\'' }));
     }
 }

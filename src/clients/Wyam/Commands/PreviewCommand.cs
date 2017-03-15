@@ -19,12 +19,12 @@ namespace Wyam.Commands
         {
             syntax.DefineOption("p|port", ref _port, "Start the preview web server on the specified port (default is " + _port + ").");
             syntax.DefineOption("force-ext", ref _forceExtension, "Force the use of extensions in the preview web server (by default, extensionless URLs may be used).");
-            syntax.DefineOption("virtual-dir", ref _virtualDirectory, DirectoryPath.FromString, "Serve files in the preview web server under the specified virtual directory.");
+            syntax.DefineOption("virtual-dir", ref _virtualDirectory, DirectoryPathFromArg, "Serve files in the preview web server under the specified virtual directory.");
         }
 
         protected override void ParseParameters(ArgumentSyntax syntax)
         {
-            syntax.DefineParameter("path", ref _path, DirectoryPath.FromString, "The path that the server should preview (defaults to \"output\").");
+            syntax.DefineParameter("path", ref _path, DirectoryPathFromArg, "The path that the server should preview (defaults to \"output\").");
         }
 
         protected override ExitCode RunCommand(Preprocessor preprocessor)

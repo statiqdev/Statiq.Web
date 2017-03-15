@@ -28,8 +28,8 @@ namespace Wyam.Commands
             syntax.DefineOption("u|update-packages", ref _configOptions.UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
-            syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPath.FromString, "The packages path to use (only if use-local is true).");
-            syntax.DefineOption("i|input", ref _inputPath, DirectoryPath.FromString, "The path of input files, can be absolute or relative to the current folder.");
+            syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPathFromArg, "The packages path to use (only if use-local is true).");
+            syntax.DefineOption("i|input", ref _inputPath, DirectoryPathFromArg, "The path of input files, can be absolute or relative to the current folder.");
             syntax.DefineOption("c|config", ref _configOptions.ConfigFilePath, FilePath.FromString, "Configuration file (by default, config.wyam is used).");
         }
 
