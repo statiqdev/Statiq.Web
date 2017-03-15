@@ -50,15 +50,12 @@
     <Reference Include="System.Xml" />
     <Reference Include="Tabular, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Tabular.dll.2.1.5\lib\net40\Tabular.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Tabular.Csv, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Tabular.Csv.dll.2.1.5\lib\net40\Tabular.Csv.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Tabular.Excel, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Tabular.Excel.dll.2.1.5\lib\net40\Tabular.Excel.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
