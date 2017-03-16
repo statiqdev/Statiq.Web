@@ -133,6 +133,9 @@ namespace Wyam.Core.Execution
             _documentFactory = new DocumentFactory(_settings);
         }
 
+        /// <summary>
+        /// Deletes the output path and all files it contains.
+        /// </summary>
         public void CleanOutputPath()
         {
             try
@@ -148,6 +151,27 @@ namespace Wyam.Core.Execution
             catch (Exception ex)
             {
                 Trace.Warning("Error while cleaning output path {0}: {1} - {2}", FileSystem.OutputPath, ex.GetType(), ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deletes the temp path and all files it contains.
+        /// </summary>
+        public void CleanTempPath()
+        {
+            try
+            {
+                Trace.Information("Cleaning temp path {0}", FileSystem.TempPath);
+                IDirectory tempDirectory = FileSystem.GetTempDirectory();
+                if (tempDirectory.Exists)
+                {
+                    tempDirectory.Delete(true);
+                }
+                Trace.Information("Cleaned temp directory");
+            }
+            catch (Exception ex)
+            {
+                Trace.Warning("Error while cleaning temp path {0}: {1} - {2}", FileSystem.TempPath, ex.GetType(), ex.Message);
             }
         }
 
@@ -174,6 +198,8 @@ namespace Wyam.Core.Execution
                 Trace.Error("No pipelines are configured. Please supply a configuration file, specify a recipe, or configure programmatically");
                 return;
             }
+
+            CleanTempPath();
 
             // Clean the output folder if requested
             if (Settings.Bool(Keys.CleanOutputPath))
@@ -249,6 +275,7 @@ namespace Wyam.Core.Execution
                 pipeline.Dispose();
             }
             System.Diagnostics.Trace.Listeners.Remove(_diagnosticsTraceListener);
+            CleanTempPath();
             _disposed = true;
         }
 

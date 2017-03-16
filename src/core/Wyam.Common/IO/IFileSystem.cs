@@ -42,6 +42,9 @@ namespace Wyam.Common.IO
         /// </value>
         new DirectoryPath OutputPath { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets the temporary file path.
+        /// </summary>
+        new DirectoryPath TempPath { get; set; }
     }
 }

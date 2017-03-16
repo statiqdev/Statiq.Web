@@ -48,6 +48,13 @@ namespace Wyam.Common.Meta
         /// </summary>
         public const string CleanOutputPath = nameof(CleanOutputPath);
 
+        /// <summary>
+        /// Specifies that temporary files should be created to store document content. This reduces
+        /// memory pressure for extremly large generations by not storing document content strings
+        /// in memory. The tradeoff is performance since file I/O is much slower than memory.
+        /// </summary>
+        public const string UseTempContentFiles = nameof(UseTempContentFiles);
+
         // ReadFile/WriteFiles/CopyFiles
 
         /// <summary>

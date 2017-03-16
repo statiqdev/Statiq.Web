@@ -16,10 +16,10 @@ namespace Wyam.Core.Documents
     // Document source must be unique within the pipeline
     internal class Document : IDocument
     {
+        private readonly object _streamLock;
         private readonly MetadataStack _metadata;
         private string _content;
         private Stream _stream;
-        private readonly object _streamLock;
         private bool _disposeStream;
         private bool _disposed;
 

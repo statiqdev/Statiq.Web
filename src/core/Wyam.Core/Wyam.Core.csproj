@@ -155,6 +155,7 @@
     <Compile Include="Documents\CustomDocument.cs" />
     <Compile Include="Documents\CustomDocumentFactory.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
+    <Compile Include="Documents\TempFileStream.cs" />
     <Compile Include="IO\FileProviderCollection.cs" />
     <Compile Include="IO\FileSystem.cs" />
     <Compile Include="IO\Globbing\DirectoryInfo.cs" />

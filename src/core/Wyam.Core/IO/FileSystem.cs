@@ -17,6 +17,7 @@ namespace Wyam.Core.IO
     {
         private DirectoryPath _rootPath = System.IO.Directory.GetCurrentDirectory();
         private DirectoryPath _outputPath = "output";
+        private DirectoryPath _tempPath = "temp";
 
         public FileSystem()
         {
@@ -63,6 +64,19 @@ namespace Wyam.Core.IO
                     throw new ArgumentNullException(nameof(OutputPath));
                 }
                 _outputPath = value;
+            }
+        }
+
+        public DirectoryPath TempPath
+        {
+            get { return _tempPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(TempPath));
+                }
+                _tempPath = value;
             }
         }
 
@@ -168,6 +182,29 @@ namespace Wyam.Core.IO
 
         public IDirectory GetOutputDirectory(DirectoryPath path = null) =>
             GetDirectory(GetOutputPath(path));
+
+        public FilePath GetTempPath(FilePath path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            return RootPath.Combine(TempPath).CombineFile(path);
+        }
+
+        public DirectoryPath GetTempPath(DirectoryPath path = null) =>
+            path == null
+                ? RootPath.Combine(TempPath)
+                : RootPath.Combine(TempPath).Combine(path);
+
+        public IFile GetTempFile(FilePath path) =>
+            GetFile(GetTempPath(path));
+
+        public IFile GetTempFile() => GetTempFile(System.IO.Path.ChangeExtension(System.IO.Path.GetRandomFileName(), "tmp"));
+
+        public IDirectory GetTempDirectory(DirectoryPath path = null) =>
+            GetDirectory(GetTempPath(path));
 
         public IFile GetRootFile(FilePath path)
         {

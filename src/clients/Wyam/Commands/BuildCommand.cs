@@ -160,6 +160,7 @@ namespace Wyam.Commands
             Trace.Information($"Root path:{Environment.NewLine}    {engineManager.Engine.FileSystem.RootPath}");
             Trace.Information($"Input path(s):{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.FileSystem.InputPaths)}");
             Trace.Information($"Output path:{Environment.NewLine}    {engineManager.Engine.FileSystem.OutputPath}");
+            Trace.Information($"Temp path:{Environment.NewLine}    {engineManager.Engine.FileSystem.TempPath}");
             Trace.Information($"Settings:{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.Settings.Select(x => $"{x.Key}: {x.Value?.ToString() ?? "null"}"))}");
             if (!engineManager.Execute())
             {

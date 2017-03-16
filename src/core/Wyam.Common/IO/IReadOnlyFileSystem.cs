@@ -55,6 +55,14 @@ namespace Wyam.Common.IO
         DirectoryPath OutputPath { get; }
 
         /// <summary>
+        /// Gets the temporary file path.
+        /// </summary>
+        /// <value>
+        /// The temporary file path.
+        /// </value>
+        DirectoryPath TempPath { get; }
+
+        /// <summary>
         /// Gets a file representing an input.
         /// </summary>
         /// <param name="path">
@@ -179,6 +187,52 @@ namespace Wyam.Common.IO
         /// </param>
         /// <returns>A root directory.</returns>
         IDirectory GetRootDirectory(DirectoryPath path = null);
+
+        /// <summary>
+        /// Gets a temp file path by combining it with the root path and temp path.
+        /// </summary>
+        /// <param name="path">The path to combine with the root path and temp path.</param>
+        /// <returns>The temp file path.</returns>
+        FilePath GetTempPath(FilePath path);
+
+        /// <summary>
+        /// Gets a temp directory path by combining it with the root path and temp path.
+        /// </summary>
+        /// <param name="path">The path to combine with the root path and temp path.
+        /// If this is <c>null</c>, returns the root path combined with the temp path.</param>
+        /// <returns>The temp directory path.</returns>
+        DirectoryPath GetTempPath(DirectoryPath path = null);
+
+        /// <summary>
+        /// Gets a file representing a temp file.
+        /// </summary>
+        /// <param name="path">
+        /// If this is an absolute path,
+        /// then a file representing the specified path is returned.
+        /// If it's a relative path, then it will be combined with the
+        /// current temp path.
+        /// </param>
+        /// <returns>A temp file.</returns>
+        IFile GetTempFile(FilePath path);
+
+        /// <summary>
+        /// Gets a file representing a temp file with a random file name.
+        /// </summary>
+        /// <returns>A temp file.</returns>
+        IFile GetTempFile();
+
+        /// <summary>
+        /// Gets a directory representing temp files.
+        /// </summary>
+        /// <param name="path">
+        /// The path of the temp directory. If this is an absolute path,
+        /// then a directory representing the specified path is returned.
+        /// If it's a relative path, then it will be combined with the
+        /// current temp path. If this is <c>null</c> then the base
+        /// temp directory is returned.
+        /// </param>
+        /// <returns>A temp directory.</returns>
+        IDirectory GetTempDirectory(DirectoryPath path = null);
 
         /// <summary>
         /// Gets an absolute file.
