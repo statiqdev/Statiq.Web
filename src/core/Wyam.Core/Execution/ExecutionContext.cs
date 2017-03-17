@@ -103,23 +103,24 @@ namespace Wyam.Core.Execution
             {
                 // Using temp files
                 IFile tempFile = FileSystem.GetTempFile();
-                tempFile.WriteAllText(content);
+                if (!string.IsNullOrEmpty(content))
+                {
+                    tempFile.WriteAllText(content);
+                }
                 stream = new TempFileStream(tempFile);
             }
             else
             {
                 // Using memory
-                stream = Engine.RecyclableMemoryStreamManager.GetStream();
-            }
-
-            // Copy content
-            if (!string.IsNullOrEmpty(content))
-            {
-                // Don't disposed the StreamWriter because that will dispose the underlying stream
-                StreamWriter writer = new StreamWriter(stream);
-                writer.Write(content);
-                writer.Flush();
-                stream.Position = 0;
+                if (string.IsNullOrEmpty(content))
+                {
+                    stream = Engine.RecyclableMemoryStreamManager.GetStream();
+                }
+                else
+                {
+                    byte[] contentBytes = Encoding.UTF8.GetBytes(content);
+                    stream = Engine.RecyclableMemoryStreamManager.GetStream(null, contentBytes, 0, contentBytes.Length);
+                }
             }
 
             return stream;

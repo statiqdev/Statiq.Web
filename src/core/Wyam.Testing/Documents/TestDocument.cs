@@ -30,21 +30,6 @@ namespace Wyam.Testing.Documents
             Content = content;
         }
 
-        public TestDocument(IEnumerable<MetadataItem> metadata)
-            : this()
-        {
-            foreach (KeyValuePair<string, object> item in metadata)
-            {
-                _metadata[item.Key] = item.Value;
-            }
-        }
-
-        public TestDocument(string content, IEnumerable<MetadataItem> metadata)
-            : this(metadata)
-        {
-            Content = content;
-        }
-
         public TestDocument(IEnumerable<KeyValuePair<string, object>> metadata)
             : this()
         {
@@ -178,7 +163,7 @@ namespace Wyam.Testing.Documents
 
         public string Content { get; set; }
 
-        public Stream GetStream() => new MemoryStream(Encoding.UTF8.GetBytes(Content));
+        public Stream GetStream() => string.IsNullOrEmpty(Content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(Content));
 
         public IMetadata Metadata
         {

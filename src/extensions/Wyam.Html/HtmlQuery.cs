@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common;
 using Wyam.Common.Modules;
@@ -200,9 +201,27 @@ namespace Wyam.Html
                                 }
 
                                 // Clone the document and optionally change content to the HTML element
-                                documents.Add(_outerHtmlContent.HasValue
-                                    ? context.GetDocument(input, _outerHtmlContent.Value ? element.OuterHtml : element.InnerHtml, metadata.Count == 0 ? null : metadata)
-                                    : context.GetDocument(input, metadata));
+                                if (_outerHtmlContent.HasValue)
+                                {
+                                    Stream contentStream = context.GetContentStream();
+                                    using (StreamWriter writer = contentStream.GetWriter())
+                                    {
+                                        if (_outerHtmlContent.Value)
+                                        {
+                                            element.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                                        }
+                                        else
+                                        {
+                                            element.ChildNodes.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                                        }
+                                        writer.Flush();
+                                        documents.Add(context.GetDocument(input, contentStream, metadata.Count == 0 ? null : metadata));
+                                    }
+                                }
+                                else
+                                {
+                                    documents.Add(context.GetDocument(input, metadata));
+                                }
                             }
                             return (IEnumerable<Common.Documents.IDocument>)documents;
                         }

@@ -105,10 +105,14 @@ namespace Wyam.Html
                             {
                                 element.Insert(_position, content);
                             }
-                            StringWriter writer = new StringWriter();
-                            htmlDocument.ToHtml(writer, new HtmlMarkupFormatter());
-                            writer.Flush();
-                            return context.GetDocument(input, writer.ToString());
+
+                            Stream contentStream = context.GetContentStream();
+                            using (StreamWriter writer = contentStream.GetWriter())
+                            {
+                                htmlDocument.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                                writer.Flush();
+                                return context.GetDocument(input, contentStream);
+                            }
                         }
                     }
                     return input;

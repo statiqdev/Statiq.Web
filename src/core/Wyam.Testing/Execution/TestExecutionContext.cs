@@ -77,27 +77,36 @@ namespace Wyam.Testing.Execution
         public IDocument GetDocument(IDocument sourceDocument, FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null,
             bool disposeStream = true)
         {
-            throw new NotImplementedException();
+            return GetDocument(sourceDocument, source, GetContent(stream), items);
         }
 
         public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            throw new NotImplementedException();
+            return GetDocument(source, GetContent(stream), items);
         }
 
         public IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            throw new NotImplementedException();
+            return GetDocument(sourceDocument, GetContent(stream), items);
         }
 
         public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
-            throw new NotImplementedException();
+            return GetDocument(GetContent(stream), items);
         }
 
         public IDocument GetDocument(IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            throw new NotImplementedException();
+            return GetDocument(sourceDocument, source, null, items);
+        }
+
+        private string GetContent(Stream stream)
+        {
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
+            {
+                return reader.ReadToEnd();
+            }
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
@@ -198,8 +207,8 @@ namespace Wyam.Testing.Execution
             throw new NotImplementedException();
         }
 
-        public IReadOnlyCollection<byte[]> DynamicAssemblies { get; set; }
-        public IReadOnlyCollection<string> Namespaces { get; set; }
+        public IReadOnlyCollection<byte[]> DynamicAssemblies { get; set; } = new List<byte[]>();
+        public IReadOnlyCollection<string> Namespaces { get; set; } = new List<string>();
         public IReadOnlyPipeline Pipeline { get; set; }
         public IModule Module { get; set; }
         public IExecutionCache ExecutionCache { get; set; }
@@ -212,7 +221,7 @@ namespace Wyam.Testing.Execution
         public ISettings Settings { get; } = new Settings();
         IReadOnlySettings IExecutionContext.Settings => Settings;
 
-        public Stream GetContentStream(string content = null) => 
+        public Stream GetContentStream(string content = null) =>
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         // GetLink

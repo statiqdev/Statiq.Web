@@ -75,6 +75,7 @@ namespace Wyam.Common.Execution
         /// is not null, the stream is initialized with the specified content. It is prefered to use
         /// this method to obtain a stream over creating your own if the source of the content does
         /// not already provide one. The returned streams are optimized for memory usage and performance.
+        /// <remarks>The position is set to the beginning of the stream when returned.</remarks>
         /// </summary>
         /// <param name="content">Content to initialize the stream with.</param>
         /// <returns>A stream for document content.</returns>

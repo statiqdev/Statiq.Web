@@ -75,19 +75,16 @@ namespace Wyam.Common.IO
         /// <param name="pathKind">Specifies whether the path is relative, absolute, or indeterminate.</param>
         private NormalizedPath(Tuple<Uri, string> providerAndPath, bool fullySpecified, PathKind pathKind)
         {
-            Uri fileProvider = providerAndPath.Item1;
-            string path = providerAndPath.Item2;
-
-            if (path == null)
+            if (providerAndPath.Item2 == null)
             {
-                throw new ArgumentNullException(nameof(path));
+                throw new ArgumentNullException();
             }
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(providerAndPath.Item2))
             {
-                throw new ArgumentException("Path cannot be empty", nameof(path));
+                throw new ArgumentException("Path cannot be empty");
             }
 
-            FullPath = path.Replace('\\', '/').Trim();
+            FullPath = providerAndPath.Item2.Replace('\\', '/').Trim();
 
             // Remove relative part of a path, but only if it's not the only part
             if (FullPath.StartsWith("./", StringComparison.Ordinal) && FullPath.Length > 2)
@@ -123,19 +120,22 @@ namespace Wyam.Common.IO
             }
 
             // Set provider (but only if absolute)
-            if (IsRelative && fileProvider != null)
+            if (IsRelative && providerAndPath.Item1 != null)
             {
-                throw new ArgumentException("Can not specify provider for relative paths", nameof(fileProvider));
+                throw new ArgumentException("Can not specify provider for relative paths");
             }
-            if (fileProvider == null && IsAbsolute && !fullySpecified)
+            if (providerAndPath.Item1 == null && IsAbsolute && !fullySpecified)
             {
-                fileProvider = DefaultFileProvider;
+                FileProvider = DefaultFileProvider;
             }
-            if (fileProvider != null && !fileProvider.IsAbsoluteUri)
+            else if (providerAndPath.Item1 != null && !providerAndPath.Item1.IsAbsoluteUri)
             {
                 throw new ArgumentException("The provider URI must always be absolute");
             }
-            FileProvider = fileProvider;
+            else
+            {
+                FileProvider = providerAndPath.Item1;
+            }
 
             // Extract path segments.
             Segments = FullPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);

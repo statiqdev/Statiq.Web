@@ -43,6 +43,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Gets the content associated with this document as a <see cref="Stream"/>.
+        /// The underlying stream will be reset to position 0 each time this method is called.
         /// The stream you get from this call must be disposed as soon as reading is complete.
         /// Other threads will block on this call until the previously returned stream is disposed.
         /// </summary>

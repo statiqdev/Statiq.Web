@@ -24,6 +24,8 @@ namespace Wyam.Core.Execution
     /// </summary>
     public class Engine : IEngine, IDisposable
     {
+        private const int RecyclableMemoryStreamBlockSize = 32768;
+
         public static string Version
         {
             get
@@ -128,7 +130,11 @@ namespace Wyam.Core.Execution
             }
         }
 
-        internal RecyclableMemoryStreamManager RecyclableMemoryStreamManager => new RecyclableMemoryStreamManager();
+        internal RecyclableMemoryStreamManager RecyclableMemoryStreamManager { get; } =
+            new RecyclableMemoryStreamManager(
+                RecyclableMemoryStreamBlockSize,
+                RecyclableMemoryStreamManager.DefaultLargeBufferMultiple,
+                RecyclableMemoryStreamManager.DefaultMaximumBufferSize);
 
         /// <summary>
         /// Creates the engine.
@@ -146,7 +152,7 @@ namespace Wyam.Core.Execution
         {
             try
             {
-                Trace.Information("Cleaning output path {0}", FileSystem.OutputPath);
+                Trace.Information("Cleaning output path: {0}", FileSystem.OutputPath);
                 IDirectory outputDirectory = FileSystem.GetOutputDirectory();
                 if (outputDirectory.Exists)
                 {
@@ -156,7 +162,7 @@ namespace Wyam.Core.Execution
             }
             catch (Exception ex)
             {
-                Trace.Warning("Error while cleaning output path {0}: {1} - {2}", FileSystem.OutputPath, ex.GetType(), ex.Message);
+                Trace.Warning("Error while cleaning output path: {0} - {1}", ex.GetType(), ex.Message);
             }
         }
 
@@ -167,7 +173,7 @@ namespace Wyam.Core.Execution
         {
             try
             {
-                Trace.Information("Cleaning temp path {0}", FileSystem.TempPath);
+                Trace.Information("Cleaning temp path: {0}", FileSystem.TempPath);
                 IDirectory tempDirectory = FileSystem.GetTempDirectory();
                 if (tempDirectory.Exists)
                 {
@@ -177,7 +183,7 @@ namespace Wyam.Core.Execution
             }
             catch (Exception ex)
             {
-                Trace.Warning("Error while cleaning temp path {0}: {1} - {2}", FileSystem.TempPath, ex.GetType(), ex.Message);
+                Trace.Warning("Error while cleaning temp path: {0} - {1}", ex.GetType(), ex.Message);
             }
         }
 

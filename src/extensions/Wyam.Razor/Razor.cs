@@ -224,7 +224,7 @@ namespace Wyam.Razor
             return validInputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Razor for {0}", input.SourceString());
-                using (var scope = scopeFactory.CreateScope())
+                using (IServiceScope scope = scopeFactory.CreateScope())
                 {
                     // Get services
                     IRazorViewEngine viewEngine = scope.ServiceProvider.GetRequiredService<IRazorViewEngine>();
@@ -242,26 +242,41 @@ namespace Wyam.Razor
                     IView view;
                     using (Stream stream = input.GetStream())
                     {
-                        view = GetViewFromStream(relativePath, stream, viewStartLocation, layoutLocation, viewEngine, pageActivator,
-                            htmlEncoder, pageFactoryProvider, hostingEnviornment.WebRootFileProvider, razorCompilationService);
+                        view = GetViewFromStream(
+                            relativePath,
+                            stream,
+                            viewStartLocation,
+                            layoutLocation,
+                            viewEngine,
+                            pageActivator,
+                            htmlEncoder,
+                            pageFactoryProvider,
+                            hostingEnviornment.WebRootFileProvider,
+                            razorCompilationService);
                     }
 
                     // Render the view
                     object model = _model == null ? input : _model.Invoke(input, context);
-                    using (StringWriter output = new StringWriter())
+                    Stream contentStream = context.GetContentStream();
+                    using (StreamWriter writer = contentStream.GetWriter())
                     {
                         Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext =
-                            GetViewContext(scope.ServiceProvider, view, model, input, context, output);
+                            GetViewContext(scope.ServiceProvider, view, model, input, context, writer);
                         viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
-                        return context.GetDocument(input, output.ToString());
+                        writer.Flush();
                     }
+                    return context.GetDocument(input, contentStream);
                 }
             });
         }
 
         private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(
-            IServiceProvider services, IView view, object model,
-            IDocument document, IExecutionContext executionContext, TextWriter output)
+            IServiceProvider services,
+            IView view,
+            object model,
+            IDocument document,
+            IExecutionContext executionContext,
+            TextWriter output)
         {
             HttpContext httpContext = new DefaultHttpContext
             {
@@ -276,8 +291,15 @@ namespace Wyam.Razor
             };
             ITempDataDictionary tempData = new TempDataDictionary(
                 actionContext.HttpContext, services.GetRequiredService<ITempDataProvider>());
-            ViewContext viewContext = new ViewContext(actionContext, view, viewData, tempData,
-                output, new HtmlHelperOptions(), document, executionContext);
+            ViewContext viewContext = new ViewContext(
+                actionContext,
+                view,
+                viewData,
+                tempData,
+                output,
+                new HtmlHelperOptions(),
+                document,
+                executionContext);
             return viewContext;
         }
 
@@ -285,9 +307,17 @@ namespace Wyam.Razor
         /// Gets the view for an input document (which is different than the view for a layout, partial, or
         /// other indirect view because it's not necessarily on disk or in the file system).
         /// </summary>
-        private IView GetViewFromStream(string relativePath, Stream stream, string viewStartLocation, string layoutLocation,
-            IRazorViewEngine viewEngine, IRazorPageActivator pageActivator, HtmlEncoder htmlEncoder,
-            IRazorPageFactoryProvider pageFactoryProvider, IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
+        private IView GetViewFromStream(
+            string relativePath,
+            Stream stream,
+            string viewStartLocation,
+            string layoutLocation,
+            IRazorViewEngine viewEngine,
+            IRazorPageActivator pageActivator,
+            HtmlEncoder htmlEncoder,
+            IRazorPageFactoryProvider pageFactoryProvider,
+            IFileProvider rootFileProvider,
+            IRazorCompilationService razorCompilationService)
         {
             IEnumerable<string> viewStartLocations = viewStartLocation != null
                 ? new [] { viewStartLocation }
@@ -311,8 +341,13 @@ namespace Wyam.Razor
         /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother
         /// with caching the page if it's from a live stream.
         /// </summary>
-        private IRazorPage GetPageFromStream(string relativePath, string viewStartLocation, string layoutLocation, Stream stream,
-            IFileProvider rootFileProvider, IRazorCompilationService razorCompilationService)
+        private IRazorPage GetPageFromStream(
+            string relativePath,
+            string viewStartLocation,
+            string layoutLocation,
+            Stream stream,
+            IFileProvider rootFileProvider,
+            IRazorCompilationService razorCompilationService)
         {
             if (relativePath.StartsWith("~/", StringComparison.Ordinal))
             {

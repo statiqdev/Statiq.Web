@@ -18,7 +18,7 @@ namespace Wyam
             }
             catch (Exception ex)
             {
-                Trace.Critical($"Error while running preview server: {ex.Message}");
+                Trace.Critical($"Error while running preview server: {ex}");
                 return null;
             }
 

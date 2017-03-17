@@ -10,6 +10,8 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Html.Tests
 {
@@ -227,21 +229,21 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 HtmlQuery query = new HtmlQuery("p")
                     .SetContent();
 
                 // When
-                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,"<p>This is some Foobar text</p>");
-                context.Received().GetDocument(document,"<p>This is some other text</p>");
-                stream.Dispose();
+                Assert.That(results, Has.Count.EqualTo(2));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[]
+                {
+                    "<p>This is some Foobar text</p>",
+                    "<p>This is some other text</p>"
+                }));
             }
 
             [Test]
@@ -258,21 +260,21 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 HtmlQuery query = new HtmlQuery("p")
                     .SetContent(false);
 
                 // When
-                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,"This is some Foobar text");
-                context.Received().GetDocument(document,"This is some other text");
-                stream.Dispose();
+                Assert.That(results, Has.Count.EqualTo(2));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[]
+                {
+                    "This is some Foobar text",
+                    "This is some other text"
+                }));
             }
 
             [Test]
@@ -289,33 +291,33 @@ namespace Wyam.Html.Tests
                             <p>This is some other text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
+                TestDocument document = new TestDocument(input);
+                TestExecutionContext context = new TestExecutionContext();
                 HtmlQuery query = new HtmlQuery("p")
                     .SetContent()
                     .GetInnerHtml("InnerHtmlKey")
                     .GetOuterHtml("OuterHtmlKey");
 
                 // When
-                query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = query.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,"<p>This is some Foobar text</p>",
-                    Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
-                    {
-                        new KeyValuePair<string, object>("InnerHtmlKey", "This is some Foobar text"),
-                        new KeyValuePair<string, object>("OuterHtmlKey", "<p>This is some Foobar text</p>")
-                    })));
-                context.Received().GetDocument(document,"<p>This is some other text</p>",
-                    Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
-                    {
-                        new KeyValuePair<string, object>("InnerHtmlKey", "This is some other text"),
-                        new KeyValuePair<string, object>("OuterHtmlKey", "<p>This is some other text</p>")
-                    })));
-                stream.Dispose();
+                Assert.That(results, Has.Count.EqualTo(2));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[]
+                {
+                    "<p>This is some Foobar text</p>",
+                    "<p>This is some other text</p>"
+                }));
+                Assert.That(results.Select(x => x.String("InnerHtmlKey")), Is.EquivalentTo(new[]
+                {
+                    "This is some Foobar text",
+                    "This is some other text"
+                }));
+                Assert.That(results.Select(x => x.String("OuterHtmlKey")), Is.EquivalentTo(new[]
+                {
+                    "<p>This is some Foobar text</p>",
+                    "<p>This is some other text</p>"
+                }));
             }
 
             [Test]

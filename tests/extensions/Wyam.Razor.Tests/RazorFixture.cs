@@ -13,6 +13,8 @@ using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
 using Wyam.Core.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 using Wyam.Testing.IO;
 
 namespace Wyam.Razor.Tests
@@ -29,16 +31,16 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = Substitute.For<IDocument>();
-                document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }")));
+                IDocument document = new TestDocument(@"@for(int c = 0 ; c < 5 ; c++) { <p>@c</p> }");
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, " <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> ");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { " <p>0</p>  <p>1</p>  <p>2</p>  <p>3</p>  <p>4</p> " }));
             }
 
             [Test]
@@ -48,14 +50,13 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = Substitute.For<IDocument>();
+                IDocument document = new TestDocument(@"@{ Trace.Information(""Test""); }");
                 TraceListener traceListener = new TraceListener();
                 Trace.AddListener(traceListener);
-                document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"@{ Trace.Information(""Test""); }")));
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 Trace.RemoveListener(traceListener);
@@ -88,17 +89,19 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = Substitute.For<IDocument>();
-                document["MyKey"].Returns("MyValue");
-                document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Metadata[""MyKey""]</p>")));
+                IDocument document = new TestDocument(@"<p>@Metadata[""MyKey""]</p>", new MetadataItems
+                {
+                    { "MyKey", "MyValue" }
+                });
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, "<p>MyValue</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { "<p>MyValue</p>" }));
             }
 
             [Test]
@@ -107,17 +110,19 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(new FilePath("C:/Temp/temp.txt"));
-                document.GetStream().Returns(new MemoryStream(Encoding.UTF8.GetBytes(@"<p>@Document.Source</p>")));
+                IDocument document = new TestDocument(@"<p>@Document.Source</p>")
+                {
+                    Source = new FilePath("C:/Temp/temp.txt")
+                };
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>file:///C:/Temp/temp.txt</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"<p>file:///C:/Temp/temp.txt</p>" }));
             }
 
             [Test]
@@ -130,11 +135,12 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>file:///C:/Temp/temp.txt</p>");  // The slash prefix is just added by our dumb mock
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"<p>file:///C:/Temp/temp.txt</p>" }));
             }
 
             [Test]
@@ -149,11 +155,12 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().WithModel(model);
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, @"<p>3</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"<p>3</p>" }));
             }
 
             [Test]
@@ -170,13 +177,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -190,13 +197,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().WithLayout("_Layout.cshtml");
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -210,13 +217,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT2
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT2
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -230,13 +237,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStart.cshtml");
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT3
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT3
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -250,13 +257,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT3
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT3
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -270,13 +277,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT3
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT3
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -296,13 +303,13 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document1, document2 }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document1, document2 }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document1,
-@"LAYOUT4
-<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT4
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -318,12 +325,12 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor().IgnorePrefix("Ignore");
 
                 // When
-                razor.Execute(new[] { document1, document2 }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document1, document2 }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document1,
-@"<p>This is a test</p>");
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"<p>This is a test</p>" }));
             }
 
             [Test]
@@ -343,16 +350,16 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT5
+                Assert.That(
+                    results.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT5
 
 <p>Section Content</p>
 
-<p>This is a test</p>");
+<p>This is a test</p>" }));
             }
 
             [Test]
@@ -372,45 +379,42 @@ namespace Wyam.Razor.Tests
                 Razor razor = new Razor();
 
                 // When
-                razor.Execute(new[] { document }, context).ToList();
-                razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results1 = razor.Execute(new[] { document }, context).ToList();
+                List<IDocument> results2 = razor.Execute(new[] { document }, context).ToList();
 
                 // Then
-                context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document,
-@"LAYOUT5
+                Assert.That(
+                    results1.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT5
 
 <p>Section Content</p>
 
-<p>This is a test</p>");
+<p>This is a test</p>" }));
+                Assert.That(
+                    results2.Select(x => x.Content),
+                    Is.EquivalentTo(new[] { @"LAYOUT5
+
+<p>Section Content</p>
+
+<p>This is a test</p>" }));
             }
 
             private IDocument GetDocument(string source, string content)
             {
-                IDocument document = Substitute.For<IDocument>();
-                document.Source.Returns(new FilePath(source));
-                document.ContainsKey(Keys.RelativeFilePath).Returns(true);
-                document.String(Keys.RelativeFilePath).Returns(source);
-                document.ContainsKey(Keys.SourceFileName).Returns(true);
-                document.FilePath(Keys.SourceFileName).Returns(new FilePath(source).FileName);
-                document.GetStream().Returns(
-                    new MemoryStream(Encoding.UTF8.GetBytes(content)),
-                    new MemoryStream(Encoding.UTF8.GetBytes(content)));  // Return a new memory stream if called again
+                TestDocument document = new TestDocument(content, new []
+                {
+                    new KeyValuePair<string, object>(Keys.RelativeFilePath, source),
+                    new KeyValuePair<string, object>(Keys.SourceFileName, new FilePath(source).FileName)
+                });
+                document.Source = new FilePath(source);
                 return document;
             }
 
             private IExecutionContext GetExecutionContext(Engine engine)
             {
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                context.Namespaces.Returns(engine.Namespaces);
-                IReadOnlyFileSystem fileSystem = GetFileSystem();
-                context.FileSystem.Returns(fileSystem);
-                FilePath result;
-                context.TryConvert(Arg.Any<object>(), out result).Returns(x =>
-                {
-                    x[1] = (FilePath)x[0];
-                    return true;
-                });
+                TestExecutionContext context = new TestExecutionContext();
+                context.Namespaces = engine.Namespaces;
+                context.FileSystem = GetFileSystem();
                 return context;
             }
 

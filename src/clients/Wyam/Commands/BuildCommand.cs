@@ -157,11 +157,8 @@ namespace Wyam.Commands
                 return ExitCode.Normal;
             }
 
-            Trace.Information($"Root path:{Environment.NewLine}    {engineManager.Engine.FileSystem.RootPath}");
-            Trace.Information($"Input path(s):{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.FileSystem.InputPaths)}");
-            Trace.Information($"Output path:{Environment.NewLine}    {engineManager.Engine.FileSystem.OutputPath}");
-            Trace.Information($"Temp path:{Environment.NewLine}    {engineManager.Engine.FileSystem.TempPath}");
-            Trace.Information($"Settings:{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.Settings.Select(x => $"{x.Key}: {x.Value?.ToString() ?? "null"}"))}");
+            TraceEnviornment(engineManager);
+
             if (!engineManager.Execute())
             {
                 return ExitCode.ExecutionError;
@@ -263,9 +260,9 @@ namespace Wyam.Commands
                             exitCode = ExitCode.ConfigurationError;
                             break;
                         }
-                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.RootPath}");
-                        Console.WriteLine($"Input path(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", engineManager.Engine.FileSystem.InputPaths)}");
-                        Console.WriteLine($"Root path:{Environment.NewLine}  {engineManager.Engine.FileSystem.OutputPath}");
+
+                        TraceEnviornment(engineManager);
+
                         if (!engineManager.Execute())
                         {
                             exitCode = ExitCode.ExecutionError;
@@ -320,6 +317,15 @@ namespace Wyam.Commands
             }
 
             return exitCode;
+        }
+
+        private void TraceEnviornment(EngineManager engineManager)
+        {
+            Trace.Information($"Root path:{Environment.NewLine}    {engineManager.Engine.FileSystem.RootPath}");
+            Trace.Information($"Input path(s):{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.FileSystem.InputPaths)}");
+            Trace.Information($"Output path:{Environment.NewLine}    {engineManager.Engine.FileSystem.OutputPath}");
+            Trace.Information($"Temp path:{Environment.NewLine}    {engineManager.Engine.FileSystem.TempPath}");
+            Trace.Information($"Settings:{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", engineManager.Engine.Settings.Select(x => $"{x.Key}: {x.Value?.ToString() ?? "null"}"))}");
         }
     }
 }

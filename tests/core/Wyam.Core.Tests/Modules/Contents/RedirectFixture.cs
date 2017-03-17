@@ -24,7 +24,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void SingleRedirect()
         {
             // Given
-            IDocument redirected = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
             });
@@ -43,7 +43,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void AddsExtension()
         {
             // Given
-            IDocument redirected = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo/bar") } }
             });
@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void WarnsForAbsoluteRedirectFromPath()
         {
             // Given
-            IDocument redirected = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("/foo/bar") } }
             })
@@ -86,11 +86,11 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void MultipleRedirects()
         {
             // Given
-            IDocument redirected1 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected1 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
             });
-            IDocument redirected2 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected2 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });
@@ -108,12 +108,12 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void WithAdditionalOutput()
         {
             // Given
-            IDocument redirected1 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected1 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
                 {Keys.RelativeFilePath, new FilePath("foo2.html") }
             });
-            IDocument redirected2 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected2 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });
@@ -132,12 +132,12 @@ namespace Wyam.Core.Tests.Modules.Contents
         public void WithAdditionalOutputWithoutMetaRefresh()
         {
             // Given
-            IDocument redirected1 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected1 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
                 {Keys.RelativeFilePath, new FilePath("foo2.html") }
             });
-            IDocument redirected2 = new TestDocument((IEnumerable<MetadataItem>)new MetadataItems
+            IDocument redirected2 = new TestDocument(new MetadataItems
             {
                 {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });

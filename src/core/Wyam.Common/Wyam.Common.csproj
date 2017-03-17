@@ -122,6 +122,7 @@
     <Compile Include="Util\GroupByExtensions.cs" />
     <Compile Include="Execution\TraceExceptionsExtensions.cs" />
     <Compile Include="Util\SourceInfoAttribute.cs" />
+    <Compile Include="Util\StreamExtensions.cs" />
     <Compile Include="Util\ToLookupExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -35,7 +35,7 @@ namespace Wyam.Core.Documents
             string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetDocument(context, sourceDocument, source, context.GetContentStream(content), items);
+            return GetDocument(context, sourceDocument, source, string.IsNullOrEmpty(content) ? null : context.GetContentStream(content), items);
         }
 
         public IDocument GetDocument(
@@ -57,7 +57,7 @@ namespace Wyam.Core.Documents
             string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            return GetDocument(context, sourceDocument, context.GetContentStream(content), items);
+            return GetDocument(context, sourceDocument, string.IsNullOrEmpty(content) ? null : context.GetContentStream(content), items);
         }
 
         public IDocument GetDocument(
