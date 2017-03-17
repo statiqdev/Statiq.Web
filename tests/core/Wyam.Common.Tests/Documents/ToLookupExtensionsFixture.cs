@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Core.Documents;
@@ -19,13 +21,17 @@ namespace Wyam.Common.Tests.Documents
             {
                 // Given
                 IDocument a = new Document(
-                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } }, "a");
+                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("a")));
                 IDocument b = new Document(
-                    new MetadataDictionary { { "Numbers", new [] { 2, 3, 4 } } }, "b");
+                    new MetadataDictionary { { "Numbers", new[] { 2, 3, 4 } } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
-                    new MetadataDictionary { { "Numbers", 3 } }, "c");
+                    new MetadataDictionary { { "Numbers", 3 } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("c")));
                 IDocument d = new Document(
-                    new MetadataDictionary { { "Numbers", "4" } }, "d");
+                    new MetadataDictionary { { "Numbers", "4" } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -44,13 +50,17 @@ namespace Wyam.Common.Tests.Documents
             {
                 // Given
                 IDocument a = new Document(
-                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } }, "a");
+                    new MetadataDictionary { { "Numbers", new[] { 1, 2, 3 } } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("a")));
                 IDocument b = new Document(
-                    new MetadataDictionary { { "Numbers", new[] { 2, 3, 4 } } }, "b");
+                    new MetadataDictionary { { "Numbers", new[] { 2, 3, 4 } } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
-                    new MetadataDictionary { { "Numbers", 3 } }, "c");
+                    new MetadataDictionary { { "Numbers", 3 } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("c")));
                 IDocument d = new Document(
-                    new MetadataDictionary { { "Numbers", "4" } }, "d");
+                    new MetadataDictionary { { "Numbers", "4" } },
+                    new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -73,25 +83,29 @@ namespace Wyam.Common.Tests.Documents
                     {
                         { "Numbers", new[] { 1, 2, 3 } },
                         { "Colors", "Red" }
-                    }, "a");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("a")));
                 IDocument b = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", new[] { 2, 3, 4 } },
                         { "Colors", new [] { "Red", "Blue" } }
-                    }, "b");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", 3 },
                         { "Colors", "Green" }
-                    }, "c");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("c")));
                 IDocument d = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", "4" },
                         { "Colors", new [] { "Green", "Blue" } }
-                    }, "d");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When
@@ -117,25 +131,29 @@ namespace Wyam.Common.Tests.Documents
                     {
                         { "Numbers", new[] { 1, 2, 3 } },
                         { "Colors", "Red" }
-                    }, "a");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("a")));
                 IDocument b = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", new[] { 2, 3, 4 } },
                         { "Colors", new [] { "Red", "Blue" } }
-                    }, "b");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", 3 },
                         { "Colors", "Green" }
-                    }, "c");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("c")));
                 IDocument d = new Document(
                     new MetadataDictionary
                     {
                         { "Numbers", "4" },
                         { "Colors", new [] { "Green", "Blue" } }
-                    }, "d");
+                    },
+                    new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
 
                 // When

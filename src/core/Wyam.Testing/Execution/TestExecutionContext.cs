@@ -212,6 +212,9 @@ namespace Wyam.Testing.Execution
         public ISettings Settings { get; } = new Settings();
         IReadOnlySettings IExecutionContext.Settings => Settings;
 
+        public Stream GetContentStream(string content = null) => 
+            string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
+
         // GetLink
 
         public string GetLink() =>

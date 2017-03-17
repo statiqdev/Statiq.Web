@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JavaScriptEngineSwitcher.Core;
+using Microsoft.IO;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -127,6 +128,11 @@ namespace Wyam.Core.Execution
             }
         }
 
+        internal RecyclableMemoryStreamManager RecyclableMemoryStreamManager => new RecyclableMemoryStreamManager();
+
+        /// <summary>
+        /// Creates the engine.
+        /// </summary>
         public Engine()
         {
             System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);

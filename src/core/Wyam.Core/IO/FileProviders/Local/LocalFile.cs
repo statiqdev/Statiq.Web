@@ -97,9 +97,6 @@ namespace Wyam.Core.IO.FileProviders.Local
         public string ReadAllText() =>
             LocalFileProvider.Retry(() => System.IO.File.ReadAllText(_file.FullName));
 
-        public Stream OpenRead() =>
-            LocalFileProvider.Retry(() => _file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-
         public void WriteAllText(string contents, bool createDirectory = true)
         {
             if (createDirectory)
@@ -108,6 +105,9 @@ namespace Wyam.Core.IO.FileProviders.Local
             }
             LocalFileProvider.Retry(() => System.IO.File.WriteAllText(_file.FullName, contents));
         }
+
+        public Stream OpenRead() =>
+            LocalFileProvider.Retry(() => _file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
         public Stream OpenWrite(bool createDirectory = true)
         {
@@ -125,6 +125,15 @@ namespace Wyam.Core.IO.FileProviders.Local
                 Directory.Create();
             }
             return LocalFileProvider.Retry(() => _file.Open(FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
+        }
+
+        public Stream Open(bool createDirectory = true)
+        {
+            if (createDirectory)
+            {
+                Directory.Create();
+            }
+            return LocalFileProvider.Retry(() => _file.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite));
         }
     }
 }

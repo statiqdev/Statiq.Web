@@ -71,6 +71,16 @@ namespace Wyam.Common.Execution
         string ApplicationInput { get; }
 
         /// <summary>
+        /// Gets a <see cref="Stream"/> that can be used for document content. If <paramref name="content"/>
+        /// is not null, the stream is initialized with the specified content. It is prefered to use
+        /// this method to obtain a stream over creating your own if the source of the content does
+        /// not already provide one. The returned streams are optimized for memory usage and performance.
+        /// </summary>
+        /// <param name="content">Content to initialize the stream with.</param>
+        /// <returns>A stream for document content.</returns>
+        Stream GetContentStream(string content = null);
+
+        /// <summary>
         /// Gets a link for the root of the site using the host and root path specified in the settings.
         /// </summary>
         /// <returns>A link for the root of the site.</returns>
@@ -186,6 +196,7 @@ namespace Wyam.Common.Execution
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
@@ -194,6 +205,7 @@ namespace Wyam.Common.Execution
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
@@ -237,6 +249,7 @@ namespace Wyam.Common.Execution
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
@@ -247,6 +260,7 @@ namespace Wyam.Common.Execution
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>

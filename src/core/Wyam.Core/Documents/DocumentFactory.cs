@@ -25,7 +25,7 @@ namespace Wyam.Core.Documents
 
         public IDocument GetDocument(IExecutionContext context)
         {
-            return new Document(_settings, null, null, null, null, true);
+            return new Document(_settings, null, null, null, true);
         }
 
         public IDocument GetDocument(
@@ -35,16 +35,7 @@ namespace Wyam.Core.Documents
             string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            Stream stream = GetTempContentFileStream(context, content);
-            if (stream != null)
-            {
-                return GetDocument(context, sourceDocument, source, stream, items, true);
-            }
-            if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
-            {
-                return new Document(_settings, source, null, content, items, true);
-            }
-            return new Document((Document)sourceDocument, source, content, items);
+            return GetDocument(context, sourceDocument, source, context.GetContentStream(content), items);
         }
 
         public IDocument GetDocument(
@@ -55,7 +46,7 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_settings, source, null, null, items, true);
+                return new Document(_settings, source, null, items, true);
             }
             return new Document((Document)sourceDocument, source, items);
         }
@@ -66,16 +57,7 @@ namespace Wyam.Core.Documents
             string content,
             IEnumerable<KeyValuePair<string, object>> items = null)
         {
-            Stream stream = GetTempContentFileStream(context, content);
-            if (stream != null)
-            {
-                return GetDocument(context, sourceDocument, stream, items, true);
-            }
-            if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
-            {
-                return new Document(_settings, null, null, content, items, true);
-            }
-            return new Document((Document)sourceDocument, content, items);
+            return GetDocument(context, sourceDocument, context.GetContentStream(content), items);
         }
 
         public IDocument GetDocument(
@@ -88,7 +70,7 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_settings, source, stream, null, items, disposeStream);
+                return new Document(_settings, source, stream, items, disposeStream);
             }
             return new Document((Document)sourceDocument, source, stream, items, disposeStream);
         }
@@ -102,7 +84,7 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_settings, null, stream, null, items, disposeStream);
+                return new Document(_settings, null, stream, items, disposeStream);
             }
             return new Document((Document)sourceDocument, stream, items, disposeStream);
         }
@@ -114,20 +96,9 @@ namespace Wyam.Core.Documents
         {
             if (sourceDocument == null || ModuleExtensions.AsNewDocumentModules.Contains(context.Module))
             {
-                return new Document(_settings, null, null, null, items, true);
+                return new Document(_settings, null, null, items, true);
             }
             return new Document((Document)sourceDocument, items);
-        }
-
-        private Stream GetTempContentFileStream(IExecutionContext context, string content)
-        {
-            if (!string.IsNullOrEmpty(content) && _settings.Bool(Keys.UseTempContentFiles))
-            {
-                IFile tempFile = context.FileSystem.GetTempFile();
-                tempFile.WriteAllText(content);
-                return new TempFileStream(tempFile);
-            }
-            return null;
         }
     }
 }

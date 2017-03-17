@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using JavaScriptEngineSwitcher.Core;
 using JavaScriptEngineSwitcher.Jint;
@@ -19,6 +20,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.JavaScript;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
+using Wyam.Core.Documents;
 using Wyam.Core.JavaScript;
 using Wyam.Core.Meta;
 using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
@@ -92,6 +94,36 @@ namespace Wyam.Core.Execution
         }
 
         public bool TryConvert<T>(object value, out T result) => TypeHelper.TryConvert(value, out result);
+
+        public Stream GetContentStream(string content = null)
+        {
+            // Get the stream
+            Stream stream;
+            if (Bool(Common.Meta.Keys.UseTempContentFiles))
+            {
+                // Using temp files
+                IFile tempFile = FileSystem.GetTempFile();
+                tempFile.WriteAllText(content);
+                stream = new TempFileStream(tempFile);
+            }
+            else
+            {
+                // Using memory
+                stream = Engine.RecyclableMemoryStreamManager.GetStream();
+            }
+
+            // Copy content
+            if (!string.IsNullOrEmpty(content))
+            {
+                // Don't disposed the StreamWriter because that will dispose the underlying stream
+                StreamWriter writer = new StreamWriter(stream);
+                writer.Write(content);
+                writer.Flush();
+                stream.Position = 0;
+            }
+
+            return stream;
+        }
 
         // GetLink
 

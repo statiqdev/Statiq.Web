@@ -29,6 +29,7 @@ namespace Wyam.Common.Documents
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace Wyam.Common.Documents
         /// <param name="content">The content.</param>
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
+        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
         IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>

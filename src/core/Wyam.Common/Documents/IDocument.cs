@@ -37,11 +37,15 @@ namespace Wyam.Common.Documents
         /// <value>The metadata associated with this document.</value>
         IMetadata Metadata { get; }
 
-        /// <summary>Gets the content associated with this document as a string.</summary>
+        /// <summary>Gets the content associated with this document as a string. This will result in reading the entire content stream.</summary>
         /// <value>The content associated with this document.</value>
         string Content { get; }
 
-        /// <summary>Gets the content associated with this document as a <see cref="Stream"/>.</summary>
+        /// <summary>
+        /// Gets the content associated with this document as a <see cref="Stream"/>.
+        /// The stream you get from this call must be disposed as soon as reading is complete.
+        /// Other threads will block on this call until the previously returned stream is disposed.
+        /// </summary>
         /// <returns>A <see cref="Stream"/> of the content associated with this document.</returns>
         Stream GetStream();
 
