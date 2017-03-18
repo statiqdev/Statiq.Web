@@ -43,6 +43,8 @@ namespace Wyam.Images
 
         public string FileNameSuffix { get; set; }
 
+        public bool? CompressLossless { get; set; }
+
         public bool IsFileNameCustomized => !string.IsNullOrWhiteSpace(FileNamePrefix) || !string.IsNullOrWhiteSpace(FileNameSuffix);
 
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
