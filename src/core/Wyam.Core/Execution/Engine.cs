@@ -24,8 +24,6 @@ namespace Wyam.Core.Execution
     /// </summary>
     public class Engine : IEngine, IDisposable
     {
-        private const int RecyclableMemoryStreamBlockSize = 32768;
-
         public static string Version
         {
             get
@@ -44,7 +42,20 @@ namespace Wyam.Core.Execution
         private readonly Settings _settings = new Settings();
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
+
+        private IContentStreamFactory _contentStreamFactory = new RecyclableMemoryContentStreamFactory();
+        private IDocumentFactory _documentFactory;
+
         private bool _disposed;
+
+        /// <summary>
+        /// Creates the engine.
+        /// </summary>
+        public Engine()
+        {
+            System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
+            _documentFactory = new DocumentFactory(_settings);
+        }
 
         /// <summary>
         /// Gets the file system.
@@ -112,14 +123,16 @@ namespace Wyam.Core.Execution
         /// </summary>
         public string ApplicationInput { get; set; }
 
-        private IDocumentFactory _documentFactory;
-
         /// <summary>
         /// Gets or sets the document factory.
         /// </summary>
         public IDocumentFactory DocumentFactory
         {
-            get { return _documentFactory; }
+            get
+            {
+                return _documentFactory;
+            }
+
             set
             {
                 if (value == null)
@@ -130,20 +143,26 @@ namespace Wyam.Core.Execution
             }
         }
 
-        internal RecyclableMemoryStreamManager RecyclableMemoryStreamManager { get; } =
-            new RecyclableMemoryStreamManager(
-                RecyclableMemoryStreamBlockSize,
-                RecyclableMemoryStreamManager.DefaultLargeBufferMultiple,
-                RecyclableMemoryStreamManager.DefaultMaximumBufferSize);
-
         /// <summary>
-        /// Creates the engine.
+        /// The factory that should provide content streams for documents.
         /// </summary>
-        public Engine()
+        public IContentStreamFactory ContentStreamFactory
         {
-            System.Diagnostics.Trace.Listeners.Add(_diagnosticsTraceListener);
-            _documentFactory = new DocumentFactory(_settings);
+            get
+            {
+                return _contentStreamFactory;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(ContentStreamFactory));
+                }
+                _contentStreamFactory = value;
+            }
         }
+
 
         /// <summary>
         /// Deletes the output path and all files it contains.

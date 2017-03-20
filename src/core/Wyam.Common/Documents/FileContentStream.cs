@@ -8,18 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
 
-namespace Wyam.Core.Documents
+namespace Wyam.Common.Documents
 {
     /// <summary>
     /// This creates a file stream that deletes the underlying file on dispose.
     /// </summary>
-    internal class TempFileStream : Stream
+    internal class FileContentStream : Stream
     {
         private readonly IFile _file;
         private Stream _stream;
         private bool _disposed;
 
-        public TempFileStream(IFile file)
+        public FileContentStream(IFile file)
         {
             if (file == null)
             {
@@ -43,7 +43,7 @@ namespace Wyam.Core.Documents
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(TempFileStream));
+                throw new ObjectDisposedException(nameof(FileContentStream));
             }
         }
 

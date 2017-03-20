@@ -95,36 +95,7 @@ namespace Wyam.Core.Execution
 
         public bool TryConvert<T>(object value, out T result) => TypeHelper.TryConvert(value, out result);
 
-        public Stream GetContentStream(string content = null)
-        {
-            // Get the stream
-            Stream stream;
-            if (Bool(Common.Meta.Keys.UseTempContentFiles))
-            {
-                // Using temp files
-                IFile tempFile = FileSystem.GetTempFile();
-                if (!string.IsNullOrEmpty(content))
-                {
-                    tempFile.WriteAllText(content);
-                }
-                stream = new TempFileStream(tempFile);
-            }
-            else
-            {
-                // Using memory
-                if (string.IsNullOrEmpty(content))
-                {
-                    stream = Engine.RecyclableMemoryStreamManager.GetStream();
-                }
-                else
-                {
-                    byte[] contentBytes = Encoding.UTF8.GetBytes(content);
-                    stream = Engine.RecyclableMemoryStreamManager.GetStream(null, contentBytes, 0, contentBytes.Length);
-                }
-            }
-
-            return stream;
-        }
+        public Stream GetContentStream(string content = null) => Engine.ContentStreamFactory.GetStream(this, content);
 
         // GetLink
 
