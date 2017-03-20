@@ -101,26 +101,22 @@ Task("Build")
     .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
     {
-        if (isRunningOnWindows)
-        {
-            MSBuild("./Wyam.sln", new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .SetMaxCpuCount(0)
-                .SetVerbosity(Verbosity.Minimal)
-            );
-            MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .SetMaxCpuCount(0)
-                .SetVerbosity(Verbosity.Minimal)
-            );
-        }
-        else
-        {
-            XBuild("./Wyam.sln", new XBuildSettings()
-                .SetConfiguration(configuration)
-                .SetVerbosity(Verbosity.Minimal)
-            );
-        }
+        MSBuild("./Wyam.sln", new MSBuildSettings()
+            {
+                ArgumentCustomization = args => args.Append("/p:WarningLevel=0")    
+            }
+            .SetConfiguration(configuration)
+            .SetMaxCpuCount(0)
+            .SetVerbosity(Verbosity.Minimal)                
+        );
+        MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
+            {
+                ArgumentCustomization = args => args.Append("/p:WarningLevel=0")    
+            }
+            .SetConfiguration(configuration)
+            .SetMaxCpuCount(0)
+            .SetVerbosity(Verbosity.Minimal)
+        );
     });
 
 Task("Run-Unit-Tests")
