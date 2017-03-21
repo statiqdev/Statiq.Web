@@ -172,7 +172,7 @@ namespace Wyam.Html.Tests
                 excerpt.Execute(new[] { document }, null).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
+                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (Stream)null);
                 stream.Dispose();
             }
 

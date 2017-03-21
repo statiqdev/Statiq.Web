@@ -53,6 +53,7 @@ namespace Wyam.Core.Modules.Contents
         /// key <c>RedirectFrom</c> are used.
         /// </summary>
         /// <param name="paths">A delegate that should return one or more <see cref="FilePath"/>.</param>
+        /// <returns>The current module instance.</returns>
         public Redirect WithPaths(DocumentConfig paths)
         {
             if (paths == null)
@@ -67,6 +68,7 @@ namespace Wyam.Core.Modules.Contents
         /// Controls whether meta refresh pages are output.
         /// </summary>
         /// <param name="metaRefreshPages">If <c>true</c>, meta refresh pages are generated.</param>
+        /// <returns>The current module instance.</returns>
         public Redirect WithMetaRefreshPages(bool metaRefreshPages = true)
         {
             _metaRefreshPages = metaRefreshPages;
@@ -77,6 +79,7 @@ namespace Wyam.Core.Modules.Contents
         /// Indicates whether the host should be automatically included in generated redirect links.
         /// </summary>
         /// <param name="includeHost"><c>true</c> to include the host.</param>
+        /// <returns>The current module instance.</returns>
         public Redirect IncludeHost(bool includeHost = true)
         {
             _includeHost = includeHost;
@@ -90,6 +93,7 @@ namespace Wyam.Core.Modules.Contents
         /// <param name="path">The path of the output file (must be relative).</param>
         /// <param name="content">A delegate that takes a dictionary with keys equal to each redirected file
         /// and values equal to the destination URL. The delegate should return the content of the output file.</param>
+        /// <returns>The current module instance.</returns>
         public Redirect WithAdditionalOutput(FilePath path, Func<IDictionary<FilePath, string>, string> content)
         {
             if (path == null)
@@ -138,7 +142,9 @@ namespace Wyam.Core.Modules.Contents
                             FilePath outputPath = fromPath.ChangeExtension(".html");
                             if (_metaRefreshPages)
                             {
-                                metaRefreshDocuments.Add(context.GetDocument($@"
+                                metaRefreshDocuments.Add(
+                                    context.GetDocument(
+                                        context.GetContentStream($@"
 <!doctype html>
 <html>    
   <head>      
@@ -149,7 +155,7 @@ namespace Wyam.Core.Modules.Contents
     <p>This page has moved to a <a href=""{url}"">{url}</a></p> 
   </body>  
 </html>
-                                ", new MetadataItems
+                                "), new MetadataItems
                                 {
                                     { Keys.RelativeFilePath, outputPath },
                                     { Keys.WritePath, outputPath }
@@ -170,11 +176,14 @@ namespace Wyam.Core.Modules.Contents
                     string content = additionalOutput.Value(redirects);
                     if (!string.IsNullOrEmpty(content))
                     {
-                        outputs.Add(context.GetDocument(content, new MetadataItems
-                        {
-                            { Keys.RelativeFilePath, additionalOutput.Key },
-                            { Keys.WritePath, additionalOutput.Key }
-                        }));
+                        outputs.Add(
+                            context.GetDocument(
+                                context.GetContentStream(content),
+                                new MetadataItems
+                                {
+                                    { Keys.RelativeFilePath, additionalOutput.Key },
+                                    { Keys.WritePath, additionalOutput.Key }
+                                }));
                     }
                 }
             }

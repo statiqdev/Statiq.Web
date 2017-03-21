@@ -2,11 +2,14 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Markdown.Tests
 {
@@ -27,17 +30,15 @@ namespace Wyam.Markdown.Tests
 <em>Line 2</em></p>
 <h1>Line 3</h1>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -46,19 +47,17 @@ namespace Wyam.Markdown.Tests
                 string input = @"![Alt text](/path/to/img.jpg)";
                 string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image"" alt=""Alt text"" /></p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                var o = new Type[] {typeof(ExternalMarkdownExtension)};
-                var cast = o as IEnumerable<Type>;
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                Type[] o = { typeof(ExternalMarkdownExtension) };
+                IEnumerable<Type> cast = o as IEnumerable<Type>;
                 Markdown markdown = new Markdown().UseExtensions(cast);
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -68,17 +67,15 @@ namespace Wyam.Markdown.Tests
                 string input = @"[link](url){#id .class}";
                 string output = @"<p><a href=""url"">link</a>{#id .class}</p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -88,17 +85,15 @@ namespace Wyam.Markdown.Tests
                 string input = @"[link](url){#id .class}";
                 string output = @"<p><a href=""url"" id=""id"" class=""class"">link</a></p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseExtensions();
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -112,17 +107,15 @@ namespace Wyam.Markdown.Tests
 :   Pomaceous fruit of plants of the genus Malus in
 the family Rosaceae.</p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -138,17 +131,15 @@ the family Rosaceae.</p>
 the family Rosaceae.</dd>
 </dl>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().UseConfiguration("definitionlists");
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -158,17 +149,15 @@ the family Rosaceae.</dd>
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking &#64;Good, Man!</p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown();
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -178,17 +167,15 @@ the family Rosaceae.</dd>
                 string input = @"Looking @Good, Man!";
                 string output = @"<p>Looking @Good, Man!</p>
 ".Replace(Environment.NewLine, "\n");
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 Markdown markdown = new Markdown().EscapeAt(false);
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -203,22 +190,19 @@ the family Rosaceae.</dd>
 <h1>Line 3</h1>
 ".Replace(Environment.NewLine, "\n");
 
-                IDocument document = Substitute.For<IDocument>();
-                document.ContainsKey("meta").Returns(true);
-                document.String("meta").Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "meta", input }
+                });
                 Markdown markdown = new Markdown("meta");
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(Arg.Any<IDocument>(), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new MetadataItems
-                {
-                    { "meta", output }
-                })));
+                Assert.That(results.Select(x => x.String("meta")), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -233,39 +217,33 @@ the family Rosaceae.</dd>
 <h1>Line 3</h1>
 ".Replace(Environment.NewLine, "\n");
 
-                IDocument document = Substitute.For<IDocument>();
-                document.ContainsKey("meta").Returns(true);
-                document.String("meta").Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "meta", input }
+                });
                 Markdown markdown = new Markdown("meta", "meta2");
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(Arg.Any<IDocument>(), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new MetadataItems
-                {
-                    { "meta2", output }
-                })));
+                Assert.That(results.Select(x => x.String("meta2")), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
             public void DoesNothingIfMetadataKeyDoesNotExist()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                document.ContainsKey("meta").Returns(false);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument();
                 Markdown markdown = new Markdown("meta");
 
                 // When
-                markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
+                Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
         }
     }

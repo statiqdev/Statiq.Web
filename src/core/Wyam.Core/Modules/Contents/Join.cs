@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,33 +54,44 @@ namespace Wyam.Core.Modules.Contents
         /// <returns>A single document in a list</returns>
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            StringBuilder contentBuilder = new StringBuilder();
-
+            Stream contentStream = context.GetContentStream();
             if (inputs == null || inputs.Count < 1)
             {
-                return new List<IDocument>() { context.GetDocument() };
+                return new[] { context.GetDocument() };
             }
 
-            foreach (var document in inputs)
+            bool first = true;
+            byte[] delimeterBytes = Encoding.UTF8.GetBytes(_delimiter);
+            foreach (IDocument document in inputs)
             {
                 if (document == null)
                 {
                     continue;
                 }
 
-                contentBuilder.Append(document.Content);
-                contentBuilder.Append(_delimiter);
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    contentStream.Write(delimeterBytes, 0, delimeterBytes.Length);
+                }
+
+                using (Stream inputStream = document.GetStream())
+                {
+                    inputStream.CopyTo(contentStream);
+                }
             }
 
-            contentBuilder.Remove(contentBuilder.Length - _delimiter.Length, _delimiter.Length);
-
-            return new List<IDocument>() { context.GetDocument(contentBuilder.ToString(), MetadataForOutputDocument(inputs)) };
+            return new[] { context.GetDocument(contentStream, MetadataForOutputDocument(inputs)) };
         }
 
         /// <summary>
-        /// returns the correct metadata for the new document based on the provided list of documents and the selected metadata mode
+        /// Returns the correct metadata for the new document based on the provided list of documents and the selected metadata mode.
         /// </summary>
-        /// <param name="inputs">The list of input documents</param>
+        /// <param name="inputs">The list of input documents.</param>
+        /// <returns>The set of metadata for all input documents.</returns>
         private IEnumerable<KeyValuePair<string, object>> MetadataForOutputDocument(IReadOnlyList<IDocument> inputs)
         {
             switch (_metaDataMode)

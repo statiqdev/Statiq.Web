@@ -124,14 +124,16 @@ namespace Wyam.Core.Modules.Contents
                     currentDocumentContent = currentDocumentContent.Insert(match.Index, result.ToString());
                     match = Regex.Match(currentDocumentContent, _search, _regexOptions);
                 }
-                return new[] { context.GetDocument(input, currentDocumentContent) };
+                return new[] { context.GetDocument(input, context.GetContentStream(currentDocumentContent)) };
             }
-            return new[] {
-                context.GetDocument(input,
-                    _isRegex ?
+            return new[]
+            {
+                context.GetDocument(
+                    input,
+                    context.GetContentStream(_isRegex ?
                         Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
                         input.Content.Replace(_search, content.ToString())
-                    )
+                    ))
             };
         }
     }

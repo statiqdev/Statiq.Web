@@ -58,7 +58,7 @@ namespace Wyam.TextGeneration
 
         protected override IDocument Execute(string content, IDocument input, IExecutionContext context)
         {
-            return context.GetDocument(input, content);
+            return context.GetDocument(input, context.GetContentStream(content));
         }
     }
 }

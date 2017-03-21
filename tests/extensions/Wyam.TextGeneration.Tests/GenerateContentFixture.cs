@@ -11,6 +11,8 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.TextGeneration.Tests
 {
@@ -23,26 +25,15 @@ namespace Wyam.TextGeneration.Tests
             public void GeneratingContentFromStringTemplateSetsContent()
             {
                 // Given
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(string.Empty));
-                document.GetStream().Returns(stream);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument();
                 IModule generateContent = new GenerateContent(@"[rs:4;,\s]{<noun>}").WithSeed(1000);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                object result;
-                context.TryConvert(new object(), out result)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
 
                 // When
-                generateContent.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
+                IList<IDocument> results = generateContent.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(Arg.Is(document), "nectarine, gambler, marijuana, chickadee");
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { "nectarine, gambler, marijuana, chickadee" }));
             }
         }
     }

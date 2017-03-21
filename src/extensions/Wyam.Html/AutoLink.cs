@@ -157,7 +157,14 @@ namespace Wyam.Html
                         {
                             replacement.Key.Replace(parser.ParseFragment(replacement.Value, replacement.Key.ParentElement).ToArray());
                         }
-                        return context.GetDocument(input, htmlDocument.ToHtml());
+
+                        Stream contentStream = context.GetContentStream();
+                        using (StreamWriter writer = contentStream.GetWriter())
+                        {
+                            htmlDocument.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                            writer.Flush();
+                            return context.GetDocument(input, contentStream);
+                        }
                     }
                     return input;
                 }

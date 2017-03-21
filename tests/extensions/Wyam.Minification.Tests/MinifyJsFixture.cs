@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Minification.Tests
 {
@@ -46,19 +49,15 @@ if(is.ua.indexOf('gecko')>=0){is.ie=is.ns=false;is.gecko=true;}";
 
                 // HACK: The JS minifier will use \n new-lines, but in this test Windows/VS uses \r\n for new-lines
                 output = output.Replace(System.Environment.NewLine, "\n");
-
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 MinifyJs minifyJs = new MinifyJs();
 
                 // When
-                minifyJs.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = minifyJs.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
     }

@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Minification.Tests
 {
@@ -28,19 +31,15 @@ namespace Wyam.Minification.Tests
                         </body>
                     </html>";
                 string output = @"<html><head><title>Title</title></head><body><h1>Title</h1><p>This is<br />some text</p></body></html>";
-
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(input);
-
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 MinifyXhtml minifyXhtml = new MinifyXhtml();
 
                 // When
-                minifyXhtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = minifyXhtml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
     }

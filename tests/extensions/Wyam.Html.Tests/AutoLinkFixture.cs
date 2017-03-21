@@ -10,6 +10,8 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Html.Tests
 {
@@ -32,28 +34,18 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobaz", "http://www.google.com" }
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
-                stream.Dispose();
+                Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
 
             [Test]
@@ -77,29 +69,18 @@ namespace Wyam.Html.Tests
                             <p>This is some <a href=""http://www.google.com"">Foobar</a> text</p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" }
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -125,29 +106,18 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" }
                 }).WithQuerySelector("baz");
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -171,29 +141,18 @@ namespace Wyam.Html.Tests
                             <p>This <i>is</i> some <a href=""http://www.google.com"">Foobar</a> <b>text</b></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" }
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -217,29 +176,18 @@ namespace Wyam.Html.Tests
                             <p>This <i>is</i> some <i><a href=""http://www.google.com"">Foobar</a></i> <b>text</b></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" }
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -263,29 +211,18 @@ namespace Wyam.Html.Tests
                             <p attr=""Foobar"">This is some <a href=""http://www.google.com"">Foobar</a> <b ref=""Foobar"">text</b></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" }
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -309,17 +246,8 @@ namespace Wyam.Html.Tests
                             <p>This is some <i><a href=""http://www.google.com"">Foobar</a></i> text <a href=""http://www.bing.com"">Foobaz</a></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" },
@@ -327,12 +255,10 @@ namespace Wyam.Html.Tests
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -358,17 +284,8 @@ namespace Wyam.Html.Tests
                             <p>Another <a href=""http://www.bing.com"">Foobaz</a> paragraph</p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" },
@@ -376,12 +293,10 @@ namespace Wyam.Html.Tests
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -405,17 +320,8 @@ namespace Wyam.Html.Tests
                             <p>This is some <a href=""http://www.yahoo.com"">Foobar</a> text <a href=""http://www.bing.com"">Foobaz</a></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" },
@@ -423,12 +329,10 @@ namespace Wyam.Html.Tests
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -452,17 +356,8 @@ namespace Wyam.Html.Tests
                             <p>This is some <i><a href=""http://www.google.com"">Foo</a>bar</i> text <a href=""http://www.bing.com"">Foobaz</a></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foo", "http://www.google.com" },
@@ -470,12 +365,10 @@ namespace Wyam.Html.Tests
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -499,17 +392,8 @@ namespace Wyam.Html.Tests
                             <p>This is some <i><a href=""http://www.google.com"">Foobar</a></i> text <a href=""http://www.yahoo.com"">Foobaz</a></p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foobar", "http://www.google.com" },
@@ -517,12 +401,10 @@ namespace Wyam.Html.Tests
                 }).WithLink("Foobaz", "http://www.yahoo.com");
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -546,29 +428,18 @@ namespace Wyam.Html.Tests
                             <p>This is some <i><a href=""http://www.google.com"">Foo</a></i> text Foobaz</p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foo", "http://www.google.com" },
                 }).WithMatchOnlyWholeWord();
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -592,17 +463,8 @@ namespace Wyam.Html.Tests
                             <p>abc <a href=""http://www.google.com"">Foo</a>(<a href=""http://www.yahoo.com"">baz</a>) xyz</p>
                         
                     </body></html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foo", "http://www.google.com" },
@@ -610,12 +472,10 @@ namespace Wyam.Html.Tests
                 });
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output.Replace("\r\n", "\n"));
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
             }
 
             [Test]
@@ -631,17 +491,8 @@ namespace Wyam.Html.Tests
                             <p>abc Foo(baz) xyz</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
                 {
                     { "Foo", "http://www.google.com" },
@@ -649,11 +500,10 @@ namespace Wyam.Html.Tests
                 }).WithMatchOnlyWholeWord();
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
-                stream.Dispose();
+                Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
         }
     }

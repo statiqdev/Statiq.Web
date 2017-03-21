@@ -63,6 +63,7 @@ namespace Wyam.AmazonWebServices
         /// <param name="fieldName">The CloudSearch field name.</param>
         /// <param name="metaKey">The meta key. If the meta key does not exist, the field will not be written.</param>
         /// <param name="transformer">An optional function that takes a string and returns an object. If specified, it will be invoked on the meta value prior to serialization. If the function returns NULL, the field will not be written.</param>
+        /// <returns>The current module.</returns>
         public GenerateCloudSearchData MapMetaField(string fieldName, string metaKey, Func<object, object> transformer = null)
         {
             if (fieldName == null)
@@ -82,7 +83,7 @@ namespace Wyam.AmazonWebServices
         /// </summary>
         /// <param name="fieldName">The CloudSearch field name.</param>
         /// <param name="fieldValue">The value.</param>
-        /// <returns></returns>
+        /// <returns>The current module.</returns>
         public GenerateCloudSearchData AddField(string fieldName, object fieldValue)
         {
             _fields.Add(new Field(fieldName, fieldValue));
@@ -94,7 +95,7 @@ namespace Wyam.AmazonWebServices
         /// </summary>
         /// <param name="fieldName">The CloudSearch field name.</param>
         /// <param name="execute">A function of signature Func&lt;IDocument, object&gt;. If the function returns NULL, the field will not be written.</param>
-        /// <returns></returns>
+        /// <returns>The current module.</returns>
         public GenerateCloudSearchData AddField(string fieldName, Func<IDocument, object> execute)
         {
             _fields.Add(new Field(fieldName, execute));
@@ -104,127 +105,81 @@ namespace Wyam.AmazonWebServices
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            StringBuilder sb = new StringBuilder();
-            StringWriter sw = new StringWriter(sb);
-
-            using (JsonWriter writer = new JsonTextWriter(sw))
+            Stream contentStream = context.GetContentStream();
+            using (TextWriter textWriter = new StreamWriter(contentStream))
             {
-                writer.WriteStartArray();
-
-                context.ForEach(inputs, doc =>
+                using (JsonWriter writer = new JsonTextWriter(textWriter))
                 {
-                    writer.WriteStartObject();
+                    writer.WriteStartArray();
 
-                    writer.WritePropertyName("type");
-                    writer.WriteValue("add");
-
-                    writer.WritePropertyName("id");
-                    writer.WriteValue(_idMetaKey != null ? doc.String(_idMetaKey) : doc.Id);
-
-                    writer.WritePropertyName("fields");
-                    writer.WriteStartObject();
-
-                    if (_bodyField != null)
+                    context.ForEach(inputs, doc =>
                     {
-                        writer.WritePropertyName(_bodyField);
-                        writer.WriteValue(doc.Content);
-                    }
+                        writer.WriteStartObject();
 
-                    foreach (var field in _fields)
-                    {
-                        var value = field.GetValue(doc);
-                        if (value == null)
+                        writer.WritePropertyName("type");
+                        writer.WriteValue("add");
+
+                        writer.WritePropertyName("id");
+                        writer.WriteValue(_idMetaKey != null ? doc.String(_idMetaKey) : doc.Id);
+
+                        writer.WritePropertyName("fields");
+                        writer.WriteStartObject();
+
+                        if (_bodyField != null)
                         {
-                            // Null fields are not written
-                            continue;
+                            writer.WritePropertyName(_bodyField);
+                            writer.WriteValue(doc.Content);
                         }
 
-                        writer.WritePropertyName(field.FieldName);
-                        writer.WriteRawValue(JsonConvert.SerializeObject(value));
-                    }
-
-                    foreach (var field in _metaFields)
-                    {
-                        if (!doc.ContainsKey(field.MetaKey))
+                        foreach (Field field in _fields)
                         {
-                            continue;
+                            object value = field.GetValue(doc);
+                            if (value == null)
+                            {
+                                // Null fields are not written
+                                continue;
+                            }
+
+                            writer.WritePropertyName(field.FieldName);
+                            writer.WriteRawValue(JsonConvert.SerializeObject(value));
                         }
 
-                        object value = doc.Get(field.MetaKey);
-                        if (value == null)
+                        foreach (MetaFieldMapping field in _metaFields)
                         {
-                            // Null fields are not written
-                            continue;
+                            if (!doc.ContainsKey(field.MetaKey))
+                            {
+                                continue;
+                            }
+
+                            object value = doc.Get(field.MetaKey);
+                            if (value == null)
+                            {
+                                // Null fields are not written
+                                continue;
+                            }
+
+                            value = field.Transformer.Invoke(value.ToString());
+                            if (value == null)
+                            {
+                                // If the transformer function returns null, we'll not writing this either
+                                continue;
+                            }
+
+                            writer.WritePropertyName(field.FieldName);
+                            writer.WriteRawValue(JsonConvert.SerializeObject(value));
                         }
 
-                        value = field.Transformer.Invoke(value.ToString());
-                        if (value == null)
-                        {
-                            // If the transformer function returns null, we'll not writing this either
-                            continue;
-                        }
+                        writer.WriteEndObject();
 
-                        writer.WritePropertyName(field.FieldName);
-                        writer.WriteRawValue(JsonConvert.SerializeObject(value));
-                    }
+                        writer.WriteEndObject();
+                    });
 
-                    writer.WriteEndObject();
+                    writer.WriteEndArray();
+                    textWriter.Flush();
 
-                    writer.WriteEndObject();
-                });
-
-                writer.WriteEndArray();
-
-                return new[] { context.GetDocument(sw.ToString()) };
+                    return new[] { context.GetDocument(contentStream) };
+                }
             }
-        }
-    }
-
-    internal class Field
-    {
-        public string FieldName { get; }
-        public object FieldValue { get; }
-        public Func<IDocument, object> Execute { get; }
-
-        public Field(string fieldName, object fieldValue)
-        {
-            FieldName = fieldName;
-            FieldValue = fieldValue;
-        }
-
-        public Field(string fieldName, Func<IDocument, object> execute)
-        {
-            FieldName = fieldName;
-            Execute = execute;
-        }
-
-        public object GetValue(IDocument doc)
-        {
-            // Return the field value, if it's set
-            // Note: if the field value is set, the passed-in document is never used...
-            if (FieldValue != null)
-            {
-                return FieldValue;
-            }
-
-            return Execute.Invoke(doc);
-        }
-    }
-
-    internal class MetaFieldMapping
-    {
-        public string FieldName { get; }
-        public string MetaKey { get; }
-
-        public Func<object, object> Transformer { get; }
-
-        public MetaFieldMapping(string fieldName, string metaKey, Func<object, object> transformer = null)
-        {
-            FieldName = fieldName;
-            MetaKey = metaKey;
-
-            // If they didn't pass in a transformer, just set it to a function which returns the input unchanged
-            Transformer = transformer ?? (o => o);
         }
     }
 }

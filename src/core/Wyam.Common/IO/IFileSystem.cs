@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
+    /// <summary>
+    /// A file system that can be configured.
+    /// </summary>
     public interface IFileSystem : IReadOnlyFileSystem
     {
         /// <summary>

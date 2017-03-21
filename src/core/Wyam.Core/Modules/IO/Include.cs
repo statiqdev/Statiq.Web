@@ -44,7 +44,7 @@ namespace Wyam.Core.Modules.IO
             return inputs.AsParallel().Select(context, input =>
             {
                 string content = input.Content;
-                return ProcessIncludes(ref content, input.Source, context) ? context.GetDocument(input, content) : input;
+                return ProcessIncludes(ref content, input.Source, context) ? context.GetDocument(input, context.GetContentStream(content)) : input;
             });
         }
 

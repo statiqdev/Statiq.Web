@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
                 // When
@@ -79,7 +79,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles("txt");
 
                 // When
@@ -95,7 +95,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldWriteDotFile()
             {
                 // Given
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles((x, y) => ".dotfile");
 
                 // When
@@ -111,7 +111,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldReturnNullBasePathsForDotFiles()
             {
                 // Given
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles((x, y) => ".dotfile");
 
                 // When
@@ -127,7 +127,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void OutputDocumentContainsSameContent()
             {
                 // Given
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles((x, y) => null);
 
                 // When
@@ -141,7 +141,7 @@ namespace Wyam.Core.Tests.Modules.IO
             public void ShouldReturnOriginalDocumentForFailedPredicate()
             {
                 // Given
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles((x, y) => null).Where((x, y) => false);
 
                 // When
@@ -158,11 +158,11 @@ namespace Wyam.Core.Tests.Modules.IO
                 ThrowOnTraceEventType(TraceEventType.Error);
                 IDocument[] inputs = new[]
                 {
-                    Context.GetDocument("A"),
-                    Context.GetDocument("B"),
-                    Context.GetDocument("C"),
-                    Context.GetDocument("D"),
-                    Context.GetDocument("E"),
+                    Context.GetDocument(Context.GetContentStream("A")),
+                    Context.GetDocument(Context.GetContentStream("B")),
+                    Context.GetDocument(Context.GetContentStream("C")),
+                    Context.GetDocument(Context.GetContentStream("D")),
+                    Context.GetDocument(Context.GetContentStream("E")),
                 };
                 WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt");
 
@@ -181,11 +181,11 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] inputs = new[]
                 {
-                    Context.GetDocument(new FilePath("/a.txt"), "A"),
-                    Context.GetDocument(new FilePath("/b.txt"), "B"),
-                    Context.GetDocument(new FilePath("/c.txt"), "C"),
-                    Context.GetDocument(new FilePath("/d.txt"), "D"),
-                    Context.GetDocument(new FilePath("/e.txt"), "E"),
+                    Context.GetDocument(new FilePath("/a.txt"), Context.GetContentStream("A")),
+                    Context.GetDocument(new FilePath("/b.txt"), Context.GetContentStream("B")),
+                    Context.GetDocument(new FilePath("/c.txt"), Context.GetContentStream("C")),
+                    Context.GetDocument(new FilePath("/d.txt"), Context.GetContentStream("D")),
+                    Context.GetDocument(new FilePath("/e.txt"), Context.GetContentStream("E")),
                 };
                 WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt");
 
@@ -204,11 +204,11 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] inputs = new[]
                 {
-                    Context.GetDocument("A"),
-                    Context.GetDocument("B"),
-                    Context.GetDocument("C"),
-                    Context.GetDocument("D"),
-                    Context.GetDocument("E"),
+                    Context.GetDocument(Context.GetContentStream("A")),
+                    Context.GetDocument(Context.GetContentStream("B")),
+                    Context.GetDocument(Context.GetContentStream("C")),
+                    Context.GetDocument(Context.GetContentStream("D")),
+                    Context.GetDocument(Context.GetContentStream("E")),
                 };
                 WriteFiles writeFiles = new WriteFiles((x, y) => "output.txt").Append();
 
@@ -231,7 +231,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
                 // When
@@ -249,7 +249,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
                 // When
@@ -266,7 +266,7 @@ namespace Wyam.Core.Tests.Modules.IO
             {
                 // Given
                 Engine.Settings[Keys.RelativeFilePath] = new FilePath("Subfolder/write-test.abc");
-                IDocument[] inputs = new[] { Context.GetDocument("Test") };
+                IDocument[] inputs = new[] { Context.GetDocument(Context.GetContentStream("Test")) };
                 WriteFiles writeFiles = new WriteFiles(".txt");
 
                 // When
@@ -285,19 +285,23 @@ namespace Wyam.Core.Tests.Modules.IO
                 MemoryStream emptyStream = new MemoryStream(new byte[] { });
                 IDocument[] inputs =
                 {
-                    Context.GetDocument("Test",
+                    Context.GetDocument(
+                        Context.GetContentStream("Test"),
                         new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/write-test"))
                         }),
-                    Context.GetDocument(string.Empty,
+                    Context.GetDocument(
+                        Context.GetContentStream(string.Empty),
                         new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/empty-test")),
                         }),
-                    Context.GetDocument((string)null,
+                    Context.GetDocument(
+                        (Stream)null,
                         new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/null-test"))
                         }),
-                    Context.GetDocument(emptyStream,
+                    Context.GetDocument(
+                        emptyStream,
                         new MetadataItems {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath(@"Subfolder/stream-test"))
                         })

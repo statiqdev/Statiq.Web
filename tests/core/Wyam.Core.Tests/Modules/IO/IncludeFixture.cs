@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] documents =
                 {
-                    Context.GetDocument("foo ^\"test-a.txt\" bar")
+                    Context.GetDocument(Context.GetContentStream("foo ^\"test-a.txt\" bar"))
                 };
                 Include include = new Include();
 
@@ -76,7 +76,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] documents =
                 {
-                    Context.GetDocument("foo ^\"/TestFiles/Input/test-a.txt\" bar")
+                    Context.GetDocument(Context.GetContentStream("foo ^\"/TestFiles/Input/test-a.txt\" bar"))
                 };
                 Include include = new Include();
 
@@ -93,7 +93,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] documents =
                 {
-                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), "^\"test-a.txt\"foo")
+                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), Context.GetContentStream("^\"test-a.txt\"foo"))
                 };
                 Include include = new Include();
 
@@ -110,7 +110,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] documents =
                 {
-                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), "\\^\"test-a.txt\"foo")
+                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), Context.GetContentStream("\\^\"test-a.txt\"foo"))
                 };
                 Include include = new Include();
 
@@ -127,7 +127,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 // Given
                 IDocument[] documents =
                 {
-                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), "\\\\\\^\"test-a.txt\"foo")
+                    Context.GetDocument(new FilePath("/TestFiles/Input/test.txt"), Context.GetContentStream("\\\\\\^\"test-a.txt\"foo"))
                 };
                 Include include = new Include();
 
@@ -146,7 +146,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"test-a.txt\" y ^\"test-b.txt\" z")
+                        Context.GetContentStream("x ^\"test-a.txt\" y ^\"test-b.txt\" z"))
                 };
                 Include include = new Include();
 
@@ -165,7 +165,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"test-a.txt\"^\"test-b.txt\" z")
+                        Context.GetContentStream("x ^\"test-a.txt\"^\"test-b.txt\" z"))
                 };
                 Include include = new Include();
 
@@ -185,7 +185,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"test-c.txt\" y")
+                        Context.GetContentStream("x ^\"test-c.txt\" y"))
                 };
                 Include include = new Include();
 
@@ -204,7 +204,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"Subfolder/test-c.txt\" y")
+                        Context.GetContentStream("x ^\"Subfolder/test-c.txt\" y"))
                 };
                 Include include = new Include();
 
@@ -223,7 +223,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"../test-above-input.txt\" y")
+                        Context.GetContentStream("x ^\"../test-above-input.txt\" y"))
                 };
                 Include include = new Include();
 
@@ -243,7 +243,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "x ^\"/TestFiles/test-above-input.txt\" y")
+                        Context.GetContentStream("x ^\"/TestFiles/test-above-input.txt\" y"))
                 };
                 Include include = new Include();
 
@@ -265,7 +265,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "1 ^\"test-outer.txt\" 2")
+                        Context.GetContentStream("1 ^\"test-outer.txt\" 2"))
                 };
                 Include include = new Include();
 
@@ -287,7 +287,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "1 ^\"test-outer.txt\" 2")
+                        Context.GetContentStream("1 ^\"test-outer.txt\" 2"))
                 };
                 Include include = new Include().WithRecursion(false);
 
@@ -309,7 +309,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "1 ^\"test-outer.txt\" 2")
+                        Context.GetContentStream("1 ^\"test-outer.txt\" 2"))
                 };
                 Include include = new Include().WithRecursion(false);
 
@@ -334,7 +334,7 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         new FilePath("/TestFiles/Input/test.txt"),
-                        "1 ^\"test-outer.txt\" 2")
+                        Context.GetContentStream("1 ^\"test-outer.txt\" 2"))
                 };
                 Include include = new Include();
 

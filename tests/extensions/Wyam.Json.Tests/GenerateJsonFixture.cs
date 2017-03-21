@@ -9,6 +9,8 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Json.Tests
 {
@@ -52,86 +54,90 @@ namespace Wyam.Json.Tests
             public void GetsObjectFromMetadata()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Get("JsonObject").Returns(JsonObject);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    {"JsonObject", JsonObject}
+                });
                 GenerateJson generateJson = new GenerateJson("JsonObject");
 
                 // When
-                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, Arg.Is(JsonContent));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
             }
 
             [Test]
             public void GetsObjectFromContextDelegate()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument();
                 GenerateJson generateJson = new GenerateJson(ctx => JsonObject);
 
                 // When
-                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, Arg.Is(JsonContent));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
             }
 
             [Test]
             public void GetsObjectFromDocumentDelegate()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Get("JsonObject").Returns(JsonObject);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    {"JsonObject", JsonObject}
+                });
                 GenerateJson generateJson = new GenerateJson((doc, ctx) => doc.Get("JsonObject"));
 
                 // When
-                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, Arg.Is(JsonContent));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
             }
 
             [Test]
             public void SetsMetadataKey()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Get("JsonObject").Returns(JsonObject);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "JsonObject", JsonObject }
+                });
                 GenerateJson generateJson = new GenerateJson("JsonObject", "OutputKey");
 
                 // When
-                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(
-                    x => x.First().Key == "OutputKey" && (string)x.First().Value == JsonContent));
+                Assert.That(
+                    results.Select(x => x.First(y => y.Key == "OutputKey")),
+                    Is.EquivalentTo(new[] { new KeyValuePair<string, object>("OutputKey", JsonContent) }));
             }
 
             [Test]
             public void DoesNotIndent()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Get("JsonObject").Returns(JsonObject);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    {"JsonObject", JsonObject}
+                });
                 GenerateJson generateJson = new GenerateJson("JsonObject").WithIndenting(false);
                 string nonIndentedJsonContent = JsonContent.Replace(" ", "").Replace("\r\n", "");
 
                 // When
-                generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, Arg.Is(nonIndentedJsonContent));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { nonIndentedJsonContent }));
             }
         }
     }

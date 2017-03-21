@@ -10,6 +10,8 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Html.Tests
 {
@@ -32,26 +34,15 @@ namespace Wyam.Html.Tests
                             <p>This is some Foobar text</p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 HtmlEscape htmlEscape = new HtmlEscape();
 
                 // When
-                htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.DidNotReceiveWithAnyArgs().GetDocument((IDocument)null, (string)null);
-                stream.Dispose();
+                Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
 
             [Test]
@@ -108,27 +99,15 @@ namespace Wyam.Html.Tests
                             </p>
                         </body>
                     </html>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 HtmlEscape htmlEscape = new HtmlEscape().WithEscapedChar('ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', 'ß', '©');
 
                 // When
-                htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -153,27 +132,15 @@ namespace Wyam.Html.Tests
                             &lt;p&gt;This is some Foobar text&lt;&#47;p&gt;
                         &lt;&#47;body&gt;
                     &lt;&#47;html&gt;";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 HtmlEscape htmlEscape = new HtmlEscape().EscapeAllNonstandard().WithDefaultStandard();
 
                 // When
-                htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = htmlEscape.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<string>());
-                context.Received().GetDocument(document, output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
     }

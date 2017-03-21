@@ -10,6 +10,8 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Xslt2.Tests
 {
@@ -105,126 +107,95 @@ namespace Wyam.Xslt2.Tests
 + "\n" + "   </BODY>"
 + "\n" + "</HTML>";
 
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
-
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                TestDocument xsltDocument = new TestDocument(xsltInput);
                 IModule module = Substitute.For<IModule>();
-                IDocument xsltDocument = Substitute.For<IDocument>();
-
-                MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
-                xsltDocument.GetStream().Returns(xsltStream);
-                context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] { xsltDocument });
+                module.Execute(Arg.Any<IReadOnlyList<IDocument>>(), Arg.Any<IExecutionContext>()).Returns(new IDocument[] { xsltDocument });
                 Xslt2 xslt2 = new Xslt2(module);
 
                 // When
-                xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received().GetDocument(Arg.Is(document), output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+            }
+
+            [Test]
+            public void TestTransform2()
+            {
+                // Given
+                string xsltInput = ""
+    + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    + "\n" + "<xsl:stylesheet version=\"2.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" >"
+    + "\n" + "<xsl:output method=\"xml\" indent=\"yes\" />"
+    + "\n" + ""
+    + "\n" + "<xsl:template match=\"world\">"
+    + "\n" + "    <div>"
+    + "\n" + "        <xsl:for-each-group select=\"country\" group-by=\"@continent\">"
+    + "\n" + "            <div>"
+    + "\n" + "		<h1><xsl:value-of select=\"@continent\" /></h1>"
+    + "\n" + "                <xsl:for-each select=\"current-group()\">"
+    + "\n" + "                    <p>"
+    + "\n" + "                        <xsl:value-of select=\"@name\" />"
+    + "\n" + "                    </p>"
+    + "\n" + "                </xsl:for-each>"
+    + "\n" + "            </div>"
+    + "\n" + "        </xsl:for-each-group>"
+    + "\n" + "    </div>"
+    + "\n" + "</xsl:template>"
+    + "\n" + "</xsl:stylesheet>";
+
+
+
+
+                string input = ""
+    + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    + "<world>"
+    + "<country name=\"Canada\" continent=\"North America\" />"
+    + "<country name=\"Jamaica\" continent=\"North America\" />"
+    + "<country name=\"United States\" continent=\"North America\" />"
+    + "<country name=\"United Kingdom\" continent=\"Europe\" />"
+    + "<country name=\"France\" continent=\"Europe\" />"
+    + "<country name=\"Japan\" continent=\"Asia\" />"
+    + "</world>";
+
+
+                string output = ""
+     + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    + "\n" + "<div>"
+    + "\n" + "   <div>"
+    + "\n" + "      <h1>North America</h1>"
+    + "\n" + "      <p>Canada</p>"
+    + "\n" + "      <p>Jamaica</p>"
+    + "\n" + "      <p>United States</p>"
+    + "\n" + "   </div>"
+    + "\n" + "   <div>"
+    + "\n" + "      <h1>Europe</h1>"
+    + "\n" + "      <p>United Kingdom</p>"
+    + "\n" + "      <p>France</p>"
+    + "\n" + "   </div>"
+    + "\n" + "   <div>"
+    + "\n" + "      <h1>Asia</h1>"
+    + "\n" + "      <p>Japan</p>"
+    + "\n" + "   </div>"
+    + "\n" + "</div>"
+    + "\n" ;
+
+
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                TestDocument xsltDocument = new TestDocument(xsltInput);
+                IModule module = Substitute.For<IModule>();
+                module.Execute(Arg.Any<IReadOnlyList<IDocument>>(), Arg.Any<IExecutionContext>()).Returns(new IDocument[] { xsltDocument });
+                Xslt2 xslt2 = new Xslt2(module);
+
+                // When
+                IList<IDocument> results = xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
-
-        [Test]
-        public void TestTransform2()
-        {
-            // Given
-            string xsltInput = ""
-+ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-+ "\n" + "<xsl:stylesheet version=\"2.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" >"
-+ "\n" + "<xsl:output method=\"xml\" indent=\"yes\" />"
-+ "\n" + ""
-+ "\n" + "<xsl:template match=\"world\">"
-+ "\n" + "    <div>"
-+ "\n" + "        <xsl:for-each-group select=\"country\" group-by=\"@continent\">"
-+ "\n" + "            <div>"
-+ "\n" + "		<h1><xsl:value-of select=\"@continent\" /></h1>"
-+ "\n" + "                <xsl:for-each select=\"current-group()\">"
-+ "\n" + "                    <p>"
-+ "\n" + "                        <xsl:value-of select=\"@name\" />"
-+ "\n" + "                    </p>"
-+ "\n" + "                </xsl:for-each>"
-+ "\n" + "            </div>"
-+ "\n" + "        </xsl:for-each-group>"
-+ "\n" + "    </div>"
-+ "\n" + "</xsl:template>"
-+ "\n" + "</xsl:stylesheet>";
-
-
-
-
-            string input = ""
-+ "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-+ "<world>"
-+ "<country name=\"Canada\" continent=\"North America\" />"
-+ "<country name=\"Jamaica\" continent=\"North America\" />"
-+ "<country name=\"United States\" continent=\"North America\" />"
-+ "<country name=\"United Kingdom\" continent=\"Europe\" />"
-+ "<country name=\"France\" continent=\"Europe\" />"
-+ "<country name=\"Japan\" continent=\"Asia\" />"
-+ "</world>";
-
-
-            string output = ""
- + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-+ "\n" + "<div>"
-+ "\n" + "   <div>"
-+ "\n" + "      <h1>North America</h1>"
-+ "\n" + "      <p>Canada</p>"
-+ "\n" + "      <p>Jamaica</p>"
-+ "\n" + "      <p>United States</p>"
-+ "\n" + "   </div>"
-+ "\n" + "   <div>"
-+ "\n" + "      <h1>Europe</h1>"
-+ "\n" + "      <p>United Kingdom</p>"
-+ "\n" + "      <p>France</p>"
-+ "\n" + "   </div>"
-+ "\n" + "   <div>"
-+ "\n" + "      <h1>Asia</h1>"
-+ "\n" + "      <p>Japan</p>"
-+ "\n" + "   </div>"
-+ "\n" + "</div>"
-+ "\n" ;
-
-
-            IDocument document = Substitute.For<IDocument>();
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-            document.GetStream().Returns(stream);
-
-            IExecutionContext context = Substitute.For<IExecutionContext>();
-            Dictionary<string, string> convertedLinks;
-            context.TryConvert(new object(), out convertedLinks)
-                .ReturnsForAnyArgs(x =>
-                {
-                    x[1] = x[0];
-                    return true;
-                });
-
-            IModule module = Substitute.For<IModule>();
-            IDocument xsltDocument = Substitute.For<IDocument>();
-
-            MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
-            xsltDocument.GetStream().Returns(xsltStream);
-            context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] { xsltDocument });
-            Xslt2 xslt2 = new Xslt2(module);
-
-            // When
-            xslt2.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
-
-            // Then
-            context.Received().GetDocument(Arg.Is(document), output);
-            stream.Dispose();
-        }
-
     }
 }

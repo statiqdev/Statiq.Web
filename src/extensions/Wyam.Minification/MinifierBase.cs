@@ -29,7 +29,7 @@ namespace Wyam.Minification
                         Trace.Warning("{0} warnings found while minifying {4} for {1}:{2}{3}", result.Warnings.Count, input.SourceString(), Environment.NewLine, string.Join(Environment.NewLine, result.Warnings.Select(MinificationErrorInfoToString)), minifierType);
                     }
 
-                    return context.GetDocument(input, result.MinifiedContent);
+                    return context.GetDocument(input, context.GetContentStream(result.MinifiedContent));
                 }
                 catch (Exception ex)
                 {

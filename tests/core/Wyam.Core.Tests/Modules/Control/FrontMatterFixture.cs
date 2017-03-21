@@ -9,6 +9,8 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
 {
@@ -22,12 +24,10 @@ namespace Wyam.Core.Tests.Modules.Control
             public void DefaultCtorSplitsAtDashes()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 ---
 Content1
@@ -56,12 +56,10 @@ Content2", documents.First().Content);
             public void DashStringDoesNotSplitAtNonmatchingDashes()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 ---
 Content1
@@ -91,12 +89,10 @@ Content2", documents.First().Content);
             public void MatchingStringSplitsAtCorrectLocation()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 ABC
 Content1
@@ -125,12 +121,10 @@ Content2", documents.First().Content);
             public void SingleCharWithRepeatedDelimiterSplitsAtCorrectLocation()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 !!!!
 Content1
@@ -159,12 +153,10 @@ Content2", documents.First().Content);
             public void SingleCharWithRepeatedDelimiterWithTrailingSpacesSplitsAtCorrectLocation()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 !!!!  
 Content1
@@ -193,12 +185,10 @@ Content2", documents.First().Content);
             public void SingleCharWithRepeatedDelimiterWithLeadingSpacesDoesNotSplit()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
   !!!!
 Content1
@@ -228,12 +218,10 @@ Content2", documents.First().Content);
             public void SingleCharWithRepeatedDelimiterWithExtraLinesSplitsAtCorrectLocation()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                     context.GetDocument(@"FM1
+                     new TestDocument(@"FM1
 FM2
 
 !!!!
@@ -266,12 +254,10 @@ Content2", documents.First().Content);
             public void SingleCharWithSingleDelimiterSplitsAtCorrectLocation()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"FM1
+                    new TestDocument(@"FM1
 FM2
 !
 Content1
@@ -300,15 +286,13 @@ Content2", documents.First().Content);
             public void MultipleInputDocumentsResultsInMultipleOutputs()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"AA
+                    new TestDocument(@"AA
 -
 XX"),
-                    context.GetDocument(@"BB
+                    new TestDocument(@"BB
 -
 YY")
                 };
@@ -335,12 +319,10 @@ BB
             public void DefaultCtorIgnoresDelimiterOnFirstLine()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"---
+                    new TestDocument(@"---
 FM1
 FM2
 ---
@@ -370,12 +352,10 @@ Content2", documents.First().Content);
             public void NoIgnoreDelimiterOnFirstLine()
             {
                 // Given
-                Engine engine = new Engine();
-                ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new TestExecutionContext();
                 IDocument[] inputs =
                 {
-                    context.GetDocument(@"---
+                    new TestDocument(@"---
 FM1
 FM2
 ---

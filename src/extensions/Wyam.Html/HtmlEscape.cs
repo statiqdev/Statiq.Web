@@ -230,7 +230,7 @@ namespace Wyam.Html
                         }
                     }
                 }
-                return escaped ? context.GetDocument(input, outputString.ToString()) : input;
+                return escaped ? context.GetDocument(input, context.GetContentStream(outputString.ToString())) : input;
             });
         }
     }

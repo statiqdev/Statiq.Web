@@ -35,12 +35,17 @@ namespace Wyam.Testing.Modules
                     Value++;
                     if (CloneSource)
                     {
-                        yield return context.GetDocument(input, new FilePath(ValueKey + sourceCount++, PathKind.Absolute), input.Content == null ? Value.ToString() : input.Content + Value,
+                        yield return context.GetDocument(
+                            input,
+                            new FilePath(ValueKey + sourceCount++, PathKind.Absolute),
+                            context.GetContentStream(input.Content == null ? Value.ToString() : input.Content + Value),
                             new Dictionary<string, object> { { ValueKey, Value } });
                     }
                     else
                     {
-                        yield return context.GetDocument(input, input.Content == null ? Value.ToString() : input.Content + Value,
+                        yield return context.GetDocument(
+                            input,
+                            context.GetContentStream(input.Content == null ? Value.ToString() : input.Content + Value),
                             new Dictionary<string, object> { { ValueKey, Value } });
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,12 +30,13 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    using (var stream = input.GetStream())
+                    Tabular.Table table;
+                    using (Stream stream = input.GetStream())
                     {
-                        Tabular.Table table = Tabular.Excel.ReadFrom(stream, Tabular.ExcelFormat.Excel2007);
-                        Tabular.Csv csv = Tabular.Csv.ToCsv(table);
-                        return context.GetDocument(input, csv.Data);
+                        table = Tabular.Excel.ReadFrom(stream, Tabular.ExcelFormat.Excel2007);
                     }
+                    Tabular.Csv csv = Tabular.Csv.ToCsv(table);
+                    return context.GetDocument(input, context.GetContentStream(csv.Data));
                 }
                 catch (Exception e)
                 {

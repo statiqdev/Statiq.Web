@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -147,8 +148,14 @@ namespace Wyam.Highlight
                                         }
                                     }
                                 }
-                                string content = htmlDocument.ToHtml();
-                                return context.GetDocument(input, content);
+
+                                Stream contentStream = context.GetContentStream();
+                                using (StreamWriter writer = contentStream.GetWriter())
+                                {
+                                    htmlDocument.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                                    writer.Flush();
+                                    return context.GetDocument(input, contentStream);
+                                }
                             }
                         }
                         catch (Exception ex)

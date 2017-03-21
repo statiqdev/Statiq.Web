@@ -104,9 +104,9 @@ namespace Wyam.Markdown
                 return this;
             }
 
-            foreach (var type in extensions)
+            foreach (Type type in extensions)
             {
-                var extension = Activator.CreateInstance(type) as IMarkdownExtension;
+                IMarkdownExtension extension = Activator.CreateInstance(type) as IMarkdownExtension;
                 if (extension != null)
                 {
                     _extensions.AddIfNotAlready(extension);
@@ -121,8 +121,10 @@ namespace Wyam.Markdown
         {
             return inputs.AsParallel().Select(context, input =>
             {
-                Trace.Verbose("Processing Markdown {0} for {1}",
-                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey), input.SourceString());
+                Trace.Verbose(
+                    "Processing Markdown {0} for {1}",
+                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey),
+                    input.SourceString());
                 string result;
                 IExecutionCache executionCache = context.ExecutionCache;
 
@@ -153,7 +155,7 @@ namespace Wyam.Markdown
                 }
 
                 return string.IsNullOrEmpty(_sourceKey)
-                    ? context.GetDocument(input, result)
+                    ? context.GetDocument(input, context.GetContentStream(result))
                     : context.GetDocument(input, new MetadataItems
                     {
                         { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }

@@ -7,8 +7,11 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.Templates;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Templates
 {
@@ -77,33 +80,18 @@ namespace Wyam.Core.Tests.Modules.Templates
     + "</bookstore>";
 
                 string output = "<HTML><BODY><TABLE BORDER=\"2\"><TR><TD>ISBN</TD><TD>Title</TD><TD>Price</TD></TR><TR><TD>1-861003-11-0</TD><TD>The Autobiography of Benjamin Franklin</TD><TD>8.99</TD></TR><TR><TD>0-201-63361-2</TD><TD>The Confidence Man</TD><TD>11.99</TD></TR><TR><TD>1-861001-57-6</TD><TD>The Gorgias</TD><TD>9.99</TD></TR></TABLE></BODY></HTML>";
-                IDocument document = Substitute.For<IDocument>();
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
 
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                Dictionary<string, string> convertedLinks;
-                context.TryConvert(new object(), out convertedLinks)
-                    .ReturnsForAnyArgs(x =>
-                    {
-                        x[1] = x[0];
-                        return true;
-                    });
-
-                IModule module = Substitute.For<IModule>();
-                IDocument xsltDocument = Substitute.For<IDocument>();
-
-                MemoryStream xsltStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltInput));
-                xsltDocument.GetStream().Returns(xsltStream);
-                context.Execute(Arg.Any<IEnumerable<IModule>>(), Arg.Any<IEnumerable<IDocument>>()).Returns(new IDocument[] {xsltDocument });
-                Xslt autoLink = new Xslt(module);
+                TestExecutionContext context = new TestExecutionContext();
+                IDocument document = new TestDocument(input);
+                IDocument xsltDocument = new TestDocument(xsltInput);
+                IModule module = new Execute(_ => new[] { xsltDocument });
+                Xslt xslt = new Xslt(module);
 
                 // When
-                autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = xslt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received().GetDocument(Arg.Is(document), output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
     }

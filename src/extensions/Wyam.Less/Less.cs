@@ -74,7 +74,7 @@ namespace Wyam.Less
                     fileName = Path.GetRandomFileName();
                 }
                 string content = engine.TransformToCss(input.Content, fileName);
-                return context.GetDocument(input, content);
+                return context.GetDocument(input, context.GetContentStream(content));
             });
         }
     }

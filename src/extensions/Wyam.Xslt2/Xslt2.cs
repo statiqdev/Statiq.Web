@@ -127,7 +127,7 @@ namespace Wyam.Xslt2
                             Saxon.Api.Serializer serializer = new Saxon.Api.Serializer();
                             serializer.SetOutputWriter(writer);
                             transformer.Run(serializer);
-                            return context.GetDocument(input, writer.ToString());
+                            return context.GetDocument(input, context.GetContentStream(writer.ToString()));
                         }
                     }
 

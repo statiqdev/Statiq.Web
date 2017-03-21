@@ -38,7 +38,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 ExecutionPipeline contentPipeline = new ExecutionPipeline("Content", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
 
-                IDocument doc = context.GetDocument("Test", new[]
+                IDocument doc = context.GetDocument(context.GetContentStream("Test"), new[]
                 {
                     new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
                 });
@@ -51,7 +51,9 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Func<string, string> formatter = null;
 
                 if (!string.IsNullOrWhiteSpace(formatterString))
+                {
                     formatter = f => string.Format(formatterString, f);
+                }
 
                 // When
                 Sitemap sitemap = new Sitemap(formatter);
@@ -81,7 +83,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                 ExecutionPipeline contentPipeline = new ExecutionPipeline("Content", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, contentPipeline);
 
-                IDocument doc = context.GetDocument("Test", new[]
+                IDocument doc = context.GetDocument(context.GetContentStream("Test"), new[]
                 {
                     new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
                 });
@@ -94,7 +96,9 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Func<string, string> formatter = null;
 
                 if (!string.IsNullOrWhiteSpace(formatterString))
+                {
                     formatter = f => string.Format(formatterString, f);
+                }
 
                 // When
                 Sitemap sitemap = new Sitemap(formatter);

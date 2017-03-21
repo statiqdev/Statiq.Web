@@ -31,7 +31,7 @@ namespace Wyam.CodeAnalysis.Tests
             IExecutionContext context = Substitute.For<IExecutionContext>();
             context.FileSystem.RootPath.Returns(new DirectoryPath(TestContext.CurrentContext.TestDirectory));
             context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
-            context.GetDocument(Arg.Any<FilePath>(), Arg.Any<string>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
+            context.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
                 .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
             return context;
         }

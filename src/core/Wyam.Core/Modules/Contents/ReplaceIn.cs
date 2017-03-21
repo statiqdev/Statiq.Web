@@ -95,13 +95,15 @@ namespace Wyam.Core.Modules.Contents
             }
             if (string.IsNullOrEmpty(_search))
             {
-                return new[] { context.GetDocument(input, content.ToString()) };
+                return new[] { context.GetDocument(input, context.GetContentStream(content.ToString())) };
             }
-            return new[] { context.GetDocument(input,
-                _isRegex ?
-                    Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
-                    content.ToString().Replace(_search, input.Content)
-                )
+            return new[]
+            {
+                context.GetDocument(
+                    input,
+                    context.GetContentStream(_isRegex ?
+                        Regex.Replace(input.Content, _search, content.ToString(), _regexOptions) :
+                        content.ToString().Replace(_search, input.Content)))
             };
         }
     }

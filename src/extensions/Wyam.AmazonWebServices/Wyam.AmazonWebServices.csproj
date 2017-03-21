@@ -53,7 +53,9 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Field.cs" />
     <Compile Include="GenerateCloudSearchData.cs" />
+    <Compile Include="MetaFieldMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

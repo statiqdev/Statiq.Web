@@ -291,5 +291,12 @@ namespace Wyam.Common.IO
         /// All files in the specified directory that match the globbing patterns and/or absolute paths.
         /// </returns>
         IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns);
+
+        /// <summary>
+        /// Gets the registered file provider for a specified path.
+        /// </summary>
+        /// <param name="path">The path to get the file provider for.</param>
+        /// <returns>The file provider for the specified path.</returns>
+        IFileProvider GetFileProvider(NormalizedPath path);
     }
 }

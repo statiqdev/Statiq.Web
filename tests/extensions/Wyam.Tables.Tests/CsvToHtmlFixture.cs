@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Tables.Tests
 {
@@ -21,7 +23,6 @@ namespace Wyam.Tables.Tests
             public void TestWithoutHeadder()
             {
                 // Given
-                #region input
                 string input = ""
         + "\"\",\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"\r\n"
 + "\"1\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\"\r\n"
@@ -323,29 +324,21 @@ namespace Wyam.Tables.Tests
 <td>182</td>
 </tr>
 </table>";
-                #endregion
-                IDocument document = Substitute.For<IDocument>();
-
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 CsvToHtml module = new CsvToHtml();
 
                 // When
-                module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received().GetDocument(document, output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
             public void TestHeadder()
             {
                 // Given
-                #region input
                 string input = ""
         + "\"\",\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"\r\n"
 + "\"1\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\"\r\n"
@@ -647,23 +640,15 @@ namespace Wyam.Tables.Tests
 <td>182</td>
 </tr>
 </table>";
-
-                #endregion
-                IDocument document = Substitute.For<IDocument>();
-
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
-                document.GetStream().Returns(stream);
-                document.Content.Returns(input);
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
                 CsvToHtml module = new CsvToHtml().WithHeader();
 
                 // When
-                module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received().GetDocument(document, output);
-                stream.Dispose();
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
             }
         }
     }

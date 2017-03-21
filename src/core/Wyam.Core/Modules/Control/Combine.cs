@@ -31,7 +31,7 @@ namespace Wyam.Core.Modules.Control
             {
                 result = result == null
                     ? input
-                    : context.GetDocument(result, result.Content + input.Content, input);
+                    : context.GetDocument(result, context.GetContentStream(result.Content + input.Content), input);
             });
             return new[] { result };
         }

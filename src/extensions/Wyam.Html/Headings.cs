@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
+using AngleSharp.Html;
 using AngleSharp.Parser.Html;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
@@ -233,7 +235,13 @@ namespace Wyam.Html
                         {
                             metadata.Add(_parentKey, new CachedDelegateMetadataValue(_ => parent?.Document));
                         }
-                        heading.Document = context.GetDocument(heading.Element.InnerHtml, metadata);
+                        Stream contentStream = context.GetContentStream();
+                        using (StreamWriter writer = contentStream.GetWriter())
+                        {
+                            heading.Element.ChildNodes.ToHtml(writer, HtmlMarkupFormatter.Instance);
+                            writer.Flush();
+                            heading.Document = context.GetDocument(contentStream, metadata);
+                        }
 
                         // Add to parent
                         parent?.Children.Add(heading.Document);

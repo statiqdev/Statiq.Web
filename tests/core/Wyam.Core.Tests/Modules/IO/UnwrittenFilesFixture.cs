@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -12,6 +13,8 @@ using Wyam.Common.Modules;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Execution;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.Modules.IO
@@ -20,42 +23,22 @@ namespace Wyam.Core.Tests.Modules.IO
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class UnwrittenFilesFixture : BaseFixture
     {
-        private Engine Engine { get; set; }
-        private ExecutionPipeline Pipeline { get; set; }
-        private IExecutionContext Context { get; set; }
-
-        [SetUp]
-        public void SetUp()
-        {
-            Engine = new Engine();
-            Engine.FileSystem.FileProviders.Add(NormalizedPath.DefaultFileProvider.Scheme, GetFileProvider());
-            Engine.FileSystem.RootPath = "/";
-            Pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-            Context = new ExecutionContext(Engine, Pipeline);
-        }
-
-        private IFileProvider GetFileProvider()
-        {
-            TestFileProvider fileProvider = new TestFileProvider();
-
-            fileProvider.AddDirectory("/");
-            fileProvider.AddDirectory("/output");
-
-            fileProvider.AddFile("/output/test.md");
-
-            return fileProvider;
-        }
-
         [Test]
         public void DoesNotOutputExistingFiles()
         {
             // Given
-            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.md");
-            IDocument[] inputs = new[] { Context.GetDocument() };
+            TestExecutionContext context = GetContext();
+            IDocument[] inputs =
+            {
+                new TestDocument(new MetadataItems
+                {
+                    { Keys.RelativeFilePath, new FilePath("test.md") }
+                })
+            };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles();
 
             // When
-            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, Context).ToList();
+            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.AreEqual(0, outputs.Count());
@@ -65,12 +48,18 @@ namespace Wyam.Core.Tests.Modules.IO
         public void DoesNotOutputExistingFilesWithDifferentExtension()
         {
             // Given
-            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.txt");
-            IDocument[] inputs = new[] { Context.GetDocument() };
+            TestExecutionContext context = GetContext();
+            IDocument[] inputs =
+            {
+                new TestDocument(new MetadataItems
+                {
+                    { Keys.RelativeFilePath, new FilePath("test.txt") }
+                })
+            };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles(".md");
 
             // When
-            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, Context).ToList();
+            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.AreEqual(0, outputs.Count());
@@ -80,12 +69,18 @@ namespace Wyam.Core.Tests.Modules.IO
         public void ShouldOutputNonExistingFiles()
         {
             // Given
-            Engine.Settings[Keys.RelativeFilePath] = new FilePath("foo.txt");
-            IDocument[] inputs = new[] { Context.GetDocument("Test") };
+            TestExecutionContext context = GetContext();
+            IDocument[] inputs =
+            {
+                new TestDocument("Test", new MetadataItems
+                {
+                    { Keys.RelativeFilePath, new FilePath("foo.txt") }
+                })
+            };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles();
 
             // When
-            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, Context).ToList();
+            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.AreEqual(1, outputs.Count());
@@ -96,16 +91,43 @@ namespace Wyam.Core.Tests.Modules.IO
         public void ShouldOutputNonExistingFilesWithDifferentExtension()
         {
             // Given
-            Engine.Settings[Keys.RelativeFilePath] = new FilePath("test.md");
-            IDocument[] inputs = new[] { Context.GetDocument("Test") };
+            TestExecutionContext context = GetContext();
+            IDocument[] inputs =
+            {
+                new TestDocument("Test", new MetadataItems
+                {
+                    { Keys.RelativeFilePath, new FilePath("test.md") }
+                })
+            };
             UnwrittenFiles unwrittenFiles = new UnwrittenFiles(".txt");
 
             // When
-            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, Context).ToList();
+            IEnumerable<IDocument> outputs = unwrittenFiles.Execute(inputs, context).ToList();
 
             // Then
             Assert.AreEqual(1, outputs.Count());
             Assert.AreEqual("Test", outputs.First().Content);
+        }
+
+        private TestExecutionContext GetContext() => new TestExecutionContext
+        {
+            FileSystem = new TestFileSystem
+            {
+                FileProvider = GetFileProvider(),
+                RootPath = "/"
+            }
+        };
+
+        private TestFileProvider GetFileProvider()
+        {
+            TestFileProvider fileProvider = new TestFileProvider();
+
+            fileProvider.AddDirectory("/");
+            fileProvider.AddDirectory("/output");
+
+            fileProvider.AddFile("/output/test.md");
+
+            return fileProvider;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Core.Execution;
@@ -53,16 +54,19 @@ namespace Wyam.Core.Tests.Execution
             // Given
             Engine engine = new Engine();
             int c = 0;
-            engine.Pipelines.Add("Pipeline",
-                new Execute((x, ctx) => new[]
-                {
-                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } }),
-                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
-                }, false),
-                new Execute((x, ctx) => new[]
-                {
-                    ctx.GetDocument(x, (string)null, new Dictionary<string, object> { { c.ToString(), c++ } })
-                }, false));
+            engine.Pipelines.Add(
+                "Pipeline",
+                new Execute(
+                    (x, ctx) => new[]
+                    {
+                        ctx.GetDocument(x, (Stream)null, new Dictionary<string, object> { { c.ToString(), c++ } }),
+                        ctx.GetDocument(x, (Stream)null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    }, false),
+                new Execute(
+                    (x, ctx) => new[]
+                    {
+                        ctx.GetDocument(x, (Stream)null, new Dictionary<string, object> { { c.ToString(), c++ } })
+                    }, false));
 
             // When
             engine.Execute();
@@ -92,15 +96,17 @@ namespace Wyam.Core.Tests.Execution
             Engine engine = new Engine();
             int c = 0;
             engine.Pipelines.Add(
-                new Execute((x, ctx) => new[]
-                {
-                    ctx.GetDocument(x, (c++).ToString()),
-                    ctx.GetDocument(x, (c++).ToString())
-                }, false),
-                new Execute((x, ctx) => new[]
-                {
-                    ctx.GetDocument(x, (c++).ToString())
-                }, false),
+                new Execute(
+                    (x, ctx) => new[]
+                    {
+                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString())),
+                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString()))
+                    }, false),
+                new Execute(
+                    (x, ctx) => new[]
+                    {
+                        ctx.GetDocument(x, ctx.GetContentStream((c++).ToString()))
+                    }, false),
                 new Core.Modules.Metadata.Meta("Content", (x, y) => x.Content));
 
             // When

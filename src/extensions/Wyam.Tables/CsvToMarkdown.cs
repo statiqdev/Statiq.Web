@@ -80,7 +80,7 @@ namespace Wyam.Tables
                         firstLine = false;
                     }
 
-                    return context.GetDocument(input, builder.ToString());
+                    return context.GetDocument(input, context.GetContentStream(builder.ToString()));
                 }
                 catch (Exception e)
                 {

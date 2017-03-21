@@ -36,18 +36,19 @@ namespace Wyam.Docs.Pipelines
             new FrontMatter(new Yaml.Yaml()),
             new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(DocsKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
             new Concat(
-                // Add any additional Razor pages
-                new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"),
+                new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"), // Add any additional Razor pages
                 new Include(),
                 new FrontMatter(new Yaml.Yaml())),
-            new If(ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+            new If(
+                ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                 new AutoLink(typeNamesToLink)
                     .WithQuerySelector("code")
                     .WithMatchOnlyWholeWord()
             ),
             // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
             // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
-            new If((doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+            new If(
+                (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                 new Replace("@", "&#64;")
             ),
             new Excerpt(),
@@ -69,7 +70,7 @@ namespace Wyam.Docs.Pipelines
             FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] { "index.html" })));
             items.Add(Keys.RelativeFilePath, indexPath);
             items.Add(Keys.Title, Title.GetTitle(indexPath));
-            return context.GetDocument("@Html.Partial(\"_ChildPages\")", items);
+            return context.GetDocument(context.GetContentStream("@Html.Partial(\"_ChildPages\")"), items);
         }
     }
 }

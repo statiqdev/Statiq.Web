@@ -89,15 +89,16 @@ namespace Wyam.Json
                        object data = _data(input, context);
                        if (data != null)
                        {
-                           string result = JsonConvert.SerializeObject(data,
+                           string result = JsonConvert.SerializeObject(
+                               data,
                                _indenting ? Formatting.Indented : Formatting.None);
                            if (string.IsNullOrEmpty(_destinationKey))
                            {
-                               return context.GetDocument(input, result);
+                               return context.GetDocument(input, context.GetContentStream(result));
                            }
                            return context.GetDocument(input, new MetadataItems
                            {
-                               {_destinationKey, result}
+                               { _destinationKey, result }
                            });
                        }
                    }

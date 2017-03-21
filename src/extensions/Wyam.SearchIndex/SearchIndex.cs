@@ -225,7 +225,7 @@ namespace Wyam.SearchIndex
                 };
             }
 
-            return new []{ context.GetDocument(script, metadata) };
+            return new []{ context.GetDocument(context.GetContentStream(script), metadata) };
         }
 
         private StringBuilder BuildScript(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
