@@ -71,7 +71,7 @@ namespace Wyam.Blog.Pipelines
                 new Concat
                 {
                     new ReadFiles(
-                        ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/*.cshtml"),
+                        ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath},!tags,**}}/{{!_,}}*.cshtml"),
                     new FrontMatter(new Yaml.Yaml())
                 }
             },
