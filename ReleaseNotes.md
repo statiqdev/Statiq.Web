@@ -1,3 +1,14 @@
+# 0.17.2
+
+- [Feature] Added `IExecutionContext.GetContentStream()` utility method to get streams for document content
+- [Refactoring] Removed string content support from documents and deprecated string-based document factories (#477)
+- [Feature] Added support for alternate content storage strategies (#476)
+- [Feature] Special handling for CLI directory path inputs ending in an escape (#472)
+- [Feature] Updated to latest Roslyn libraries supporting C# 7 (#473)
+- [Feature] Added support for operators to the docs recipe (#468)
+- [Feature] Added `Keys.TotalItems` for use with the `Paginate` module
+- [Feature] Added optional pagination to tag archives for blog themes using `BlogKeys.TagPageSize` (#469, thanks @alfadormx)
+
 # 0.17.1
 
 - [Fix] Fixed regression in `Execute` module that caused tags not to be output in Blog recipe
