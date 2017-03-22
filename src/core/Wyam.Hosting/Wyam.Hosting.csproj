@@ -271,7 +271,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- HACK, required until VS2017 and the new project structure. -->
-    <Content Include="..\..\..\packages\Libuv.1.9.1\runtimes\win7-x86\native\libuv.dll">
+    <Content Include="..\..\..\packages\Libuv.1.9.1\runtimes\win7-x64\native\libuv.dll">
       <Link>libuv.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
