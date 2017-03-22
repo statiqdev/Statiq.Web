@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using System.Text.RegularExpressions;
-using System;
 
 namespace Wyam.Core.Modules.Contents
 {
@@ -15,9 +15,9 @@ namespace Wyam.Core.Modules.Contents
     public class Replace : ContentModule
     {
         private readonly string _search;
+        private readonly Func<Match, object> _contentFinder;
         private bool _isRegex;
         private RegexOptions _regexOptions = RegexOptions.None;
-        private readonly Func<Match, object> _contentFinder;
 
         /// <summary>
         /// Replaces all occurrences of the search string in every input document

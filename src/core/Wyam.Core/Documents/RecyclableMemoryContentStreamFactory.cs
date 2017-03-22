@@ -12,7 +12,7 @@ namespace Wyam.Core.Documents
 {
     internal class RecyclableMemoryContentStreamFactory : IContentStreamFactory
     {
-        private const int BlockSize = 32768;
+        private const int BlockSize = 16384;
         private readonly object _managerLock = new object();
         private RecyclableMemoryStreamManager _manager;
 
@@ -25,7 +25,10 @@ namespace Wyam.Core.Documents
                     _manager = new RecyclableMemoryStreamManager(
                         BlockSize,
                         RecyclableMemoryStreamManager.DefaultLargeBufferMultiple,
-                        RecyclableMemoryStreamManager.DefaultMaximumBufferSize);
+                        RecyclableMemoryStreamManager.DefaultMaximumBufferSize)
+                    {
+                        MaximumFreeSmallPoolBytes = BlockSize * 32768L * 2, // 1 GB
+                    };
                 }
             }
 
