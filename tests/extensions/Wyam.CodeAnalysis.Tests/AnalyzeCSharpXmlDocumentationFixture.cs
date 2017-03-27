@@ -1551,6 +1551,119 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void InheritFromImplementedMethodIfOverride()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public interface IGreen
+                        {
+                            /// <summary>Interface summary.</summary>
+                            void Foo();
+                        }
+
+                        public abstract class Red : IGreen
+                        {
+                            public abstract void Foo();
+                        }
+
+                        public class Blue : Red
+                        {
+                            /// <inheritdoc />
+                            public override void Foo() {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Interface summary.", GetMember(results, "Blue", "Foo")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromBaseMethodIfOverrideAndInterface()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public interface IGreen
+                        {
+                            /// <summary>Interface summary.</summary>
+                            void Foo();
+                        }
+
+                        public abstract class Red : IGreen
+                        {
+                            /// <summary>Base summary.</summary>
+                            public abstract void Foo();
+                        }
+
+                        public class Blue : Red
+                        {
+                            /// <inheritdoc />
+                            public override void Foo() {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Base summary.", GetMember(results, "Blue", "Foo")["Summary"]);
+            }
+
+            [Test]
+            public void InheritFromImplementedMethodIfIndirectOverride()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        public interface IGreen
+                        {
+                            /// <summary>Interface summary.</summary>
+                            void Foo();
+                        }
+
+                        public abstract class Yellow : IGreen
+                        {
+                            public abstract void Foo();
+                        }
+
+                        public abstract class Red : Yellow
+                        {
+                        }
+
+                        public class Blue : Red
+                        {
+                            /// <inheritdoc />
+                            public override void Foo() {}
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Interface summary.", GetMember(results, "Blue", "Foo")["Summary"]);
+            }
+
+            [Test]
             public void SummaryWithCdata()
             {
                 // Given

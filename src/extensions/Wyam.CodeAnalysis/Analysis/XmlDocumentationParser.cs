@@ -238,22 +238,29 @@ namespace Wyam.CodeAnalysis.Analysis
                                 }
                             }
                         }
-                        else if (currentMethodSymbol != null && currentMethodSymbol.IsOverride)
-                        {
-                            // Override, get overridden method
-                            IMethodSymbol overriddenMethodSymbol = currentMethodSymbol.OverriddenMethod;
-                            if (overriddenMethodSymbol != null
-                                && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
-                            {
-                                inheritedSymbols.Add(overriddenMethodSymbol);
-                            }
-                        }
                         else if (currentMethodSymbol != null)
                         {
+                            IMethodSymbol overriddenMethodSymbol = null;
+                            if (currentMethodSymbol.IsOverride)
+                            {
+                                // Override, get overridden method
+                                overriddenMethodSymbol = currentMethodSymbol.OverriddenMethod;
+                                if (overriddenMethodSymbol != null
+                                    && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
+                                {
+                                    inheritedSymbols.Add(overriddenMethodSymbol);
+                                }
+                            }
+
                             // Check if this is an interface implementation
                             IMethodSymbol interfaceMethodSymbol = currentMethodSymbol.ContainingType.AllInterfaces
                                 .SelectMany(x => x.GetMembers().OfType<IMethodSymbol>())
-                                .FirstOrDefault(x => currentSymbol.Equals(currentSymbol.ContainingType.FindImplementationForInterfaceMember(x)));
+                                .FirstOrDefault(x =>
+                                {
+                                    ISymbol implementationSymbol = currentSymbol.ContainingType.FindImplementationForInterfaceMember(x);
+                                    return currentSymbol.Equals(implementationSymbol)
+                                    || (overriddenMethodSymbol != null && overriddenMethodSymbol.Equals(implementationSymbol));
+                                });
                             if (interfaceMethodSymbol != null
                                 && inheritedSymbolCommentIds.Add(interfaceMethodSymbol.GetDocumentationCommentId()))
                             {

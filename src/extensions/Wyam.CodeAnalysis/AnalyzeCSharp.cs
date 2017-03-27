@@ -348,8 +348,9 @@ namespace Wyam.CodeAnalysis
                         using (MemoryStream xmlBytes = new MemoryStream())
                         {
                             xmlStream.CopyTo(xmlBytes);
-                            return MetadataReference.CreateFromStream(assemblyFile.OpenRead(),
-                                documentation: Wyam.CodeAnalysis.Analysis.XmlDocumentationProvider.CreateFromBytes(xmlBytes.ToArray()));
+                            return MetadataReference.CreateFromStream(
+                                assemblyFile.OpenRead(),
+                                documentation: XmlDocumentationProvider.CreateFromBytes(xmlBytes.ToArray()));
                         }
                     }
                 }
@@ -366,9 +367,14 @@ namespace Wyam.CodeAnalysis
 
             // Get and return the document tree
             symbols.Add(compilation.Assembly.GlobalNamespace);
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(compilation, context, _symbolPredicate,
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(
+                compilation,
+                context,
+                _symbolPredicate,
                 _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)),
-                _cssClasses, _docsForImplicitSymbols, _assemblySymbols);
+                _cssClasses,
+                _docsForImplicitSymbols,
+                _assemblySymbols);
             foreach (ISymbol symbol in symbols)
             {
                 visitor.Visit(symbol);

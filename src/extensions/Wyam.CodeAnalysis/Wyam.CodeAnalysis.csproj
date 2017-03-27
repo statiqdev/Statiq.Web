@@ -171,7 +171,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\NonReentrantLock.cs" />
-    <Compile Include="Analysis\XmlDocumentationProvider.cs" />
     <Compile Include="Analysis\AnalyzeSymbolVisitor.cs" />
     <Compile Include="AnalyzeCSharp.cs" />
     <Compile Include="OtherComment.cs" />
