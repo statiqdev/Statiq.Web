@@ -312,7 +312,8 @@ namespace Wyam.CodeAnalysis
             Compilation compilation = CSharpCompilation
                 .Create(CompilationAssemblyName)
                 .WithReferences(mscorlib)
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                .WithOptions(new CSharpCompilationOptions(
+                    OutputKind.DynamicallyLinkedLibrary,
                     xmlReferenceResolver: new XmlFileResolver(context.FileSystem.RootPath.FullPath)));
 
             // Handle input documents
@@ -325,7 +326,8 @@ namespace Wyam.CodeAnalysis
                     using (Stream stream = input.GetStream())
                     {
                         SourceText sourceText = SourceText.From(stream);
-                        syntaxTrees.Add(CSharpSyntaxTree.ParseText(sourceText,
+                        syntaxTrees.Add(CSharpSyntaxTree.ParseText(
+                            sourceText,
                             path: input.String(Keys.SourceFilePath, string.Empty)));
                     }
                 });

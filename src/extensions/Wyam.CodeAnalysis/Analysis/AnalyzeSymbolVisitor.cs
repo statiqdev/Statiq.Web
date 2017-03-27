@@ -21,6 +21,8 @@ namespace Wyam.CodeAnalysis.Analysis
 {
     internal class AnalyzeSymbolVisitor : SymbolVisitor
     {
+        private static readonly object XmlDocLock = new object();
+
         private readonly ConcurrentDictionary<string, IDocument> _namespaceDisplayNameToDocument = new ConcurrentDictionary<string, IDocument>();
         private readonly ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>> _namespaceDisplayNameToSymbols = new ConcurrentDictionary<string, ConcurrentHashSet<INamespaceSymbol>>();
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument = new ConcurrentDictionary<ISymbol, IDocument>();
@@ -356,7 +358,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             // Get universal metadata
             string commentId = symbol.GetDocumentationCommentId();
-            items.AddRange(new []
+            items.AddRange(new[]
             {
                 // In general, cache the values that need calculation and don't cache the ones that are just properties of ISymbol
                 new MetadataItem(CodeAnalysisKeys.IsResult, !_finished),
@@ -398,7 +400,8 @@ namespace Wyam.CodeAnalysis.Analysis
             }
 
             // Create the document and add it to caches
-            IDocument document = _symbolToDocument.GetOrAdd(symbol,
+            IDocument document = _symbolToDocument.GetOrAdd(
+                symbol,
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -407,9 +410,14 @@ namespace Wyam.CodeAnalysis.Analysis
         private void AddXmlDocumentation(ISymbol symbol, MetadataItems metadata)
         {
             INamespaceSymbol namespaceSymbol = symbol as INamespaceSymbol;
-            string documentationCommentXml = namespaceSymbol == null
-                ? symbol.GetDocumentationCommentXml(expandIncludes: true)
-                : GetNamespaceDocumentationCommentXml(namespaceSymbol);
+            string documentationCommentXml;
+            lock (XmlDocLock)
+            {
+                // Need to lock the XML comment access or it sometimes doesn't get generated when using external XML doc files
+                documentationCommentXml = namespaceSymbol == null
+                    ? symbol.GetDocumentationCommentXml(expandIncludes: true)
+                    : GetNamespaceDocumentationCommentXml(namespaceSymbol);
+            }
             XmlDocumentationParser xmlDocumentationParser
                 = new XmlDocumentationParser(_context, symbol, _compilation, _symbolToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
@@ -432,7 +440,8 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Add other HTML elements with keys of [ElementName]Html
             metadata.AddRange(otherHtmlElementNames.Select(x =>
-                new MetadataItem(FirstLetterToUpper(x) + "Comments",
+                new MetadataItem(
+                    FirstLetterToUpper(x) + "Comments",
                     _ => xmlDocumentationParser.Process().OtherComments[x])));
         }
 
@@ -441,7 +450,7 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             // Try and get comments applied to the namespace
             TextWriter writer = new StringWriter();
-            CancellationToken ct = new CancellationToken();
+            CancellationToken ct = default(CancellationToken);
             object documentationCompiler = Activator.CreateInstance(_documentationCommentCompiler, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[]
             {
                 (string)null,
