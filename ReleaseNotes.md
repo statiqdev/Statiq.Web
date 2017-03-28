@@ -1,3 +1,11 @@
+# 0.17.3
+
+- [Fix] Fixed occasional missing XML doc comments from assembly XML doc files (#483)
+- [Fix] Fixed inheritdoc behavior when interface is inherited from base class (#481)
+- [Refactoring] Turned off x86 runtime preference and switched to x64 libuv - this means the Wyam preview server will no longer work on x86 platforms without manually swapping the libuv library (#484)
+- [Refactoring] Continuing to tweak memory pool settings
+- [Fix] Excluding partials from the blog pages pipeline
+
 # 0.17.2
 
 - [Feature] Added `IExecutionContext.GetContentStream()` utility method to get streams for document content
