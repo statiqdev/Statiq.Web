@@ -59,6 +59,9 @@ namespace Wyam.Common.Execution
         /// </summary>
         IDocumentCollection Documents { get; }
 
+        /// <summary>
+        /// Gets the global metadata.
+        /// </summary>
         [Obsolete]
         IMetadata GlobalMetadata { get; }
 

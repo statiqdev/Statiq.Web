@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wyam
 {
-    public class InterlockedBool
+    internal class InterlockedBool
     {
         private volatile int _set;
 

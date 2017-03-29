@@ -6,6 +6,9 @@ using Wyam.Common.Util;
 
 namespace Wyam.Common.Documents
 {
+    /// <summary>
+    /// Extensions grouping document sequences.
+    /// </summary>
     public static class GroupByExtensions
     {
         /// <summary>

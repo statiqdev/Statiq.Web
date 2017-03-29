@@ -27,6 +27,7 @@ namespace Wyam.Common.Documents
         /// <summary>
         /// Gets a string representation of the source that's guaranteed non-null, used primarily for trace messages.
         /// </summary>
+        /// <returns>A string representation of the source.</returns>
         string SourceString();
 
         /// <summary>An identifier that is generated when the document is created and stays the same after cloning.</summary>

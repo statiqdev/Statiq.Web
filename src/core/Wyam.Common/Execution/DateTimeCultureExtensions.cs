@@ -42,7 +42,7 @@ namespace Wyam.Common.Execution
         /// <param name="targetCulture">The culture that should be used if the date display setting isn't provided. If the
         /// current culture is of the same family, then it will be used. If not, the specified target culture will be used.</param>
         /// <returns>A short date display string.</returns>
-        public static string ToShortDateString(this DateTime dateTime, IExecutionContext context, string targetCulture = "en-GB") => 
+        public static string ToShortDateString(this DateTime dateTime, IExecutionContext context, string targetCulture = "en-GB") =>
             dateTime.ToString(context.GetDateTimeDisplayCulture(targetCulture).DateTimeFormat.ShortDatePattern);
 
         /// <summary>

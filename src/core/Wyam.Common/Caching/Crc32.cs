@@ -2,12 +2,17 @@
 
 namespace Wyam.Common.Caching
 {
-    // This is taken from the ASP.NET v5 Razor caching implementation
+    /// <summary>
+    /// A helper class to quickly calculate CRC32 codes.
+    /// </summary>
+    /// <remarks>
+    /// The implementation was originaly taken from the ASP.NET v5 Razor caching implementation.
+    /// </remarks>
     public static class Crc32
     {
         private static readonly int BufferSize = 4 * 1024;
 
-        private static readonly uint[] _crcTable = new uint[256]
+        private static readonly uint[] CrcTable = new uint[256]
         {
             0x00000000u, 0x77073096u, 0xee0e612cu, 0x990951bau, 0x076dc419u,
             0x706af48fu, 0xe963a535u, 0x9e6495a3u, 0x0edb8832u, 0x79dcb8a4u,
@@ -63,35 +68,45 @@ namespace Wyam.Common.Caching
             0x2d02ef8du
         };
 
+        /// <summary>
+        /// Calculates a CRC32 code from a stream.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <returns>A CRC32.</returns>
         public static uint Calculate(Stream stream)
         {
-            var buffer = new byte[BufferSize];
-            var crc32 = 0xffffffffU;
+            byte[] buffer = new byte[BufferSize];
+            uint crc32 = 0xffffffffU;
             while (true)
             {
-                var read = stream.Read(buffer, 0, BufferSize);
+                int read = stream.Read(buffer, 0, BufferSize);
                 if (read == 0)
                 {
                     break;
                 }
 
-                var offset = 0;
+                int offset = 0;
                 while (offset < read)
                 {
-                    crc32 = _crcTable[(crc32 ^ buffer[offset++]) & 0xFF] ^ (crc32 >> 8);
+                    crc32 = CrcTable[(crc32 ^ buffer[offset++]) & 0xFF] ^ (crc32 >> 8);
                 }
             }
 
             return crc32 ^ 0xffffffffU;
         }
 
+        /// <summary>
+        /// Calculates a CRC32 code from a string.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns>A CRC32.</returns>
         public static uint Calculate(string str)
         {
-            var crc32 = 0xffffffffU;
-            var offset = 0;
+            uint crc32 = 0xffffffffU;
+            int offset = 0;
             while (offset < str.Length)
             {
-                crc32 = _crcTable[(crc32 ^ str[offset++]) & 0xFF] ^ (crc32 >> 8);
+                crc32 = CrcTable[(crc32 ^ str[offset++]) & 0xFF] ^ (crc32 >> 8);
             }
             return crc32 ^ 0xffffffffU;
         }

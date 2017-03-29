@@ -7,6 +7,9 @@ using Wyam.Common.Meta;
 
 namespace Wyam.Common.Configuration
 {
+    /// <summary>
+    /// Stores global settings that control behavior and execution.
+    /// </summary>
     public interface ISettings : IMetadataDictionary, IReadOnlySettings
     {
         /// <summary>

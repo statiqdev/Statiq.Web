@@ -7,6 +7,9 @@ using Wyam.Tracing;
 
 namespace Wyam
 {
+    /// <summary>
+    /// The primary console entry point.
+    /// </summary>
     public class Program
     {
         private static int Main(string[] args)

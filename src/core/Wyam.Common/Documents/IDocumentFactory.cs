@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.IO;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 
 namespace Wyam.Common.Documents
 {
+    /// <summary>
+    /// Responsible for creating new document instances.
+    /// </summary>
     public interface IDocumentFactory
     {
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Wyam Rules" Description="These rules apply to all Wyam projects with releasable source code and enforce consistent code quality guidelines." ToolsVersion="14.0">
+<RuleSet Name="Wyam Rules" Description="These rules apply to all Wyam projects with releasable source code and enforce consistent code quality guidelines." ToolsVersion="15.0">
   <Include Path="basicdesignguidelinerules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1020" Action="Warning" />
@@ -33,6 +33,11 @@
     <Rule Id="CA1725" Action="Warning" />
     <Rule Id="CA1726" Action="Warning" />
     <Rule Id="CA2204" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0007" Action="None" />
+    <Rule Id="IDE0007WithoutSuggestion" Action="None" />
+    <Rule Id="IDE0008" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1101" Action="None" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wyam
 {
-    public enum ExitCode
+    internal enum ExitCode
     {
         Normal = 0,
         UnhandledError = 1,

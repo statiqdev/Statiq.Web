@@ -6,11 +6,13 @@ using Wyam.Common.Tracing;
 
 namespace Wyam
 {
-    public static class StandardInputReader
+    /// <summary>
+    /// Reads standard input (stdin). We have to be very careful because the calling process might have
+    /// opened stdin and just left it open, in which case it would register as redirected but the
+    /// stream won't ever return because it's just waiting for input.
+    /// </summary>
+    internal static class StandardInputReader
     {
-        // Capture any stdin, but we have to be very careful because the calling process might have
-        // opened stdin and just left it open, in which case it would register as redirected but the
-        // stream won't ever return because it's just waiting for input
         public static string Read()
         {
             if (Console.IsInputRedirected)

@@ -4,9 +4,13 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Common.Configuration
 {
-    // This class satisfies a common use case for modules where you need to get some configuration value
-    // either directly, from a delegate at the module level, or from a delegate at a per-document level
-    // and the user should be able to specify any of these possibilities
+    /// <summary>
+    /// This class satisfies a common use case for modules where you need to get some configuration value
+    /// either directly, from a delegate at the module level, or from a delegate at a per-document level
+    /// and the user should be able to specify any of these possibilities (typically via module constructor
+    /// overloads).
+    /// </summary>
+    /// <typeparam name="T">The type of the value you want to eventually convert to.</typeparam>
     public class ConfigHelper<T>
     {
         private readonly ContextConfig _contextConfig;
@@ -15,26 +19,45 @@ namespace Wyam.Common.Configuration
         private T _value;
         private bool _gotValue;
 
+        /// <summary>
+        /// Creates a new helper with the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public ConfigHelper(T value)
         {
             _contextConfig = c => value;
         }
 
-        // defaultValue is used if the delegate is null
+        /// <summary>
+        /// Creates a new helper with the specified delegate.
+        /// </summary>
+        /// <param name="config">The delegate.</param>
+        /// <param name="defaultValue">A default value to use if the delegate is null.</param>
         public ConfigHelper(ContextConfig config, T defaultValue = default(T))
         {
             _contextConfig = config;
             _defaultValue = defaultValue;
         }
 
+        /// <summary>
+        /// Creates a new helper with the specified delegate.
+        /// </summary>
+        /// <param name="config">The delegate.</param>
+        /// <param name="defaultValue">A default value to use if the delegate is null.</param>
         public ConfigHelper(DocumentConfig config, T defaultValue = default(T))
         {
             _documentConfig = config;
             _defaultValue = defaultValue;
         }
 
-        // Call this each time you need the value, passing in a postProcessing function if required
-        // If no document delegate is specified, then this will get and cache the value on first request
+        /// <summary>
+        /// Call this each time you need the value, passing in a post-processing function if required.
+        /// If no document delegate is specified, then this will get and cache the value on first request.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="context">The execution context.</param>
+        /// <param name="postProcessing">An optional post-processing function.</param>
+        /// <returns>The result value.</returns>
         public T GetValue(IDocument document, IExecutionContext context, Func<T, T> postProcessing = null)
         {
             if (_documentConfig == null)

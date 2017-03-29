@@ -8,7 +8,10 @@ using Wyam.Common.IO;
 
 namespace Wyam
 {
-    public class ActionFileSystemWatcher : IDisposable
+    /// <summary>
+    /// A wrapper around <see cref="FileSystemWatcher"/> that invokes a callback action on changes.
+    /// </summary>
+    internal class ActionFileSystemWatcher : IDisposable
     {
         private readonly List<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
         private readonly string _outputPath;

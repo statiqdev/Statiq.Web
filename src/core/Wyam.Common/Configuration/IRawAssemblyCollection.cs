@@ -12,6 +12,10 @@ namespace Wyam.Common.Configuration
     /// </summary>
     public interface IRawAssemblyCollection : IReadOnlyCollection<byte[]>
     {
+        /// <summary>
+        /// Adds a raw assembly to the collection.
+        /// </summary>
+        /// <param name="rawAssembly">The bytes of the assembly to add.</param>
         void Add(byte[] rawAssembly);
     }
 }

@@ -6,6 +6,9 @@ using Wyam.Common.Util;
 
 namespace Wyam.Common.Documents
 {
+    /// <summary>
+    /// Extensions for creating lookups from document sequences.
+    /// </summary>
     public static class ToLookupExtensions
     {
         /// <summary>

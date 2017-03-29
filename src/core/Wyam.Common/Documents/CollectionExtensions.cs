@@ -5,6 +5,9 @@ using Wyam.Common.Util;
 
 namespace Wyam.Common.Documents
 {
+    /// <summary>
+    /// Extensions for working with specific types of collections.
+    /// </summary>
     public static class CollectionExtensions
     {
         /// <summary>
