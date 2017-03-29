@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Wyam.Common.Meta;
 using Wyam.Common.Util;
 
 namespace Wyam.Common.Documents

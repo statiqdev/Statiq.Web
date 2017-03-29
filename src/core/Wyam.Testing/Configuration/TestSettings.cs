@@ -93,33 +93,6 @@ namespace Wyam.Testing.Configuration
         public T Get<T>(string key, T defaultValue) => _metadata.Get(key, defaultValue);
 
         /// <inheritdoc />
-        public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
-
-        /// <inheritdoc />
-        public bool Bool(string key, bool defaultValue = false) => _metadata.Bool(key, defaultValue);
-
-        /// <inheritdoc />
-        public DateTime DateTime(string key, DateTime defaultValue = new DateTime()) => _metadata.DateTime(key, defaultValue);
-
-        /// <inheritdoc />
-        public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
-
-        /// <inheritdoc />
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _metadata.DirectoryPath(key, defaultValue);
-
-        /// <inheritdoc />
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _metadata.List(key, defaultValue);
-
-        /// <inheritdoc />
-        public IDocument Document(string key) => _metadata.Document(key);
-
-        /// <inheritdoc />
-        public IReadOnlyList<IDocument> DocumentList(string key) => _metadata.DocumentList(key);
-
-        /// <inheritdoc />
-        public dynamic Dynamic(string key, object defaultValue = null) => _metadata.Dynamic(key, defaultValue);
-
-        /// <inheritdoc />
         ICollection<string> IMetadataDictionary.Keys
         {
             get { throw new NotImplementedException(); }

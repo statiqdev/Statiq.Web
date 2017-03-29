@@ -251,23 +251,5 @@ namespace Wyam.Core.Execution
         public T Get<T>(string key) => Settings.Get<T>(key);
 
         public T Get<T>(string key, T defaultValue) => Settings.Get(key, defaultValue);
-
-        public string String(string key, string defaultValue = null) => Settings.String(key, defaultValue);
-
-        public bool Bool(string key, bool defaultValue = false) => Settings.Bool(key, defaultValue);
-
-        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Settings.DateTime(key, defaultValue);
-
-        public FilePath FilePath(string key, FilePath defaultValue = null) => Settings.FilePath(key, defaultValue);
-
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => Settings.DirectoryPath(key, defaultValue);
-
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Settings.List(key, defaultValue);
-
-        public IDocument Document(string key) => Settings.Document(key);
-
-        public IReadOnlyList<IDocument> DocumentList(string key) => Settings.DocumentList(key);
-
-        public dynamic Dynamic(string key, object defaultValue = null) => Settings.Dynamic(key, defaultValue);
     }
 }

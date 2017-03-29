@@ -69,9 +69,9 @@
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\NamedModule.cs" />
     <Compile Include="JavaScript\IJsEngine.cs" />
-    <Compile Include="Util\DateTimeCultureExtensions.cs" />
+    <Compile Include="Execution\DateTimeCultureExtensions.cs" />
     <Compile Include="Util\EmptyDisposable.cs" />
-    <Compile Include="Util\LinkExtensions.cs" />
+    <Compile Include="Execution\LinkExtensions.cs" />
     <Compile Include="Util\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />
@@ -127,6 +127,7 @@
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="Util\GroupByExtensions.cs" />
     <Compile Include="Execution\TraceExceptionsExtensions.cs" />
+    <Compile Include="Meta\MetadataConversionExtensions.cs" />
     <Compile Include="Util\SourceInfoAttribute.cs" />
     <Compile Include="Util\StreamExtensions.cs" />
     <Compile Include="Util\ToLookupExtensions.cs" />

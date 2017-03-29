@@ -300,32 +300,5 @@ namespace Wyam.Testing.Execution
 
         /// <inheritdoc/>
         public T Get<T>(string key, T defaultValue) => _settings.Get(key, defaultValue);
-
-        /// <inheritdoc/>
-        public string String(string key, string defaultValue = null) => _settings.String(key, defaultValue);
-
-        /// <inheritdoc/>
-        public bool Bool(string key, bool defaultValue = false) => _settings.Bool(key, defaultValue);
-
-        /// <inheritdoc/>
-        public DateTime DateTime(string key, DateTime defaultValue = new DateTime()) => _settings.DateTime(key, defaultValue);
-
-        /// <inheritdoc/>
-        public FilePath FilePath(string key, FilePath defaultValue = null) => _settings.FilePath(key, defaultValue);
-
-        /// <inheritdoc/>
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _settings.DirectoryPath(key, defaultValue);
-
-        /// <inheritdoc/>
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _settings.List(key, defaultValue);
-
-        /// <inheritdoc/>
-        public IDocument Document(string key) => _settings.Document(key);
-
-        /// <inheritdoc/>
-        public IReadOnlyList<IDocument> DocumentList(string key) => _settings.DocumentList(key);
-
-        /// <inheritdoc/>
-        public dynamic Dynamic(string key, object defaultValue = null) => _settings.Dynamic(key, defaultValue);
     }
 }

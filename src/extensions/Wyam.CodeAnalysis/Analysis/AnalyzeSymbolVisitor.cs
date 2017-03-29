@@ -16,6 +16,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis.Analysis
 {

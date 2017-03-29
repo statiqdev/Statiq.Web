@@ -403,7 +403,7 @@ namespace Wyam.Razor.Tests
             {
                 TestDocument document = new TestDocument(content, new []
                 {
-                    new KeyValuePair<string, object>(Keys.RelativeFilePath, source),
+                    new KeyValuePair<string, object>(Keys.RelativeFilePath, new FilePath(source)),
                     new KeyValuePair<string, object>(Keys.SourceFileName, new FilePath(source).FileName)
                 });
                 document.Source = new FilePath(source);

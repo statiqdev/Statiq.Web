@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common.Configuration;
-using Wyam.Common.Execution;
+﻿using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 
-namespace Wyam.Common.Util
+namespace Wyam.Common.Execution
 {
     /// <summary>
     /// Extensions to generate web links using global settings.

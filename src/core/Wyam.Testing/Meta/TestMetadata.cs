@@ -71,43 +71,6 @@ namespace Wyam.Testing.Meta
         public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);
 
         /// <inhertdoc />
-        public string String(string key, string defaultValue = null) => Get<string>(key, defaultValue);
-
-        /// <inhertdoc />
-        public bool Bool(string key, bool defaultValue = false) => Get<bool>(key, defaultValue);
-
-        /// <inhertdoc />
-        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime)) => Get<DateTime>(key, defaultValue);
-
-        /// <inhertdoc />
-        public FilePath FilePath(string key, FilePath defaultValue = null)
-        {
-            object value = Get(key, (object)defaultValue);
-            string stringValue = value as string;
-            return stringValue != null ? new FilePath(stringValue) : (FilePath)value;
-        }
-
-        /// <inhertdoc />
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
-        {
-            object value = Get(key, (object)defaultValue);
-            string stringValue = value as string;
-            return stringValue != null ? new DirectoryPath(stringValue) : (DirectoryPath)value;
-        }
-
-        /// <inhertdoc />
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => Get<IReadOnlyList<T>>(key, defaultValue);
-
-        /// <inhertdoc />
-        public IDocument Document(string key) => Get<IDocument>(key);
-
-        /// <inhertdoc />
-        public IReadOnlyList<IDocument> DocumentList(string key) => Get<IReadOnlyList<IDocument>>(key);
-
-        /// <inhertdoc />
-        public dynamic Dynamic(string key, object defaultValue = null) => Get(key, defaultValue) ?? defaultValue;
-
-        /// <inhertdoc />
         public object this[string key]
         {
             get

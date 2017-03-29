@@ -7,6 +7,8 @@ using Wyam.Core.Modules.Extensibility;
 using Wyam.Testing;
 using Wyam.Testing.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
+using Wyam.Common.Util;
 
 namespace Wyam.Core.Tests.Execution
 {

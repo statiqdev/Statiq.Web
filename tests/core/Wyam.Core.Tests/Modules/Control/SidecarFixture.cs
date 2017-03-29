@@ -17,6 +17,7 @@ using System.Text;
 using Wyam.Common.Modules;
 using System.Collections.ObjectModel;
 using System;
+using Wyam.Common.Util;
 using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control

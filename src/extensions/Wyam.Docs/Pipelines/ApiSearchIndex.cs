@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.CodeAnalysis;
 using Wyam.Common.Execution;
+using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;

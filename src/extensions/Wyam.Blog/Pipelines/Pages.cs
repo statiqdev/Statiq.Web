@@ -4,6 +4,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;

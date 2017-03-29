@@ -9,6 +9,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 using Wyam.Core.Execution;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Testing;

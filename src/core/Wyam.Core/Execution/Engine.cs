@@ -10,6 +10,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.Caching;
 using Wyam.Core.Configuration;
 using Wyam.Core.Documents;

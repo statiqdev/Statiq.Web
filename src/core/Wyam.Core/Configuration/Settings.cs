@@ -4,7 +4,9 @@ using System.Reflection;
 using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 using Wyam.Common.Tracing;
+using Wyam.Common.Util;
 using Wyam.Core.Meta;
 
 namespace Wyam.Core.Configuration
@@ -25,7 +27,7 @@ namespace Wyam.Core.Configuration
             get
             {
                 Trace.Warning("Settings.Host is deprecated and will be removed in a future version. Please use Settings[Keys.Host] instead.");
-                return String(Common.Meta.Keys.Host);
+                return this.String(Common.Meta.Keys.Host);
             }
             set
             {
@@ -55,7 +57,7 @@ namespace Wyam.Core.Configuration
             get
             {
                 Trace.Warning("Settings.LinkRoot is deprecated and will be removed in a future version. Please use Settings[Keys.LinkRoot] instead.");
-                return DirectoryPath(Common.Meta.Keys.LinkRoot);
+                return this.DirectoryPath(Common.Meta.Keys.LinkRoot);
             }
             set
             {

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;

@@ -82,33 +82,6 @@ namespace Wyam.Testing.Documents
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
         /// <inhertdoc />
-        public string String(string key, string defaultValue = null) => _metadata.String(key, defaultValue);
-
-        /// <inhertdoc />
-        public bool Bool(string key, bool defaultValue = false) => _metadata.Bool(key, defaultValue);
-
-        /// <inhertdoc />
-        public DateTime DateTime(string key, DateTime defaultValue = new DateTime()) => _metadata.DateTime(key, defaultValue);
-
-        /// <inhertdoc />
-        public FilePath FilePath(string key, FilePath defaultValue = null) => _metadata.FilePath(key, defaultValue);
-
-        /// <inhertdoc />
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _metadata.DirectoryPath(key, defaultValue);
-
-        /// <inhertdoc />
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _metadata.List(key, defaultValue);
-
-        /// <inhertdoc />
-        public IDocument Document(string key) => _metadata.Document(key);
-
-        /// <inhertdoc />
-        public IReadOnlyList<IDocument> DocumentList(string key) => _metadata.DocumentList(key);
-
-        /// <inhertdoc />
-        public dynamic Dynamic(string key, object defaultValue = null) => _metadata.Dynamic(key, defaultValue);
-
-        /// <inhertdoc />
         public object this[string key] => _metadata[key];
 
         /// <inhertdoc />
