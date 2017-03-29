@@ -298,7 +298,6 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="ServerEndpointTests.cs" />
     <Compile Include="ServerFixture.cs" />
     <Compile Include="Owin\ScriptInjectionMiddlewareTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
