@@ -22,7 +22,7 @@
                             <h3 class="post-subtitle">@lead</h3>
                         }
                     </a>
-                    <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>
+                    <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
                     @Html.Raw(doc.String(BlogKeys.Excerpt))             
                 </div>       
             }

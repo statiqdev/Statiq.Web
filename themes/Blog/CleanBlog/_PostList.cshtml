@@ -13,7 +13,7 @@
                     <h4 class="post-subtitle">@lead</h4>
                 }
             </a>
-            <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>            
+            <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>            
         </div>   
     }
 }

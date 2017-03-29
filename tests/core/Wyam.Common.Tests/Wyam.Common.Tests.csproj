@@ -131,6 +131,7 @@
     <Compile Include="Documents\ToLookupExtensionsFixture.cs" />
     <Compile Include="Modules\ModuleListExtensionsFixture.cs" />
     <Compile Include="Modules\ModuleListFixture.cs" />
+    <Compile Include="Util\DateTimeCultureExtensionsFixture.cs" />
     <Compile Include="Util\LinkGeneratorFixture.cs" />
     <Compile Include="IO\DirectoryPathFixture.cs" />
     <Compile Include="IO\FilePathFixture.cs" />

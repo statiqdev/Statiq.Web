@@ -20,6 +20,7 @@ using Wyam.Testing.Caching;
 using Wyam.Testing.Configuration;
 using Wyam.Testing.Documents;
 using Wyam.Testing.IO;
+using Wyam.Testing.Meta;
 
 namespace Wyam.Testing.Execution
 {
@@ -28,6 +29,8 @@ namespace Wyam.Testing.Execution
     /// </summary>
     public class TestExecutionContext : IExecutionContext
     {
+        private readonly TestSettings _settings = new TestSettings();
+
         /// <inheritdoc/>
         public IDocument GetDocument() => new TestDocument();
 
@@ -131,128 +134,6 @@ namespace Wyam.Testing.Execution
         }
 
         /// <inheritdoc/>
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        /// <inheritdoc/>
-        public int Count { get; }
-
-        /// <inheritdoc/>
-        public bool ContainsKey(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool TryGetValue(string key, out object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public object this[string key]
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<string> Keys { get; }
-
-        /// <inheritdoc/>
-        public IEnumerable<object> Values { get; }
-
-        /// <inheritdoc/>
-        public IMetadata<T> MetadataAs<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public object Get(string key, object defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public object GetRaw(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public T Get<T>(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public T Get<T>(string key, T defaultValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public string String(string key, string defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool Bool(string key, bool defaultValue = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public DateTime DateTime(string key, DateTime defaultValue = default(DateTime))
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public FilePath FilePath(string key, FilePath defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public IDocument Document(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public IReadOnlyList<IDocument> DocumentList(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public dynamic Dynamic(string key, object defaultValue = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
         public IReadOnlyCollection<byte[]> DynamicAssemblies { get; set; } = new List<byte[]>();
 
         /// <inheritdoc/>
@@ -280,7 +161,8 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         public string ApplicationInput { get; set; }
 
-        public ISettings Settings { get; } = new Settings();
+        /// <inheritdoc/>
+        public ISettings Settings => _settings;
 
         IReadOnlySettings IExecutionContext.Settings => Settings;
 
@@ -307,8 +189,13 @@ namespace Wyam.Testing.Execution
 
         /// <inheritdoc/>
         public string GetLink(string path, bool includeHost = false) =>
-            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
+            GetLink(
+                path == null ? null : new FilePath(path),
+                includeHost ? Settings.String(Common.Meta.Keys.Host) : null,
+                Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps),
+                Settings.Bool(Common.Meta.Keys.LinkHideIndexPages),
+                Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         /// <inheritdoc/>
         public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
@@ -316,12 +203,20 @@ namespace Wyam.Testing.Execution
 
         /// <inheritdoc/>
         public string GetLink(NormalizedPath path, bool includeHost = false) =>
-            GetLink(path, includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
+            GetLink(
+                path,
+                includeHost ? Settings.String(Common.Meta.Keys.Host) : null,
+                Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
+                Settings.Bool(Common.Meta.Keys.LinksUseHttps),
+                Settings.Bool(Common.Meta.Keys.LinkHideIndexPages),
+                Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
 
         /// <inheritdoc/>
         public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
-            LinkGenerator.GetLink(path, host, root,
+            LinkGenerator.GetLink(
+                path,
+                host,
+                root,
                 useHttps ? "https" : null,
                 hideIndexPages ? LinkGenerator.DefaultHidePages : null,
                 hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
@@ -407,5 +302,77 @@ namespace Wyam.Testing.Execution
                 throw new NotImplementedException();
             }
         }
+
+        /// <inheritdoc/>
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _settings.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) _settings).GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        public int Count => _settings.Count;
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key) => _settings.ContainsKey(key);
+
+        /// <inheritdoc/>
+        public bool TryGetValue(string key, out object value) => _settings.TryGetValue(key, out value);
+
+        /// <inheritdoc/>
+        public object this[string key] => _settings[key];
+
+        /// <inheritdoc/>
+        public IEnumerable<string> Keys => _settings.Keys;
+
+        /// <inheritdoc/>
+        public IEnumerable<object> Values => _settings.Values;
+
+        /// <inheritdoc/>
+        public IMetadata<T> MetadataAs<T>() => _settings.MetadataAs<T>();
+
+        /// <inheritdoc/>
+        public object Get(string key, object defaultValue = null) => _settings.Get(key, defaultValue);
+
+        /// <inheritdoc/>
+        public object GetRaw(string key) => _settings.GetRaw(key);
+
+        /// <inheritdoc/>
+        public T Get<T>(string key) => _settings.Get<T>(key);
+
+        /// <inheritdoc/>
+        public T Get<T>(string key, T defaultValue) => _settings.Get(key, defaultValue);
+
+        /// <inheritdoc/>
+        public string String(string key, string defaultValue = null) => _settings.String(key, defaultValue);
+
+        /// <inheritdoc/>
+        public bool Bool(string key, bool defaultValue = false) => _settings.Bool(key, defaultValue);
+
+        /// <inheritdoc/>
+        public DateTime DateTime(string key, DateTime defaultValue = new DateTime()) => _settings.DateTime(key, defaultValue);
+
+        /// <inheritdoc/>
+        public FilePath FilePath(string key, FilePath defaultValue = null) => _settings.FilePath(key, defaultValue);
+
+        /// <inheritdoc/>
+        public DirectoryPath DirectoryPath(string key, DirectoryPath defaultValue = null) => _settings.DirectoryPath(key, defaultValue);
+
+        /// <inheritdoc/>
+        public IReadOnlyList<T> List<T>(string key, IReadOnlyList<T> defaultValue = null) => _settings.List(key, defaultValue);
+
+        /// <inheritdoc/>
+        public IDocument Document(string key) => _settings.Document(key);
+
+        /// <inheritdoc/>
+        public IReadOnlyList<IDocument> DocumentList(string key) => _settings.DocumentList(key);
+
+        /// <inheritdoc/>
+        public dynamic Dynamic(string key, object defaultValue = null) => _settings.Dynamic(key, defaultValue);
     }
 }

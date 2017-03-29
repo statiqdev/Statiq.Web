@@ -13,7 +13,7 @@
     <div class="meta">        
         @if (Published != default(DateTime))
         {
-            <text>Published on @Published.ToLongDateString()<br></text>
+            <text>Published on @Published.ToLongDateString(Context)<br></text>
         }
     </div>
     @if (Tags != null)

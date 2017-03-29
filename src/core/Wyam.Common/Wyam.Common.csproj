@@ -69,6 +69,7 @@
     <Compile Include="Modules\ModuleExtensions.cs" />
     <Compile Include="Modules\NamedModule.cs" />
     <Compile Include="JavaScript\IJsEngine.cs" />
+    <Compile Include="Util\DateTimeCultureExtensions.cs" />
     <Compile Include="Util\EmptyDisposable.cs" />
     <Compile Include="Util\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />

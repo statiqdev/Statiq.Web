@@ -16,7 +16,7 @@
                             <h3>@lead</h3>
                         }
                     </a>
-                    <p>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>
+                    <p>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
                     @Html.Raw(doc.String(BlogKeys.Excerpt))             
                 </div>       
             }

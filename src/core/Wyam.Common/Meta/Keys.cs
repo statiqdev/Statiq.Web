@@ -48,6 +48,16 @@ namespace Wyam.Common.Meta
         /// </summary>
         public const string CleanOutputPath = nameof(CleanOutputPath);
 
+        /// <summary>
+        /// Indicates the culture to use for reading and interpreting dates as input.
+        /// </summary>
+        public const string DateTimeInputCulture = nameof(DateTimeInputCulture);
+
+        /// <summary>
+        /// Indicates the culture to use for displaying dates in output.
+        /// </summary>
+        public const string DateTimeDisplayCulture = nameof(DateTimeDisplayCulture);
+
         // ReadFile/WriteFiles/CopyFiles
 
         /// <summary>

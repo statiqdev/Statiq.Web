@@ -12,7 +12,7 @@
     }                  
     @if (Published != default(DateTime))
     {
-        <p><em>Published on @Published.ToLongDateString()</em></p>
+        <p><em>Published on @Published.ToLongDateString(Context)</em></p>
     }
     @if (Tags != null)
     {

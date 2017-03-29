@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 using Wyam.Core.Modules.Contents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
@@ -47,7 +48,7 @@ namespace Wyam.Docs.Pipelines
             new Meta(DocsKeys.Published, (doc, ctx) =>
             {
                 DateTime published;
-                if (!DateTime.TryParse(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
+                if (!ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
                 {
                     Wyam.Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
                     return null;

@@ -13,7 +13,7 @@
                     <p>@lead</p>
                 }
             </a>
-            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</em></p>            
+            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</em></p>            
         </div>   
     }
 }
