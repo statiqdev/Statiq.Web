@@ -312,12 +312,12 @@
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\packages\Scripty.MsBuild.0.6.0\build\Scripty.MsBuild.targets" Condition="Exists('..\..\..\packages\Scripty.MsBuild.0.6.0\build\Scripty.MsBuild.targets')" />
+  <Import Project="..\..\..\packages\Scripty.MsBuild.0.7.0\build\Scripty.MsBuild.targets" Condition="Exists('..\..\..\packages\Scripty.MsBuild.0.7.0\build\Scripty.MsBuild.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\Scripty.MsBuild.0.6.0\build\Scripty.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Scripty.MsBuild.0.6.0\build\Scripty.MsBuild.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Scripty.MsBuild.0.7.0\build\Scripty.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Scripty.MsBuild.0.7.0\build\Scripty.MsBuild.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
