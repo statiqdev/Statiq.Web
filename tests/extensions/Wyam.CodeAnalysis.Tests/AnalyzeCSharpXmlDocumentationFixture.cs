@@ -486,7 +486,7 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("<code><a href=\"link\">FooException</a></code>",
+                Assert.AreEqual("<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
                 Assert.AreEqual("Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
@@ -584,7 +584,7 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(2, GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions").Count);
-                Assert.AreEqual("<code><a href=\"link\">FooException</a></code>",
+                Assert.AreEqual("<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
                 Assert.AreEqual("FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
@@ -845,7 +845,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <code><a href=\"link\">Red</a></code> class", GetResult(results, "Green")["Summary"]);
+                Assert.AreEqual("Check <code><a href=\"/Foo/Red/index.html\">Red</a></code> class", GetResult(results, "Green")["Summary"]);
             }
 
             [Test]
@@ -876,7 +876,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <code><a href=\"link\">Blue()</a></code> method", GetResult(results, "Green")["Summary"]);
+                Assert.AreEqual("Check <code><a href=\"/Foo/Red/00F22A50.html\">Blue()</a></code> method", GetResult(results, "Green")["Summary"]);
             }
 
             [Test]
@@ -930,7 +930,7 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 // <seealso> should be removed from the summary and instead placed in the SeeAlso metadata
                 Assert.AreEqual("Check this out ", GetResult(results, "Green")["Summary"]);
-                Assert.AreEqual("<code><a href=\"link\">Red</a></code>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
+                Assert.AreEqual("<code><a href=\"/Foo/Red/index.html\">Red</a></code>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
             }
 
             [Test]
@@ -958,7 +958,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("<code><a href=\"link\">Red</a></code>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
+                Assert.AreEqual("<code><a href=\"/Foo/Red/index.html\">Red</a></code>", GetResult(results, "Green").Get<IReadOnlyList<string>>("SeeAlso")[0]);
             }
 
             [Test]
@@ -986,7 +986,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <code><a href=\"link\">Red</a></code> class",
+                Assert.AreEqual("Check <code><a href=\"/Foo/Red/index.html\">Red</a></code> class",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Html);
             }
 

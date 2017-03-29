@@ -7,6 +7,7 @@ using Wyam.CodeAnalysis;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 using Wyam.Html;
 
 namespace Wyam.Docs

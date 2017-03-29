@@ -237,10 +237,7 @@ namespace Wyam.Testing.IO
             GetFiles(directory, (IEnumerable<string>)patterns);
 
         /// <inheritdoc />
-        public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IFile> GetFiles(IDirectory directory, IEnumerable<string> patterns) => Array.Empty<IFile>();
 
         /// <inheritdoc />
         public IFileProvider GetFileProvider(NormalizedPath path) => FileProvider;

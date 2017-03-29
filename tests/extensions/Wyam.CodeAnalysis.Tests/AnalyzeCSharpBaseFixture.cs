@@ -11,30 +11,25 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Util;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
+using Wyam.Testing.IO;
 
 namespace Wyam.CodeAnalysis.Tests
 {
     public abstract class AnalyzeCSharpBaseFixture : BaseFixture
     {
-        protected IDocument GetDocument(string content)
-        {
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-            IDocument document = Substitute.For<IDocument>();
-            document.GetStream().Returns(stream);
-            return document;
-        }
+        protected IDocument GetDocument(string content) => new TestDocument(content);
 
-        protected IExecutionContext GetContext()
+        protected IExecutionContext GetContext() => new TestExecutionContext
         {
-            IExecutionContext context = Substitute.For<IExecutionContext>();
-            context.FileSystem.RootPath.Returns(new DirectoryPath(TestContext.CurrentContext.TestDirectory));
-            context.GetLink(Arg.Any<NormalizedPath>(), Arg.Any<bool>()).Returns("link");
-            context.GetDocument(Arg.Any<FilePath>(), Arg.Any<Stream>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>())
-                .Returns(x => new TestDocument((IEnumerable<KeyValuePair<string, object>>)x[2]));
-            return context;
-        }
+            FileSystem = new TestFileSystem
+            {
+                RootPath = new DirectoryPath(TestContext.CurrentContext.TestDirectory)
+            }
+        };
 
         protected IDocument GetResult(List<IDocument> results, string name)
         {

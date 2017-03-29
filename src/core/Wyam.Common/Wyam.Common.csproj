@@ -71,6 +71,7 @@
     <Compile Include="JavaScript\IJsEngine.cs" />
     <Compile Include="Util\DateTimeCultureExtensions.cs" />
     <Compile Include="Util\EmptyDisposable.cs" />
+    <Compile Include="Util\LinkExtensions.cs" />
     <Compile Include="Util\LinkGenerator.cs" />
     <Compile Include="IO\DirectoryEqualityComparer.cs" />
     <Compile Include="IO\DirectoryPath.cs" />

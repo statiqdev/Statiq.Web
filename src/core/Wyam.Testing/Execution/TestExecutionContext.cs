@@ -126,6 +126,10 @@ namespace Wyam.Testing.Execution
 
         private string GetContent(Stream stream)
         {
+            if (stream == null)
+            {
+                return string.Empty;
+            }
             stream.Position = 0;
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
             {
@@ -169,57 +173,6 @@ namespace Wyam.Testing.Execution
         /// <inheritdoc/>
         public Stream GetContentStream(string content = null) =>
             string.IsNullOrEmpty(content) ? new MemoryStream() : new MemoryStream(Encoding.UTF8.GetBytes(content));
-
-        // GetLink
-
-        /// <inheritdoc/>
-        public string GetLink() =>
-            GetLink((NormalizedPath)null, Settings.String(Common.Meta.Keys.Host), Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), Settings.Bool(Common.Meta.Keys.LinksUseHttps), false, false);
-
-        /// <inheritdoc/>
-        public string GetLink(IMetadata metadata, bool includeHost = false) =>
-            GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
-
-        /// <inheritdoc/>
-        public string GetLink(IMetadata metadata, string key, bool includeHost = false)
-        {
-            FilePath filePath = metadata?.FilePath(key);
-            return filePath != null ? GetLink(filePath, includeHost) : null;
-        }
-
-        /// <inheritdoc/>
-        public string GetLink(string path, bool includeHost = false) =>
-            GetLink(
-                path == null ? null : new FilePath(path),
-                includeHost ? Settings.String(Common.Meta.Keys.Host) : null,
-                Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps),
-                Settings.Bool(Common.Meta.Keys.LinkHideIndexPages),
-                Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
-
-        /// <inheritdoc/>
-        public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
-            GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
-
-        /// <inheritdoc/>
-        public string GetLink(NormalizedPath path, bool includeHost = false) =>
-            GetLink(
-                path,
-                includeHost ? Settings.String(Common.Meta.Keys.Host) : null,
-                Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps),
-                Settings.Bool(Common.Meta.Keys.LinkHideIndexPages),
-                Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
-
-        /// <inheritdoc/>
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
-            LinkGenerator.GetLink(
-                path,
-                host,
-                root,
-                useHttps ? "https" : null,
-                hideIndexPages ? LinkGenerator.DefaultHidePages : null,
-                hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
 
         /// <inheritdoc/>
         public bool TryConvert<T>(object value, out T result)

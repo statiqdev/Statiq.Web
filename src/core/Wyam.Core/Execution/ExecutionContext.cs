@@ -97,37 +97,6 @@ namespace Wyam.Core.Execution
 
         public Stream GetContentStream(string content = null) => Engine.ContentStreamFactory.GetStream(this, content);
 
-        // GetLink
-
-        public string GetLink() =>
-            GetLink((NormalizedPath)null, Settings.String(Common.Meta.Keys.Host), Settings.DirectoryPath(Common.Meta.Keys.LinkRoot), Settings.Bool(Common.Meta.Keys.LinksUseHttps), false, false);
-
-        public string GetLink(IMetadata metadata, bool includeHost = false) =>
-            GetLink(metadata, Common.Meta.Keys.RelativeFilePath, includeHost);
-
-        public string GetLink(IMetadata metadata, string key, bool includeHost = false)
-        {
-            FilePath filePath = metadata?.FilePath(key);
-            return filePath != null ? GetLink(filePath, includeHost) : null;
-        }
-
-        public string GetLink(string path, bool includeHost = false) =>
-            GetLink(path == null ? null : new FilePath(path), includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
-
-        public string GetLink(string path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
-            GetLink(path == null ? null : new FilePath(path), host, root, useHttps, hideIndexPages, hideExtensions);
-
-        public string GetLink(NormalizedPath path, bool includeHost = false) =>
-            GetLink(path, includeHost ? Settings.String(Common.Meta.Keys.Host) : null, Settings.DirectoryPath(Common.Meta.Keys.LinkRoot),
-                Settings.Bool(Common.Meta.Keys.LinksUseHttps), Settings.Bool(Common.Meta.Keys.LinkHideIndexPages), Settings.Bool(Common.Meta.Keys.LinkHideExtensions));
-
-        public string GetLink(NormalizedPath path, string host, DirectoryPath root, bool useHttps, bool hideIndexPages, bool hideExtensions) =>
-            LinkGenerator.GetLink(path, host, root,
-                useHttps ? "https" : null,
-                hideIndexPages ? LinkGenerator.DefaultHidePages : null,
-                hideExtensions ? LinkGenerator.DefaultHideExtensions : null);
-
         // GetDocument
 
         public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null) =>

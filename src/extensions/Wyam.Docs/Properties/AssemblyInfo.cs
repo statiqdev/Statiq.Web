@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-
 [assembly: AssemblyTitle("Wyam.Docs")]
 [assembly: AssemblyDescription("")]
 [assembly: ComVisible(false)]

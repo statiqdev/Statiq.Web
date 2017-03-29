@@ -8,6 +8,7 @@ using Wyam.CodeAnalysis;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
+using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 
