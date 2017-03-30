@@ -249,7 +249,6 @@ namespace Wyam.Html
             return true;
         }
 
-
         private class Trie<T> where T : IComparable<T>
         {
             public Node Root { get; }

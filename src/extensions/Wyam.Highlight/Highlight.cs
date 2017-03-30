@@ -106,7 +106,6 @@ namespace Wyam.Highlight
                                         continue;
                                     }
 
-
                                     // Make sure to use TextContent, otherwise you'll get escaped html which highlight.js won't parse
                                     engine.SetVariableValue("input", element.TextContent);
 

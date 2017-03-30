@@ -1,13 +1,8 @@
-﻿using NSubstitute;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Execution;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
@@ -23,7 +18,7 @@ namespace Wyam.Tables.Tests
             public void TestXlsx()
             {
                 // Given
-                string output = ""
+                string output = string.Empty
                     + "\"\",\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"\r\n"
 + "\"1\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\"\r\n"
 + "\"2\",\"2\",\"4\",\"6\",\"8\",\"10\",\"12\",\"14\"\r\n"

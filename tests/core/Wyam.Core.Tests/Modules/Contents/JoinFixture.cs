@@ -91,7 +91,6 @@ namespace Wyam.Core.Tests.Modules.Contents
             Assert.AreEqual("TestTest3", results.Single().Content);
         }
 
-
         [Test]
         public void JoinnullPassedInAsDocumentList()
         {

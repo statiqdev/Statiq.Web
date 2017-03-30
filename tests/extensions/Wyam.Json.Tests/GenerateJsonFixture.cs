@@ -26,7 +26,7 @@ namespace Wyam.Json.Tests
             public IList<string> Roles { get; set; }
         }
 
-        private static Account JsonObject = new Account
+        private static Account _jsonObject = new Account
         {
             Email = "james@example.com",
             Active = true,
@@ -38,7 +38,7 @@ namespace Wyam.Json.Tests
             }
         };
 
-        private static string JsonContent = @"{
+        private static string _jsonContent = @"{
   ""Email"": ""james@example.com"",
   ""Active"": true,
   ""CreatedDate"": ""2013-01-20T00:00:00Z"",
@@ -57,7 +57,7 @@ namespace Wyam.Json.Tests
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
-                    {"JsonObject", JsonObject}
+                    { "JsonObject", _jsonObject }
                 });
                 GenerateJson generateJson = new GenerateJson("JsonObject");
 
@@ -65,7 +65,7 @@ namespace Wyam.Json.Tests
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { _jsonContent }));
             }
 
             [Test]
@@ -74,13 +74,13 @@ namespace Wyam.Json.Tests
                 // Given
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument();
-                GenerateJson generateJson = new GenerateJson(ctx => JsonObject);
+                GenerateJson generateJson = new GenerateJson(ctx => _jsonObject);
 
                 // When
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { _jsonContent }));
             }
 
             [Test]
@@ -90,7 +90,7 @@ namespace Wyam.Json.Tests
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
-                    {"JsonObject", JsonObject}
+                    { "JsonObject", _jsonObject }
                 });
                 GenerateJson generateJson = new GenerateJson((doc, ctx) => doc.Get("JsonObject"));
 
@@ -98,7 +98,7 @@ namespace Wyam.Json.Tests
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { JsonContent }));
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { _jsonContent }));
             }
 
             [Test]
@@ -108,7 +108,7 @@ namespace Wyam.Json.Tests
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
-                    { "JsonObject", JsonObject }
+                    { "JsonObject", _jsonObject }
                 });
                 GenerateJson generateJson = new GenerateJson("JsonObject", "OutputKey");
 
@@ -118,7 +118,7 @@ namespace Wyam.Json.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.First(y => y.Key == "OutputKey")),
-                    Is.EquivalentTo(new[] { new KeyValuePair<string, object>("OutputKey", JsonContent) }));
+                    Is.EquivalentTo(new[] { new KeyValuePair<string, object>("OutputKey", _jsonContent) }));
             }
 
             [Test]
@@ -128,10 +128,10 @@ namespace Wyam.Json.Tests
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems
                 {
-                    {"JsonObject", JsonObject}
+                    { "JsonObject", _jsonObject }
                 });
                 GenerateJson generateJson = new GenerateJson("JsonObject").WithIndenting(false);
-                string nonIndentedJsonContent = JsonContent.Replace(" ", "").Replace("\r\n", "");
+                string nonIndentedJsonContent = _jsonContent.Replace(" ", string.Empty).Replace("\r\n", string.Empty);
 
                 // When
                 IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

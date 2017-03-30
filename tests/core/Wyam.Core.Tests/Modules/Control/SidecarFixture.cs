@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Linq;
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
-using Wyam.Core.Documents;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Execution;
@@ -11,13 +12,7 @@ using Wyam.Testing;
 using Wyam.Common.IO;
 using Wyam.Testing.IO;
 using NSubstitute;
-using System.IO;
 using Wyam.Common.Meta;
-using System.Text;
-using Wyam.Common.Modules;
-using System.Collections.ObjectModel;
-using System;
-using Wyam.Common.Util;
 using Wyam.Testing.Execution;
 
 namespace Wyam.Core.Tests.Modules.Control
@@ -42,7 +37,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 Sidecar sidecar = new Sidecar(new Execute((x, ctx) =>
                 {
                     lodedSidecarContent = x.Content;
-                    return new [] { x };
+                    return new[] { x };
                 }));
 
                 // When
@@ -67,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 Sidecar sidecar = new Sidecar(".other", new Execute((x, ctx) =>
                  {
                      lodedSidecarContent = x.Content;
-                     return new [] { x };
+                     return new[] { x };
                  }));
 
                 // When
@@ -92,7 +87,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 Sidecar sidecar = new Sidecar(".foo", new Execute((x, ctx) =>
                 {
                     executedSidecarModules = true;
-                    return new [] { x };
+                    return new[] { x };
                 }));
 
                 // When

@@ -31,14 +31,17 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     Value = 20
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b),
+                engine.Pipelines.Add(
+                    "Test",
+                    a,
+                    new Merge(b),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When
                 engine.Execute();
 
                 // Then
-                CollectionAssert.AreEqual(new [] { "21" }, engine.Documents["Test"].Select(x => x["Content"]));
+                CollectionAssert.AreEqual(new[] { "21" }, engine.Documents["Test"].Select(x => x["Content"]));
             }
 
             [Test]
@@ -203,7 +206,10 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     Value = 20
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b).ForEachDocument(),
+                engine.Pipelines.Add(
+                    "Test",
+                    a,
+                    new Merge(b).ForEachDocument(),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When
@@ -229,7 +235,10 @@ namespace Wyam.Core.Tests.Modules.Control
                     Value = 20,
                     AdditionalOutputs = 1
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b).ForEachDocument(),
+                engine.Pipelines.Add(
+                    "Test",
+                    a,
+                    new Merge(b).ForEachDocument(),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When
@@ -255,7 +264,10 @@ namespace Wyam.Core.Tests.Modules.Control
                 {
                     Value = 20
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b).ForEachDocument(),
+                engine.Pipelines.Add(
+                    "Test",
+                    a,
+                    new Merge(b).ForEachDocument(),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When
@@ -282,7 +294,10 @@ namespace Wyam.Core.Tests.Modules.Control
                     Value = 20,
                     AdditionalOutputs = 1
                 };
-                engine.Pipelines.Add("Test", a, new Merge(b).ForEachDocument(),
+                engine.Pipelines.Add(
+                    "Test",
+                    a,
+                    new Merge(b).ForEachDocument(),
                     new Core.Modules.Metadata.Meta("Content", (doc, ctx) => doc.Content));
 
                 // When

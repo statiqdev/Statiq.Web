@@ -26,7 +26,7 @@ namespace Wyam.Git.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 context.FileSystem.RootPath.Returns(new DirectoryPath("/"));
-                context.FileSystem.InputPaths.Returns(x => new [] { new DirectoryPath(TestContext.CurrentContext.TestDirectory) });
+                context.FileSystem.InputPaths.Returns(x => new[] { new DirectoryPath(TestContext.CurrentContext.TestDirectory) });
                 context.GetDocument(Arg.Any<IEnumerable<KeyValuePair<string, object>>>()).Returns(getNewDocumentCallInfo =>
                 {
                     IDocument newDocument = Substitute.For<IDocument>();

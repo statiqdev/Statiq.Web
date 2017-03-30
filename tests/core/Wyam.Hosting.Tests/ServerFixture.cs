@@ -23,8 +23,8 @@ namespace Wyam.Hosting.Tests
                 // Given
                 IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
                 reloadClientMock.IsConnected.Returns(true);
-                Server server = Substitute.ForPartsOf<Server>("", 35729);
-                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> {reloadClientMock});
+                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
+                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
 
                 // When
                 server.TriggerReload();
@@ -39,8 +39,8 @@ namespace Wyam.Hosting.Tests
                 // Given
                 IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
                 reloadClientMock.IsConnected.Returns(false);
-                Server server = Substitute.ForPartsOf<Server>("", 35729);
-                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> {reloadClientMock});
+                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
+                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
 
                 // When
                 server.TriggerReload();

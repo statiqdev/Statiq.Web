@@ -320,7 +320,7 @@ namespace Wyam.Html.Tests
                         });
                 MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
                 document.GetStream().Returns(stream);
-                Excerpt excerpt = new Excerpt().WithSeparators(new [] { "foo" });
+                Excerpt excerpt = new Excerpt().WithSeparators(new[] { "foo" });
 
                 // When
                 excerpt.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list

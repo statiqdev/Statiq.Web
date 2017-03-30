@@ -11,10 +11,11 @@ using Wyam.Testing;
 namespace Wyam.Common.Tests.IO
 {
     // Resharper NUnit runner having issues with this test fixture
-    //[TestFixture(typeof(DirectoryPath))]
-    //[TestFixture(typeof(FilePath))]
+    // [TestFixture(typeof(DirectoryPath))]
+    // [TestFixture(typeof(FilePath))]
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
-    public class PathCollectionFixture<TPath> : BaseFixture where TPath : NormalizedPath
+    public class PathCollectionFixture<TPath> : BaseFixture
+        where TPath : NormalizedPath
     {
         private readonly TPath _upperCaseA;
         private readonly TPath _lowerCaseA;
@@ -68,7 +69,7 @@ namespace Wyam.Common.Tests.IO
             public void ShouldReturnTheNumberOfPathsInTheCollection()
             {
                 // Given
-                PathCollection<TPath> collection = new PathCollection<TPath>(new [] { _upperCaseA, _upperCaseB });
+                PathCollection<TPath> collection = new PathCollection<TPath>(new[] { _upperCaseA, _upperCaseB });
 
                 // When, Then
                 Assert.AreEqual(2, collection.Count);
@@ -131,10 +132,10 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { _upperCaseA, _upperCaseB });
+                    new[] { _upperCaseA, _upperCaseB });
 
                 // When
-                collection.AddRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
+                collection.AddRange(new[] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);
@@ -169,10 +170,10 @@ namespace Wyam.Common.Tests.IO
             {
                 // Given
                 PathCollection<TPath> collection = new PathCollection<TPath>(
-                    new [] { _upperCaseA, _upperCaseB });
+                    new[] { _upperCaseA, _upperCaseB });
 
                 // When
-                collection.RemoveRange(new [] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
+                collection.RemoveRange(new[] { _lowerCaseA, _lowerCaseB, _lowerCaseC });
 
                 // Then
                 Assert.AreEqual(expectedCount, collection.Count);

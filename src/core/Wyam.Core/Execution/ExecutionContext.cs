@@ -71,7 +71,6 @@ namespace Wyam.Core.Execution
 
         internal ExecutionContext Clone(IModule module) => new ExecutionContext(this, module);
 
-
         /// <summary>
         /// The context is disposed after use by each module to ensure modules aren't accessing stale data
         /// if they continue to create documents or perform other operations after the module is done

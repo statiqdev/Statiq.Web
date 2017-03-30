@@ -251,7 +251,7 @@ namespace Wyam.Common.Tests.Modules
             public void AlsoWorksWithModules()
             {
                 // Given
-                IPipeline collection = new ExecutionPipeline("Test", new []
+                IPipeline collection = new ExecutionPipeline("Test", new[]
                 {
                     new CountModule("mykey1")
                         .WithName("First"),

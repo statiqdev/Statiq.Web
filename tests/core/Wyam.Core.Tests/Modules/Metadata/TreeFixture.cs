@@ -29,14 +29,14 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/b/3.txt",
                     "root/a/1.txt",
                     "root/b/x/4.txt",
                     "root/c/d/5.txt",
-                    "root/6.txt"
-                );
+                    "root/6.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -44,7 +44,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Assert.AreEqual(1, documents.Count);
-                AssertTree(documents[0],
+                AssertTree(
+                    documents[0],
                     "index.html",
                     "root/index.html",
                     "root/6.txt",
@@ -67,14 +68,14 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "a/2.txt",
                     "b/3.txt",
                     "a/1.txt",
                     "b/x/4.txt",
                     "c/d/5.txt",
-                    "6.txt"
-                );
+                    "6.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -82,7 +83,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Assert.AreEqual(1, documents.Count);
-                AssertTree(documents[0],
+                AssertTree(
+                    documents[0],
                     "index.html",
                     "6.txt",
                     "a/index.html",
@@ -104,14 +106,14 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "a/2.txt",
                     "b/3.txt",
                     "a/1.txt",
                     "b/x/4.txt",
                     "c/d/5.txt",
-                    "6.txt"
-                );
+                    "6.txt");
                 Tree tree = new Tree().WithNesting(true, true);
 
                 // When
@@ -120,7 +122,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 // Then
                 Assert.AreEqual(4, documents.Count);
                 CollectionAssert.AreEquivalent(
-                    new[] {"a/index.html", "b/index.html", "c/index.html", "6.txt"},
+                    new[] { "a/index.html", "b/index.html", "c/index.html", "6.txt" },
                     documents.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath));
             }
 
@@ -131,11 +133,11 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/a/3.txt",
-                    "root/a/1.txt"
-                );
+                    "root/a/1.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -143,7 +145,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 IDocument document = FindTreeNode(documents[0], "root/a/2.txt");
-                Assert.AreEqual("root/a/1.txt",
+                Assert.AreEqual(
+                    "root/a/1.txt",
                     document.Document(Keys.PreviousSibling).FilePath(Keys.RelativeFilePath).FullPath);
             }
 
@@ -154,11 +157,11 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/a/3.txt",
-                    "root/a/1.txt"
-                );
+                    "root/a/1.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -166,7 +169,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 IDocument document = FindTreeNode(documents[0], "root/a/2.txt");
-                Assert.AreEqual("root/a/3.txt",
+                Assert.AreEqual(
+                    "root/a/3.txt",
                     document.Document(Keys.NextSibling).FilePath(Keys.RelativeFilePath).FullPath);
             }
 
@@ -177,11 +181,11 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/a/3.txt",
-                    "root/a/1.txt"
-                );
+                    "root/a/1.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -189,7 +193,8 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 IDocument document = FindTreeNode(documents[0], "root/a/2.txt");
-                Assert.AreEqual("root/a/1.txt",
+                Assert.AreEqual(
+                    "root/a/1.txt",
                     document.Document(Keys.Previous).FilePath(Keys.RelativeFilePath).FullPath);
             }
 
@@ -200,12 +205,12 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/a/3.txt",
                     "root/a/1.txt",
-                    "root/b/4.txt"
-                );
+                    "root/b/4.txt");
                 Tree tree = new Tree().WithNesting();
 
                 // When
@@ -213,10 +218,10 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 IDocument document = FindTreeNode(documents[0], "root/b/4.txt");
-                Assert.AreEqual("root/b/index.html",
+                Assert.AreEqual(
+                    "root/b/index.html",
                     document.Document(Keys.Previous).FilePath(Keys.RelativeFilePath).FullPath);
             }
-
 
             [Test]
             public void SplitsTree()
@@ -225,12 +230,12 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/2.txt",
                     "root/b/index.html",
                     "root/a/1.txt",
-                    "root/b/4.txt"
-                );
+                    "root/b/4.txt");
                 Tree tree = new Tree()
                     .WithNesting()
                     .WithRoots((doc, ctx) => doc.FilePath(Keys.RelativeFilePath).FullPath.EndsWith("b/index.html"));
@@ -240,10 +245,12 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 // Then
                 Assert.AreEqual(2, documents.Count);
-                AssertTree(documents[0],
+                AssertTree(
+                    documents[0],
                     "root/b/index.html",
                     "root/b/4.txt");
-                AssertTree(documents[1],
+                AssertTree(
+                    documents[1],
                     "index.html",
                     "root/index.html",
                     "root/a/index.html",
@@ -258,32 +265,38 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = GetDocuments(context,
+                IDocument[] inputs = GetDocuments(
+                    context,
                     "root/a/b/2.txt",
                     "root/a/3.txt",
-                    "root/a/1.txt"
-                );
+                    "root/a/1.txt");
                 Tree tree = new Tree();
 
                 // When
                 List<IDocument> documents = tree.Execute(inputs, context).ToList();
 
                 // Then
-                AssertTreeChildren(documents[0],
+                AssertTreeChildren(
+                    documents[0],
                     "root/a/b/2.txt");
-                AssertTreeChildren(documents[1],
+                AssertTreeChildren(
+                    documents[1],
                     "root/a/3.txt");
-                AssertTreeChildren(documents[2],
+                AssertTreeChildren(
+                    documents[2],
                     "root/a/1.txt");
-                AssertTreeChildren(documents[3],
+                AssertTreeChildren(
+                    documents[3],
                     "root/a/b/index.html",
                     "root/a/b/2.txt");
-                AssertTreeChildren(documents[4],
+                AssertTreeChildren(
+                    documents[4],
                     "root/a/index.html",
                     "root/a/1.txt",
                     "root/a/3.txt",
                     "root/a/b/index.html");
-                AssertTreeChildren(documents[5],
+                AssertTreeChildren(
+                    documents[5],
                     "root/index.html",
                     "root/a/index.html");
             }

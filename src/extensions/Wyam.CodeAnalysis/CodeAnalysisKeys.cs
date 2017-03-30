@@ -79,7 +79,6 @@ namespace Wyam.CodeAnalysis
         public const string AttributeData = nameof(AttributeData); // AttributeData
         //                  Type
 
-
         // Documentation (not present for external symbols)
         public const string CommentXml = nameof(CommentXml); // string, the XML documentation comments (if any) or an empty string
         public const string Example = nameof(Example); // string, multiple entries are concatenated

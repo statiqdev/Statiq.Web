@@ -27,7 +27,7 @@ namespace Wyam.Common.Tests.Modules
                 list.Add(count);
 
                 // Then
-                Assert.That(list.AsKeyValuePairs(), Is.EqualTo(new[] {new KeyValuePair<string, IModule>(null, count)}));
+                Assert.That(list.AsKeyValuePairs(), Is.EqualTo(new[] { new KeyValuePair<string, IModule>(null, count) }));
             }
 
             [Test]
@@ -134,7 +134,7 @@ namespace Wyam.Common.Tests.Modules
 
                 // Then
                 Assert.That(result, Is.False);
-                Assert.That(list, Is.EqualTo(new [] { count2 }));
+                Assert.That(list, Is.EqualTo(new[] { count2 }));
             }
 
             [Test]
@@ -152,7 +152,7 @@ namespace Wyam.Common.Tests.Modules
 
                 // Then
                 Assert.That(result, Is.True);
-                Assert.That(list, Is.EqualTo(new [] { count2 }));
+                Assert.That(list, Is.EqualTo(new[] { count2 }));
             }
 
             [Test]
@@ -169,7 +169,7 @@ namespace Wyam.Common.Tests.Modules
 
                 // Then
                 Assert.That(result, Is.False);
-                Assert.That(list, Is.EqualTo(new [] { count2 }));
+                Assert.That(list, Is.EqualTo(new[] { count2 }));
             }
         }
 
@@ -253,7 +253,7 @@ namespace Wyam.Common.Tests.Modules
                 list.Insert(0, count);
 
                 // Then
-                Assert.That(list, Is.EqualTo(new [] {count, count2}));
+                Assert.That(list, Is.EqualTo(new[] { count, count2 }));
             }
 
             [Test]

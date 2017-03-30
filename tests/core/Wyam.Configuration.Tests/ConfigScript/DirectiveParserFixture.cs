@@ -29,7 +29,8 @@ C";
 
                 // Then
                 CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
-                Assert.AreEqual(@"A
+                Assert.AreEqual(
+                    @"A
 B
 C", directiveParser.Code);
             }
@@ -52,14 +53,16 @@ C";
                 directiveParser.Parse(configScript);
 
                 // Then
-                Assert.AreEqual(@"//#valid a b c
+                Assert.AreEqual(
+                    @"//#valid a b c
 #invalid a b c
 #validx y z
 A=
 =B
 //#valid   x y z  
 C", directiveParser.Code);
-                CollectionAssert.AreEqual(new[]
+                CollectionAssert.AreEqual(
+                    new[]
                 {
                     Tuple.Create((int?)1, "valid", "a b c"),
                     Tuple.Create((int?)6, "valid", "x y z")
@@ -79,7 +82,8 @@ C", directiveParser.Code);
                 directiveParser.Parse(configScript);
 
                 // Then
-                Assert.AreEqual(@"# valid a b c
+                Assert.AreEqual(
+                    @"# valid a b c
             A", directiveParser.Code);
                 CollectionAssert.IsEmpty(directiveParser.DirectiveValues);
             }

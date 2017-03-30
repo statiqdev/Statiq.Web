@@ -270,7 +270,6 @@ namespace Wyam.Images
             return this;
         }
 
-
         /// <summary>
         /// This setting only applies to JPEG images. It sets the quality of the JPEG output. The possible values are from <c>0</c> to <c>100</c>.
         /// </summary>

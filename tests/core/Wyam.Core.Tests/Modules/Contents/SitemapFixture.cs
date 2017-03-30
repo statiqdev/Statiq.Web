@@ -42,9 +42,10 @@ namespace Wyam.Core.Tests.Modules.Contents
                 {
                     new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
                 });
-                IDocument[] inputs = {doc};
+                IDocument[] inputs = { doc };
 
-                Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem,
+                Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(
+                    Keys.SitemapItem,
                     (d, c) => new SitemapItem(d[Keys.RelativeFilePath].ToString()));
                 var outputs = m.Execute(inputs, context);
 
@@ -87,9 +88,10 @@ namespace Wyam.Core.Tests.Modules.Contents
                 {
                     new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
                 });
-                IDocument[] inputs = {doc};
+                IDocument[] inputs = { doc };
 
-                Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(Keys.SitemapItem,
+                Core.Modules.Metadata.Meta m = new Core.Modules.Metadata.Meta(
+                    Keys.SitemapItem,
                     (d, c) => d[Keys.RelativeFilePath].ToString());
                 var outputs = m.Execute(inputs, context);
 

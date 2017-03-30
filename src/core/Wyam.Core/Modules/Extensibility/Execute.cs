@@ -121,7 +121,6 @@ namespace Wyam.Core.Modules.Extensibility
                 ?? ThrowInvalidDelegateResult(contextResult);
         }
 
-
         private IEnumerable<IDocument> GetDocuments(object result)
         {
             IEnumerable<IDocument> documents = result as IEnumerable<IDocument>;

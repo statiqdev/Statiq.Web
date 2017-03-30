@@ -39,7 +39,6 @@ namespace Cake.Wyam.Tests
                 Assert.AreEqual(expected, result.Path.FullPath);
             }
 
-
             [TestCase("C:/Wyam/Wyam.exe", "C:/Wyam/Wyam.exe")]
             public void ShouldUseWyamRunnerFromToolPathIfProvidedOnWindows(string toolPath, string expected)
             {

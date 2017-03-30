@@ -18,7 +18,7 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                CountModule a = new CountModule("A") {AdditionalOutputs = 2};
+                CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
                 CountModule b = new CountModule("B");
                 CountModule c = new CountModule("C");
                 CountModule d = new CountModule("D");
@@ -40,7 +40,7 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                CountModule a = new CountModule("A") {AdditionalOutputs = 2};
+                CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
                 CountModule b = new CountModule("B");
                 CountModule c = new CountModule("C");
 
@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                CountModule a = new CountModule("A") {AdditionalOutputs = 2};
+                CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
                 CountModule b = new CountModule("B");
                 CountModule c = new CountModule("C");
 
@@ -84,11 +84,11 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                CountModule a = new CountModule("A") {AdditionalOutputs = 2};
+                CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
                 CountModule b = new CountModule("B");
                 CountModule c = new CountModule("C");
 
-                engine.Pipelines.Add(a, new Switch((x, y) => x.Content).Case(new string[] {"1", "2"}, b), c);
+                engine.Pipelines.Add(a, new Switch((x, y) => x.Content).Case(new string[] { "1", "2" }, b), c);
 
                 // When
                 engine.Execute();
@@ -106,7 +106,7 @@ namespace Wyam.Core.Tests.Modules.Control
             {
                 // Given
                 Engine engine = new Engine();
-                CountModule a = new CountModule("A") {AdditionalOutputs = 2};
+                CountModule a = new CountModule("A") { AdditionalOutputs = 2 };
                 CountModule b = new CountModule("B");
 
                 engine.Pipelines.Add(a, new Switch((x, y) => x.Content), b);

@@ -18,7 +18,7 @@ namespace Wyam.Json.Tests
     [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
     public class JsonFixture : BaseFixture
     {
-        private static string JsonContent = @"{
+        private static string _jsonContent = @"{
   ""Email"": ""james@example.com"",
   ""Active"": true,
   ""CreatedDate"": ""2013-01-20T00:00:00Z"",
@@ -35,11 +35,11 @@ namespace Wyam.Json.Tests
                 // Given
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(JsonContent);
+                document.Content.Returns(_jsonContent);
                 Json json = new Json("MyJson");
 
                 // When
-                json.Execute(new[] {document}, context).ToList();  // Make sure to materialize the result list
+                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
@@ -56,11 +56,11 @@ namespace Wyam.Json.Tests
                 context
                     .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-                document.Content.Returns(JsonContent);
+                document.Content.Returns(_jsonContent);
                 Json json = new Json("MyJson");
 
                 // When
-                json.Execute(new[] {document}, context).ToList();  // Make sure to materialize the result list
+                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
@@ -69,7 +69,7 @@ namespace Wyam.Json.Tests
                 Assert.AreEqual("james@example.com", (string)((dynamic)items.First().Value).Email);
                 Assert.AreEqual(true, (bool)((dynamic)items.First().Value).Active);
                 Assert.AreEqual(new DateTime(2013, 1, 20, 0, 0, 0, DateTimeKind.Utc), (DateTime)((dynamic)items.First().Value).CreatedDate);
-                CollectionAssert.AreEqual(new [] { "User", "Admin" }, (IEnumerable)((dynamic)items.First().Value).Roles);
+                CollectionAssert.AreEqual(new[] { "User", "Admin" }, (IEnumerable)((dynamic)items.First().Value).Roles);
             }
 
             [Test]
@@ -82,7 +82,7 @@ namespace Wyam.Json.Tests
                 context
                     .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-                document.Content.Returns(JsonContent);
+                document.Content.Returns(_jsonContent);
                 Json json = new Json();
 
                 // When

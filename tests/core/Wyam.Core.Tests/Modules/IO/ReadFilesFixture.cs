@@ -37,7 +37,7 @@ namespace Wyam.Core.Tests.Modules.IO
             Engine.FileSystem.InputPaths.Add("/TestFiles/Input");
             Pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
             Context = new ExecutionContext(Engine, Pipeline);
-            Inputs = new [] { Context.GetDocument() };
+            Inputs = new[] { Context.GetDocument() };
         }
 
         private IFileProvider GetFileProvider()

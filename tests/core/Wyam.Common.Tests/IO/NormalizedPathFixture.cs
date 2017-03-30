@@ -479,7 +479,7 @@ namespace Wyam.Common.Tests.IO
             [TestCase("hello/temp/test/../../world", "hello/world")]
             [TestCase("hello/temp/../temp2/../world", "hello/world")]
             [TestCase("/hello/temp/test/../../world", "/hello/world")]
-            [TestCase("/hello/../../../../../../temp", "/temp")]  // Stop collapsing when root is reached
+            [TestCase("/hello/../../../../../../temp", "/temp")] // Stop collapsing when root is reached
             [TestCase(".", ".")]
             [TestCase("/.", ".")]
             [TestCase("./a", "a")]

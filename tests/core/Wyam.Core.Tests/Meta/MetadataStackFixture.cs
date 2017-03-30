@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using NSubstitute;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -94,7 +94,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -108,7 +108,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -139,7 +139,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsTrueForValidValue()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -155,7 +155,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsFalseForInvalidValue()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -207,11 +207,11 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsPreviousValues()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
 
                 // Then
                 Assert.AreEqual("a", clone["A"]);
@@ -221,11 +221,11 @@ namespace Wyam.Core.Tests.Meta
             public void ClonedMetadataDoesNotContainNewValues()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
 
                 // Then
                 Assert.IsFalse(metadata.ContainsKey("B"));
@@ -235,11 +235,11 @@ namespace Wyam.Core.Tests.Meta
             public void ContainsNewValues()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"B", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> { { "B", "b" } });
 
                 // Then
                 Assert.AreEqual("b", clone["B"]);
@@ -249,11 +249,11 @@ namespace Wyam.Core.Tests.Meta
             public void ReplacesValue()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = "a"};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = "a" };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
-                MetadataStack clone = metadata.Clone(new Dictionary<string, object> {{"A", "b"}});
+                MetadataStack clone = metadata.Clone(new Dictionary<string, object> { { "A", "b" } });
 
                 // Then
                 Assert.AreEqual("a", metadata["A"]);
@@ -320,7 +320,7 @@ namespace Wyam.Core.Tests.Meta
             public void ReturnsCorrectResultForList()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<int> {1, 2, 3}};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<int> { 1, 2, 3 } };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -328,14 +328,14 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsNotNull(result);
-                CollectionAssert.AreEqual(result, new[] {1, 2, 3});
+                CollectionAssert.AreEqual(result, new[] { 1, 2, 3 });
             }
 
             [Test]
             public void ReturnsCorrectResultForConvertedStringList()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<string> {"1", "2", "3"}};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<string> { "1", "2", "3" } };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -343,14 +343,14 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsNotNull(result);
-                CollectionAssert.AreEqual(result, new[] {1, 2, 3});
+                CollectionAssert.AreEqual(result, new[] { 1, 2, 3 });
             }
 
             [Test]
             public void ReturnsCorrectResultForConvertedIntList()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new List<int> {1, 2, 3}};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new List<int> { 1, 2, 3 } };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -358,14 +358,14 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsNotNull(result);
-                CollectionAssert.AreEqual(result, new[] {"1", "2", "3"});
+                CollectionAssert.AreEqual(result, new[] { "1", "2", "3" });
             }
 
             [Test]
             public void ReturnsCorrectResultForArray()
             {
                 // Given
-                MetadataDictionary initialMetadata = new MetadataDictionary {["A"] = new[] {1, 2, 3}};
+                MetadataDictionary initialMetadata = new MetadataDictionary { ["A"] = new[] { 1, 2, 3 } };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
                 // When
@@ -373,7 +373,7 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsNotNull(result);
-                CollectionAssert.AreEqual(result, new[] {1, 2, 3});
+                CollectionAssert.AreEqual(result, new[] { 1, 2, 3 });
             }
         }
 
@@ -438,7 +438,7 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsNotNull(result);
-                CollectionAssert.AreEqual(new [] { a, b, c }, result);
+                CollectionAssert.AreEqual(new[] { a, b, c }, result);
             }
 
             [Test]
@@ -716,9 +716,9 @@ namespace Wyam.Core.Tests.Meta
                 // Given
                 MetadataDictionary initialMetadata = new MetadataDictionary
                 {
-                    ["A"] = new SimpleMetadataValue {Value = "a"},
-                    ["B"] = new SimpleMetadataValue {Value = "b"},
-                    ["C"] = new SimpleMetadataValue {Value = "c"}
+                    ["A"] = new SimpleMetadataValue { Value = "a" },
+                    ["B"] = new SimpleMetadataValue { Value = "b" },
+                    ["C"] = new SimpleMetadataValue { Value = "c" }
                 };
                 MetadataStack metadata = new MetadataStack(initialMetadata);
 
@@ -726,7 +726,7 @@ namespace Wyam.Core.Tests.Meta
                 object[] values = metadata.Select(x => x.Value).ToArray();
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] {"a", "b", "c"}, values);
+                CollectionAssert.AreEquivalent(new[] { "a", "b", "c" }, values);
             }
         }
 

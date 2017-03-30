@@ -1,13 +1,9 @@
-﻿using NSubstitute;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using NUnit.Framework;
 using Wyam.Common.Documents;
-using Wyam.Common.Execution;
 using Wyam.Common.Meta;
-using Wyam.Common.Util;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
 using Wyam.Testing.Execution;
@@ -190,7 +186,6 @@ the family Rosaceae.</dd>
 <em>Line 2</em></p>
 <h1>Line 3</h1>
 ".Replace(Environment.NewLine, "\n");
-
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(new MetadataItems

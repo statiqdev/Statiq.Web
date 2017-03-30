@@ -44,7 +44,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new [] { string.Empty, "Foo", "Bar" }, results.Select(x => x["Name"]));
+                CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Bar" }, results.Select(x => x["Name"]));
             }
 
             [Test]
@@ -73,7 +73,8 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, results.Select(x => x["Name"]));
-                CollectionAssert.AreEquivalent(new [] { "Foo", "Bar" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Foo", "Bar" },
                     results.Single(x => x["Name"].Equals(string.Empty)).Get<IEnumerable<IDocument>>("MemberNamespaces").Select(x => x["Name"]));
             }
 
@@ -103,7 +104,8 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Baz", "Bar" }, results.Select(x => x["Name"]));
-                CollectionAssert.AreEquivalent(new[] { "Baz", "Bar" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Baz", "Bar" },
                     results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberNamespaces").Select(x => x["Name"]));
             }
 
@@ -259,9 +261,11 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new [] { "Red" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Red" },
                     results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
-                CollectionAssert.AreEquivalent(new[] { "Blue", "Green" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Blue", "Green" },
                     results.Single(x => x["Name"].Equals("Bar")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             }
 
@@ -285,10 +289,11 @@ namespace Wyam.CodeAnalysis.Tests
                 IModule module = new AnalyzeCSharp();
 
                 // When
-                List<IDocument> results = module.Execute(new[] { document },context).ToList();  // Make sure to materialize the result list
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "Blue" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Blue" },
                     results.Single(x => x["Name"].Equals("Foo")).Get<IEnumerable<IDocument>>("MemberTypes").Select(x => x["Name"]));
             }
 
@@ -312,7 +317,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "global/index.html", "Foo/index.html", "Foo.Bar/index.html" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "global/index.html", "Foo/index.html", "Foo.Bar/index.html" },
                     results.Where(x => x["Kind"].Equals("Namespace")).Select(x => ((FilePath)x[Keys.WritePath]).FullPath));
             }
         }

@@ -37,7 +37,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -45,10 +45,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -69,7 +71,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter("-", new Execute((x, ctx) =>
                 {
                     executed = true;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -78,7 +80,8 @@ Content2")
                 // Then
                 Assert.AreEqual(1, documents.Count());
                 Assert.IsFalse(executed);
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ---
 Content1
@@ -102,7 +105,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter("ABC", new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -110,10 +113,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -134,7 +139,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -142,10 +147,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -166,7 +173,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -174,10 +181,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -198,7 +207,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
                     executed = true;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -207,7 +216,8 @@ Content2")
                 // Then
                 Assert.AreEqual(1, documents.Count());
                 Assert.IsFalse(executed);
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
   !!!!
 Content1
@@ -233,7 +243,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -241,11 +251,13 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 
 ", frontMatterContent);
-                Assert.AreEqual(@"
+                Assert.AreEqual(
+                    @"
 Content1
 Content2", documents.First().Content);
             }
@@ -267,7 +279,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter('!', new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -275,10 +287,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -300,7 +314,7 @@ YY")
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
                     frontMatterContent += x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -308,7 +322,8 @@ YY")
 
                 // Then
                 Assert.AreEqual(2, documents.Count());
-                Assert.AreEqual(@"AA
+                Assert.AreEqual(
+                    @"AA
 BB
 ", frontMatterContent);
                 Assert.AreEqual(@"XX", documents.First().Content);
@@ -333,7 +348,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 }));
 
                 // When
@@ -341,10 +356,12 @@ Content2")
 
                 // Then
                 Assert.AreEqual(1, documents.Count());
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ", frontMatterContent);
-                Assert.AreEqual(@"Content1
+                Assert.AreEqual(
+                    @"Content1
 Content2", documents.First().Content);
             }
 
@@ -366,7 +383,7 @@ Content2")
                 FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
                 {
                     frontMatterContent = x.Content;
-                    return new[] {x};
+                    return new[] { x };
                 })).IgnoreDelimiterOnFirstLine(false);
 
                 // When
@@ -375,7 +392,8 @@ Content2")
                 // Then
                 Assert.AreEqual(1, documents.Count());
                 Assert.AreEqual("\n", frontMatterContent);
-                Assert.AreEqual(@"FM1
+                Assert.AreEqual(
+                    @"FM1
 FM2
 ---
 Content1

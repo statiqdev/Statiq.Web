@@ -3,8 +3,8 @@ using System.Diagnostics;
 using NUnit.Framework;
 using Wyam.Core.Execution;
 using Wyam.Testing;
-using Trace = Wyam.Core.Modules.Extensibility.Trace;
 using Wyam.Common.Execution;
+using Trace = Wyam.Core.Modules.Extensibility.Trace;
 
 namespace Wyam.Core.Tests.Modules.Extensibility
 {

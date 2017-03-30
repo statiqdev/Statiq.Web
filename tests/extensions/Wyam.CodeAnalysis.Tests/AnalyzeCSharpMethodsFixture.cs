@@ -49,7 +49,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "Green", "Red", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Green", "Red", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             }
 
@@ -81,7 +82,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "op_Addition", "op_Explicit" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "op_Addition", "op_Explicit" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Operators").Select(x => x["Name"]));
             }
 
@@ -141,7 +143,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new[] { "global/Yellow/66F23CDD.html", "Foo/Red/A94FD382.html" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "global/Yellow/66F23CDD.html", "Foo/Red/A94FD382.html" },
                     results.Where(x => x["Kind"].Equals("Method")).Select(x => ((FilePath)x[Keys.WritePath]).FullPath));
             }
 
@@ -276,9 +279,11 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 CollectionAssert.AreEquivalent(new[] { string.Empty, "Foo", "Blue", "Red" }, results.Select(x => x["Name"]));
-                CollectionAssert.AreEquivalent(new[] { "Red" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Red" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Where(x => x.Bool("IsResult")).Select(x => x["Name"]));
-                CollectionAssert.AreEquivalent(new[] { "Red", "Green", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
+                CollectionAssert.AreEquivalent(
+                    new[] { "Red", "Green", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
                     GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
             }
 
@@ -304,7 +309,6 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual("Int32", ((IDocument)GetParameter(results, "Yellow", "X", "z")["Type"])["Name"]);
             }
-
 
             [Test]
             public void ParameterParamsType()

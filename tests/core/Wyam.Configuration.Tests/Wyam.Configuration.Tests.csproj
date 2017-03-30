@@ -175,6 +175,7 @@
     <Compile Include="ConfigScript\ScriptManagerFixture.cs" />
     <Compile Include="ConfigScript\DirectiveParserFixture.cs" />
     <Compile Include="ConfiguratorFixture.cs" />
+    <Compile Include="MetadataTestRecipe.cs" />
     <Compile Include="Preprocessing\ArgumentSplitterFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

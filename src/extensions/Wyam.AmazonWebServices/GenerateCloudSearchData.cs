@@ -43,7 +43,6 @@ namespace Wyam.AmazonWebServices
         private readonly List<MetaFieldMapping> _metaFields;
         private readonly List<Field> _fields;
 
-
         /// <summary>
         /// Generates Amazon CloudSearch JSON data.
         /// </summary>

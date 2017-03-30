@@ -259,7 +259,6 @@ namespace Wyam.Common.Tests.IO
 
                 // Then
                 Assert.IsNull(result);
-
             }
         }
 

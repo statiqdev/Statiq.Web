@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Wyam.Common.Configuration;
-using Wyam.Common.Execution;
-using Wyam.Common.IO;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Core.Execution;
 using Wyam.Testing;
@@ -508,19 +505,6 @@ SetCustomDocumentType<MyDocument>();
         {
             Configurator configurator = new Configurator(engine);
             return configurator;
-        }
-    }
-
-    public class MetadataTestRecipe : IRecipe
-    {
-        public void Apply(IEngine engine)
-        {
-            engine.Settings["Foo"] = "Bar";
-        }
-
-        public void Scaffold(IFile configFile, IDirectory inputDirectory)
-        {
-            throw new NotImplementedException();
         }
     }
 }

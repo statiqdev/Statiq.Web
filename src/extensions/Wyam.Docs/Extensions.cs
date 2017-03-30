@@ -73,7 +73,6 @@ namespace Wyam.Docs
                 : (name ?? metadata.Name());
         }
 
-
         /// <summary>
         /// Generates links to each heading on a page and returns a string containing all of the links.
         /// </summary>

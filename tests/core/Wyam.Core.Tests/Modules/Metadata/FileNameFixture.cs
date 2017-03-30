@@ -21,14 +21,18 @@ namespace Wyam.Core.Tests.Modules.Metadata
     {
         public class ExecuteTests : FileNameFixture
         {
-            [TestCase("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
+            [TestCase(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=",
                 "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789")]
             [TestCase("Děku.jemeविकीвики-движка", "děku.jemeविकीвикидвижка")]
-            [TestCase("this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].",
+            [TestCase(
+                "this is my title - and some \t\t\t\t\n   clever; (piece) of text here: [ok].",
                 "this-is-my-title-and-some-clever-piece-of-text-here-ok")]
-            [TestCase("this is my title?!! /r/science/ and #firstworldproblems :* :sadface=true",
+            [TestCase(
+                "this is my title?!! /r/science/ and #firstworldproblems :* :sadface=true",
                 "this-is-my-title-rscience-and-firstworldproblems-sadfacetrue")]
-            [TestCase("one-two-three--four--five and a six--seven--eight-nine------ten",
+            [TestCase(
+                "one-two-three--four--five and a six--seven--eight-nine------ten",
                 "onetwothreefourfive-and-a-sixseveneightnineten")]
             public void FileNameIsConvertedCorrectly(string input, string output)
             {
@@ -36,10 +40,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                IDocument[] inputs =
+                {
+                    context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, input)
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When
@@ -59,10 +66,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                IDocument[] inputs =
+                {
+                    context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, new FilePath(input))
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When
@@ -82,10 +92,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                IDocument[] inputs =
+                {
+                    context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, new FilePath(input))
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When
@@ -106,10 +119,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                IDocument[] inputs =
+                {
+                    context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, new FilePath(input))
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When
@@ -130,12 +146,16 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                string manyCharactersWow = new String(character[0], 10);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                string manyCharactersWow = new string(character[0], 10);
+                IDocument[] inputs =
                 {
-                    new MetadataItem(Keys.SourceFileName,
+                    context.GetDocument(new MetadataItems
+                {
+                    new MetadataItem(
+                        Keys.SourceFileName,
                         string.Format("testing {0} some of {0} these {0}", manyCharactersWow))
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When
@@ -154,10 +174,13 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
                 IExecutionContext context = new ExecutionContext(engine, pipeline);
-                IDocument[] inputs = { context.GetDocument(new MetadataItems
+                IDocument[] inputs =
+                {
+                    context.GetDocument(new MetadataItems
                 {
                     new MetadataItem(Keys.SourceFileName, input)
-                }) };
+                })
+                };
                 FileName fileName = new FileName();
 
                 // When

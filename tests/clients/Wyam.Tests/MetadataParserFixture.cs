@@ -15,7 +15,7 @@ namespace Wyam.Tests
             public void TestKeyOnlyParse()
             {
                 // Given
-                string[] excepted = {"hi", "=hello", "\\=abcd", "key\\=val", "     bjorn  \\=   dad"};
+                string[] excepted = { "hi", "=hello", "\\=abcd", "key\\=val", "     bjorn  \\=   dad" };
 
                 // When
                 IReadOnlyDictionary<string, object> args = MetadataParser.Parse(excepted);
@@ -35,7 +35,7 @@ namespace Wyam.Tests
             public void TestKeyValueParse()
             {
                 // Given
-                string[] pairs = {"key=value", "k=v", "except=bro", "awesome====123123", "   keytrimmed    =    value trimmed   "};
+                string[] pairs = { "key=value", "k=v", "except=bro", "awesome====123123", "   keytrimmed    =    value trimmed   " };
 
                 // When
                 IReadOnlyDictionary<string, object> args = MetadataParser.Parse(pairs);
@@ -56,14 +56,14 @@ namespace Wyam.Tests
             public void ArrayValue()
             {
                 // Given
-                string[] pairs = {"foo = [bar,baz boo,baz\\, boo, a, b\\\"b]"};
+                string[] pairs = { "foo = [bar,baz boo,baz\\, boo, a, b\\\"b]" };
 
                 // When
                 IReadOnlyDictionary<string, object> args = MetadataParser.Parse(pairs);
 
                 // Then
-                CollectionAssert.AreEqual(new [] {"foo"}, args.Keys);
-                CollectionAssert.AreEqual(new [] {"bar", "baz boo", "baz, boo", "a", "b\"b"}, args["foo"] as object[]);
+                CollectionAssert.AreEqual(new[] { "foo" }, args.Keys);
+                CollectionAssert.AreEqual(new[] { "bar", "baz boo", "baz, boo", "a", "b\"b" }, args["foo"] as object[]);
             }
 
             /// <summary>
@@ -74,7 +74,7 @@ namespace Wyam.Tests
             {
                 // Given, When, Then
                 Assert.Throws<ArgumentException>(
-                    () => MetadataParser.Parse(new [] {"hello=world", "hello=exception"}));
+                    () => MetadataParser.Parse(new[] { "hello=world", "hello=exception" }));
             }
         }
     }

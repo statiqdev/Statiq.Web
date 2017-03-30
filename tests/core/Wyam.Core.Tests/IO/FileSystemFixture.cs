@@ -30,7 +30,7 @@ namespace Wyam.Core.Tests.IO
                 FileSystem fileSystem = new FileSystem();
 
                 // Then
-                CollectionAssert.AreEquivalent(new [] { "theme", "input" }, fileSystem.InputPaths.Select(x => x.FullPath));
+                CollectionAssert.AreEquivalent(new[] { "theme", "input" }, fileSystem.InputPaths.Select(x => x.FullPath));
             }
         }
 
@@ -248,7 +248,8 @@ namespace Wyam.Core.Tests.IO
                 IEnumerable<IDirectory> result = fileSystem.GetInputDirectories();
 
                 // Then
-                CollectionAssert.AreEquivalent(new []
+                CollectionAssert.AreEquivalent(
+                    new[]
                 {
                     "/a/theme",
                     "/a/input",
@@ -585,7 +586,7 @@ namespace Wyam.Core.Tests.IO
             [TestCase("/", new[] { "qwerty:///q/werty.txt" }, new[] { "/q/werty.txt" }, false)]
             public void ShouldReturnExistingFiles(string directory, string[] patterns, string[] expected, bool reverseSlashes)
             {
-                //TestContext.Out.WriteLine($"Patterns: {string.Join(",", patterns)}");
+                // TestContext.Out.WriteLine($"Patterns: {string.Join(",", patterns)}");
 
                 // Given
                 FileSystem fileSystem = new FileSystem();
@@ -605,7 +606,7 @@ namespace Wyam.Core.Tests.IO
 
                 if (reverseSlashes)
                 {
-                    //When
+                    // When
                     results = fileSystem.GetFiles(dir, patterns.Select(x => x.Replace("/", "\\")));
 
                     // Then

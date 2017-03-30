@@ -234,7 +234,6 @@ namespace Wyam.Core.Tests.Modules.IO
                 Assert.AreEqual("x test y", results.Single().Content);
             }
 
-
             [Test]
             public void IncludingAbsolutePath()
             {

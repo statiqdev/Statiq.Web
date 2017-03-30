@@ -287,22 +287,26 @@ namespace Wyam.Core.Tests.Modules.IO
                 {
                     Context.GetDocument(
                         Context.GetContentStream("Test"),
-                        new MetadataItems {
+                        new MetadataItems
+                        {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/write-test"))
                         }),
                     Context.GetDocument(
                         Context.GetContentStream(string.Empty),
-                        new MetadataItems {
+                        new MetadataItems
+                        {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/empty-test")),
                         }),
                     Context.GetDocument(
                         (Stream)null,
-                        new MetadataItems {
+                        new MetadataItems
+                        {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath("Subfolder/null-test"))
                         }),
                     Context.GetDocument(
                         emptyStream,
-                        new MetadataItems {
+                        new MetadataItems
+                        {
                             new MetadataItem(Keys.RelativeFilePath, new FilePath(@"Subfolder/stream-test"))
                         })
                     };

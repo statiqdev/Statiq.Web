@@ -28,17 +28,21 @@ namespace Wyam.Xmp.Tests
 
                 Xmp directoryMetadata = new Xmp()
                     .WithMetadata("xmpRights:UsageTerms", "Copyright");
+
                 // When
-                var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
 
                 // Then
 
                 string expected = "This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Attribution-ShareAlike 4.0 International License</a>.";
 
-                Assert.True(cloneDictionary[documents[0]]
+                Assert.True(
+                    cloneDictionary[documents[0]]
                     .ContainsKey("Copyright"),
                     "Metadata Copyright not found");
-                Assert.AreEqual(expected, cloneDictionary[documents[0]]["Copyright"],
+                Assert.AreEqual(
+                    expected,
+                    cloneDictionary[documents[0]]["Copyright"],
                     "Metadata Copyright Wrong Value");
             }
 
@@ -50,7 +54,10 @@ namespace Wyam.Xmp.Tests
                 IDocument[] documents;
                 IExecutionContext context;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                Setup(out context, out documents, out cloneDictionary,
+                Setup(
+                    out context,
+                    out documents,
+                    out cloneDictionary,
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"),
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
@@ -58,11 +65,14 @@ namespace Wyam.Xmp.Tests
 
                 Xmp directoryMetadata = new Xmp(skipElementOnMissingMandatoryData: true)
                     .WithMetadata("xmpRights:UsageTerms", "Copyright", true);
+
                 // When
-                var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(1, returnedDocuments.Count,
+                Assert.AreEqual(
+                    1,
+                    returnedDocuments.Count,
                     "Wrong number of returned Documents");
             }
 
@@ -74,7 +84,10 @@ namespace Wyam.Xmp.Tests
                 IDocument[] documents;
                 IExecutionContext context;
                 Dictionary<IDocument, IDictionary<string, object>> cloneDictionary;
-                Setup(out context, out documents, out cloneDictionary,
+                Setup(
+                    out context,
+                    out documents,
+                    out cloneDictionary,
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\Flamme.png"),
                     Path.Combine(TestContext.CurrentContext.TestDirectory, @"Samples\RomantiqueInitials.ttf"));
 
@@ -82,11 +95,14 @@ namespace Wyam.Xmp.Tests
 
                 Xmp directoryMetadata = new Xmp(skipElementOnMissingMandatoryData: false)
                     .WithMetadata("xmpRights:UsageTerms", "Copyright", true);
+
                 // When
-                var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(2, returnedDocuments.Count,
+                Assert.AreEqual(
+                    2,
+                    returnedDocuments.Count,
                     "Wrong number of returned Documents");
             }
 
@@ -106,21 +122,23 @@ namespace Wyam.Xmp.Tests
                     .WithMetadata("bla:UsageTerms", "Copyright");
 
                 // When
-                var returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
+                List<IDocument> returnedDocuments = directoryMetadata.Execute(new List<IDocument>(documents), context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 string expected = "This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">Creative Commons Attribution-ShareAlike 4.0 International License</a>.";
 
-                Assert.True(cloneDictionary[documents[0]]
+                Assert.True(
+                    cloneDictionary[documents[0]]
                     .ContainsKey("Copyright"),
                     "Metadata Copyright not found");
-                Assert.AreEqual(expected, cloneDictionary[documents[0]]["Copyright"],
+                Assert.AreEqual(
+                    expected,
+                    cloneDictionary[documents[0]]["Copyright"],
                     "Metadata Copyright Wrong Value");
             }
 
             private void Setup(out IExecutionContext context, out IDocument[] documents, out Dictionary<IDocument, IDictionary<string, object>> cloneDictionary, params string[] pathArray)
             {
-
                 documents = pathArray.Select(x =>
                 {
                     IDocument document = Substitute.For<IDocument>();
@@ -130,17 +148,17 @@ namespace Wyam.Xmp.Tests
                     return document;
                 }).ToArray();
 
-                var tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
+                Dictionary<IDocument, IDictionary<string, object>> tempDictionary = new Dictionary<IDocument, IDictionary<string, object>>();
                 cloneDictionary = tempDictionary;
                 context = Substitute.For<IExecutionContext>();
                 context
                     .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
                     .Do(x =>
                     {
-                        var document = x.Arg<IDocument>();
-                        var newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
-                        var oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
-                        foreach (var m in newMetadata) // overriding the old metadata like Document would do it.
+                        IDocument document = x.Arg<IDocument>();
+                        IEnumerable<KeyValuePair<string, object>> newMetadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
+                        Dictionary<string, object> oldMetadata = document.Metadata.ToDictionary(y => y.Key, y => y.Value);
+                        foreach (KeyValuePair<string, object> m in newMetadata)
                         {
                             oldMetadata[m.Key] = m.Value;
                         }

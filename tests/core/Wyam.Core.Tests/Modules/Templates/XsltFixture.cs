@@ -25,7 +25,7 @@ namespace Wyam.Core.Tests.Modules.Templates
             public void TestTransform()
             {
                 // Given
-                string xsltInput = ""
+                string xsltInput = string.Empty
     + "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">"
     + "<xsl:template match=\"bookstore\">"
     + "  <HTML>"
@@ -50,7 +50,7 @@ namespace Wyam.Core.Tests.Modules.Templates
     + "</xsl:template>"
     + "</xsl:stylesheet>";
 
-                string input = ""
+                string input = string.Empty
     + "<?xml version='1.0'?>"
     + "<!-- This file represents a fragment of a book store inventory database -->"
     + "<bookstore>"

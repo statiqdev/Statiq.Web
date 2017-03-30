@@ -454,12 +454,10 @@ public string Self(string x)
         {
             public GenericModule(T input)
             {
-
             }
 
             public GenericModule(Action<T> input)
             {
-
             }
 
             /// <inheritdoc />

@@ -73,7 +73,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, new [] {"index"}, null);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, new[] { "index" }, null);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -109,7 +109,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, null, new [] {"html", ".htm"});
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, new[] { "html", ".htm" });
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -126,7 +126,7 @@ namespace Wyam.Common.Tests.Util
             [TestCase(null, "/baz/", "/foo/bar", "/baz/foo/bar")]
             [TestCase("www.google.com", null, "/foo/bar", "http://www.google.com/foo/bar")]
             [TestCase("www.google.com", null, "/foo/bar", "http://www.google.com/foo/bar")]
-            [TestCase("www.google.com" ,"xyz", "/foo/bar", "http://www.google.com/xyz/foo/bar")]
+            [TestCase("www.google.com", "xyz", "/foo/bar", "http://www.google.com/xyz/foo/bar")]
             [TestCase("www.google.com", "/xyz/", "/foo/bar", "http://www.google.com/xyz/foo/bar")]
             [TestCase("www.google.com", null, null, "http://www.google.com/")]
             [TestCase("www.google.com", "xyz", null, "http://www.google.com/xyz")]
@@ -188,7 +188,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, null, null, new [] {"index"}, null);
+                string link = LinkGenerator.GetLink(path, null, null, null, new[] { "index" }, null);
 
                 // Then
                 Assert.AreEqual("/", link);
@@ -201,7 +201,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, null, null, null, new [] { "html" });
+                string link = LinkGenerator.GetLink(path, null, null, null, null, new[] { "html" });
 
                 // Then
                 Assert.AreEqual("/", link);

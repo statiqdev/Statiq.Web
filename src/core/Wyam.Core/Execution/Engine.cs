@@ -164,7 +164,6 @@ namespace Wyam.Core.Execution
             }
         }
 
-
         /// <summary>
         /// Deletes the output path and all files it contains.
         /// </summary>

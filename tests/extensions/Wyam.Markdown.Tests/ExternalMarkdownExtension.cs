@@ -6,7 +6,7 @@ using Markdig.Syntax.Inlines;
 
 namespace Wyam.Markdown.Tests
 {
-    class ExternalMarkdownExtension : IMarkdownExtension
+    public class ExternalMarkdownExtension : IMarkdownExtension
     {
         public void Setup(MarkdownPipelineBuilder pipeline)
         {
@@ -18,7 +18,6 @@ namespace Wyam.Markdown.Tests
         public void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
         {
         }
-
 
         private static void PipelineOnDocumentProcessed(MarkdownDocument document)
         {

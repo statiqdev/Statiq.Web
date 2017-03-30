@@ -197,7 +197,6 @@ namespace Wyam.Xmp
              }).Where(x => x != null);
         }
 
-
         [System.Diagnostics.DebuggerDisplay("{ElementName}: {ElementValue} [{ElementArrayIndex}] ({ElementNameSpace})")]
         private class TreeDirectory
         {

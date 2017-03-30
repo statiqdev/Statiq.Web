@@ -37,7 +37,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<string> content = new List<string>();
                 Engine engine = new Engine();
                 Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents("A", "B", "C", "D");
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -49,7 +50,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(4, content.Count);
-                CollectionAssert.AreEqual(new[] {"A", "B", "C", "D"}, content);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C", "D" }, content);
             }
 
             [Test]
@@ -59,10 +60,11 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<object> values = new List<object>();
                 Engine engine = new Engine();
                 Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents(
-                    new Dictionary<string, object> {{"Foo", "a"}},
-                    new Dictionary<string, object> {{"Foo", "b"}},
-                    new Dictionary<string, object> {{"Foo", "c"}});
-                Execute gatherData = new Execute((d, c) =>
+                    new Dictionary<string, object> { { "Foo", "a" } },
+                    new Dictionary<string, object> { { "Foo", "b" } },
+                    new Dictionary<string, object> { { "Foo", "c" } });
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     values.Add(d["Foo"]);
                     return null;
@@ -74,7 +76,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(3, values.Count);
-                CollectionAssert.AreEqual(new[] {"a", "b", "c"}, values);
+                CollectionAssert.AreEqual(new[] { "a", "b", "c" }, values);
             }
 
             [Test]
@@ -85,10 +87,11 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<object> values = new List<object>();
                 Engine engine = new Engine();
                 Core.Modules.Control.Documents documents = new Core.Modules.Control.Documents(
-                    Tuple.Create("A", new Dictionary<string, object> {{"Foo", "a"}}.AsEnumerable()),
-                    Tuple.Create("B", new Dictionary<string, object> {{"Foo", "b"}}.AsEnumerable()),
-                    Tuple.Create("C", new Dictionary<string, object> {{"Foo", "c"}}.AsEnumerable()));
-                Execute gatherData = new Execute((d, c) =>
+                    Tuple.Create("A", new Dictionary<string, object> { { "Foo", "a" } }.AsEnumerable()),
+                    Tuple.Create("B", new Dictionary<string, object> { { "Foo", "b" } }.AsEnumerable()),
+                    Tuple.Create("C", new Dictionary<string, object> { { "Foo", "c" } }.AsEnumerable()));
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     values.Add(d["Foo"]);
@@ -102,8 +105,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 // Then
                 Assert.AreEqual(3, content.Count);
                 Assert.AreEqual(3, values.Count);
-                CollectionAssert.AreEqual(new[] {"A", "B", "C"}, content);
-                CollectionAssert.AreEqual(new[] {"a", "b", "c"}, values);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C" }, content);
+                CollectionAssert.AreEqual(new[] { "a", "b", "c" }, values);
             }
         }
     }

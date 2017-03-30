@@ -215,7 +215,6 @@ namespace Wyam.Core.Tests.Modules.IO
 
                 // When
                 copyFiles.Execute(Inputs, Context).ToList();
-
             }
 
             [TestCase(Keys.SourceFilePath, "/TestFiles/Input/test-a.txt")]

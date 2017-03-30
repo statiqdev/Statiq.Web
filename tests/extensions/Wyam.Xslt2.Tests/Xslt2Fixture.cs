@@ -1,11 +1,7 @@
-﻿using NSubstitute;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NSubstitute;
+using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
@@ -25,7 +21,7 @@ namespace Wyam.Xslt2.Tests
             public void TestTransform()
             {
                 // Given
-                string xsltInput = ""
+                string xsltInput = string.Empty
     + "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">"
     + "<xsl:template match=\"bookstore\">"
     + "  <HTML>"
@@ -50,7 +46,7 @@ namespace Wyam.Xslt2.Tests
     + "</xsl:template>"
     + "</xsl:stylesheet>";
 
-                string input = ""
+                string input = string.Empty
     + "<?xml version='1.0'?>"
     + "<!-- This file represents a fragment of a book store inventory database -->"
     + "<bookstore>"
@@ -125,11 +121,11 @@ namespace Wyam.Xslt2.Tests
             public void TestTransform2()
             {
                 // Given
-                string xsltInput = ""
+                string xsltInput = string.Empty
     + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     + "\n" + "<xsl:stylesheet version=\"2.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" >"
     + "\n" + "<xsl:output method=\"xml\" indent=\"yes\" />"
-    + "\n" + ""
+    + "\n" + string.Empty
     + "\n" + "<xsl:template match=\"world\">"
     + "\n" + "    <div>"
     + "\n" + "        <xsl:for-each-group select=\"country\" group-by=\"@continent\">"
@@ -146,10 +142,7 @@ namespace Wyam.Xslt2.Tests
     + "\n" + "</xsl:template>"
     + "\n" + "</xsl:stylesheet>";
 
-
-
-
-                string input = ""
+                string input = string.Empty
     + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     + "<world>"
     + "<country name=\"Canada\" continent=\"North America\" />"
@@ -160,8 +153,7 @@ namespace Wyam.Xslt2.Tests
     + "<country name=\"Japan\" continent=\"Asia\" />"
     + "</world>";
 
-
-                string output = ""
+                string output = string.Empty
      + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     + "\n" + "<div>"
     + "\n" + "   <div>"
@@ -180,8 +172,7 @@ namespace Wyam.Xslt2.Tests
     + "\n" + "      <p>Japan</p>"
     + "\n" + "   </div>"
     + "\n" + "</div>"
-    + "\n" ;
-
+    + "\n";
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);

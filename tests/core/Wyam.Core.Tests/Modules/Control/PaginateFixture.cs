@@ -36,7 +36,8 @@ namespace Wyam.Core.Tests.Modules.Control
                     AdditionalOutputs = 7
                 };
                 Paginate paginate = new Paginate(3, count);
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     currentPage.Add(d.Get<int>(Keys.CurrentPage));
                     totalPages.Add(d.Get<int>(Keys.TotalPages));
@@ -69,7 +70,8 @@ namespace Wyam.Core.Tests.Modules.Control
                     AdditionalOutputs = 7
                 };
                 Paginate paginate = new Paginate(3, count);
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
                     return null;
@@ -81,9 +83,9 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(3, content.Count);
-                CollectionAssert.AreEqual(new[] {"1", "2", "3"}, content[0]);
-                CollectionAssert.AreEqual(new[] {"4", "5", "6"}, content[1]);
-                CollectionAssert.AreEqual(new[] {"7", "8"}, content[2]);
+                CollectionAssert.AreEqual(new[] { "1", "2", "3" }, content[0]);
+                CollectionAssert.AreEqual(new[] { "4", "5", "6" }, content[1]);
+                CollectionAssert.AreEqual(new[] { "7", "8" }, content[2]);
             }
 
             [Test]
@@ -97,7 +99,8 @@ namespace Wyam.Core.Tests.Modules.Control
                     AdditionalOutputs = 7
                 };
                 Paginate paginate = new Paginate(3, count).Where((doc, ctx) => doc.Content != "5");
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
                     return null;

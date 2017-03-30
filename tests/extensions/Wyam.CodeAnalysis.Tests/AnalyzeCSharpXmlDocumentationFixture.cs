@@ -323,7 +323,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("\n    This is <code>some code</code> and\n    <pre><code>with some code</code></pre>\n    a summary\n    ",
+                Assert.AreEqual(
+                    "\n    This is <code>some code</code> and\n    <pre><code>with some code</code></pre>\n    a summary\n    ",
                     GetResult(results, "Green")["Summary"]);
             }
 
@@ -424,9 +425,11 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("bar",
+                Assert.AreEqual(
+                    "bar",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Params")[0].Name);
-                Assert.AreEqual("comment",
+                Assert.AreEqual(
+                    "comment",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Params")[0].Html);
             }
 
@@ -485,11 +488,14 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("FooException",
+                Assert.AreEqual(
+                    "FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
+                Assert.AreEqual(
+                    "<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
-                Assert.AreEqual("Throws when null",
+                Assert.AreEqual(
+                    "Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
             }
 
@@ -517,11 +523,14 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("FooException",
+                Assert.AreEqual(
+                    "FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("FooException",
+                Assert.AreEqual(
+                    "FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
-                Assert.AreEqual("Throws when null",
+                Assert.AreEqual(
+                    "Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
             }
 
@@ -549,9 +558,11 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(string.Empty,
+                Assert.AreEqual(
+                    string.Empty,
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("Throws when null",
+                Assert.AreEqual(
+                    "Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
             }
 
@@ -585,17 +596,23 @@ namespace Wyam.CodeAnalysis.Tests
 
                 // Then
                 Assert.AreEqual(2, GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions").Count);
-                Assert.AreEqual("<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
+                Assert.AreEqual(
+                    "<code><a href=\"/Foo/FooException/index.html\">FooException</a></code>",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Link);
-                Assert.AreEqual("FooException",
+                Assert.AreEqual(
+                    "FooException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Name);
-                Assert.AreEqual("Throws when null",
+                Assert.AreEqual(
+                    "Throws when null",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[0].Html);
-                Assert.AreEqual("BarException",
+                Assert.AreEqual(
+                    "BarException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[1].Link);
-                Assert.AreEqual("BarException",
+                Assert.AreEqual(
+                    "BarException",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[1].Name);
-                Assert.AreEqual("Throws for another reason",
+                Assert.AreEqual(
+                    "Throws for another reason",
                     GetMember(results, "Green", "Go").List<ReferenceComment>("Exceptions")[1].Html);
             }
 
@@ -636,7 +653,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"
+                Assert.AreEqual(
+                    @"
                 This is a summary.
                 <ul>
                 <li>
@@ -652,7 +670,8 @@ namespace Wyam.CodeAnalysis.Tests
                 <span class=""description"">y</span>
                 </li>
                 </ul>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetResult(results, "Green")["Summary"]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "),
+                    GetResult(results, "Green")["Summary"]);
             }
 
             [Test]
@@ -692,7 +711,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"
+                Assert.AreEqual(
+                    @"
                 This is a summary.
                 <ol>
                 <li>
@@ -708,7 +728,8 @@ namespace Wyam.CodeAnalysis.Tests
                 <span class=""description"">y</span>
                 </li>
                 </ol>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetResult(results, "Green")["Summary"]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "),
+                    GetResult(results, "Green")["Summary"]);
             }
 
             [Test]
@@ -748,7 +769,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"
+                Assert.AreEqual(
+                    @"
                 This is a summary.
                 <table class=""table"">
                 <tr>
@@ -764,7 +786,8 @@ namespace Wyam.CodeAnalysis.Tests
                 <td>y</td>
                 </tr>
                 </table>
-                ".Replace("\r\n", "\n").Replace("                ", "    "), GetResult(results, "Green")["Summary"]);
+                ".Replace("\r\n", "\n").Replace("                ", "    "),
+                    GetResult(results, "Green")["Summary"]);
             }
 
             [Test]
@@ -987,7 +1010,8 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("Check <code><a href=\"/Foo/Red/index.html\">Red</a></code> class",
+                Assert.AreEqual(
+                    "Check <code><a href=\"/Foo/Red/index.html\">Red</a></code> class",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Html);
             }
 
@@ -1018,13 +1042,17 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(3,
+                Assert.AreEqual(
+                    3,
                     GetResult(results, "Green").List<OtherComment>("BarComments").Count);
-                Assert.AreEqual("Circle",
+                Assert.AreEqual(
+                    "Circle",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Html);
-                Assert.AreEqual("Square",
+                Assert.AreEqual(
+                    "Square",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[1].Html);
-                Assert.AreEqual("Rectangle",
+                Assert.AreEqual(
+                    "Rectangle",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[2].Html);
             }
 
@@ -1054,15 +1082,20 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(1,
+                Assert.AreEqual(
+                    1,
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Attributes.Count);
-                Assert.AreEqual("x",
+                Assert.AreEqual(
+                    "x",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[0].Attributes["a"]);
-                Assert.AreEqual(2,
+                Assert.AreEqual(
+                    2,
                     GetResult(results, "Green").List<OtherComment>("BarComments")[1].Attributes.Count);
-                Assert.AreEqual("y",
+                Assert.AreEqual(
+                    "y",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[1].Attributes["a"]);
-                Assert.AreEqual("z",
+                Assert.AreEqual(
+                    "z",
                     GetResult(results, "Green").List<OtherComment>("BarComments")[1].Attributes["b"]);
             }
 
@@ -1412,13 +1445,17 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual("b",
+                Assert.AreEqual(
+                    "b",
                     GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[0].Name);
-                Assert.AreEqual("XXX",
+                Assert.AreEqual(
+                    "XXX",
                     GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[0].Html);
-                Assert.AreEqual("a",
+                Assert.AreEqual(
+                    "a",
                     GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[1].Name);
-                Assert.AreEqual("AAA",
+                Assert.AreEqual(
+                    "AAA",
                     GetMember(results, "Blue", "Foo").List<ReferenceComment>("Params")[1].Html);
             }
 

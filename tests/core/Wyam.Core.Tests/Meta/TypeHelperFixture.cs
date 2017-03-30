@@ -17,7 +17,7 @@ namespace Wyam.Core.Tests.Meta
             public void ArrayConvertsToArray()
             {
                 // Given
-                Array value = new[] {1, 2, 3};
+                Array value = new[] { 1, 2, 3 };
 
                 // When
                 Array result;
@@ -62,7 +62,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertsEnumerableToList()
             {
                 // Given
-                Array value = new[] {1, 2, 3};
+                Array value = new[] { 1, 2, 3 };
 
                 // When
                 List<int> result;
@@ -92,7 +92,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertsEnumerableToIEnumerable()
             {
                 // Given
-                Array value = new [] { 1.0, 2.0 };
+                Array value = new[] { 1.0, 2.0 };
 
                 // When
                 IEnumerable<int> result;
@@ -175,7 +175,7 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsTrue(convert);
-                CollectionAssert.AreEquivalent(new [] { value }, result);
+                CollectionAssert.AreEquivalent(new[] { value }, result);
             }
 
             [Test]
@@ -213,7 +213,7 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsTrue(convert);
-                CollectionAssert.AreEquivalent(new [] { value }, result);
+                CollectionAssert.AreEquivalent(new[] { value }, result);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(0), result[0][0]);
                 CollectionAssert.AreEquivalent((IEnumerable)value.GetValue(1), result[0][1]);
             }
@@ -222,7 +222,7 @@ namespace Wyam.Core.Tests.Meta
             public void ConvertsArrayOfStringsToFirstString()
             {
                 // Given
-                Array value = new[] {"Red", "Green", "Blue"};
+                Array value = new[] { "Red", "Green", "Blue" };
 
                 // When
                 string result;
@@ -320,7 +320,7 @@ namespace Wyam.Core.Tests.Meta
 
                 // Then
                 Assert.IsTrue(convert);
-                CollectionAssert.AreEqual(new [] { "1", "2", "3" }, result);
+                CollectionAssert.AreEqual(new[] { "1", "2", "3" }, result);
             }
 
             [Test]

@@ -49,12 +49,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some Foobar text</p>")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some other text</p>")
@@ -88,12 +90,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", @"<p foo=""bar"">This is some Foobar text</p>")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", @"<p foo=""baz"" a=""A"">This is some other text</p>")
@@ -128,7 +132,8 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(1).GetDocument(document, Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "<p>This is some Foobar text</p>")
@@ -162,12 +167,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "This is some Foobar text")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Key", "This is some other text")
@@ -202,13 +209,15 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some Foobar text"),
                         new KeyValuePair<string, object>("OuterHtmlKey", "<p>This is some Foobar text</p>")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("InnerHtmlKey", "This is some other text"),
@@ -348,12 +357,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("TextContentKey", "This is some Foobar text")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("TextContentKey", "This is some other text")
@@ -387,12 +398,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Foo", "bar")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Foo", "baz")
@@ -426,12 +439,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz")
@@ -465,12 +480,14 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz")
@@ -504,14 +521,16 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "bar"),
                         new KeyValuePair<string, object>("a", "A"),
                         new KeyValuePair<string, object>("b", "B")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("foo", "baz"),
@@ -546,7 +565,8 @@ namespace Wyam.Html.Tests
 
                 // Then
                 context.Received(2).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("OuterHtml", @"<p foo=""bar"" a=""A"" b=""B"">This is some <b>Foobar</b> text</p>"),
@@ -556,7 +576,8 @@ namespace Wyam.Html.Tests
                         new KeyValuePair<string, object>("a", "A"),
                         new KeyValuePair<string, object>("b", "B")
                     })));
-                context.Received().GetDocument(document,
+                context.Received().GetDocument(
+                    document,
                     Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.SequenceEqual(new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("OuterHtml", @"<p foo=""baz"" x=""X"">This is some other text</p>"),

@@ -34,7 +34,7 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<IDocument> results = combine.Execute(new[] { a, b }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEqual(new [] { "ab" }, results.Select(x => x.Content));
+                CollectionAssert.AreEqual(new[] { "ab" }, results.Select(x => x.Content));
             }
 
             [Test]
@@ -44,13 +44,13 @@ namespace Wyam.Core.Tests.Modules.Control
                 TestExecutionContext context = new TestExecutionContext();
                 IDocument a = new TestDocument(new Dictionary<string, object>
                 {
-                    {"a", 1},
-                    {"b", 2}
+                    { "a", 1 },
+                    { "b", 2 }
                 });
                 IDocument b = new TestDocument(new Dictionary<string, object>
                 {
-                    {"b", 3},
-                    {"c", 4}
+                    { "b", 3 },
+                    { "c", 4 }
                 });
                 Combine combine = new Combine();
 
@@ -58,7 +58,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 List<IDocument> results = combine.Execute(new[] { a, b }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                CollectionAssert.AreEquivalent(new Dictionary<string, object>
+                CollectionAssert.AreEquivalent(
+                    new Dictionary<string, object>
                 {
                     { "a", 1 },
                     { "b", 3 },

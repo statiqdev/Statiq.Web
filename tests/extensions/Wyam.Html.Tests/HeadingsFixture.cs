@@ -45,7 +45,7 @@ namespace Wyam.Html.Tests
 
                 // Then
                 CollectionAssert.AreEqual(
-                    new[] {"Foo", "Bar"},
+                    new[] { "Foo", "Bar" },
                     results[0].DocumentList(HtmlKeys.Headings).Select(x => x.Content).ToArray());
             }
 
@@ -77,7 +77,6 @@ namespace Wyam.Html.Tests
                     new[] { "Foo", "Bar" },
                     results[0].DocumentList(HtmlKeys.Headings).Select(x => x.String("HContent")).ToArray());
             }
-
 
             [Test]
             public void DoesNotSetHeadingMetadataIfNull()
@@ -138,7 +137,6 @@ namespace Wyam.Html.Tests
                     new[] { "Foo", "Bar" },
                     results[0].DocumentList(HtmlKeys.Headings).Select(x => x.Content).ToArray());
             }
-
 
             [Test]
             public void GetsDeeperLevels()

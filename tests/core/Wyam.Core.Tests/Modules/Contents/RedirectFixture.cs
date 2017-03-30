@@ -26,7 +26,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
             });
             IDocument notRedirected = new TestDocument();
             IExecutionContext context = new TestExecutionContext();
@@ -36,7 +36,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             List<IDocument> results = redirect.Execute(new[] { redirected, notRedirected }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEqual(new [] {"foo.html"}, results.Select(x => x.Get<FilePath>(Keys.WritePath).FullPath));
+            CollectionAssert.AreEqual(new[] { "foo.html" }, results.Select(x => x.Get<FilePath>(Keys.WritePath).FullPath));
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo/bar") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo/bar") } }
             });
             IDocument notRedirected = new TestDocument();
             IExecutionContext context = new TestExecutionContext();
@@ -64,7 +64,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("/foo/bar") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("/foo/bar") } }
             })
             {
                 Source = new FilePath("/")
@@ -88,11 +88,11 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected1 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } }
             });
             IDocument redirected2 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });
             IExecutionContext context = new TestExecutionContext();
             Redirect redirect = new Redirect();
@@ -110,12 +110,12 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected1 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
-                {Keys.RelativeFilePath, new FilePath("foo2.html") }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
+                { Keys.RelativeFilePath, new FilePath("foo2.html") }
             });
             IDocument redirected2 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });
             IExecutionContext context = new TestExecutionContext();
             Redirect redirect = new Redirect().WithAdditionalOutput(new FilePath("a/b"), x => string.Join("|", x.Select(y => $"{y.Key} {y.Value}")));
@@ -134,12 +134,12 @@ namespace Wyam.Core.Tests.Modules.Contents
             // Given
             IDocument redirected1 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
-                {Keys.RelativeFilePath, new FilePath("foo2.html") }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo.html") } },
+                { Keys.RelativeFilePath, new FilePath("foo2.html") }
             });
             IDocument redirected2 = new TestDocument(new MetadataItems
             {
-                {Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath("bar/baz.html") } }
             });
             IExecutionContext context = new TestExecutionContext();
             Redirect redirect = new Redirect()

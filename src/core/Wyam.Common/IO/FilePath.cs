@@ -154,7 +154,6 @@ namespace Wyam.Common.IO
             }
         }
 
-
         /// <summary>
         /// Gets the file extension (including the preceding ".").
         /// </summary>

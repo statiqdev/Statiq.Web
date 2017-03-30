@@ -58,7 +58,6 @@ namespace Wyam.Core.IO.Globbing
             return result.Files.Select(match => directory.GetFile(match.Path));
         }
 
-
         private static readonly Regex HasBraces = new Regex(@"\{.*\}");
         private static readonly Regex NumericSet = new Regex(@"^\{(-?[0-9]+)\.\.(-?[0-9]+)\}");
 

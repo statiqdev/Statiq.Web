@@ -89,7 +89,7 @@ namespace Wyam.Common.Tests.Documents
                     new MetadataDictionary
                     {
                         { "Numbers", new[] { 2, 3, 4 } },
-                        { "Colors", new [] { "Red", "Blue" } }
+                        { "Colors", new[] { "Red", "Blue" } }
                     },
                     new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
@@ -103,7 +103,7 @@ namespace Wyam.Common.Tests.Documents
                     new MetadataDictionary
                     {
                         { "Numbers", "4" },
-                        { "Colors", new [] { "Green", "Blue" } }
+                        { "Colors", new[] { "Green", "Blue" } }
                     },
                     new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };
@@ -137,7 +137,7 @@ namespace Wyam.Common.Tests.Documents
                     new MetadataDictionary
                     {
                         { "Numbers", new[] { 2, 3, 4 } },
-                        { "Colors", new [] { "Red", "Blue" } }
+                        { "Colors", new[] { "Red", "Blue" } }
                     },
                     new MemoryStream(Encoding.UTF8.GetBytes("b")));
                 IDocument c = new Document(
@@ -151,7 +151,7 @@ namespace Wyam.Common.Tests.Documents
                     new MetadataDictionary
                     {
                         { "Numbers", "4" },
-                        { "Colors", new [] { "Green", "Blue" } }
+                        { "Colors", new[] { "Green", "Blue" } }
                     },
                     new MemoryStream(Encoding.UTF8.GetBytes("d")));
                 List<IDocument> documents = new List<IDocument>() { a, b, c, d };

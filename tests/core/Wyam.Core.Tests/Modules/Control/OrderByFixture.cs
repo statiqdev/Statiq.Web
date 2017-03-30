@@ -31,7 +31,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 };
                 Concat concat = new Concat(count2);
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A"));
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -43,7 +44,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(8, content.Count);
-                CollectionAssert.AreEqual(new[] {"1", "1", "2", "2", "3", "3", "4", "5"}, content);
+                CollectionAssert.AreEqual(new[] { "1", "1", "2", "2", "3", "3", "4", "5" }, content);
             }
 
             [Test]
@@ -62,7 +63,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 };
                 Concat concat = new Concat(count2);
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A")).Descending();
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -74,9 +76,8 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(8, content.Count);
-                CollectionAssert.AreEqual(new[] {"5", "4", "3", "3", "2", "2", "1", "1"}, content);
+                CollectionAssert.AreEqual(new[] { "5", "4", "3", "3", "2", "2", "1", "1" }, content);
             }
-
 
             [Test]
             public void OrderByOrdersThenByInAscendingOrder()
@@ -94,7 +95,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 };
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A"))
                     .ThenBy((d, c) => d.Get<int>("B"));
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -106,7 +108,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(10, content.Count); // (4+1) * (21+1)
-                CollectionAssert.AreEqual(new[] {"11", "12", "23", "24", "35", "36", "47", "48", "59", "510"}, content);
+                CollectionAssert.AreEqual(new[] { "11", "12", "23", "24", "35", "36", "47", "48", "59", "510" }, content);
             }
 
             [Test]
@@ -126,7 +128,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A"))
                     .ThenBy((d, c) => d.Get<int>("B"))
                     .Descending();
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -138,7 +141,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(10, content.Count); // (4+1) * (21+1)
-                CollectionAssert.AreEqual(new[] {"12", "11", "24", "23", "36", "35", "48", "47", "510", "59"}, content);
+                CollectionAssert.AreEqual(new[] { "12", "11", "24", "23", "36", "35", "48", "47", "510", "59" }, content);
             }
 
             [Test]
@@ -159,7 +162,8 @@ namespace Wyam.Core.Tests.Modules.Control
                     .Descending()
                     .ThenBy((d, c) => d.Get<int>("B"))
                     .Descending();
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -171,7 +175,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(10, content.Count); // (4+1) * (21+1)
-                CollectionAssert.AreEqual(new[] {"510", "59", "48", "47", "36", "35", "24", "23", "12", "11"}, content);
+                CollectionAssert.AreEqual(new[] { "510", "59", "48", "47", "36", "35", "24", "23", "12", "11" }, content);
             }
 
             [Test]
@@ -191,7 +195,8 @@ namespace Wyam.Core.Tests.Modules.Control
                 OrderBy orderBy = new OrderBy((d, c) => d.Get<int>("A"))
                     .Descending()
                     .ThenBy((d, c) => d.Get<int>("B"));
-                Execute gatherData = new Execute((d, c) =>
+                Execute gatherData = new Execute(
+                    (d, c) =>
                 {
                     content.Add(d.Content);
                     return null;
@@ -203,7 +208,7 @@ namespace Wyam.Core.Tests.Modules.Control
 
                 // Then
                 Assert.AreEqual(10, content.Count); // (4+1) * (21+1)
-                CollectionAssert.AreEqual(new[] {"59", "510", "47", "48", "35", "36", "23", "24", "11", "12"}, content);
+                CollectionAssert.AreEqual(new[] { "59", "510", "47", "48", "35", "36", "23", "24", "11", "12" }, content);
             }
         }
     }

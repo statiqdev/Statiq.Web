@@ -65,7 +65,7 @@ namespace Wyam.Core.Tests.Documents
                 MetadataDictionary initialMetadata = new MetadataDictionary();
                 initialMetadata.Add("A", "a");
                 Document document = new Document(initialMetadata);
-                Document cloned = new Document(document, new MetadataItems {{"B", "b"}});
+                Document cloned = new Document(document, new MetadataItems { { "B", "b" } });
 
                 // When
                 string initialA = document.String("A");
@@ -93,8 +93,12 @@ namespace Wyam.Core.Tests.Documents
                 // Given
                 MetadataDictionary initialMetadata = new MetadataDictionary();
                 DisposeCheckStream stream = new DisposeCheckStream();
-                Document originalDoc = new Document(initialMetadata, new FilePath("Test", PathKind.Absolute), 
-                    stream, Array.Empty<KeyValuePair<string, object>>(), true);
+                Document originalDoc = new Document(
+                    initialMetadata,
+                    new FilePath("Test", PathKind.Absolute),
+                    stream,
+                    Array.Empty<KeyValuePair<string, object>>(),
+                    true);
                 Document clonedDoc = new Document(originalDoc, Array.Empty<KeyValuePair<string, object>>());
 
                 // When

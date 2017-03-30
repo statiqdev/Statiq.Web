@@ -217,7 +217,7 @@ namespace Wyam.Core.Tests.Modules.Extensibility
                 List<IDocument> results = ((IModule)execute).Execute(inputs, context).ToList();
 
                 // Then
-                CollectionAssert.AreEquivalent(results.Select(x => x.Content), new[] {"0", "1"});
+                CollectionAssert.AreEquivalent(results.Select(x => x.Content), new[] { "0", "1" });
             }
         }
     }

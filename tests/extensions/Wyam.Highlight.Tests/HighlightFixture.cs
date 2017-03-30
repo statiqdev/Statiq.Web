@@ -56,7 +56,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -66,7 +65,7 @@ namespace Wyam.Highlight.Tests
                 Highlight highlight = new Highlight();
 
                 // When
-                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
 
                 // Then
                 Assert.IsTrue(results[0].Content.Contains("language-csharp hljs"));
@@ -96,7 +95,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -106,7 +104,7 @@ namespace Wyam.Highlight.Tests
                 Highlight highlight = new Highlight();
 
                 // When
-                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
 
                 // Then
                 Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
@@ -131,7 +129,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -141,7 +138,7 @@ namespace Wyam.Highlight.Tests
                 Highlight highlight = new Highlight();
 
                 // When
-                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
 
                 // Then
                 Assert.IsTrue(results[0].Content.Contains("language-html hljs"));
@@ -168,7 +165,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -178,12 +174,11 @@ namespace Wyam.Highlight.Tests
                 Highlight highlight = new Highlight();
 
                 // When
-                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
 
                 // Then
                 Assert.IsTrue(results[0].Content.Contains("hljs"));
             }
-
 
             [Test]
             public void HighlightFailsForMissingLanguage()
@@ -210,7 +205,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -222,7 +216,7 @@ namespace Wyam.Highlight.Tests
                 // When, Then
                 Assert.Throws<AggregateException>(() =>
                 {
-                    List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                    List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
                     Assert.IsNull(results, "Should never get here due to exception");
                 });
             }
@@ -252,7 +246,6 @@ namespace Wyam.Highlight.Tests
 </body>
 </html>";
 
-
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
@@ -263,7 +256,7 @@ namespace Wyam.Highlight.Tests
                     .WithMissingLanguageWarning(false);
 
                 // When
-                List<IDocument> results = highlight.Execute(new[] {document}, context).ToList();
+                List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
 
                 // Then
                 CollectionAssert.IsNotEmpty(results);

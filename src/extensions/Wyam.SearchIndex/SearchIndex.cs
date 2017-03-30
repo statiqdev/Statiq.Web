@@ -208,7 +208,6 @@ namespace Wyam.SearchIndex
             StringBuilder scriptBuilder = BuildScript(searchIndexItems, stopwords, context);
             string script = _script(scriptBuilder, context);
 
-
             // Get the output path
             MetadataItems metadata = null;
             FilePath outputPath = _path?.Invoke<FilePath>(context, "while getting output path");

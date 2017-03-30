@@ -70,7 +70,6 @@ namespace Wyam.Core.Modules.Contents
             _search = search;
         }
 
-
         /// <summary>
         /// Replaces all occurrences of the search string in every input document
         /// with the string value of the objects returned by the delegate. The delegate will be called
@@ -85,7 +84,6 @@ namespace Wyam.Core.Modules.Contents
             _contentFinder = contentFinder;
             _isRegex = true;
         }
-
 
         /// <summary>
         /// Indicates that the search string(s) should be treated as a regular expression(s)

@@ -44,7 +44,7 @@ namespace Wyam.Core.Tests.IO
         public class GetDirectoriesTests : VirtualInputDirectoryFixture
         {
             [Test]
-            [TestCase(".", SearchOption.AllDirectories, new [] { "c", "c/1", "d", "a", "a/b" })]
+            [TestCase(".", SearchOption.AllDirectories, new[] { "c", "c/1", "d", "a", "a/b" })]
             [TestCase(".", SearchOption.TopDirectoryOnly, new[] { "c", "d", "a" })]
             public void RootVirtualDirectoryDoesNotIncludeSelf(string virtualPath, SearchOption searchOption, string[] expectedPaths)
             {
@@ -80,7 +80,7 @@ namespace Wyam.Core.Tests.IO
             [TestCase(".", SearchOption.AllDirectories, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt", "/a/b/d/baz.txt", "/foo/baz.txt", "/foo/c/baz.txt" })]
             [TestCase(".", SearchOption.TopDirectoryOnly, new[] { "/foo/baz.txt" })]
             [TestCase("c", SearchOption.AllDirectories, new[] { "/a/b/c/foo.txt", "/a/b/c/1/2.txt", "/foo/c/baz.txt" })]
-            [TestCase("c", SearchOption.TopDirectoryOnly, new [] { "/a/b/c/foo.txt", "/foo/c/baz.txt" })]
+            [TestCase("c", SearchOption.TopDirectoryOnly, new[] { "/a/b/c/foo.txt", "/foo/c/baz.txt" })]
             public void GetsFiles(string virtualPath, SearchOption searchOption, string[] expectedPaths)
             {
                 // Given
@@ -92,7 +92,6 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 CollectionAssert.AreEquivalent(expectedPaths, files.Select(x => x.Path.FullPath));
             }
-
         }
 
         public class GetFileTests : VirtualInputDirectoryFixture
@@ -219,7 +218,6 @@ namespace Wyam.Core.Tests.IO
                 // Then
                 Assert.AreEqual(expected, result?.Path.Collapse().FullPath);
             }
-
         }
 
         public class ExistsTests : VirtualInputDirectoryFixture

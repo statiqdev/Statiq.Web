@@ -34,10 +34,11 @@ namespace Wyam.Core.Tests.Documents
 
                 // Then
                 Assert.IsInstanceOf<TestDocument>(resultDocument);
-                CollectionAssert.AreEqual(new Dictionary<string, object>
-                {
-                    { "Foo", "Bar" }
-                }, resultDocument);
+                CollectionAssert.AreEqual(
+                    new Dictionary<string, object>
+                    {
+                        { "Foo", "Bar" }
+                    }, resultDocument);
             }
 
             [Test]
@@ -80,21 +81,28 @@ namespace Wyam.Core.Tests.Documents
                 CustomDocument sourceDocument = (CustomDocument)customDocumentFactory.GetDocument(context);
 
                 // When
-                IDocument resultDocument = customDocumentFactory.GetDocument(context, sourceDocument, new Dictionary<string, object>
-                {
-                    { "Baz", "Bat" }
-                });
+                IDocument resultDocument = customDocumentFactory.GetDocument(
+                    context,
+                    sourceDocument,
+                    new Dictionary<string, object>
+                    {
+                        { "Baz", "Bat" }
+                    });
 
                 // Then
-                CollectionAssert.AreEquivalent(new Dictionary<string, object>
-                {
-                    { "Foo", "Bar" }
-                }, sourceDocument);
-                CollectionAssert.AreEquivalent(new Dictionary<string, object>
-                {
-                    { "Foo", "Bar" },
-                    { "Baz", "Bat" }
-                }, resultDocument);
+                CollectionAssert.AreEquivalent(
+                    new Dictionary<string, object>
+                    {
+                        { "Foo", "Bar" }
+                    },
+                    sourceDocument);
+                CollectionAssert.AreEquivalent(
+                    new Dictionary<string, object>
+                    {
+                        { "Foo", "Bar" },
+                        { "Baz", "Bat" }
+                    },
+                    resultDocument);
             }
         }
 

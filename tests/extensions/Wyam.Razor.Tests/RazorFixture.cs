@@ -151,7 +151,7 @@ namespace Wyam.Razor.Tests
                 IExecutionContext context = GetExecutionContext(engine);
                 IDocument document = GetDocument("C:/Temp/temp.txt", @"@model IList<int>
 <p>@Model.Count</p>");
-                IList<int> model = new[] {1, 2, 3};
+                IList<int> model = new[] { 1, 2, 3 };
                 Razor razor = new Razor().WithModel(model);
 
                 // When
@@ -169,7 +169,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/Layout/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/Layout/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -182,8 +183,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -192,7 +196,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/Layout/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/Layout/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithLayout("_Layout.cshtml");
 
@@ -202,8 +207,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -212,7 +220,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/ViewStartAndLayout/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/ViewStartAndLayout/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor();
 
@@ -222,8 +231,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT2
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT2
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -232,7 +244,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStart.cshtml");
 
@@ -242,8 +255,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT3
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT3
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -252,7 +268,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"/AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
@@ -262,8 +279,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT3
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT3
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -272,7 +292,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/AlternateViewStartPath/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/AlternateViewStartPath/Test.cshtml",
 @"<p>This is a test</p>");
                 Razor razor = new Razor().WithViewStart(@"AlternateViewStart/_ViewStartRelativeLayout.cshtml");
 
@@ -282,8 +303,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT3
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT3
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -292,12 +316,14 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document1 = GetDocument(@"/IgnoreUnderscores/Test.cshtml",
+                IDocument document1 = GetDocument(
+                    @"/IgnoreUnderscores/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
 <p>This is a test</p>");
-                IDocument document2 = GetDocument(@"/IgnoreUnderscores/_Layout.cshtml",
+                IDocument document2 = GetDocument(
+                    @"/IgnoreUnderscores/_Layout.cshtml",
 @"LAYOUT4
 @RenderBody()");
                 Razor razor = new Razor();
@@ -308,8 +334,11 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT4
-<p>This is a test</p>" }));
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT4
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -318,9 +347,11 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document1 = GetDocument(@"/AlternateIgnorePrefix/Test.cshtml",
+                IDocument document1 = GetDocument(
+                    @"/AlternateIgnorePrefix/Test.cshtml",
 @"<p>This is a test</p>");
-                IDocument document2 = GetDocument(@"/AlternateIgnorePrefix/IgnoreMe.cshtml",
+                IDocument document2 = GetDocument(
+                    @"/AlternateIgnorePrefix/IgnoreMe.cshtml",
 @"<p>Ignore me</p>");
                 Razor razor = new Razor().IgnorePrefix("Ignore");
 
@@ -339,7 +370,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/LayoutWithSection/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/LayoutWithSection/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -355,11 +387,14 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT5
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT5
 
 <p>Section Content</p>
 
-<p>This is a test</p>" }));
+<p>This is a test</p>"
+                    }));
             }
 
             [Test]
@@ -368,7 +403,8 @@ namespace Wyam.Razor.Tests
                 // Given
                 Engine engine = new Engine();
                 IExecutionContext context = GetExecutionContext(engine);
-                IDocument document = GetDocument(@"/LayoutWithSection/Test.cshtml",
+                IDocument document = GetDocument(
+                    @"/LayoutWithSection/Test.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }
@@ -385,23 +421,29 @@ namespace Wyam.Razor.Tests
                 // Then
                 Assert.That(
                     results1.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT5
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT5
 
 <p>Section Content</p>
 
-<p>This is a test</p>" }));
+<p>This is a test</p>"
+                    }));
                 Assert.That(
                     results2.Select(x => x.Content),
-                    Is.EquivalentTo(new[] { @"LAYOUT5
+                    Is.EquivalentTo(new[]
+                    {
+                        @"LAYOUT5
 
 <p>Section Content</p>
 
-<p>This is a test</p>" }));
+<p>This is a test</p>"
+                    }));
             }
 
             private IDocument GetDocument(string source, string content)
             {
-                TestDocument document = new TestDocument(content, new []
+                TestDocument document = new TestDocument(content, new[]
                 {
                     new KeyValuePair<string, object>(Keys.RelativeFilePath, new FilePath(source)),
                     new KeyValuePair<string, object>(Keys.SourceFileName, new FilePath(source).FileName)
@@ -450,31 +492,39 @@ namespace Wyam.Razor.Tests
                 fileProvider.AddDirectory("/SimpleTemplate");
                 fileProvider.AddDirectory("/ViewStartAndLayout");
 
-                fileProvider.AddFile("/Layout/_Layout.cshtml",
+                fileProvider.AddFile(
+                    "/Layout/_Layout.cshtml",
 @"LAYOUT
 @RenderBody()");
-                fileProvider.AddFile("/ViewStartAndLayout/_ViewStart.cshtml",
+                fileProvider.AddFile(
+                    "/ViewStartAndLayout/_ViewStart.cshtml",
 @"@{
 	Layout = ""_Layout.cshtml"";
 }");
-                fileProvider.AddFile("/ViewStartAndLayout/_Layout.cshtml",
+                fileProvider.AddFile(
+                    "/ViewStartAndLayout/_Layout.cshtml",
 @"LAYOUT2
 @RenderBody()");
-                fileProvider.AddFile("/AlternateViewStart/_ViewStart.cshtml",
+                fileProvider.AddFile(
+                    "/AlternateViewStart/_ViewStart.cshtml",
 @"@{
 	Layout = @""/AlternateViewStart/_Layout.cshtml"";
 }");
-                fileProvider.AddFile("/AlternateViewStart/_ViewStartRelativeLayout.cshtml",
+                fileProvider.AddFile(
+                    "/AlternateViewStart/_ViewStartRelativeLayout.cshtml",
 @"@{
 	Layout = @""_Layout.cshtml"";
 }");
-                fileProvider.AddFile("/AlternateViewStart/_Layout.cshtml",
+                fileProvider.AddFile(
+                    "/AlternateViewStart/_Layout.cshtml",
 @"LAYOUT3
 @RenderBody()");
-                fileProvider.AddFile("/IgnoreUnderscores/_Layout.cshtml",
+                fileProvider.AddFile(
+                    "/IgnoreUnderscores/_Layout.cshtml",
 @"LAYOUT4
 @RenderBody()");
-                fileProvider.AddFile("/LayoutWithSection/_Layout.cshtml",
+                fileProvider.AddFile(
+                    "/LayoutWithSection/_Layout.cshtml",
 @"LAYOUT5
 @RenderSection(""MySection"", false)
 @RenderBody()");

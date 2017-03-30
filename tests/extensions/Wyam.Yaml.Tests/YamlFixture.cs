@@ -32,11 +32,11 @@ namespace Wyam.Yaml.Tests
                 Yaml yaml = new Yaml("MyYaml");
 
                 // When
-                yaml.Execute(new [] { document }, context).ToList();  // Make sure to materialize the result list
+                yaml.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(Arg.Is(document), (Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyYaml")));
+                context.Received().GetDocument(Arg.Is(document), Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyYaml"));
             }
 
             [Test]
