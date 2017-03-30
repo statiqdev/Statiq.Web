@@ -73,6 +73,7 @@ namespace Wyam.Git
         /// Specifies that commit information should be added to each input document.
         /// </summary>
         /// <param name="commitsMetadataKey">The metadata key to set for commit information.</param>
+        /// <returns>The current module instance.</returns>
         public GitCommits ForEachInputDocument(string commitsMetadataKey = GitKeys.Commits)
         {
             _commitsMetadataKey = commitsMetadataKey;

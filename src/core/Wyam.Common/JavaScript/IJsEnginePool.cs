@@ -29,7 +29,7 @@ namespace Wyam.Common.JavaScript
         /// <summary>
         /// Disposes the specified engine and removes it from the pool. A new engine will be created in it's place.
         /// </summary>
-        /// <param name="engine"></param>
+        /// <param name="engine">The JavaScript engine.</param>
         void RecycleEngine(IJsEngine engine);
 
         /// <summary>

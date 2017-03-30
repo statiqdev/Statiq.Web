@@ -119,6 +119,7 @@ namespace Wyam.Core.Modules.IO
         /// </summary>
         /// <param name="onlyMetadata">If set to <c>true</c>, metadata will be added
         /// to the input document(s) without actually writing them to the file system.</param>
+        /// <returns>The current module instance.</returns>
         public WriteFiles OnlyMetadata(bool onlyMetadata = true)
         {
             _onlyMetadata = onlyMetadata;
@@ -131,6 +132,7 @@ namespace Wyam.Core.Modules.IO
         /// to turn off the default behavior and always rely on the delegate for obtaining the write location.
         /// </summary>
         /// <param name="useWriteMetadata">If set to <c>false</c>, metadata of the input document will not be used.</param>
+        /// <returns>The current module instance.</returns>
         public WriteFiles UseWriteMetadata(bool useWriteMetadata = true)
         {
             _useWriteMetadata = useWriteMetadata;
@@ -141,6 +143,7 @@ namespace Wyam.Core.Modules.IO
         /// Ignores documents with empty content, which is the default behavior.
         /// </summary>
         /// <param name="ignoreEmptyContent">If set to <c>true</c>, documents with empty content will be ignored.</param>
+        /// <returns>The current module instance.</returns>
         public WriteFiles IgnoreEmptyContent(bool ignoreEmptyContent = true)
         {
             _ignoreEmptyContent = ignoreEmptyContent;
@@ -151,7 +154,7 @@ namespace Wyam.Core.Modules.IO
         /// Appends content to each file instead of overwriting them.
         /// </summary>
         /// <param name="append">Appends to existing files if set to <c>true</c>.</param>
-        /// <returns></returns>
+        /// <returns>The current module instance.</returns>
         public WriteFiles Append(bool append = true)
         {
             _append = true;
@@ -162,20 +165,33 @@ namespace Wyam.Core.Modules.IO
         /// Specifies a predicate that must be satisfied for the file to be written.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the file should be written.</param>
+        /// <returns>The current module instance.</returns>
         public WriteFiles Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null
-                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                ? (Func<IDocument, IExecutionContext, bool>)predicate.Invoke<bool>
                 : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
 
+        /// <summary>
+        /// Checks whether the input document should be processed.
+        /// </summary>
+        /// <param name="input">The input document to check/</param>
+        /// <param name="context">The execution context.</param>
+        /// <returns><c>true</c> if the input document should be processed, <c>false</c> otherwise.</returns>
         protected bool ShouldProcess(IDocument input, IExecutionContext context)
         {
             return _predicate == null || _predicate(input, context);
         }
 
+        /// <summary>
+        /// Gets the output path of the input document.
+        /// </summary>
+        /// <param name="input">The input document.</param>
+        /// <param name="context">The execution context.</param>
+        /// <returns>The outout path.</returns>
         protected FilePath GetOutputPath(IDocument input, IExecutionContext context)
         {
             FilePath path = null;
@@ -260,7 +276,7 @@ namespace Wyam.Core.Modules.IO
                     else
                     {
                         value = new Tuple<List<string>, Action>(
-                            new List<string> {input.SourceString()},
+                            new List<string> { input.SourceString() },
                             () => outputs.Add(Write(input, context, outputPath)));
                     }
                     writesBySource[outputPath] = value;

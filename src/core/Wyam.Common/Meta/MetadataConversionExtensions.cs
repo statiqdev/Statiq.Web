@@ -64,6 +64,7 @@ namespace Wyam.Common.Meta
         /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{T}"/>. This method never throws an exception. It will return the specified
         /// default value if the key is not found. Note that if the value is atomic, the conversion operation will succeed and return a list with one item.
         /// </summary>
+        /// <typeparam name="T">The type to convert to.</typeparam>
         /// <param name="metadata">The metadata containing the value.</param>
         /// <param name="key">The key of the value to get.</param>
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to a list.</param>

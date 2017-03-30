@@ -37,7 +37,10 @@ namespace Wyam.Xslt2
         public Xslt2(FilePath xsltPath)
         {
             if (xsltPath == null)
+            {
                 throw new ArgumentNullException(nameof(xsltPath));
+            }
+
             _xsltPath = (a, b) => xsltPath;
         }
 
@@ -50,7 +53,10 @@ namespace Wyam.Xslt2
         public Xslt2(DocumentConfig xsltPath)
         {
             if (xsltPath == null)
+            {
                 throw new ArgumentNullException(nameof(xsltPath));
+            }
+
             _xsltPath = xsltPath;
         }
 
@@ -62,7 +68,10 @@ namespace Wyam.Xslt2
         public Xslt2(params IModule[] modules)
         {
             if (modules == null)
+            {
                 throw new ArgumentNullException(nameof(modules));
+            }
+
             _xsltGeneration = modules;
         }
 

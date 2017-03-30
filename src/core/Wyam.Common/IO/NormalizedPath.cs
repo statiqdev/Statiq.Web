@@ -8,13 +8,14 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Provides properties and instance methods for working with paths.
     /// </summary>
     public abstract class NormalizedPath : IComparable<NormalizedPath>, IComparable, IEquatable<NormalizedPath>
     {
-        private static readonly string FileProviderDelimiter = "|";
+        // Initially based on code from Cake (http://cakebuild.net/)
+
+        private const string FileProviderDelimiter = "|";
 
         /// <summary>
         /// The default file provider.
@@ -318,10 +319,10 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this path.
+        /// Returns a <see cref="string" /> that represents this path.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -338,14 +339,16 @@ namespace Wyam.Common.IO
             return FileProvider + FileProviderDelimiter + FullPath;
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             int hash = 17;
-            hash = hash * 31 + (FileProvider?.GetHashCode() ?? 0);
-            hash = hash * 31 + FullPath.GetHashCode();
+            hash = (hash * 31) + (FileProvider?.GetHashCode() ?? 0);
+            hash = (hash * 31) + FullPath.GetHashCode();
             return hash;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             NormalizedPath other = obj as NormalizedPath;
@@ -372,12 +375,14 @@ namespace Wyam.Common.IO
             && FileProvider?.ToString() == other.FileProvider?.ToString()
             && FullPath == other.FullPath;
 
+        /// <inheritdoc />
         public int CompareTo(object obj)
         {
             NormalizedPath path = obj as NormalizedPath;
             return path == null ? 1 : CompareTo(path);
         }
 
+        /// <inheritdoc />
         public int CompareTo(NormalizedPath other)
         {
             if (other == null)

@@ -57,16 +57,22 @@ namespace Wyam.Core.Modules.Extensibility
         {
         }
 
+        /// <summary>
+        /// Sets the event type to trace.
+        /// </summary>
+        /// <param name="traceEventType">The event type to trace.</param>
+        /// <returns>The current module instance.</returns>
         public Trace EventType(TraceEventType traceEventType)
         {
             _traceEventType = traceEventType;
             return this;
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
-            Wyam.Common.Tracing.Trace.TraceEvent(_traceEventType, content.ToString());
-            return new [] { input };
+            Common.Tracing.Trace.TraceEvent(_traceEventType, content.ToString());
+            return new[] { input };
         }
     }
 }

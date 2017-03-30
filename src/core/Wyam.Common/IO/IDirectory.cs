@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a directory. Not all implementations will support all
     /// available methods and may throw <see cref="NotSupportedException"/>.
     /// </summary>
     public interface IDirectory : IFileSystemEntry
     {
+        // Initially based on code from Cake (http://cakebuild.net/)
+
         /// <summary>
         /// Gets the path to the directory.
         /// </summary>

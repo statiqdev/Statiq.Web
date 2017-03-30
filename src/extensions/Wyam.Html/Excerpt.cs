@@ -69,6 +69,7 @@ namespace Wyam.Html
         /// Allows you to specify an alternate metadata key.
         /// </summary>
         /// <param name="metadataKey">The metadata key to store the excerpt in.</param>
+        /// <returns>The current module instance.</returns>
         public Excerpt WithMetadataKey(string metadataKey)
         {
             _metadataKey = metadataKey;
@@ -81,6 +82,7 @@ namespace Wyam.Html
         /// and rely only on the query selector.
         /// </summary>
         /// <param name="separators">The excerpt separators.</param>
+        /// <returns>The current module instance.</returns>
         public Excerpt WithSeparators(string[] separators)
         {
             _separators = separators;
@@ -93,6 +95,7 @@ namespace Wyam.Html
         /// elements prior to the separator the excerpt should be taken from.
         /// </summary>
         /// <param name="querySelector">The query selector to use.</param>
+        /// <returns>The current module instance.</returns>
         public Excerpt WithQuerySelector(string querySelector)
         {
             _querySelector = querySelector;
@@ -106,6 +109,7 @@ namespace Wyam.Html
         /// This setting has no effect if a separator comment is found.
         /// </summary>
         /// <param name="outerHtml">If set to <c>true</c>, outer HTML will be stored.</param>
+        /// <returns>The current module instance.</returns>
         public Excerpt WithOuterHtml(bool outerHtml)
         {
             _outerHtml = outerHtml;

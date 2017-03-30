@@ -69,6 +69,7 @@ namespace Wyam.Feeds
         /// to order the documents prior to this module.
         /// </summary>
         /// <param name="maximumItems">The maximum number of items.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds MaximumItems(int maximumItems)
         {
             _maximumItems = maximumItems;
@@ -81,6 +82,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="rssPath">A delegate that should return a <see cref="FilePath"/> for the RSS path.
         /// If the delegate is <c>null</c> or returns <c>null</c>, no RSS file will be generated.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithRssPath(ContextConfig rssPath)
         {
             _rssPath = rssPath;
@@ -93,6 +95,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="atomPath">A delegate that should return a <see cref="FilePath"/> for the Atom path.
         /// If the delegate is <c>null</c> or returns <c>null</c>, no Atom file will be generated.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithAtomPath(ContextConfig atomPath)
         {
             _atomPath = atomPath;
@@ -104,6 +107,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="rdfPath">A delegate that should return a <see cref="FilePath"/> for the RDF path.
         /// If the delegate is <c>null</c> or returns <c>null</c>, no RDF file will be generated.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithRdfPath(ContextConfig rdfPath)
         {
             _rdfPath = rdfPath;
@@ -115,6 +119,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedId">A delegate that should return a <c>Uri</c> with
         /// the feed identifier.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedId(ContextConfig feedId)
         {
             _feedId = feedId;
@@ -127,6 +132,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedTitle">A delegate that should return a <c>string</c> with
         /// the feed title.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedTitle(ContextConfig feedTitle)
         {
             _feedTitle = feedTitle;
@@ -139,6 +145,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedDescription">A delegate that should return a <c>string</c> with
         /// the feed description.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedDescription(ContextConfig feedDescription)
         {
             _feedDescription = feedDescription;
@@ -151,6 +158,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedAuthor">A delegate that should return a <c>string</c> with
         /// the feed author.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedAuthor(ContextConfig feedAuthor)
         {
             _feedAuthor = feedAuthor;
@@ -162,6 +170,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedPublished">A delegate that should return a <c>DateTime</c> with
         /// the feed published time.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedPublished(ContextConfig feedPublished)
         {
             _feedPublished = feedPublished;
@@ -173,6 +182,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedUpdated">A delegate that should return a <c>DateTime</c> with
         /// the feed updated time.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedUpdated(ContextConfig feedUpdated)
         {
             _feedUpdated = feedUpdated;
@@ -184,6 +194,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedLink">A delegate that should return a <c>Uri</c> with
         /// the feed link.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedLink(ContextConfig feedLink)
         {
             _feedLink = feedLink;
@@ -196,6 +207,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedImageLink">A delegate that should return a <c>Uri</c> with
         /// the feed image link.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedImageLink(ContextConfig feedImageLink)
         {
             _feedImageLink = feedImageLink;
@@ -208,6 +220,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="feedCopyright">A delegate that should return a <c>string</c> with
         /// the feed copyright.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithFeedCopyright(ContextConfig feedCopyright)
         {
             _feedCopyright = feedCopyright;
@@ -219,6 +232,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemId">A delegate that should return a <c>Uri</c> with
         /// the item identifier.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemId(DocumentConfig itemId)
         {
             _itemId = itemId;
@@ -231,6 +245,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemTitle">A delegate that should return a <c>string</c> with
         /// the item title.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemTitle(DocumentConfig itemTitle)
         {
             _itemTitle = itemTitle;
@@ -243,6 +258,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemDescription">A delegate that should return a <c>string</c> with
         /// the item description.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemDescription(DocumentConfig itemDescription)
         {
             _itemDescription = itemDescription;
@@ -255,6 +271,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemAuthor">A delegate that should return a <c>string</c> with
         /// the item author.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemAuthor(DocumentConfig itemAuthor)
         {
             _itemAuthor = itemAuthor;
@@ -267,6 +284,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemPublished">A delegate that should return a <c>DateTime</c> with
         /// the item published time.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemPublished(DocumentConfig itemPublished)
         {
             _itemPublished = itemPublished;
@@ -279,6 +297,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemUpdated">A delegate that should return a <c>DateTime</c> with
         /// the item updated time.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemUpdated(DocumentConfig itemUpdated)
         {
             _itemUpdated = itemUpdated;
@@ -290,6 +309,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemLink">A delegate that should return a <c>Uri</c> with
         /// the item link.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemLink(DocumentConfig itemLink)
         {
             _itemLink = itemLink;
@@ -302,6 +322,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemImageLink">A delegate that should return a <c>Uri</c> with
         /// the item image link.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemImageLink(DocumentConfig itemImageLink)
         {
             _itemImageLink = itemImageLink;
@@ -316,6 +337,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemContent">A delegate that should return a <c>string</c> with
         /// the content of the item.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemContent(DocumentConfig itemContent)
         {
             _itemContent = itemContent;
@@ -327,6 +349,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemThreadLink">A delegate that should return a <c>Uri</c> with
         /// the item thread link.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemThreadLink(DocumentConfig itemThreadLink)
         {
             _itemThreadLink = itemThreadLink;
@@ -338,6 +361,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemThreadCount">A delegate that should return an <c>int</c> with
         /// the item thread count.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemThreadCount(DocumentConfig itemThreadCount)
         {
             _itemThreadCount = itemThreadCount;
@@ -349,6 +373,7 @@ namespace Wyam.Feeds
         /// </summary>
         /// <param name="itemThreadUpdated">A delegate that should return a <c>DateTime</c> with
         /// the item thread updated time.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateFeeds WithItemThreadUpdated(DocumentConfig itemThreadUpdated)
         {
             _itemThreadUpdated = itemThreadUpdated;

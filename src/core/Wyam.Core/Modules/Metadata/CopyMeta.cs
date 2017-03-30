@@ -41,6 +41,11 @@ namespace Wyam.Core.Modules.Metadata
             _format = format;
         }
 
+        /// <summary>
+        /// Specifies the format to use when copying the value.
+        /// </summary>
+        /// <param name="format">The format to use.</param>
+        /// <returns>The current module instance.</returns>
         public CopyMeta WithFormat(string format)
         {
             if (format == null)
@@ -51,7 +56,12 @@ namespace Wyam.Core.Modules.Metadata
             return this;
         }
 
-        public CopyMeta WithFormat(Func<string,string> execute)
+        /// <summary>
+        /// Specifies the format to use when copying the value.
+        /// </summary>
+        /// <param name="execute">A function to get the format to use.</param>
+        /// <returns>The current module instance.</returns>
+        public CopyMeta WithFormat(Func<string, string> execute)
         {
             if (execute == null)
             {

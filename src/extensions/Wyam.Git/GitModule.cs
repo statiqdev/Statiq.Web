@@ -91,7 +91,8 @@ namespace Wyam.Git
                         new MetadataItem(GitKeys.CommitterEmail, x.Committer.Email),
                         new MetadataItem(GitKeys.CommitterWhen, x.Committer.When),
                         new MetadataItem(GitKeys.Message, x.Message),
-                        new MetadataItem(GitKeys.Entries,
+                        new MetadataItem(
+                            GitKeys.Entries,
                             CompareTrees(repository, x).ToImmutableDictionary(y => new FilePath(y.Path), y => y.Status.ToString()))
                     }))
                     .ToImmutableArray();
@@ -105,15 +106,17 @@ namespace Wyam.Git
 
             IEnumerable<PatchEntryChanges> patch = parentCommitTrees.Select(x => repo.Diff.Compare<Patch>(x, commitTree)).SelectMany(x => x); // Difference
 
-            if (!parentCommitTrees.Any()) // Don't use Patch for commits without parents.
+            // Don't use Patch for commits without parents.
+            if (!parentCommitTrees.Any())
             {
                 foreach (string ptc in TraverseTree(commitTree))
                 {
                     yield return new Entry { Path = ptc, Status = ChangeKind.Added };
                 }
             }
-            else if (!parentCommitTrees.Skip(1).Any()) // Merge doesn't count to History. So everything that has more than one parent will be ignored
+            else if (!parentCommitTrees.Skip(1).Any())
             {
+                // Merge doesn't count to History. So everything that has more than one parent will be ignored
                 foreach (PatchEntryChanges ptc in patch)
                 {
                     yield return new Entry { Path = ptc.Path, Status = ptc.Status };
@@ -128,7 +131,7 @@ namespace Wyam.Git
                 if (item.TargetType == TreeEntryTargetType.Blob)
                 {
                     Blob blob = (Blob)item.Target;
-                    yield return (item.Path);
+                    yield return item.Path;
                 }
 
                 if (item.TargetType == TreeEntryTargetType.Tree)

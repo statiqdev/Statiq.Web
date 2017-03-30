@@ -50,6 +50,7 @@ namespace Wyam.Core.Modules.Control
         /// (as opposed to the default behavior of the sequence of modules only being executed once
         /// with an empty initial document). This method has no effect if no modules are specified.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public Merge ForEachDocument()
         {
             _forEachDocument = true;

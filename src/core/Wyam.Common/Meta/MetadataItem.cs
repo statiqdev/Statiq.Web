@@ -10,17 +10,35 @@ namespace Wyam.Common.Meta
     /// </summary>
     public struct MetadataItem
     {
+        /// <summary>
+        /// Gets the underlying <see cref="KeyValuePair{TKey, TValue}"/>.
+        /// </summary>
         public KeyValuePair<string, object> Pair { get; }
 
+        /// <summary>
+        /// Gets the key of the item.
+        /// </summary>
         public string Key => Pair.Key;
 
+        /// <summary>
+        /// Gets the value of the item.
+        /// </summary>
         public object Value => Pair.Value;
 
+        /// <summary>
+        /// Creates a new metadata item with a specified key-value pair.
+        /// </summary>
+        /// <param name="pair">The key-value pair.</param>
         public MetadataItem(KeyValuePair<string, object> pair)
         {
             Pair = pair;
         }
 
+        /// <summary>
+        /// Creates a new metadata item with the specified key and value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public MetadataItem(string key, object value)
         {
             Pair = new KeyValuePair<string, object>(key, value);
@@ -39,11 +57,19 @@ namespace Wyam.Common.Meta
                 cacheValue ? new CachedDelegateMetadataValue(value) : new DelegateMetadataValue(value));
         }
 
+        /// <summary>
+        /// Converts a key-value pair to a <see cref="MetadataItem"/>.
+        /// </summary>
+        /// <param name="pair">The key-value pair to convert.</param>
         public static implicit operator MetadataItem(KeyValuePair<string, object> pair)
         {
             return new MetadataItem(pair);
         }
 
+        /// <summary>
+        /// Converts a <see cref="MetadataItem"/> to a key-value pair.
+        /// </summary>
+        /// <param name="item">The metadata item to convert.</param>
         public static implicit operator KeyValuePair<string, object>(MetadataItem item)
         {
             return item.Pair;

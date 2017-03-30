@@ -91,6 +91,7 @@ namespace Wyam.Core.Modules.Extensibility
             };
         }
 
+        /// <inheritdoc />
         IEnumerable<IDocument> IModule.Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             if (_executeDocument != null)
@@ -100,10 +101,10 @@ namespace Wyam.Core.Modules.Extensibility
                     object documentResult = _executeDocument(input, context);
                     if (documentResult == null)
                     {
-                        return new[] {input};
+                        return new[] { input };
                     }
                     return GetDocuments(documentResult)
-                           ?? ExecuteModules(documentResult, context, new[] {input})
+                           ?? ExecuteModules(documentResult, context, new[] { input })
                            ?? ChangeContent(documentResult, context, input);
                 };
                 return _parallel

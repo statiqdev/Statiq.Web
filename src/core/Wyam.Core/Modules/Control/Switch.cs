@@ -46,6 +46,7 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="value">The value to compare to the one returned by the document delegate. Must be a primitive object or an array of primitive objects.</param>
         /// <param name="modules">The modules to execute if the case object (or any objects in the array) matches the document object.</param>
+        /// <returns>The current module instance.</returns>
         public Switch Case(object value, params IModule[] modules)
         {
             _cases.Add(new Tuple<object, IModule[]>(value, modules));
@@ -56,6 +57,7 @@ namespace Wyam.Core.Modules.Control
         /// Defines modules to execute against documents that don't match a case.
         /// </summary>
         /// <param name="modules">The modules to execute against documents that don't match a case.</param>
+        /// <returns>The current module instance.</returns>
         public Switch Default(params IModule[] modules)
         {
             _defaultModules = modules;

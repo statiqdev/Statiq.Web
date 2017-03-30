@@ -61,6 +61,9 @@ namespace Wyam.Core.Modules.Metadata
         private string _nextKey = Keys.Next;
         private string _treePathKey = Keys.TreePath;
 
+        /// <summary>
+        /// Creates a new tree module.
+        /// </summary>
         public Tree()
         {
             _isRoot = (doc, ctx) => false;
@@ -82,8 +85,9 @@ namespace Wyam.Core.Modules.Metadata
             };
             _placeholderFactory = (treePath, items, context) =>
             {
-                items.Add(new MetadataItem(Keys.RelativeFilePath,
-                    new FilePath(string.Join("/", treePath.Concat(new[] {"index.html"})))));
+                items.Add(new MetadataItem(
+                    Keys.RelativeFilePath,
+                    new FilePath(string.Join("/", treePath.Concat(new[] { "index.html" })))));
                 return context.GetDocument(items);
             };
             _sort = (x, y) => Comparer.Default.Compare(
@@ -99,6 +103,7 @@ namespace Wyam.Core.Modules.Metadata
         /// returns null, a new document with the tree metadata is created.
         /// </summary>
         /// <param name="factory">The factory function.</param>
+        /// <returns>The current module instance.</returns>
         public Tree WithPlaceholderFactory(Func<object[], MetadataItems, IExecutionContext, IDocument> factory)
         {
             if (factory == null)
@@ -116,6 +121,7 @@ namespace Wyam.Core.Modules.Metadata
         /// or file name). The output document for each tree node is used as the input to the sort delegate.
         /// </summary>
         /// <param name="sort">A comparison delegate.</param>
+        /// <returns>The current module instance.</returns>
         public Tree WithSort(Comparison<IDocument> sort)
         {
             if (sort == null)
@@ -132,6 +138,7 @@ namespace Wyam.Core.Modules.Metadata
         /// removing the root node from the set of children of it's parent and setting it's parent to <c>null</c>.
         /// </summary>
         /// <param name="isRoot">A predicate (must return <c>bool</c>) that specifies if the current document is treated as the root of a new tree.</param>
+        /// <returns>The current module instance.</returns>
         public Tree WithRoots(DocumentConfig isRoot)
         {
             if (isRoot == null)
@@ -148,6 +155,7 @@ namespace Wyam.Core.Modules.Metadata
         /// is excluded from the tree.
         /// </summary>
         /// <param name="treePath">A delegate that must return a sequence of objects.</param>
+        /// <returns>The current module instance.</returns>
         public Tree WithTreePath(DocumentConfig treePath)
         {
             if (treePath == null)
@@ -160,8 +168,16 @@ namespace Wyam.Core.Modules.Metadata
         }
 
         /// <summary>
-        /// Changes the standard metadata keys used by this module.
+        /// Changes the default metadata keys.
         /// </summary>
+        /// <param name="parentKey">The metadata key where parent documents should be stored.</param>
+        /// <param name="childrenKey">The metadata key where child documents should be stored.</param>
+        /// <param name="previousSiblingKey">The metadata key where the previous sibling document should be stored.</param>
+        /// <param name="nextSiblingKey">The metadata key where the next sibling document should be stored.</param>
+        /// <param name="previousKey">The metadata key where the previous document should be stored.</param>
+        /// <param name="nextKey">The metadata key where the next document should be stored.</param>
+        /// <param name="treePathKey">The metadata key where the tree path should be stored.</param>
+        /// <returns>The current module instance.</returns>
         public Tree WithMetadataNames(
             string parentKey = Keys.Parent,
             string childrenKey = Keys.Children,
@@ -191,6 +207,7 @@ namespace Wyam.Core.Modules.Metadata
         /// should output first-level documents as if they were root documents. This setting
         /// has no effect if not nesting.
         /// </param>
+        /// <returns>The current module instance.</returns>
         public Tree WithNesting(bool nesting = true, bool collapseRoot = false)
         {
             _nesting = nesting;
@@ -396,7 +413,7 @@ namespace Wyam.Core.Modules.Metadata
             public bool Equals(object[] x, object[] y) => x.SequenceEqual(y);
 
             public int GetHashCode(object[] obj) =>
-                obj?.Aggregate(17, (index, x) => index * 23 + (x?.GetHashCode() ?? 0)) ?? 0;
+                obj?.Aggregate(17, (index, x) => (index * 23) + (x?.GetHashCode() ?? 0)) ?? 0;
         }
     }
 }

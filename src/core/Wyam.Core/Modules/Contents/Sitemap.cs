@@ -57,7 +57,7 @@ namespace Wyam.Core.Modules.Contents
         public Sitemap(string sitemapItemOrLocationMetadataKey, Func<string, string> locationFormatter = null)
             : this((d, c) => d.String(sitemapItemOrLocationMetadataKey), locationFormatter)
         {
-            if (String.IsNullOrEmpty(sitemapItemOrLocationMetadataKey))
+            if (string.IsNullOrEmpty(sitemapItemOrLocationMetadataKey))
             {
                 throw new ArgumentException("Argument is null or empty", nameof(sitemapItemOrLocationMetadataKey));
             }

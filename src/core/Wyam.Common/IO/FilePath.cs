@@ -7,12 +7,13 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a file path.
     /// </summary>
     public sealed class FilePath : NormalizedPath
     {
+        // Initially based on code from Cake (http://cakebuild.net/)
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FilePath"/> class.
         /// The path will be considered absolute if the underlying OS file system
@@ -119,6 +120,9 @@ namespace Wyam.Common.IO
             }
         }
 
+        /// <summary>
+        /// Gets the file path relative to it's root path.
+        /// </summary>
         public FilePath RootRelative
         {
             get
@@ -200,7 +204,7 @@ namespace Wyam.Common.IO
         public FilePath Collapse() => new FilePath(FileProvider, Collapse(this));
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FilePath"/>.
+        /// Performs an implicit conversion from <see cref="string"/> to <see cref="FilePath"/>.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>
@@ -210,7 +214,7 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
-        /// Performs a conversion from <see cref="System.String"/> to <see cref="FilePath"/>.
+        /// Performs a conversion from <see cref="string"/> to <see cref="FilePath"/>.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>

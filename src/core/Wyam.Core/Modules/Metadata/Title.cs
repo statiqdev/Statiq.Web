@@ -78,6 +78,7 @@ namespace Wyam.Core.Modules.Metadata
         /// a value for the key Title.
         /// </summary>
         /// <param name="key">The metadata key to set.</param>
+        /// <returns>The current module instance.</returns>
         public Title WithKey(string key)
         {
             if (key == null)
@@ -100,6 +101,7 @@ namespace Wyam.Core.Modules.Metadata
         /// result is null or empty.
         /// </summary>
         /// <param name="keepExisting">Whether to keep the existing title metadata value.</param>
+        /// <returns>The current module instance.</returns>
         public Title KeepExisting(bool keepExisting = true)
         {
             _keepExisting = keepExisting;
@@ -126,17 +128,28 @@ namespace Wyam.Core.Modules.Metadata
                         : context
                             .GetDocument(input, new MetadataItems
                             {
-                                {_key, title}
+                                { _key, title }
                             });
                 });
         }
 
+        /// <summary>
+        /// Gets a normalized title given a document.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        /// <param name="context">The execution context.</param>
+        /// <returns>A normalized title.</returns>
         public static object GetTitle(IDocument doc, IExecutionContext context)
         {
             FilePath path = doc.Source ?? doc.FilePath(Keys.RelativeFilePath);
             return path == null ? null : GetTitle(path);
         }
 
+        /// <summary>
+        /// Gets a normalized title given a file path.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <returns>A normalized title.</returns>
         public static string GetTitle(FilePath path)
         {
             // Get the filename, unless an index file, then get containing directory

@@ -2,6 +2,9 @@
 
 namespace Wyam.Common.IO
 {
+    /// <summary>
+    /// A read-only collection of file providers mapped to schemes.
+    /// </summary>
     public interface IReadOnlyFileProviderCollection
     {
         /// <summary>

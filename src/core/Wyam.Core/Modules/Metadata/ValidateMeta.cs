@@ -12,6 +12,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <summary>
     /// Tests metadata for existence, typing, and supplied assertions.
     /// </summary>
+    /// <typeparam name="T">The type of the metadata value to convert to for validation.</typeparam>
     /// <remarks>
     /// This module performs tests on metadata. It can ensure metadata exists, that it can be converted to the correct type, and that is passes
     /// arbitrary tests (delegates) to ensure validity. Metadata can be specified as optional, in which case, typing and assertion testing
@@ -48,8 +49,8 @@ namespace Wyam.Core.Modules.Metadata
     public class ValidateMeta<T> : IModule
     {
         private readonly string _key;
-        private bool _optional;
         private readonly List<Assertion<T>> _assertions;
+        private bool _optional;
 
         /// <summary>
         /// Performs validation checks on metadata.
@@ -68,6 +69,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <summary>
         /// Declares the entire check as optional. Is this is set, and the meta key doesn't exist, no checks will be run.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public ValidateMeta<T> IsOptional()
         {
             _optional = true;
@@ -81,6 +83,7 @@ namespace Wyam.Core.Modules.Metadata
         /// declaration. Assertions are strongly-typed and can assume the value has been converted to the correct type. If the function returns
         /// false, the check failed, an exception will be thrown, and execution will halt.</param>
         /// <param name="message">The error message to output on failure.</param>
+        /// <returns>The current module instance.</returns>
         public ValidateMeta<T> WithAssertion(Func<T, bool> execute, string message = null)
         {
             _assertions.Add(new Assertion<T>(execute, message));

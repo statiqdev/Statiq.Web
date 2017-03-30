@@ -3,8 +3,12 @@ using System.Collections.Generic;
 
 namespace Wyam.Core.Modules.IO
 {
+    /// <summary>
+    /// Fields in the request header of a web request.
+    /// </summary>
     public class RequestHeader
     {
+#pragma warning disable 1591
         public List<string> Accept { get; set; } = new List<string>();
 
         public List<string> AcceptCharset { get; set; } = new List<string>();
@@ -17,7 +21,7 @@ namespace Wyam.Core.Modules.IO
 
         public List<string> Connection { get; set; } = new List<string>();
 
-        public DateTimeOffset? Date;
+        public DateTimeOffset? Date { get; set; }
 
         public List<string> Expect { get; set; } = new List<string>();
 
@@ -29,7 +33,7 @@ namespace Wyam.Core.Modules.IO
 
         public List<string> IfMatch { get; set; } = new List<string>();
 
-        public DateTimeOffset? IfModifiedSince;
+        public DateTimeOffset? IfModifiedSince { get; set; }
 
         public List<string> IfNoneMatch { get; set; } = new List<string>();
 
@@ -47,5 +51,6 @@ namespace Wyam.Core.Modules.IO
         {
             BasicAuthorization = Tuple.Create(username, password);
         }
+#pragma warning restore 1591
     }
 }

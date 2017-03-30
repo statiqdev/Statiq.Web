@@ -47,6 +47,7 @@ namespace Wyam.Core.Modules.Control
         /// modification regardless of whether they satisfy the predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
+        /// <returns>The current module instance.</returns>
         public ConcatBranch Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

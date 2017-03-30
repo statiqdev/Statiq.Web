@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
+    /// <summary>
+    /// A collection of file providers mapped to schemes.
+    /// </summary>
     public interface IFileProviderCollection : IReadOnlyFileProviderCollection
     {
         /// <summary>

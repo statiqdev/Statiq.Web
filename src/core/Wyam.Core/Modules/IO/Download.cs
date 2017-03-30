@@ -55,6 +55,7 @@ namespace Wyam.Core.Modules.IO
         /// Downloads the specified URIs with a default request header.
         /// </summary>
         /// <param name="uris">The URIs to download.</param>
+        /// <returns>The current module instance.</returns>
         public Download WithUris(params string[] uris)
         {
             foreach (string uri in uris)
@@ -69,6 +70,7 @@ namespace Wyam.Core.Modules.IO
         /// </summary>
         /// <param name="uri">The URI to download.</param>
         /// <param name="requestHeader">The request header to use.</param>
+        /// <returns>The current module instance.</returns>
         public Download WithUri(string uri, RequestHeader requestHeader = null)
         {
             _urls.Add(new DownloadInstruction(uri, requestHeader));
@@ -79,6 +81,7 @@ namespace Wyam.Core.Modules.IO
         /// Indicates whether the downloaded response should be cached between regenerations.
         /// </summary>
         /// <param name="cacheResponse">If set to <c>true</c>, the response is cached (the default is <c>false</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Download CacheResponse(bool cacheResponse)
         {
             _cacheResponse = cacheResponse;
@@ -124,13 +127,13 @@ namespace Wyam.Core.Modules.IO
         {
             using (HttpClient client = new HttpClient())
             {
-                //prepare request headers
+                // Prepare request headers
                 if (instruction.ContainRequestHeader)
                 {
                     ModifyRequestHeader(client.DefaultRequestHeaders, instruction.RequestHeader);
                 }
 
-                //Now that we are set and ready, go and do the download call
+                // Now that we are set and ready, go and do the download call
                 using (HttpResponseMessage response = await client.GetAsync(instruction.Uri))
                 {
                     using (HttpContent content = response.Content)
@@ -152,22 +155,22 @@ namespace Wyam.Core.Modules.IO
         {
             foreach (string a in requestHeader.Accept)
             {
-                request.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(a));
+                request.Accept.Add(new MediaTypeWithQualityHeaderValue(a));
             }
 
             foreach (string a in requestHeader.AcceptCharset)
             {
-                request.AcceptCharset.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                request.AcceptCharset.Add(new StringWithQualityHeaderValue(a));
             }
 
             foreach (string a in requestHeader.AcceptEncoding)
             {
-                request.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                request.AcceptEncoding.Add(new StringWithQualityHeaderValue(a));
             }
 
             foreach (string a in requestHeader.AcceptLanguage)
             {
-                request.AcceptLanguage.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue(a));
+                request.AcceptLanguage.Add(new StringWithQualityHeaderValue(a));
             }
 
             if (requestHeader.BasicAuthorization != null)
@@ -175,7 +178,8 @@ namespace Wyam.Core.Modules.IO
                 Tuple<string, string> auth = requestHeader.BasicAuthorization;
 
                 request.Authorization =
-                new AuthenticationHeaderValue("Basic",
+                new AuthenticationHeaderValue(
+                    "Basic",
                     Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
             }
 

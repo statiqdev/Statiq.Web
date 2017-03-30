@@ -18,7 +18,7 @@ namespace Wyam.Core.Configuration
         public NamespaceCollection()
         {
             // This is the default set of namespaces that should brought in scope during configuration and in other dynamic modules
-            _namespaces.AddRange(new []
+            _namespaces.AddRange(new[]
             {
                 "System",
                 "System.Collections.Generic",

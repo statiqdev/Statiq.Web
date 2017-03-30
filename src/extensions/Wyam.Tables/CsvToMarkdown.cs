@@ -33,6 +33,7 @@ namespace Wyam.Tables
         /// <summary>
         /// Treats the first line of input content as a header and generates <c>&lt;th&gt;</c> tags in the output table.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public CsvToMarkdown WithHeader()
         {
             _firstLineHeader = true;

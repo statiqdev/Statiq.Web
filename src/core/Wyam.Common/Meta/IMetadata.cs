@@ -40,6 +40,7 @@ namespace Wyam.Common.Meta
         /// This method never throws an exception. It will return default(T) if the key is not found
         /// or the value cannot be converted to T.
         /// </summary>
+        /// <typeparam name="T">The desired return type.</typeparam>
         /// <param name="key">The key of the value to get.</param>
         /// <returns>The value for the specified key converted to type T or default(T) if the key is not found or cannot be converted to type T.</returns>
         T Get<T>(string key);
@@ -48,6 +49,7 @@ namespace Wyam.Common.Meta
         /// Gets the value for the specified key. This method never throws an exception. It will return the specified
         /// default value if the key is not found.
         /// </summary>
+        /// <typeparam name="T">The desired return type.</typeparam>
         /// <param name="key">The key of the value to get.</param>
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to type T.</param>
         /// <returns>The value for the specified key converted to type T or the specified default value.</returns>

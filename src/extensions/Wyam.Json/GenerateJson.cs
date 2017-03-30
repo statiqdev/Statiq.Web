@@ -70,6 +70,7 @@ namespace Wyam.Json
         /// Specifies whether the generated JSON should be indented.
         /// </summary>
         /// <param name="indenting">If set to <c>true</c>, the JSON is indented.</param>
+        /// <returns>The current module instance.</returns>
         public GenerateJson WithIndenting(bool indenting = true)
         {
             _indenting = indenting;

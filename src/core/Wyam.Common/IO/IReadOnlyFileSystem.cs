@@ -8,12 +8,13 @@ using System.Xml.Serialization.Configuration;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a file system.
     /// </summary>
     public interface IReadOnlyFileSystem
     {
+        // Initially based on code from Cake (http://cakebuild.net/)
+
         /// <summary>
         /// Gets the file providers.
         /// </summary>

@@ -127,6 +127,7 @@ namespace Wyam.Core.Modules.Control
         /// Only documents that satisfy the predicate will be output.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
+        /// <returns>The current module instance.</returns>
         public Documents Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

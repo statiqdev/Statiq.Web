@@ -93,6 +93,7 @@ namespace Wyam.Images
         /// <item><description>AnchorPosition.BottomRight</description></item>
         /// </list>
         /// </param>
+        /// <returns>The current module instance.</returns>
         public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
         {
             EnsureCurrentInstruction();
@@ -110,6 +111,7 @@ namespace Wyam.Images
         /// </summary>
         /// <param name="width">The maximum desired width.</param>
         /// <param name="height">The maximum desired height.</param>
+        /// <returns>The current module instance.</returns>
         public Image Constrain(int width, int height)
         {
             EnsureCurrentInstruction();
@@ -138,6 +140,7 @@ namespace Wyam.Images
         /// these filters here</a>.
         /// </summary>
         /// <param name="filters">The filters to apply.</param>
+        /// <returns>The current module instance.</returns>
         public Image ApplyFilters(params ImageFilter[] filters)
         {
             EnsureCurrentInstruction();
@@ -151,10 +154,13 @@ namespace Wyam.Images
         /// Brightens the image by the specified percentage.
         /// </summary>
         /// <param name="percentage">The percentage to brighten the image by (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image Brighten(short percentage)
         {
             if (percentage < 0 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
 
@@ -167,10 +173,13 @@ namespace Wyam.Images
         /// Darkens the image by the specified percentage.
         /// </summary>
         /// <param name="percentage">The percentage to darken the image by (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image Darken(short percentage)
         {
             if (percentage < 0 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
 
@@ -183,10 +192,13 @@ namespace Wyam.Images
         /// Sets the opacity of the image.
         /// </summary>
         /// <param name="percentage">The opacity percentage (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image SetOpacity(short percentage)
         {
             if (percentage < 0 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
 
@@ -200,10 +212,13 @@ namespace Wyam.Images
         /// </summary>
         /// <param name="degrees">The degrees to set.</param>
         /// <param name="rotate">If set to <c>true</c>, rotates the hue.</param>
+        /// <returns>The current module instance.</returns>
         public Image SetHue(short degrees, bool rotate = false)
         {
             if (degrees < 0 || degrees > 360)
+            {
                 throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
+            }
 
             EnsureCurrentInstruction();
 
@@ -222,6 +237,7 @@ namespace Wyam.Images
         /// check here for more color values</a>.
         /// </summary>
         /// <param name="color">The color to tint the image to.</param>
+        /// <returns>The current module instance.</returns>
         public Image Tint(Color color)
         {
             EnsureCurrentInstruction();
@@ -234,6 +250,7 @@ namespace Wyam.Images
         /// Apply vignette processing to the image with specific color, e.g. <c>Vignette(Color.AliceBlue)</c>.
         /// </summary>
         /// <param name="color">The color to use for the vignette.</param>
+        /// <returns>The current module instance.</returns>
         public Image Vignette(Color color)
         {
             EnsureCurrentInstruction();
@@ -246,10 +263,13 @@ namespace Wyam.Images
         /// Saturates the image.
         /// </summary>
         /// <param name="percentage">The saturation percentage (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image Saturate(short percentage)
         {
             if (percentage < 0 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.Saturation = percentage;
@@ -260,10 +280,13 @@ namespace Wyam.Images
         /// Desaturates the image.
         /// </summary>
         /// <param name="percentage">The desaturation percentage (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image Desaturate(short percentage)
         {
             if (percentage < 0 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.Saturation = -percentage;
@@ -274,10 +297,13 @@ namespace Wyam.Images
         /// This setting only applies to JPEG images. It sets the quality of the JPEG output. The possible values are from <c>0</c> to <c>100</c>.
         /// </summary>
         /// <param name="quality">The desired JPEG quality (<c>0</c> to <c>100</c>).</param>
+        /// <returns>The current module instance.</returns>
         public Image SetJpegQuality(short quality)
         {
             if (quality < 0 || quality > 100)
+            {
                 throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.JpegQuality = quality;
@@ -288,10 +314,13 @@ namespace Wyam.Images
         /// Adjusts the contrast of the image.
         /// </summary>
         /// <param name="percentage">Set the contrast value of the image from the value of <c>-100</c> to <c>100</c>.</param>
+        /// <returns>The current module instance.</returns>
         public Image SetContrast(short percentage)
         {
             if (percentage < -100 || percentage > 100)
+            {
                 throw new ArgumentException($"Percentage must be between -100 and 100 instead of {percentage}%");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.Contrast = percentage;
@@ -303,10 +332,13 @@ namespace Wyam.Images
         /// filename "hello-world.jpg" to "hello-world-medium.jpg".
         /// </summary>
         /// <param name="suffix">The suffix to use.</param>
+        /// <returns>The current module instance.</returns>
         public Image SetSuffix(string suffix)
         {
             if (string.IsNullOrWhiteSpace(suffix))
+            {
                 throw new ArgumentException("Please supply the suffix");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.FileNameSuffix = suffix;
@@ -318,10 +350,13 @@ namespace Wyam.Images
         /// filename "hello-world.jpg" to "medium-hello-world.jpg".
         /// </summary>
         /// <param name="prefix">The prefix to use.</param>
+        /// <returns>The current module instance.</returns>
         public Image SetPrefix(string prefix)
         {
             if (string.IsNullOrWhiteSpace(prefix))
+            {
                 throw new ArgumentException("Please supply the prefix");
+            }
 
             EnsureCurrentInstruction();
             _currentInstruction.FileNamePrefix = prefix;
@@ -331,6 +366,7 @@ namespace Wyam.Images
         /// <summary>
         /// Mark the beginning of another set of processing instructions to be applied to the images.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public Image And
         {
             get
@@ -345,12 +381,17 @@ namespace Wyam.Images
             ISupportedImageFormat format = null;
 
             if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
+            {
                 format = new JpegFormat { Quality = ins.JpegQuality };
-            else
-                if (extension.Equals(".gif", StringComparison.OrdinalIgnoreCase))
+            }
+            else if (extension.Equals(".gif", StringComparison.OrdinalIgnoreCase))
+            {
                 format = new GifFormat { };
+            }
             else if (extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
+            {
                 format = new PngFormat { };
+            }
 
             return format;
         }

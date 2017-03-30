@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents an entry in the file system
     /// </summary>
     public interface IFileSystemEntry
     {
+        // Initially based on code from Cake (http://cakebuild.net/)
+
         /// <summary>
         /// Gets the path to the entry.
         /// </summary>

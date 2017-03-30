@@ -19,7 +19,7 @@ namespace Wyam.Core.Modules.Metadata
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Select((x, i) => context.GetDocument(x, new MetadataItems {{Keys.Index, i + 1}}));
+            return inputs.Select((x, i) => context.GetDocument(x, new MetadataItems { { Keys.Index, i + 1} }));
         }
     }
 }

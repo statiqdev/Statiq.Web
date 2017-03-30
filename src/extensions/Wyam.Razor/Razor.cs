@@ -108,6 +108,7 @@ namespace Wyam.Razor
         /// Specifies an alternate ViewStart file to use for all Razor pages processed by this module.
         /// </summary>
         /// <param name="path">The path to the alternate ViewStart file.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithViewStart(FilePath path)
         {
             _viewStartPath = (doc, ctx) => path;
@@ -122,6 +123,7 @@ namespace Wyam.Razor
         /// </summary>
         /// <param name="path">A delegate that should return the ViewStart path as a <c>FilePath</c>,
         /// or <c>null</c> for the default ViewStart search behavior.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithViewStart(DocumentConfig path)
         {
             _viewStartPath = path;
@@ -132,6 +134,7 @@ namespace Wyam.Razor
         /// Specifies a layout file to use for all Razor pages processed by this module.
         /// </summary>
         /// <param name="path">The path to the layout file.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithLayout(FilePath path)
         {
             _layoutPath = (doc, ctx) => path;
@@ -143,6 +146,7 @@ namespace Wyam.Razor
         /// lets you specify a different layout file for each document.
         /// </summary>
         /// <param name="path">A delegate that should return the layout path as a <c>FilePath</c>.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithLayout(DocumentConfig path)
         {
             _layoutPath = path;
@@ -153,6 +157,7 @@ namespace Wyam.Razor
         /// Specifies a model to use for each page.
         /// </summary>
         /// <param name="model">The model.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithModel(object model)
         {
             _model = (doc, ctx) => model;
@@ -164,6 +169,7 @@ namespace Wyam.Razor
         /// document and context.
         /// </summary>
         /// <param name="model">A delegate that returns the model.</param>
+        /// <returns>The current module instance.</returns>
         public Razor WithModel(DocumentConfig model)
         {
             _model = model;
@@ -177,6 +183,7 @@ namespace Wyam.Razor
         /// an underscore (_). Specifying <c>null</c> will result in no documents being ignored.
         /// </summary>
         /// <param name="prefix">The file prefix to ignore.</param>
+        /// <returns>The current module instance.</returns>
         public Razor IgnorePrefix(string prefix)
         {
             _ignorePrefix = prefix;

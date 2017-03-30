@@ -37,14 +37,6 @@ namespace Wyam.CodeAnalysis
     {
         internal const string CompilationAssemblyName = nameof(CompilationAssemblyName);
 
-        private readonly List<string> _assemblyGlobs = new List<string>();
-        private Func<ISymbol, bool> _symbolPredicate;
-        private Func<IMetadata, FilePath> _writePath;
-        private DirectoryPath _writePathPrefix = null;
-        private bool _docsForImplicitSymbols = false;
-        private bool _inputDocuments = true;
-        private bool _assemblySymbols = false;
-
         // Use an intermediate Dictionary to initialize with defaults
         private readonly ConcurrentDictionary<string, string> _cssClasses
             = new ConcurrentDictionary<string, string>(
@@ -53,12 +45,22 @@ namespace Wyam.CodeAnalysis
                     { "table", "table" }
                 });
 
+        private readonly List<string> _assemblyGlobs = new List<string>();
+
+        private Func<ISymbol, bool> _symbolPredicate;
+        private Func<IMetadata, FilePath> _writePath;
+        private DirectoryPath _writePathPrefix = null;
+        private bool _docsForImplicitSymbols = false;
+        private bool _inputDocuments = true;
+        private bool _assemblySymbols = false;
+
         /// <summary>
         /// By default, XML documentation comments are not parsed and rendered for documents that are not part
         /// of the initial result set. This can control that behavior and be used to generate documentation
         /// metadata for all documents, regardless if they were part of the initial result set.
         /// </summary>
         /// <param name="docsForImplicitSymbols">If set to <c>true</c>, documentation metadata is generated for XML comments on all symbols.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithDocsForImplicitSymbols(bool docsForImplicitSymbols = true)
         {
             _docsForImplicitSymbols = docsForImplicitSymbols;
@@ -69,6 +71,7 @@ namespace Wyam.CodeAnalysis
         /// Controls whether the content of input documents is treated as code and used in the analysis (the default is <c>true</c>).
         /// </summary>
         /// <param name="inputDocuments"><c>true</c> to analyze the content of input documents.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithInputDocuments(bool inputDocuments = true)
         {
             _inputDocuments = inputDocuments;
@@ -79,6 +82,7 @@ namespace Wyam.CodeAnalysis
         /// Analyzes the specified assemblies.
         /// </summary>
         /// <param name="assemblies">A globbing pattern indicating the assemblies to analyze.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithAssemblies(string assemblies)
         {
             if (!string.IsNullOrEmpty(assemblies))
@@ -92,6 +96,7 @@ namespace Wyam.CodeAnalysis
         /// Analyzes the specified assemblies.
         /// </summary>
         /// <param name="assemblies">Globbing patterns indicating the assemblies to analyze.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithAssemblies(IEnumerable<string> assemblies)
         {
             if (assemblies != null)
@@ -105,6 +110,7 @@ namespace Wyam.CodeAnalysis
         /// Controls which symbols are processed as part of the initial result set.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the symbol should be included in the initial result set.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WhereSymbol(Func<ISymbol, bool> predicate)
         {
             if (predicate != null)
@@ -120,6 +126,7 @@ namespace Wyam.CodeAnalysis
         /// an additional predicate on the named type.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the symbol should be included in the initial result set.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithNamedTypes(Func<INamedTypeSymbol, bool> predicate = null)
         {
             return WhereSymbol(x =>
@@ -135,6 +142,7 @@ namespace Wyam.CodeAnalysis
         /// <param name="includeGlobal">If set to <c>true</c>, symbols in the unnamed global namespace are included.</param>
         /// <param name="namespaces">The namespaces to include symbols from (if <c>namespaces</c> is <c>null</c>, symbols from all
         /// namespaces are included).</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WhereNamespaces(bool includeGlobal, params string[] namespaces)
         {
             return WhereSymbol(x =>
@@ -162,6 +170,7 @@ namespace Wyam.CodeAnalysis
         /// Limits symbols in the initial result set to those in the namespaces that satisfy the specified predicate.
         /// </summary>
         /// <param name="predicate">A predicate that returns true if symbols in the namespace should be included.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WhereNamespaces(Func<string, bool> predicate)
         {
             return WhereSymbol(x =>
@@ -183,6 +192,7 @@ namespace Wyam.CodeAnalysis
         /// Limits symbols in the initial result set to those that are public (and optionally protected)
         /// </summary>
         /// <param name="includeProtected">If set to <c>true</c>, protected symbols are also included.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WherePublic(bool includeProtected = true)
         {
             return WhereSymbol(x =>
@@ -204,6 +214,7 @@ namespace Wyam.CodeAnalysis
         /// <param name="tagName">Name of the tag.</param>
         /// <param name="cssClasses">The CSS classes to set for the specified tag name. Separate multiple CSS classes
         /// with a space (just like you would in HTML).</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithCssClasses(string tagName, string cssClasses)
         {
             if (tagName == null)
@@ -225,6 +236,7 @@ namespace Wyam.CodeAnalysis
         /// Controls whether assembly symbol documents are output.
         /// </summary>
         /// <param name="assemblySymbols"><c>true</c> to output assembly symbol documents.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithAssemblySymbols(bool assemblySymbols = true)
         {
             _assemblySymbols = assemblySymbols;
@@ -240,6 +252,7 @@ namespace Wyam.CodeAnalysis
         /// </summary>
         /// <param name="writePath">A function that takes the metadata for a given symbol and returns a <c>FilePath</c> to
         /// use for the <c>WritePath</c> metadata value.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithWritePath(Func<IMetadata, FilePath> writePath)
         {
             _writePath = writePath;
@@ -252,6 +265,7 @@ namespace Wyam.CodeAnalysis
         /// effect if you've supplied a custom <c>WritePath</c> behavior.
         /// </summary>
         /// <param name="prefix">The prefix to use for each generated <c>WritePath</c>.</param>
+        /// <returns>The current module instance.</returns>
         public AnalyzeCSharp WithWritePathPrefix(DirectoryPath prefix)
         {
             _writePathPrefix = prefix;

@@ -52,6 +52,7 @@ namespace Wyam.Html
         /// only query for top-level headings (level 1).
         /// </summary>
         /// <param name="level">The deepest heading level to get.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithLevel(int level)
         {
             if (level < 1)
@@ -71,6 +72,7 @@ namespace Wyam.Html
         /// Sets the key to use in the heading documents to store the level.
         /// </summary>
         /// <param name="levelKey">The key to use for the level.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithLevelKey(string levelKey)
         {
             _levelKey = levelKey;
@@ -82,6 +84,7 @@ namespace Wyam.Html
         /// <c>id</c> attribute (if it has one).
         /// </summary>
         /// <param name="idKey">The key to use for the <c>id</c>.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithIdKey(string idKey)
         {
             _idKey = idKey;
@@ -95,6 +98,7 @@ namespace Wyam.Html
         /// level one deeper than the current heading.
         /// </summary>
         /// <param name="childrenKey">The key to use for children.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithChildrenKey(string childrenKey)
         {
             _childrenKey = childrenKey;
@@ -106,6 +110,7 @@ namespace Wyam.Html
         /// of a given heading.
         /// </summary>
         /// <param name="parentKey">The key to use for the parent.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithParentKey(string parentKey)
         {
             _parentKey = parentKey;
@@ -120,6 +125,7 @@ namespace Wyam.Html
         /// to something else while maintaining the heading content in metadata.
         /// </summary>
         /// <param name="headingKey">The key to use for the heading content.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithHeadingKey(string headingKey)
         {
             _headingKey = headingKey;
@@ -133,6 +139,7 @@ namespace Wyam.Html
         /// metadata of the root heading documents.
         /// </summary>
         /// <param name="nesting"><c>true</c> to turn on nesting</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithNesting(bool nesting = true)
         {
             _nesting = true;
@@ -143,6 +150,7 @@ namespace Wyam.Html
         /// Allows you to specify an alternate metadata key for the heading documents.
         /// </summary>
         /// <param name="metadataKey">The metadata key to store the heading documents in.</param>
+        /// <returns>The current module instance.</returns>
         public Headings WithMetadataKey(string metadataKey)
         {
             _metadataKey = metadataKey;

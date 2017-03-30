@@ -50,6 +50,7 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents where the predicate is <c>true</c>.</param>
+        /// <returns>The current module instance.</returns>
         public If ElseIf(DocumentConfig predicate, params IModule[] modules)
         {
             _conditions.Add(new Condition(predicate, modules));
@@ -63,6 +64,7 @@ namespace Wyam.Core.Modules.Control
         /// </summary>
         /// <param name="predicate">A predicate delegate that should return a <c>bool</c>.</param>
         /// <param name="modules">The modules to execute on documents if the predicate is <c>true</c>.</param>
+        /// <returns>The current module instance.</returns>
         public If ElseIf(ContextConfig predicate, params IModule[] modules)
         {
             _conditions.Add(new Condition(predicate, modules));
@@ -75,6 +77,7 @@ namespace Wyam.Core.Modules.Control
         /// The predicate will be evaluated against every input document individually.
         /// </summary>
         /// <param name="modules">The modules to execute on documents where no previous predicate was <c>true</c>.</param>
+        /// <returns>The current module instance.</returns>
         public IModule Else(params IModule[] modules)
         {
             _conditions.Add(new Condition(ctx => true, modules));

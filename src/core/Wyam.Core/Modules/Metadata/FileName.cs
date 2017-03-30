@@ -141,7 +141,7 @@ namespace Wyam.Core.Modules.Metadata
         /// Indicates whether to set the metadata key <c>WritePath</c> to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
         /// </summary>
         /// <param name="preservePath">If set to <c>true</c>, the <c>WritePath</c> metadata key is set.</param>
-        /// <returns></returns>
+        /// <returns>The current module instance.</returns>
         public FileName PreservePath(bool preservePath)
         {
             if (!preservePath)
@@ -155,6 +155,7 @@ namespace Wyam.Core.Modules.Metadata
         /// Indicates whether to set the specified metadata key to <c>Path.Combine(RelativeFileDir, WriteFileName)</c>.
         /// </summary>
         /// <param name="outputKey">The metadata key to set.</param>
+        /// <returns>The current module instance.</returns>
         public FileName PreservePath(string outputKey)
         {
             if (outputKey == null)
@@ -173,7 +174,7 @@ namespace Wyam.Core.Modules.Metadata
         /// Specifies the characters to allow in the filename.
         /// </summary>
         /// <param name="allowedCharacters">The allowed characters.</param>
-        /// <returns></returns>
+        /// <returns>The current module instance.</returns>
         public FileName WithAllowedCharacters(IEnumerable<string> allowedCharacters)
         {
             _allowedCharacters.AddRange(allowedCharacters);

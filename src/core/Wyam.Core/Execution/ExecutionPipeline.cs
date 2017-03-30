@@ -81,7 +81,7 @@ namespace Wyam.Core.Execution
             IReadOnlyList<IDocument> resultDocuments;
             using (ExecutionContext context = new ExecutionContext(engine, this))
             {
-                ImmutableArray<IDocument> inputs = new[] {engine.DocumentFactory.GetDocument(context)}.ToImmutableArray();
+                ImmutableArray<IDocument> inputs = new[] { engine.DocumentFactory.GetDocument(context) }.ToImmutableArray();
                 resultDocuments = Execute(context, _modules, inputs);
             }
 
@@ -214,7 +214,7 @@ namespace Wyam.Core.Execution
                         IEnumerable<IDocument> children = value as IEnumerable<IDocument>;
                         if (children == null && value is IDocument)
                         {
-                            children = new[] { (IDocument)value};
+                            children = new[] { (IDocument)value };
                         }
                         return children ?? Enumerable.Empty<IDocument>();
                     }),

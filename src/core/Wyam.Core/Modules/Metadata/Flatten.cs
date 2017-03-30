@@ -16,10 +16,17 @@ namespace Wyam.Core.Modules.Metadata
     {
         private readonly string _childrenKey = Keys.Children;
 
+        /// <summary>
+        /// Creates a new flatten module.
+        /// </summary>
         public Flatten()
         {
         }
 
+        /// <summary>
+        /// Creates a new flatten module with the specified children key.
+        /// </summary>
+        /// <param name="childrenKey">The metadata key that contains the children.</param>
         public Flatten(string childrenKey)
         {
             _childrenKey = childrenKey;

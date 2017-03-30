@@ -96,6 +96,7 @@ namespace Wyam.Core.Modules.Control
         /// has the delimiter both above and below the front matter content. The default behavior is <c>true</c>.
         /// </summary>
         /// <param name="ignore">If set to <c>true</c>, ignore the delimiter if it appears on the first line.</param>
+        /// <returns>The current module instance.</returns>
         public FrontMatter IgnoreDelimiterOnFirstLine(bool ignore = true)
         {
             _ignoreDelimiterOnFirstLine = ignore;

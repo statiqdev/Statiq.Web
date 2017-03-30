@@ -135,14 +135,24 @@ namespace Wyam.Html
         /// Defines a standard set of characters as 0-9, a-z, A-Z, newlines, and space. Use with
         /// the <c>EscapeAllNonstandard()</c> method to whitelist this default set of characters.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public HtmlEscape WithDefaultStandard()
         {
             for (char c = '0'; c <= '9'; c++)
+            {
                 _standardCharacters.Add(c);
+            }
+
             for (char c = 'a'; c <= 'z'; c++)
+            {
                 _standardCharacters.Add(c);
+            }
+
             for (char c = 'A'; c <= 'Z'; c++)
+            {
                 _standardCharacters.Add(c);
+            }
+
             _standardCharacters.Add('\r');
             _standardCharacters.Add('\n');
             _standardCharacters.Add(' ');
@@ -153,10 +163,14 @@ namespace Wyam.Html
         /// Defines a custom set of standard characters to use with the <c>EscapeAllNonstandard()</c> method.
         /// </summary>
         /// <param name="standard">The standard set of characters to use.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlEscape WithStandard(params char[] standard)
         {
             foreach (char c in standard)
+            {
                 _standardCharacters.Add(c);
+            }
+
             return this;
         }
 
@@ -164,6 +178,7 @@ namespace Wyam.Html
         /// Escapes all nonstandard characters (standard characters are defined with the <c>WithDefaultStandard()</c>
         /// or <c>WithStandard()</c> methods).
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public HtmlEscape EscapeAllNonstandard()
         {
             _escapeAllNonStandardCharacters = true;
@@ -174,6 +189,7 @@ namespace Wyam.Html
         /// Defines additional characters to escape.
         /// </summary>
         /// <param name="toEscape">The additional characters to escape.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlEscape WithEscapedChar(params char[] toEscape)
         {
             foreach (char c in toEscape)

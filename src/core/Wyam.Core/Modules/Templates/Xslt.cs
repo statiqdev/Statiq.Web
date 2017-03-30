@@ -84,7 +84,7 @@ namespace Wyam.Core.Modules.Templates
                     }
                     else if (_xsltGeneration != null)
                     {
-                        IDocument xsltDocument = context.Execute(_xsltGeneration, new[] {input}).Single();
+                        IDocument xsltDocument = context.Execute(_xsltGeneration, new[] { input }).Single();
                         using (Stream stream = xsltDocument.GetStream())
                         {
                             xslt.Load(XmlReader.Create(stream));

@@ -41,6 +41,7 @@ namespace Wyam.Html
         /// should be subsequently checked manually.
         /// </summary>
         /// <param name="validateAbsoluteLinks"><c>true</c> to validate absolute links.</param>
+        /// <returns>The current module instance.</returns>
         public ValidateLinks ValidateAbsoluteLinks(bool validateAbsoluteLinks = true)
         {
             _validateAbsoluteLinks = validateAbsoluteLinks;
@@ -51,6 +52,7 @@ namespace Wyam.Html
         /// Validates relative links, which is activated by default.
         /// </summary>
         /// <param name="validateRelativeLinks"><c>true</c> to validate relative links.</param>
+        /// <returns>The current module instance.</returns>
         public ValidateLinks ValidateRelativeLinks(bool validateRelativeLinks = true)
         {
             _validateRelativeLinks = validateRelativeLinks;
@@ -63,6 +65,7 @@ namespace Wyam.Html
         /// as errors instead (possibly breaking the generation).
         /// </summary>
         /// <param name="asError"><c>true</c> to report failures as an error.</param>
+        /// <returns>The current module instance.</returns>
         public ValidateLinks AsError(bool asError = true)
         {
             _asError = asError;

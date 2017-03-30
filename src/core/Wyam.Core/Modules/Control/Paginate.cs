@@ -89,6 +89,7 @@ namespace Wyam.Core.Modules.Control
         /// Limits the documents to be paged to those that satisfy the supplied predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
+        /// <returns>The current module instance.</returns>
         public Paginate Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;

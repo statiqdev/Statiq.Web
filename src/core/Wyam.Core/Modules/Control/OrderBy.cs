@@ -38,6 +38,7 @@ namespace Wyam.Core.Modules.Control
         /// You can chain as many ThenBy calls together as needed.
         /// </summary>
         /// <param name="key">A delegate that should return the key to use for ordering.</param>
+        /// <returns>The current module instance.</returns>
         public OrderBy ThenBy(DocumentConfig key)
         {
             if (key == null)
@@ -53,7 +54,7 @@ namespace Wyam.Core.Modules.Control
         /// If you use this method after called ThenBy, the descending ordering will apply to the secondary sort.
         /// </summary>
         /// <param name="descending">If set to <c>true</c>, the documents are output in descending order.</param>
-        /// <returns></returns>
+        /// <returns>The current module instance.</returns>
         public OrderBy Descending(bool descending = true)
         {
             _orders.Peek().Descending = descending;
@@ -64,6 +65,7 @@ namespace Wyam.Core.Modules.Control
         /// Specifies a comparer to use for the ordering.
         /// </summary>
         /// <param name="comparer">The comparer to use.</param>
+        /// <returns>The current module instance.</returns>
         public OrderBy WithComparer(IComparer<object> comparer)
         {
             _orders.Peek().Comparer = comparer;
@@ -79,6 +81,7 @@ namespace Wyam.Core.Modules.Control
         /// documents will compare as equal.
         /// </summary>
         /// <param name="comparer">The typed comparer to use.</param>
+        /// <returns>The current module instance.</returns>
         public OrderBy WithComparer<TValue>(IComparer<TValue> comparer)
         {
             _orders.Peek().Comparer = comparer == null ? null : new ConvertingComparer<TValue>(comparer);

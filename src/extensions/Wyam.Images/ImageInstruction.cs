@@ -50,11 +50,17 @@ namespace Wyam.Images
         public Size? GetCropSize()
         {
             if (Width.HasValue && Height.HasValue)
+            {
                 return new Size(Width.Value, Height.Value);
+            }
             else if (Width.HasValue)
+            {
                 return new Size(Width.Value, 0);
+            }
             else if (Height.HasValue)
+            {
                 return new Size(0, Height.Value);
+            }
 
             return null;
         }
@@ -73,13 +79,19 @@ namespace Wyam.Images
         {
             string suffix = "";
             if (Width.HasValue)
+            {
                 suffix += "-w" + Width.Value;
+            }
 
             if (Height.HasValue)
+            {
                 suffix += "-h" + Height.Value;
+            }
 
             if (Constraint.HasValue)
+            {
                 suffix += $"-cw{Constraint.Value.Width}h{Constraint.Value.Height}";
+            }
 
             foreach (var f in Filters)
             {

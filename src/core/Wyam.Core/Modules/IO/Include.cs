@@ -32,6 +32,7 @@ namespace Wyam.Core.Modules.IO
         /// included files recursively.
         /// </summary>
         /// <param name="recursion"><c>true</c> if included content should be recursively processed.</param>
+        /// <returns>The current module instance.</returns>
         public Include WithRecursion(bool recursion = true)
         {
             _recursion = recursion;

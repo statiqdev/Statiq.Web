@@ -55,6 +55,7 @@ namespace Wyam.CodeAnalysis
         /// Filters the project based on name.
         /// </summary>
         /// <param name="predicate">A predicate that should return <c>true</c> if the project should be included.</param>
+        /// <returns>The current module instance.</returns>
         public ReadWorkspace WhereProject(Func<string, bool> predicate)
         {
             Func<string, bool> currentPredicate = _whereProject;
@@ -66,6 +67,7 @@ namespace Wyam.CodeAnalysis
         /// Filters the source code file based on path.
         /// </summary>
         /// <param name="predicate">A predicate that should return <c>true</c> if the source code file should be included.</param>
+        /// <returns>The current module instance.</returns>
         public ReadWorkspace WhereFile(Func<IFile, bool> predicate)
         {
             Func<IFile, bool> currentPredicate = _whereFile;
@@ -77,6 +79,7 @@ namespace Wyam.CodeAnalysis
         /// Filters the source code files based on extension.
         /// </summary>
         /// <param name="extensions">The extensions to include (if defined, any extensions not listed will be excluded).</param>
+        /// <returns>The current module instance.</returns>
         public ReadWorkspace WithExtensions(params string[] extensions)
         {
             _extensions = _extensions?.Concat(extensions.Select(x => x.StartsWith(".") ? x : "." + x)).ToArray()

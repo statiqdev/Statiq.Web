@@ -64,6 +64,7 @@ namespace Wyam.Git
         /// Specifies that authors should be included.
         /// </summary>
         /// <param name="authors">If set to <c>true</c> (the default), authors are included in the output.</param>
+        /// <returns>The current module instance.</returns>
         public GitContributors WithAuthors(bool authors = true)
         {
             _authors = authors;
@@ -74,7 +75,7 @@ namespace Wyam.Git
         /// Specifies that committers should be included.
         /// </summary>
         /// <param name="committers">If set to <c>true</c> (the default), committers are included in the output.</param>
-        /// <returns></returns>
+        /// <returns>The current module instance.</returns>
         public GitContributors WithCommitters(bool committers = true)
         {
             _committers = committers;
@@ -85,6 +86,7 @@ namespace Wyam.Git
         /// Specifies that contributor information should be added to each input document.
         /// </summary>
         /// <param name="contributorsMetadataKey">The metadata key to set for contributor information.</param>
+        /// <returns>The current module instance.</returns>
         public GitContributors ForEachInputDocument(string contributorsMetadataKey = GitKeys.Contributors)
         {
             _contributorsMetadataKey = contributorsMetadataKey;

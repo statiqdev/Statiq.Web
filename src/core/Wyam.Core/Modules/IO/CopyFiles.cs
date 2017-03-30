@@ -74,6 +74,7 @@ namespace Wyam.Core.Modules.IO
         /// Specifies a predicate that must be satisfied for the file to be copied.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the file should be copied.</param>
+        /// <returns>The current module instance.</returns>
         public CopyFiles Where(Func<IFile, bool> predicate)
         {
             Func<IFile, bool> currentPredicate = _predicate;
@@ -89,6 +90,7 @@ namespace Wyam.Core.Modules.IO
         /// </summary>
         /// <param name="destinationPath">A delegate that specifies an alternate destination.
         /// The parameter contains the source <see cref="IFile"/>.</param>
+        /// <returns>The current module instance.</returns>
         public CopyFiles To(Func<IFile, FilePath> destinationPath)
         {
             if (destinationPath == null)
@@ -111,6 +113,7 @@ namespace Wyam.Core.Modules.IO
         /// <param name="destinationPath">A delegate that specifies an alternate destination.
         /// The first parameter contains the source <see cref="IFile"/> and the second contains
         /// an <see cref="IFile"/> representing the calculated destination.</param>
+        /// <returns>The current module instance.</returns>
         public CopyFiles To(Func<IFile, IFile, FilePath> destinationPath)
         {
             if (destinationPath == null)
@@ -161,8 +164,8 @@ namespace Wyam.Core.Modules.IO
                             // Return the document
                             return context.GetDocument(input, file.Path, new MetadataItems
                             {
-                                {Keys.SourceFilePath, file.Path},
-                                {Keys.DestinationFilePath, destination.Path}
+                                { Keys.SourceFilePath, file.Path },
+                                { Keys.DestinationFilePath, destination.Path }
                             });
                         }
                         catch (Exception ex)

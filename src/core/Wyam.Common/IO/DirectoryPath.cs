@@ -9,12 +9,13 @@ using Wyam.Common.Execution;
 
 namespace Wyam.Common.IO
 {
-    // Initially based on code from Cake (http://cakebuild.net/)
     /// <summary>
     /// Represents a directory path.
     /// </summary>
     public sealed class DirectoryPath : NormalizedPath
     {
+        // Initially based on code from Cake (http://cakebuild.net/)
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectoryPath"/> class.
         /// The path will be considered absolute if the underlying OS file system
@@ -225,14 +226,14 @@ namespace Wyam.Common.IO
         public DirectoryPath Collapse() => new DirectoryPath(FileProvider, Collapse(this));
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.
+        /// Performs an implicit conversion from <see cref="string"/> to <see cref="DirectoryPath"/>.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
         public static implicit operator DirectoryPath(string path) => FromString(path);
 
         /// <summary>
-        /// Performs a conversion from <see cref="System.String"/> to <see cref="DirectoryPath"/>.
+        /// Performs a conversion from <see cref="string"/> to <see cref="DirectoryPath"/>.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>

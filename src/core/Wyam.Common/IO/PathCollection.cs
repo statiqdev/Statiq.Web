@@ -8,7 +8,9 @@ namespace Wyam.Common.IO
     /// <summary>
     /// An ordered collection of unique <see cref="NormalizedPath"/>.
     /// </summary>
-    public class PathCollection<TPath> : IReadOnlyList<TPath> where TPath : NormalizedPath
+    /// <typeparam name="TPath">The type of the path (file or directory).</typeparam>
+    public class PathCollection<TPath> : IReadOnlyList<TPath>
+        where TPath : NormalizedPath
     {
         private readonly List<TPath> _paths;
 
@@ -58,7 +60,7 @@ namespace Wyam.Common.IO
         /// The <see cref="Wyam.Common.IO.DirectoryPath" /> at the specified index.
         /// </value>
         /// <param name="index">The index.</param>
-        /// <returns></returns>
+        /// <returns>The path at the specified index.</returns>
         public TPath this[int index]
         {
             get { return _paths[index]; }

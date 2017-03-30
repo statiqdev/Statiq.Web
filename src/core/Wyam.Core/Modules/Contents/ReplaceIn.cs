@@ -80,6 +80,7 @@ namespace Wyam.Core.Modules.Contents
         /// with the specified options.
         /// </summary>
         /// <param name="regexOptions">The options to use (if any).</param>
+        /// <returns>The current module instance.</returns>
         public ReplaceIn IsRegex(RegexOptions regexOptions = RegexOptions.None)
         {
             _isRegex = true;
@@ -87,6 +88,7 @@ namespace Wyam.Core.Modules.Contents
             return this;
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
             if (content == null)

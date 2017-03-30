@@ -55,6 +55,7 @@ namespace Wyam.Markdown
         /// directives.
         /// </summary>
         /// <param name="escapeAt">If set to <c>true</c>, <c>@</c> symbols are HTML escaped.</param>
+        /// <returns>The current module instance.</returns>
         public Markdown EscapeAt(bool escapeAt = true)
         {
             _escapeAt = escapeAt;
@@ -65,6 +66,7 @@ namespace Wyam.Markdown
         /// Includes a set of useful advanced extensions, e.g., citations, footers, footnotes, math,
         /// grid-tables, pipe-tables, and tasks, in the Markdown processing pipeline.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public Markdown UseExtensions()
         {
             _configuration = "advanced";
@@ -75,6 +77,8 @@ namespace Wyam.Markdown
         /// Includes a set of extensions defined as a string, e.g., "pipetables", "citations",
         /// "mathematics", or "abbreviations". Separate different extensions with a '+'.
         /// </summary>
+        /// <param name="extensions">The extensions string.</param>
+        /// <returns>The current module instance.</returns>
         public Markdown UseConfiguration(string extensions)
         {
             _configuration = extensions;
@@ -86,6 +90,7 @@ namespace Wyam.Markdown
         /// the IMarkdownExtension interface.
         /// </summary>
         /// <typeparam name="TExtension">The type of the extension to use.</typeparam>
+        /// <returns>The current module instance.</returns>
         public Markdown UseExtension<TExtension>()
             where TExtension : class, IMarkdownExtension, new()
         {
@@ -95,8 +100,10 @@ namespace Wyam.Markdown
 
         /// <summary>
         /// Includes multiple custom extension in the markdown processing given by classes implementing
-        /// the IMarkdownExtension interface.
+        /// the <see cref="IMarkdownExtension"/> interface.
         /// </summary>
+        /// <param name="extensions">A sequence of types that implement <see cref="IMarkdownExtension"/>.</param>
+        /// <returns>The current module instance.</returns>
         public Markdown UseExtensions(IEnumerable<Type> extensions)
         {
             if (extensions == null)

@@ -16,6 +16,10 @@ namespace Wyam.Common.Modules
     {
         private readonly IModuleList _modules;
 
+        /// <summary>
+        /// Creates a new container module with the specified child modules.
+        /// </summary>
+        /// <param name="modules">The child modules.</param>
         protected ContainerModule(IEnumerable<IModule> modules)
         {
             _modules = (modules as IModuleList) ?? new ModuleList(modules);

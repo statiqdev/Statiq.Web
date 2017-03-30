@@ -103,7 +103,6 @@ namespace Wyam.SearchIndex
         /// <param name="searchIndexItem">A delegate that should return a <c>SearchIndexItem</c>.</param>
         /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
-        /// <exception cref="System.ArgumentNullException"></exception>
         public SearchIndex(DocumentConfig searchIndexItem, FilePath stopwordsPath = null, bool enableStemming = false)
         {
             if (searchIndexItem == null)
@@ -119,6 +118,7 @@ namespace Wyam.SearchIndex
         /// Indicates whether the host should be automatically included in generated links.
         /// </summary>
         /// <param name="includeHost"><c>true</c> to include the host.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex IncludeHost(bool includeHost = true)
         {
             _includeHost = includeHost;
@@ -129,6 +129,7 @@ namespace Wyam.SearchIndex
         /// Sets the path to a stopwords file.
         /// </summary>
         /// <param name="stopwordsPath">A file to use that contains a set of stopwords.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex WithStopwordsPath(FilePath stopwordsPath)
         {
             _stopwordsPath = stopwordsPath;
@@ -139,6 +140,7 @@ namespace Wyam.SearchIndex
         /// Controls whether stemming is turned on.
         /// </summary>
         /// <param name="enableStemming">If set to <c>true</c>, stemming is enabled.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex EnableStemming(bool enableStemming = true)
         {
             _enableStemming = enableStemming;
@@ -150,6 +152,7 @@ namespace Wyam.SearchIndex
         /// will be used to set a <c>WritePath</c> metadata value.
         /// </summary>
         /// <param name="path">The path to the output file.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex WithPath(FilePath path)
         {
             _path = _ => path;
@@ -161,6 +164,7 @@ namespace Wyam.SearchIndex
         /// will be used to set a <c>WritePath</c> metadata value.
         /// </summary>
         /// <param name="path">A delegate that should return a <see cref="FilePath"/> to the output file.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex WithPath(ContextConfig path)
         {
             if (path == null)
@@ -177,6 +181,7 @@ namespace Wyam.SearchIndex
         /// <param name="script">A script transformation function. The <see cref="StringBuilder"/> contains
         /// the generated script content. You can manipulate as appropriate and then return the final
         /// script as a <c>string</c>.</param>
+        /// <returns>The current module instance.</returns>
         public SearchIndex WithScript(Func<StringBuilder, IExecutionContext, string> script)
         {
             if (script == null)

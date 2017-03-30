@@ -110,11 +110,12 @@ namespace Wyam.Core.Modules.Control
         /// Limits the documents to be grouped to those that satisfy the supplied predicate.
         /// </summary>
         /// <param name="predicate">A delegate that should return a <c>bool</c>.</param>
+        /// <returns>The current module instance.</returns>
         public GroupByMany Where(DocumentConfig predicate)
         {
             Func<IDocument, IExecutionContext, bool> currentPredicate = _predicate;
             _predicate = currentPredicate == null
-                ? (Func<IDocument, IExecutionContext, bool>)(predicate.Invoke<bool>)
+                ? (Func<IDocument, IExecutionContext, bool>)predicate.Invoke<bool>
                 : ((x, c) => currentPredicate(x, c) && predicate.Invoke<bool>(x, c));
             return this;
         }
@@ -123,6 +124,7 @@ namespace Wyam.Core.Modules.Control
         /// Specifies an equality comparer to use for the grouping.
         /// </summary>
         /// <param name="comparer">The equality comparer to use.</param>
+        /// <returns>The current module instance.</returns>
         public GroupByMany WithComparer(IEqualityComparer<object> comparer)
         {
             _comparer = comparer;
@@ -138,6 +140,7 @@ namespace Wyam.Core.Modules.Control
         /// only end up with a single group for those documents with a group key of 1 (since the <c>int</c> key came first).
         /// </summary>
         /// <param name="comparer">The typed equality comparer to use.</param>
+        /// <returns>The current module instance.</returns>
         public GroupByMany WithComparer<TValue>(IEqualityComparer<TValue> comparer)
         {
             _comparer = comparer == null ? null : new ConvertingEqualityComparer<TValue>(comparer);
@@ -160,8 +163,8 @@ namespace Wyam.Core.Modules.Control
                 return groupings.Select(x => context.GetDocument(input,
                     new MetadataItems
                     {
-                        {Common.Meta.Keys.GroupDocuments, x.ToImmutableArray()},
-                        {Common.Meta.Keys.GroupKey, x.Key}
+                        { Common.Meta.Keys.GroupDocuments, x.ToImmutableArray() },
+                        { Common.Meta.Keys.GroupKey, x.Key }
                     })
                 );
             });

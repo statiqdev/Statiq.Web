@@ -61,6 +61,7 @@ namespace Wyam.GitHub
         /// Specifies and alternate API URL (such as to an Enterprise GitHub endpoint).
         /// </summary>
         /// <param name="url">The URL to use.</param>
+        /// <returns>The current module instance.</returns>
         public GitHub WithUrl(string url)
         {
             _url = new Uri(url);
@@ -72,6 +73,7 @@ namespace Wyam.GitHub
         /// </summary>
         /// <param name="key">The metadata key in which to store the return value of the request function.</param>
         /// <param name="request">A function with the request to make.</param>
+        /// <returns>The current module instance.</returns>
         public GitHub WithRequest(string key, Func<GitHubClient, object> request)
         {
             if (string.IsNullOrEmpty(key))
@@ -92,6 +94,7 @@ namespace Wyam.GitHub
         /// </summary>
         /// <param name="key">The metadata key in which to store the return value of the request function.</param>
         /// <param name="request">A function with the request to make.</param>
+        /// <returns>The current module instance.</returns>
         public GitHub WithRequest(string key, Func<IExecutionContext, GitHubClient, object> request)
         {
             if (string.IsNullOrEmpty(key))
@@ -112,6 +115,7 @@ namespace Wyam.GitHub
         /// </summary>
         /// <param name="key">The metadata key in which to store the return value of the request function.</param>
         /// <param name="request">A function with the request to make.</param>
+        /// <returns>The current module instance.</returns>
         public GitHub WithRequest(string key, Func<IDocument, IExecutionContext, GitHubClient, object> request)
         {
             if (string.IsNullOrEmpty(key))

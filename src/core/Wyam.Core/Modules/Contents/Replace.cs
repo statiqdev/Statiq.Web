@@ -90,6 +90,7 @@ namespace Wyam.Core.Modules.Contents
         /// with the specified options.
         /// </summary>
         /// <param name="regexOptions">The options to use (if any).</param>
+        /// <returns>The current module instance.</returns>
         public Replace IsRegex(RegexOptions regexOptions = RegexOptions.None)
         {
             _isRegex = true;
@@ -97,6 +98,7 @@ namespace Wyam.Core.Modules.Contents
             return this;
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<IDocument> Execute(object content, IDocument input, IExecutionContext context)
         {
             if (content == null)
@@ -112,7 +114,7 @@ namespace Wyam.Core.Modules.Contents
                 Match match = Regex.Match(input.Content, _search, _regexOptions);
                 if (!match.Success)
                 {
-                    return new[] {input};
+                    return new[] { input };
                 }
                 string currentDocumentContent = input.Content;
                 while (match.Success)

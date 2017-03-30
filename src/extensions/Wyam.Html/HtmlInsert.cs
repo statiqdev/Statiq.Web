@@ -55,6 +55,7 @@ namespace Wyam.Html
         /// Specifies that only the first query result should be processed (the default is <c>false</c>).
         /// </summary>
         /// <param name="first">If set to <c>true</c>, only the first result is processed.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlInsert First(bool first = true)
         {
             _first = first;
@@ -65,6 +66,7 @@ namespace Wyam.Html
         /// Specifies where in matching elements the new content should be inserted.
         /// </summary>
         /// <param name="position">A <see cref="AdjacentPosition"/> indicating where the new content should be inserted.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlInsert AtPosition(AdjacentPosition position = AdjacentPosition.BeforeEnd)
         {
             _position = position;

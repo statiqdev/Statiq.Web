@@ -164,7 +164,7 @@ namespace Wyam.Core.Modules.Contents
                         }
                         return (IEnumerable<IDocument>)metaRefreshDocuments;
                     }
-                    return new IDocument[] {};
+                    return new IDocument[] { };
                 })
                 .ToList();  // Need to materialize the parallel operation before creating the additional outputs
 

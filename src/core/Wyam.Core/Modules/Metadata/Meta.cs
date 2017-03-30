@@ -85,6 +85,7 @@ namespace Wyam.Core.Modules.Metadata
         /// with an empty initial document). This method has no effect if no modules are specified.
         /// </summary>
         /// <param name="forEachDocument"><c>true</c> to execute for every input document.</param>
+        /// <returns>The current module instance.</returns>
         public Meta ForEachDocument(bool forEachDocument = true)
         {
             _forEachDocument = forEachDocument;
@@ -95,6 +96,7 @@ namespace Wyam.Core.Modules.Metadata
         /// Ignores null values and does not add a metadata item for them.
         /// </summary>
         /// <param name="ignoreNull"><c>true</c> to ignore null values.</param>
+        /// <returns>The current module instance.</returns>
         public Meta IgnoreNull(bool ignoreNull = true)
         {
             _ignoreNull = ignoreNull;
@@ -106,6 +108,7 @@ namespace Wyam.Core.Modules.Metadata
         /// The default behavior is to set the new value regardless.
         /// </summary>
         /// <param name="onlyIfNonExisting"><c>true</c> if the new value should only be set if it doesn't already exist.</param>
+        /// <returns>The current module instance.</returns>
         public Meta OnlyIfNonExisting(bool onlyIfNonExisting = true)
         {
             _onlyIfNonExisting = onlyIfNonExisting;

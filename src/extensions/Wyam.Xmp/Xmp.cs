@@ -67,6 +67,7 @@ namespace Wyam.Xmp
         /// <param name="xmpPath">The tag name of the XMP element including the namespace prefix.</param>
         /// <param name="targetMetadata">The metadata key where the value should be added to the document.</param>
         /// <param name="isMandatory">Specifies that the input should contain the XMP metadata.</param>
+        /// <returns>The current module instance.</returns>
         public Xmp WithMetadata(string xmpPath, string targetMetadata, bool isMandatory = false)
         {
             _toSearch.Add(new XmpSearchEntry(this, isMandatory, targetMetadata, xmpPath));
@@ -101,6 +102,7 @@ namespace Wyam.Xmp
         /// </summary>
         /// <param name="xmlNamespace">The namespace to define.</param>
         /// <param name="alias">The namespace alias.</param>
+        /// <returns>The current module instance.</returns>
         public Xmp WithNamespace(string xmlNamespace, string alias)
         {
             _namespaceAlias[alias] = xmlNamespace;

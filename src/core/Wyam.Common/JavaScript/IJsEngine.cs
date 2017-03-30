@@ -44,16 +44,14 @@ namespace Wyam.Common.JavaScript
         void Execute(string code);
 
         /// <summary>
-        /// Executes code from JavaScript file. If the file should only be loaded once per lifetime of the
-        /// engine, see <see cref="RequireFile"/>.
+        /// Executes code from JavaScript file.
         /// </summary>
         /// <param name="path">Path to the JavaScript file.</param>
         /// <param name="encoding">Text encoding.</param>
         void ExecuteFile(string path, Encoding encoding = null);
 
         /// <summary>
-        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the
-        /// engine, see <see cref="RequireResource"/>.
+        /// Executes code from embedded JavaScript resource.
         /// </summary>
         /// <param name="resourceName">The case-sensitive resource name without the namespace of the specified type.</param>
         /// <param name="type">The type, that determines the assembly and whose namespace is used to scope
@@ -61,8 +59,7 @@ namespace Wyam.Common.JavaScript
         void ExecuteResource(string resourceName, Type type);
 
         /// <summary>
-        /// Executes code from embedded JavaScript resource. If the resource should only be loaded once per lifetime of the
-        /// engine, see <see cref="RequireResource"/>.
+        /// Executes code from embedded JavaScript resource.
         /// </summary>
         /// <param name="resourceName">The case-sensitive resource name.</param>
         /// <param name="assembly">The assembly, which contains the embedded resource.</param>

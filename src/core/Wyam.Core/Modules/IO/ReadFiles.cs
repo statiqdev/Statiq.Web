@@ -104,6 +104,7 @@ namespace Wyam.Core.Modules.IO
         /// Specifies a predicate that must be satisfied for the file to be read.
         /// </summary>
         /// <param name="predicate">A predicate that returns <c>true</c> if the file should be read.</param>
+        /// <returns>The current module instance.</returns>
         public ReadFiles Where(Func<IFile, bool> predicate)
         {
             Func<IFile, bool> currentPredicate = _predicate;

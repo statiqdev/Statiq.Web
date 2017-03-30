@@ -49,6 +49,7 @@ namespace Wyam.Html
         /// Specifies that only the first query result should be processed (the default is <c>false</c>).
         /// </summary>
         /// <param name="first">If set to <c>true</c>, only the first result is processed.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery First(bool first = true)
         {
             _first = first;
@@ -65,6 +66,7 @@ namespace Wyam.Html
         /// If set to <c>false</c>, inner HTML content is used for the document content.
         /// If <c>null</c>, no document content is set.
         /// </param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery SetContent(bool? outerHtml = true)
         {
             _outerHtmlContent = outerHtml;
@@ -76,6 +78,7 @@ namespace Wyam.Html
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the outer HTML.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetOuterHtml(string metadataKey = HtmlKeys.OuterHtml)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -90,6 +93,7 @@ namespace Wyam.Html
         /// corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the inner HTML.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetInnerHtml(string metadataKey = HtmlKeys.InnerHtml)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -104,6 +108,7 @@ namespace Wyam.Html
         /// the corresponding result document(s) with the specified key.
         /// </summary>
         /// <param name="metadataKey">The metadata key in which to place the text content.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetTextContent(string metadataKey = HtmlKeys.TextContent)
         {
             if (!string.IsNullOrWhiteSpace(metadataKey))
@@ -121,6 +126,7 @@ namespace Wyam.Html
         /// </summary>
         /// <param name="attributeName">Name of the attribute to get.</param>
         /// <param name="metadataKey">The metadata key in which to place the attribute value.</param>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetAttributeValue(string attributeName, string metadataKey = null)
         {
             if (string.IsNullOrWhiteSpace(metadataKey))
@@ -141,6 +147,7 @@ namespace Wyam.Html
         /// Gets the values for all attributes of each query result and sets them in the
         /// metadata of the corresponding result document(s) with keys names equal to the attribute local name.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetAttributeValues()
         {
             _metadataActions.Add((e, d) =>
@@ -158,6 +165,7 @@ namespace Wyam.Html
         /// document(s). This is equivalent to calling <c>GetOuterHtml()</c>, <c>GetInnerHtml()</c>,
         /// <c>GetTextContent()</c>, and <c>GetAttributeValues()</c> with default arguments.
         /// </summary>
+        /// <returns>The current module instance.</returns>
         public HtmlQuery GetAll()
         {
             GetOuterHtml();
