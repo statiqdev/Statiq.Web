@@ -100,12 +100,10 @@ namespace Wyam.Blog.Pipelines
                 new ModuleCollection
                 {
                     new If(
-                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml"))
-                                      && ctx.ContainsKey(BlogKeys.Image),
+                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.Image),
                         new Meta(BlogKeys.Image, ctx => ctx[BlogKeys.Image])),
                     new If(
-                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml"))
-                                      && ctx.ContainsKey(BlogKeys.HeaderTextColor),
+                        (doc, ctx) => doc.FilePath(Keys.RelativeFilePath).Equals(new FilePath("index.cshtml")) && ctx.ContainsKey(BlogKeys.HeaderTextColor),
                         new Meta(BlogKeys.HeaderTextColor, ctx => ctx[BlogKeys.HeaderTextColor]))
                 }
             },

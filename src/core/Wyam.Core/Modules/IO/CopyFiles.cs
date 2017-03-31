@@ -25,8 +25,8 @@ namespace Wyam.Core.Modules.IO
     /// with metadata representing the files copied by the module. Note that the input documents are not output by this
     /// module.
     /// </remarks>
-    /// <metadata name="SourceFilePath" type="FilePath">The full path (including file name) of the source file.</metadata>
-    /// <metadata name="DestinationFilePath" type="FilePath">The full path (including file name) of the destination file.</metadata>
+    /// <metadata cref="Keys.SourceFilePath" usage="Output">The full path (including file name) of the source file.</metadata>
+    /// <metadata cref="Keys.DestinationFilePath" usage="Output">The full path (including file name) of the destination file.</metadata>
     /// <category>Input/Output</category>
     public class CopyFiles : IModule, IAsNewDocuments
     {

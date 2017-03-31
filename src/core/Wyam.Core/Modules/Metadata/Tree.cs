@@ -32,6 +32,9 @@ namespace Wyam.Core.Modules.Metadata
     /// by rerunning this module on all the newly created documents again.
     /// </para>
     /// </remarks>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input">
+    /// Used to calculate the segments of the document in the tree.
+    /// </metadata>
     /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata>
     /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata>
     /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children

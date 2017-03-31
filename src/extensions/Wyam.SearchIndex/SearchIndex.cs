@@ -61,8 +61,8 @@ namespace Wyam.SearchIndex
     /// });
     /// </code>
     /// </example>
-    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output search index file.</metadata>
-    /// <metadata name="WritePath" type="FilePath">Relative path to the output search index file (primarily to support the WriteFiles module).</metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output search index file.</metadata>
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>
     public class SearchIndex : IModule
     {

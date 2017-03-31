@@ -25,8 +25,8 @@ namespace Wyam.Feeds
     /// This module outputs a document for each of the selected feed types. Input documents
     /// are not output by this module.
     /// </remarks>
-    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output feed file.</metadata>
-    /// <metadata name="WritePath" type="FilePath">Relative path to the output feed file (primarily to support the WriteFiles module).</metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output feed file.</metadata>
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>
     public class GenerateFeeds : IModule
     {

@@ -63,6 +63,10 @@ namespace Wyam.Razor
     /// That said, a lot of functionality does function the same as it does in ASP.NET MVC.
     /// </para>
     /// </remarks>
+    /// <metadata cref="Keys.SourceFileName" usage="Input">
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input" />
+    /// Used to determine if the source file name contains the ignore prefix.
+    /// </metadata>
     /// <category>Templates</category>
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule

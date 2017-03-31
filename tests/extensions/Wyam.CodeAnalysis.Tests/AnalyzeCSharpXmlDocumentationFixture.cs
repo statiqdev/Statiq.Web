@@ -873,6 +873,62 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void SummaryWithSeeElementWithNotFoundSymbol()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Check <see cref=""Blue""/> class</summary>
+                        class Green
+                        {
+                        }
+
+                        class Red
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Check <code>Blue</code> class", GetResult(results, "Green")["Summary"]);
+            }
+
+            [Test]
+            public void SummaryWithSeeElementWithNonCompilationGenericSymbol()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>Check <see cref=""IEnumerable{string}""/> class</summary>
+                        class Green
+                        {
+                        }
+
+                        class Red
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("Check <code>IEnumerable&lt;string&gt;</code> class", GetResult(results, "Green")["Summary"]);
+            }
+
+            [Test]
             public void SummaryWithSeeElementToMethod()
             {
                 // Given

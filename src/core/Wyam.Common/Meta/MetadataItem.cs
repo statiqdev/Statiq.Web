@@ -53,7 +53,8 @@ namespace Wyam.Common.Meta
         /// <param name="cacheValue">if set to <c>true</c>, cache the value after the first request.</param>
         public MetadataItem(string key, Func<IMetadata, object> value, bool cacheValue = false)
         {
-            Pair = new KeyValuePair<string, object>(key,
+            Pair = new KeyValuePair<string, object>(
+                key,
                 cacheValue ? new CachedDelegateMetadataValue(value) : new DelegateMetadataValue(value));
         }
 

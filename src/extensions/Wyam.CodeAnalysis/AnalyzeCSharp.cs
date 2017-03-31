@@ -31,6 +31,18 @@ namespace Wyam.CodeAnalysis
     /// for each symbol on to a template engine like Razor and generate pages for each symbol by having the
     /// template use the document metadata.
     /// </remarks>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output">
+    /// A generated relative file path specific to the symbol.
+    /// </metadata>
+    /// <metadata cref="Keys.RelativeFilePathBase" usage="Output">
+    /// A generated relative file path without extension specific to the symbol.
+    /// </metadata>
+    /// <metadata cref="Keys.RelativeFileDir" usage="Output">
+    /// A generated relative file directory specific to the symbol.
+    /// </metadata>
+    /// <metadata cref="Keys.WritePath" usage="Output">
+    /// A generated write file path specific to the symbol.
+    /// </metadata>
     /// <include file="Documentation.xml" path="/Documentation/AnalyzeCSharp/*" />
     /// <category>Metadata</category>
     public class AnalyzeCSharp : IModule

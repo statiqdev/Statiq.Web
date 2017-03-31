@@ -25,6 +25,16 @@ namespace Wyam.CodeAnalysis
     /// Note that this requires the MSBuild tools to be installed (included with Visual Studio).
     /// See https://github.com/dotnet/roslyn/issues/212 and https://roslyn.codeplex.com/workitem/218.
     /// </summary>
+    /// <metadata cref="Keys.SourceFileRoot" usage="Output" />
+    /// <metadata cref="Keys.SourceFileBase" usage="Output" />
+    /// <metadata cref="Keys.SourceFileExt" usage="Output" />
+    /// <metadata cref="Keys.SourceFileName" usage="Output" />
+    /// <metadata cref="Keys.SourceFileDir" usage="Output" />
+    /// <metadata cref="Keys.SourceFilePath" usage="Output" />
+    /// <metadata cref="Keys.SourceFilePathBase" usage="Output" />
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
+    /// <metadata cref="Keys.RelativeFilePathBase" usage="Output" />
+    /// <metadata cref="Keys.RelativeFileDir" usage="Output" />
     public abstract class ReadWorkspace : IModule, IAsNewDocuments
     {
         private readonly FilePath _path;
@@ -116,7 +126,8 @@ namespace Wyam.CodeAnalysis
                                 .Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
                                 .Select(x => context.FileSystem.GetInputFile(x.FilePath))
                                 .Where(x => x.Exists && (_whereFile == null || _whereFile(x)) && (_extensions == null || _extensions.Contains(x.Path.Extension)))
-                                .Select(file => {
+                                .Select(file =>
+                                {
                                     Trace.Verbose($"Read file {file.Path.FullPath}");
                                     DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
                                     FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectFile.Path.Directory.GetRelativePath(file.Path);

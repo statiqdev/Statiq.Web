@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.IO;
 
 namespace Wyam.Common.Meta
 {
@@ -11,103 +13,124 @@ namespace Wyam.Common.Meta
     /// </summary>
     public static class Keys
     {
-        // Settings
-
         /// <summary>
         /// The host to use when generating links.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string Host = nameof(Host);
 
         /// <summary>
         /// Indicates if generated links should use HTTPS instead of HTTP as the scheme.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string LinksUseHttps = nameof(LinksUseHttps);
 
         /// <summary>
         /// The default root path to use when generating links.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string LinkRoot = nameof(LinkRoot);
 
         /// <summary>
         /// Indicates whether to hide index pages by default when generating links.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string LinkHideIndexPages = nameof(LinkHideIndexPages);
 
         /// <summary>
         /// Indicates whether to hide ".html" and ".htm" extensions by default when generating links.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string LinkHideExtensions = nameof(LinkHideExtensions);
 
         /// <summary>
         /// Indicates whether caching should be used.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string UseCache = nameof(UseCache);
 
         /// <summary>
         /// Indicates whether to clean the output path on each execution.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string CleanOutputPath = nameof(CleanOutputPath);
 
         /// <summary>
         /// Indicates the culture to use for reading and interpreting dates as input.
         /// </summary>
+        /// <type><see cref="string"/> or <see cref="CultureInfo"/></type>
         public const string DateTimeInputCulture = nameof(DateTimeInputCulture);
 
         /// <summary>
         /// Indicates the culture to use for displaying dates in output.
         /// </summary>
+        /// <type><see cref="string"/> or <see cref="CultureInfo"/></type>
         public const string DateTimeDisplayCulture = nameof(DateTimeDisplayCulture);
 
         // ReadFile/WriteFiles/CopyFiles
 
         /// <summary>
-        /// The absolute Path to the folder of the original file.
+        /// The absolute root search path without any nested directories
+        /// (I.e., the path that was searched, and possibly descended, for the given pattern).
         /// </summary>
+        /// <type><see cref="DirectoryPath"/></type>
         public const string SourceFileRoot = nameof(SourceFileRoot);
 
         /// <summary>
         /// The name of the original file without extension.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string SourceFileBase = nameof(SourceFileBase);
 
         /// <summary>
-        /// The extension of the original file (including the .).
+        /// The extension of the original file (including the ".").
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string SourceFileExt = nameof(SourceFileExt);
 
         /// <summary>
         /// The file name of the original file with extension.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string SourceFileName = nameof(SourceFileName);
 
         /// <summary>
-        /// The absolute Path to the folder of the original file.
+        /// The absolute path to the folder of the original file.
         /// </summary>
+        /// <type><see cref="DirectoryPath"/></type>
         public const string SourceFileDir = nameof(SourceFileDir);
 
         /// <summary>
         /// The absolute path to the original file.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string SourceFilePath = nameof(SourceFilePath);
 
         /// <summary>
         /// The absolute path to the original file without the file extension.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string SourceFilePathBase = nameof(SourceFilePathBase);
 
         /// <summary>
-        /// The path to the original file relative to the input folder.
+        /// The path to the file relative to the input folder. This metadata
+        /// value is used when generating links to the document.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string RelativeFilePath = nameof(RelativeFilePath);
 
+        ///*** STOPED DOING FIND USAGES HERE
+
         /// <summary>
-        /// The path to the original file relative to the input folder without extension.
+        /// The path to the file relative to the input folder without extension.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string RelativeFilePathBase = nameof(RelativeFilePathBase);
 
         /// <summary>
-        /// The path to the original files folder relative to the input folder.
+        /// The path to the folder containing the file relative to the input folder.
         /// </summary>
+        /// <type><see cref="DirectoryPath"/></type>
         public const string RelativeFileDir = nameof(RelativeFileDir);
 
         /// <summary>

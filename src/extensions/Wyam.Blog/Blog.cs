@@ -23,6 +23,45 @@ namespace Wyam.Blog
     /// <summary>
     /// A recipe for creating blogging websites.
     /// </summary>
+    /// <metadata cref="BlogKeys.Title" usage="Setting">The title of the blog.</metadata>
+    /// <metadata cref="BlogKeys.Title" usage="Input">The title of the post or page.</metadata>
+    /// <metadata cref="BlogKeys.Image" usage="Setting">The relative path to an image to display on the home page.</metadata>
+    /// <metadata cref="BlogKeys.Image" usage="Input">The relative path to an image for the current post or page (often shown in the header of the page).</metadata>
+    /// <metadata cref="BlogKeys.HeaderTextColor" usage="Setting">
+    /// Changes the header and nav bar text color on the home page.
+    /// The value should be a valid CSS color. This setting has no effect in themes where the header
+    /// text is not over an image.
+    /// </metadata>
+    /// <metadata cref="BlogKeys.HeaderTextColor" usage="Input">
+    /// Changes the header and nav bar text color on the current post or page.
+    /// The value should be a valid CSS color and you should surround it
+    /// in quotes when defining in front matter. This setting has no effect in themes where the header
+    /// text is not over an image.
+    /// </metadata>
+    /// <metadata cref="BlogKeys.Description" usage="Setting" />
+    /// <metadata cref="BlogKeys.Intro" usage="Setting" />
+    /// <metadata cref="BlogKeys.PostsPath" usage="Setting" />
+    /// <metadata cref="BlogKeys.CaseInsensitiveTags" usage="Setting" />
+    /// <metadata cref="BlogKeys.MarkdownExtensions" usage="Setting" />
+    /// <metadata cref="BlogKeys.MarkdownExternalExtensions" usage="Setting" />
+    /// <metadata cref="BlogKeys.IncludeDateInPostPath" usage="Setting" />
+    /// <metadata cref="BlogKeys.MetaRefreshRedirects" usage="Setting" />
+    /// <metadata cref="BlogKeys.NetlifyRedirects" usage="Setting" />
+    /// <metadata cref="BlogKeys.RssPath" usage="Setting" />
+    /// <metadata cref="BlogKeys.AtomPath" usage="Setting" />
+    /// <metadata cref="BlogKeys.RdfPath" usage="Setting" />
+    /// <metadata cref="BlogKeys.ValidateAbsoluteLinks" usage="Setting" />
+    /// <metadata cref="BlogKeys.ValidateRelativeLinks" usage="Setting" />
+    /// <metadata cref="BlogKeys.ValidateLinksAsError" usage="Setting" />
+    /// <metadata cref="BlogKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.Published" usage="Input" />
+    /// <metadata cref="BlogKeys.Tags" usage="Input" />
+    /// <metadata cref="BlogKeys.Lead" usage="Input" />
+    /// <metadata cref="BlogKeys.Excerpt" usage="Output" />
+    /// <metadata cref="BlogKeys.ShowInNavbar" usage="Input" />
+    /// <metadata cref="BlogKeys.Content" usage="Output" />
+    /// <metadata cref="BlogKeys.Posts" usage="Output" />
+    /// <metadata cref="BlogKeys.Tag" usage="Output" />
     public class Blog : Recipe
     {
         /// <inheritdoc cref="Pipelines.Pages" />
@@ -75,8 +114,6 @@ namespace Wyam.Blog
             engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
 
             base.Apply(engine);
-            // TODO: Revert the BlogPipelines class and obsolete all the members, search and replace the themes to point to Blog.Xyz instead
-
         }
 
         /// <inheritdoc />

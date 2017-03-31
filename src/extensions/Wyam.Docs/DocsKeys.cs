@@ -7,23 +7,20 @@ using Wyam.Common.IO;
 
 namespace Wyam.Docs
 {
+    /// <summary>
+    /// Metadata keys used by the docs recipe.
+    /// </summary>
     public static class DocsKeys
     {
-        // ***Global
-
         /// <summary>
-        /// When used as a global setting, indicates the title of your site. Otherwise,
-        /// when used in document metadata, indicates the title of the post or page.
+        /// The title of the site, post, or page.
         /// </summary>
-        /// <scope>Global</scope>
-        /// <scope>Document</scope>
         /// <type><see cref="string"/></type>
         public const string Title = nameof(Title);
 
         /// <summary>
         /// The path to a logo to use for the site.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="FilePath"/></type>
         public const string Logo = nameof(Logo);
 
@@ -35,7 +32,6 @@ namespace Wyam.Docs
         /// your own globbing pattern (or more than one globbing pattern) if your source
         /// files are found elsewhere.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string SourceFiles = nameof(SourceFiles);
 
@@ -43,7 +39,6 @@ namespace Wyam.Docs
         /// Indicates where to locate assemblies for the API documentation. You can specify
         /// one (or more) globbing pattern(s).
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string AssemblyFiles = nameof(AssemblyFiles);
 
@@ -52,7 +47,6 @@ namespace Wyam.Docs
         /// The edit link combines this base URL with the relative path of the
         /// input file.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="string"/></type>
         public const string BaseEditUrl = nameof(BaseEditUrl);
 
@@ -60,7 +54,6 @@ namespace Wyam.Docs
         /// Controls whether the global namespace is included in your API
         /// documentation.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string IncludeGlobalNamespace = nameof(IncludeGlobalNamespace);
 
@@ -69,7 +62,6 @@ namespace Wyam.Docs
         /// blog posts or content pages should be automatically linked to the
         /// corresponding API documentation page (the default is <c>true</c>).
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string AutoLinkTypes = nameof(AutoLinkTypes);
 
@@ -78,7 +70,6 @@ namespace Wyam.Docs
         /// the year and date in the output path of blog posts.
         /// The default value is <c>false</c>.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
 
@@ -86,7 +77,6 @@ namespace Wyam.Docs
         /// Set to <c>false</c> to prevent a search index for API types from being
         /// generated and presented on the API pages.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string SearchIndex = nameof(SearchIndex);
 
@@ -94,7 +84,6 @@ namespace Wyam.Docs
         /// Set this to control the activated set of Markdown extensions for the
         /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="string"/></type>
         public const string MarkdownExtensions = nameof(MarkdownExtensions);
 
@@ -102,7 +91,6 @@ namespace Wyam.Docs
         /// Set this to add extension Markdown extensions for the Markdig Markdown
         /// renderer. The default value is null;
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="IEnumerable{IMarkDownExtension}"/></type>
         public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
 
@@ -113,7 +101,6 @@ namespace Wyam.Docs
         /// your own pipelines for files under certain folders and you don't
         /// want the primary content page pipelines to pick them up.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string IgnoreFolders = nameof(IgnoreFolders);
 
@@ -122,7 +109,6 @@ namespace Wyam.Docs
         /// for any redirected documents (as indicated by a <c>RedirectFrom</c>
         /// metadata value in the document).
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
 
@@ -131,7 +117,6 @@ namespace Wyam.Docs
         /// a Netlify <c>_redirects</c> file from redirected documents
         /// (as indicated by a <c>RedirectFrom</c> metadata value).
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
@@ -140,7 +125,6 @@ namespace Wyam.Docs
         /// The default value is <c>feed.rss</c>. Set to <c>null</c>
         /// to prevent generating an RSS feed.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
         public const string BlogRssPath = nameof(BlogRssPath);
 
@@ -149,7 +133,6 @@ namespace Wyam.Docs
         /// The default value is <c>feed.atom</c>. Set to <c>null</c>
         /// to prevent generating an Atom feed.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
         public const string BlogAtomPath = nameof(BlogAtomPath);
 
@@ -158,7 +141,6 @@ namespace Wyam.Docs
         /// The default value is <c>null</c> which
         /// prevents generating an RDF feed.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
         public const string BlogRdfPath = nameof(BlogRdfPath);
 
@@ -167,7 +149,6 @@ namespace Wyam.Docs
         /// validate all absolute links. Note that this may add considerable
         /// time to your generation process.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string ValidateAbsoluteLinks = nameof(ValidateAbsoluteLinks);
 
@@ -175,7 +156,6 @@ namespace Wyam.Docs
         /// Set to <c>true</c> (the default value) to
         /// validate all relative links.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
 
@@ -183,17 +163,13 @@ namespace Wyam.Docs
         /// Set to <c>true</c> (the default value is <c>false</c>) to
         /// report errors on link validation failures.
         /// </summary>
-        /// <scope>Global</scope>
         /// <type><see cref="bool"/></type>
         public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
-
-        // ***Document
 
         /// <summary>
         /// Set by the system for documents that support editing. Contains the
         /// relative path to the document to be appended to the base edit URL.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="FilePath"/></type>
         public const string EditFilePath = nameof(EditFilePath);
 
@@ -201,7 +177,6 @@ namespace Wyam.Docs
         /// Used to provide a description for pages and blog posts that can be used
         /// in the meta description tag and also for page listings.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="string"/></type>
         public const string Description = nameof(Description);
 
@@ -209,7 +184,6 @@ namespace Wyam.Docs
         /// Used by blog posts to indicate the category of the post.
         /// Also used by pages to indicate the category of the page.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="string"/></type>
         public const string Category = nameof(Category);
 
@@ -219,7 +193,6 @@ namespace Wyam.Docs
         /// is 1000 (I.e., after most pages that do have a defined
         /// order).
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="int"/></type>
         public const string Order = nameof(Order);
 
@@ -227,7 +200,6 @@ namespace Wyam.Docs
         /// Setting this to <c>true</c> for a document will remove the
         /// sidebar from the page.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="bool"/></type>
         public const string NoSidebar = nameof(NoSidebar);
 
@@ -235,7 +207,6 @@ namespace Wyam.Docs
         /// Setting this to <c>true</c> for a document will remove the
         /// surrounding container from a page, including the title.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="bool"/></type>
         public const string NoContainer = nameof(NoContainer);
 
@@ -243,7 +214,6 @@ namespace Wyam.Docs
         /// Setting this to <c>true</c> for a document will remove the
         /// title banner from the page.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="bool"/></type>
         public const string NoTitle = nameof(NoTitle);
 
@@ -251,21 +221,18 @@ namespace Wyam.Docs
         /// Setting this to <c>true</c> will remove the gutter area
         /// from around a page.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="bool"/></type>
         public const string NoGutter = nameof(NoGutter);
 
         /// <summary>
         /// Used for blog posts to store the date of the post.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="DateTime"/> or <see cref="string"/></type>
         public const string Published = nameof(Published);
 
         /// <summary>
         /// Used by blog posts and pages to indicate the author.
         /// </summary>
-        /// <scope>Document</scope>
         /// <type><see cref="string"/></type>
         public const string Author = nameof(Author);
     }

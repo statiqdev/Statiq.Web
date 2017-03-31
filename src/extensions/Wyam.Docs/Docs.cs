@@ -20,6 +20,37 @@ namespace Wyam.Docs
     /// <summary>
     /// A recipe for creating documentation websites.
     /// </summary>
+    /// <metadata cref="DocsKeys.Title" usage="Setting">The title of the site.</metadata>
+    /// <metadata cref="DocsKeys.Title" usage="Input">The title of the post or page.</metadata>
+    /// <metadata cref="DocsKeys.Logo" usage="Setting" />
+    /// <metadata cref="DocsKeys.SourceFiles" usage="Setting" />
+    /// <metadata cref="DocsKeys.AssemblyFiles" usage="Setting" />
+    /// <metadata cref="DocsKeys.BaseEditUrl" usage="Setting" />
+    /// <metadata cref="DocsKeys.IncludeGlobalNamespace" usage="Setting" />
+    /// <metadata cref="DocsKeys.AutoLinkTypes" usage="Setting" />
+    /// <metadata cref="DocsKeys.IncludeDateInPostPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.SearchIndex" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownExtensions" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownExternalExtensions" usage="Setting" />
+    /// <metadata cref="DocsKeys.IgnoreFolders" usage="Setting" />
+    /// <metadata cref="DocsKeys.MetaRefreshRedirects" usage="Setting" />
+    /// <metadata cref="DocsKeys.NetlifyRedirects" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogRssPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogAtomPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogRdfPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
+    /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
+    /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
+    /// <metadata cref="DocsKeys.EditFilePath" usage="Output" />
+    /// <metadata cref="DocsKeys.Description" usage="Input" />
+    /// <metadata cref="DocsKeys.Category" usage="Input" />
+    /// <metadata cref="DocsKeys.Order" usage="Input" />
+    /// <metadata cref="DocsKeys.NoSidebar" usage="Input" />
+    /// <metadata cref="DocsKeys.NoContainer" usage="Input" />
+    /// <metadata cref="DocsKeys.NoTitle" usage="Input" />
+    /// <metadata cref="DocsKeys.NoGutter" usage="Input" />
+    /// <metadata cref="DocsKeys.Published" usage="Input" />
+    /// <metadata cref="DocsKeys.Author" usage="Input" />
     public class Docs : Recipe
     {
         private static readonly ConcurrentDictionary<string, string> TypeNamesToLink = new ConcurrentDictionary<string, string>();

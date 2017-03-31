@@ -41,6 +41,7 @@ namespace Wyam.Less
     /// );
     /// </code>
     /// </example>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input" />
     /// <category>Templates</category>
     public class Less : IModule
     {

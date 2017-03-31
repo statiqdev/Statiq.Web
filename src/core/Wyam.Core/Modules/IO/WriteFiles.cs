@@ -30,6 +30,18 @@ namespace Wyam.Core.Modules.IO
     /// should be output as a .xml file instead, define the <c>WriteExtension</c> metadata value
     /// in the front matter of the page.
     /// </remarks>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input">
+    /// Used in combination with <see cref="Keys.WriteExtension"/> to determine an
+    /// alternate location to write the file.
+    /// </metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
+    /// <metadata cref="Keys.RelativeFileDir" usage="Input">
+    /// Used in combination with <see cref="Keys.WriteFileName"/> to determine an
+    /// alternate location to write the file.
+    /// </metadata>
+    /// <metadata cref="Keys.WriteExtension" usage="Input" />
+    /// <metadata cref="Keys.WriteFileName" usage="Input" />
+    /// <metadata cref="Keys.WritePath" usage="Input" />
     /// <metadata name="DestinationFilePath" type="FilePath">The full absolute path (including file name)
     /// of the destination file.</metadata>
     /// <metadata name="DestinationFilePathBase" type="FilePath">The full absolute path (including file name)

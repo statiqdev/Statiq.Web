@@ -22,6 +22,9 @@ namespace Wyam.Core.Modules.Control
     /// in more than one output document, multiple clones of the input document will be made for each one.
     /// The output document content is set to the original input document content.
     /// </remarks>
+    /// <metadata cref="Keys.SourceFilePath" usage="Input">
+    /// Used as the default location at which to search for sidecar files for a given document.
+    /// </metadata>
     /// <category>Control</category>
     public class Sidecar : ContainerModule
     {

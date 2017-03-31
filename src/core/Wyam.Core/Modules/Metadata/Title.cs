@@ -19,6 +19,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <remarks>
     /// This will split the title at special characters, capitalize first letters, remove extensions, etc.
     /// </remarks>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input" />
     /// <metadata name="Title" type="string">The title of the document.</metadata>
     /// <category>Metadata</category>
     public class Title : IModule

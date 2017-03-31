@@ -34,6 +34,8 @@ namespace Wyam.Core.Modules.Contents
     /// <para>This module outputs any meta refresh pages as well as any additional redirect files
     /// you specify. It does not output the original input files.</para>
     /// </remarks>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output meta refresh
     /// page or output redirect listing file.</metadata>
     /// <metadata name="WritePath" type="FilePath">Relative path to the meta refresh page or
@@ -154,12 +156,12 @@ namespace Wyam.Core.Modules.Contents
   <body> 
     <p>This page has moved to a <a href=""{url}"">{url}</a></p> 
   </body>  
-</html>
-                                "), new MetadataItems
-                                {
-                                    { Keys.RelativeFilePath, outputPath },
-                                    { Keys.WritePath, outputPath }
-                                }));
+</html>"),
+                                        new MetadataItems
+                                        {
+                                            { Keys.RelativeFilePath, outputPath },
+                                            { Keys.WritePath, outputPath }
+                                        }));
                             }
                         }
                         return (IEnumerable<IDocument>)metaRefreshDocuments;
