@@ -32,11 +32,9 @@ namespace Wyam.Git
     /// (including those that didn't have commit information).
     /// </para>
     /// </remarks>
-    /// <metadata name="ContributorName" type="string">The name of the contributor.</metadata>
-    /// <metadata name="ContributorEmail" type="string">The email of the contributor.</metadata>
-    /// <metadata name="Commits" type="IReadOnlyList&lt;IDocument&gt;">
-    /// A document representing each commit by this contributor that contains the metadata specified in <see cref="GitCommits"/>.
-    /// </metadata>
+    /// <metadata cref="GitKeys.ContributorName" usage="Output"/>
+    /// <metadata cref="GitKeys.ContributorEmail" usage="Output"/>
+    /// <metadata cref="GitKeys.Commits" usage="Output"/>
     /// <category>Metadata</category>
     public class GitContributors : GitModule
     {

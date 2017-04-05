@@ -11,6 +11,7 @@ namespace Wyam.Core.Modules.Metadata
     /// Flattens a tree structure given child documents are stored in a given metadata key ("Children" by default).
     /// The flattened documents are returned in no particular order.
     /// </summary>
+    /// <metadata cref="Keys.Children" usage="Input"/>
     /// <category>Metadata</category>
     public class Flatten : IModule
     {

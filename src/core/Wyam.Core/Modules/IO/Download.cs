@@ -26,6 +26,8 @@ namespace Wyam.Core.Modules.IO
     /// of this module. If you want to retain the original input documents, consider using the
     /// <see cref="ConcatBranch"/> module.
     /// </remarks>
+    /// <metadata cref="Keys.SourceUri" usage="Output" />
+    /// <metadata cref="Keys.SourceHeaders" usage="Output" />
     /// <category>Input/Output</category>
     public class Download : IModule
     {

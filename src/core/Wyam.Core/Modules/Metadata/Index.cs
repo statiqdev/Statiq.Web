@@ -12,7 +12,7 @@ namespace Wyam.Core.Modules.Metadata
     /// <summary>
     /// Adds a one-based index to every document as metadata.
     /// </summary>
-    /// <metadata name="Index" type="int">The one-based index of the current document relative to other documents in the pipeline.</metadata>
+    /// <metadata cref="Keys.Index" usage="Output" />
     /// <category>Metadata</category>
     public class Index : IModule
     {

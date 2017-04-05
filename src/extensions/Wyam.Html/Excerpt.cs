@@ -28,8 +28,7 @@ namespace Wyam.Html
     /// and will use the outer HTML content. In both cases, the excerpt is placed in metadata with a key of <c>Excerpt</c>.
     /// The content of the original input document is left unchanged.
     /// </remarks>
-    /// <metadata name="Excerpt" type="string">Contains the content of the first result from the query
-    /// selector (unless an alternate metadata key is specified).</metadata>
+    /// <metadata cref="HtmlKeys.Excerpt" usage="Output"/>
     /// <category>Metadata</category>
     public class Excerpt : IModule
     {

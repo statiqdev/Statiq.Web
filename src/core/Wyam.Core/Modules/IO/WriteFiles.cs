@@ -34,7 +34,6 @@ namespace Wyam.Core.Modules.IO
     /// Used in combination with <see cref="Keys.WriteExtension"/> to determine an
     /// alternate location to write the file.
     /// </metadata>
-    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
     /// <metadata cref="Keys.RelativeFileDir" usage="Input">
     /// Used in combination with <see cref="Keys.WriteFileName"/> to determine an
     /// alternate location to write the file.
@@ -42,24 +41,20 @@ namespace Wyam.Core.Modules.IO
     /// <metadata cref="Keys.WriteExtension" usage="Input" />
     /// <metadata cref="Keys.WriteFileName" usage="Input" />
     /// <metadata cref="Keys.WritePath" usage="Input" />
-    /// <metadata name="DestinationFilePath" type="FilePath">The full absolute path (including file name)
-    /// of the destination file.</metadata>
-    /// <metadata name="DestinationFilePathBase" type="FilePath">The full absolute path (including file name)
-    /// of the destination file without the file extension.</metadata>
-    /// <metadata name="DestinationFileBase" type="FilePath">The file name without any extension. Equivalent
-    /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileExt" type="string">The extension of the file. Equivalent
-    /// to <c>Path.GetExtension(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileName" type="FilePath">The full file name. Equivalent
-    /// to <c>Path.GetFileName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="DestinationFileDir" type="DirectoryPath">The full absolute directory of the file.
-    /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.</metadata>
-    /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam output folder.</metadata>
-    /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam output folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file
-    /// from the Wyam output folder.</metadata>
+    /// <metadata cref="Keys.WritePath" usage="Output">
+    /// The write path is output if the module is in metadata-only mode so that following
+    /// executions of the <see cref="WriteFiles"/> module will write the document to the
+    /// calculated output path.
+    /// </metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
+    /// <metadata cref="Keys.RelativeFilePathBase" usage="Output" />
+    /// <metadata cref="Keys.RelativeFileDir" usage="Output" />
+    /// <metadata cref="Keys.DestinationFileBase" usage="Output" />
+    /// <metadata cref="Keys.DestinationFileExt" usage="Output" />
+    /// <metadata cref="Keys.DestinationFileName" usage="Output" />
+    /// <metadata cref="Keys.DestinationFileDir" usage="Output" />
+    /// <metadata cref="Keys.DestinationFilePath" usage="Output" />
+    /// <metadata cref="Keys.DestinationFilePathBase" usage="Output" />
     /// <category>Input/Output</category>
     public class WriteFiles : IModule
     {

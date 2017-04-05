@@ -35,17 +35,13 @@ namespace Wyam.Core.Modules.Metadata
     /// <metadata cref="Keys.RelativeFilePath" usage="Input">
     /// Used to calculate the segments of the document in the tree.
     /// </metadata>
-    /// <metadata name="Parent" type="IDocument">The parent of this node or <c>null</c> if it is a root.</metadata>
-    /// <metadata name="Children" type="ReadOnlyCollection&lt;IDocument&gt;">All the children of this node.</metadata>
-    /// <metadata name="PreviousSibling" type="IDocument">The previous sibling, that is the previous node in the children
-    /// collection of the parent or <c>null</c> if this is the first node in the collection or the parent is null.</metadata>
-    /// <metadata name="NextSibling" type="IDocument">The next sibling, that is the next node in the children collection
-    /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.</metadata>
-    /// <metadata name="Next" type="IDocument">The next node in the tree using a depth-first
-    /// search or <c>null</c> if this was the last node.</metadata>
-    /// <metadata name="Previous" type="IDocument">The previous node in the tree using a depth-first
-    /// search or <c>null</c> if this was the first node.</metadata>
-    /// <metadata name="TreePath" type="object[]">The path that represents this node in the tree.</metadata>
+    /// <metadata cref="Keys.Parent" usage="Output"/>
+    /// <metadata cref="Keys.Children" usage="Output"/>
+    /// <metadata cref="Keys.PreviousSibling" usage="Output"/>
+    /// <metadata cref="Keys.NextSibling" usage="Output"/>
+    /// <metadata cref="Keys.Next" usage="Output"/>
+    /// <metadata cref="Keys.Previous" usage="Output"/>
+    /// <metadata cref="Keys.TreePath" usage="Output"/>
     /// <category>Metadata</category>
     public class Tree : IModule
     {

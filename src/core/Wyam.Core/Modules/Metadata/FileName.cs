@@ -24,10 +24,9 @@ namespace Wyam.Core.Modules.Metadata
     /// etc.
     /// </remarks>
     /// <metadata cref="Keys.SourceFileName" usage="Input" />
-    /// <metadata name="WriteFileName" type="FilePath">Contains the optimized filename (unless
-    /// an alternate metadata key was specified).</metadata>
-    /// <metadata name="WritePath" type="FilePath">Contains the full path with the optimized filename (unless
-    /// an alternate metadata key was specified).</metadata>
+    /// <metadata cref="Keys.RelativeFileDir" usage="Input" />
+    /// <metadata cref="Keys.WriteFileName" usage="Output" />
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Metadata</category>
     public class FileName : IModule
     {

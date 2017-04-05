@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
 
 namespace Wyam.CodeAnalysis
 {
@@ -17,25 +18,16 @@ namespace Wyam.CodeAnalysis
     /// <remarks>
     /// The output of this module is similar to executing the ReadFiles module on all source files in the solution.
     /// </remarks>
-    /// <metadata name="SourceFileRoot" type="DirectoryPath">The absolute root search path without any nested directories
-    /// (I.e., the path that was searched, and possibly descended, for the given pattern).</metadata>
-    /// <metadata name="SourceFilePath" type="FilePath">The full absolute path of the file (including file name).</metadata>
-    /// <metadata name="SourceFilePathBase" type="FilePath">The full absolute path of the file (including file name)
-    /// without the file extension.</metadata>
-    /// <metadata name="SourceFileBase" type="FilePath">The file name without any extension. Equivalent
-    /// to <c>Path.GetFileNameWithoutExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileExt" type="string">The extension of the file. Equivalent
-    /// to <c>Path.GetExtension(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileName" type="FilePath">The full file name. Equivalent
-    /// to <c>Path.GetFileName(SourceFilePath)</c>.</metadata>
-    /// <metadata name="SourceFileDir" type="DirectoryPath">The full absolute directory of the file.
-    /// Equivalent to <c>Path.GetDirectoryName(SourceFilePath).</c></metadata>
-    /// <metadata name="RelativeFilePath" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam input folder.</metadata>
-    /// <metadata name="RelativeFilePathBase" type="FilePath">The relative path to the file (including file name)
-    /// from the Wyam input folder without the file extension.</metadata>
-    /// <metadata name="RelativeFileDir" type="DirectoryPath">The relative directory of the file
-    /// from the Wyam input folder.</metadata>
+    /// <metadata cref="Keys.SourceFileRoot" usage="Output" />
+    /// <metadata cref="Keys.SourceFileBase" usage="Output" />
+    /// <metadata cref="Keys.SourceFileExt" usage="Output" />
+    /// <metadata cref="Keys.SourceFileName" usage="Output" />
+    /// <metadata cref="Keys.SourceFileDir" usage="Output" />
+    /// <metadata cref="Keys.SourceFilePath" usage="Output" />
+    /// <metadata cref="Keys.SourceFilePathBase" usage="Output" />
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
+    /// <metadata cref="Keys.RelativeFilePathBase" usage="Output" />
+    /// <metadata cref="Keys.RelativeFileDir" usage="Output" />
     /// <category>Input/Output</category>
     public class ReadSolution : ReadWorkspace
     {

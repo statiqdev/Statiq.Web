@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.Documents;
 using Wyam.Common.IO;
 
 namespace Wyam.Common.Meta
@@ -119,8 +120,6 @@ namespace Wyam.Common.Meta
         /// <type><see cref="FilePath"/></type>
         public const string RelativeFilePath = nameof(RelativeFilePath);
 
-        ///*** STOPED DOING FIND USAGES HERE
-
         /// <summary>
         /// The path to the file relative to the input folder without extension.
         /// </summary>
@@ -137,51 +136,60 @@ namespace Wyam.Common.Meta
         /// The file name without any extension. Equivalent
         /// to <c>Path.GetFileNameWithoutExtension(DestinationFilePath)</c>.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string DestinationFileBase = nameof(DestinationFileBase);
 
         /// <summary>
         /// The extension of the file. Equivalent
         /// to <c>Path.GetExtension(DestinationFilePath)</c>.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string DestinationFileExt = nameof(DestinationFileExt);
 
         /// <summary>
         /// The full file name. Equivalent
         /// to <c>Path.GetFileName(DestinationFilePath)</c>.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string DestinationFileName = nameof(DestinationFileName);
 
         /// <summary>
         /// The full absolute directory of the file.
         /// Equivalent to <c>Path.GetDirectoryName(DestinationFilePath)</c>.
         /// </summary>
+        /// <type><see cref="DirectoryPath"/></type>
         public const string DestinationFileDir = nameof(DestinationFileDir);
 
         /// <summary>
         /// The full absolute path (including file name)
         /// of the destination file.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string DestinationFilePath = nameof(DestinationFilePath);
 
         /// <summary>
         /// The full absolute path (including file name)
         /// of the destination file without the file extension.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string DestinationFilePathBase = nameof(DestinationFilePathBase);
 
         /// <summary>
         /// The extension to use when writing the file.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string WriteExtension = nameof(WriteExtension);
 
         /// <summary>
         /// The file name to use when writing the file.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string WriteFileName = nameof(WriteFileName);
 
         /// <summary>
         /// The path to use when writing the file.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string WritePath = nameof(WritePath);
 
         // Paginate
@@ -189,31 +197,37 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// Contains all the documents for the current page.
         /// </summary>
+        /// <type><see cref="IEnumerable{IDocument}"/></type>
         public const string PageDocuments = nameof(PageDocuments);
 
         /// <summary>
         /// The index of the current page (1 based).
         /// </summary>
+        /// <type><see cref="int"/></type>
         public const string CurrentPage = nameof(CurrentPage);
 
         /// <summary>
         /// The total number of pages.
         /// </summary>
+        /// <type><see cref="int"/></type>
         public const string TotalPages = nameof(TotalPages);
 
         /// <summary>
         /// The total number of items across all pages.
         /// </summary>
+        /// <type><see cref="int"/></type>
         public const string TotalItems = nameof(TotalItems);
 
         /// <summary>
         /// Whether there is another page after this one.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string HasNextPage = nameof(HasNextPage);
 
         /// <summary>
         /// Whether there is another page before this one.
         /// </summary>
+        /// <type><see cref="bool"/></type>
         public const string HasPreviousPage = nameof(HasPreviousPage);
 
         // GroupBy
@@ -221,11 +235,13 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// Contains all the documents for the current group.
         /// </summary>
+        /// <type><see cref="IEnumerable{IDocument}"/></type>
         public const string GroupDocuments = nameof(GroupDocuments);
 
         /// <summary>
         /// The key for the current group.
         /// </summary>
+        /// <type><see cref="object"/></type>
         public const string GroupKey = nameof(GroupKey);
 
         // Index
@@ -233,6 +249,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The one-based index of the current document relative to other documents in the pipeline.
         /// </summary>
+        /// <type><see cref="int"/></type>
         public const string Index = nameof(Index);
 
         // Sitemap
@@ -240,6 +257,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// Contains a document-specific sitemap item for use when generating a sitemap.
         /// </summary>
+        /// <type><see cref="Modules.Contents.SitemapItem"/></type>
         public const string SitemapItem = nameof(SitemapItem);
 
         // Download
@@ -247,11 +265,13 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The URI where the document was downloaded from.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string SourceUri = nameof(SourceUri);
 
         /// <summary>
         /// The web headers of the document.
         /// </summary>
+        /// <type><c>Dictionary&lt;string, string&gt;</c></type>
         public const string SourceHeaders = nameof(SourceHeaders);
 
         // Tree
@@ -259,40 +279,47 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The parent of this node or <c>null</c> if it is a root.
         /// </summary>
+        /// <type><see cref="IDocument"/></type>
         public const string Parent = nameof(Parent);
 
         /// <summary>
         /// All the children of this node.
         /// </summary>
+        /// <type><see cref="IReadOnlyCollection{IDocument}"/></type>
         public const string Children = nameof(Children);
 
         /// <summary>
         /// The previous sibling, that is the previous node in the children
         /// collection of the parent or <c>null</c> if this is the first node in the collection or the parent is null.
         /// </summary>
+        /// <type><see cref="IDocument"/></type>
         public const string PreviousSibling = nameof(PreviousSibling);
 
         /// <summary>
         /// The next sibling, that is the next node in the children collection
         /// of the parent or <c>null</c> if this is the last node in the collection or the parent is null.
         /// </summary>
+        /// <type><see cref="IDocument"/></type>
         public const string NextSibling = nameof(NextSibling);
 
         /// <summary>
         /// The next node in the tree using a depth-first
         /// search or <c>null</c> if this was the last node.
         /// </summary>
+        /// <type><see cref="IDocument"/></type>
         public const string Next = nameof(Next);
 
         /// <summary>
         /// The previous node in the tree using a depth-first
         /// search or <c>null</c> if this was the first node.
         /// </summary>
+        /// <type><see cref="IDocument"/></type>
         public const string Previous = nameof(Previous);
 
         /// <summary>
         /// The path that represents this node in the tree.
         /// </summary>
+        /// <type><see cref="Array"/></type>
         public const string TreePath = nameof(TreePath);
 
         // Title
@@ -300,6 +327,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The calculated title of the document.
         /// </summary>
+        /// <type><see cref="string"/></type>
         public const string Title = nameof(Title);
 
         // RedirectFrom
@@ -307,6 +335,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// The path(s) where the document should be redirected from.
         /// </summary>
+        /// <type><see cref="FilePath"/></type>
         public const string RedirectFrom = nameof(RedirectFrom);
     }
 }

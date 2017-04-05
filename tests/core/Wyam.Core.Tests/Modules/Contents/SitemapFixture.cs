@@ -8,6 +8,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Meta;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
+using Wyam.Common.Modules.Contents;
 using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Modules.Contents;

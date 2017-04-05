@@ -24,7 +24,15 @@ namespace Wyam.Html
     /// is also set as the content of each document. The output of this module is the input documents with the additional
     /// metadata value containing the documents that present each heading.
     /// </remarks>
-    /// <metadata name="Headings" type="IReadOnlyList&lt;IDocument&gt;">Documents that represent the headings in each input document.</metadata>
+    /// <metadata cref="HtmlKeys.Headings" usage="Output"/>
+    /// <metadata cref="HtmlKeys.Level" usage="Output"/>
+    /// <metadata cref="HtmlKeys.Id" usage="Output"/>
+    /// <metadata cref="Keys.Children" usage="Output">
+    /// The child heading documents of the current heading document.
+    /// </metadata>
+    /// <metadata cref="Keys.Parent" usage="Output">
+    /// The parent heading document of the current heading document.
+    /// </metadata>
     /// <category>Metadata</category>
     public class Headings : IModule
     {
@@ -256,7 +264,8 @@ namespace Wyam.Html
                     }
                 }
 
-                return context.GetDocument(input,
+                return context.GetDocument(
+                    input,
                     new MetadataItems
                     {
                         {

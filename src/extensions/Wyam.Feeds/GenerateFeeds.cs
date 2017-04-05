@@ -25,13 +25,33 @@ namespace Wyam.Feeds
     /// This module outputs a document for each of the selected feed types. Input documents
     /// are not output by this module.
     /// </remarks>
+    /// <metadata cref="FeedKeys.Title" usage="Input"/>
+    /// <metadata cref="FeedKeys.Description" usage="Input"/>
+    /// <metadata cref="FeedKeys.Author" usage="Input"/>
+    /// <metadata cref="FeedKeys.Image" usage="Input"/>
+    /// <metadata cref="FeedKeys.Copyright" usage="Input"/>
+    /// <metadata cref="FeedKeys.Excerpt" usage="Input"/>
+    /// <metadata cref="FeedKeys.Published" usage="Input"/>
+    /// <metadata cref="FeedKeys.Updated" usage="Input"/>
+    /// <metadata cref="FeedKeys.Content" usage="Input"/>
     /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output feed file.</metadata>
     /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>
     public class GenerateFeeds : IModule
     {
+        /// <summary>
+        /// The default path for RSS files.
+        /// </summary>
         public static readonly FilePath DefaultRssPath = new FilePath("feed.rss");
+
+        /// <summary>
+        /// The default path for Atom files.
+        /// </summary>
         public static readonly FilePath DefaultAtomPath = new FilePath("feed.atom");
+
+        /// <summary>
+        /// The default path for RDF files.
+        /// </summary>
         public static readonly FilePath DefaultRdfPath = null;
 
         private int _maximumItems = 20;

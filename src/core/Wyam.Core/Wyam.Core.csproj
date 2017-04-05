@@ -173,13 +173,11 @@
     <Compile Include="JavaScript\PooledJsEngine.cs" />
     <Compile Include="Meta\Metadata.cs" />
     <Compile Include="Meta\MetadataDictionary.cs" />
-    <Compile Include="Modules\Contents\ChangeFrequency.cs" />
     <Compile Include="Modules\Contents\Join.cs" />
     <Compile Include="Modules\Contents\JoinedMetadata.cs" />
     <Compile Include="Modules\Contents\Redirect.cs" />
     <Compile Include="Modules\IO\Include.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
-    <Compile Include="Modules\Contents\SitemapItem.cs" />
     <Compile Include="Modules\Control\GroupByMany.cs" />
     <Compile Include="Modules\Control\Sidecar.cs" />
     <Compile Include="Modules\Control\Merge.cs" />

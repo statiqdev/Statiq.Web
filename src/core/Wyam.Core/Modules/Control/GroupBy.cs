@@ -24,8 +24,8 @@ namespace Wyam.Core.Modules.Control
     /// is added to each clone. For example, if you have 2 input documents
     /// and the result of grouping is 3 groups, this module will output 6 documents.
     /// </remarks>
-    /// <metadata name="GroupDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current group.</metadata>
-    /// <metadata name="GroupKey" type="object">The key for the current group.</metadata>
+    /// <metadata cref="Keys.GroupDocuments" usage="Output" />
+    /// <metadata cref="Keys.GroupKey" usage="Output" />
     /// <category>Control</category>
     public class GroupBy : ContainerModule
     {

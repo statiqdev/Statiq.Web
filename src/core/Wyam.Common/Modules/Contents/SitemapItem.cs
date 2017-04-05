@@ -1,6 +1,6 @@
 using System;
 
-namespace Wyam.Core.Modules.Contents
+namespace Wyam.Common.Modules.Contents
 {
     /// <summary>
     /// Represents an item in the site map.

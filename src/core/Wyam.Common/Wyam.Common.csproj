@@ -62,6 +62,8 @@
     <Compile Include="Execution\PipelineExtensions.cs" />
     <Compile Include="JavaScript\IJsEnginePool.cs" />
     <Compile Include="Modules\ContainerModule.cs" />
+    <Compile Include="Modules\Contents\ChangeFrequency.cs" />
+    <Compile Include="Modules\Contents\SitemapItem.cs" />
     <Compile Include="Modules\IModuleList.cs" />
     <Compile Include="Modules\ModuleListExtensions.cs" />
     <Compile Include="Modules\IReadOnlyModuleList.cs" />

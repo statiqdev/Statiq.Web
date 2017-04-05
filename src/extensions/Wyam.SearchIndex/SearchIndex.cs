@@ -61,6 +61,7 @@ namespace Wyam.SearchIndex
     /// });
     /// </code>
     /// </example>
+    /// <metadata cref="SearchIndexKeys.SearchIndexItem" usage="Input" />
     /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output search index file.</metadata>
     /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>

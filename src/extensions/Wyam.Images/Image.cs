@@ -50,6 +50,8 @@ namespace Wyam.Images
     /// <para>The above configuration produces two set of new images, one with a "-thumb" suffix and the other with a "-medium" suffix.</para>
     /// </remarks>
     /// <metadata cref="Keys.RelativeFilePath" usage="Input" />
+    /// <metadata cref="Keys.WriteExtension" usage="Output" />
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>
     public class Image : IModule
     {

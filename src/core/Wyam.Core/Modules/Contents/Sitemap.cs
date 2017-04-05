@@ -10,6 +10,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules.Contents;
 using Wyam.Common.Util;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
@@ -25,6 +26,7 @@ namespace Wyam.Core.Modules.Contents
     /// into an absolute HTML path) or you can supply a <c>SitemapItem</c> for more control. You can also specify the
     /// <c>Hostname</c> metadata key (as a <c>string</c>) for each input document, which will be prepended to all locations.
     /// </remarks>
+    /// <metadata cref="Keys.SitemapItem" usage="Input" />
     /// <category>Content</category>
     public class Sitemap : IModule
     {

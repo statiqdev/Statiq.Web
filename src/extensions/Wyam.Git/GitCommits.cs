@@ -32,22 +32,17 @@ namespace Wyam.Git
     /// (including those that didn't have commit information).
     /// </para>
     /// </remarks>
-    /// <metadata name="Sha" type="string">The SHA of the commit.</metadata>
-    /// <metadata name="Parents" type="IReadOnlyList&lt;string&gt;">The SHA of every parent commit.</metadata>
-    /// <metadata name="AuthorName" type="string">The name of the author.</metadata>
-    /// <metadata name="AuthorEmail" type="string">The email of the author.</metadata>
-    /// <metadata name="AuthorWhen" type="DateTimeOffset">The date of the author signature.</metadata>
-    /// <metadata name="CommitterName" type="string">The name of the committer.</metadata>
-    /// <metadata name="CommitterEmail" type="string">The email of the committer.</metadata>
-    /// <metadata name="CommitterWhen" type="DateTimeOffset">The date of the committer signature.</metadata>
-    /// <metadata name="Message" type="string">The commit message.</metadata>
-    /// <metadata name="Entries" type="IReadOnlyDictionary&lt;FilePath, string&gt;">
-    /// All commit entries. The key is the path of the file and the value is the status of the file within the commit.
-    /// </metadata>
-    /// <metadata name="Commits" type="IReadOnlyList&lt;IDocument&gt;">
-    /// The sequence of commits for the input document if <c>ForEachInputDocument()</c> was called (and an alternate
-    /// metadata key was not provided).
-    /// </metadata>
+    /// <metadata cref="GitKeys.Sha" usage="Output"/>
+    /// <metadata cref="GitKeys.Parents" usage="Output"/>
+    /// <metadata cref="GitKeys.AuthorName" usage="Output"/>
+    /// <metadata cref="GitKeys.AuthorEmail" usage="Output"/>
+    /// <metadata cref="GitKeys.AuthorWhen" usage="Output"/>
+    /// <metadata cref="GitKeys.CommitterName" usage="Output"/>
+    /// <metadata cref="GitKeys.CommitterEmail" usage="Output"/>
+    /// <metadata cref="GitKeys.CommitterWhen" usage="Output"/>
+    /// <metadata cref="GitKeys.Message" usage="Output"/>
+    /// <metadata cref="GitKeys.Entries" usage="Output"/>
+    /// <metadata cref="GitKeys.Commits" usage="Output"/>
     /// <category>Metadata</category>
     public class GitCommits : GitModule
     {

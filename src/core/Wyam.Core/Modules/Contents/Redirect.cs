@@ -34,12 +34,9 @@ namespace Wyam.Core.Modules.Contents
     /// <para>This module outputs any meta refresh pages as well as any additional redirect files
     /// you specify. It does not output the original input files.</para>
     /// </remarks>
+    /// <metadata cref="Keys.RedirectFrom" usage="Input" />
     /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
     /// <metadata cref="Keys.WritePath" usage="Output" />
-    /// <metadata name="RelativeFilePath" type="FilePath">Relative path to the output meta refresh
-    /// page or output redirect listing file.</metadata>
-    /// <metadata name="WritePath" type="FilePath">Relative path to the meta refresh page or
-    /// output redirect listing file (primarily to support the WriteFiles module).</metadata>
     /// <category>Content</category>
     public class Redirect : IModule
     {

@@ -1,4 +1,4 @@
-namespace Wyam.Core.Modules.Contents
+namespace Wyam.Common.Modules.Contents
 {
     /// <summary>
     /// The change frequency for each item in the site map.

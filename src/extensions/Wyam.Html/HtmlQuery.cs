@@ -24,17 +24,18 @@ namespace Wyam.Html
     /// for each query result and allows you to set the new document content and/or set new
     /// metadata based on the query result.
     /// </remarks>
-    /// <metadata name="OuterHtml" type="string">Contains the outer HTML of the query result (unless an alternate metadata key is specified).</metadata>
-    /// <metadata name="InnerHtml" type="string">Contains the inner HTML of the query result (unless an alternate metadata key is specified).</metadata>
-    /// <metadata name="TextContent" type="string">Contains the text content of the query result (unless an alternate metadata key is specified).</metadata>
+    /// <metadata cref="HtmlKeys.OuterHtml" usage="Output"/>
+    /// <metadata cref="HtmlKeys.InnerHtml" usage="Output"/>
+    /// <metadata cref="HtmlKeys.TextContent" usage="Output"/>
     /// <category>Metadata</category>
     public class HtmlQuery : IModule
     {
+        private readonly List<Action<IElement, Dictionary<string, object>>> _metadataActions
+            = new List<Action<IElement, Dictionary<string, object>>>();
+
         private readonly string _querySelector;
         private bool _first;
         private bool? _outerHtmlContent;
-        private readonly List<Action<IElement, Dictionary<string, object>>> _metadataActions
-            = new List<Action<IElement, Dictionary<string, object>>>();
 
         /// <summary>
         /// Creates the module with the specified query selector.

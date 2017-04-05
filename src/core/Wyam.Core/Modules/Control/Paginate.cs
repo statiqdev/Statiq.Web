@@ -45,12 +45,12 @@ namespace Wyam.Core.Modules.Control
     /// );
     /// </code>
     /// </example>
-    /// <metadata name="PageDocuments" type="IEnumerable&lt;IDocument&gt;">Contains all the documents for the current page.</metadata>
-    /// <metadata name="CurrentPage" type="int">The index of the current page (1 based).</metadata>
-    /// <metadata name="TotalPages" type="int">The total number of pages.</metadata>
-    /// <metadata name="TotalItems" type="int">The total number of items across all pages.</metadata>
-    /// <metadata name="HasNextPage" type="bool">Whether there is another page after this one.</metadata>
-    /// <metadata name="HasPreviousPage" type="bool">Whether there is another page before this one.</metadata>
+    /// <metadata cref="Keys.PageDocuments" usage="Output" />
+    /// <metadata cref="Keys.CurrentPage" usage="Output" />
+    /// <metadata cref="Keys.TotalPages" usage="Output" />
+    /// <metadata cref="Keys.TotalItems" usage="Output" />
+    /// <metadata cref="Keys.HasNextPage" usage="Output" />
+    /// <metadata cref="Keys.HasPreviousPage" usage="Output" />
     /// <category>Control</category>
     public class Paginate : ContainerModule
     {

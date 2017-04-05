@@ -31,19 +31,75 @@ namespace Wyam.CodeAnalysis
     /// for each symbol on to a template engine like Razor and generate pages for each symbol by having the
     /// template use the document metadata.
     /// </remarks>
+    /// <metadata cref="CodeAnalysisKeys.IsResult" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.SymbolId" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Symbol" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Name" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.FullName" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.QualifiedName" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.DisplayName" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Kind" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.SpecificKind" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ContainingNamespace" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ContainingAssembly" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.IsStatic" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.IsAbstract" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.IsVirtual" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.IsOverride" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.CommentId" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.MemberTypes" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.MemberNamespaces" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ContainingType" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.BaseTypes" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.AllInterfaces" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Members" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Operators" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ExtensionMethods" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.DerivedTypes" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ImplementingTypes" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Constructors" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.TypeParameters" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Accessibility" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Attributes" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Parameters" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ReturnType" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.OverriddenMethod" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Type" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.HasConstantValue" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.ConstantValue" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.DeclaringType" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.AttributeData" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.CommentXml" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Example" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Remarks" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Summary" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Returns" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Value" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Exceptions" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Permissions" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Params" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.TypeParams" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.SeeAlso" usage="Output"/>
+    /// <metadata cref="CodeAnalysisKeys.Syntax" usage="Output"/>
     /// <metadata cref="Keys.RelativeFilePath" usage="Output">
-    /// A generated relative file path specific to the symbol.
+    /// The same as <see cref="Keys.WritePath"/>.
+    /// This metadata key is available for compatibility with other modules.
     /// </metadata>
     /// <metadata cref="Keys.RelativeFilePathBase" usage="Output">
-    /// A generated relative file path without extension specific to the symbol.
+    /// The same as <see cref="Keys.WritePath"/> without the file extension.
+    /// This metadata key is available for compatibility with other modules.
     /// </metadata>
     /// <metadata cref="Keys.RelativeFileDir" usage="Output">
-    /// A generated relative file directory specific to the symbol.
+    /// The same as the directory of <see cref="Keys.WritePath"/>.
+    /// This metadata key is available for compatibility with other modules.
     /// </metadata>
     /// <metadata cref="Keys.WritePath" usage="Output">
-    /// A generated write file path specific to the symbol.
+    /// A write path is generated for each symbol during code analysis and serves several purposes.First, it's
+    /// used to automatically create hyperlinks for references in XML documentation comments.It can also be used
+    /// for generating inbound links from other modules or pipelines to a given symbol. Because the WriteFiles module
+    /// will check for any WritePath metadata values when outputting documents, this metadata also makes writing
+    /// symbol documents to disk easier (presumably after they've been sent through a templating module).
     /// </metadata>
-    /// <include file="Documentation.xml" path="/Documentation/AnalyzeCSharp/*" />
     /// <category>Metadata</category>
     public class AnalyzeCSharp : IModule
     {
