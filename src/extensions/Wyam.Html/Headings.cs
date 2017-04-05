@@ -18,7 +18,7 @@ namespace Wyam.Html
     /// Queries HTML content of the input documents and adds a metadata value that contains it's headings.
     /// </summary>
     /// <remarks>
-    /// A new document is created for each heading, all of which are placed into a <see cref="IReadOnlyList{IDocument}"/>
+    /// A new document is created for each heading, all of which are placed into a <c>IReadOnlyList&lt;IDocument&gt;</c>
     /// in the metadata of each input document. The new heading documents contain metadata with the level of the heading,
     /// the children of the heading (the following headings with one deeper level) and optionally the heading content, which
     /// is also set as the content of each document. The output of this module is the input documents with the additional

@@ -11,7 +11,7 @@ namespace Wyam.Common.Meta
     public struct MetadataItem
     {
         /// <summary>
-        /// Gets the underlying <see cref="KeyValuePair{TKey, TValue}"/>.
+        /// Gets the underlying <c>KeyValuePair&lt;TKey, TValue&gt;</c>.
         /// </summary>
         public KeyValuePair<string, object> Pair { get; }
 

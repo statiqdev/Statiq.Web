@@ -17,7 +17,7 @@ namespace Wyam.Git
         /// <summary>
         /// The SHA of every parent commit.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{String}"/></type>
+        /// <type><c>IReadOnlyList&lt;string&gt;</c></type>
         public const string Parents = nameof(Parents);
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Wyam.Git
         /// The sequence of commits for the input document if <c>ForEachInputDocument()</c> was called (and an alternate
         /// metadata key was not provided).
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Commits = nameof(Commits);
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Wyam.Git
         /// <summary>
         /// A document representing each commit by this contributor that contains the metadata specified in <see cref="GitCommits"/>.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Contributors = nameof(Contributors);
     }
 }

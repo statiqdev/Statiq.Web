@@ -117,14 +117,14 @@ namespace Wyam.CodeAnalysis
         /// This is available for namespace and type symbols and contains a collection of the documents that represent all member types.
         /// It only contains direct children (as opposed to all nested types).
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string MemberTypes = nameof(MemberTypes);
 
         /// <summary>
         /// This is available for namespace symbols and contains a collection of the documents that represent all member namespaces.
         /// The collection is empty if there are no member namespaces.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string MemberNamespaces = nameof(MemberNamespaces);
 
         /// <summary>
@@ -137,62 +137,62 @@ namespace Wyam.CodeAnalysis
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all base types (inner-most first).
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string BaseTypes = nameof(BaseTypes);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all implemented interfaces. The collection
         /// is empty if the type doesn't implement any interfaces.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string AllInterfaces = nameof(AllInterfaces);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all members of the type, including inherited ones. The collection
         /// is empty if the type doesn't have any members.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Members = nameof(Members);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all operators of the type, including inherited ones. The collection
         /// is empty if the type doesn't have any operators.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Operators = nameof(Operators);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all extension members applicable to the type.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string ExtensionMethods = nameof(ExtensionMethods);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all types derived from the type. The collection
         /// is empty if the type doesn't have any derived types.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string DerivedTypes = nameof(DerivedTypes);
 
         /// <summary>
         /// This is available for interface symbols and contains a collection of the documents that represent all types that implement the interface. The collection
         /// is empty if no other types implement the interface.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string ImplementingTypes = nameof(ImplementingTypes);
 
         /// <summary>
         /// This is available for type symbols and contains a collection of the documents that represent all constructors of the type. The collection
         /// is empty if the type doesn't have any explicit constructors.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Constructors = nameof(Constructors);
 
         /// <summary>
         /// This is available for type and method symbols and contains a collection of the documents that represent all generic type parameters of the type or method. The collection
         /// is empty if the type or method doesn't have any generic type parameters.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string TypeParameters = nameof(TypeParameters);
 
         /// <summary>
@@ -204,13 +204,13 @@ namespace Wyam.CodeAnalysis
         /// <summary>
         /// This is available for type, method, field, event, property, parameter, and type parameter symbols and contains the type symbol documents for attributes applied to the symbol.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Attributes = nameof(Attributes);
 
         /// <summary>
         /// This is available for method and property (I.e., indexer) symbols and contains a collection of the documents that represent the parameters of the method or property.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Parameters = nameof(Parameters);
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace Wyam.CodeAnalysis
         /// This is available for documents in the initial result set (<see cref="IsResult"/> is <c>true</c>) and contains
         /// a collection of all<c>seealso</c> XML documentation comments for this symbol with their rendered HTML link (or just name if no link could be generated).
         /// </summary>
-        /// <type><see cref="IReadOnlyList{String}"/></type>
+        /// <type><c>IReadOnlyList&lt;string&gt;</c></type>
         public const string SeeAlso = nameof(SeeAlso);
 
         /// <summary>

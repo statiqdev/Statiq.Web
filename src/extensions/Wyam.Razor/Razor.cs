@@ -81,7 +81,7 @@ namespace Wyam.Razor
         /// <summary>
         /// Parses Razor templates in each input document and outputs documents with rendered HTML content.
         /// If <c>basePageType</c> is specified, it will be used as the base type for Razor pages. The new base
-        /// type must derive from <see cref="WyamRazorPage{TModel}"/>.
+        /// type must derive from <c>WyamRazorPage&lt;TModel&gt;</c>.
         /// </summary>
         /// <param name="basePageType">Type of the base Razor page class, or <c>null</c> for the default base class.</param>
         public Razor(Type basePageType = null)

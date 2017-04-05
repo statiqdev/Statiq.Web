@@ -39,7 +39,7 @@ namespace Wyam.Html
         /// <summary>
         /// Documents that represent the headings in each input document.
         /// </summary>
-        /// <type><see cref="IReadOnlyList{IDocument}"/></type>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
         public const string Headings = nameof(Headings);
 
         /// <summary>

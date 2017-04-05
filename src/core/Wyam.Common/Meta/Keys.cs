@@ -197,7 +197,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// Contains all the documents for the current page.
         /// </summary>
-        /// <type><see cref="IEnumerable{IDocument}"/></type>
+        /// <type><c>IEnumerable&lt;IDocument&gt;</c></type>
         public const string PageDocuments = nameof(PageDocuments);
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Wyam.Common.Meta
         /// <summary>
         /// Contains all the documents for the current group.
         /// </summary>
-        /// <type><see cref="IEnumerable{IDocument}"/></type>
+        /// <type><c>IEnumerable&lt;IDocument&gt;</c></type>
         public const string GroupDocuments = nameof(GroupDocuments);
 
         /// <summary>

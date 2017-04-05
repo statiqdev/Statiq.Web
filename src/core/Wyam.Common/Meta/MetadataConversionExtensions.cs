@@ -82,7 +82,7 @@ namespace Wyam.Common.Meta
         public static IDocument Document(this IMetadata metadata, string key, IDocument defaultValue = null) => metadata.Get(key, defaultValue);
 
         /// <summary>
-        /// Gets the value for the specified key converted to a <see cref="IReadOnlyList{IDocument}"/>. This method never throws an exception.
+        /// Gets the value for the specified key converted to a <c>IReadOnlyList&lt;IDocument&gt;</c>. This method never throws an exception.
         /// It will return null if the key is not found and an empty list if the key is found but contains no items that can be converted to <see cref="IDocument"/>.
         /// </summary>
         /// <param name="metadata">The metadata containing the value.</param>
