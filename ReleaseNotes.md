@@ -1,3 +1,12 @@
+# 0.17.4
+
+- [Feature] Adds a warning when output path is also one of the input paths (#490)
+- [Refactoring] Refactored `IMetadata` type conversion convenience methods into extension methods
+- [Refactoring] Refactored `IExecutionContext.GetLink(...)` methods into extension methods
+- [Feature] Adds settings and extensions for dealing with input and output date cultures (#475)
+- [Refactoring] Tons of documentation comment updates
+- [Refactoring] Added server tests back in (#484)
+
 # 0.17.3
 
 - [Fix] Fixed occasional missing XML doc comments from assembly XML doc files (#483)
