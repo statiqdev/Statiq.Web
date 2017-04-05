@@ -25,6 +25,9 @@ namespace Wyam.Core.Execution
     /// </summary>
     public class Engine : IEngine, IDisposable
     {
+        /// <summary>
+        /// Gets the version of Wyam currently being used.
+        /// </summary>
         public static string Version
         {
             get
@@ -217,6 +220,9 @@ namespace Wyam.Core.Execution
             JsEngineSwitcher.Instance.DefaultEngineName = string.Empty;
         }
 
+        /// <summary>
+        /// Executes the engine. This is the primary method that kicks off generation.
+        /// </summary>
         public void Execute()
         {
             CheckDisposed();
@@ -228,6 +234,12 @@ namespace Wyam.Core.Execution
             {
                 Trace.Error("No pipelines are configured. Please supply a configuration file, specify a recipe, or configure programmatically");
                 return;
+            }
+
+            // Do a check for the same input/output path
+            if (FileSystem.InputPaths.Any(x => x.Equals(FileSystem.OutputPath)))
+            {
+                Trace.Warning("The output path is also one of the input paths which can cause unexpected behavior and is usually not advised");
             }
 
             CleanTempPath();
@@ -259,8 +271,12 @@ namespace Wyam.Core.Execution
                             {
                                 ((ExecutionPipeline)pipeline).Execute(this);
                                 pipelineStopwatch.Stop();
-                                Trace.Information("Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
-                                    pipelineName, c++, _pipelines.Count, pipelineStopwatch.ElapsedMilliseconds,
+                                Trace.Information(
+                                    "Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",
+                                    pipelineName,
+                                    c++,
+                                    _pipelines.Count,
+                                    pipelineStopwatch.ElapsedMilliseconds,
                                     DocumentCollection.FromPipeline(pipelineName).Count());
                             }
                             catch (Exception)
@@ -282,8 +298,11 @@ namespace Wyam.Core.Execution
                     }
 
                     engineStopwatch.Stop();
-                    Trace.Information("Executed {0}/{1} pipelines in {2} ms",
-                        c - 1, _pipelines.Count, engineStopwatch.ElapsedMilliseconds);
+                    Trace.Information(
+                        "Executed {0}/{1} pipelines in {2} ms",
+                        c - 1,
+                        _pipelines.Count,
+                        engineStopwatch.ElapsedMilliseconds);
                 }
 
             }
@@ -294,6 +313,7 @@ namespace Wyam.Core.Execution
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             if (_disposed)

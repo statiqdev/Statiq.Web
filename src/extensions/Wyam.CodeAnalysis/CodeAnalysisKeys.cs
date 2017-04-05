@@ -108,7 +108,7 @@ namespace Wyam.CodeAnalysis
         public const string IsOverride = nameof(IsOverride);
 
         /// <summary>
-        /// A unique ID that identifies the symbol for documentation purposed.
+        /// A unique ID that identifies the symbol for documentation purposes.
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string CommentId = nameof(CommentId);
@@ -261,8 +261,8 @@ namespace Wyam.CodeAnalysis
         /// This is available for documents in the initial result set (<see cref="IsResult"/> is <c>true</c>) and contains
         /// the full unprocessed XML documentation comments content for this symbol. In addition, special metadata keys
         /// may be added for custom comment elements with the name <c>[ElementName]Comments</c>. These special metadata
-        /// keys contain the rendered HTML content (and any attributes) of the custom XML documentation comments with
-        /// the given <c>[ElementName]</c>.
+        /// keys contain a <see cref="OtherComment"/> instance with the rendered HTML content (and any attributes) of the
+        /// custom XML documentation comments with the given <c>[ElementName]</c>.
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string CommentXml = nameof(CommentXml);
