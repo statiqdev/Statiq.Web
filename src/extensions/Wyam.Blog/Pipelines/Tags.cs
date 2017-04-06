@@ -65,6 +65,7 @@ namespace Wyam.Blog.Pipelines
                             new Paginate(
                                 ctx.Get(BlogKeys.TagPageSize, int.MaxValue),
                                 new Documents((doc, _) => doc[Keys.GroupDocuments]))),
+                        new Meta(BlogKeys.Posts, (doc, ctx) => doc[Keys.GroupDocuments]),
                         new Meta(BlogKeys.Tag, (doc, ctx) => doc.String(Keys.GroupKey)),
                         new Meta(BlogKeys.Title, (doc, ctx) => doc.String(Keys.GroupKey)),
                         new Meta(Keys.RelativeFilePath, (doc, ctx) =>
