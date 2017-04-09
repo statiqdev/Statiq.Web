@@ -47,6 +47,9 @@
     <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -137,6 +140,7 @@
     <Compile Include="IO\VirtualInputDirectoryFixture.cs" />
     <Compile Include="Modules\Contents\JoinFixture.cs" />
     <Compile Include="Modules\Contents\RedirectFixture.cs" />
+    <Compile Include="Modules\Control\SerialCacheFixture.cs" />
     <Compile Include="Modules\Control\CombineFixture.cs" />
     <Compile Include="Modules\Control\ConcatBranchFixture.cs" />
     <Compile Include="Execution\EngineTests.cs" />

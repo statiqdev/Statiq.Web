@@ -143,6 +143,7 @@
     <Compile Include="Caching\TestExecutionCache.cs" />
     <Compile Include="Configuration\TestSettings.cs" />
     <Compile Include="Documents\TestDocument.cs" />
+    <Compile Include="ExecutionHelper.cs" />
     <Compile Include="Execution\TestExecutionContext.cs" />
     <Compile Include="IO\TestFileSystem.cs" />
     <Compile Include="Meta\TestMetadata.cs" />

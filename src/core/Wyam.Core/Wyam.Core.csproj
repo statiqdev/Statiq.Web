@@ -176,6 +176,7 @@
     <Compile Include="Modules\Contents\Join.cs" />
     <Compile Include="Modules\Contents\JoinedMetadata.cs" />
     <Compile Include="Modules\Contents\Redirect.cs" />
+    <Compile Include="Modules\Control\SerialCache.cs" />
     <Compile Include="Modules\IO\Include.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Control\GroupByMany.cs" />
