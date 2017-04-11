@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
@@ -87,7 +88,36 @@ namespace Wyam.CodeAnalysis
             return this;
         }
 
+        /// <summary>
+        /// Gets the projects in the workspace (solution or project).
+        /// </summary>
+        /// <param name="file">The project file.</param>
+        /// <returns>A sequence of Roslyn <see cref="Project"/> instances in the workspace.</returns>
         protected abstract IEnumerable<Project> GetProjects(IFile file);
+
+        protected void TraceMSBuildWorkspaceDiagnostics(MSBuildWorkspace workspace)
+        {
+            if (!workspace.Diagnostics.IsEmpty)
+            {
+                bool failure = false;
+                foreach (WorkspaceDiagnostic diagnostic in workspace.Diagnostics)
+                {
+                    if (diagnostic.Kind == WorkspaceDiagnosticKind.Warning)
+                    {
+                        Trace.Warning(diagnostic.Message);
+                    }
+                    else if (diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
+                    {
+                        Trace.Error(diagnostic.Message);
+                        failure = true;
+                    }
+                }
+                if (failure)
+                {
+                    throw new Exception("Error(s) while opening workspace");
+                }
+            }
+        }
 
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
@@ -111,6 +141,7 @@ namespace Wyam.CodeAnalysis
                         .SelectMany(project =>
                         {
                             Trace.Verbose("Read project {0}", project.Name);
+                            string assemblyName = project.AssemblyName;
                             return project.Documents
                                 .AsParallel()
                                 .Where(x => !string.IsNullOrWhiteSpace(x.FilePath))
@@ -123,6 +154,7 @@ namespace Wyam.CodeAnalysis
                                     FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectFile.Path.Directory.GetRelativePath(file.Path);
                                     return context.GetDocument(file.Path, file.OpenRead(), new MetadataItems
                                     {
+                                        { CodeAnalysisKeys.AssemblyName, assemblyName },
                                         { Keys.SourceFileRoot, inputPath ?? file.Path.Directory },
                                         { Keys.SourceFileBase, file.Path.FileNameWithoutExtension },
                                         { Keys.SourceFileExt, file.Path.Extension },

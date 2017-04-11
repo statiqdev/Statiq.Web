@@ -388,6 +388,7 @@ namespace Wyam.CodeAnalysis
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             List<ISymbol> symbols = new List<ISymbol>();
+            List<MetadataReference> metadataReferences = new List<MetadataReference>();
 
             // Create the compilation (have to supply an XmlReferenceResolver to handle include XML doc comments)
             MetadataReference mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
@@ -402,9 +403,14 @@ namespace Wyam.CodeAnalysis
             if (_inputDocuments)
             {
                 // Get syntax trees (supply path so that XML doc includes can be resolved)
-                ConcurrentBag<SyntaxTree> syntaxTrees = new ConcurrentBag<SyntaxTree>();
+                // Maintain a different set of trees for each set of sources, grouped by assembly name
+                ConcurrentDictionary<string, ConcurrentBag<SyntaxTree>> sourceSyntaxTrees =
+                    new ConcurrentDictionary<string, ConcurrentBag<SyntaxTree>>();
                 context.ParallelForEach(inputs, input =>
                 {
+                    ConcurrentBag<SyntaxTree> syntaxTrees = sourceSyntaxTrees.GetOrAdd(
+                        input.String(CodeAnalysisKeys.AssemblyName) ?? string.Empty,
+                        new ConcurrentBag<SyntaxTree>());
                     using (Stream stream = input.GetStream())
                     {
                         SourceText sourceText = SourceText.From(stream);
@@ -414,13 +420,33 @@ namespace Wyam.CodeAnalysis
                     }
                 });
 
-                compilation = compilation.AddSyntaxTrees(syntaxTrees);
+                // Iterate the sets of syntax trees, creating a new compilation for each named assembly
+                foreach (KeyValuePair<string, ConcurrentBag<SyntaxTree>> kvp in sourceSyntaxTrees)
+                {
+                    if (string.IsNullOrEmpty(kvp.Key))
+                    {
+                        // Add non-assembly sources directly to the compilation
+                        compilation = compilation.AddSyntaxTrees(kvp.Value);
+                    }
+                    else
+                    {
+                        // Create a new compilation for assembly sources
+                        Compilation sourceCompilation = CSharpCompilation
+                            .Create(kvp.Key)
+                            .WithReferences(mscorlib)
+                            .WithOptions(new CSharpCompilationOptions(
+                                OutputKind.DynamicallyLinkedLibrary,
+                                xmlReferenceResolver: new XmlFileResolver(context.FileSystem.RootPath.FullPath)))
+                            .AddSyntaxTrees(kvp.Value);
+                        metadataReferences.Add(sourceCompilation.ToMetadataReference());
+                    }
+                }
             }
 
-            // Handle assemblies
+            // Create MetadataReference for assemblies
             IEnumerable<IFile> assemblyFiles = context.FileSystem.GetInputFiles(_assemblyGlobs)
                 .Where(x => (x.Path.Extension == ".dll" || x.Path.Extension == ".exe") && x.Exists);
-            MetadataReference[] assemblyReferences = assemblyFiles.Select(assemblyFile =>
+            metadataReferences.AddRange(assemblyFiles.Select(assemblyFile =>
             {
                 // Create the metadata reference for the compilation
                 IFile xmlFile = context.FileSystem.GetFile(assemblyFile.Path.ChangeExtension("xml"));
@@ -440,11 +466,13 @@ namespace Wyam.CodeAnalysis
                 }
                 Trace.Verbose($"Creating metadata reference for assembly {assemblyFile.Path.FullPath} without XML documentation file");
                 return (MetadataReference)MetadataReference.CreateFromStream(assemblyFile.OpenRead());
-            }).ToArray();
-            if (assemblyReferences.Length > 0)
+            }));
+
+            // Add any MetadataReference to the compilation and add their top-level symbol to the set
+            if (metadataReferences.Count > 0)
             {
-                compilation = compilation.AddReferences(assemblyReferences);
-                symbols.AddRange(assemblyReferences
+                compilation = compilation.AddReferences(metadataReferences);
+                symbols.AddRange(metadataReferences
                     .Select(x => (IAssemblySymbol)compilation.GetAssemblyOrModuleSymbol(x))
                     .Select(x => _assemblySymbols ? x : (ISymbol)x.GlobalNamespace));
             }

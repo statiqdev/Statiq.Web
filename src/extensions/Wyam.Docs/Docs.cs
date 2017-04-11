@@ -24,6 +24,8 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.Title" usage="Input">The title of the post or page.</metadata>
     /// <metadata cref="DocsKeys.Logo" usage="Setting" />
     /// <metadata cref="DocsKeys.SourceFiles" usage="Setting" />
+    /// <metadata cref="DocsKeys.SolutionFiles" usage="Setting" />
+    /// <metadata cref="DocsKeys.ProjectFiles" usage="Setting" />
     /// <metadata cref="DocsKeys.AssemblyFiles" usage="Setting" />
     /// <metadata cref="DocsKeys.BaseEditUrl" usage="Setting" />
     /// <metadata cref="DocsKeys.IncludeGlobalNamespace" usage="Setting" />

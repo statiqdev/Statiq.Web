@@ -18,6 +18,7 @@ namespace Wyam.CodeAnalysis
     /// <remarks>
     /// The output of this module is similar to executing the ReadFiles module on all source files in the solution.
     /// </remarks>
+    /// <metadata cref="CodeAnalysisKeys.AssemblyName" usage="Output" />
     /// <metadata cref="Keys.SourceFileRoot" usage="Output" />
     /// <metadata cref="Keys.SourceFileBase" usage="Output" />
     /// <metadata cref="Keys.SourceFileExt" usage="Output" />
@@ -49,10 +50,12 @@ namespace Wyam.CodeAnalysis
         {
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Solution solution = workspace.OpenSolutionAsync(file.Path.FullPath).Result;
+            TraceMSBuildWorkspaceDiagnostics(workspace);
             return solution == null ? Array.Empty<Project>() : solution.Projects;
         }
     }

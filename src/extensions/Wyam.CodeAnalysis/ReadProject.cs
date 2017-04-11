@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Tracing;
 
 namespace Wyam.CodeAnalysis
 {
@@ -17,6 +19,7 @@ namespace Wyam.CodeAnalysis
     /// <remarks>
     /// The output of this module is similar to executing the ReadFiles module on all source files in the project.
     /// </remarks>
+    /// <metadata cref="CodeAnalysisKeys.AssemblyName" usage="Output" />
     /// <metadata cref="Keys.SourceFileRoot" usage="Output" />
     /// <metadata cref="Keys.SourceFileBase" usage="Output" />
     /// <metadata cref="Keys.SourceFileExt" usage="Output" />
@@ -48,11 +51,13 @@ namespace Wyam.CodeAnalysis
         {
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Project project = workspace.OpenProjectAsync(file.Path.FullPath).Result;
-            return new[] {project};
+            TraceMSBuildWorkspaceDiagnostics(workspace);
+            return new[] { project };
         }
     }
 }

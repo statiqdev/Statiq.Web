@@ -39,8 +39,8 @@ namespace Wyam.Configuration.Assemblies
             _disposed = true;
         }
 
-        public bool TryGet(string name, out Assembly assembly) =>
-            _fullNameCache.TryGetValue(name, out assembly) || _nameCache.TryGetValue(name, out assembly);
+        public bool TryGet(string fullName, out Assembly assembly) =>
+            _fullNameCache.TryGetValue(fullName, out assembly) || _nameCache.TryGetValue(fullName.Split(',')[0], out assembly);
 
         private void OnAssemblyLoad(object sender, AssemblyLoadEventArgs args) => AddToCache(args.LoadedAssembly);
 

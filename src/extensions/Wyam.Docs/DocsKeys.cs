@@ -30,7 +30,10 @@ namespace Wyam.Docs
         /// is used which searches for all "*.cs" files at any depth under a "src" folder
         /// but not under "bin", "obj", "packages" or "Tests" folders. You can specify
         /// your own globbing pattern (or more than one globbing pattern) if your source
-        /// files are found elsewhere.
+        /// files are found elsewhere. Any ".csproj" files will be processed as a project
+        /// and the source files referenced by the project will be processed. Similarly,
+        /// any ".sln" files will be processed as a solution and source files in the
+        /// projects of the solution will be processed.
         /// </summary>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string SourceFiles = nameof(SourceFiles);

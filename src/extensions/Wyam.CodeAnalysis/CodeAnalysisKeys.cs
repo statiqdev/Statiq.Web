@@ -13,6 +13,14 @@ namespace Wyam.CodeAnalysis
         // Note that if we ever introduce code analysis for other formats (such as Java or CSS), the metadata should be kept as similar as possible
 
         /// <summary>
+        /// The name of the assembly for each input document. Used to group input documents by assembly (if provided). If this is
+        /// not provided for each input source document, then analysis that depends on both source files and assemblies may not
+        /// correctly bind symbols across multiple inputs.
+        /// </summary>
+        /// <type><see cref="string"/></type>
+        public const string AssemblyName = nameof(AssemblyName);
+
+        /// <summary>
         /// By default only certain symbols are processed as part of the initial
         /// result set(such as those that match the specified predicate). If this value is <c>true</c>, then this
         /// symbol was part of the initial result set. If it is <c>false</c>, the symbol was lazily processed later
