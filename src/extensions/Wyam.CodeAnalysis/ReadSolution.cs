@@ -55,7 +55,7 @@ namespace Wyam.CodeAnalysis
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Solution solution = workspace.OpenSolutionAsync(file.Path.FullPath).Result;
-            TraceMSBuildWorkspaceDiagnostics(workspace);
+            TraceMsBuildWorkspaceDiagnostics(workspace);
             return solution == null ? Array.Empty<Project>() : solution.Projects;
         }
     }

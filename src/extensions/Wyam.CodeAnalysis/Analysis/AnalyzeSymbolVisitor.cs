@@ -39,6 +39,8 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly MethodInfo _getAccessibleMembersInThisAndBaseTypes;
         private readonly Type _documentationCommentCompiler;
         private readonly MethodInfo _documentationCommentCompilerDefaultVisit;
+        private readonly MethodInfo _diagnosticBagGetInstance;
+        private readonly MethodInfo _diagnosticBagFree;
 
         private ImmutableArray<KeyValuePair<INamedTypeSymbol, IDocument>> _namedTypes;  // This contains all of the NamedType symbols and documents obtained during the initial processing
         private bool _finished; // When this is true, we're visiting external symbols and should omit certain metadata and don't descend
@@ -69,6 +71,11 @@ namespace Wyam.CodeAnalysis.Analysis
             reflectedAssembly = typeof(CSharpCompilation).Assembly;
             _documentationCommentCompiler = reflectedAssembly.GetType("Microsoft.CodeAnalysis.CSharp.DocumentationCommentCompiler");
             _documentationCommentCompilerDefaultVisit = _documentationCommentCompiler.GetMethod("DefaultVisit");
+
+            reflectedAssembly = typeof(Diagnostic).Assembly;
+            reflectedType = reflectedAssembly.GetType("Microsoft.CodeAnalysis.DiagnosticBag");
+            _diagnosticBagGetInstance = reflectedType.GetMethod("GetInstance", BindingFlags.Static | BindingFlags.NonPublic);
+            _diagnosticBagFree = reflectedType.GetMethod("Free", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public IEnumerable<IDocument> Finish()
@@ -451,20 +458,27 @@ namespace Wyam.CodeAnalysis.Analysis
         {
             // Try and get comments applied to the namespace
             TextWriter writer = new StringWriter();
+            object diagnosticBag = _diagnosticBagGetInstance.Invoke(null, new object[] { });
             CancellationToken ct = default(CancellationToken);
-            object documentationCompiler = Activator.CreateInstance(_documentationCommentCompiler, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[]
-            {
-                (string)null,
-                _compilation,
-                writer,
-                (SyntaxTree)null,
-                (TextSpan?)null,
-                true,
-                true,
+            object documentationCompiler = Activator.CreateInstance(
+                _documentationCommentCompiler,
+                BindingFlags.Instance | BindingFlags.NonPublic,
                 null,
-                ct
-            }, null);
+                new object[]
+                {
+                    (string)null,
+                    _compilation,
+                    writer,
+                    (SyntaxTree)null,
+                    (TextSpan?)null,
+                    true,
+                    true,
+                    diagnosticBag,
+                    ct
+                },
+                null);
             _documentationCommentCompilerDefaultVisit.Invoke(documentationCompiler, new object[] { symbol });
+            _diagnosticBagFree.Invoke(diagnosticBag, new object[] { });
             string docs = writer.ToString();
 
             // Fall back to looking for a NamespaceDoc class

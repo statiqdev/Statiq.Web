@@ -95,26 +95,24 @@ namespace Wyam.CodeAnalysis
         /// <returns>A sequence of Roslyn <see cref="Project"/> instances in the workspace.</returns>
         protected abstract IEnumerable<Project> GetProjects(IFile file);
 
-        protected void TraceMSBuildWorkspaceDiagnostics(MSBuildWorkspace workspace)
+        /// <summary>
+        /// Sends workspace diagnostics messages to trace listeners.
+        /// </summary>
+        /// <param name="workspace">The workspace.</param>
+        protected internal static void TraceMsBuildWorkspaceDiagnostics(MSBuildWorkspace workspace)
         {
             if (!workspace.Diagnostics.IsEmpty)
             {
-                bool failure = false;
                 foreach (WorkspaceDiagnostic diagnostic in workspace.Diagnostics)
                 {
                     if (diagnostic.Kind == WorkspaceDiagnosticKind.Warning)
                     {
-                        Trace.Warning(diagnostic.Message);
+                        Trace.Verbose("Workspace diagnostic (warning): " + diagnostic.Message);
                     }
                     else if (diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
                     {
-                        Trace.Error(diagnostic.Message);
-                        failure = true;
+                        Trace.Verbose("Workspace diagnostic (failure): " + diagnostic.Message);
                     }
-                }
-                if (failure)
-                {
-                    throw new Exception("Error(s) while opening workspace");
                 }
             }
         }

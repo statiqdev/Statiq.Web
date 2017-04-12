@@ -29,19 +29,21 @@ namespace Wyam.Docs.Pipelines
 
         private static ModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
         {
-            new If(ctx => ctx.Documents[Docs.Code].Any() || ctx.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
+            new If(
+                ctx => ctx.Documents[Docs.Code].Any() || ctx.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
                 new Documents(Docs.Code),
-                // Put analysis module inside execute to have access to global metadata at runtime
-                new Execute(ctx => new AnalyzeCSharp()
+                new Execute(ctx => new AnalyzeCSharp() // Put analysis module inside execute to have access to global metadata at runtime
                     .WhereNamespaces(ctx.Bool(DocsKeys.IncludeGlobalNamespace))
                     .WherePublic()
                     .WithCssClasses("code", "cs")
                     .WithWritePathPrefix("api")
                     .WithAssemblies(ctx.List<string>(DocsKeys.AssemblyFiles))
+                    .WithProjects(ctx.List<string>(DocsKeys.ProjectFiles))
+                    .WithSolutions(ctx.List<string>(DocsKeys.SolutionFiles))
                     .WithAssemblySymbols()),
-                // Calculate a type name to link lookup for auto linking
                 new Execute((doc, ctx) =>
                 {
+                    // Calculate a type name to link lookup for auto linking
                     string name = null;
                     string kind = doc.String(CodeAnalysisKeys.Kind);
                     if (kind == "NamedType")

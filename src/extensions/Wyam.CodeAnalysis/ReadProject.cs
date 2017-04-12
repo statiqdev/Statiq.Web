@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
@@ -56,7 +57,11 @@ namespace Wyam.CodeAnalysis
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Project project = workspace.OpenProjectAsync(file.Path.FullPath).Result;
-            TraceMSBuildWorkspaceDiagnostics(workspace);
+            TraceMsBuildWorkspaceDiagnostics(workspace);
+            if (!project.Documents.Any())
+            {
+                Trace.Warning($"Project at {file.Path.FullPath} contains no documents, which may be an error (view verbose output for any MSBuild errors)");
+            }
             return new[] { project };
         }
     }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
 using Wyam.CodeAnalysis.Analysis;
 using Wyam.Common.Documents;
@@ -114,6 +115,8 @@ namespace Wyam.CodeAnalysis
                 });
 
         private readonly List<string> _assemblyGlobs = new List<string>();
+        private readonly List<string> _projectGlobs = new List<string>();
+        private readonly List<string> _solutionGlobs = new List<string>();
 
         private Func<ISymbol, bool> _symbolPredicate;
         private Func<IMetadata, FilePath> _writePath;
@@ -170,6 +173,62 @@ namespace Wyam.CodeAnalysis
             if (assemblies != null)
             {
                 _assemblyGlobs.AddRange(assemblies.Where(x => !string.IsNullOrEmpty(x)));
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Analyzes the specified projects.
+        /// </summary>
+        /// <param name="projects">A globbing pattern indicating the projects to analyze.</param>
+        /// <returns>The current module instance.</returns>
+        public AnalyzeCSharp WithProjects(string projects)
+        {
+            if (!string.IsNullOrEmpty(projects))
+            {
+                _projectGlobs.Add(projects);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Analyzes the specified projects.
+        /// </summary>
+        /// <param name="projects">Globbing patterns indicating the projects to analyze.</param>
+        /// <returns>The current module instance.</returns>
+        public AnalyzeCSharp WithProjects(IEnumerable<string> projects)
+        {
+            if (projects != null)
+            {
+                _projectGlobs.AddRange(projects.Where(x => !string.IsNullOrEmpty(x)));
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Analyzes the specified solutions.
+        /// </summary>
+        /// <param name="solutions">A globbing pattern indicating the solutions to analyze.</param>
+        /// <returns>The current module instance.</returns>
+        public AnalyzeCSharp WithSolutions(string solutions)
+        {
+            if (!string.IsNullOrEmpty(solutions))
+            {
+                _solutionGlobs.Add(solutions);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Analyzes the specified solutions.
+        /// </summary>
+        /// <param name="solutions">Globbing patterns indicating the solutions to analyze.</param>
+        /// <returns>The current module instance.</returns>
+        public AnalyzeCSharp WithSolutions(IEnumerable<string> solutions)
+        {
+            if (solutions != null)
+            {
+                _solutionGlobs.AddRange(solutions.Where(x => !string.IsNullOrEmpty(x)));
             }
             return this;
         }
@@ -345,20 +404,20 @@ namespace Wyam.CodeAnalysis
             IDocument namespaceDocument = metadata.Document(CodeAnalysisKeys.ContainingNamespace);
             FilePath writePath = null;
 
-            // Assemblies output to the index page in a folder of their name
             if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.Assembly.ToString())
             {
+                // Assemblies output to the index page in a folder of their name
                 writePath = new FilePath($"{metadata[CodeAnalysisKeys.DisplayName]}/index.html");
             }
-            // Namespaces output to the index page in a folder of their full name
             else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.Namespace.ToString())
             {
+                // Namespaces output to the index page in a folder of their full name
                 // If this namespace does not have a containing namespace, it's the global namespace
                 writePath = new FilePath(namespaceDocument == null ? "global/index.html" : $"{metadata[CodeAnalysisKeys.DisplayName]}/index.html");
             }
-            // Types output to the index page in a folder of their SymbolId under the folder for their namespace
             else if (metadata.String(CodeAnalysisKeys.Kind) == SymbolKind.NamedType.ToString())
             {
+                // Types output to the index page in a folder of their SymbolId under the folder for their namespace
                 writePath = new FilePath(namespaceDocument?[CodeAnalysisKeys.ContainingNamespace] == null
                     ? $"global/{metadata[CodeAnalysisKeys.SymbolId]}/index.html"
                     : $"{namespaceDocument[CodeAnalysisKeys.DisplayName]}/{metadata[CodeAnalysisKeys.SymbolId]}/index.html");
@@ -387,9 +446,6 @@ namespace Wyam.CodeAnalysis
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            List<ISymbol> symbols = new List<ISymbol>();
-            List<MetadataReference> metadataReferences = new List<MetadataReference>();
-
             // Create the compilation (have to supply an XmlReferenceResolver to handle include XML doc comments)
             MetadataReference mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
             Compilation compilation = CSharpCompilation
@@ -399,18 +455,38 @@ namespace Wyam.CodeAnalysis
                     OutputKind.DynamicallyLinkedLibrary,
                     xmlReferenceResolver: new XmlFileResolver(context.FileSystem.RootPath.FullPath)));
 
-            // Handle input documents
+            // Add the input source and references
+            List<ISymbol> symbols = new List<ISymbol>();
+            compilation = AddSourceFiles(inputs, context, compilation);
+            compilation = AddAssemblyReferences(context, symbols, compilation);
+            compilation = AddProjectReferences(context, symbols, compilation);
+            compilation = AddSolutionReferences(context, symbols, compilation);
+
+            // Get and return the document tree
+            symbols.Add(compilation.Assembly.GlobalNamespace);
+            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(
+                compilation,
+                context,
+                _symbolPredicate,
+                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)),
+                _cssClasses,
+                _docsForImplicitSymbols,
+                _assemblySymbols);
+            foreach (ISymbol symbol in symbols)
+            {
+                visitor.Visit(symbol);
+            }
+            return visitor.Finish();
+        }
+
+        private Compilation AddSourceFiles(IReadOnlyList<IDocument> inputs, IExecutionContext context, Compilation compilation)
+        {
             if (_inputDocuments)
             {
                 // Get syntax trees (supply path so that XML doc includes can be resolved)
-                // Maintain a different set of trees for each set of sources, grouped by assembly name
-                ConcurrentDictionary<string, ConcurrentBag<SyntaxTree>> sourceSyntaxTrees =
-                    new ConcurrentDictionary<string, ConcurrentBag<SyntaxTree>>();
+                ConcurrentBag<SyntaxTree> syntaxTrees = new ConcurrentBag<SyntaxTree>();
                 context.ParallelForEach(inputs, input =>
                 {
-                    ConcurrentBag<SyntaxTree> syntaxTrees = sourceSyntaxTrees.GetOrAdd(
-                        input.String(CodeAnalysisKeys.AssemblyName) ?? string.Empty,
-                        new ConcurrentBag<SyntaxTree>());
                     using (Stream stream = input.GetStream())
                     {
                         SourceText sourceText = SourceText.From(stream);
@@ -419,34 +495,16 @@ namespace Wyam.CodeAnalysis
                             path: input.String(Keys.SourceFilePath, string.Empty)));
                     }
                 });
-
-                // Iterate the sets of syntax trees, creating a new compilation for each named assembly
-                foreach (KeyValuePair<string, ConcurrentBag<SyntaxTree>> kvp in sourceSyntaxTrees)
-                {
-                    if (string.IsNullOrEmpty(kvp.Key))
-                    {
-                        // Add non-assembly sources directly to the compilation
-                        compilation = compilation.AddSyntaxTrees(kvp.Value);
-                    }
-                    else
-                    {
-                        // Create a new compilation for assembly sources
-                        Compilation sourceCompilation = CSharpCompilation
-                            .Create(kvp.Key)
-                            .WithReferences(mscorlib)
-                            .WithOptions(new CSharpCompilationOptions(
-                                OutputKind.DynamicallyLinkedLibrary,
-                                xmlReferenceResolver: new XmlFileResolver(context.FileSystem.RootPath.FullPath)))
-                            .AddSyntaxTrees(kvp.Value);
-                        metadataReferences.Add(sourceCompilation.ToMetadataReference());
-                    }
-                }
+                compilation = compilation.AddSyntaxTrees(syntaxTrees);
             }
+            return compilation;
+        }
 
-            // Create MetadataReference for assemblies
+        private Compilation AddAssemblyReferences(IExecutionContext context, List<ISymbol> symbols, Compilation compilation)
+        {
             IEnumerable<IFile> assemblyFiles = context.FileSystem.GetInputFiles(_assemblyGlobs)
                 .Where(x => (x.Path.Extension == ".dll" || x.Path.Extension == ".exe") && x.Exists);
-            metadataReferences.AddRange(assemblyFiles.Select(assemblyFile =>
+            MetadataReference[] assemblyReferences = assemblyFiles.Select(assemblyFile =>
             {
                 // Create the metadata reference for the compilation
                 IFile xmlFile = context.FileSystem.GetFile(assemblyFile.Path.ChangeExtension("xml"));
@@ -466,32 +524,82 @@ namespace Wyam.CodeAnalysis
                 }
                 Trace.Verbose($"Creating metadata reference for assembly {assemblyFile.Path.FullPath} without XML documentation file");
                 return (MetadataReference)MetadataReference.CreateFromStream(assemblyFile.OpenRead());
-            }));
-
-            // Add any MetadataReference to the compilation and add their top-level symbol to the set
-            if (metadataReferences.Count > 0)
+            }).ToArray();
+            if (assemblyReferences.Length > 0)
             {
-                compilation = compilation.AddReferences(metadataReferences);
-                symbols.AddRange(metadataReferences
+                compilation = compilation.AddReferences(assemblyReferences);
+                symbols.AddRange(assemblyReferences
                     .Select(x => (IAssemblySymbol)compilation.GetAssemblyOrModuleSymbol(x))
                     .Select(x => _assemblySymbols ? x : (ISymbol)x.GlobalNamespace));
             }
+            return compilation;
+        }
 
-            // Get and return the document tree
-            symbols.Add(compilation.Assembly.GlobalNamespace);
-            AnalyzeSymbolVisitor visitor = new AnalyzeSymbolVisitor(
-                compilation,
-                context,
-                _symbolPredicate,
-                _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)),
-                _cssClasses,
-                _docsForImplicitSymbols,
-                _assemblySymbols);
-            foreach (ISymbol symbol in symbols)
+        private Compilation AddProjectReferences(IExecutionContext context, List<ISymbol> symbols, Compilation compilation)
+        {
+            // Generate a single Workspace and add all of the projects to it
+            MSBuildWorkspace workspace = MSBuildWorkspace.Create();
+            IEnumerable<IFile> projectFiles = context.FileSystem.GetInputFiles(_projectGlobs)
+                .Where(x => x.Path.Extension == ".csproj" && x.Exists);
+            List<Project> projects = new List<Project>();
+            foreach (IFile projectFile in projectFiles)
             {
-                visitor.Visit(symbol);
+                Project project = workspace.CurrentSolution.Projects.FirstOrDefault(x => new FilePath(x.FilePath).Equals(projectFile.Path));
+                if (project != null)
+                {
+                    Trace.Verbose($"Project {projectFile.Path.FullPath} was already in the workspace");
+                }
+                else
+                {
+                    Trace.Verbose($"Creating workspace project for {projectFile.Path.FullPath}");
+                    project = workspace.OpenProjectAsync(projectFile.Path.FullPath).Result;
+                    ReadWorkspace.TraceMsBuildWorkspaceDiagnostics(workspace);
+                    if (!project.Documents.Any())
+                    {
+                        Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (view verbose output for any MSBuild errors)");
+                    }
+                }
+                projects.Add(project);
             }
-            return visitor.Finish();
+            compilation = AddProjectReferences(projects, symbols, compilation);
+            return compilation;
+        }
+
+        private Compilation AddSolutionReferences(IExecutionContext context, List<ISymbol> symbols, Compilation compilation)
+        {
+            IEnumerable<IFile> solutionFiles = context.FileSystem.GetInputFiles(_solutionGlobs)
+                .Where(x => x.Path.Extension == ".sln" && x.Exists);
+            foreach (IFile solutionFile in solutionFiles)
+            {
+                Trace.Verbose($"Creating workspace solution for {solutionFile.Path.FullPath}");
+                MSBuildWorkspace workspace = MSBuildWorkspace.Create();
+                Solution solution = workspace.OpenSolutionAsync(solutionFile.Path.FullPath).Result;
+                ReadWorkspace.TraceMsBuildWorkspaceDiagnostics(workspace);
+                compilation = AddProjectReferences(solution.Projects, symbols, compilation);
+            }
+            return compilation;
+        }
+
+        private Compilation AddProjectReferences(IEnumerable<Project> projects, List<ISymbol> symbols, Compilation compilation)
+        {
+            // Add a references to the compilation for each project in the solution
+            MetadataReference[] compilationReferences = projects
+                .Where(x => x.SupportsCompilation)
+                .AsParallel()
+                .Select(x =>
+                {
+                    Trace.Verbose($"Creating compilation reference for project {x.Name}");
+                    return (MetadataReference)x.GetCompilationAsync().Result.ToMetadataReference();
+                })
+                .ToArray();
+            if (compilationReferences.Length > 0)
+            {
+                compilation = compilation.AddReferences(compilationReferences);
+                symbols.AddRange(compilationReferences
+                    .Select(x => (IAssemblySymbol)compilation.GetAssemblyOrModuleSymbol(x))
+                    .Select(x => _assemblySymbols ? x : (ISymbol)x.GlobalNamespace));
+            }
+            return compilation;
         }
     }
 }
