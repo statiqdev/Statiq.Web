@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -458,9 +459,9 @@ namespace Wyam.CodeAnalysis
             // Add the input source and references
             List<ISymbol> symbols = new List<ISymbol>();
             compilation = AddSourceFiles(inputs, context, compilation);
-            compilation = AddAssemblyReferences(context, symbols, compilation);
             compilation = AddProjectReferences(context, symbols, compilation);
             compilation = AddSolutionReferences(context, symbols, compilation);
+            compilation = AddAssemblyReferences(context, symbols, compilation);
 
             // Get and return the document tree
             symbols.Add(compilation.Assembly.GlobalNamespace);
@@ -510,20 +511,13 @@ namespace Wyam.CodeAnalysis
                 IFile xmlFile = context.FileSystem.GetFile(assemblyFile.Path.ChangeExtension("xml"));
                 if (xmlFile.Exists)
                 {
-                    Trace.Verbose($"Creating metadata reference for assembly {assemblyFile.Path.FullPath} with XML documentation file");
-                    using (Stream xmlStream = xmlFile.OpenRead())
-                    {
-                        using (MemoryStream xmlBytes = new MemoryStream())
-                        {
-                            xmlStream.CopyTo(xmlBytes);
-                            return MetadataReference.CreateFromStream(
-                                assemblyFile.OpenRead(),
-                                documentation: XmlDocumentationProvider.CreateFromBytes(xmlBytes.ToArray()));
-                        }
-                    }
+                    Trace.Verbose($"Creating metadata reference for assembly {assemblyFile.Path.FullPath} with XML documentation file at {xmlFile.Path.FullPath}");
+                    return MetadataReference.CreateFromFile(
+                        assemblyFile.Path.FullPath,
+                        documentation: XmlDocumentationProvider.CreateFromFile(xmlFile.Path.FullPath));
                 }
                 Trace.Verbose($"Creating metadata reference for assembly {assemblyFile.Path.FullPath} without XML documentation file");
-                return (MetadataReference)MetadataReference.CreateFromStream(assemblyFile.OpenRead());
+                return (MetadataReference)MetadataReference.CreateFromFile(assemblyFile.Path.FullPath);
             }).ToArray();
             if (assemblyReferences.Length > 0)
             {
@@ -589,7 +583,7 @@ namespace Wyam.CodeAnalysis
                 .Select(x =>
                 {
                     Trace.Verbose($"Creating compilation reference for project {x.Name}");
-                    return (MetadataReference)x.GetCompilationAsync().Result.ToMetadataReference();
+                    return (MetadataReference)x.GetCompilationAsync().Result.ToMetadataReference(new[] { x.AssemblyName }.ToImmutableArray());
                 })
                 .ToArray();
             if (compilationReferences.Length > 0)
