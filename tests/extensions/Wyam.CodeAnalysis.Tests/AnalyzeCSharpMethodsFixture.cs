@@ -56,9 +56,10 @@ namespace Wyam.CodeAnalysis.Tests
                         new[] { "Green", "Red", "ToString", "Equals", "Equals", "ReferenceEquals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" },
                         GetResult(results, "Blue").Get<IReadOnlyList<IDocument>>("Members").Select(x => x["Name"]));
                 }
-                catch(ReflectionTypeLoadException ex)
+                catch (ReflectionTypeLoadException ex)
                 {
                     Console.WriteLine("Loader exceptions: " + Environment.NewLine + string.Join(Environment.NewLine, ex.LoaderExceptions.Select(x => x.Message)));
+                    throw;
                 }
             }
 
