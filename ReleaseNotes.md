@@ -1,3 +1,8 @@
+# 0.17.5
+
+- [Feature] `CodeAnalysis` module (and docs recipe) now supports loading source code directly from projects and solutions (#493)
+- [Fix] Fixes regression of missing `BlogKeys.Posts` for tag documents (it broke when pagination was added)
+
 # 0.17.4
 
 - [Feature] Adds a warning when output path is also one of the input paths (#490)
