@@ -1,3 +1,7 @@
+# 0.17.6
+
+- [Fix] Fixes some dependency issues with the MEF 2 libraries and Roslyn packages
+
 # 0.17.5
 
 - [Feature] `CodeAnalysis` module (and docs recipe) now supports loading source code directly from projects and solutions (#493)
