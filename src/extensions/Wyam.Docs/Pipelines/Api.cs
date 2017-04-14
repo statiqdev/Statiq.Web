@@ -30,7 +30,10 @@ namespace Wyam.Docs.Pipelines
         private static ModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
         {
             new If(
-                ctx => ctx.Documents[Docs.Code].Any() || ctx.List<string>(DocsKeys.AssemblyFiles)?.Count > 0,
+                ctx => ctx.Documents[Docs.Code].Any()
+                    || ctx.List<string>(DocsKeys.AssemblyFiles)?.Count > 0
+                    || ctx.List<string>(DocsKeys.ProjectFiles)?.Count > 0
+                    || ctx.List<string>(DocsKeys.SolutionFiles)?.Count > 0,
                 new Documents(Docs.Code),
                 new Execute(ctx => new AnalyzeCSharp() // Put analysis module inside execute to have access to global metadata at runtime
                     .WhereNamespaces(ctx.Bool(DocsKeys.IncludeGlobalNamespace))
