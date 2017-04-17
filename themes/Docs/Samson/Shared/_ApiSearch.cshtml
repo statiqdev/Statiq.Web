@@ -1,7 +1,7 @@
 @if(Context.Bool(DocsKeys.SearchIndex))
 {
-    <script src="/assets/js/lunr.min.js"></script>
-    <script src="/assets/js/searchIndex.js"></script>
+    <script src="@Context.GetLink("/assets/js/lunr.min.js")"></script>
+    <script src="@Context.GetLink("/assets/js/searchIndex.js")"></script>
     <div class="sidebar-form">
         <div class="input-group">
             <input type="text" name="search" id="search" class="form-control" placeholder="Search Types...">

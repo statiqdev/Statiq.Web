@@ -11,7 +11,7 @@
     {
         string link = category.ToLower().Replace(" ", "-").Replace("'", string.Empty);
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="/blog/@(link)">@category</a></li>
+        <li class="@selected"><a href="@Context.GetLink("/blog/" + link)">@category</a></li>
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
@@ -23,7 +23,7 @@
     {
         string link = published.ToString("yyyy/MM");
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="/blog/archive/@(link)">@(published.ToString("MMMM, yyyy"))</a></li>
+        <li class="@selected"><a href="@Context.GetLink("/blog/archive/" + link)">@(published.ToString("MMMM, yyyy"))</a></li>
     }
     
     <li class="header"><i class="fa fa-user"></i> Authors</li>    
@@ -34,7 +34,7 @@
     {
         string link = author.ToLower().Replace(" ", "-").Replace("'", string.Empty);
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/author/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="/blog/author/@(link)">@author</a></li>
+        <li class="@selected"><a href="@Context.GetLink("/blog/author/" + link)">@author</a></li>
     }
 }
 
