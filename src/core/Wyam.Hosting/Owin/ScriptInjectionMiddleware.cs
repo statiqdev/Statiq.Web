@@ -30,10 +30,12 @@ namespace Wyam.Hosting.Owin
             }
 
             _next = next;
-            _injectionCode = string.Join(Environment.NewLine,
+            _injectionCode = string.Join(
+                Environment.NewLine,
                 scriptUrls.Select(x => $@"<script type=""text/javascript"" src=""{x}""></script>"));
         }
 
+        /// <inheritdoc />
         public async Task Invoke(IDictionary<string, object> environment)
         {
             IOwinContext context = new OwinContext(environment);

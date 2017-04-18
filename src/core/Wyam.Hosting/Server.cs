@@ -61,7 +61,15 @@ namespace Wyam.Hosting
             LocalPath = localPath;
             Port = port;
             Extensionless = extensionless;
-            VirtualDirectory = virtualDirectory;
+
+            if (!string.IsNullOrWhiteSpace(virtualDirectory))
+            {
+                if (!virtualDirectory.StartsWith("/"))
+                {
+                    virtualDirectory = "/" + virtualDirectory;
+                }
+                VirtualDirectory = virtualDirectory.TrimEnd('/');
+            }
 
             if (liveReload)
             {
@@ -92,6 +100,10 @@ namespace Wyam.Hosting
 
         public bool Extensionless { get; }
 
+        /// <summary>
+        /// The virtual directory at which files are served (or null). This will always
+        /// begin with a backslash and end without one.
+        /// </summary>
         public string VirtualDirectory { get; }
 
         // internal virtual is required to mock for testing
@@ -123,10 +135,18 @@ namespace Wyam.Hosting
         {
             IFileSystem outputFolder = new PhysicalFileSystem(LocalPath);
 
-            // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
             if (LiveReloadClients != null)
             {
-                app.UseScriptInjection("/livereload.js");
+                // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
+                app.UseScriptInjection($"{VirtualDirectory ?? string.Empty}/livereload.js?host=localhost&port={Port}");
+
+                // Host ws:// (this also needs to go early in the pipeline so WS can return before virtual directory, etc.)
+                app.MapFleckRoute<ReloadClient>("/livereload", connection =>
+                {
+                    ReloadClient reloadClient = (ReloadClient)connection;
+                    reloadClient.Logger = _loggerProvider?.CreateLogger("LiveReload");
+                    LiveReloadClients.Add(reloadClient);
+                });
             }
 
             // Support for virtual directory
@@ -167,10 +187,9 @@ namespace Wyam.Hosting
                 ServeUnknownFileTypes = true
             });
 
-            // Add the LiveReload middleware
             if (LiveReloadClients != null)
             {
-                // Host livereload.js
+                // Host livereload.js (do this last so virtual directory rewriting applies)
                 Assembly liveReloadAssembly = typeof(ReloadClient).Assembly;
                 string rootNamespace = typeof(ReloadClient).Namespace;
                 IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
@@ -179,14 +198,6 @@ namespace Wyam.Hosting
                     RequestPath = PathString.Empty,
                     FileSystem = reloadFilesystem,
                     ServeUnknownFileTypes = true
-                });
-
-                // Host ws://
-                app.MapFleckRoute<ReloadClient>("/livereload", connection =>
-                {
-                    ReloadClient reloadClient = (ReloadClient)connection;
-                    reloadClient.Logger = _loggerProvider?.CreateLogger("LiveReload");
-                    LiveReloadClients.Add(reloadClient);
                 });
             }
         }

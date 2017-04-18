@@ -253,7 +253,6 @@
     <Compile Include="LiveReload\Messages\ILiveReloadMessage.cs" />
     <Compile Include="LiveReload\Messages\InfoMessage.cs" />
     <Compile Include="LiveReload\Messages\ReloadMessage.cs" />
-    <Compile Include="Owin\BodyInjectionStream.cs" />
     <Compile Include="LiveReload\ReloadClient.cs" />
     <Compile Include="Owin\ExtensionlessUrlsExtensions.cs" />
     <Compile Include="Owin\ExtensionlessUrlsMiddleware.cs" />
