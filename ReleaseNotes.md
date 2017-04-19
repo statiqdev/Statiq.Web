@@ -1,3 +1,8 @@
+# 0.17.7
+
+- [Fix] Fixes LiveReload support when under a virtual directory (#496)
+- [Fix] Fixed some asset links in docs theme when under a virtual directory (#497)
+
 # 0.17.6
 
 - [Fix] Fixes some dependency issues with the MEF 2 libraries and Roslyn packages
