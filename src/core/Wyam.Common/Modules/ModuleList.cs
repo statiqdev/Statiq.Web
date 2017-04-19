@@ -8,19 +8,33 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.Modules
 {
+    /// <summary>
+    /// A collection of optionally named modules.
+    /// </summary>
     public class ModuleList : IModuleList
     {
         private readonly List<KeyValuePair<string, IModule>> _modules = new List<KeyValuePair<string, IModule>>();
 
+        /// <summary>
+        /// Creates a new empty module list.
+        /// </summary>
         public ModuleList()
         {
         }
 
+        /// <summary>
+        /// Creates a new module list with an initial set of modules.
+        /// </summary>
+        /// <param name="modules">The initial modules in the list.</param>
         public ModuleList(params IModule[] modules)
             : this((IEnumerable<IModule>)modules)
         {
         }
 
+        /// <summary>
+        /// Creates a new module list with an initial set of modules.
+        /// </summary>
+        /// <param name="modules">The initial modules in the list.</param>
         public ModuleList(IEnumerable<IModule> modules)
         {
             if (modules != null)
@@ -32,6 +46,7 @@ namespace Wyam.Common.Modules
             }
         }
 
+        /// <inheritdoc />
         public void Add(params IModule[] modules)
         {
             foreach (IModule module in modules)
@@ -40,6 +55,7 @@ namespace Wyam.Common.Modules
             }
         }
 
+        /// <inheritdoc />
         public void Add(IModule item)
         {
             if (item == null)
@@ -49,6 +65,7 @@ namespace Wyam.Common.Modules
             Add(ExpandNamedModule(item));
         }
 
+        /// <inheritdoc />
         public void Add(string name, IModule module) =>
             Add(new KeyValuePair<string, IModule>(name, module));
 
@@ -62,6 +79,7 @@ namespace Wyam.Common.Modules
             _modules.Add(namedModule);
         }
 
+        /// <inheritdoc />
         public void Insert(int index, params IModule[] modules)
         {
             for (int i = index; i < index + modules.Length; i++)
@@ -70,6 +88,7 @@ namespace Wyam.Common.Modules
             }
         }
 
+        /// <inheritdoc />
         public void Insert(int index, IModule item)
         {
             if (item == null)
@@ -79,6 +98,7 @@ namespace Wyam.Common.Modules
             Insert(index, ExpandNamedModule(item));
         }
 
+        /// <inheritdoc />
         public void Insert(int index, string name, IModule module) =>
             Insert(index, new KeyValuePair<string, IModule>(name, module));
 
@@ -92,6 +112,7 @@ namespace Wyam.Common.Modules
             _modules.Insert(index, namedModule);
         }
 
+        /// <inheritdoc />
         public bool Remove(IModule item)
         {
             int index = IndexOf(item);
@@ -103,6 +124,7 @@ namespace Wyam.Common.Modules
             return false;
         }
 
+        /// <inheritdoc />
         public bool Remove(string name)
         {
             int index = IndexOf(name);
@@ -114,8 +136,10 @@ namespace Wyam.Common.Modules
             return false;
         }
 
+        /// <inheritdoc />
         public void RemoveAt(int index) => _modules.RemoveAt(index);
 
+        /// <inheritdoc />
         public IModule this[int index]
         {
             get { return _modules[index].Value; }
@@ -129,6 +153,7 @@ namespace Wyam.Common.Modules
             }
         }
 
+        /// <inheritdoc />
         public IModule this[string name]
         {
             get
@@ -142,20 +167,28 @@ namespace Wyam.Common.Modules
             }
         }
 
+        /// <inheritdoc />
         public int Count => _modules.Count;
 
+        /// <inheritdoc />
         public void Clear() => _modules.Clear();
 
+        /// <inheritdoc />
         public bool Contains(IModule item) => _modules.Any(x => x.Value.Equals(item));
 
+        /// <inheritdoc />
         public bool Contains(string name) => _modules.Any(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
+        /// <inheritdoc />
         public void CopyTo(IModule[] array, int arrayIndex) => _modules.Select(x => x.Value).ToList().CopyTo(array);
 
+        /// <inheritdoc />
         public bool IsReadOnly => false;
 
+        /// <inheritdoc />
         public int IndexOf(IModule item) => _modules.FindIndex(x => x.Value.Equals(item));
 
+        /// <inheritdoc />
         public bool TryGetValue(string name, out IModule value)
         {
             foreach (KeyValuePair<string, IModule> item in _modules)
@@ -170,12 +203,15 @@ namespace Wyam.Common.Modules
             return false;
         }
 
+        /// <inheritdoc />
         public int IndexOf(string name) => _modules.FindIndex(x => string.Equals(x.Key, name, StringComparison.OrdinalIgnoreCase));
 
+        /// <inheritdoc />
         public IEnumerable<KeyValuePair<string, IModule>> AsKeyValuePairs() => _modules;
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc />
         public IEnumerator<IModule> GetEnumerator() => _modules.Select(x => x.Value).GetEnumerator();
 
         private KeyValuePair<string, IModule> ExpandNamedModule(IModule module)
