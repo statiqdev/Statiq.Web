@@ -28,6 +28,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension SearchIndex = new KnownExtension("Wyam.SearchIndex");
 		public static readonly KnownExtension Tables = new KnownExtension("Wyam.Tables");
 		public static readonly KnownExtension TextGeneration = new KnownExtension("Wyam.TextGeneration");
+		public static readonly KnownExtension WebRecipe = new KnownExtension("Wyam.WebRecipe");
 		public static readonly KnownExtension Xmp = new KnownExtension("Wyam.Xmp");
 		public static readonly KnownExtension Xslt2 = new KnownExtension("Wyam.Xslt2");
 		public static readonly KnownExtension Yaml = new KnownExtension("Wyam.Yaml");
