@@ -103,6 +103,7 @@ namespace Wyam.Blog
         /// <inheritdoc/>
         public override void Apply(IEngine engine)
         {
+            // Global metadata defaults
             engine.Settings[BlogKeys.Title] = "My Blog";
             engine.Settings[BlogKeys.Description] = "Welcome!";
             engine.Settings[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";

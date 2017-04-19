@@ -11,6 +11,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension All = new KnownExtension("Wyam.All");
 		public static readonly KnownExtension AmazonWebServices = new KnownExtension("Wyam.AmazonWebServices");
 		public static readonly KnownExtension Blog = new KnownExtension("Wyam.Blog");
+		public static readonly KnownExtension BookSite = new KnownExtension("Wyam.BookSite");
 		public static readonly KnownExtension CodeAnalysis = new KnownExtension("Wyam.CodeAnalysis");
 		public static readonly KnownExtension Docs = new KnownExtension("Wyam.Docs");
 		public static readonly KnownExtension Feeds = new KnownExtension("Wyam.Feeds");
@@ -32,6 +33,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Yaml = new KnownExtension("Wyam.Yaml");
 		public static readonly KnownExtension CleanBlogTheme = new KnownExtension("Wyam.Blog.CleanBlog");
 		public static readonly KnownExtension PhantomTheme = new KnownExtension("Wyam.Blog.Phantom");
+		public static readonly KnownExtension VelocityTheme = new KnownExtension("Wyam.BookSite.Velocity");
 		public static readonly KnownExtension SamsonTheme = new KnownExtension("Wyam.Docs.Samson");
     }
 }

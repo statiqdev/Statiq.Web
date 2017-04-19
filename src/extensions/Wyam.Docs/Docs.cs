@@ -55,6 +55,9 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.Author" usage="Input" />
     public class Docs : Recipe
     {
+        /// <summary>
+        /// Passes type names and paths from the Api pipeline to following ones for auto-linking.
+        /// </summary>
         private static readonly ConcurrentDictionary<string, string> TypeNamesToLink = new ConcurrentDictionary<string, string>();
 
         /// <inheritdoc cref="Pipelines.Code" />
