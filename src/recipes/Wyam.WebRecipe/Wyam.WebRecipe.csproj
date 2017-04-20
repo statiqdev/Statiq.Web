@@ -57,23 +57,23 @@
       <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
       <Name>Wyam.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Feeds\Wyam.Feeds.csproj">
+    <ProjectReference Include="..\..\extensions\Wyam.Feeds\Wyam.Feeds.csproj">
       <Project>{bd7f456d-2576-43cc-b554-c03eb02be8b7}</Project>
       <Name>Wyam.Feeds</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Html\Wyam.Html.csproj">
+    <ProjectReference Include="..\..\extensions\Wyam.Html\Wyam.Html.csproj">
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
       <Name>Wyam.Html</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Markdown\Wyam.Markdown.csproj">
+    <ProjectReference Include="..\..\extensions\Wyam.Markdown\Wyam.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Markdown</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Razor\Wyam.Razor.csproj">
+    <ProjectReference Include="..\..\extensions\Wyam.Razor\Wyam.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Razor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.Yaml\Wyam.Yaml.csproj">
+    <ProjectReference Include="..\..\extensions\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>
     </ProjectReference>
