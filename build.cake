@@ -107,7 +107,8 @@ Task("Build")
             }
             .SetConfiguration(configuration)
             .SetMaxCpuCount(0)
-            .SetVerbosity(Verbosity.Minimal)                
+            .SetVerbosity(Verbosity.Minimal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)            
         );
         MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
             {
