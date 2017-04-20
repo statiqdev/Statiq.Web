@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.WebRecipe;
 
 namespace Wyam.Docs
 {
@@ -93,46 +94,6 @@ namespace Wyam.Docs
         public const string SearchIndex = nameof(SearchIndex);
 
         /// <summary>
-        /// Set this to control the activated set of Markdown extensions for the
-        /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string MarkdownExtensions = nameof(MarkdownExtensions);
-
-        /// <summary>
-        /// Set this to add extension Markdown extensions for the Markdig Markdown
-        /// renderer. The default value is null;
-        /// </summary>
-        /// <type><see cref="IEnumerable{IMarkDownExtension}"/></type>
-        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
-
-        /// <summary>
-        /// This should be a string or array of strings with the name(s)
-        /// of root-level folders to ignore when scanning for content pages.
-        /// Setting this global metadata value is useful when introducing
-        /// your own pipelines for files under certain folders and you don't
-        /// want the primary content page pipelines to pick them up.
-        /// </summary>
-        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
-        public const string IgnoreFolders = nameof(IgnoreFolders);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value) to generate meta refresh pages
-        /// for any redirected documents (as indicated by a <c>RedirectFrom</c>
-        /// metadata value in the document).
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value is <c>false</c>) to generate
-        /// a Netlify <c>_redirects</c> file from redirected documents
-        /// (as indicated by a <c>RedirectFrom</c> metadata value).
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string NetlifyRedirects = nameof(NetlifyRedirects);
-
-        /// <summary>
         /// Specifies the path where the blog RSS file will be output.
         /// The default value is <c>feed.rss</c>. Set to <c>null</c>
         /// to prevent generating an RSS feed.
@@ -155,35 +116,6 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
         public const string BlogRdfPath = nameof(BlogRdfPath);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value is <c>false</c>) to
-        /// validate all absolute links. Note that this may add considerable
-        /// time to your generation process.
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string ValidateAbsoluteLinks = nameof(ValidateAbsoluteLinks);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value) to
-        /// validate all relative links.
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
-
-        /// <summary>
-        /// Set to <c>true</c> (the default value is <c>false</c>) to
-        /// report errors on link validation failures.
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
-
-        /// <summary>
-        /// Set by the system for documents that support editing. Contains the
-        /// relative path to the document to be appended to the base edit URL.
-        /// </summary>
-        /// <type><see cref="FilePath"/></type>
-        public const string EditFilePath = nameof(EditFilePath);
 
         /// <summary>
         /// Used to provide a description for pages and blog posts that can be used
@@ -243,9 +175,44 @@ namespace Wyam.Docs
         public const string Published = nameof(Published);
 
         /// <summary>
+        /// Controls the parent path where blog posts are placed. The default is "blog".
+        /// This affects both input and output files (I.e., if you change this your input
+        /// files must also be under the same path).
+        /// </summary>
+        /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
+        public const string BlogPath = nameof(BlogPath);
+
+        /// <summary>
         /// Used by blog posts and pages to indicate the author.
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string Author = nameof(Author);
+
+        /// <inheritdoc cref="WebRecipeKeys.ValidateAbsoluteLinks" />
+        public const string ValidateAbsoluteLinks = nameof(WebRecipeKeys.ValidateAbsoluteLinks);
+
+        /// <inheritdoc cref="WebRecipeKeys.ValidateRelativeLinks" />
+        public const string ValidateRelativeLinks = nameof(WebRecipeKeys.ValidateRelativeLinks);
+
+        /// <inheritdoc cref="WebRecipeKeys.ValidateLinksAsError" />
+        public const string ValidateLinksAsError = nameof(WebRecipeKeys.ValidateLinksAsError);
+
+        /// <inheritdoc cref="WebRecipeKeys.MetaRefreshRedirects" />
+        public const string MetaRefreshRedirects = nameof(WebRecipeKeys.MetaRefreshRedirects);
+
+        /// <inheritdoc cref="WebRecipeKeys.NetlifyRedirects" />
+        public const string NetlifyRedirects = nameof(WebRecipeKeys.NetlifyRedirects);
+
+        /// <inheritdoc cref="WebRecipeKeys.IgnoreFolders" />
+        public const string IgnoreFolders = nameof(WebRecipeKeys.IgnoreFolders);
+
+        /// <inheritdoc cref="WebRecipeKeys.EditFilePath" />
+        public const string EditFilePath = nameof(WebRecipeKeys.EditFilePath);
+
+        /// <inheritdoc cref="WebRecipeKeys.MarkdownExtensions" />
+        public const string MarkdownExtensions = nameof(WebRecipeKeys.MarkdownExtensions);
+
+        /// <inheritdoc cref="WebRecipeKeys.MarkdownExternalExtensions" />
+        public const string MarkdownExternalExtensions = nameof(WebRecipeKeys.MarkdownExternalExtensions);
     }
 }

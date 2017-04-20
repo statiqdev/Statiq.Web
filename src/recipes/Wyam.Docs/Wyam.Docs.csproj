@@ -142,14 +142,10 @@
     <Compile Include="Pipelines\BlogIndexes.cs" />
     <Compile Include="Pipelines\BlogPosts.cs" />
     <Compile Include="Pipelines\Code.cs" />
-    <Compile Include="Pipelines\Less.cs" />
     <Compile Include="Pipelines\Pages.cs" />
-    <Compile Include="Pipelines\Redirects.cs" />
     <Compile Include="Pipelines\RenderApi.cs" />
     <Compile Include="Pipelines\RenderBlogPosts.cs" />
     <Compile Include="Pipelines\RenderPages.cs" />
-    <Compile Include="Pipelines\Resources.cs" />
-    <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +188,10 @@
     <ProjectReference Include="..\..\extensions\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.WebRecipe\Wyam.WebRecipe.csproj">
+      <Project>{a4038d8b-40ed-4802-aa95-1e6171ef6036}</Project>
+      <Name>Wyam.WebRecipe</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

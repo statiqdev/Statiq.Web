@@ -14,12 +14,12 @@ namespace Wyam.WebRecipe.Pipelines
     /// </summary>
     public class Resources : Pipeline
     {
-        internal Resources()
+        public Resources()
             : base(GetModules())
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules() => new ModuleList
         {
             new CopyFiles("**/*{!.cshtml,!.md,!.less,}")
         };

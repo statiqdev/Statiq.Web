@@ -27,7 +27,7 @@ namespace Wyam.Docs.Pipelines
         {
         }
 
-        private static ModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
+        private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
         {
             new ReadFiles("blog/*.md"),
             new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),

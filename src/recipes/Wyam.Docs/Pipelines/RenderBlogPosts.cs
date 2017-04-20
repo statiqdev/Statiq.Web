@@ -21,7 +21,7 @@ namespace Wyam.Docs.Pipelines
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules() => new ModuleList
         {
             // Render the blog after the indexes and archive so the layout doesn't show up when including whole page (I.e., first post)
             new If(ctx => ctx.Documents[Docs.BlogPosts].Any(),

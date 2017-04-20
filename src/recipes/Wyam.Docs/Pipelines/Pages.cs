@@ -19,52 +19,49 @@ using Wyam.Html;
 
 namespace Wyam.Docs.Pipelines
 {
-    /// <summary>
-    /// Loads documentation content from Markdown and/or Razor files.
-    /// </summary>
+    /// <inheritdoc cref="WebRecipe.Pipelines.Pages" />
     public class Pages : Pipeline
     {
+        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.MarkdownFiles" />
+        public const string MarkdownFiles = nameof(MarkdownFiles);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.RazorFiles" />
+        public const string RazorFiles = nameof(RazorFiles);
+
+        /// <summary>
+        /// Links type names from the API in pages.
+        /// </summary>
+        public const string LinkTypeNames = nameof(LinkTypeNames);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.WriteMetadata" />
+        public const string WriteMetadata = nameof(WriteMetadata);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.CreateTree" />
+        public const string CreateTree = nameof(CreateTree);
+
         internal Pages(ConcurrentDictionary<string, string> typeNamesToLink)
             : base(GetModules(typeNamesToLink))
         {
         }
 
-        private static ModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
-        {
-            new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/*.md"),
-            new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-            new Include(),
-            new FrontMatter(new Yaml.Yaml()),
-            new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(DocsKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
-            new Concat(
-                new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx)}}}/{{!_,}}*.cshtml"), // Add any additional Razor pages
-                new Include(),
-                new FrontMatter(new Yaml.Yaml())),
-            new If(
-                ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                new AutoLink(typeNamesToLink)
-                    .WithQuerySelector("code")
-                    .WithMatchOnlyWholeWord()
-            ),
-            // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
-            // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
-            new If(
-                (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                new Replace("@", "&#64;")
-            ),
-            new Excerpt(),
-            new Title(),
-            new WriteFiles(".html").OnlyMetadata(),
-            new Tree()
-                .WithPlaceholderFactory(TreePlaceholderFactory)
-                .WithNesting(true, true)
-        };
+        private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
+            new WebRecipe.Pipelines.Pages(ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }, TreePlaceholderFactory)
+                .InsertAfter(
+                    WebRecipe.Pipelines.Pages.RazorFiles,
+                    LinkTypeNames,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(typeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord(),
+#pragma warning disable SA1115 // Parameter must follow comma
 
-        private static string GetIgnoreFoldersGlob(IExecutionContext context) =>
-            string.Join(",", context
-                .List(DocsKeys.IgnoreFolders, Array.Empty<string>())
-                .Select(x => "!" + x)
-                .Concat(new[] { "!blog", "!api", "**" }));
+                        // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+                        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+                        new If(
+                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                            new Replace("@", "&#64;"))));
+#pragma warning restore SA1115 // Parameter must follow comma
 
         private static IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
         {

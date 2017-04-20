@@ -11,29 +11,24 @@ using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 
-namespace Wyam.Docs.Pipelines
+namespace Wyam.WebRecipe.Pipelines
 {
     /// <summary>
     /// Validates links.
     /// </summary>
     public class ValidateLinks : Pipeline
     {
-        internal ValidateLinks()
-            : base(GetModules())
+        public ValidateLinks(params string[] pipelines)
+            : base(GetModules(pipelines))
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules(string[] pipelines) => new ModuleList
         {
             new If(
-                ctx => ctx.Bool(DocsKeys.ValidateAbsoluteLinks) || ctx.Bool(DocsKeys.ValidateRelativeLinks),
-                new Documents(Docs.RenderPages),
-                new Concat(
-                    new Documents(Docs.RenderBlogPosts)),
-                new Concat(
-                    new Documents(Docs.RenderApi)),
-                new Concat(
-                    new Documents(Docs.Resources)),
+                ctx => ctx.Bool(WebRecipeKeys.ValidateAbsoluteLinks) || ctx.Bool(WebRecipeKeys.ValidateRelativeLinks),
+                new Documents()
+                    .FromPipelines(pipelines),
                 new Where((doc, ctx) =>
                 {
                     FilePath destinationPath = doc.FilePath(Keys.DestinationFilePath);
@@ -42,9 +37,9 @@ namespace Wyam.Docs.Pipelines
                 }),
                 new Execute(ctx =>
                     new Html.ValidateLinks()
-                        .ValidateAbsoluteLinks(ctx.Bool(DocsKeys.ValidateAbsoluteLinks))
-                        .ValidateRelativeLinks(ctx.Bool(DocsKeys.ValidateRelativeLinks))
-                        .AsError(ctx.Bool(DocsKeys.ValidateLinksAsError))))
+                        .ValidateAbsoluteLinks(ctx.Bool(WebRecipeKeys.ValidateAbsoluteLinks))
+                        .ValidateRelativeLinks(ctx.Bool(WebRecipeKeys.ValidateRelativeLinks))
+                        .AsError(ctx.Bool(WebRecipeKeys.ValidateLinksAsError))))
         };
     }
 }

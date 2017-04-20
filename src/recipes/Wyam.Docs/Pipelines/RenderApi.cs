@@ -22,7 +22,7 @@ namespace Wyam.Docs.Pipelines
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules() => new ModuleList
         {
             new If(ctx => ctx.Documents[Docs.Api].Any(),
                 new Documents(Docs.Api),

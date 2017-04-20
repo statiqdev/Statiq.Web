@@ -14,6 +14,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Util;
 using Wyam.Docs.Pipelines;
 using Wyam.Feeds;
+using Wyam.WebRecipe.Pipelines;
 
 namespace Wyam.Docs
 {
@@ -40,6 +41,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.BlogRssPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogAtomPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogRdfPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogPath" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
@@ -70,7 +72,7 @@ namespace Wyam.Docs
 
         /// <inheritdoc cref="Pipelines.Pages" />
         [SourceInfo]
-        public static Pages Pages { get; } = new Pages(TypeNamesToLink);
+        public static Pipelines.Pages Pages { get; } = new Pipelines.Pages(TypeNamesToLink);
 
         /// <inheritdoc cref="Pipelines.BlogPosts" />
         [SourceInfo]
@@ -104,9 +106,9 @@ namespace Wyam.Docs
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts();
 
-        /// <inheritdoc cref="Pipelines.Redirects" />
+        /// <inheritdoc cref="WebRecipe.Pipelines.Redirects" />
         [SourceInfo]
-        public static Redirects Redirects { get; } = new Redirects();
+        public static Redirects Redirects { get; } = new Redirects(RenderPages, RenderBlogPosts);
 
         /// <inheritdoc cref="Pipelines.RenderApi" />
         [SourceInfo]
@@ -120,17 +122,23 @@ namespace Wyam.Docs
         [SourceInfo]
         public static ApiSearchIndex ApiSearchIndex { get; } = new ApiSearchIndex();
 
-        /// <inheritdoc cref="Pipelines.Less" />
+        /// <inheritdoc cref="WebRecipe.Pipelines.Less" />
         [SourceInfo]
-        public static Pipelines.Less Less { get; } = new Pipelines.Less();
+        public static WebRecipe.Pipelines.Less Less { get; } =
+            new WebRecipe.Pipelines.Less(
+                "assets/css/*.less",
+                "assets/css/bootstrap/bootstrap.less",
+                "assets/css/adminlte/AdminLTE.less",
+                "assets/css/theme/theme.less");
 
-        /// <inheritdoc cref="Pipelines.Resources" />
+        /// <inheritdoc cref="WebRecipe.Pipelines.Resources" />
         [SourceInfo]
         public static Resources Resources { get; } = new Resources();
 
-        /// <inheritdoc cref="Pipelines.ValidateLinks" />
+        /// <inheritdoc cref="WebRecipe.Pipelines.ValidateLinks" />
         [SourceInfo]
-        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
+        public static ValidateLinks ValidateLinks { get; }
+            = new ValidateLinks(RenderPages, RenderBlogPosts, RenderApi, Resources);
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
@@ -147,6 +155,7 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.SearchIndex] = true;
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
+            engine.Settings[DocsKeys.BlogPath] = "blog";
             engine.Settings[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;

@@ -45,8 +45,13 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Pipelines\Less.cs" />
+    <Compile Include="Pipelines\Pages.cs" />
+    <Compile Include="Pipelines\Redirects.cs" />
     <Compile Include="Pipelines\Resources.cs" />
+    <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebRecipeKeys.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
@@ -64,6 +69,10 @@
     <ProjectReference Include="..\..\extensions\Wyam.Html\Wyam.Html.csproj">
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
       <Name>Wyam.Html</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extensions\Wyam.Less\Wyam.Less.csproj">
+      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
+      <Name>Wyam.Less</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\extensions\Wyam.Markdown\Wyam.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>

@@ -54,7 +54,7 @@ namespace Wyam.Blog.Pipelines
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules() => new ModuleList
         {
             {
                 MarkdownFiles,

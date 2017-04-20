@@ -12,29 +12,27 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 
-namespace Wyam.Docs.Pipelines
+namespace Wyam.WebRecipe.Pipelines
 {
     /// <summary>
     /// Generates any redirect placeholders and files.
     /// </summary>
     public class Redirects : Pipeline
     {
-        internal Redirects()
-            : base(GetModules())
+        public Redirects(params string[] pipelines)
+            : base(GetModules(pipelines))
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules(string[] pipelines) => new ModuleList
         {
-            new Documents(Docs.RenderPages),
-            new Concat(
-                new Documents(Docs.RenderBlogPosts)
-            ),
+            new Documents()
+                .FromPipelines(pipelines),
             new Execute(ctx =>
             {
                 Redirect redirect = new Redirect()
-                    .WithMetaRefreshPages(ctx.Bool(DocsKeys.MetaRefreshRedirects));
-                if (ctx.Bool(DocsKeys.NetlifyRedirects))
+                    .WithMetaRefreshPages(ctx.Bool(WebRecipeKeys.MetaRefreshRedirects));
+                if (ctx.Bool(WebRecipeKeys.NetlifyRedirects))
                 {
                     redirect.WithAdditionalOutput("_redirects", redirects =>
                         string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));

@@ -21,7 +21,7 @@ namespace Wyam.Docs.Pipelines
         {
         }
 
-        private static ModuleList GetModules() => new ModuleList
+        private static IModuleList GetModules() => new ModuleList
         {
             new ReadFiles(ctx => ctx.List<string>(DocsKeys.SourceFiles))
         };
