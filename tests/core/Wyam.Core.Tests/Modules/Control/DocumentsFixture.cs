@@ -108,6 +108,129 @@ namespace Wyam.Core.Tests.Modules.Control
                 CollectionAssert.AreEqual(new[] { "A", "B", "C" }, content);
                 CollectionAssert.AreEqual(new[] { "a", "b", "c" }, values);
             }
+
+            [Test]
+            public void PipelineReturnsCorrectDocuments()
+            {
+                // Given
+                List<string> content = new List<string>();
+                Engine engine = new Engine();
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        content.Add(d.Content);
+                        return null;
+                    }, false);
+                engine.Pipelines.Add("Foo", new Core.Modules.Control.Documents("A", "B", "C", "D"));
+                engine.Pipelines.Add("Bar", new Core.Modules.Control.Documents("E", "F"));
+                engine.Pipelines.Add(new Core.Modules.Control.Documents("Foo"), gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(4, content.Count);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C", "D" }, content);
+            }
+
+            [Test]
+            public void EmptyConstructorReturnsAllDocuments()
+            {
+                // Given
+                List<string> content = new List<string>();
+                Engine engine = new Engine();
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        content.Add(d.Content);
+                        return null;
+                    }, false);
+                engine.Pipelines.Add("Foo", new Core.Modules.Control.Documents("A", "B", "C", "D"));
+                engine.Pipelines.Add("Bar", new Core.Modules.Control.Documents("E", "F"));
+                engine.Pipelines.Add(new Core.Modules.Control.Documents(), gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(6, content.Count);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C", "D", "E", "F" }, content);
+            }
+
+            [Test]
+            public void EmptyConstructorWithSpecifiedPipelinesReturnsCorrectDocuments()
+            {
+                // Given
+                List<string> content = new List<string>();
+                Engine engine = new Engine();
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        content.Add(d.Content);
+                        return null;
+                    }, false);
+                engine.Pipelines.Add("Foo", new Core.Modules.Control.Documents("A", "B", "C", "D"));
+                engine.Pipelines.Add("Bar", new Core.Modules.Control.Documents("E", "F"));
+                engine.Pipelines.Add("Baz", new Core.Modules.Control.Documents("G", "H"));
+                engine.Pipelines.Add(new Core.Modules.Control.Documents().FromPipelines("Foo", "Baz"), gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(6, content.Count);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C", "D", "G", "H" }, content);
+            }
+
+            [Test]
+            public void SpecifiedPipelinesReturnsCorrectDocuments()
+            {
+                // Given
+                List<string> content = new List<string>();
+                Engine engine = new Engine();
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        content.Add(d.Content);
+                        return null;
+                    }, false);
+                engine.Pipelines.Add("Foo", new Core.Modules.Control.Documents("A", "B", "C", "D"));
+                engine.Pipelines.Add("Bar", new Core.Modules.Control.Documents("E", "F"));
+                engine.Pipelines.Add("Baz", new Core.Modules.Control.Documents("G", "H"));
+                engine.Pipelines.Add(new Core.Modules.Control.Documents("Foo").FromPipelines("Baz"), gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(6, content.Count);
+                CollectionAssert.AreEqual(new[] { "A", "B", "C", "D", "G", "H" }, content);
+            }
+
+            [Test]
+            public void SpecifiedPipelineDocumentsAreReturnedInCorrectOrder()
+            {
+                // Given
+                List<string> content = new List<string>();
+                Engine engine = new Engine();
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        content.Add(d.Content);
+                        return null;
+                    }, false);
+                engine.Pipelines.Add("Foo", new Core.Modules.Control.Documents("A", "B", "C", "D"));
+                engine.Pipelines.Add("Bar", new Core.Modules.Control.Documents("E", "F"));
+                engine.Pipelines.Add("Baz", new Core.Modules.Control.Documents("G", "H"));
+                engine.Pipelines.Add(new Core.Modules.Control.Documents("Baz").FromPipelines("Foo"), gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(6, content.Count);
+                CollectionAssert.AreEqual(new[] { "G", "H", "A", "B", "C", "D" }, content);
+            }
         }
     }
 }

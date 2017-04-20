@@ -24,7 +24,7 @@ namespace Wyam.Core.Modules.Control
     /// <category>Control</category>
     public class Documents : IModule
     {
-        private readonly string _pipeline;
+        private readonly List<string> _pipelines = new List<string>();
         private readonly ContextConfig _contextDocuments;
         private readonly DocumentConfig _documentDocuments;
         private Func<IDocument, IExecutionContext, bool> _predicate;
@@ -42,7 +42,7 @@ namespace Wyam.Core.Modules.Control
         /// <param name="pipeline">The pipeline to output documents from.</param>
         public Documents(string pipeline)
         {
-            _pipeline = pipeline;
+            _pipelines.Add(pipeline);
         }
 
         /// <summary>
@@ -137,6 +137,26 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <summary>
+        /// Gets documents from additional pipeline(s). The final sequence of documents will
+        /// be in the order they appear from all specified pipelines. If the empty constructor
+        /// is used that outputs documents from all pipelines, this will override that behavior
+        /// and only output the specified pipelines. Likewise, if another constructor was used
+        /// that relies on a <see cref="ContextConfig"/> or <see cref="DocumentConfig"/> then
+        /// using this method will throw <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <param name="pipelines">The additional pipelines to get documents from.</param>
+        /// <returns>The current module instance.</returns>
+        public Documents FromPipelines(params string[] pipelines)
+        {
+            if (_contextDocuments != null || _documentDocuments != null)
+            {
+                throw new InvalidOperationException("Pipelines cannot be specified if the module is generating new documents using a delegate");
+            }
+            _pipelines.AddRange(pipelines);
+            return this;
+        }
+
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -151,9 +171,9 @@ namespace Wyam.Core.Modules.Control
             }
             else
             {
-                documents = string.IsNullOrEmpty(_pipeline)
+                documents = _pipelines.Count == 0
                     ? context.Documents.ExceptPipeline(context.Pipeline.Name)
-                    : context.Documents.FromPipeline(_pipeline);
+                    : _pipelines.SelectMany(x => context.Documents.FromPipeline(x));
             }
             if (_predicate != null)
             {
