@@ -78,10 +78,12 @@ namespace Wyam.WebRecipe.Pipelines
             },
             {
                 RazorFiles,
-                new Concat(
+                new Concat
+                {
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/{{!_,}}*.cshtml"), // Add any additional Razor pages
                     new Include(),
-                    new FrontMatter(new Yaml.Yaml()))
+                    new FrontMatter(new Yaml.Yaml())
+                }
             },
             {
                 WriteMetadata,

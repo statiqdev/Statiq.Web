@@ -17,67 +17,54 @@ using Wyam.Html;
 
 namespace Wyam.Docs.Pipelines
 {
-    /// <summary>
-    /// Loads blog posts from Markdown and/or Razor files.
-    /// </summary>
+    /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts" />
     public class BlogPosts : Pipeline
     {
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.MarkdownPosts" />
+        public const string MarkdownPosts = nameof(WebRecipe.Pipelines.BlogPosts.MarkdownPosts);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.RazorPosts" />
+        public const string RazorPosts = nameof(WebRecipe.Pipelines.BlogPosts.RazorPosts);
+
+        /// <summary>
+        /// Links type names from the API in pages.
+        /// </summary>
+        public const string LinkTypeNames = nameof(LinkTypeNames);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.Published" />
+        public const string Published = nameof(WebRecipe.Pipelines.BlogPosts.Published);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.WriteMetadata" />
+        public const string WriteMetadata = nameof(WebRecipe.Pipelines.BlogPosts.WriteMetadata);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.RelativeFilePath" />
+        public const string RelativeFilePath = nameof(WebRecipe.Pipelines.BlogPosts.RelativeFilePath);
+
+        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.OrderByPublished" />
+        public const string OrderByPublished = nameof(WebRecipe.Pipelines.BlogPosts.OrderByPublished);
+
         internal BlogPosts(ConcurrentDictionary<string, string> typeNamesToLink)
             : base(GetModules(typeNamesToLink))
         {
         }
 
-        private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) => new ModuleList
-        {
-            new ReadFiles("blog/*.md"),
-            new Meta(DocsKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-            new FrontMatter(new Yaml.Yaml()),
-            new Execute(ctx => new Markdown.Markdown().UseExtensions(ctx.Settings.List<Type>(DocsKeys.MarkdownExternalExtensions)).UseConfiguration(ctx.String(DocsKeys.MarkdownExtensions))),
-            new If(ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                new AutoLink(typeNamesToLink)
-                    .WithQuerySelector("code")
-                    .WithMatchOnlyWholeWord()
-            ),
-            // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
-            // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
-            new If((doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                new Replace("@", "&#64;")
-            ),
-            new Excerpt(),
-            new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(DocsKeys.Published)),  // Record whether the publish date came from front matter
-            new Meta(DocsKeys.Published, (doc, ctx) =>
-            {
-                DateTime published;
-                if (!ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
-                {
-                    Wyam.Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
-                    return null;
-                }
-                return published;
-            }).OnlyIfNonExisting(),
-            new Where((doc, ctx) =>
-            {
-                if (!doc.ContainsKey(DocsKeys.Published) || doc.Get(DocsKeys.Published) == null)
-                {
-                    Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to not having {DocsKeys.Published} metadata");
-                    return false;
-                }
-                if (doc.Get<DateTime>(DocsKeys.Published) > DateTime.Now)
-                {
-                    Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to having {DocsKeys.Published} metadata in the future of {doc.Get<DateTime>(DocsKeys.Published)} (current date and time is {DateTime.Now})");
-                    return false;
-                }
-                return true;
-            }),
-            new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-            {
-                DateTime published = doc.Get<DateTime>(DocsKeys.Published);
-                string fileName = doc.Bool("FrontMatterPublished")
-                    ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
-                    : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                return ctx.Bool(DocsKeys.IncludeDateInPostPath) ? $"blog/{published:yyyy}/{published:MM}/{fileName}" : $"blog/{fileName}";
-            }),
-            new OrderBy((doc, ctx) => doc.Get<DateTime>(DocsKeys.Published)).Descending()
-        };
+        private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
+            new WebRecipe.Pipelines.BlogPosts(ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
+                .InsertAfter(
+                    WebRecipe.Pipelines.BlogPosts.RazorPosts,
+                    LinkTypeNames,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(typeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord(),
+#pragma warning disable SA1115 // Parameter must follow comma
+
+                        // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+                        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+                        new If(
+                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                            new Replace("@", "&#64;"))));
+#pragma warning restore SA1115 // Parameter must follow comma
     }
 }

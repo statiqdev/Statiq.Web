@@ -10,6 +10,20 @@ namespace Wyam.WebRecipe
     public static class WebRecipeKeys
     {
         /// <summary>
+        /// Used for blog posts to store the date of the post.
+        /// </summary>
+        /// <type><see cref="DateTime"/> or <see cref="string"/></type>
+        public const string Published = nameof(Published);
+
+        /// <summary>
+        /// Setting this to <c>true</c> uses
+        /// the year and date in the output path of blog posts.
+        /// The default value is <c>false</c>.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
+
+        /// <summary>
         /// Set to <c>true</c> (the default value is <c>false</c>) to
         /// validate all absolute links. Note that this may add considerable
         /// time to your generation process.

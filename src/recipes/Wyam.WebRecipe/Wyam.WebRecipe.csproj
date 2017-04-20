@@ -45,6 +45,7 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Pipelines\BlogPosts.cs" />
     <Compile Include="Pipelines\Less.cs" />
     <Compile Include="Pipelines\Pages.cs" />
     <Compile Include="Pipelines\Redirects.cs" />

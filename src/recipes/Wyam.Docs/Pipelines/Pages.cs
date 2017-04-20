@@ -23,10 +23,10 @@ namespace Wyam.Docs.Pipelines
     public class Pages : Pipeline
     {
         /// <inheritdoc cref="WebRecipe.Pipelines.Pages.MarkdownFiles" />
-        public const string MarkdownFiles = nameof(MarkdownFiles);
+        public const string MarkdownFiles = nameof(WebRecipe.Pipelines.Pages.MarkdownFiles);
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Pages.RazorFiles" />
-        public const string RazorFiles = nameof(RazorFiles);
+        public const string RazorFiles = nameof(WebRecipe.Pipelines.Pages.RazorFiles);
 
         /// <summary>
         /// Links type names from the API in pages.
@@ -34,10 +34,10 @@ namespace Wyam.Docs.Pipelines
         public const string LinkTypeNames = nameof(LinkTypeNames);
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Pages.WriteMetadata" />
-        public const string WriteMetadata = nameof(WriteMetadata);
+        public const string WriteMetadata = nameof(WebRecipe.Pipelines.Pages.WriteMetadata);
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Pages.CreateTree" />
-        public const string CreateTree = nameof(CreateTree);
+        public const string CreateTree = nameof(WebRecipe.Pipelines.Pages.CreateTree);
 
         internal Pages(ConcurrentDictionary<string, string> typeNamesToLink)
             : base(GetModules(typeNamesToLink))

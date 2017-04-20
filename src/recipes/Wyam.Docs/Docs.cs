@@ -76,7 +76,7 @@ namespace Wyam.Docs
 
         /// <inheritdoc cref="Pipelines.BlogPosts" />
         [SourceInfo]
-        public static BlogPosts BlogPosts { get; } = new BlogPosts(TypeNamesToLink);
+        public static Pipelines.BlogPosts BlogPosts { get; } = new Pipelines.BlogPosts(TypeNamesToLink);
 
         /// <inheritdoc cref="Pipelines.BlogIndexes" />
         [SourceInfo]

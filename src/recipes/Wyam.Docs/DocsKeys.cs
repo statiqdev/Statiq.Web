@@ -79,14 +79,6 @@ namespace Wyam.Docs
         public const string AutoLinkTypes = nameof(AutoLinkTypes);
 
         /// <summary>
-        /// Setting this to <c>true</c> uses
-        /// the year and date in the output path of blog posts.
-        /// The default value is <c>false</c>.
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
-
-        /// <summary>
         /// Set to <c>false</c> to prevent a search index for API types from being
         /// generated and presented on the API pages.
         /// </summary>
@@ -168,11 +160,6 @@ namespace Wyam.Docs
         /// <type><see cref="bool"/></type>
         public const string NoGutter = nameof(NoGutter);
 
-        /// <summary>
-        /// Used for blog posts to store the date of the post.
-        /// </summary>
-        /// <type><see cref="DateTime"/> or <see cref="string"/></type>
-        public const string Published = nameof(Published);
 
         /// <summary>
         /// Controls the parent path where blog posts are placed. The default is "blog".
@@ -187,6 +174,12 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string Author = nameof(Author);
+
+        /// <inheritdoc cref="WebRecipeKeys.Published" />
+        public const string Published = nameof(WebRecipeKeys.Published);
+
+        /// <inheritdoc cref="WebRecipeKeys.IncludeDateInPostPath" />
+        public const string IncludeDateInPostPath = nameof(WebRecipeKeys.IncludeDateInPostPath);
 
         /// <inheritdoc cref="WebRecipeKeys.ValidateAbsoluteLinks" />
         public const string ValidateAbsoluteLinks = nameof(WebRecipeKeys.ValidateAbsoluteLinks);
