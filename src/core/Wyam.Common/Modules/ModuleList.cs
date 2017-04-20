@@ -142,7 +142,7 @@ namespace Wyam.Common.Modules
         /// <inheritdoc />
         public IModule this[int index]
         {
-            get { return _modules[index].Value; }
+            get => _modules[index].Value;
             set
             {
                 // Zero it out before setting so we don't throw for duplicate keys

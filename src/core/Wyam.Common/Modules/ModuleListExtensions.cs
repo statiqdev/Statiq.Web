@@ -15,19 +15,55 @@ namespace Wyam.Common.Modules
         /// Inserts modules after the module with the specified name.
         /// </summary>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
-        /// <param name="name">The name of the module at which to insert the specified modules.</param>
+        /// <param name="afterName">The name of the module at which to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertAfter(this IModuleList moduleList, string name, params IModule[] modules)
-            => moduleList.Insert(moduleList.GuardIndexOf(name) + 1, modules);
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfter(this IModuleList moduleList, string afterName, params IModule[] modules)
+        {
+            moduleList.Insert(moduleList.GuardIndexOf(afterName) + 1, modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules after the module with the specified name.
+        /// </summary>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="afterName">The name of the module at which to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfter(this IModuleList moduleList, string afterName, string name, IModule module)
+        {
+            moduleList.Insert(moduleList.GuardIndexOf(name) + 1, name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Inserts modules before the module with the specified name.
         /// </summary>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
-        /// <param name="name">The name of the module at which to insert the specified modules.</param>
+        /// <param name="beforeName">The name of the module at which to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertBefore(this IModuleList moduleList, string name, params IModule[] modules)
-            => moduleList.Insert(moduleList.GuardIndexOf(name), modules);
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBefore(this IModuleList moduleList, string beforeName, params IModule[] modules)
+        {
+            moduleList.Insert(moduleList.GuardIndexOf(beforeName), modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules before the module with the specified name.
+        /// </summary>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="beforeName">The name of the module at which to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBefore(this IModuleList moduleList, string beforeName, string name, IModule module)
+        {
+            moduleList.Insert(moduleList.GuardIndexOf(beforeName), name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Inserts modules before the first module in the list of the specified type.
@@ -35,9 +71,22 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertBeforeFirst<T>(this IModuleList moduleList, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeFirst<T>(this IModuleList moduleList, params IModule[] modules)
             where T : class, IModule
             => moduleList.InsertBeforeFirst<T>(_ => true, modules);
+
+        /// <summary>
+        /// Inserts modules before the first module in the list of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeFirst<T>(this IModuleList moduleList, string name, IModule module)
+            where T : class, IModule
+            => moduleList.InsertBeforeFirst<T>(_ => true, name, module);
 
         /// <summary>
         /// Inserts modules before the first module in the list of the specified type that satisfies a predicate.
@@ -46,9 +95,29 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertBeforeFirst<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeFirst<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
             where T : class, IModule
-            => moduleList.Insert(moduleList.GuardIndexOfFirst(filter), modules);
+        {
+            moduleList.Insert(moduleList.GuardIndexOfFirst(filter), modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules before the first module in the list of the specified type that satisfies a predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeFirst<T>(this IModuleList moduleList, Predicate<T> filter, string name, IModule module)
+            where T : class, IModule
+        {
+            moduleList.Insert(moduleList.GuardIndexOfFirst(filter), name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Inserts modules after the first module in the list of the specified type.
@@ -56,9 +125,22 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertAfterFirst<T>(this IModuleList moduleList, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterFirst<T>(this IModuleList moduleList, params IModule[] modules)
             where T : class, IModule
             => moduleList.InsertAfterFirst<T>(_ => true, modules);
+
+        /// <summary>
+        /// Inserts modules after the first module in the list of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterFirst<T>(this IModuleList moduleList, string name, IModule module)
+            where T : class, IModule
+            => moduleList.InsertAfterFirst<T>(_ => true, name, module);
 
         /// <summary>
         /// Inserts modules after the first module in the list of the specified type that satisfies a predicate.
@@ -67,9 +149,29 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertAfterFirst<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterFirst<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
             where T : class, IModule
-            => moduleList.Insert(moduleList.GuardIndexOfFirst(filter) + 1, modules);
+        {
+            moduleList.Insert(moduleList.GuardIndexOfFirst(filter) + 1, modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules after the first module in the list of the specified type that satisfies a predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterFirst<T>(this IModuleList moduleList, Predicate<T> filter, string name, IModule module)
+            where T : class, IModule
+        {
+            moduleList.Insert(moduleList.GuardIndexOfFirst(filter) + 1, name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Inserts modules before the last module in the list of the specified type.
@@ -77,9 +179,22 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertBeforeLast<T>(this IModuleList moduleList, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeLast<T>(this IModuleList moduleList, params IModule[] modules)
             where T : class, IModule
             => moduleList.InsertBeforeLast<T>(_ => true, modules);
+
+        /// <summary>
+        /// Inserts modules before the last module in the list of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeLast<T>(this IModuleList moduleList, string name, IModule module)
+            where T : class, IModule
+            => moduleList.InsertBeforeLast<T>(_ => true, name, module);
 
         /// <summary>
         /// Inserts modules before the last module in the list of the specified type that satisfies a predicate.
@@ -88,9 +203,29 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertBeforeLast<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeLast<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
             where T : class, IModule
-            => moduleList.Insert(moduleList.GuardIndexOfLast(filter), modules);
+        {
+            moduleList.Insert(moduleList.GuardIndexOfLast(filter), modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules before the last module in the list of the specified type that satisfies a predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertBeforeLast<T>(this IModuleList moduleList, Predicate<T> filter, string name, IModule module)
+            where T : class, IModule
+        {
+            moduleList.Insert(moduleList.GuardIndexOfLast(filter), name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Inserts modules after the last module in the list of the specified type.
@@ -98,9 +233,22 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertAfterLast<T>(this IModuleList moduleList, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterLast<T>(this IModuleList moduleList, params IModule[] modules)
             where T : class, IModule
             => moduleList.InsertAfterLast<T>(_ => true, modules);
+
+        /// <summary>
+        /// Inserts modules after the last module in the list of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the specified modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterLast<T>(this IModuleList moduleList, string name, IModule module)
+            where T : class, IModule
+            => moduleList.InsertAfterLast<T>(_ => true, name, module);
 
         /// <summary>
         /// Inserts modules after the last module in the list of the specified type that satisfies a predicate.
@@ -109,9 +257,29 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
-        public static void InsertAfterLast<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterLast<T>(this IModuleList moduleList, Predicate<T> filter, params IModule[] modules)
             where T : class, IModule
-            => moduleList.Insert(moduleList.GuardIndexOfLast(filter) + 1, modules);
+        {
+            moduleList.Insert(moduleList.GuardIndexOfLast(filter) + 1, modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Inserts modules after the last module in the list of the specified type that satisfies a predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the module at which to insert the modules.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="filter">A predicate determining at which module to insert the specified modules.</param>
+        /// <param name="name">The name of the module to insert.</param>
+        /// <param name="module">The module to insert.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList InsertAfterLast<T>(this IModuleList moduleList, Predicate<T> filter, string name, IModule module)
+            where T : class, IModule
+        {
+            moduleList.Insert(moduleList.GuardIndexOfLast(filter) + 1, name, module);
+            return moduleList;
+        }
 
         /// <summary>
         /// Replaces the first module in the list of the specified type.
@@ -119,9 +287,11 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module to replace.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="module">The replacement module.</param>
-        public static void ReplaceFirst<T>(this IModuleList moduleList, IModule module)
+        /// <param name="name">The name of the replacement module.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList ReplaceFirst<T>(this IModuleList moduleList, IModule module, string name = null)
             where T : class, IModule
-            => moduleList.ReplaceFirst<T>(_ => true, module);
+            => moduleList.ReplaceFirst<T>(_ => true, module, name);
 
         /// <summary>
         /// Replaces the first module in the list of the specified type that satisfies a predicate.
@@ -130,9 +300,11 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining which module to replace.</param>
         /// <param name="module">The replacement module.</param>
-        public static void ReplaceFirst<T>(this IModuleList moduleList, Predicate<T> filter, IModule module)
+        /// <param name="name">The name of the replacement module.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList ReplaceFirst<T>(this IModuleList moduleList, Predicate<T> filter, IModule module, string name = null)
             where T : class, IModule
-            => moduleList.Replace(moduleList.GuardIndexOfFirst(filter), module);
+            => moduleList.Replace(moduleList.GuardIndexOfFirst(filter), module, name);
 
         /// <summary>
         /// Replaces the last module in the list of the specified type.
@@ -140,9 +312,11 @@ namespace Wyam.Common.Modules
         /// <typeparam name="T">The type of the module to replace.</typeparam>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="module">The replacement module.</param>
-        public static void ReplaceLast<T>(this IModuleList moduleList, IModule module)
+        /// <param name="name">The name of the replacement module.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList ReplaceLast<T>(this IModuleList moduleList, IModule module, string name = null)
             where T : class, IModule
-            => moduleList.ReplaceLast<T>(_ => true, module);
+            => moduleList.ReplaceLast<T>(_ => true, module, name);
 
         /// <summary>
         /// Replaces the last module in the list of the specified type that satisfies a predicate.
@@ -151,19 +325,23 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="filter">A predicate determining which module to replace.</param>
         /// <param name="module">The replacement module.</param>
-        public static void ReplaceLast<T>(this IModuleList moduleList, Predicate<T> filter, IModule module)
+        /// <param name="name">The name of the replacement module.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList ReplaceLast<T>(this IModuleList moduleList, Predicate<T> filter, IModule module, string name = null)
             where T : class, IModule
-            => moduleList.Replace(moduleList.GuardIndexOfLast(filter), module);
+            => moduleList.Replace(moduleList.GuardIndexOfLast(filter), module, name);
 
         /// <summary>
         /// Replaces a module with the specified name. The replacement module will have the same name
-        /// as the module being replaced.
+        /// as the module being replaced unless an alternate name is specified.
         /// </summary>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
-        /// <param name="name">The name of the module to replace.</param>
+        /// <param name="replaceName">The name of the module to replace.</param>
         /// <param name="module">The replacement module.</param>
-        public static void Replace(this IModuleList moduleList, string name, IModule module)
-            => moduleList.Replace(moduleList.GuardIndexOf(name), module, name);
+        /// <param name="name">The name of the replacement module.</param>
+        /// <returns>The current instance.</returns>
+        public static IModuleList Replace(this IModuleList moduleList, string replaceName, IModule module, string name = null)
+            => moduleList.Replace(moduleList.GuardIndexOf(replaceName), module, name ?? replaceName);
 
         /// <summary>
         /// Replaces a module at the specified index.
@@ -172,7 +350,8 @@ namespace Wyam.Common.Modules
         /// <param name="index">The index of the module to replace.</param>
         /// <param name="module">The replacement module.</param>
         /// <param name="name">An optional name of the replacement module.</param>
-        public static void Replace(this IModuleList moduleList, int index, IModule module, string name = "")
+        /// <returns>The current instance.</returns>
+        public static IModuleList Replace(this IModuleList moduleList, int index, IModule module, string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -185,6 +364,7 @@ namespace Wyam.Common.Modules
 
             moduleList.RemoveAt(index);
             moduleList.Insert(index, name, module);
+            return moduleList;
         }
 
         private static int GuardIndexOfLast<T>(this IModuleList moduleList, Predicate<T> filter)
