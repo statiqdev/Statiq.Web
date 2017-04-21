@@ -12,7 +12,7 @@ using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.Extensibility;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Validates links.

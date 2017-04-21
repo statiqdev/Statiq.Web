@@ -18,7 +18,7 @@ using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Html;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Loads documentation content from Markdown and/or Razor files.

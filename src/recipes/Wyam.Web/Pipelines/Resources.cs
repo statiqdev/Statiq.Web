@@ -7,7 +7,7 @@ using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.IO;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Copies all other resources to the output path.

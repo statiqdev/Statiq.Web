@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
-using Wyam.WebRecipe;
+using Wyam.Web;
 
 namespace Wyam.Docs
 {

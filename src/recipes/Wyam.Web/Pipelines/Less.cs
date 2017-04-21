@@ -8,7 +8,7 @@ using Wyam.Common.Modules;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.IO;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Processes any Less stylesheets and outputs the resulting CSS files.

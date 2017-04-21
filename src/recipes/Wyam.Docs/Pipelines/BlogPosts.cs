@@ -19,31 +19,31 @@ using Wyam.Html;
 
 namespace Wyam.Docs.Pipelines
 {
-    /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts" />
+    /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
     public class BlogPosts : Pipeline
     {
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.MarkdownPosts" />
-        public const string MarkdownPosts = nameof(WebRecipe.Pipelines.BlogPosts.MarkdownPosts);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.MarkdownPosts" />
+        public const string MarkdownPosts = nameof(Web.Pipelines.BlogPosts.MarkdownPosts);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.RazorPosts" />
-        public const string RazorPosts = nameof(WebRecipe.Pipelines.BlogPosts.RazorPosts);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.RazorPosts" />
+        public const string RazorPosts = nameof(Web.Pipelines.BlogPosts.RazorPosts);
 
         /// <summary>
         /// Links type names from the API in pages.
         /// </summary>
         public const string LinkTypeNames = nameof(LinkTypeNames);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.Published" />
-        public const string Published = nameof(WebRecipe.Pipelines.BlogPosts.Published);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.Published" />
+        public const string Published = nameof(Web.Pipelines.BlogPosts.Published);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.WriteMetadata" />
-        public const string WriteMetadata = nameof(WebRecipe.Pipelines.BlogPosts.WriteMetadata);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.WriteMetadata" />
+        public const string WriteMetadata = nameof(Web.Pipelines.BlogPosts.WriteMetadata);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.RelativeFilePath" />
-        public const string RelativeFilePath = nameof(WebRecipe.Pipelines.BlogPosts.RelativeFilePath);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.RelativeFilePath" />
+        public const string RelativeFilePath = nameof(Web.Pipelines.BlogPosts.RelativeFilePath);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.BlogPosts.OrderByPublished" />
-        public const string OrderByPublished = nameof(WebRecipe.Pipelines.BlogPosts.OrderByPublished);
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts.OrderByPublished" />
+        public const string OrderByPublished = nameof(Web.Pipelines.BlogPosts.OrderByPublished);
 
         internal BlogPosts(ConcurrentDictionary<string, string> typeNamesToLink)
             : base(GetModules(typeNamesToLink))
@@ -51,7 +51,7 @@ namespace Wyam.Docs.Pipelines
         }
 
         private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
-            new WebRecipe.Pipelines.BlogPosts(
+            new Web.Pipelines.BlogPosts(
                 nameof(BlogPosts),
                 DocsKeys.Published,
                 ctx => ctx.String(DocsKeys.MarkdownConfiguration),
@@ -59,7 +59,7 @@ namespace Wyam.Docs.Pipelines
                 ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
                 ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
                     .InsertAfter(
-                        WebRecipe.Pipelines.BlogPosts.RazorPosts,
+                        Web.Pipelines.BlogPosts.RazorPosts,
                         LinkTypeNames,
                         new If(
                             ctx => ctx.Bool(DocsKeys.AutoLinkTypes),

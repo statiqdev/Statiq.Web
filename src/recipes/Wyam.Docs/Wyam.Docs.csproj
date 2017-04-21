@@ -184,9 +184,9 @@
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wyam.WebRecipe\Wyam.WebRecipe.csproj">
+    <ProjectReference Include="..\Wyam.Web\Wyam.Web.csproj">
       <Project>{a4038d8b-40ed-4802-aa95-1e6171ef6036}</Project>
-      <Name>Wyam.WebRecipe</Name>
+      <Name>Wyam.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

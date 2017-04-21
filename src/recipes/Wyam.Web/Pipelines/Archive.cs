@@ -12,7 +12,7 @@ using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Generates an optionally grouped and paged archive for a set of documents from defined pipelines.

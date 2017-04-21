@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
 
-namespace Wyam.WebRecipe
+namespace Wyam.Web
 {
     /// <summary>
     /// Metadata keys for common web pipelines.

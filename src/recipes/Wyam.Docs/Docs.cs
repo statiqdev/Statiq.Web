@@ -14,8 +14,8 @@ using Wyam.Common.Meta;
 using Wyam.Common.Util;
 using Wyam.Docs.Pipelines;
 using Wyam.Feeds;
-using Wyam.WebRecipe;
-using Wyam.WebRecipe.Pipelines;
+using Wyam.Web;
+using Wyam.Web.Pipelines;
 
 namespace Wyam.Docs
 {
@@ -207,7 +207,7 @@ namespace Wyam.Docs
         /// Generates the blog RSS, Atom, and/or RDF feeds.
         /// </summary>
         [SourceInfo]
-        public static WebRecipe.Pipelines.Feeds BlogFeed { get; } = new WebRecipe.Pipelines.Feeds(
+        public static Web.Pipelines.Feeds BlogFeed { get; } = new Web.Pipelines.Feeds(
             nameof(BlogFeed),
             new string[] { BlogPosts },
             ctx => ctx.FilePath(DocsKeys.BlogRssPath),
@@ -222,7 +222,7 @@ namespace Wyam.Docs
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts();
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Redirects" />
+        /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
         public static Redirects Redirects { get; } = new Redirects(
             nameof(Redirects),
@@ -242,9 +242,9 @@ namespace Wyam.Docs
         [SourceInfo]
         public static ApiSearchIndex ApiSearchIndex { get; } = new ApiSearchIndex();
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Less" />
+        /// <inheritdoc cref="Web.Pipelines.Less" />
         [SourceInfo]
-        public static WebRecipe.Pipelines.Less Less { get; } = new WebRecipe.Pipelines.Less(
+        public static Web.Pipelines.Less Less { get; } = new Web.Pipelines.Less(
             nameof(Less),
             new string[]
             {
@@ -254,11 +254,11 @@ namespace Wyam.Docs
                 "assets/css/theme/theme.less"
             });
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Resources" />
+        /// <inheritdoc cref="Web.Pipelines.Resources" />
         [SourceInfo]
         public static Resources Resources { get; } = new Resources(nameof(Resources));
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.ValidateLinks" />
+        /// <inheritdoc cref="Web.Pipelines.ValidateLinks" />
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
             nameof(ValidateLinks),

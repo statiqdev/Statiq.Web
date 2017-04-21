@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Wyam.WebRecipe</id>
+    <id>Wyam.Web</id>
     <version>$version$</version>
-    <title>Wyam.WebRecipe</title>
+    <title>Wyam.Web</title>
     <authors>Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>

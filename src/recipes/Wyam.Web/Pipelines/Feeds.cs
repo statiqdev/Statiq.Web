@@ -12,7 +12,7 @@ using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.IO;
 using Wyam.Feeds;
 
-namespace Wyam.WebRecipe.Pipelines
+namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Generates RSS, Atom, and/or RDF feeds.

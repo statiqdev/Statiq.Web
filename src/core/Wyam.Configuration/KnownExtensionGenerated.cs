@@ -31,7 +31,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Blog = new KnownExtension("Wyam.Blog");
 		public static readonly KnownExtension BookSite = new KnownExtension("Wyam.BookSite");
 		public static readonly KnownExtension Docs = new KnownExtension("Wyam.Docs");
-		public static readonly KnownExtension WebRecipe = new KnownExtension("Wyam.WebRecipe");
+		public static readonly KnownExtension Web = new KnownExtension("Wyam.Web");
 		public static readonly KnownExtension CleanBlogTheme = new KnownExtension("Wyam.Blog.CleanBlog");
 		public static readonly KnownExtension PhantomTheme = new KnownExtension("Wyam.Blog.Phantom");
 		public static readonly KnownExtension VelocityTheme = new KnownExtension("Wyam.BookSite.Velocity");

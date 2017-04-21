@@ -21,25 +21,25 @@ using Wyam.Html;
 
 namespace Wyam.Docs.Pipelines
 {
-    /// <inheritdoc cref="WebRecipe.Pipelines.Pages" />
+    /// <inheritdoc cref="Web.Pipelines.Pages" />
     public class Pages : Pipeline
     {
-        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.MarkdownFiles" />
-        public const string MarkdownFiles = nameof(WebRecipe.Pipelines.Pages.MarkdownFiles);
+        /// <inheritdoc cref="Web.Pipelines.Pages.MarkdownFiles" />
+        public const string MarkdownFiles = nameof(Web.Pipelines.Pages.MarkdownFiles);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.RazorFiles" />
-        public const string RazorFiles = nameof(WebRecipe.Pipelines.Pages.RazorFiles);
+        /// <inheritdoc cref="Web.Pipelines.Pages.RazorFiles" />
+        public const string RazorFiles = nameof(Web.Pipelines.Pages.RazorFiles);
 
         /// <summary>
         /// Links type names from the API in pages.
         /// </summary>
         public const string LinkTypeNames = nameof(LinkTypeNames);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.WriteMetadata" />
-        public const string WriteMetadata = nameof(WebRecipe.Pipelines.Pages.WriteMetadata);
+        /// <inheritdoc cref="Web.Pipelines.Pages.WriteMetadata" />
+        public const string WriteMetadata = nameof(Web.Pipelines.Pages.WriteMetadata);
 
-        /// <inheritdoc cref="WebRecipe.Pipelines.Pages.CreateTree" />
-        public const string CreateTree = nameof(WebRecipe.Pipelines.Pages.CreateTree);
+        /// <inheritdoc cref="Web.Pipelines.Pages.CreateTree" />
+        public const string CreateTree = nameof(Web.Pipelines.Pages.CreateTree);
 
         internal Pages(ConcurrentDictionary<string, string> typeNamesToLink)
             : base(GetModules(typeNamesToLink))
@@ -47,7 +47,7 @@ namespace Wyam.Docs.Pipelines
         }
 
         private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
-            new WebRecipe.Pipelines.Pages(
+            new Web.Pipelines.Pages(
                 nameof(Pages),
                 ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
                     .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
@@ -55,7 +55,7 @@ namespace Wyam.Docs.Pipelines
                 ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 TreePlaceholderFactory)
                     .InsertAfter(
-                        WebRecipe.Pipelines.Pages.RazorFiles,
+                        Web.Pipelines.Pages.RazorFiles,
                         LinkTypeNames,
                         new If(
                             ctx => ctx.Bool(DocsKeys.AutoLinkTypes),

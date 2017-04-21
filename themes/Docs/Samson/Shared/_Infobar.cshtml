@@ -1,6 +1,6 @@
 @{
     string baseEditUrl = Context.String(DocsKeys.BaseEditUrl);
-    FilePath editFilePath = Model.FilePath(DocsKeys.EditFilePath);
+    FilePath editFilePath = Model.FilePath(Wyam.Web.WebKeys.EditFilePath);
     if(!string.IsNullOrWhiteSpace(baseEditUrl) && editFilePath != null)
     {
         string editUrl = baseEditUrl + editFilePath.FullPath;
