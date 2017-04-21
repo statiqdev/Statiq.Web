@@ -24,6 +24,7 @@ namespace Wyam.Common.Modules
 
         /// <summary>
         /// Creates a new module list with an initial set of modules.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The initial modules in the list.</param>
         public ModuleList(params IModule[] modules)
@@ -33,13 +34,14 @@ namespace Wyam.Common.Modules
 
         /// <summary>
         /// Creates a new module list with an initial set of modules.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The initial modules in the list.</param>
         public ModuleList(IEnumerable<IModule> modules)
         {
             if (modules != null)
             {
-                foreach (IModule module in modules)
+                foreach (IModule module in modules.Where(x => x != null))
                 {
                     Add(module);
                 }
@@ -49,7 +51,7 @@ namespace Wyam.Common.Modules
         /// <inheritdoc />
         public void Add(params IModule[] modules)
         {
-            foreach (IModule module in modules)
+            foreach (IModule module in modules.Where(x => x != null))
             {
                 Add(module);
             }
@@ -82,6 +84,7 @@ namespace Wyam.Common.Modules
         /// <inheritdoc />
         public void Insert(int index, params IModule[] modules)
         {
+            modules = modules.Where(x => x != null).ToArray();
             for (int i = index; i < index + modules.Length; i++)
             {
                 Insert(i, modules[i - index]);

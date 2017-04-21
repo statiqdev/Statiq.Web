@@ -18,8 +18,13 @@ namespace Wyam.WebRecipe.Pipelines
     /// </summary>
     public class ValidateLinks : Pipeline
     {
-        public ValidateLinks(params string[] pipelines)
-            : base(GetModules(pipelines))
+        /// <summary>
+        /// Creates the pipeline.
+        /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
+        /// <param name="pipelines">The name of pipelines from which links should be validated.</param>
+        public ValidateLinks(string name, string[] pipelines)
+            : base(name, GetModules(pipelines))
         {
         }
 

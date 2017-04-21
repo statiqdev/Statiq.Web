@@ -15,8 +15,13 @@ namespace Wyam.WebRecipe.Pipelines
     /// </summary>
     public class Less : Pipeline
     {
-        public Less(params string[] patterns)
-            : base(GetModules(patterns))
+        /// <summary>
+        /// Create the pipeline.
+        /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
+        /// <param name="patterns">The patterns of Less files to read.</param>
+        public Less(string name, string[] patterns)
+            : base(name, GetModules(patterns))
         {
         }
 

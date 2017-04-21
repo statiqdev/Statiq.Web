@@ -48,6 +48,7 @@ namespace Wyam.WebRecipe.Pipelines
         /// <summary>
         /// Creates the pipeline.
         /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
         /// <param name="ignoreFolders">
         /// A delegate that should return a <see cref="string"/>
         /// or <c>IEnumerable&lt;string&gt;</c> with ignore paths.
@@ -56,8 +57,8 @@ namespace Wyam.WebRecipe.Pipelines
         /// A factory to use for creating tree placeholders at points in the tree where no actual pages were found.
         /// If <c>null</c>, the default placeholder factory will be used which outputs empty index files.
         /// </param>
-        public Pages(ContextConfig ignoreFolders, Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(GetModules(ignoreFolders, treePlaceholderFactory))
+        public Pages(string name, ContextConfig ignoreFolders, Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
+            : base(name, GetModules(ignoreFolders, treePlaceholderFactory))
         {
         }
 

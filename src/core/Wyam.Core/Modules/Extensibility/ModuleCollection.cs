@@ -37,6 +37,7 @@ namespace Wyam.Core.Modules.Extensibility
     {
         /// <summary>
         /// Creates a module collection with the specified child modules.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The child modules.</param>
         public ModuleCollection(params IModule[] modules)
@@ -46,6 +47,7 @@ namespace Wyam.Core.Modules.Extensibility
 
         /// <summary>
         /// Creates a module collection with the specified child modules.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The child modules.</param>
         public ModuleCollection(IEnumerable<IModule> modules)

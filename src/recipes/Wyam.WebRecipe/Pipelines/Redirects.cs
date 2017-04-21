@@ -19,8 +19,13 @@ namespace Wyam.WebRecipe.Pipelines
     /// </summary>
     public class Redirects : Pipeline
     {
-        public Redirects(params string[] pipelines)
-            : base(GetModules(pipelines))
+        /// <summary>
+        /// Creates the pipeline.
+        /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
+        /// <param name="pipelines">The name of pipelines for which redirects should be calculated.</param>
+        public Redirects(string name, string[] pipelines)
+            : base(name, GetModules(pipelines))
         {
         }
 

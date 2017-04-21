@@ -26,7 +26,8 @@ namespace Wyam.Docs.Pipelines
 
         private static IModuleList GetModules() => new ModuleList
         {
-            new If(ctx => ctx.Documents[Docs.Pages].Any(),
+            new If(
+                ctx => ctx.Documents[Docs.Pages].Any(),
                 new Documents(Docs.Pages),
                 new Flatten(),
                 // Hide the sidebar for root pages if there's no children

@@ -18,6 +18,7 @@ namespace Wyam.Common.Modules
 
         /// <summary>
         /// Creates a new container module with the specified child modules.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The child modules.</param>
         protected ContainerModule(IEnumerable<IModule> modules)

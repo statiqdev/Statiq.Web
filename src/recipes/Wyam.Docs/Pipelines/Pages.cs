@@ -45,7 +45,7 @@ namespace Wyam.Docs.Pipelines
         }
 
         private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
-            new WebRecipe.Pipelines.Pages(ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }, TreePlaceholderFactory)
+            new WebRecipe.Pipelines.Pages(nameof(Pages), ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }, TreePlaceholderFactory)
                 .InsertAfter(
                     WebRecipe.Pipelines.Pages.RazorFiles,
                     LinkTypeNames,

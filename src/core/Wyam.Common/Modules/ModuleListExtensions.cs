@@ -34,7 +34,7 @@ namespace Wyam.Common.Modules
         /// <returns>The current instance.</returns>
         public static IModuleList InsertAfter(this IModuleList moduleList, string afterName, string name, IModule module)
         {
-            moduleList.Insert(moduleList.GuardIndexOf(name) + 1, name, module);
+            moduleList.Insert(moduleList.GuardIndexOf(afterName) + 1, name, module);
             return moduleList;
         }
 

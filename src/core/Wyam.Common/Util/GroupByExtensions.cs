@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Wyam.Common.Util
 {
+    /// <summary>
+    /// Extensions for performing grouping operations.
+    /// </summary>
     public static class GroupByExtensions
     {
         /// <summary>
@@ -97,9 +100,18 @@ namespace Wyam.Common.Util
             }
 
             return source
-                .SelectMany(x => keySelector(x)
-                    .Select(key => Tuple.Create(key, elementSelector(x))))
-                .GroupBy(x => x.Item1, x => x.Item2, comparer);
+                .Select(x => new
+                {
+                    Keys = keySelector(x),
+                    Element = elementSelector(x)
+                })
+                .Where(x => x.Keys != null)
+                .SelectMany(x => x.Keys.Select(key => new
+                {
+                    Key = key,
+                    x.Element
+                }))
+                .GroupBy(x => x.Key, x => x.Element, comparer);
         }
 
         /// <summary>
@@ -158,9 +170,19 @@ namespace Wyam.Common.Util
             }
 
             return source
-                .SelectMany(x => keySelector(x)
-                    .SelectMany(key => elementSelector(x).Select(elem => Tuple.Create(key, elem))))
-                .GroupBy(x => x.Item1, x => x.Item2, comparer);
+                .Select(x => new
+                {
+                    Keys = keySelector(x),
+                    Elements = elementSelector(x)
+                })
+                .Where(x => x.Keys != null && x.Elements != null)
+                .SelectMany(x => x.Keys
+                    .SelectMany(key => x.Elements.Select(elem => new
+                    {
+                        Key = key,
+                        Element = elem
+                    })))
+                .GroupBy(x => x.Key, x => x.Element, comparer);
         }
     }
 }

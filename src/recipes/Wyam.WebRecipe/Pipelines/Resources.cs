@@ -14,8 +14,12 @@ namespace Wyam.WebRecipe.Pipelines
     /// </summary>
     public class Resources : Pipeline
     {
-        public Resources()
-            : base(GetModules())
+        /// <summary>
+        /// Creates the pipeline.
+        /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
+        public Resources(string name)
+            : base(name, GetModules())
         {
         }
 

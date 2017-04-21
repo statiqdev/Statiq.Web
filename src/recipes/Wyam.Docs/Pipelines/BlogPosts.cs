@@ -49,7 +49,7 @@ namespace Wyam.Docs.Pipelines
         }
 
         private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
-            new WebRecipe.Pipelines.BlogPosts(ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
+            new WebRecipe.Pipelines.BlogPosts(nameof(BlogPosts), ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
                 .InsertAfter(
                     WebRecipe.Pipelines.BlogPosts.RazorPosts,
                     LinkTypeNames,

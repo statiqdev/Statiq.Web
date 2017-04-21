@@ -22,6 +22,7 @@ namespace Wyam.Common.Modules
 
         /// <summary>
         /// Adds modules to the list.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="modules">The modules to add.</param>
         void Add(params IModule[] modules);
@@ -36,6 +37,7 @@ namespace Wyam.Common.Modules
 
         /// <summary>
         /// Inserts modules into the list.
+        /// Any <c>null</c> items in the sequence of modules will be discarded.
         /// </summary>
         /// <param name="index">The index at which to insert the modules.</param>
         /// <param name="modules">The modules to insert.</param>

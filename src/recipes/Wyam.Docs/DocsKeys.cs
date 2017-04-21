@@ -86,6 +86,42 @@ namespace Wyam.Docs
         public const string SearchIndex = nameof(SearchIndex);
 
         /// <summary>
+        /// The page size for blog index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string BlogPageSize = nameof(BlogPageSize);
+
+        /// <summary>
+        /// The page size for blog category index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string CategoryPageSize = nameof(CategoryPageSize);
+
+        /// <summary>
+        /// The page size for blog tag index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string TagPageSize = nameof(TagPageSize);
+
+        /// <summary>
+        /// The page size for blog author index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string AuthorPageSize = nameof(AuthorPageSize);
+
+        /// <summary>
+        /// The page size for blog monthly index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string MonthPageSize = nameof(MonthPageSize);
+
+        /// <summary>
+        /// The page size for blog yearly index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string YearPageSize = nameof(YearPageSize);
+
+        /// <summary>
         /// Specifies the path where the blog RSS file will be output.
         /// The default value is <c>feed.rss</c>. Set to <c>null</c>
         /// to prevent generating an RSS feed.
@@ -124,6 +160,30 @@ namespace Wyam.Docs
         public const string Category = nameof(Category);
 
         /// <summary>
+        /// The tags for a given post.
+        /// </summary>
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
+        public const string Tags = nameof(Tags);
+
+        /// <summary>
+        /// Set to <c>true</c> to make category groupings case-insensitive.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string CaseInsensitiveCategories = nameof(CaseInsensitiveCategories);
+
+        /// <summary>
+        /// Set to <c>true</c> to make tag groupings case-insensitive.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
+
+        /// <summary>
+        /// Set to <c>true</c> to make author groupings case-insensitive.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string CaseInsensitiveAuthors = nameof(CaseInsensitiveAuthors);
+
+        /// <summary>
         /// Indicates the relative order of pages to each other. If
         /// no value is supplied for a document, the default order
         /// is 1000 (I.e., after most pages that do have a defined
@@ -159,7 +219,6 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string NoGutter = nameof(NoGutter);
-
 
         /// <summary>
         /// Controls the parent path where blog posts are placed. The default is "blog".

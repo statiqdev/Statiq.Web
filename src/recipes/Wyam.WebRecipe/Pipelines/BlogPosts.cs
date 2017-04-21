@@ -56,9 +56,10 @@ namespace Wyam.WebRecipe.Pipelines
         /// <summary>
         /// Creates the pipeline.
         /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
         /// <param name="postsPath">A delegate that should return a <see cref="string"/> with the path to blog post files.</param>
-        public BlogPosts(ContextConfig postsPath)
-            : base(GetModules(postsPath))
+        public BlogPosts(string name, ContextConfig postsPath)
+            : base(name, GetModules(postsPath))
         {
         }
 

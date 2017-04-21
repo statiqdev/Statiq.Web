@@ -33,6 +33,15 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.AutoLinkTypes" usage="Setting" />
     /// <metadata cref="DocsKeys.IncludeDateInPostPath" usage="Setting" />
     /// <metadata cref="DocsKeys.SearchIndex" usage="Setting" />
+    /// <metadata cref="DocsKeys.CaseInsensitiveCategories" usage="Setting" />
+    /// <metadata cref="DocsKeys.CaseInsensitiveTags" usage="Setting" />
+    /// <metadata cref="DocsKeys.CaseInsensitiveAuthors" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogPageSize" usage="Setting" />
+    /// <metadata cref="DocsKeys.CategoryPageSize" usage="Setting" />
+    /// <metadata cref="DocsKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="DocsKeys.AuthorPageSize" usage="Setting" />
+    /// <metadata cref="DocsKeys.MonthPageSize" usage="Setting" />
+    /// <metadata cref="DocsKeys.YearPageSize" usage="Setting" />
     /// <metadata cref="DocsKeys.MarkdownExtensions" usage="Setting" />
     /// <metadata cref="DocsKeys.MarkdownExternalExtensions" usage="Setting" />
     /// <metadata cref="DocsKeys.IgnoreFolders" usage="Setting" />
@@ -48,6 +57,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.EditFilePath" usage="Output" />
     /// <metadata cref="DocsKeys.Description" usage="Input" />
     /// <metadata cref="DocsKeys.Category" usage="Input" />
+    /// <metadata cref="DocsKeys.Tags" usage="Input" />
     /// <metadata cref="DocsKeys.Order" usage="Input" />
     /// <metadata cref="DocsKeys.NoSidebar" usage="Input" />
     /// <metadata cref="DocsKeys.NoContainer" usage="Input" />
@@ -78,21 +88,119 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Pipelines.BlogPosts BlogPosts { get; } = new Pipelines.BlogPosts(TypeNamesToLink);
 
-        /// <inheritdoc cref="Pipelines.BlogIndexes" />
+        /// <summary>
+        /// Generates the index pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static BlogIndexes BlogIndexes { get; } = new BlogIndexes();
+        public static Archive BlogIndexes { get; } = new Archive(
+            nameof(BlogIndexes),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            null,
+            null,
+            ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => "Blog",
+            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.BlogCategories" />
+        /// <summary>
+        /// Generates the category pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static BlogCategories BlogCategories { get; } = new BlogCategories();
+        public static Archive BlogCategories { get; } = new Archive(
+            nameof(BlogCategories),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            (doc, ctx) => doc.List<string>(DocsKeys.Category),
+            ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
+            ctx => ctx.Get(DocsKeys.CategoryPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => doc.String(Keys.GroupKey),
+            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/{doc.String(Keys.GroupKey)}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.BlogArchives" />
+        /// <summary>
+        /// Generates the tag pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static BlogArchives BlogArchives { get; } = new BlogArchives();
+        public static Archive BlogTags { get; } = new Archive(
+            nameof(BlogTags),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            (doc, ctx) => doc.List<string>(DocsKeys.Tags),
+            ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
+            ctx => ctx.Get(DocsKeys.TagPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => doc.String(Keys.GroupKey),
+            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.BlogAuthors" />
+        /// <summary>
+        /// Generates the author pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static BlogAuthors BlogAuthors { get; } = new BlogAuthors();
+        public static Archive BlogAuthors { get; } = new Archive(
+            nameof(BlogAuthors),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            (doc, ctx) => doc.List<string>(DocsKeys.Author),
+            ctx => ctx.Bool(DocsKeys.CaseInsensitiveAuthors),
+            ctx => ctx.Get(DocsKeys.AuthorPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => doc.String(Keys.GroupKey),
+            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/author/{doc.String(Keys.GroupKey)}",
+            null,
+            null);
+
+        /// <summary>
+        /// Generates the monthly archive pages for blog posts.
+        /// </summary>
+        [SourceInfo]
+        public static Archive BlogArchives { get; } = new Archive(
+            nameof(BlogArchives),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, doc.Get<DateTime>(DocsKeys.Published).Month, 1),
+            null,
+            ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy"),
+            (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy/MM}",
+            null,
+            null);
+
+        /// <summary>
+        /// Generates the yearly archive pages for blog posts.
+        /// </summary>
+        [SourceInfo]
+        public static Archive BlogYearlyArchives { get; } = new Archive(
+            nameof(BlogYearlyArchives),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_BlogLayout.cshtml",
+            (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, 1, 1),
+            null,
+            ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
+            true,
+            (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy"),
+            (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy}",
+            null,
+            null);
 
         /// <inheritdoc cref="Pipelines.BlogFeed" />
         [SourceInfo]
@@ -108,7 +216,9 @@ namespace Wyam.Docs
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Redirects" />
         [SourceInfo]
-        public static Redirects Redirects { get; } = new Redirects(RenderPages, RenderBlogPosts);
+        public static Redirects Redirects { get; } = new Redirects(
+            nameof(Redirects),
+            new string[] { RenderPages, RenderBlogPosts });
 
         /// <inheritdoc cref="Pipelines.RenderApi" />
         [SourceInfo]
@@ -124,21 +234,25 @@ namespace Wyam.Docs
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Less" />
         [SourceInfo]
-        public static WebRecipe.Pipelines.Less Less { get; } =
-            new WebRecipe.Pipelines.Less(
+        public static WebRecipe.Pipelines.Less Less { get; } = new WebRecipe.Pipelines.Less(
+            nameof(Less),
+            new string[]
+            {
                 "assets/css/*.less",
                 "assets/css/bootstrap/bootstrap.less",
                 "assets/css/adminlte/AdminLTE.less",
-                "assets/css/theme/theme.less");
+                "assets/css/theme/theme.less"
+            });
 
         /// <inheritdoc cref="WebRecipe.Pipelines.Resources" />
         [SourceInfo]
-        public static Resources Resources { get; } = new Resources();
+        public static Resources Resources { get; } = new Resources(nameof(Resources));
 
         /// <inheritdoc cref="WebRecipe.Pipelines.ValidateLinks" />
         [SourceInfo]
-        public static ValidateLinks ValidateLinks { get; }
-            = new ValidateLinks(RenderPages, RenderBlogPosts, RenderApi, Resources);
+        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
+            nameof(ValidateLinks),
+            new string[] { RenderPages, RenderBlogPosts, RenderApi, Resources });
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
@@ -156,6 +270,12 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
             engine.Settings[DocsKeys.BlogPath] = "blog";
+            engine.Settings[DocsKeys.BlogPageSize] = 5;
+            engine.Settings[DocsKeys.CategoryPageSize] = 5;
+            engine.Settings[DocsKeys.TagPageSize] = 5;
+            engine.Settings[DocsKeys.AuthorPageSize] = 5;
+            engine.Settings[DocsKeys.MonthPageSize] = 5;
+            engine.Settings[DocsKeys.YearPageSize] = 5;
             engine.Settings[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
