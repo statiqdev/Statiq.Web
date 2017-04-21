@@ -57,25 +57,40 @@ namespace Wyam.WebRecipe.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
+        /// <param name="publishedKey">The metadata key where <see cref="DateTime"/> published dates are stored for each post.</param>
+        /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
+        /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
+        /// <param name="includeDateInPostPath">A delegate that returns a <see cref="bool"/> indicating if post dates should be included in the output path.</param>
         /// <param name="postsPath">A delegate that should return a <see cref="string"/> with the path to blog post files.</param>
-        public BlogPosts(string name, ContextConfig postsPath)
-            : base(name, GetModules(postsPath))
+        public BlogPosts(
+            string name,
+            string publishedKey,
+            ContextConfig markdownConfiguration,
+            ContextConfig markdownExtensionTypes,
+            ContextConfig includeDateInPostPath,
+            ContextConfig postsPath)
+            : base(name, GetModules(publishedKey, markdownConfiguration, markdownExtensionTypes, includeDateInPostPath, postsPath))
         {
         }
 
-        private static IModuleList GetModules(ContextConfig postsPath) => new ModuleList
+        private static IModuleList GetModules(
+            string publishedKey,
+            ContextConfig markdownConfiguration,
+            ContextConfig markdownExtensionTypes,
+            ContextConfig includeDateInPostPath,
+            ContextConfig postsPath) => new ModuleList
         {
             {
                 MarkdownPosts,
                 new ModuleCollection
                 {
                     new ReadFiles(ctx => $"{postsPath.Invoke<string>(ctx)}/*.md"),
-                    new Meta(WebRecipeKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
+                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml()),
                     new Execute(ctx => new Markdown.Markdown()
-                        .UseExtensions(ctx.Settings.List<Type>(WebRecipeKeys.MarkdownExternalExtensions))
-                        .UseConfiguration(ctx.String(WebRecipeKeys.MarkdownExtensions)))
+                        .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
+                        .UseExtensions(markdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
                 }
             },
             {
@@ -83,6 +98,7 @@ namespace Wyam.WebRecipe.Pipelines
                 new Concat
                 {
                     new ReadFiles(ctx => $"{postsPath.Invoke<string>(ctx)}/{{!_,!index,}}*.cshtml"),
+                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())
                 }
@@ -95,8 +111,8 @@ namespace Wyam.WebRecipe.Pipelines
                 Published,
                 new ModuleCollection
                 {
-                    new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(WebRecipeKeys.Published)),  // Record whether the publish date came from front matter
-                    new Meta(WebRecipeKeys.Published, (doc, ctx) =>
+                    new Meta("FrontMatterPublished", (doc, ctx) => doc.ContainsKey(publishedKey)),  // Record whether the publish date came from front matter
+                    new Meta(publishedKey, (doc, ctx) =>
                     {
                         DateTime published;
                         if (!ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
@@ -108,14 +124,14 @@ namespace Wyam.WebRecipe.Pipelines
                     }).OnlyIfNonExisting(),
                     new Where((doc, ctx) =>
                     {
-                        if (!doc.ContainsKey(WebRecipeKeys.Published) || doc.Get(WebRecipeKeys.Published) == null)
+                        if (!doc.ContainsKey(publishedKey) || doc.Get(publishedKey) == null)
                         {
-                            Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to not having {WebRecipeKeys.Published} metadata");
+                            Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to not having {publishedKey} metadata");
                             return false;
                         }
-                        if (doc.Get<DateTime>(WebRecipeKeys.Published) > DateTime.Now)
+                        if (doc.Get<DateTime>(publishedKey) > DateTime.Now)
                         {
-                            Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to having {WebRecipeKeys.Published} metadata of {doc.Get<DateTime>(WebRecipeKeys.Published)} in the future (current date and time is {DateTime.Now})");
+                            Common.Tracing.Trace.Warning($"Skipping {doc.SourceString()} due to having {publishedKey} metadata of {doc.Get<DateTime>(publishedKey)} in the future (current date and time is {DateTime.Now})");
                             return false;
                         }
                         return true;
@@ -126,18 +142,18 @@ namespace Wyam.WebRecipe.Pipelines
                 RelativeFilePath,
                 new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                 {
-                    DateTime published = doc.Get<DateTime>(WebRecipeKeys.Published);
+                    DateTime published = doc.Get<DateTime>(publishedKey);
                     string fileName = doc.Bool("FrontMatterPublished")
                         ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
                         : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-                    return ctx.Bool(WebRecipeKeys.IncludeDateInPostPath)
+                    return includeDateInPostPath.Invoke<bool>(ctx)
                         ? $"{postsPath.Invoke<string>(ctx)}/{published:yyyy}/{published:MM}/{fileName}"
                         : $"{postsPath.Invoke<string>(ctx)}/{fileName}";
                 })
             },
             {
                 OrderByPublished,
-                new OrderBy((doc, ctx) => doc.Get<DateTime>(WebRecipeKeys.Published)).Descending()
+                new OrderBy((doc, ctx) => doc.Get<DateTime>(publishedKey)).Descending()
             }
         };
     }

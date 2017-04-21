@@ -46,6 +46,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Pipelines\Archive.cs" />
+    <Compile Include="Pipelines\Feeds.cs" />
     <Compile Include="Pipelines\BlogPosts.cs" />
     <Compile Include="Pipelines\Less.cs" />
     <Compile Include="Pipelines\Pages.cs" />
@@ -53,7 +54,7 @@
     <Compile Include="Pipelines\Resources.cs" />
     <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebRecipeKeys.cs" />
+    <Compile Include="WebKeys.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">

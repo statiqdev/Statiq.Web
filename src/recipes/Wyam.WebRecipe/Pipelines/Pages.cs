@@ -53,35 +53,47 @@ namespace Wyam.WebRecipe.Pipelines
         /// A delegate that should return a <see cref="string"/>
         /// or <c>IEnumerable&lt;string&gt;</c> with ignore paths.
         /// </param>
+        /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
+        /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
         /// <param name="treePlaceholderFactory">
         /// A factory to use for creating tree placeholders at points in the tree where no actual pages were found.
         /// If <c>null</c>, the default placeholder factory will be used which outputs empty index files.
         /// </param>
-        public Pages(string name, ContextConfig ignoreFolders, Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(name, GetModules(ignoreFolders, treePlaceholderFactory))
+        public Pages(
+            string name,
+            ContextConfig ignoreFolders,
+            ContextConfig markdownConfiguration,
+            ContextConfig markdownExtensionTypes,
+            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
+            : base(name, GetModules(ignoreFolders, markdownConfiguration, markdownExtensionTypes, treePlaceholderFactory))
         {
         }
 
-        private static IModuleList GetModules(ContextConfig ignoreFolders, Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory) => new ModuleList
+        private static IModuleList GetModules(
+            ContextConfig ignoreFolders,
+            ContextConfig markdownConfiguration,
+            ContextConfig markdownExtensionTypes,
+            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory) => new ModuleList
         {
             {
                 MarkdownFiles,
                 new ModuleCollection
                 {
                     new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/*.md"),
-                    new Meta(WebRecipeKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
+                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml()),
                     new Execute(ctx => new Markdown.Markdown()
-                        .UseExtensions(ctx.Settings.List<Type>(WebRecipeKeys.MarkdownExternalExtensions))
-                        .UseConfiguration(ctx.String(WebRecipeKeys.MarkdownExtensions)))
+                        .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
+                        .UseExtensions(markdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
                 }
             },
             {
                 RazorFiles,
                 new Concat
                 {
-                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/{{!_,}}*.cshtml"), // Add any additional Razor pages
+                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/{{!_,}}*.cshtml"),
+                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())
                 }
@@ -104,10 +116,10 @@ namespace Wyam.WebRecipe.Pipelines
         };
 
         private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig ignoreFolders) =>
-            string.Join(",", context
-                .List(WebRecipeKeys.IgnoreFolders, Array.Empty<string>())
-                .Concat(ignoreFolders.Invoke<IEnumerable<string>>(context))
-                .Select(x => "!" + x)
-                .Concat(new[] { "**" }));
+            string.Join(
+                ",",
+                ignoreFolders.Invoke<IEnumerable<string>>(context)
+                    .Select(x => "!" + x)
+                    .Concat(new[] { "**" }));
     }
 }

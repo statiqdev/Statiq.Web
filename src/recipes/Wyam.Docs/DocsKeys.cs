@@ -234,37 +234,86 @@ namespace Wyam.Docs
         /// <type><see cref="string"/></type>
         public const string Author = nameof(Author);
 
-        /// <inheritdoc cref="WebRecipeKeys.Published" />
-        public const string Published = nameof(WebRecipeKeys.Published);
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to
+        /// validate all absolute links. Note that this may add considerable
+        /// time to your generation process.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateAbsoluteLinks = nameof(ValidateAbsoluteLinks);
 
-        /// <inheritdoc cref="WebRecipeKeys.IncludeDateInPostPath" />
-        public const string IncludeDateInPostPath = nameof(WebRecipeKeys.IncludeDateInPostPath);
+        /// <summary>
+        /// Set to <c>true</c> (the default value) to
+        /// validate all relative links.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateRelativeLinks = nameof(ValidateRelativeLinks);
 
-        /// <inheritdoc cref="WebRecipeKeys.ValidateAbsoluteLinks" />
-        public const string ValidateAbsoluteLinks = nameof(WebRecipeKeys.ValidateAbsoluteLinks);
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to
+        /// report errors on link validation failures.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
 
-        /// <inheritdoc cref="WebRecipeKeys.ValidateRelativeLinks" />
-        public const string ValidateRelativeLinks = nameof(WebRecipeKeys.ValidateRelativeLinks);
+        /// <summary>
+        /// Set to <c>true</c> (the default value) to generate meta refresh pages
+        /// for any redirected documents (as indicated by a <c>RedirectFrom</c>
+        /// metadata value in the document).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string MetaRefreshRedirects = nameof(MetaRefreshRedirects);
 
-        /// <inheritdoc cref="WebRecipeKeys.ValidateLinksAsError" />
-        public const string ValidateLinksAsError = nameof(WebRecipeKeys.ValidateLinksAsError);
+        /// <summary>
+        /// Set to <c>true</c> (the default value is <c>false</c>) to generate
+        /// a Netlify <c>_redirects</c> file from redirected documents
+        /// (as indicated by a <c>RedirectFrom</c> metadata value).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
-        /// <inheritdoc cref="WebRecipeKeys.MetaRefreshRedirects" />
-        public const string MetaRefreshRedirects = nameof(WebRecipeKeys.MetaRefreshRedirects);
+        /// <summary>
+        /// Used for blog posts to store the date of the post.
+        /// </summary>
+        /// <type><see cref="DateTime"/> or <see cref="string"/></type>
+        public const string Published = nameof(Published);
 
-        /// <inheritdoc cref="WebRecipeKeys.NetlifyRedirects" />
-        public const string NetlifyRedirects = nameof(WebRecipeKeys.NetlifyRedirects);
+        /// <summary>
+        /// Setting this to <c>true</c> uses
+        /// the year and date in the output path of blog posts.
+        /// The default value is <c>false</c>.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IncludeDateInPostPath = nameof(IncludeDateInPostPath);
 
-        /// <inheritdoc cref="WebRecipeKeys.IgnoreFolders" />
-        public const string IgnoreFolders = nameof(WebRecipeKeys.IgnoreFolders);
+        /// <summary>
+        /// Set this to control the activated set of Markdown extensions for the
+        /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
+        /// </summary>
+        /// <type><see cref="string"/></type>
+        public const string MarkdownConfiguration = nameof(MarkdownConfiguration);
 
-        /// <inheritdoc cref="WebRecipeKeys.EditFilePath" />
-        public const string EditFilePath = nameof(WebRecipeKeys.EditFilePath);
+        /// <summary>
+        /// Set this to add extension Markdown extensions for the Markdig Markdown
+        /// renderer. The default value is null;
+        /// </summary>
+        /// <type><see cref="IEnumerable{Type}"/></type>
+        public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
 
-        /// <inheritdoc cref="WebRecipeKeys.MarkdownExtensions" />
-        public const string MarkdownExtensions = nameof(WebRecipeKeys.MarkdownExtensions);
+        /// <summary>
+        /// This should be a string or array of strings with the name(s)
+        /// of root-level folders to ignore when scanning for content pages.
+        /// Setting this global metadata value is useful when introducing
+        /// your own pipelines for files under certain folders and you don't
+        /// want the primary content page pipelines to pick them up.
+        /// </summary>
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
+        public const string IgnoreFolders = nameof(IgnoreFolders);
 
-        /// <inheritdoc cref="WebRecipeKeys.MarkdownExternalExtensions" />
-        public const string MarkdownExternalExtensions = nameof(WebRecipeKeys.MarkdownExternalExtensions);
+        [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
+        public const string MarkdownExtensions = nameof(MarkdownConfiguration);
+
+        [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
+        public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
     }
 }

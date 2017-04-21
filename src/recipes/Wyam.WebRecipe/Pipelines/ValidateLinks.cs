@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
@@ -23,15 +24,18 @@ namespace Wyam.WebRecipe.Pipelines
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
         /// <param name="pipelines">The name of pipelines from which links should be validated.</param>
-        public ValidateLinks(string name, string[] pipelines)
-            : base(name, GetModules(pipelines))
+        /// <param name="validateAbsoluteLinks">A delegate to indicate whether absolute links should be validated.</param>
+        /// <param name="validateRelativeLinks">A delegate to indicate whether relative links should be validated.</param>
+        /// <param name="validateLinksAsError">A delegate to indicate whether links should validate as errors.</param>
+        public ValidateLinks(string name, string[] pipelines, ContextConfig validateAbsoluteLinks, ContextConfig validateRelativeLinks, ContextConfig validateLinksAsError)
+            : base(name, GetModules(pipelines, validateAbsoluteLinks, validateRelativeLinks, validateLinksAsError))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines) => new ModuleList
+        private static IModuleList GetModules(string[] pipelines, ContextConfig validateAbsoluteLinks, ContextConfig validateRelativeLinks, ContextConfig validateLinksAsError) => new ModuleList
         {
             new If(
-                ctx => ctx.Bool(WebRecipeKeys.ValidateAbsoluteLinks) || ctx.Bool(WebRecipeKeys.ValidateRelativeLinks),
+                ctx => validateAbsoluteLinks.Invoke<bool>(ctx) || validateRelativeLinks.Invoke<bool>(ctx),
                 new Documents()
                     .FromPipelines(pipelines),
                 new Where((doc, ctx) =>
@@ -42,9 +46,9 @@ namespace Wyam.WebRecipe.Pipelines
                 }),
                 new Execute(ctx =>
                     new Html.ValidateLinks()
-                        .ValidateAbsoluteLinks(ctx.Bool(WebRecipeKeys.ValidateAbsoluteLinks))
-                        .ValidateRelativeLinks(ctx.Bool(WebRecipeKeys.ValidateRelativeLinks))
-                        .AsError(ctx.Bool(WebRecipeKeys.ValidateLinksAsError))))
+                        .ValidateAbsoluteLinks(validateAbsoluteLinks.Invoke<bool>(ctx))
+                        .ValidateRelativeLinks(validateRelativeLinks.Invoke<bool>(ctx))
+                        .AsError(validateLinksAsError.Invoke<bool>(ctx))))
         };
     }
 }

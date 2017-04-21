@@ -17,6 +17,8 @@ using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Html;
 
+#pragma warning disable SA1115, SA1515
+
 namespace Wyam.Docs.Pipelines
 {
     /// <inheritdoc cref="WebRecipe.Pipelines.Pages" />
@@ -45,23 +47,26 @@ namespace Wyam.Docs.Pipelines
         }
 
         private static IModuleList GetModules(ConcurrentDictionary<string, string> typeNamesToLink) =>
-            new WebRecipe.Pipelines.Pages(nameof(Pages), ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }, TreePlaceholderFactory)
-                .InsertAfter(
-                    WebRecipe.Pipelines.Pages.RazorFiles,
-                    LinkTypeNames,
-                    new If(
-                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                        new AutoLink(typeNamesToLink)
-                            .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
-#pragma warning disable SA1115 // Parameter must follow comma
-
-                        // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
-                        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+            new WebRecipe.Pipelines.Pages(
+                nameof(Pages),
+                ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
+                    .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
+                ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+                ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+                TreePlaceholderFactory)
+                    .InsertAfter(
+                        WebRecipe.Pipelines.Pages.RazorFiles,
+                        LinkTypeNames,
                         new If(
-                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                            new Replace("@", "&#64;"))));
-#pragma warning restore SA1115 // Parameter must follow comma
+                            ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                            new AutoLink(typeNamesToLink)
+                                .WithQuerySelector("code")
+                                .WithMatchOnlyWholeWord(),
+                            // This is an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+                            // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+                            new If(
+                                (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                                new Replace("@", "&#64;"))));
 
         private static IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
         {
@@ -72,3 +77,5 @@ namespace Wyam.Docs.Pipelines
         }
     }
 }
+
+#pragma warning restore SA1115, SA1515

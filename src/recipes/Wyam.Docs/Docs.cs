@@ -14,6 +14,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Util;
 using Wyam.Docs.Pipelines;
 using Wyam.Feeds;
+using Wyam.WebRecipe;
 using Wyam.WebRecipe.Pipelines;
 
 namespace Wyam.Docs
@@ -42,8 +43,8 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.AuthorPageSize" usage="Setting" />
     /// <metadata cref="DocsKeys.MonthPageSize" usage="Setting" />
     /// <metadata cref="DocsKeys.YearPageSize" usage="Setting" />
-    /// <metadata cref="DocsKeys.MarkdownExtensions" usage="Setting" />
-    /// <metadata cref="DocsKeys.MarkdownExternalExtensions" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownConfiguration" usage="Setting" />
+    /// <metadata cref="DocsKeys.MarkdownExtensionTypes" usage="Setting" />
     /// <metadata cref="DocsKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="DocsKeys.MetaRefreshRedirects" usage="Setting" />
     /// <metadata cref="DocsKeys.NetlifyRedirects" usage="Setting" />
@@ -54,7 +55,6 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
-    /// <metadata cref="DocsKeys.EditFilePath" usage="Output" />
     /// <metadata cref="DocsKeys.Description" usage="Input" />
     /// <metadata cref="DocsKeys.Category" usage="Input" />
     /// <metadata cref="DocsKeys.Tags" usage="Input" />
@@ -65,6 +65,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.NoGutter" usage="Input" />
     /// <metadata cref="DocsKeys.Published" usage="Input" />
     /// <metadata cref="DocsKeys.Author" usage="Input" />
+    /// <metadata cref="WebKeys.EditFilePath" usage="Output" />
     public class Docs : Recipe
     {
         /// <summary>
@@ -202,9 +203,16 @@ namespace Wyam.Docs
             null,
             null);
 
-        /// <inheritdoc cref="Pipelines.BlogFeed" />
+        /// <summary>
+        /// Generates the blog RSS, Atom, and/or RDF feeds.
+        /// </summary>
         [SourceInfo]
-        public static BlogFeed BlogFeed { get; } = new BlogFeed();
+        public static WebRecipe.Pipelines.Feeds BlogFeed { get; } = new WebRecipe.Pipelines.Feeds(
+            nameof(BlogFeed),
+            new string[] { BlogPosts },
+            ctx => ctx.FilePath(DocsKeys.BlogRssPath),
+            ctx => ctx.FilePath(DocsKeys.BlogAtomPath),
+            ctx => ctx.FilePath(DocsKeys.BlogRdfPath));
 
         /// <inheritdoc cref="Pipelines.RenderPages" />
         [SourceInfo]
@@ -218,7 +226,9 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Redirects Redirects { get; } = new Redirects(
             nameof(Redirects),
-            new string[] { RenderPages, RenderBlogPosts });
+            new string[] { RenderPages, RenderBlogPosts },
+            ctx => ctx.Bool(DocsKeys.MetaRefreshRedirects),
+            ctx => ctx.Bool(DocsKeys.NetlifyRedirects));
 
         /// <inheritdoc cref="Pipelines.RenderApi" />
         [SourceInfo]
@@ -252,7 +262,10 @@ namespace Wyam.Docs
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
             nameof(ValidateLinks),
-            new string[] { RenderPages, RenderBlogPosts, RenderApi, Resources });
+            new string[] { RenderPages, RenderBlogPosts, RenderApi, Resources },
+            ctx => ctx.Bool(DocsKeys.ValidateAbsoluteLinks),
+            ctx => ctx.Bool(DocsKeys.ValidateRelativeLinks),
+            ctx => ctx.Bool(DocsKeys.ValidateLinksAsError));
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
@@ -265,7 +278,7 @@ namespace Wyam.Docs
             };
             engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
             engine.Settings[DocsKeys.IncludeDateInPostPath] = false;
-            engine.Settings[DocsKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.Settings[DocsKeys.MarkdownConfiguration] = "advanced+bootstrap";
             engine.Settings[DocsKeys.SearchIndex] = true;
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;

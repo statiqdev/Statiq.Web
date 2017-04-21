@@ -135,7 +135,6 @@
     <Compile Include="Pipelines\Api.cs" />
     <Compile Include="Pipelines\ApiIndex.cs" />
     <Compile Include="Pipelines\ApiSearchIndex.cs" />
-    <Compile Include="Pipelines\BlogFeed.cs" />
     <Compile Include="Pipelines\BlogPosts.cs" />
     <Compile Include="Pipelines\Code.cs" />
     <Compile Include="Pipelines\Pages.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Common.Configuration;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
@@ -24,20 +25,22 @@ namespace Wyam.WebRecipe.Pipelines
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
         /// <param name="pipelines">The name of pipelines for which redirects should be calculated.</param>
-        public Redirects(string name, string[] pipelines)
-            : base(name, GetModules(pipelines))
+        /// <param name="metaRefreshRedirects">A delegate specifying whether META-REFRESH redirects should be generated.</param>
+        /// <param name="netlifyRedirects">A delegate specifying whether Netlify-style redirects file should be generated.</param>
+        public Redirects(string name, string[] pipelines, ContextConfig metaRefreshRedirects, ContextConfig netlifyRedirects)
+            : base(name, GetModules(pipelines, metaRefreshRedirects, netlifyRedirects))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines) => new ModuleList
+        private static IModuleList GetModules(string[] pipelines, ContextConfig metaRefreshRedirects, ContextConfig netlifyRedirects) => new ModuleList
         {
             new Documents()
                 .FromPipelines(pipelines),
             new Execute(ctx =>
             {
                 Redirect redirect = new Redirect()
-                    .WithMetaRefreshPages(ctx.Bool(WebRecipeKeys.MetaRefreshRedirects));
-                if (ctx.Bool(WebRecipeKeys.NetlifyRedirects))
+                    .WithMetaRefreshPages(metaRefreshRedirects.Invoke<bool>(ctx));
+                if (netlifyRedirects.Invoke<bool>(ctx))
                 {
                     redirect.WithAdditionalOutput("_redirects", redirects =>
                         string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));
