@@ -257,6 +257,74 @@ namespace Wyam.Core.Tests.Modules.Control
                 Assert.AreEqual(0, b.OutputCount);
                 Assert.AreEqual(0, c.OutputCount);
             }
+
+            [Test]
+            public void UnmatchedDocumentsAreAddedToResults()
+            {
+                // Given
+                Engine engine = new Engine();
+                CountModule a = new CountModule("A")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule b = new CountModule("B")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule c = new CountModule("C")
+                {
+                    AdditionalOutputs = 3
+                };
+                engine.Pipelines.Add(a, new If((doc, ctx) => false, b), c);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(1, a.ExecuteCount);
+                Assert.AreEqual(0, b.ExecuteCount);
+                Assert.AreEqual(1, c.ExecuteCount);
+                Assert.AreEqual(1, a.InputCount);
+                Assert.AreEqual(0, b.InputCount);
+                Assert.AreEqual(3, c.InputCount);
+                Assert.AreEqual(3, a.OutputCount);
+                Assert.AreEqual(0, b.OutputCount);
+                Assert.AreEqual(12, c.OutputCount);
+            }
+
+            [Test]
+            public void UnmatchedDocumentsAreNotAddedToResults()
+            {
+                // Given
+                Engine engine = new Engine();
+                CountModule a = new CountModule("A")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule b = new CountModule("B")
+                {
+                    AdditionalOutputs = 2
+                };
+                CountModule c = new CountModule("C")
+                {
+                    AdditionalOutputs = 3
+                };
+                engine.Pipelines.Add(a, new If((doc, ctx) => false, b).WithoutUnmatchedDocuments(), c);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(1, a.ExecuteCount);
+                Assert.AreEqual(0, b.ExecuteCount);
+                Assert.AreEqual(1, c.ExecuteCount);
+                Assert.AreEqual(1, a.InputCount);
+                Assert.AreEqual(0, b.InputCount);
+                Assert.AreEqual(0, c.InputCount);
+                Assert.AreEqual(3, a.OutputCount);
+                Assert.AreEqual(0, b.OutputCount);
+                Assert.AreEqual(0, c.OutputCount);
+            }
         }
     }
 }

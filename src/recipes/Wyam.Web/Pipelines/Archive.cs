@@ -172,34 +172,37 @@ namespace Wyam.Web.Pipelines
                     pageSize.Invoke<int>(ctx),
                     indexDocuments,
                     new OrderBy(orderBy).Descending(orderDescending))),
-            new Meta(Keys.Title, (doc, ctx) =>
-            {
-                string indexTitle = title.Invoke<string>(doc, ctx);
-                return doc.Get<int>(Keys.CurrentPage) <= 1
-                    ? indexTitle
-                    : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
-            }),
-            string.IsNullOrEmpty(groupDocumentsMetadataKey)
-                ? null
-                : new Meta(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]),
-            string.IsNullOrEmpty(groupKeyMetadataKey)
-                ? null
-                : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
-            new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-            {
-                string path = relativePath.Invoke<string>(doc, ctx)
-                    .ToLowerInvariant()
-                    .Replace(' ', '-')
-                    .Replace("'", string.Empty)
-                    .Replace(".", string.Empty);
-                return doc.Get<int>(Keys.CurrentPage) <= 1
-                    ? (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                        ? path
-                        : $"{path}/index.html")
-                    : (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                        ? path.Insert(path.Length - 5, doc.String(Keys.CurrentPage))
-                        : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
-            })
+            new If(
+                (doc, ctx) => doc.ContainsKey(Keys.TotalItems),
+                new Meta(Keys.Title, (doc, ctx) =>
+                {
+                    string indexTitle = title.Invoke<string>(doc, ctx);
+                    return doc.Get<int>(Keys.CurrentPage) <= 1
+                        ? indexTitle
+                        : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
+                }),
+                string.IsNullOrEmpty(groupDocumentsMetadataKey)
+                    ? null
+                    : new Meta(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]),
+                string.IsNullOrEmpty(groupKeyMetadataKey)
+                    ? null
+                    : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
+                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                {
+                    string path = relativePath.Invoke<string>(doc, ctx)
+                        .ToLowerInvariant()
+                        .Replace(' ', '-')
+                        .Replace("'", string.Empty)
+                        .Replace(".", string.Empty);
+                    return doc.Get<int>(Keys.CurrentPage) <= 1
+                        ? (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+                            ? path
+                            : $"{path}/index.html")
+                        : (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+                            ? path.Insert(path.Length - 5, doc.String(Keys.CurrentPage))
+                            : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
+                }))
+                .WithoutUnmatchedDocuments()
         };
     }
 }

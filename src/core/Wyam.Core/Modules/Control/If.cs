@@ -13,13 +13,14 @@ namespace Wyam.Core.Modules.Control
     /// </summary>
     /// <remarks>
     /// Any result documents from the child modules will be returned as the result of the
-    /// this module. Any input modules that don't match a predicate will be returned as
+    /// this module. Any input documents that don't match a predicate will be returned as
     /// outputs without modification.
     /// </remarks>
     /// <category>Control</category>
     public class If : IModule
     {
         private readonly List<Condition> _conditions = new List<Condition>();
+        private bool _withoutUnmatchedDocuments;
 
         /// <summary>
         /// Specifies a predicate and a series of child modules to be evaluated if the predicate returns <c>true</c>.
@@ -84,6 +85,20 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <summary>
+        /// The default behavior of this module is to "fall through" any documents that
+        /// didn't match one of the conditions and add it to the result set. This method
+        /// allows you to change that behavior and prevent unmatched documents from being
+        /// added to the result set.
+        /// </summary>
+        /// <param name="withoutUnmatchedDocuments">Set to <c>true</c> to prevent unmatched documents from being added to the resut set.</param>
+        /// <returns>The current module.</returns>
+        public If WithoutUnmatchedDocuments(bool withoutUnmatchedDocuments = true)
+        {
+            _withoutUnmatchedDocuments = withoutUnmatchedDocuments;
+            return this;
+        }
+
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -124,7 +139,10 @@ namespace Wyam.Core.Modules.Control
             }
 
             // Add back any documents that never matched a predicate
-            results.AddRange(documents);
+            if (!_withoutUnmatchedDocuments)
+            {
+                results.AddRange(documents);
+            }
 
             return results;
         }
