@@ -11,11 +11,17 @@ using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
+using Wyam.Common.Modules;
 using Wyam.Common.Util;
+using Wyam.Core.Modules.Contents;
+using Wyam.Core.Modules.Control;
+using Wyam.Core.Modules.Metadata;
 using Wyam.Docs.Pipelines;
 using Wyam.Feeds;
+using Wyam.Html;
 using Wyam.Web;
 using Wyam.Web.Pipelines;
+using ValidateLinks = Wyam.Web.Pipelines.ValidateLinks;
 
 namespace Wyam.Docs
 {
@@ -81,13 +87,49 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Api Api { get; } = new Api(TypeNamesToLink);
 
-        /// <inheritdoc cref="Pipelines.Pages" />
+        /// <inheritdoc cref="Pages" />
+        // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
-        public static Pipelines.Pages Pages { get; } = new Pipelines.Pages(TypeNamesToLink);
+        public static Pages Pages { get; } = new Pages(
+            nameof(Pages),
+            ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
+                .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
+            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+            TreePlaceholderFactory)
+                .InsertAfter(
+                    Pages.RazorFiles,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(TypeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord(),
+                        new If(
+                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                            new Replace("@", "&#64;"))));
 
-        /// <inheritdoc cref="Pipelines.BlogPosts" />
+        /// <inheritdoc cref="BlogPosts" />
+        // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
-        public static Pipelines.BlogPosts BlogPosts { get; } = new Pipelines.BlogPosts(TypeNamesToLink);
+        public static BlogPosts BlogPosts { get; } = new BlogPosts(
+            nameof(BlogPosts),
+            DocsKeys.Published,
+            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+            ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
+            ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
+            .InsertAfter(
+                BlogPosts.RazorPosts,
+                new If(
+                    ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                    new AutoLink(TypeNamesToLink)
+                        .WithQuerySelector("code")
+                        .WithMatchOnlyWholeWord(),
+                    new If(
+                        (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                        new Replace("@", "&#64;"))));
 
         /// <summary>
         /// Generates the index pages for blog posts.
@@ -203,9 +245,7 @@ namespace Wyam.Docs
             null,
             null);
 
-        /// <summary>
-        /// Generates the blog RSS, Atom, and/or RDF feeds.
-        /// </summary>
+        /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
         public static Web.Pipelines.Feeds BlogFeed { get; } = new Web.Pipelines.Feeds(
             nameof(BlogFeed),
@@ -214,13 +254,32 @@ namespace Wyam.Docs
             ctx => ctx.FilePath(DocsKeys.BlogAtomPath),
             ctx => ctx.FilePath(DocsKeys.BlogRdfPath));
 
-        /// <inheritdoc cref="Pipelines.RenderPages" />
+        /// <inheritdoc cref="RenderPages" />
         [SourceInfo]
-        public static RenderPages RenderPages { get; } = new RenderPages();
+        public static RenderPages RenderPages { get; } = new RenderPages(
+            nameof(RenderPages),
+            new string[] { Pages },
+            (doc, ctx) => "/_Layout.cshtml")
+                .InsertAfter(
+                    RenderPages.GetDocuments,
+                    new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(
+                        DocsKeys.NoSidebar,
+                        (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
+                        && doc.Document(Keys.Parent) == null))
+                .InsertAfter(
+                    RenderPages.WriteMetadata,
+                    new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
 
-        /// <inheritdoc cref="Pipelines.RenderBlogPosts" />
+        /// <inheritdoc cref="RenderBlogPosts" />
         [SourceInfo]
-        public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts();
+        public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
+            nameof(RenderBlogPosts),
+            new string[] { BlogPosts },
+            DocsKeys.Published,
+            (doc, ctx) => "/_BlogPost.cshtml")
+                .InsertAfter(
+                    RenderPages.WriteMetadata,
+                    new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
 
         /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
@@ -326,6 +385,14 @@ Category: Release
 Author: me
 ---
 There is a new release out, go get it now.");
+        }
+
+        private static IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
+        {
+            FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] { "index.html" })));
+            items.Add(Keys.RelativeFilePath, indexPath);
+            items.Add(Keys.Title, Title.GetTitle(indexPath));
+            return context.GetDocument(context.GetContentStream("@Html.Partial(\"_ChildPages\")"), items);
         }
     }
 }

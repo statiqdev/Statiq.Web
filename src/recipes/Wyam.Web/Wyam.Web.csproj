@@ -51,6 +51,8 @@
     <Compile Include="Pipelines\Less.cs" />
     <Compile Include="Pipelines\Pages.cs" />
     <Compile Include="Pipelines\Redirects.cs" />
+    <Compile Include="Pipelines\RenderBlogPosts.cs" />
+    <Compile Include="Pipelines\RenderPages.cs" />
     <Compile Include="Pipelines\Resources.cs" />
     <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

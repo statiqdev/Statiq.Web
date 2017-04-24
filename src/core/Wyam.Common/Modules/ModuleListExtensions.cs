@@ -17,8 +17,10 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="afterName">The name of the module at which to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertAfter(this IModuleList moduleList, string afterName, params IModule[] modules)
+        public static TModuleList InsertAfter<TModuleList>(this TModuleList moduleList, string afterName, params IModule[] modules)
+            where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(afterName) + 1, modules);
             return moduleList;
@@ -31,8 +33,10 @@ namespace Wyam.Common.Modules
         /// <param name="afterName">The name of the module at which to insert the specified modules.</param>
         /// <param name="name">The name of the module to insert.</param>
         /// <param name="module">The module to insert.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertAfter(this IModuleList moduleList, string afterName, string name, IModule module)
+        public static IModuleList InsertAfter<TModuleList>(this TModuleList moduleList, string afterName, string name, IModule module)
+            where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(afterName) + 1, name, module);
             return moduleList;
@@ -44,8 +48,10 @@ namespace Wyam.Common.Modules
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
         /// <param name="beforeName">The name of the module at which to insert the specified modules.</param>
         /// <param name="modules">The modules to insert.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertBefore(this IModuleList moduleList, string beforeName, params IModule[] modules)
+        public static IModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, params IModule[] modules)
+            where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(beforeName), modules);
             return moduleList;
@@ -58,8 +64,10 @@ namespace Wyam.Common.Modules
         /// <param name="beforeName">The name of the module at which to insert the specified modules.</param>
         /// <param name="name">The name of the module to insert.</param>
         /// <param name="module">The module to insert.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertBefore(this IModuleList moduleList, string beforeName, string name, IModule module)
+        public static IModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, string name, IModule module)
+            where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(beforeName), name, module);
             return moduleList;
@@ -339,8 +347,10 @@ namespace Wyam.Common.Modules
         /// <param name="replaceName">The name of the module to replace.</param>
         /// <param name="module">The replacement module.</param>
         /// <param name="name">The name of the replacement module.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList Replace(this IModuleList moduleList, string replaceName, IModule module, string name = null)
+        public static TModuleList Replace<TModuleList>(this TModuleList moduleList, string replaceName, IModule module, string name = null)
+            where TModuleList : IModuleList
             => moduleList.Replace(moduleList.GuardIndexOf(replaceName), module, name ?? replaceName);
 
         /// <summary>
@@ -350,8 +360,10 @@ namespace Wyam.Common.Modules
         /// <param name="index">The index of the module to replace.</param>
         /// <param name="module">The replacement module.</param>
         /// <param name="name">An optional name of the replacement module.</param>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList Replace(this IModuleList moduleList, int index, IModule module, string name = null)
+        public static TModuleList Replace<TModuleList>(this TModuleList moduleList, int index, IModule module, string name = null)
+            where TModuleList : IModuleList
         {
             if (string.IsNullOrWhiteSpace(name))
             {
