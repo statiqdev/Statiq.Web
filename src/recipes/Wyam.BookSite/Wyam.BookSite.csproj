@@ -47,15 +47,6 @@
     </Compile>
     <Compile Include="BookSite.cs" />
     <Compile Include="BookSiteKeys.cs" />
-    <Compile Include="Pipelines\Feed.cs" />
-    <Compile Include="Pipelines\Pages.cs" />
-    <Compile Include="Pipelines\Posts.cs" />
-    <Compile Include="Pipelines\RawPosts.cs" />
-    <Compile Include="Pipelines\Redirects.cs" />
-    <Compile Include="Pipelines\RenderPages.cs" />
-    <Compile Include="Pipelines\Resources.cs" />
-    <Compile Include="Pipelines\Tags.cs" />
-    <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +78,10 @@
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Wyam.Web\Wyam.Web.csproj">
+      <Project>{a4038d8b-40ed-4802-aa95-1e6171ef6036}</Project>
+      <Name>Wyam.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -97,6 +92,8 @@
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Pipelines\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

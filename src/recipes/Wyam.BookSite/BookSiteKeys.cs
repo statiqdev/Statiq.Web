@@ -12,52 +12,53 @@ namespace Wyam.BookSite
     /// </summary>
     public static class BookSiteKeys
     {
-        /// <summary>The title of the blog, post, or page.</summary>
-        /// <type><see cref="string"/></type>
-        public const string Title = nameof(Title);
-
-        /// <summary>The relative path to a page image.</summary>
-        /// <type><see cref="string"/></type>
-        public const string Image = nameof(Image);
-
-        /// <summary>The description of your blog (usually placed on the home page).</summary>
-        /// <type><see cref="string"/></type>
-        public const string Description = nameof(Description);
-
         /// <summary>
-        /// A short introduction to your blog (usually placed on the home page
-        /// under the description).
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Intro = nameof(Intro);
-
-        /// <summary>
-        /// Controls the parent path where blog posts are placed. The default is "posts".
+        /// Controls the parent path where blog posts are placed. The default is "blog".
         /// This affects both input and output files (I.e., if you change this your input
         /// files must also be under the same path).
         /// </summary>
         /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
-        public const string PostsPath = nameof(PostsPath);
+        public const string BlogPath = nameof(BlogPath);
 
         /// <summary>
-        /// Set to <c>true</c> to make tag groupings case-insensitive.
+        /// This should be a string or array of strings with the name(s)
+        /// of root-level folders to ignore when scanning for content pages.
+        /// Setting this global metadata value is useful when introducing
+        /// your own pipelines for files under certain folders and you don't
+        /// want the primary content page pipelines to pick them up.
         /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
+        public const string IgnoreFolders = nameof(IgnoreFolders);
 
         /// <summary>
         /// Set this to control the activated set of Markdown extensions for the
         /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
         /// </summary>
         /// <type><see cref="string"/></type>
-        public const string MarkdownExtensions = nameof(MarkdownExtensions);
+        public const string MarkdownConfiguration = nameof(MarkdownConfiguration);
 
         /// <summary>
         /// Set this to add extension Markdown extensions for the Markdig Markdown
         /// renderer. The default value is null;
         /// </summary>
-        /// <type><see cref="IEnumerable{IMarkdownExtension}"/></type>
-        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
+        /// <type><see cref="IEnumerable{Type}"/></type>
+        public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
+
+        /// <summary>The title of the blog, post, or page.</summary>
+        /// <type><see cref="string"/></type>
+        public const string Title = nameof(Title);
+
+        /// <summary>The subtitle of the book.</summary>
+        /// <type><see cref="string"/></type>
+        public const string Subtitle = nameof(Subtitle);
+
+        /// <summary>The description of your book (usually placed on the home page).</summary>
+        /// <type><see cref="string"/></type>
+        public const string Description = nameof(Description);
+
+        /// <summary>The relative path to an image to display in the layout.</summary>
+        /// <type><see cref="string"/></type>
+        public const string Image = nameof(Image);
 
         /// <summary>
         /// Setting this to <c>true</c> uses
@@ -89,7 +90,7 @@ namespace Wyam.BookSite
         /// to prevent generating an RSS feed.
         /// </summary>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
-        public const string RssPath = nameof(RssPath);
+        public const string BlogRssPath = nameof(BlogRssPath);
 
         /// <summary>
         /// Specifies the path where the blog Atom file will be output.
@@ -97,7 +98,7 @@ namespace Wyam.BookSite
         /// to prevent generating an Atom feed.
         /// </summary>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
-        public const string AtomPath = nameof(AtomPath);
+        public const string BlogAtomPath = nameof(BlogAtomPath);
 
         /// <summary>
         /// Specifies the path where the blog RDF file will be output.
@@ -105,7 +106,7 @@ namespace Wyam.BookSite
         /// prevents generating an RDF feed.
         /// </summary>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
-        public const string RdfPath = nameof(RdfPath);
+        public const string BlogRdfPath = nameof(BlogRdfPath);
 
         /// <summary>
         /// Set to <c>true</c> (the default value is <c>false</c>) to
@@ -130,7 +131,13 @@ namespace Wyam.BookSite
         public const string ValidateLinksAsError = nameof(ValidateLinksAsError);
 
         /// <summary>
-        /// The page size for tag archive pages (if not specified, no paging will be used).
+        /// The page size for blog index pages (the default is 5).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string BlogPageSize = nameof(BlogPageSize);
+
+        /// <summary>
+        /// The page size for blog tag index pages (the default is 5).
         /// </summary>
         /// <type><see cref="int"/></type>
         public const string TagPageSize = nameof(TagPageSize);
@@ -148,41 +155,9 @@ namespace Wyam.BookSite
         public const string Tags = nameof(Tags);
 
         /// <summary>
-        /// A short description of a particular blog post.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Lead = nameof(Lead);
-
-        /// <summary>
-        /// An excerpt of the blog post, automatically set for each document
-        /// by the recipe.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Excerpt = nameof(Excerpt);
-
-        /// <summary>
-        /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.
+        /// Set to <c>true</c> to make tag groupings case-insensitive.
         /// </summary>
         /// <type><see cref="bool"/></type>
-        public const string ShowInNavbar = nameof(ShowInNavbar);
-
-        /// <summary>
-        /// Set by the recipe to the content of the post (without any of the wrapping HTML elements).
-        /// Used primarily by the feed generation module to ensure feed items don't include the whole layout.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Content = nameof(Content);
-
-        /// <summary>
-        /// Set by the recipe for tag groups. Contains the set of documents with a given tag.
-        /// </summary>
-        /// <type><c>IEnumerable&lt;IDocument&gt;</c></type>
-        public const string Posts = nameof(Posts);
-
-        /// <summary>
-        /// Set by the recipe to the name of the tag for each tag group.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Tag = nameof(Tag);
+        public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
     }
 }

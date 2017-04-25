@@ -3,97 +3,165 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.BookSite.Pipelines;
 using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
+using Wyam.Common.Meta;
+using Wyam.Common.Modules;
 using Wyam.Common.Util;
+using Wyam.Core.Modules.Metadata;
 using Wyam.Feeds;
+using Wyam.Web.Pipelines;
 
 namespace Wyam.BookSite
 {
     /// <summary>
     /// A recipe for creating book and ebook marketing sites.
     /// </summary>
-    /// <metadata cref="BookSiteKeys.Title" usage="Setting">The title of the blog.</metadata>
+    /// <metadata cref="BookSiteKeys.Title" usage="Setting">The title of the book.</metadata>
     /// <metadata cref="BookSiteKeys.Title" usage="Input">The title of the post or page.</metadata>
-    /// <metadata cref="BookSiteKeys.Image" usage="Setting">The relative path to an image to display on the home page.</metadata>
-    /// <metadata cref="BookSiteKeys.Image" usage="Input">The relative path to an image for the current post or page (often shown in the header of the page).</metadata>
+    /// <metadata cref="BookSiteKeys.Subtitle" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.Intro" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.PostsPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.Image" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BlogPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BookSiteKeys.CaseInsensitiveTags" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.MarkdownExtensions" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.MarkdownExternalExtensions" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.MarkdownConfiguration" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.MarkdownExtensionTypes" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IncludeDateInPostPath" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MetaRefreshRedirects" usage="Setting" />
     /// <metadata cref="BookSiteKeys.NetlifyRedirects" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.RssPath" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.AtomPath" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.RdfPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BlogRssPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BlogAtomPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BlogRdfPath" usage="Setting" />
     /// <metadata cref="BookSiteKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="BookSiteKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="BookSiteKeys.ValidateLinksAsError" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BlogPageSize" usage="Setting" />
     /// <metadata cref="BookSiteKeys.TagPageSize" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Published" usage="Input" />
     /// <metadata cref="BookSiteKeys.Tags" usage="Input" />
-    /// <metadata cref="BookSiteKeys.Lead" usage="Input" />
-    /// <metadata cref="BookSiteKeys.Excerpt" usage="Output" />
-    /// <metadata cref="BookSiteKeys.ShowInNavbar" usage="Input" />
-    /// <metadata cref="BookSiteKeys.Content" usage="Output" />
-    /// <metadata cref="BookSiteKeys.Posts" usage="Output" />
-    /// <metadata cref="BookSiteKeys.Tag" usage="Output" />
     public class BookSite : Recipe
     {
-        /// <inheritdoc cref="Pipelines.Pages" />
+        /// <inheritdoc cref="Pages" />
         [SourceInfo]
-        public static Pages Pages { get; } = new Pages();
+        public static Pages Pages { get; } = new Pages(
+            nameof(Pages),
+            ctx => new[] { ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath }
+                .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
+            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            TreePlaceholderFactory);
 
-        /// <inheritdoc cref="Pipelines.RawPosts" />
+        /// <inheritdoc cref="BlogPosts" />
         [SourceInfo]
-        public static RawPosts RawPosts { get; } = new RawPosts();
+        public static BlogPosts BlogPosts { get; } = new BlogPosts(
+            nameof(BlogPosts),
+            BookSiteKeys.Published,
+            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
+            ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath);
 
-        /// <inheritdoc cref="Pipelines.Tags" />
+        /// <summary>
+        /// Generates the index pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static Tags Tags { get; } = new Tags();
+        public static Archive BlogIndexes { get; } = new Archive(
+            nameof(BlogIndexes),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_Layout.cshtml",
+            null,
+            null,
+            ctx => ctx.Get(BookSiteKeys.BlogPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(BookSiteKeys.Published),
+            true,
+            (doc, ctx) => "Blog",
+            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.Posts" />
+        /// <summary>
+        /// Generates the tag pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static Posts Posts { get; } = new Posts();
+        public static Archive BlogTags { get; } = new Archive(
+            nameof(BlogTags),
+            new string[] { BlogPosts },
+            "_BlogIndex.cshtml",
+            "/_Layout.cshtml",
+            (doc, ctx) => doc.List<string>(BookSiteKeys.Tags),
+            ctx => ctx.Bool(BookSiteKeys.CaseInsensitiveTags),
+            ctx => ctx.Get(BookSiteKeys.TagPageSize, int.MaxValue),
+            (doc, _) => doc.Get<DateTime>(BookSiteKeys.Published),
+            true,
+            (doc, ctx) => doc.String(Keys.GroupKey),
+            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.Feed" />
+        /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
-        public static Feed Feed { get; } = new Feed();
+        public static Web.Pipelines.Feeds BlogFeed { get; } = new Web.Pipelines.Feeds(
+            nameof(BlogFeed),
+            new string[] { BlogPosts },
+            ctx => ctx.FilePath(BookSiteKeys.BlogRssPath),
+            ctx => ctx.FilePath(BookSiteKeys.BlogAtomPath),
+            ctx => ctx.FilePath(BookSiteKeys.BlogRdfPath));
 
-        /// <inheritdoc cref="Pipelines.RenderPages" />
+        /// <inheritdoc cref="RenderPages" />
         [SourceInfo]
-        public static RenderPages RenderPages { get; } = new RenderPages();
+        public static RenderPages RenderPages { get; } = new RenderPages(
+            nameof(RenderPages),
+            new string[] { Pages },
+            (doc, ctx) => "/_Layout.cshtml");
 
-        /// <inheritdoc cref="Pipelines.Redirects" />
+        /// <inheritdoc cref="RenderBlogPosts" />
         [SourceInfo]
-        public static Redirects Redirects { get; } = new Redirects();
+        public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
+                nameof(RenderBlogPosts),
+                new string[] { BlogPosts },
+                BookSiteKeys.Published,
+                (doc, ctx) => "/_BlogPost.cshtml");
 
-        /// <inheritdoc cref="Pipelines.Resources" />
+        /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
-        public static Resources Resources { get; } = new Resources();
+        public static Redirects Redirects { get; } = new Redirects(
+            nameof(Redirects),
+            new string[] { RenderPages, RenderBlogPosts },
+            ctx => ctx.Bool(BookSiteKeys.MetaRefreshRedirects),
+            ctx => ctx.Bool(BookSiteKeys.NetlifyRedirects));
 
-        /// <inheritdoc cref="Pipelines.ValidateLinks" />
+        /// <inheritdoc cref="Web.Pipelines.Resources" />
         [SourceInfo]
-        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
+        public static Resources Resources { get; } = new Resources(nameof(Resources));
+
+        /// <inheritdoc cref="Web.Pipelines.ValidateLinks" />
+        [SourceInfo]
+        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
+            nameof(ValidateLinks),
+            new string[] { RenderPages, RenderBlogPosts, Resources },
+            ctx => ctx.Bool(BookSiteKeys.ValidateAbsoluteLinks),
+            ctx => ctx.Bool(BookSiteKeys.ValidateRelativeLinks),
+            ctx => ctx.Bool(BookSiteKeys.ValidateLinksAsError));
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.Settings[BookSiteKeys.Title] = "My Blog";
-            engine.Settings[BookSiteKeys.Description] = "Welcome!";
-            engine.Settings[BookSiteKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.Settings[BookSiteKeys.Title] = "My Book";
+            engine.Settings[BookSiteKeys.Description] = "The best book you'll ever read.";
+            engine.Settings[BookSiteKeys.MarkdownConfiguration] = "advanced+bootstrap";
             engine.Settings[BookSiteKeys.IncludeDateInPostPath] = false;
-            engine.Settings[BookSiteKeys.PostsPath] = new DirectoryPath("posts");
+            engine.Settings[BookSiteKeys.BlogPath] = new DirectoryPath("blog");
+            engine.Settings[BookSiteKeys.BlogPageSize] = 5;
+            engine.Settings[BookSiteKeys.TagPageSize] = 5;
             engine.Settings[BookSiteKeys.MetaRefreshRedirects] = true;
-            engine.Settings[BookSiteKeys.RssPath] = GenerateFeeds.DefaultRssPath;
-            engine.Settings[BookSiteKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
-            engine.Settings[BookSiteKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[BookSiteKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
+            engine.Settings[BookSiteKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
+            engine.Settings[BookSiteKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
 
             base.Apply(engine);
         }
@@ -105,6 +173,14 @@ namespace Wyam.BookSite
             configFile?.WriteAllText(@"#recipe BookSite");
 
             // TODO
+        }
+
+        private static IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
+        {
+            FilePath indexPath = new FilePath(string.Join("/", path.Concat(new[] { "index.html" })));
+            items.Add(Keys.RelativeFilePath, indexPath);
+            items.Add(Keys.Title, Title.GetTitle(indexPath));
+            return context.GetDocument(context.GetContentStream("@Html.Partial(\"_ChildPages\")"), items);
         }
     }
 }
