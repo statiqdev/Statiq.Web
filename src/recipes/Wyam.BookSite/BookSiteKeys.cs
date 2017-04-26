@@ -60,6 +60,10 @@ namespace Wyam.BookSite
         /// <type><see cref="string"/></type>
         public const string Image = nameof(Image);
 
+        /// <summary>The path to an image of the book, defaults to "/images/book.png".</summary>
+        /// <type><see cref="string"/></type>
+        public const string BookImage = nameof(BookImage);
+
         /// <summary>
         /// Setting this to <c>true</c> uses
         /// the year and date in the output path of blog posts.
@@ -159,5 +163,11 @@ namespace Wyam.BookSite
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
+
+        /// <summary>
+        /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ShowInNavbar = nameof(ShowInNavbar);
     }
 }

@@ -24,6 +24,7 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.Subtitle" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Image" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BookImage" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BlogPath" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BookSiteKeys.CaseInsensitiveTags" usage="Setting" />
@@ -42,6 +43,7 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.TagPageSize" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Published" usage="Input" />
     /// <metadata cref="BookSiteKeys.Tags" usage="Input" />
+    /// <metadata cref="BookSiteKeys.ShowInNavbar" usage="Input" />
     public class BookSite : Recipe
     {
         /// <inheritdoc cref="Pages" />
@@ -153,6 +155,7 @@ namespace Wyam.BookSite
             // Global metadata defaults
             engine.Settings[BookSiteKeys.Title] = "My Book";
             engine.Settings[BookSiteKeys.Description] = "The best book you'll ever read.";
+            engine.Settings[BookSiteKeys.BookImage] = "/images/book.png";
             engine.Settings[BookSiteKeys.MarkdownConfiguration] = "advanced+bootstrap";
             engine.Settings[BookSiteKeys.IncludeDateInPostPath] = false;
             engine.Settings[BookSiteKeys.BlogPath] = new DirectoryPath("blog");

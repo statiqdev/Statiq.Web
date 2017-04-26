@@ -71,6 +71,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.NoGutter" usage="Input" />
     /// <metadata cref="DocsKeys.Published" usage="Input" />
     /// <metadata cref="DocsKeys.Author" usage="Input" />
+    /// <metadata cref="DocsKeys.ShowInNavbar" usage="Input" />
     /// <metadata cref="WebKeys.EditFilePath" usage="Output" />
     public class Docs : Recipe
     {

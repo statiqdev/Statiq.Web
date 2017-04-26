@@ -1,13 +1,15 @@
 @{
     List<Tuple<string, string>> pages = Context
         .Documents[Docs.Pages]
+        .Where(x => x.Bool(DocsKeys.ShowInNavbar, true))
         .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
         .Select(x => Tuple.Create(x.WithoutSettings.String(Keys.Title), Context.GetLink(x)))
+        .Where(x => !string.IsNullOrEmpty(x.Item1))
         .OrderBy(x => x.Item1)
         .ToList();
     if(Documents[Docs.BlogPosts].Any())
     {
-        pages.Add(Tuple.Create("Blog", Context.GetLink("blog")));
+        pages.Add(Tuple.Create("Blog", Context.GetLink(Context.String(BookSiteKeys.BlogPath))));
     }
     if(Documents[Docs.Api].Any())
     {

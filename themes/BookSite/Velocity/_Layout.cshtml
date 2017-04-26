@@ -37,6 +37,18 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="@Context.GetLink(Model, true)" />
 		<!-- TODO: More social graph meta tags -->
+
+		<style>
+			@if(Context.ContainsKey(BookSiteKeys.Image))
+			{
+				<text>
+					#header-wrapper {
+						background: url(@Context.GetLink(Context.String(BookSiteKeys.Image))) center center;
+						background-size: cover;
+					}
+				</text>
+			}
+		</style>
         
         @Html.Partial("_Head")
 	</head>

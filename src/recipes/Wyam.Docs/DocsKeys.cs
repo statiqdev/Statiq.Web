@@ -310,6 +310,12 @@ namespace Wyam.Docs
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string IgnoreFolders = nameof(IgnoreFolders);
 
+        /// <summary>
+        /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ShowInNavbar = nameof(ShowInNavbar);
+
         [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
         public const string MarkdownExtensions = nameof(MarkdownConfiguration);
 
