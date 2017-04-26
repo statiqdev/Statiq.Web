@@ -1,0 +1,52 @@
+@{
+    List<IDocument> chapters = Documents[BookSite.Chapters]
+        .Where(x => x.Get<int>(BookSiteKeys.ChapterNumber) > 0)
+        .OrderBy(x => x.Get<int>(BookSiteKeys.ChapterNumber))
+        .ToList();
+}
+<div class="title">Table Of Contents</div>
+<div id="main" class="container">
+    <section id="features">
+        @if(Context.ContainsKey(BookSiteKeys.ChaptersIntro))
+        {
+            <header class="style1">
+                <p>@Context.String(BookSiteKeys.ChaptersIntro)</p>
+            </header>
+        }
+        <div class="feature-list">
+            @for(int r = 0 ; r <= chapters.Count / 2 ; r++)
+            {
+                <div class="row">
+                    <div class="6u 12u(mobile)">
+                        <section>
+                            <h3 class="chapter" data-chapter="@(chapters[r].Get<int>(BookSiteKeys.ChapterNumber))">
+                                <a href="@Context.GetLink(chapters[r])">@(chapters[r].String(BookSiteKeys.Title))</a>
+                            </h3>
+                            @if(chapters[r].ContainsKey(BookSiteKeys.Description))
+                            {
+                                <p>@(chapters[r].String(BookSiteKeys.Description))</p>
+                            }
+                        </section>                                
+                    </div>
+                    <div class="6u 12u(mobile)">
+                        @{
+                            int chapterNumber = chapters.Count/2+1+r;
+                        }
+                        @if(chapters.Count/2+r < chapters.Count)
+                        {
+                            <section>
+                                <h3 class="chapter" data-chapter="@(chapters[chapterNumber].Get<int>(BookSiteKeys.ChapterNumber))">
+                                    <a href="@Context.GetLink(chapters[chapterNumber])">@(chapters[chapterNumber].String(BookSiteKeys.Title))</a>
+                                </h3>
+                                @if(chapters[chapterNumber].ContainsKey(BookSiteKeys.Description))
+                                {
+                                    <p>@(chapters[chapterNumber].String(BookSiteKeys.Description))</p>
+                                }
+                            </section> 
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>

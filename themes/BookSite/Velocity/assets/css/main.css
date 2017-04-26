@@ -1908,6 +1908,20 @@
 				margin: 0 0 0 4em;
 			}
 
+			.feature-list h3.chapter
+			{
+				position: relative;
+				padding-left: 4.3em;
+				padding-top: 16px;
+			}
+			.feature-list h3.chapter:before
+			{
+				content: attr(data-chapter);
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+
 		/* Box */
 
 			.box header {
@@ -2107,7 +2121,7 @@
 		/* Intro */
 
 			#intro {
-				text-align: center;
+				text-align: left;
 			}
 
 				#intro .style1 {
@@ -2390,6 +2404,20 @@
 
 			.feature-list p {
 				margin: 0 0 0 48px;
+			}
+						
+			.feature-list h3.chapter
+			{
+				position: relative;
+				padding-left: 48px;
+				padding-top: 8px;
+			}
+			.feature-list h3.chapter:before
+			{
+				content: attr(data-chapter);
+				position: absolute;
+				left: 0;
+				top: 0;
 			}
 
 		/* Box */

@@ -49,9 +49,14 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
+        /// <param name="pagesPattern">
+        /// A delegate that should return a <see cref="string"/> with the glob to pages.
+        /// If <c>null</c>, a default globbing pattern of "**" is used.
+        /// </param>
         /// <param name="ignoreFolders">
         /// A delegate that should return a <see cref="string"/>
         /// or <c>IEnumerable&lt;string&gt;</c> with ignore paths.
+        /// If the delegate is <c>null</c>, no paths will be ignored.
         /// </param>
         /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
         /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
@@ -61,15 +66,17 @@ namespace Wyam.Web.Pipelines
         /// </param>
         public Pages(
             string name,
+            ContextConfig pagesPattern,
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
             Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(name, GetModules(ignoreFolders, markdownConfiguration, markdownExtensionTypes, treePlaceholderFactory))
+            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, treePlaceholderFactory))
         {
         }
 
         private static IModuleList GetModules(
+            ContextConfig pagesPath,
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
@@ -79,7 +86,7 @@ namespace Wyam.Web.Pipelines
                 MarkdownFiles,
                 new ModuleCollection
                 {
-                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/*.md"),
+                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}}}/*.md"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml()),
@@ -92,7 +99,7 @@ namespace Wyam.Web.Pipelines
                 RazorFiles,
                 new Concat
                 {
-                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, ignoreFolders)}}}/{{!_,}}*.cshtml"),
+                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}}}/{{!_,}}*.cshtml"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new Include(),
                     new FrontMatter(new Yaml.Yaml())
@@ -115,11 +122,12 @@ namespace Wyam.Web.Pipelines
             }
         };
 
-        private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig ignoreFolders) =>
+        private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignoreFolders) =>
             string.Join(
                 ",",
-                ignoreFolders.Invoke<IEnumerable<string>>(context)
-                    .Select(x => "!" + x)
-                    .Concat(new[] { "**" }));
+                (ignoreFolders == null
+                    ? Array.Empty<string>()
+                    : ignoreFolders.Invoke<IEnumerable<string>>(context).Select(x => "!" + x))
+                    .Concat(new[] { pagesPattern == null ? "**" : pagesPattern.Invoke<string>(context) }));
     }
 }

@@ -1,16 +1,22 @@
 <div id="intro-wrapper" class="wrapper style1">
-	<div class="title">Introduction</div>
-	<section id="intro" class="container">
-        <div class="row">
-			<div class="3u 12u(mobile) image">
-		        <img src="@Context.String(BookSiteKeys.BookImage)">
-			</div>
-			<div class="9u 12u(mobile)">
-                <p class="style1">@Context.String(BookSiteKeys.Description)</p>
-                <ul class="actions">
-                    <li><a href="#" class="button big">Order Now</a></li>
-                </ul>
-			</div>
-		</div>
-	</section>
+    <div class="title">Introduction</div>
+    <section id="intro" class="container">
+	<div class="row">
+	    <div class="4u 12u(mobile) image">
+		<img src="@Context.String(BookSiteKeys.BookImage)">
+	    </div>
+	    <div class="8u 12u(mobile)">
+		@if(Context.ContainsKey(BookSiteKeys.Description))
+		{
+			<p class="style1">@Context.String(BookSiteKeys.Description)</p>
+		}
+		@if(Context.ContainsKey(BookSiteKeys.BookLink))
+		{
+		    <ul class="actions">
+		        <li><a href="@Context.String(BookSiteKeys.BookLink)" class="button big">@Context.String(BookSiteKeys.BookLinkText)</a></li>
+		    </ul>
+		}
+	    </div>
+	</div>
+    </section>
 </div>

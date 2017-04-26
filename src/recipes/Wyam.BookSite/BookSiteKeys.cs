@@ -21,6 +21,18 @@ namespace Wyam.BookSite
         public const string BlogPath = nameof(BlogPath);
 
         /// <summary>
+        /// Controls the parent path where chapters are placed. The default is "chapters".
+        /// This affects both input and output files (I.e., if you change this your input
+        /// files must also be under the same path).
+        /// </summary>
+        /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
+        public const string ChaptersPath = nameof(ChaptersPath);
+
+        /// <summary>An introduction to display above the chapters listing.</summary>
+        /// <type><see cref="string"/></type>
+        public const string ChaptersIntro = nameof(ChaptersIntro);
+
+        /// <summary>
         /// This should be a string or array of strings with the name(s)
         /// of root-level folders to ignore when scanning for content pages.
         /// Setting this global metadata value is useful when introducing
@@ -44,7 +56,7 @@ namespace Wyam.BookSite
         /// <type><see cref="IEnumerable{Type}"/></type>
         public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
 
-        /// <summary>The title of the blog, post, or page.</summary>
+        /// <summary>The title of the book, chapter, or page.</summary>
         /// <type><see cref="string"/></type>
         public const string Title = nameof(Title);
 
@@ -56,9 +68,23 @@ namespace Wyam.BookSite
         /// <type><see cref="string"/></type>
         public const string Description = nameof(Description);
 
+        /// <summary>
+        /// Provides the chapter number for a chapter.
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string ChapterNumber = nameof(ChapterNumber);
+
         /// <summary>The relative path to an image to display in the layout.</summary>
         /// <type><see cref="string"/></type>
         public const string Image = nameof(Image);
+
+        /// <summary>A link to the book order form, download, etc.</summary>
+        /// <type><see cref="string"/></type>
+        public const string BookLink = nameof(BookLink);
+
+        /// <summary>The text to display on book links. Defaults to "Order Now".</summary>
+        /// <type><see cref="string"/></type>
+        public const string BookLinkText = nameof(BookLinkText);
 
         /// <summary>The path to an image of the book, defaults to "/images/book.png".</summary>
         /// <type><see cref="string"/></type>

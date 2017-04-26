@@ -94,6 +94,7 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
+            null,
             ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
                 .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
             ctx => ctx.String(DocsKeys.MarkdownConfiguration),

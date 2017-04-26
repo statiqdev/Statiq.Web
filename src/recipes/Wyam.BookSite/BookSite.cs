@@ -20,12 +20,17 @@ namespace Wyam.BookSite
     /// A recipe for creating book and ebook marketing sites.
     /// </summary>
     /// <metadata cref="BookSiteKeys.Title" usage="Setting">The title of the book.</metadata>
-    /// <metadata cref="BookSiteKeys.Title" usage="Input">The title of the post or page.</metadata>
+    /// <metadata cref="BookSiteKeys.Title" usage="Input">The title of the post, chapter, or page.</metadata>
     /// <metadata cref="BookSiteKeys.Subtitle" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.Description" usage="Input">Used with chapters to provide an optional description of the chapter.</metadata>
     /// <metadata cref="BookSiteKeys.Image" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BookImage" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BookLink" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.BookLinkText" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BlogPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.ChaptersPath" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.ChaptersIntro" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BookSiteKeys.CaseInsensitiveTags" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MarkdownConfiguration" usage="Setting" />
@@ -41,6 +46,7 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.ValidateLinksAsError" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BlogPageSize" usage="Setting" />
     /// <metadata cref="BookSiteKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.ChapterNumber" usage="Input" />
     /// <metadata cref="BookSiteKeys.Published" usage="Input" />
     /// <metadata cref="BookSiteKeys.Tags" usage="Input" />
     /// <metadata cref="BookSiteKeys.ShowInNavbar" usage="Input" />
@@ -50,11 +56,30 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
-            ctx => new[] { ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath }
+            null,
+            ctx => new[]
+                {
+                    ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath,
+                    ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath
+                }
                 .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
             ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
             TreePlaceholderFactory);
+
+        /// <summary>
+        /// Reads chapter files. These files can be either Markdown or Razor format
+        /// and should be placed, one per chapter, in the folder specified by
+        /// <see cref="BookSiteKeys.ChaptersPath"/>.
+        /// </summary>
+        [SourceInfo]
+        public static Pages Chapters { get; } = new Pages(
+            nameof(Chapters),
+            ctx => ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath,
+            null,
+            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            null);
 
         /// <inheritdoc cref="BlogPosts" />
         [SourceInfo]
@@ -156,9 +181,11 @@ namespace Wyam.BookSite
             engine.Settings[BookSiteKeys.Title] = "My Book";
             engine.Settings[BookSiteKeys.Description] = "The best book you'll ever read.";
             engine.Settings[BookSiteKeys.BookImage] = "/images/book.png";
+            engine.Settings[BookSiteKeys.BookLinkText] = "Order Now";
             engine.Settings[BookSiteKeys.MarkdownConfiguration] = "advanced+bootstrap";
             engine.Settings[BookSiteKeys.IncludeDateInPostPath] = false;
-            engine.Settings[BookSiteKeys.BlogPath] = new DirectoryPath("blog");
+            engine.Settings[BookSiteKeys.BlogPath] = "blog";
+            engine.Settings[BookSiteKeys.ChaptersPath] = "chapters";
             engine.Settings[BookSiteKeys.BlogPageSize] = 5;
             engine.Settings[BookSiteKeys.TagPageSize] = 5;
             engine.Settings[BookSiteKeys.MetaRefreshRedirects] = true;
