@@ -88,29 +88,6 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Api Api { get; } = new Api(TypeNamesToLink);
 
-        /// <inheritdoc cref="Pages" />
-        // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
-        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
-        [SourceInfo]
-        public static Pages Pages { get; } = new Pages(
-            nameof(Pages),
-            null,
-            ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
-                .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
-            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
-            TreePlaceholderFactory)
-                .InsertAfter(
-                    Pages.RazorFiles,
-                    new If(
-                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                        new AutoLink(TypeNamesToLink)
-                            .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
-                        new If(
-                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                            new Replace("@", "&#64;"))));
-
         /// <inheritdoc cref="BlogPosts" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
         // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
@@ -133,6 +110,31 @@ namespace Wyam.Docs
                         (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                         new Replace("@", "&#64;"))));
 
+        /// <inheritdoc cref="Pages" />
+        // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
+        // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
+        [SourceInfo]
+        public static Pages Pages { get; } = new Pages(
+            nameof(Pages),
+            null,
+            ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
+                .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
+            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+            null,
+            true,
+            TreePlaceholderFactory)
+                .InsertAfter(
+                    Pages.RazorFiles,
+                    new If(
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(TypeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord(),
+                        new If(
+                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                            new Replace("@", "&#64;"))));
+
         /// <summary>
         /// Generates the index pages for blog posts.
         /// </summary>
@@ -145,8 +147,7 @@ namespace Wyam.Docs
             null,
             null,
             ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => "Blog",
             (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}",
             null,
@@ -164,8 +165,7 @@ namespace Wyam.Docs
             (doc, ctx) => doc.List<string>(DocsKeys.Category),
             ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
             ctx => ctx.Get(DocsKeys.CategoryPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => doc.String(Keys.GroupKey),
             (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/{doc.String(Keys.GroupKey)}",
             null,
@@ -183,8 +183,7 @@ namespace Wyam.Docs
             (doc, ctx) => doc.List<string>(DocsKeys.Tags),
             ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
             ctx => ctx.Get(DocsKeys.TagPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => doc.String(Keys.GroupKey),
             (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}",
             null,
@@ -202,8 +201,7 @@ namespace Wyam.Docs
             (doc, ctx) => doc.List<string>(DocsKeys.Author),
             ctx => ctx.Bool(DocsKeys.CaseInsensitiveAuthors),
             ctx => ctx.Get(DocsKeys.AuthorPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => doc.String(Keys.GroupKey),
             (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/author/{doc.String(Keys.GroupKey)}",
             null,
@@ -221,8 +219,7 @@ namespace Wyam.Docs
             (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, doc.Get<DateTime>(DocsKeys.Published).Month, 1),
             null,
             ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy"),
             (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy/MM}",
             null,
@@ -240,8 +237,7 @@ namespace Wyam.Docs
             (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, 1, 1),
             null,
             ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
-            (doc, _) => doc.Get<DateTime>(DocsKeys.Published),
-            true,
+            null,
             (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy"),
             (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy}",
             null,
@@ -261,7 +257,8 @@ namespace Wyam.Docs
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
             new string[] { Pages },
-            (doc, ctx) => "/_Layout.cshtml")
+            (doc, ctx) => "/_Layout.cshtml",
+            null)
                 .InsertAfter(
                     RenderPages.GetDocuments,
                     new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(

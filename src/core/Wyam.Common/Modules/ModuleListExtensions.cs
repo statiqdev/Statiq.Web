@@ -12,6 +12,64 @@ namespace Wyam.Common.Modules
     public static class ModuleListExtensions
     {
         /// <summary>
+        /// Appends modules.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="modules">The modules to append.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Append<TModuleList>(this TModuleList moduleList, params IModule[] modules)
+            where TModuleList : IModuleList
+        {
+            moduleList.Add(modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Appends a named module.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to append.</param>
+        /// <param name="module">The module to append.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Append<TModuleList>(this TModuleList moduleList, string name, IModule module)
+            where TModuleList : IModuleList
+        {
+            moduleList.Add(name, module);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Prepends modules.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="modules">The modules to prepend.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Prepend<TModuleList>(this TModuleList moduleList, params IModule[] modules)
+            where TModuleList : IModuleList
+        {
+            moduleList.Insert(0, modules);
+            return moduleList;
+        }
+
+        /// <summary>
+        /// Prepends a named module.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="name">The name of the module to prepend.</param>
+        /// <param name="module">The module to prepend.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Prepend<TModuleList>(this TModuleList moduleList, string name, IModule module)
+            where TModuleList : IModuleList
+        {
+            moduleList.Insert(0, name, module);
+            return moduleList;
+        }
+
+        /// <summary>
         /// Inserts modules after the module with the specified name.
         /// </summary>
         /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
@@ -35,7 +93,7 @@ namespace Wyam.Common.Modules
         /// <param name="module">The module to insert.</param>
         /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertAfter<TModuleList>(this TModuleList moduleList, string afterName, string name, IModule module)
+        public static TModuleList InsertAfter<TModuleList>(this TModuleList moduleList, string afterName, string name, IModule module)
             where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(afterName) + 1, name, module);
@@ -50,7 +108,7 @@ namespace Wyam.Common.Modules
         /// <param name="modules">The modules to insert.</param>
         /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, params IModule[] modules)
+        public static TModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, params IModule[] modules)
             where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(beforeName), modules);
@@ -66,7 +124,7 @@ namespace Wyam.Common.Modules
         /// <param name="module">The module to insert.</param>
         /// <typeparam name="TModuleList">The type of the module list.</typeparam>
         /// <returns>The current instance.</returns>
-        public static IModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, string name, IModule module)
+        public static TModuleList InsertBefore<TModuleList>(this TModuleList moduleList, string beforeName, string name, IModule module)
             where TModuleList : IModuleList
         {
             moduleList.Insert(moduleList.GuardIndexOf(beforeName), name, module);

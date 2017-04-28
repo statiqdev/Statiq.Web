@@ -1,8 +1,5 @@
 @{
-    List<IDocument> chapters = Documents[BookSite.Chapters]
-        .Where(x => x.Get<int>(BookSiteKeys.ChapterNumber) > 0)
-        .OrderBy(x => x.Get<int>(BookSiteKeys.ChapterNumber))
-        .ToList();
+    List<IDocument> chapters = Documents[BookSite.Chapters].ToList();
 }
 <div class="title">Table Of Contents</div>
 <div id="main" class="container">
@@ -14,13 +11,20 @@
             </header>
         }
         <div class="feature-list">
-            @for(int r = 0 ; r <= chapters.Count / 2 ; r++)
+            @for(int r = 0 ; r <= (chapters.Count - 1) / 2 ; r++)
             {
                 <div class="row">
                     <div class="6u 12u(mobile)">
                         <section>
                             <h3 class="chapter" data-chapter="@(chapters[r].Get<int>(BookSiteKeys.ChapterNumber))">
-                                <a href="@Context.GetLink(chapters[r])">@(chapters[r].String(BookSiteKeys.Title))</a>
+                                @if(!string.IsNullOrWhiteSpace(chapters[r].Content))
+                                {
+                                    <a href="@Context.GetLink(chapters[r])">@(chapters[r].String(BookSiteKeys.Title))</a>
+                                }
+                                else
+                                {
+                                    <text>@(chapters[r].String(BookSiteKeys.Title))</text>
+                                }
                             </h3>
                             @if(chapters[r].ContainsKey(BookSiteKeys.Description))
                             {
@@ -30,13 +34,20 @@
                     </div>
                     <div class="6u 12u(mobile)">
                         @{
-                            int chapterNumber = chapters.Count/2+1+r;
+                            int chapterNumber = ((chapters.Count - 1) / 2)+r+1;
                         }
-                        @if(chapters.Count/2+r < chapters.Count)
+                        @if(chapterNumber < chapters.Count)
                         {
                             <section>
                                 <h3 class="chapter" data-chapter="@(chapters[chapterNumber].Get<int>(BookSiteKeys.ChapterNumber))">
-                                    <a href="@Context.GetLink(chapters[chapterNumber])">@(chapters[chapterNumber].String(BookSiteKeys.Title))</a>
+                                    @if(!string.IsNullOrWhiteSpace(chapters[chapterNumber].Content))
+                                    {
+                                        <a href="@Context.GetLink(chapters[chapterNumber])">@(chapters[chapterNumber].String(BookSiteKeys.Title))</a>
+                                    }
+                                    else
+                                    {
+                                        <text>@(chapters[chapterNumber].String(BookSiteKeys.Title))</text>
+                                    }
                                 </h3>
                                 @if(chapters[chapterNumber].ContainsKey(BookSiteKeys.Description))
                                 {

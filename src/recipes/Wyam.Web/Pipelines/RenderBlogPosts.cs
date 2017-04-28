@@ -16,6 +16,7 @@ namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Renders and outputs the blog posts using the template layouts.
+    /// This pipeline is designed to be used with documents from the <see cref="BlogPosts"/> pipeline.
     /// </summary>
     public class RenderBlogPosts : Pipeline
     {

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
@@ -18,6 +20,7 @@ namespace Wyam.Web.Pipelines
 {
     /// <summary>
     /// Renders and outputs the document content pages using the template layouts.
+    /// This pipeline is designed to be used with documents from the <see cref="Pages"/> pipeline.
     /// </summary>
     public class RenderPages : Pipeline
     {
@@ -42,10 +45,9 @@ namespace Wyam.Web.Pipelines
         public const string WriteFiles = nameof(WriteFiles);
 
         /// <summary>
-        /// Orders the posts by their published date. We need to do this
-        /// again since the order would have gotten messed up by the concurrent Razor rendering.
+        /// Sorts the rendered documents.
         /// </summary>
-        public const string OrderByPublished = nameof(OrderByPublished);
+        public const string Sort = nameof(Sort);
 
         /// <summary>
         /// Creates the pipeline.
@@ -53,12 +55,13 @@ namespace Wyam.Web.Pipelines
         /// <param name="name">The name of this pipeline.</param>
         /// <param name="pipelines">The pipelines from which to get page documents.</param>
         /// <param name="layout">The Razor layout to use.</param>
-        public RenderPages(string name, string[] pipelines, DocumentConfig layout)
-            : base(name, GetModules(pipelines, layout))
+        /// <param name="sort">Sorts the documents based on a comparison. If <c>null</c>, the sorting will be based on the document title.</param>
+        public RenderPages(string name, string[] pipelines, DocumentConfig layout, Comparison<IDocument> sort)
+            : base(name, GetModules(pipelines, layout, sort))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines, DocumentConfig layout) => new ModuleList
+        private static IModuleList GetModules(string[] pipelines, DocumentConfig layout, Comparison<IDocument> sort) => new ModuleList
         {
             {
                 GetDocuments,
@@ -81,6 +84,10 @@ namespace Wyam.Web.Pipelines
             {
                 WriteFiles,
                 new WriteFiles()
+            },
+            {
+                Sort,
+                new Sort(sort ?? ((x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title))))
             }
         };
     }

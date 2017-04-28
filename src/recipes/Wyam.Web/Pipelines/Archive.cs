@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
@@ -52,8 +53,7 @@ namespace Wyam.Web.Pipelines
         /// <c>false</c> or <c>null</c> to use the default comparer (including for non-string group keys).
         /// </param>
         /// <param name="pageSize">A delegate to get the page size.</param>
-        /// <param name="orderBy">A delegate to order the documents prior to pagination.</param>
-        /// <param name="orderDescending"><c>true</c> to order the documents in descending order, <c>false</c> otherwise.</param>
+        /// <param name="sort">Sorts the documents before generating the archive pages. If <c>null</c> the documents will maintain the order of their source pipeline(s).</param>
         /// <param name="title">A delegate to get the title of each page.</param>
         /// <param name="relativePath">
         /// A delegate to get the relative output path of each page. If the result contains a ".html" extension, the page
@@ -70,8 +70,7 @@ namespace Wyam.Web.Pipelines
             DocumentConfig group,
             ContextConfig caseInsensitiveGroupComparer,
             ContextConfig pageSize,
-            DocumentConfig orderBy,
-            bool orderDescending,
+            Comparison<IDocument> sort,
             DocumentConfig title,
             DocumentConfig relativePath,
             string groupDocumentsMetadataKey,
@@ -85,8 +84,7 @@ namespace Wyam.Web.Pipelines
                     group,
                     caseInsensitiveGroupComparer,
                     pageSize,
-                    orderBy,
-                    orderDescending,
+                    sort,
                     title,
                     relativePath,
                     groupDocumentsMetadataKey,
@@ -101,8 +99,7 @@ namespace Wyam.Web.Pipelines
             DocumentConfig group,
             ContextConfig caseInsensitiveGroupComparer,
             ContextConfig pageSize,
-            DocumentConfig orderBy,
-            bool orderDescending,
+            Comparison<IDocument> sort,
             DocumentConfig title,
             DocumentConfig relativePath,
             string groupDocumentsMetadataKey,
@@ -128,8 +125,7 @@ namespace Wyam.Web.Pipelines
                         new ForEach((IModule)GetIndexPageModules(
                             new Documents((doc, _) => doc[Keys.GroupDocuments]),
                             pageSize,
-                            orderBy,
-                            orderDescending,
+                            sort,
                             title,
                             relativePath,
                             groupDocumentsMetadataKey,
@@ -138,8 +134,7 @@ namespace Wyam.Web.Pipelines
                     : GetIndexPageModules(
                         new Documents().FromPipelines(pipelines),
                         pageSize,
-                        orderBy,
-                        orderDescending,
+                        sort,
                         title,
                         relativePath,
                         groupDocumentsMetadataKey,
@@ -160,49 +155,50 @@ namespace Wyam.Web.Pipelines
         private static ModuleCollection GetIndexPageModules(
             Documents indexDocuments,
             ContextConfig pageSize,
-            DocumentConfig orderBy,
-            bool orderDescending,
+            Comparison<IDocument> sort,
             DocumentConfig title,
             DocumentConfig relativePath,
             string groupDocumentsMetadataKey,
-            string groupKeyMetadataKey) => new ModuleCollection
+            string groupKeyMetadataKey)
         {
-            new Execute(ctx =>
-                new Paginate(
-                    pageSize.Invoke<int>(ctx),
-                    indexDocuments,
-                    new OrderBy(orderBy).Descending(orderDescending))),
-            new If(
-                (doc, ctx) => doc.ContainsKey(Keys.TotalItems),
-                new Meta(Keys.Title, (doc, ctx) =>
-                {
-                    string indexTitle = title.Invoke<string>(doc, ctx);
-                    return doc.Get<int>(Keys.CurrentPage) <= 1
-                        ? indexTitle
-                        : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
-                }),
-                string.IsNullOrEmpty(groupDocumentsMetadataKey)
-                    ? null
-                    : new Meta(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]),
-                string.IsNullOrEmpty(groupKeyMetadataKey)
-                    ? null
-                    : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
-                new Meta(Keys.RelativeFilePath, (doc, ctx) =>
-                {
-                    string path = relativePath.Invoke<string>(doc, ctx)
-                        .ToLowerInvariant()
-                        .Replace(' ', '-')
-                        .Replace("'", string.Empty)
-                        .Replace(".", string.Empty);
-                    return doc.Get<int>(Keys.CurrentPage) <= 1
-                        ? (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                            ? path
-                            : $"{path}/index.html")
-                        : (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                            ? path.Insert(path.Length - 5, doc.String(Keys.CurrentPage))
-                            : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
-                }))
-                .WithoutUnmatchedDocuments()
-        };
+            IModule[] paginateModules = sort == null
+                ? new IModule[] { indexDocuments }
+                : new IModule[] { indexDocuments, new Sort(sort) };
+            return new ModuleCollection
+            {
+                new Execute(ctx => new Paginate(pageSize.Invoke<int>(ctx), paginateModules)),
+                new If(
+                    (doc, ctx) => doc.ContainsKey(Keys.TotalItems),
+                    new Meta(Keys.Title, (doc, ctx) =>
+                    {
+                        string indexTitle = title.Invoke<string>(doc, ctx);
+                        return doc.Get<int>(Keys.CurrentPage) <= 1
+                            ? indexTitle
+                            : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
+                    }),
+                    string.IsNullOrEmpty(groupDocumentsMetadataKey)
+                        ? null
+                        : new Meta(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]),
+                    string.IsNullOrEmpty(groupKeyMetadataKey)
+                        ? null
+                        : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
+                    new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                    {
+                        string path = relativePath.Invoke<string>(doc, ctx)
+                            .ToLowerInvariant()
+                            .Replace(' ', '-')
+                            .Replace("'", string.Empty)
+                            .Replace(".", string.Empty);
+                        return doc.Get<int>(Keys.CurrentPage) <= 1
+                            ? (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+                                ? path
+                                : $"{path}/index.html")
+                            : (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
+                                ? path.Insert(path.Length - 5, doc.String(Keys.CurrentPage))
+                                : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
+                    }))
+                    .WithoutUnmatchedDocuments()
+            };
+        }
     }
 }

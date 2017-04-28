@@ -33,6 +33,18 @@ namespace Wyam.BookSite
         public const string ChaptersIntro = nameof(ChaptersIntro);
 
         /// <summary>
+        /// Controls the parent path where sections for the homepage are placed. The default is "sections".
+        /// </summary>
+        /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
+        public const string SectionsPath = nameof(SectionsPath);
+
+        /// <summary>
+        /// Controls the order in which pages should appear in the navigation bar or sections should appear on the homepage.
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string Order = nameof(Order);
+
+        /// <summary>
         /// This should be a string or array of strings with the name(s)
         /// of root-level folders to ignore when scanning for content pages.
         /// Setting this global metadata value is useful when introducing

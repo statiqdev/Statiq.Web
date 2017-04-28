@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +42,9 @@ namespace Wyam.Web.Pipelines
         public const string WriteMetadata = nameof(WriteMetadata);
 
         /// <summary>
-        /// Creates a tree structure from the pages.
+        /// Creates a tree structure from the pages and/or sorts the pages.
         /// </summary>
-        public const string CreateTree = nameof(CreateTree);
+        public const string CreateTreeAndSort = nameof(CreateTreeAndSort);
 
         /// <summary>
         /// Creates the pipeline.
@@ -60,6 +61,8 @@ namespace Wyam.Web.Pipelines
         /// </param>
         /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
         /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
+        /// <param name="sort">Sorts the documents based on a comparison. If <c>null</c>, the sorting will be based on the document title.</param>
+        /// <param name="createTree"><c>true</c> to create a tree from the pages, <c>false</c> to leave the pages flat.</param>
         /// <param name="treePlaceholderFactory">
         /// A factory to use for creating tree placeholders at points in the tree where no actual pages were found.
         /// If <c>null</c>, the default placeholder factory will be used which outputs empty index files.
@@ -70,8 +73,10 @@ namespace Wyam.Web.Pipelines
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
+            Comparison<IDocument> sort,
+            bool createTree,
             Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, treePlaceholderFactory))
+            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, sort, createTree, treePlaceholderFactory))
         {
         }
 
@@ -80,54 +85,74 @@ namespace Wyam.Web.Pipelines
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
-            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory) => new ModuleList
+            Comparison<IDocument> sort,
+            bool createTree,
+            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
         {
+            ModuleList moduleList = new ModuleList
             {
-                MarkdownFiles,
-                new ModuleCollection
                 {
-                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}}}/*.md"),
-                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                    new Include(),
-                    new FrontMatter(new Yaml.Yaml()),
-                    new Execute(ctx => new Markdown.Markdown()
-                        .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
-                        .UseExtensions(markdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
-                }
-            },
-            {
-                RazorFiles,
-                new Concat
+                    MarkdownFiles,
+                    new ModuleCollection
+                    {
+                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/*.md"),
+                        new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
+                        new Include(),
+                        new FrontMatter(new Yaml.Yaml()),
+                        new Execute(ctx => new Markdown.Markdown()
+                            .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
+                            .UseExtensions(markdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
+                    }
+                },
                 {
-                    new ReadFiles(ctx => $"{{{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}}}/{{!_,}}*.cshtml"),
-                    new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                    new Include(),
-                    new FrontMatter(new Yaml.Yaml())
-                }
-            },
-            {
-                WriteMetadata,
-                new ModuleCollection
+                    RazorFiles,
+                    new Concat
+                    {
+                        new ReadFiles(
+                            ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.cshtml"),
+                        new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
+                        new Include(),
+                        new FrontMatter(new Yaml.Yaml())
+                    }
+                },
                 {
-                    new Excerpt(),
-                    new Title(),
-                    new WriteFiles(".html").OnlyMetadata()
+                    WriteMetadata,
+                    new ModuleCollection
+                    {
+                        new Excerpt(),
+                        new Title(),
+                        new WriteFiles(".html").OnlyMetadata()
+                    }
                 }
-            },
-            {
-                CreateTree,
-                treePlaceholderFactory == null
-                    ? new Tree().WithNesting(true, true)
-                    : new Tree().WithNesting(true, true).WithPlaceholderFactory(treePlaceholderFactory)
-            }
-        };
+            };
 
-        private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignoreFolders) =>
-            string.Join(
-                ",",
-                (ignoreFolders == null
-                    ? Array.Empty<string>()
-                    : ignoreFolders.Invoke<IEnumerable<string>>(context).Select(x => "!" + x))
-                    .Concat(new[] { pagesPattern == null ? "**" : pagesPattern.Invoke<string>(context) }));
+            // Tree and sort
+            if (sort == null)
+            {
+                sort = (x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title));
+            }
+            if (createTree)
+            {
+                Tree tree = treePlaceholderFactory == null
+                    ? new Tree().WithNesting(true, true)
+                    : new Tree().WithNesting(true, true).WithPlaceholderFactory(treePlaceholderFactory);
+                tree.WithSort(sort);
+                moduleList.Add(CreateTreeAndSort, tree);
+            }
+            else
+            {
+                moduleList.Add(CreateTreeAndSort, new Sort(sort));
+            }
+            return moduleList;
+        }
+
+        private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignoreFolders)
+        {
+            string[] segments =
+                (ignoreFolders?.Invoke<IEnumerable<string>>(context).Select(x => "!" + x) ?? Array.Empty<string>())
+                .Concat(new[] { pagesPattern == null ? "**" : pagesPattern.Invoke<string>(context) })
+                .ToArray();
+            return segments.Length == 1 ? segments[0] : $"{{{string.Join(",", segments)}}}";
+        }
     }
 }
