@@ -243,9 +243,69 @@ namespace Wyam.BookSite
         public override void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
             // Config file
-            configFile?.WriteAllText(@"#recipe BookSite");
+            configFile?.WriteAllText(@"#recipe BookSite
 
-            // TODO
+Settings[BookSiteKeys.Title] = ""Your Book Title"";
+Settings[BookSiteKeys.Subtitle] = ""The Subtitle Of Your Book."";
+Settings[BookSiteKeys.Description] = ""A short description of your book."";
+Settings[BookSiteKeys.BookLink] = ""https://a/link/to/your/book"";
+Settings[BookSiteKeys.BookImage] = ""/images/book.jpg"";  // Add an image at this path to your input folder
+Settings[BookSiteKeys.Image] = ""/images/banner.jpg"";  // Add an image at this path to your input folder
+Settings[BookSiteKeys.ChaptersIntro] = ""A short introduction to the content of your book."";");
+
+            // Chapter
+            inputDirectory.GetFile("chapters/first-chapter.md").WriteAllText(
+                @"Title: First Chapter
+Description: An optional description of this chapter.
+ChapterNumber: 1
+---
+An optional longer description of your chapter.");
+
+            // Blog Post
+            inputDirectory.GetFile("blog/first-post.md").WriteAllText(
+                @"Title: First Post
+Published: 1/1/2016
+---
+This is a new blog post.");
+
+            // Home sections
+            inputDirectory.GetFile("sections/endorsements.cshtml").WriteAllText(@"Title: What Readers Are Saying
+Order: 1
+---
+<div class=""row 150%"">
+    <div class=""4u 12u(mobile)"">
+        <section class=""highlight"">
+            <p>A newspaper quote.</p>
+            <h3><a href=""#"">Daily Newspaper</a></h3>
+        </section>
+    </div>
+    <div class=""4u 12u(mobile)"">
+        <section class=""highlight"">
+            <p>Quote from a reviewer.</p>
+            <h3><a href=""#"">Reviewer on GoodReads</a></h3>
+        </section>
+    </div>
+    <div class=""4u 12u(mobile)"">
+        <section class=""highlight"">
+            <p>I loved this book. It was incredible.</p>
+            <h3><a href=""#"">Internet Person</a></h3>
+        </section>
+    </div>
+</div>");
+            inputDirectory.GetFile("sections/author.cshtml").WriteAllText(@"Title: About The Author
+Order: 2
+---
+<section id=""features"">
+    <header class=""style1"">
+        <h2>Your Name</h2>
+        <p>Say a little something about yourself.</p>
+    </header>
+</section>");
+
+            // Page
+            inputDirectory.GetFile("custom-page.md").WriteAllText(@"Title: Custom Page
+---
+You can add as many custom pages as you want.");
         }
 
         private static IDocument TreePlaceholderFactory(object[] path, MetadataItems items, IExecutionContext context)
