@@ -1,0 +1,33 @@
+@{
+	ViewData["Area"] = "Chapter " + Model.Get<int>(BookSiteKeys.ChapterNumber);
+	Layout = "/_Layout.cshtml";
+}
+
+@RenderBody()
+
+@{	
+    List<IDocument> chapters = Documents[BookSite.Chapters].ToList();
+	int currentChapter = chapters.IndexOf(Model);
+    <div class="row 150%">
+        <div class="6u 12u(mobile)">
+            @if(currentChapter > 0)
+            {
+                <section class="box" style="text-align: center;">
+                    <div><a href="@(Context.GetLink(chapters[currentChapter - 1]))" class="button style1">Previous</a></div>
+					<div><strong>Chapter @(chapters[currentChapter - 1].Get<int>(BookSiteKeys.ChapterNumber))</strong></div>
+					<div>@(chapters[currentChapter - 1].String(Keys.Title))</div>
+                </section>
+            }
+        </div>
+        <div class="6u 12u(mobile)">
+            @if(currentChapter < chapters.Count - 1)
+            {
+                <section class="box" style="text-align: center;">
+                    <div><a href="@(Context.GetLink(chapters[currentChapter + 1]))" class="button style1">Next</a></div>
+					<div><strong>Chapter @(chapters[currentChapter + 1].Get<int>(BookSiteKeys.ChapterNumber))</strong></div>
+					<div>@(chapters[currentChapter + 1].String(Keys.Title))</div>
+                </section>
+            }
+        </div>
+    </div>
+}

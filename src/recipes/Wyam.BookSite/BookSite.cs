@@ -27,6 +27,7 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Input">Used with chapters to provide an optional description of the chapter.</metadata>
     /// <metadata cref="BookSiteKeys.Image" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.Image" usage="Input">An image to display on the blog or chapter page.</metadata>
     /// <metadata cref="BookSiteKeys.BookImage" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BookLink" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BookLinkText" usage="Setting" />
@@ -35,7 +36,6 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.ChaptersIntro" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BookSiteKeys.SectionsPath" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.CaseInsensitiveTags" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MarkdownConfiguration" usage="Setting" />
     /// <metadata cref="BookSiteKeys.MarkdownExtensionTypes" usage="Setting" />
     /// <metadata cref="BookSiteKeys.IncludeDateInPostPath" usage="Setting" />
@@ -48,10 +48,8 @@ namespace Wyam.BookSite
     /// <metadata cref="BookSiteKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="BookSiteKeys.ValidateLinksAsError" usage="Setting" />
     /// <metadata cref="BookSiteKeys.BlogPageSize" usage="Setting" />
-    /// <metadata cref="BookSiteKeys.TagPageSize" usage="Setting" />
     /// <metadata cref="BookSiteKeys.ChapterNumber" usage="Input" />
     /// <metadata cref="BookSiteKeys.Published" usage="Input" />
-    /// <metadata cref="BookSiteKeys.Tags" usage="Input" />
     /// <metadata cref="BookSiteKeys.ShowInNavbar" usage="Input" />
     /// <metadata cref="BookSiteKeys.Order" usage="Input" />
     public class BookSite : Recipe
@@ -146,20 +144,20 @@ namespace Wyam.BookSite
             null);
 
         /// <summary>
-        /// Generates the tag pages for blog posts.
+        /// Generates the chapter index.
         /// </summary>
         [SourceInfo]
-        public static Archive BlogTags { get; } = new Archive(
-            nameof(BlogTags),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
+        public static Archive ChapterIndex { get; } = new Archive(
+            nameof(ChapterIndex),
+            new string[] { Chapters },
+            "_ChapterIndex.cshtml",
             "/_Layout.cshtml",
-            (doc, ctx) => doc.List<string>(BookSiteKeys.Tags),
-            ctx => ctx.Bool(BookSiteKeys.CaseInsensitiveTags),
-            ctx => ctx.Get(BookSiteKeys.TagPageSize, int.MaxValue),
             null,
-            (doc, ctx) => doc.String(Keys.GroupKey),
-            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}",
+            null,
+            null,
+            null,
+            (doc, ctx) => "Chapters",
+            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath}",
             null,
             null);
 
@@ -179,6 +177,16 @@ namespace Wyam.BookSite
             new string[] { Pages },
             (doc, ctx) => "/_Layout.cshtml",
             null);
+
+        /// <summary>
+        /// Renders the chapter pages if they have content.
+        /// </summary>
+        [SourceInfo]
+        public static RenderPages RenderChapters { get; } = new RenderPages(
+            nameof(RenderChapters),
+            new string[] { Chapters },
+            (doc, ctx) => "/_Chapter.cshtml",
+            (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber)));
 
         /// <inheritdoc cref="RenderBlogPosts" />
         [SourceInfo]
@@ -223,7 +231,6 @@ namespace Wyam.BookSite
             engine.Settings[BookSiteKeys.ChaptersPath] = "chapters";
             engine.Settings[BookSiteKeys.SectionsPath] = "sections";
             engine.Settings[BookSiteKeys.BlogPageSize] = 5;
-            engine.Settings[BookSiteKeys.TagPageSize] = 5;
             engine.Settings[BookSiteKeys.MetaRefreshRedirects] = true;
             engine.Settings[BookSiteKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[BookSiteKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;

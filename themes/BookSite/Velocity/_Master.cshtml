@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+@{ 
+	string Title = Model.WithoutSettings.String(BookSiteKeys.Title); 
+	string PageTitle = Context.String(BookSiteKeys.Title) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+}
+<!--
+	Escape Velocity by HTML5 UP
+	html5up.net | @@ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>@PageTitle</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="@Context.GetLink("/assets/js/ie/html5shiv.js")"></script><![endif]-->
+		<link rel="stylesheet" href="@Context.GetLink("/assets/css/main.css")" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="@Context.GetLink("/assets/css/ie8.css")" /><![endif]-->
+        <link href="@Context.GetLink("/assets/css/override.css")" rel="stylesheet" />
+
+		<meta name="description" content="@Context.String(BookSiteKeys.Description)" />
+		@if (Context.String(BookSiteKeys.BlogRssPath) != null) {
+		<link type="application/rss+xml" rel="alternate" title="@Context.String(BookSiteKeys.Title)" href="@Context.GetLink(Context.String(BookSiteKeys.BlogRssPath))" />
+		}
+		@if (Context.String(BookSiteKeys.BlogAtomPath) != null) {
+		<link type="application/atom+xml" rel="alternate" title="@Context.String(BookSiteKeys.Title)" href="@Context.GetLink(Context.String(BookSiteKeys.BlogAtomPath))" />
+		}
+		<link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+		<link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+
+		<meta name="application-name" content="@Context.String(BookSiteKeys.Title)" />
+		<meta name="msapplication-tooltip" content="@Context.String(BookSiteKeys.Title)" />
+		<meta name="msapplication-starturl" content="@Context.GetLink("/")" />
+
+		<meta property="og:title" content="@PageTitle" />
+        @* <meta property="og:image" content="@BookSiteKeys.Image" /> *@
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="@Context.GetLink(Model, true)" />
+		<!-- TODO: More social graph meta tags -->
+
+		<style>
+			@if(Context.ContainsKey(BookSiteKeys.Image))
+			{
+				<text>
+					#header-wrapper {
+						background: url(@Context.GetLink(Context.String(BookSiteKeys.Image))) center center;
+						background-size: cover;
+					}
+				</text>
+			}
+		</style>
+        
+        @Html.Partial("_Head")
+	</head>
+	@{
+		string bodyClass = Model.FilePath(Keys.RelativeFilePath).FullPath == "index.html" ? "homepage" : "right-sidebar";
+	}
+	<body class="@bodyClass">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<div id="header-wrapper" class="wrapper">
+					<div id="header">
+
+						<!-- Logo -->
+							<div id="logo">
+								<h1><a href="@Context.GetLink("/")">@Context.String(BookSiteKeys.Title)</a></h1>
+								@if(Context.ContainsKey(BookSiteKeys.Subtitle))
+								{
+										<p>@Context.String(BookSiteKeys.Subtitle)</p>
+								}
+							</div>
+
+						<!-- Nav -->
+							@Html.Partial("_Navbar")
+
+					</div>
+				</div>
+
+				@RenderBody()
+	
+				<!-- Footer -->
+				<div id="footer-wrapper" class="wrapper">
+						@Html.Partial("_Footer")
+				</div>	
+
+			</div>
+			
+			@Html.Partial("_Scripts")
+
+			<!-- Scripts -->
+				<script src="@Context.GetLink("/assets/js/jquery.min.js")"></script>
+				<script src="@Context.GetLink("/assets/js/jquery.dropotron.min.js")"></script>
+				<script src="@Context.GetLink("/assets/js/skel.min.js")"></script>
+				<script src="@Context.GetLink("/assets/js/skel-viewport.min.js")"></script>
+				<script src="@Context.GetLink("/assets/js/util.js")"></script>
+				<!--[if lte IE 8]><script src="@Context.GetLink("/assets/js/ie/respond.min.js")"></script><![endif]-->
+				<script src="@Context.GetLink("/assets/js/main.js")"></script>
+
+	</body>
+</html>

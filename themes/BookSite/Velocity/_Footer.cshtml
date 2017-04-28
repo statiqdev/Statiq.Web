@@ -1,5 +1,8 @@
 <div id="footer" class="container">    
 <div class="row">
+    <div class="2u 12u(mobile) image">
+        <img src="@Context.String(BookSiteKeys.BookImage)">
+    </div>
     <div class="10u 12u(mobile)">
         <h2>@Context.String(BookSiteKeys.Title)</h2>        
         @if(Context.ContainsKey(BookSiteKeys.Subtitle))
@@ -12,9 +15,6 @@
                 <li><a href="@Context.String(BookSiteKeys.BookLink)" class="button">@Context.String(BookSiteKeys.BookLinkText)</a></li>
             </ul>
         }
-    </div>
-    <div class="2u 12u(mobile) image">
-        <img src="@Context.String(BookSiteKeys.BookImage)">
     </div>
 </div>
 <div id="copyright">

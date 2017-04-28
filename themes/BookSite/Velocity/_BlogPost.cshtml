@@ -1,1 +1,10 @@
+@{
+	ViewData["Area"] = "Blog Post";
+	Layout = "/_Layout.cshtml";
+}
+
+<header class="style1">
+    <p><i>Posted on @(Model.Get<DateTime>(BookSiteKeys.Published).ToLongDateString(Context))</i></p>
+</header>
+
 @RenderBody()

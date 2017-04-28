@@ -52,7 +52,7 @@ namespace Wyam.Web.Pipelines
         /// A delegate that should return <c>true</c> the use the case-insensitive group key comparer,
         /// <c>false</c> or <c>null</c> to use the default comparer (including for non-string group keys).
         /// </param>
-        /// <param name="pageSize">A delegate to get the page size.</param>
+        /// <param name="pageSize">A delegate to get the page size. If <c>null</c>, no paging will be used.</param>
         /// <param name="sort">Sorts the documents before generating the archive pages. If <c>null</c> the documents will maintain the order of their source pipeline(s).</param>
         /// <param name="title">A delegate to get the title of each page.</param>
         /// <param name="relativePath">
@@ -166,7 +166,7 @@ namespace Wyam.Web.Pipelines
                 : new IModule[] { indexDocuments, new Sort(sort) };
             return new ModuleCollection
             {
-                new Execute(ctx => new Paginate(pageSize.Invoke<int>(ctx), paginateModules)),
+                new Execute(ctx => new Paginate(pageSize?.Invoke<int>(ctx) ?? int.MaxValue, paginateModules)),
                 new If(
                     (doc, ctx) => doc.ContainsKey(Keys.TotalItems),
                     new Meta(Keys.Title, (doc, ctx) =>

@@ -179,28 +179,10 @@ namespace Wyam.BookSite
         public const string BlogPageSize = nameof(BlogPageSize);
 
         /// <summary>
-        /// The page size for blog tag index pages (the default is 5).
-        /// </summary>
-        /// <type><see cref="int"/></type>
-        public const string TagPageSize = nameof(TagPageSize);
-
-        /// <summary>
         /// The date of the post.
         /// </summary>
         /// <type><see cref="DateTime"/> or <see cref="string"/></type>
         public const string Published = nameof(Published);
-
-        /// <summary>
-        /// The tags for a given post.
-        /// </summary>
-        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
-        public const string Tags = nameof(Tags);
-
-        /// <summary>
-        /// Set to <c>true</c> to make tag groupings case-insensitive.
-        /// </summary>
-        /// <type><see cref="bool"/></type>
-        public const string CaseInsensitiveTags = nameof(CaseInsensitiveTags);
 
         /// <summary>
         /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.

@@ -1,3 +1,7 @@
+@{
+	Layout = "/_Master.cshtml";
+}
+
 @Html.Partial("_Introduction")
 
 @{
@@ -6,17 +10,17 @@
 
 @if(Documents[BookSite.BlogPosts].Any())
 {
-    <div class="wrapper @wrapperStyle">
+		<div class="wrapper @wrapperStyle">
 				@Html.Partial("_BlogPosts")
-    </div>
+		</div>
 		wrapperStyle = wrapperStyle == "style2" ? "style3" : "style2";
 }
 
 @if(Documents[BookSite.Chapters].Any())
 {
-    <div class="wrapper @wrapperStyle">
+		<div class="wrapper @wrapperStyle">
 				@Html.Partial("_Chapters")
-    </div>
+		</div>
 		wrapperStyle = wrapperStyle == "style2" ? "style3" : "style2";
 }
 
@@ -24,12 +28,12 @@
 {
 		foreach(IDocument section in Documents[BookSite.Sections])
 		{
-			  <div class="wrapper @wrapperStyle">
-					  <div class="title">@(section.String(Keys.Title))</div>
+				<div class="wrapper @wrapperStyle">
+						<div class="title">@(section.String(Keys.Title))</div>
 						<div class="container">
-							  @Html.Raw(section.Content)
+								@Html.Raw(section.Content)
 						</div>
-			  </div>
+				</div>
 				wrapperStyle = wrapperStyle == "style2" ? "style3" : "style2";
 		}
 }
