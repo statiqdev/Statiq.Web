@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<link rel="self" href="/" />
+	<id>/</id>
+	<title>The Adventures of Sherlock Holmes</title>
+	<rights>2017</rights>
+	<updated>2017-04-28T21:34:12Z</updated>
+	<logo>/images/banner.jpg</logo>
+	<subtitle>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</subtitle>
+	<entry>
+		<link href="/blog/on-doyles-name" />
+		<link rel="enclosure" type="image" href="/images/banner.jpg" />
+		<id>/blog/on-doyles-name</id>
+		<title>On Doyle's Name</title>
+		<updated>2017-03-14T00:00:00Z</updated>
+		<summary>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</summary>
+	</entry>
+	<entry>
+		<link href="/blog/putting-the-stories-in-context" />
+		<link rel="enclosure" type="image" href="/images/banner.jpg" />
+		<id>/blog/putting-the-stories-in-context</id>
+		<title>Putting The Stories In Context</title>
+		<updated>2017-02-22T00:00:00Z</updated>
+		<summary>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</summary>
+	</entry>
+</feed>

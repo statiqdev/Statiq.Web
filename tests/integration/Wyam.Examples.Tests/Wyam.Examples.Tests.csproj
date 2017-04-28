@@ -236,6 +236,10 @@
       <Project>{9cadde07-290f-4958-b0d4-2e613b8f127f}</Project>
       <Name>Wyam</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\recipes\Wyam.BookSite\Wyam.BookSite.csproj">
+      <Project>{8a4fbe8f-b009-4ea7-b941-9b6406b4e55d}</Project>
+      <Name>Wyam.BookSite</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
