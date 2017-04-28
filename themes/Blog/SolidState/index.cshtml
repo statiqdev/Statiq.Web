@@ -1,0 +1,65 @@
+@section Header {
+    @Html.Partial("_IndexHeader")
+}
+
+<div class="inner">
+    <div class="col-sm-8 right-border">
+        @{
+            bool first = true;
+            foreach(IDocument doc in Documents[Blog.Posts].Take(3))
+            {                
+                if (!first)
+                {
+                    <hr /> 
+                }
+                first = false;
+                string lead = doc.String(BlogKeys.Lead);
+                <div class="content">
+                    <a href="@Context.GetLink(doc)">
+                        <h2 class="post-title">@doc.WithoutSettings.String(BlogKeys.Title)</h2>
+                        @if(!string.IsNullOrWhiteSpace(lead))
+                        {
+                            <h3 class="post-subtitle">@lead</h3>
+                        }
+                    </a>
+                    <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
+                    @Html.Raw(doc.String(BlogKeys.Excerpt))             
+                </div>       
+            }
+        }
+    </div>
+    <div class="col-sm-4 sidebar">
+        <hr class="visible-xs-block" />
+        <h5 class="major">Tags</h5>
+        <div>
+            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+            {
+                string tag = tagDocument.String(BlogKeys.Tag);
+                string postCount = tagDocument.String(Keys.TotalItems);
+                <a role="button" href="@Context.GetLink(tagDocument)" class="btn btn-default btn-sm"> @tag (@postCount)</a>
+            }
+        </div>
+        <ul class="links">
+            <li class="next">
+                <a href="/tags">View All Tags &rarr;</a>
+            </li>
+        </ul>
+        <hr />
+        <h5 class="major">Older Posts</h5>
+        <ul class="links">
+            @foreach(IDocument doc in Documents[Blog.Posts].Skip(3).Take(4))
+            {        
+                <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
+            }
+        </ul>
+        <ul class="links">
+            <li class="next">
+                <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Archive &rarr;</a>
+            </li>
+        </ul>
+
+        @Html.Partial("_Sidebar")
+    </div> 
+</div>

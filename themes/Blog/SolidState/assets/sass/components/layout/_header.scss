@@ -1,0 +1,140 @@
+///
+/// Solid State by HTML5 UP
+/// html5up.net | @ajlkn
+/// Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+///
+
+/* Header */
+
+	#header {
+		@include vendor('transition', 'background-color #{_duration(transition)} ease-in-out');
+		background-color: transparentize(desaturate(lighten(_palette(bg), 3), 1.5), 0.05);
+		height: 3.5em;
+		left: 0;
+		line-height: 3.5em;
+		padding: 0 1.25em;
+		position: fixed;
+		top: 0;
+		width: 100%;
+		z-index: _misc(z-index-base);
+
+		h1 {
+			@include vendor('transition', (
+				'opacity #{_duration(transition)} ease-in-out',
+				'visibility #{_duration(transition)}'
+			));
+			border-bottom: 0;
+			font-size: 0.8em;
+			margin-bottom: 0;
+			opacity: 1;
+			visibility: visible;
+
+			a {
+				border: 0;
+			}
+		}
+
+		nav {
+			font-family: _font(family-heading);
+			font-size: 0.8em;
+			font-weight: _font(weight-heading-bold);
+			height: 3em;
+			letter-spacing: _font(kern-heading);
+			line-height: 3em;
+			position: absolute;
+			right: 0.7em;
+			text-transform: uppercase;
+			top: 0.7em;
+
+			a {
+				border: 0;
+				display: inline-block;
+				padding: 0 1em;
+
+				&:before {
+					float: right;
+					margin-left: 0.75em;
+				}
+
+				&[href="#menu"] {
+					@include icon;
+					@include vendor('transition', 'background-color #{_duration(transition)} ease-in-out');
+					border-radius: _size(border-radius);
+					box-shadow: inset 0 0 0 2px _palette(border);
+					padding: 0 1.35em;
+
+					&:before {
+						content: '\f0c9';
+					}
+
+					&:hover {
+						background-color: _palette(border-bg);
+					}
+
+					&:active {
+						background-color: _palette(border2-bg);
+					}
+				}
+			}
+		}
+
+		&.alt {
+			background-color: transparent;
+
+			h1 {
+				opacity: 0;
+				visibility: hidden;
+			}
+		}
+
+		@include breakpoint(small) {
+			height: 2.75em;
+			line-height: 2.75em;
+
+			nav {
+				top: 0;
+				right: 0;
+				height: inherit;
+				line-height: inherit;
+
+				a {
+					height: inherit;
+					line-height: inherit;
+
+					&[href="#menu"] {
+						box-shadow: none;
+						padding: 0 1em;
+						border-radius: 0;
+
+						&:hover, &:active {
+							background-color: inherit;
+						}
+					}
+				}
+			}
+		}
+
+		@include breakpoint(xsmall) {
+			nav {
+				a {
+					&[href="#menu"] {
+						width: 4em;
+						white-space: nowrap;
+						text-indent: 4em;
+						position: relative;
+
+						&:before {
+							width: inherit;
+							position: absolute;
+							top: 0;
+							left: 0;
+							text-indent: 0;
+							text-align: right;
+							margin-left: 0;
+							padding-right: 1.25em;
+						}
+					}
+				}
+			}
+		}
+	}

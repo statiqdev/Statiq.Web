@@ -1,0 +1,116 @@
+/*
+	Solid State by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
+/* Basic */
+body {
+  -ms-behavior: url("assets/js/backgroundsize.min.htc"); }
+
+/* Type */
+h1.major, h2.major, h3.major, h4.major, h5.major, h6.major {
+  border-bottom: solid 2px #ffffff; }
+
+blockquote {
+  border-left: solid 4px #ffffff; }
+
+code {
+  border: solid 2px #ffffff; }
+
+hr {
+  border-bottom: solid 2px #ffffff; }
+
+/* Button */
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+button,
+.button {
+  position: relative;
+  -ms-behavior: url("assets/js/ie/PIE.htc");
+  border: solid 2px #ffffff; }
+  input[type="submit"].special,
+  input[type="reset"].special,
+  input[type="button"].special,
+  button.special,
+  .button.special {
+    border: 0; }
+
+/* Form */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+  position: relative;
+  -ms-behavior: url("assets/js/ie/PIE.htc");
+  background: transparent;
+  border: solid 2px #ffffff; }
+
+/* Table */
+table tbody tr {
+  border: solid 1px #ffffff;
+  border-left: 0;
+  border-right: 0; }
+
+table.alt tbody tr td {
+  border: solid 1px #ffffff;
+  border-left-width: 0;
+  border-top-width: 0; }
+  table.alt tbody tr td:first-child {
+    border-left-width: 1px; }
+
+table.alt tbody tr:first-child td {
+  border-top-width: 1px; }
+
+table.alt thead {
+  border-bottom: 0; }
+
+table.alt tfoot {
+  border-top: 0; }
+
+/* Features */
+.features article {
+  -ms-behavior: url("assets/js/ie/PIE.htc");
+  position: relative;
+  width: 44%; }
+  .features article .image {
+    margin-top: 0;
+    margin-left: 0;
+    width: 100%; }
+
+/* Menu */
+#menu {
+  background: #2e3141; }
+  #menu h2 {
+    border-bottom: solid 2px #ffffff; }
+
+/* Header */
+#header {
+  background-color: #353849; }
+
+/* Wrapper */
+.wrapper {
+  margin: 0; }
+  .wrapper:before, .wrapper:after {
+    display: none; }
+  .wrapper.spotlight .image {
+    -ms-behavior: url("assets/js/ie/PIE.htc"); }
+    .wrapper.spotlight .image img {
+      position: relative;
+      -ms-behavior: url("assets/js/ie/PIE.htc"); }
+
+/* Banner */
+#banner .logo .icon {
+  border: solid 2px #ffffff;
+  -ms-behavior: url("assets/js/ie/PIE.htc"); }
+
+#banner h2 {
+  border-bottom: solid 2px #ffffff; }
+
+/* Footer */
+#footer .inner .copyright {
+  border-top: solid 2px #ffffff; }
+  #footer .inner .copyright li {
+    border-left: solid 2px #ffffff; }

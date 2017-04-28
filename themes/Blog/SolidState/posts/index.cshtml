@@ -1,0 +1,18 @@
+Title: Archive
+---
+@{
+    Layout = "/_Layout.cshtml";
+}
+
+@{
+    foreach(IGrouping<int, IDocument> year in Documents[Blog.Posts]
+        .Where(x => x.ContainsKey("Published"))
+        .OrderByDescending(x => x.Get<DateTime>("Published"))
+        .GroupBy(x => x.Get<DateTime>("Published").Year)
+        .OrderByDescending(x => x.Key))
+    {
+        <h1>@year.Key</h1>
+        <hr />
+        @Html.Partial("_PostList", year);
+    }
+}
