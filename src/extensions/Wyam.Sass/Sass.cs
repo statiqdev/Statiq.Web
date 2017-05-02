@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using LibSass.Compiler;
-using LibSass.Compiler.Options;
+using SharpScss;
+using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
@@ -30,12 +31,31 @@ namespace Wyam.Sass
     /// );
     /// </code>
     /// </example>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input">The default key to use for determining the input document path.</metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output CSS (or map) file.</metadata>
+    /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Templates</category>
     public class Sass : IModule
     {
+        private DocumentConfig _inputPath = (doc, ctx) => doc.FilePath(Keys.RelativeFilePath);
         private readonly List<string> _includePaths = new List<string>();
         private bool _includeSourceComments = true;
-        private SassOutputStyle _outputStyle = SassOutputStyle.Compact;
+        private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
+        private bool _generateSourceMap = false;
+
+        /// <summary>
+        /// Specifies a delegate that should be used to get the input path for each
+        /// input document. This allows the Sass processor to search the right
+        /// file system and paths for include files. By default, the <see cref="Keys.RelativeFilePath"/>
+        /// metadata value is used for the input document path.
+        /// </summary>
+        /// <param name="inputPath">A delegate that should return a <see cref="FilePath"/>.</param>
+        /// <returns>The current instance.</returns>
+        public Sass WithInputPath(DocumentConfig inputPath)
+        {
+            _inputPath = inputPath ?? throw new ArgumentNullException(nameof(inputPath));
+            return this;
+        }
 
         /// <summary>
         /// Adds a list of paths to search while processing includes.
@@ -45,17 +65,6 @@ namespace Wyam.Sass
         public Sass WithIncludePaths(IEnumerable<string> paths)
         {
             _includePaths.AddRange(paths);
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a path to search while processing includes.
-        /// </summary>
-        /// <param name="path">The path to include.</param>
-        /// <returns>The current instance.</returns>
-        public Sass WithIncludePath(string path)
-        {
-            _includePaths.Add(path);
             return this;
         }
 
@@ -76,10 +85,9 @@ namespace Wyam.Sass
         /// <returns>The current instance.</returns>
         public Sass WithCompactOutputStyle()
         {
-            _outputStyle = SassOutputStyle.Compact;
+            _outputStyle = ScssOutputStyle.Compact;
             return this;
         }
-
 
         /// <summary>
         /// Sets the output style to expanded.
@@ -87,7 +95,7 @@ namespace Wyam.Sass
         /// <returns>The current instance.</returns>
         public Sass WithExpandedOutputStyle()
         {
-            _outputStyle = SassOutputStyle.Expanded;
+            _outputStyle = ScssOutputStyle.Expanded;
             return this;
         }
 
@@ -97,7 +105,7 @@ namespace Wyam.Sass
         /// <returns>The current instance.</returns>
         public Sass WithCompressedOutputStyle()
         {
-            _outputStyle = SassOutputStyle.Compressed;
+            _outputStyle = ScssOutputStyle.Compressed;
             return this;
         }
 
@@ -107,47 +115,85 @@ namespace Wyam.Sass
         /// <returns>The current instance.</returns>
         public Sass WithNestedOutputStyle()
         {
-            _outputStyle = SassOutputStyle.Nested;
+            _outputStyle = ScssOutputStyle.Nested;
             return this;
         }
 
+        /// <summary>
+        /// Specifies whether a source map should be generated (the default
+        /// behavior is <c>false</c>).
+        /// </summary>
+        /// <param name="generateSourceMap"><c>true</c> to generate a source map.</param>
+        /// <returns>The current instance.</returns>
+        public Sass GenerateSourceMap(bool generateSourceMap = true)
+        {
+            _generateSourceMap = generateSourceMap;
+            return this;
+        }
+
+        /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(context, input =>
-            {
-                Trace.Verbose("Processing Sass for {0}", input.SourceString());
-
-                FilePath path = input.FilePath(Keys.SourceFilePath);
-                SassOptions sassOptions = new SassOptions
+            return inputs.AsParallel()
+                .SelectMany(context, input =>
                 {
-                    Data = input.Content,
-                    IncludeSourceComments = _includeSourceComments,
-                    OutputStyle = _outputStyle,
-                    IncludePaths = path == null
-                        ? _includePaths.ToArray()
-                        : new List<string>(_includePaths) { path.Directory.FullPath }.ToArray()
-                };
+                    Trace.Verbose($"Processing Sass for {input.SourceString()}");
 
-                SassCompiler sassCompiler = new SassCompiler(sassOptions);
-                SassResult sassResult ;
-                try
-                {
-                    sassResult = sassCompiler.Compile();
-                }
-                catch (Exception ex)
-                {
-                    Trace.Warning("Exception while compiling sass file {0}: {}", input.SourceString(), ex.ToString());
-                    return context.GetDocument(input, input.SourceString());
-                }
+                    FilePath inputPath = _inputPath.Invoke<FilePath>(input, context);
+                    if (inputPath == null)
+                    {
+                        inputPath = new FilePath(Path.GetRandomFileName());
+                        Trace.Warning($"No input path found for document {input.SourceString()}, using {inputPath.FileName.FullPath}");
+                    }
 
-                if (sassResult.ErrorStatus != 0)
-                {
-                    Trace.Warning("Exception while compiling sass file {0}: {1}", input.SourceString(), sassResult.ErrorMessage);
-                    return context.GetDocument(input, input.SourceString());
-                }
+                    string content = input.Content;
 
-                return context.GetDocument(input, sassResult.Output);
-            });
+                    // Sass conversion
+                    FileImporter importer = new FileImporter(context, inputPath);
+                    ScssOptions options = new ScssOptions
+                    {
+                        OutputStyle = _outputStyle,
+                        GenerateSourceMap = _generateSourceMap,
+                        SourceComments = _includeSourceComments,
+                        InputFile = inputPath.FullPath,
+                        TryImport = importer.TryImport
+                    };
+                    options.IncludePaths.AddRange(_includePaths);
+                    ScssResult result = Scss.ConvertToCss(content, options);
+
+                    // Process the result
+                    if (result.Css != null)
+                    {
+                        FilePath cssPath = inputPath.ChangeExtension("css");
+                        IDocument cssDocument = context.GetDocument(
+                            input,
+                            context.GetContentStream(result.Css),
+                            new MetadataItems
+                            {
+                                {Keys.RelativeFilePath, cssPath},
+                                {Keys.WritePath, cssPath}
+                            });
+
+                        IDocument sourceMapDocument = null;
+                        if (_generateSourceMap && result.SourceMap != null)
+                        {
+                            FilePath sourceMapPath = inputPath.ChangeExtension("map");
+                            sourceMapDocument = context.GetDocument(
+                                input,
+                                context.GetContentStream(result.SourceMap),
+                                new MetadataItems
+                                {
+                                    {Keys.RelativeFilePath, sourceMapPath},
+                                    {Keys.WritePath, sourceMapPath}
+                                });
+                        }
+
+                        return new[] {cssDocument, sourceMapDocument};
+                    }
+
+                    return null;
+                })
+                .Where(x => x != null);
         }
     }
 }
