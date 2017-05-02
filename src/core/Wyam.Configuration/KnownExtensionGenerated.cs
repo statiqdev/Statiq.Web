@@ -22,6 +22,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Markdown = new KnownExtension("Wyam.Markdown");
 		public static readonly KnownExtension Minification = new KnownExtension("Wyam.Minification");
 		public static readonly KnownExtension Razor = new KnownExtension("Wyam.Razor");
+		public static readonly KnownExtension Sass = new KnownExtension("Wyam.Sass");
 		public static readonly KnownExtension SearchIndex = new KnownExtension("Wyam.SearchIndex");
 		public static readonly KnownExtension Tables = new KnownExtension("Wyam.Tables");
 		public static readonly KnownExtension TextGeneration = new KnownExtension("Wyam.TextGeneration");
