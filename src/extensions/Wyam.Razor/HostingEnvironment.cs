@@ -1,21 +1,22 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using Wyam.Common.Execution;
+using Wyam.Common.IO;
+using IFileProvider = Microsoft.Extensions.FileProviders.IFileProvider;
 
 namespace Wyam.Razor
 {
     internal class HostingEnvironment : IHostingEnvironment
     {
-        public HostingEnvironment(IExecutionContext context)
+        public HostingEnvironment(IReadOnlyFileSystem fileSystem)
         {
             EnvironmentName = "Wyam";
 
             // This gets used to load dependencies and is passed to Assembly.Load()
             ApplicationName = typeof(HostingEnvironment).Assembly.FullName;
 
-            WebRootPath = context.FileSystem.RootPath.FullPath;
-            WebRootFileProvider = new FileSystemFileProvider(context.FileSystem);
+            WebRootPath = fileSystem.RootPath.FullPath;
+            WebRootFileProvider = new FileSystemFileProvider(fileSystem);
             ContentRootPath = WebRootPath;
             ContentRootFileProvider = WebRootFileProvider;
         }

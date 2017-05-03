@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Directives;
@@ -10,7 +11,7 @@ namespace Wyam.Razor
 {
     internal class RazorHost : MvcRazorHost
     {
-        public RazorHost(IExecutionContext executionContext, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver, IBasePageTypeProvider basePageTypeProvider)
+        public RazorHost(NamespaceCollection namespaces, IChunkTreeCache chunkTreeCache, ITagHelperDescriptorResolver resolver, IBasePageTypeProvider basePageTypeProvider)
             : base(chunkTreeCache, resolver)
         {
             // Remove the backtick from generic class names
@@ -26,7 +27,7 @@ namespace Wyam.Razor
             EnableInstrumentation = false;
 
             // Add additional default namespaces from the execution context
-            foreach (string ns in executionContext.Namespaces)
+            foreach (string ns in namespaces)
             {
                 NamespaceImports.Add(ns);
             }
