@@ -328,9 +328,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePageTypeProvider.cs" />
+    <Compile Include="DynamicAssemblyCollection.cs" />
     <Compile Include="EmptyChangeToken.cs" />
     <Compile Include="IBasePageTypeProvider.cs" />
     <Compile Include="MetadataReferenceFeatureProvider.cs" />
+    <Compile Include="NamespaceCollection.cs" />
+    <Compile Include="RazorService.cs" />
+    <Compile Include="RenderRequest.cs" />
     <Compile Include="ViewDataKeys.cs" />
     <Compile Include="SilentDiagnosticSource.cs" />
     <Compile Include="HostingEnvironment.cs" />
