@@ -40,7 +40,7 @@ namespace Wyam.Sass
     {
         private DocumentConfig _inputPath = DefaultInputPath;
         private readonly List<string> _includePaths = new List<string>();
-        private bool _includeSourceComments = true;
+        private bool _includeSourceComments = false;
         private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
         private bool _generateSourceMap = false;
 
@@ -70,9 +70,9 @@ namespace Wyam.Sass
         }
 
         /// <summary>
-        /// Sets whether the source comments are included
+        /// Sets whether the source comments are included (by default they are not).
         /// </summary>
-        /// <param name="includeSourceComments">The default value is <c>true</c></param>
+        /// <param name="includeSourceComments"><c>true</c> to include source comments.</param>
         /// <returns>The current instance.</returns>
         public Sass IncludeSourceComments(bool includeSourceComments = true)
         {
@@ -163,39 +163,34 @@ namespace Wyam.Sass
                     ScssResult result = Scss.ConvertToCss(content, options);
 
                     // Process the result
-                    if (result.Css != null)
-                    {
-                        DirectoryPath relativeDirectory = context.FileSystem.GetContainingInputPath(inputPath);
-                        FilePath relativePath = relativeDirectory?.GetRelativePath(inputPath) ?? inputPath.FileName;
+                    DirectoryPath relativeDirectory = context.FileSystem.GetContainingInputPath(inputPath);
+                    FilePath relativePath = relativeDirectory?.GetRelativePath(inputPath) ?? inputPath.FileName;
 
-                        FilePath cssPath = relativePath.ChangeExtension("css");
-                        IDocument cssDocument = context.GetDocument(
+                    FilePath cssPath = relativePath.ChangeExtension("css");
+                    IDocument cssDocument = context.GetDocument(
+                        input,
+                        context.GetContentStream(result.Css ?? string.Empty),
+                        new MetadataItems
+                        {
+                            {Keys.RelativeFilePath, cssPath},
+                            {Keys.WritePath, cssPath}
+                        });
+
+                    IDocument sourceMapDocument = null;
+                    if (_generateSourceMap && result.SourceMap != null)
+                    {
+                        FilePath sourceMapPath = relativePath.ChangeExtension("map");
+                        sourceMapDocument = context.GetDocument(
                             input,
-                            context.GetContentStream(result.Css),
+                            context.GetContentStream(result.SourceMap),
                             new MetadataItems
                             {
-                                {Keys.RelativeFilePath, cssPath},
-                                {Keys.WritePath, cssPath}
+                                {Keys.RelativeFilePath, sourceMapPath},
+                                {Keys.WritePath, sourceMapPath}
                             });
-
-                        IDocument sourceMapDocument = null;
-                        if (_generateSourceMap && result.SourceMap != null)
-                        {
-                            FilePath sourceMapPath = relativePath.ChangeExtension("map");
-                            sourceMapDocument = context.GetDocument(
-                                input,
-                                context.GetContentStream(result.SourceMap),
-                                new MetadataItems
-                                {
-                                    {Keys.RelativeFilePath, sourceMapPath},
-                                    {Keys.WritePath, sourceMapPath}
-                                });
-                        }
-
-                        return new[] {cssDocument, sourceMapDocument};
                     }
 
-                    return null;
+                    return new[] {cssDocument, sourceMapDocument};
                 })
                 .Where(x => x != null);
         }

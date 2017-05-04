@@ -19,6 +19,15 @@ namespace Wyam.Web.Pipelines
         /// Create the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
+        public Less(string name)
+            : this(name, new[] { "**/{!_,}*.less" })
+        {
+        }
+
+        /// <summary>
+        /// Create the pipeline.
+        /// </summary>
+        /// <param name="name">The name of this pipeline.</param>
         /// <param name="patterns">The patterns of Less files to read.</param>
         public Less(string name, string[] patterns)
             : base(name, GetModules(patterns))
@@ -29,7 +38,7 @@ namespace Wyam.Web.Pipelines
         {
             new ReadFiles(patterns),
             new Wyam.Less.Less(),
-            new WriteFiles(".css")
+            new WriteFiles()
         };
     }
 }

@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.Execution;
 using Wyam.Common.Modules;
 using Wyam.Core.Modules.IO;
@@ -10,32 +5,34 @@ using Wyam.Core.Modules.IO;
 namespace Wyam.Web.Pipelines
 {
     /// <summary>
-    /// Copies all other resources to the output path.
+    /// Processes any Sass stylesheets and outputs the resulting CSS files.
     /// </summary>
-    public class Resources : Pipeline
+    public class Sass : Pipeline
     {
         /// <summary>
-        /// Creates the pipeline.
+        /// Create the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        public Resources(string name)
-            : this(name, new[] { "**/*{!.cshtml,!.md,!.less,!.scss,}" })
+        public Sass(string name)
+            : this(name, new[] { "**/{!_,}*.scss" })
         {
         }
 
         /// <summary>
-        /// Creates the pipeline.
+        /// Create the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="patterns">The patterns of files to copy.</param>
-        public Resources(string name, string[] patterns)
+        /// <param name="patterns">The patterns of Sass files to read.</param>
+        public Sass(string name, string[] patterns)
             : base(name, GetModules(patterns))
         {
         }
 
         private static IModuleList GetModules(string[] patterns) => new ModuleList
         {
-            new CopyFiles(patterns)
+            new ReadFiles(patterns),
+            new Wyam.Sass.Sass(),
+            new WriteFiles()
         };
     }
 }

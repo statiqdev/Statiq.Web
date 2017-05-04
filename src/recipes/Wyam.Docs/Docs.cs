@@ -304,13 +304,17 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Web.Pipelines.Less Less { get; } = new Web.Pipelines.Less(
             nameof(Less),
-            new string[]
+            new[]
             {
                 "assets/css/*.less",
                 "assets/css/bootstrap/bootstrap.less",
                 "assets/css/adminlte/AdminLTE.less",
                 "assets/css/theme/theme.less"
             });
+
+        /// <inheritdoc cref="Web.Pipelines.Sass" />
+        [SourceInfo]
+        public static Web.Pipelines.Sass Sass { get; } = new Web.Pipelines.Sass(nameof(Sass));
 
         /// <inheritdoc cref="Web.Pipelines.Resources" />
         [SourceInfo]
@@ -329,7 +333,7 @@ namespace Wyam.Docs
         public override void Apply(IEngine engine)
         {
             // Global metadata defaults
-            engine.Settings[DocsKeys.SourceFiles] = new []
+            engine.Settings[DocsKeys.SourceFiles] = new[]
             {
                 "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs",
                 "../src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs"

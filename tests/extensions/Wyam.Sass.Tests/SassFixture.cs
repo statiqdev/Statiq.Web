@@ -53,13 +53,47 @@ body {
                     { Keys.RelativeFilePath, new FilePath("assets/test.scss") }
                 });
 
-                Sass sass = new Sass().IncludeSourceComments(false).WithCompactOutputStyle();
+                Sass sass = new Sass().WithCompactOutputStyle();
 
                 // When
                 List<IDocument> results = sass.Execute(new[] {document}, context).ToList(); // Make sure to materialize the result list
 
                 // Then
                 Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] {output}));
+                Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
+            }
+
+            [Test]
+            public void EmptyOutputForEmptyContent()
+            {
+                // Given
+                string input = string.Empty;
+
+                TestFileProvider fileProvider = new TestFileProvider();
+                fileProvider.AddDirectory("/");
+                fileProvider.AddDirectory("/input");
+                fileProvider.AddDirectory("/input/assets");
+                fileProvider.AddFile("/input/assets/test.scss", input);
+                TestFileSystem fileSystem = new TestFileSystem
+                {
+                    FileProvider = fileProvider
+                };
+                IExecutionContext context = new TestExecutionContext
+                {
+                    FileSystem = fileSystem
+                };
+                IDocument document = new TestDocument(input, new MetadataItems
+                {
+                    { Keys.RelativeFilePath, new FilePath("assets/test.scss") }
+                });
+
+                Sass sass = new Sass();
+
+                // When
+                List<IDocument> results = sass.Execute(new[] { document }, context).ToList(); // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EqualTo(new[] { string.Empty }));
                 Assert.That(results.Select(x => x.FilePath(Keys.RelativeFilePath).FullPath), Is.EqualTo(new[] { "assets/test.css" }));
             }
 

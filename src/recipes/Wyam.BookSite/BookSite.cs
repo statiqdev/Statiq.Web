@@ -204,6 +204,14 @@ namespace Wyam.BookSite
             ctx => ctx.Bool(BookSiteKeys.MetaRefreshRedirects),
             ctx => ctx.Bool(BookSiteKeys.NetlifyRedirects));
 
+        /// <inheritdoc cref="Web.Pipelines.Less" />
+        [SourceInfo]
+        public static Web.Pipelines.Less Less { get; } = new Web.Pipelines.Less(nameof(Less));
+
+        /// <inheritdoc cref="Web.Pipelines.Sass" />
+        [SourceInfo]
+        public static Web.Pipelines.Sass Sass { get; } = new Web.Pipelines.Sass(nameof(Sass));
+
         /// <inheritdoc cref="Web.Pipelines.Resources" />
         [SourceInfo]
         public static Resources Resources { get; } = new Resources(nameof(Resources));

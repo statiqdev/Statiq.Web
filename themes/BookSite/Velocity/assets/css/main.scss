@@ -319,19 +319,19 @@
 		cursor: pointer;
 
 		&:hover {
-			background-color: #f98780;
+			background-color: lighten($primary-color, 15%);
 		}
 
 		&.style1 {
-			background: #e97770 url('images/overlay.png');
+			background: $primary-color url('images/overlay.png');
 			color: #fff;
 
 			&:hover {
-				background-color: #f98780;
+				background-color: lighten($primary-color, 15%);
 			}
 
 			&:active {
-				background-color: #d96760;
+				background-color: darken($primary-color, 15%);
 			}
 		}
 
@@ -419,7 +419,7 @@
 
 	.feature-list {
 		h3 {
-			color: #e97770 !important;
+			color: $primary-color !important;
 
 			&:before {
 				position: relative;
@@ -428,6 +428,19 @@
 				background: #2f333b url('images/overlay.png');
 				border-radius: 1em;
 				text-align: center;
+			}
+
+			&.chapter {
+				position: relative;
+				padding-left: 4.3em;
+				padding-top: 16px;
+
+				&:before {
+					content: attr(data-chapter);
+					position: absolute;
+					left: 0;
+					top: 0;
+				}
 			}
 		}
 	}
@@ -492,12 +505,12 @@
 		}
 
 		&.style1 {
-			background: #e97770 url('images/overlay.png');
+			background: $primary-color url('images/overlay.png');
 			color: #eee;
 			color: rgba(255, 255, 255, 0.75);
 
 			.title {
-				background: #e97770 url('images/overlay.png');
+				background: $primary-color url('images/overlay.png');
 				color: #fff;
 			}
 
@@ -647,7 +660,7 @@
 /* Intro */
 
 	#intro {
-		> .style2 {
+		.style2 {
 			font-weight: 700;
 			color: #fff;
 			border-radius: 0.35em;
@@ -667,7 +680,7 @@
 			text-align: center;
 
 			h3 {
-				color: #e97770;
+				color: $primary-color;
 			}
 		}
 	}
@@ -1060,14 +1073,14 @@
 		/* Intro */
 
 			#intro {
-				text-align: center;
+				text-align: left;
 
-				> .style1 {
+				.style1 {
 					font-size: 1.5em;
 					letter-spacing: 0.075em;
 				}
 
-				> .style2 {
+				.style2 {
 					font-size: 2.75em;
 					letter-spacing: 0.075em;
 					line-height: 1.35em;
@@ -1075,7 +1088,7 @@
 					margin-bottom: 1em;
 				}
 
-				> .style3 {
+				.style3 {
 					font-size: 1.1em;
 					width: 48em;
 					margin: 0 auto;

@@ -54,6 +54,7 @@
     <Compile Include="Pipelines\RenderBlogPosts.cs" />
     <Compile Include="Pipelines\RenderPages.cs" />
     <Compile Include="Pipelines\Resources.cs" />
+    <Compile Include="Pipelines\Sass.cs" />
     <Compile Include="Pipelines\ValidateLinks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebKeys.cs" />
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\..\extensions\Wyam.Razor\Wyam.Razor.csproj">
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Razor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extensions\Wyam.Sass\Wyam.Sass.csproj">
+      <Project>{90a0ab19-0146-4931-befa-d895b192e050}</Project>
+      <Name>Wyam.Sass</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\extensions\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
