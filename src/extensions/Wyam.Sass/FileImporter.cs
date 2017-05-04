@@ -11,11 +11,11 @@ namespace Wyam.Sass
         private readonly ConcurrentDictionary<FilePath, FilePath> _parentAbsolutePaths
             = new ConcurrentDictionary<FilePath, FilePath>();
 
-        private readonly IExecutionContext _context;
+        private readonly IReadOnlyFileSystem _fileSystem;
 
-        public FileImporter(IExecutionContext context)
+        public FileImporter(IReadOnlyFileSystem fileSystem)
         {
-            _context = context;
+            _fileSystem = fileSystem;
         }
 
         public bool TryImport(string requestedFile, string parentPath, out string scss, out string map)
@@ -31,7 +31,7 @@ namespace Wyam.Sass
                 // Relative parent path and no available absolute path, try with the relative path
                 parentFilePath = new FilePath(parentPath);
             }
-            DirectoryPath containingPath = _context.FileSystem.GetContainingInputPath(parentFilePath);
+            DirectoryPath containingPath = _fileSystem.GetContainingInputPath(parentFilePath);
             if (containingPath == null)
             {
                 // Couldn't find the containing path, give up at this point
@@ -40,7 +40,7 @@ namespace Wyam.Sass
             FilePath parentRelativePath = containingPath.GetRelativePath(parentFilePath);
 
             // Find the requested file
-            // ...as input
+            // ...as specified
             FilePath filePath = parentRelativePath.Directory.CombineFile(requestedFilePath);
             if (GetFile(filePath, requestedFilePath, out scss))
             {
@@ -56,7 +56,7 @@ namespace Wyam.Sass
                     return true;
                 }
 
-                // ...with underscore prefix (if not already)
+                // ...and with underscore prefix (if not already)
                 if (!extensionPath.FileName.FullPath.StartsWith("_"))
                 {
                     extensionPath = extensionPath.Directory.CombineFile("_" + extensionPath.FileName.FullPath);
@@ -83,7 +83,7 @@ namespace Wyam.Sass
         private bool GetFile(FilePath filePath, FilePath requestedFilePath, out string scss)
         {
             scss = null;
-            IFile file = _context.FileSystem.GetInputFile(filePath);
+            IFile file = _fileSystem.GetInputFile(filePath);
             if (file.Exists)
             {
                 if (requestedFilePath.IsRelative)

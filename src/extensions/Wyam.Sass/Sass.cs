@@ -150,7 +150,7 @@ namespace Wyam.Sass
                     string content = input.Content;
 
                     // Sass conversion
-                    FileImporter importer = new FileImporter(context);
+                    FileImporter importer = new FileImporter(context.FileSystem);
                     ScssOptions options = new ScssOptions
                     {
                         OutputStyle = _outputStyle,
