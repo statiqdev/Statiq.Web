@@ -27,7 +27,7 @@ namespace Wyam.Testing.IO
         IReadOnlyFileProviderCollection IReadOnlyFileSystem.FileProviders => FileProviders;
 
         /// <inheritdoc />
-        public DirectoryPath RootPath { get; set; }
+        public DirectoryPath RootPath { get; set; } = new DirectoryPath("/");
 
         /// <inheritdoc />
         public PathCollection<DirectoryPath> InputPaths { get; set; } = new PathCollection<DirectoryPath>(new[]

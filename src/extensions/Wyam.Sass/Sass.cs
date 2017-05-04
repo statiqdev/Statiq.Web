@@ -31,13 +31,14 @@ namespace Wyam.Sass
     /// );
     /// </code>
     /// </example>
-    /// <metadata cref="Keys.RelativeFilePath" usage="Input">The default key to use for determining the input document path.</metadata>
+    /// <metadata cref="Keys.SourceFilePath" usage="Input">The default key to use for determining the input document path.</metadata>
+    /// <metadata cref="Keys.RelativeFilePath" usage="Input">If <see cref="Keys.SourceFilePath"/> is unavailable, this is used to guess at the source file path.</metadata>
     /// <metadata cref="Keys.RelativeFilePath" usage="Output">Relative path to the output CSS (or map) file.</metadata>
     /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Templates</category>
     public class Sass : IModule
     {
-        private DocumentConfig _inputPath = (doc, ctx) => doc.FilePath(Keys.RelativeFilePath);
+        private DocumentConfig _inputPath = DefaultInputPath;
         private readonly List<string> _includePaths = new List<string>();
         private bool _includeSourceComments = true;
         private ScssOutputStyle _outputStyle = ScssOutputStyle.Compact;
@@ -140,16 +141,16 @@ namespace Wyam.Sass
                     Trace.Verbose($"Processing Sass for {input.SourceString()}");
 
                     FilePath inputPath = _inputPath.Invoke<FilePath>(input, context);
-                    if (inputPath == null)
+                    if (inputPath == null || !inputPath.IsAbsolute)
                     {
-                        inputPath = new FilePath(Path.GetRandomFileName());
+                        inputPath = context.FileSystem.GetInputFile(new FilePath(Path.GetRandomFileName())).Path;
                         Trace.Warning($"No input path found for document {input.SourceString()}, using {inputPath.FileName.FullPath}");
                     }
 
                     string content = input.Content;
 
                     // Sass conversion
-                    FileImporter importer = new FileImporter(context, inputPath);
+                    FileImporter importer = new FileImporter(context);
                     ScssOptions options = new ScssOptions
                     {
                         OutputStyle = _outputStyle,
@@ -164,7 +165,10 @@ namespace Wyam.Sass
                     // Process the result
                     if (result.Css != null)
                     {
-                        FilePath cssPath = inputPath.ChangeExtension("css");
+                        DirectoryPath relativeDirectory = context.FileSystem.GetContainingInputPath(inputPath);
+                        FilePath relativePath = relativeDirectory?.GetRelativePath(inputPath) ?? inputPath.FileName;
+
+                        FilePath cssPath = relativePath.ChangeExtension("css");
                         IDocument cssDocument = context.GetDocument(
                             input,
                             context.GetContentStream(result.Css),
@@ -177,7 +181,7 @@ namespace Wyam.Sass
                         IDocument sourceMapDocument = null;
                         if (_generateSourceMap && result.SourceMap != null)
                         {
-                            FilePath sourceMapPath = inputPath.ChangeExtension("map");
+                            FilePath sourceMapPath = relativePath.ChangeExtension("map");
                             sourceMapDocument = context.GetDocument(
                                 input,
                                 context.GetContentStream(result.SourceMap),
@@ -194,6 +198,21 @@ namespace Wyam.Sass
                     return null;
                 })
                 .Where(x => x != null);
+        }
+
+        private static object DefaultInputPath(IDocument document, IExecutionContext context)
+        {
+            FilePath path = document.FilePath(Keys.SourceFilePath);
+            if (path == null)
+            {
+                path = document.FilePath(Keys.RelativeFilePath);
+                if (path != null)
+                {
+                    IFile inputFile = context.FileSystem.GetInputFile(path);
+                    return inputFile.Exists ? inputFile.Path : null;
+                }
+            }
+            return path;
         }
     }
 }
