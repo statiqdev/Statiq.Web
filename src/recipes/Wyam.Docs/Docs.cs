@@ -302,15 +302,7 @@ namespace Wyam.Docs
 
         /// <inheritdoc cref="Web.Pipelines.Less" />
         [SourceInfo]
-        public static Web.Pipelines.Less Less { get; } = new Web.Pipelines.Less(
-            nameof(Less),
-            new[]
-            {
-                "assets/css/*.less",
-                "assets/css/bootstrap/bootstrap.less",
-                "assets/css/adminlte/AdminLTE.less",
-                "assets/css/theme/theme.less"
-            });
+        public static Web.Pipelines.Less Less { get; } = new Web.Pipelines.Less(nameof(Less));
 
         /// <inheritdoc cref="Web.Pipelines.Sass" />
         [SourceInfo]
