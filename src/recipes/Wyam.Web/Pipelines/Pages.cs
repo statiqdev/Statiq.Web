@@ -95,7 +95,7 @@ namespace Wyam.Web.Pipelines
                     MarkdownFiles,
                     new ModuleCollection
                     {
-                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/*.md"),
+                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.md"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new Include(),
                         new FrontMatter(new Yaml.Yaml()),

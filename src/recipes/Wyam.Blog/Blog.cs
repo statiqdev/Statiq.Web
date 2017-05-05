@@ -17,6 +17,11 @@ using Wyam.Core.Modules.Extensibility;
 using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Feeds;
+using Wyam.Web.Pipelines;
+using Redirects = Wyam.Blog.Pipelines.Redirects;
+using RenderPages = Wyam.Blog.Pipelines.RenderPages;
+using Resources = Wyam.Blog.Pipelines.Resources;
+using ValidateLinks = Wyam.Blog.Pipelines.ValidateLinks;
 
 namespace Wyam.Blog
 {
@@ -42,8 +47,8 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.Intro" usage="Setting" />
     /// <metadata cref="BlogKeys.PostsPath" usage="Setting" />
     /// <metadata cref="BlogKeys.CaseInsensitiveTags" usage="Setting" />
-    /// <metadata cref="BlogKeys.MarkdownExtensions" usage="Setting" />
-    /// <metadata cref="BlogKeys.MarkdownExternalExtensions" usage="Setting" />
+    /// <metadata cref="BlogKeys.MarkdownConfiguration" usage="Setting" />
+    /// <metadata cref="BlogKeys.MarkdownExtensionTypes" usage="Setting" />
     /// <metadata cref="BlogKeys.IncludeDateInPostPath" usage="Setting" />
     /// <metadata cref="BlogKeys.MetaRefreshRedirects" usage="Setting" />
     /// <metadata cref="BlogKeys.NetlifyRedirects" usage="Setting" />
@@ -54,6 +59,7 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="BlogKeys.ValidateLinksAsError" usage="Setting" />
     /// <metadata cref="BlogKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BlogKeys.Published" usage="Input" />
     /// <metadata cref="BlogKeys.Tags" usage="Input" />
     /// <metadata cref="BlogKeys.Lead" usage="Input" />
@@ -64,17 +70,46 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.Tag" usage="Output" />
     public class Blog : Recipe
     {
-        /// <inheritdoc cref="Pipelines.Pages" />
+        /// <inheritdoc cref="Web.Pipelines.Pages" />
         [SourceInfo]
-        public static Pages Pages { get; } = new Pages();
+        public static Pages Pages { get; } = new Pages(
+            nameof(Pages),
+            null,
+            ctx => new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
+                .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
+            ctx => ctx.String(BlogKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+            null,
+            false,
+            null);
 
-        /// <inheritdoc cref="Pipelines.RawPosts" />
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         [SourceInfo]
-        public static RawPosts RawPosts { get; } = new RawPosts();
+        public static BlogPosts BlogPosts { get; } = new BlogPosts(
+            nameof(BlogPosts),
+            BlogKeys.Published,
+            ctx => ctx.String(BlogKeys.MarkdownConfiguration),
+            ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+            ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
+            ctx => ctx.DirectoryPath(BlogKeys.PostsPath).FullPath);
 
-        /// <inheritdoc cref="Pipelines.Tags" />
+        /// <summary>
+        /// Generates the tag pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static Tags Tags { get; } = new Tags();
+        public static Archive Tags { get; } = new Archive(
+            nameof(Tags),
+            new string[] { BlogPosts },
+            "_Tag.cshtml",
+            "/_Layout.cshtml",
+            (doc, ctx) => doc.List<string>(BlogKeys.Tags),
+            ctx => ctx.Bool(BlogKeys.CaseInsensitiveTags),
+            ctx => ctx.Get(BlogKeys.TagPageSize, int.MaxValue),
+            null,
+            (doc, ctx) => doc.String(Keys.GroupKey),
+            (doc, ctx) => $"tags/{doc.String(Keys.GroupKey)}.html",
+            BlogKeys.Posts,
+            BlogKeys.Tag);
 
         /// <inheritdoc cref="Pipelines.Posts" />
         [SourceInfo]
@@ -100,13 +135,18 @@ namespace Wyam.Blog
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
 
+        // Obsolete pipeline keys
+
+        [Obsolete("The Blog.RawPosts pipeline key is obsolete, please use Blog.BlogPosts instead.")]
+        public const string RawPosts = nameof(BlogPosts);
+
         /// <inheritdoc/>
         public override void Apply(IEngine engine)
         {
             // Global metadata defaults
             engine.Settings[BlogKeys.Title] = "My Blog";
             engine.Settings[BlogKeys.Description] = "Welcome!";
-            engine.Settings[BlogKeys.MarkdownExtensions] = "advanced+bootstrap";
+            engine.Settings[BlogKeys.MarkdownConfiguration] = "advanced+bootstrap";
             engine.Settings[BlogKeys.IncludeDateInPostPath] = false;
             engine.Settings[BlogKeys.PostsPath] = new DirectoryPath("posts");
             engine.Settings[BlogKeys.MetaRefreshRedirects] = true;

@@ -53,14 +53,11 @@
     <Compile Include="BlogKeys.cs" />
     <Compile Include="BlogPipelines.cs" />
     <Compile Include="Pipelines\Feed.cs" />
-    <Compile Include="Pipelines\Pages.cs" />
     <Compile Include="Pipelines\Posts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Pipelines\RawPosts.cs" />
     <Compile Include="Pipelines\Redirects.cs" />
     <Compile Include="Pipelines\RenderPages.cs" />
     <Compile Include="Pipelines\Resources.cs" />
-    <Compile Include="Pipelines\Tags.cs" />
     <Compile Include="Pipelines\ValidateLinks.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +77,10 @@
       <Project>{68085ee3-bb21-4e52-9a86-dd1820a0d010}</Project>
       <Name>Wyam.Html</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\extensions\Wyam.Less\Wyam.Less.csproj">
+      <Project>{fbb9fb85-a0fc-4201-bc29-30ff16c93e76}</Project>
+      <Name>Wyam.Less</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\extensions\Wyam.Markdown\Wyam.Markdown.csproj">
       <Project>{af8f5c85-2c54-4cfe-a509-c30515b7b943}</Project>
       <Name>Wyam.Markdown</Name>
@@ -88,9 +89,17 @@
       <Project>{d044419d-363a-47cc-a4ed-466a6128d7a2}</Project>
       <Name>Wyam.Razor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\extensions\Wyam.Sass\Wyam.Sass.csproj">
+      <Project>{90a0ab19-0146-4931-befa-d895b192e050}</Project>
+      <Name>Wyam.Sass</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\extensions\Wyam.Yaml\Wyam.Yaml.csproj">
       <Project>{ab59f7bd-0fc3-43ad-a3ae-2e3c7551e947}</Project>
       <Name>Wyam.Yaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Web\Wyam.Web.csproj">
+      <Project>{a4038d8b-40ed-4802-aa95-1e6171ef6036}</Project>
+      <Name>Wyam.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

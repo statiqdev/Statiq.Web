@@ -73,7 +73,7 @@ namespace Wyam.BookSite
                     Pages.CreateTreeAndSort,
                     new Where((doc, ctx) => doc.Get<int>(BookSiteKeys.ChapterNumber) > 0));
 
-        /// <inheritdoc cref="BlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         [SourceInfo]
         public static BlogPosts BlogPosts { get; } = new BlogPosts(
             nameof(BlogPosts),
@@ -83,7 +83,7 @@ namespace Wyam.BookSite
             ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
             ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath);
 
-        /// <inheritdoc cref="Pages" />
+        /// <inheritdoc cref="Web.Pipelines.Pages" />
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
@@ -170,7 +170,7 @@ namespace Wyam.BookSite
             ctx => ctx.FilePath(BookSiteKeys.BlogAtomPath),
             ctx => ctx.FilePath(BookSiteKeys.BlogRdfPath));
 
-        /// <inheritdoc cref="RenderPages" />
+        /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
@@ -188,7 +188,7 @@ namespace Wyam.BookSite
             (doc, ctx) => "/_Chapter.cshtml",
             (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber)));
 
-        /// <inheritdoc cref="RenderBlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
             nameof(RenderBlogPosts),

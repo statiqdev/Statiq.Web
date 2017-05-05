@@ -54,15 +54,15 @@ namespace Wyam.Blog
         /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
         /// </summary>
         /// <type><see cref="string"/></type>
-        public const string MarkdownExtensions = nameof(MarkdownExtensions);
+        public const string MarkdownConfiguration = nameof(MarkdownConfiguration);
 
         /// <summary>
         /// Set this to add extension Markdown extensions for the Markdig Markdown
         /// renderer. The default value is null;
         /// </summary>
         /// <type><see cref="IEnumerable{IMarkdownExtension}"/></type>
-        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
-
+        public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
+        
         /// <summary>
         /// Setting this to <c>true</c> uses
         /// the year and date in the output path of blog posts.
@@ -188,5 +188,21 @@ namespace Wyam.Blog
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string Tag = nameof(Tag);
+
+        /// <summary>
+        /// This should be a string or array of strings with the name(s)
+        /// of root-level folders to ignore when scanning for content pages.
+        /// Setting this global metadata value is useful when introducing
+        /// your own pipelines for files under certain folders and you don't
+        /// want the primary content page pipelines to pick them up.
+        /// </summary>
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
+        public const string IgnoreFolders = nameof(IgnoreFolders);
+
+        [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
+        public const string MarkdownExtensions = nameof(MarkdownConfiguration);
+
+        [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
+        public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
     }
 }

@@ -88,7 +88,7 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Api Api { get; } = new Api(TypeNamesToLink);
 
-        /// <inheritdoc cref="BlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
         // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
@@ -110,7 +110,7 @@ namespace Wyam.Docs
                         (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                         new Replace("@", "&#64;"))));
 
-        /// <inheritdoc cref="Pages" />
+        /// <inheritdoc cref="Web.Pipelines.Pages" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
         // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
@@ -252,7 +252,7 @@ namespace Wyam.Docs
             ctx => ctx.FilePath(DocsKeys.BlogAtomPath),
             ctx => ctx.FilePath(DocsKeys.BlogRdfPath));
 
-        /// <inheritdoc cref="RenderPages" />
+        /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
@@ -269,7 +269,7 @@ namespace Wyam.Docs
                     RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
 
-        /// <inheritdoc cref="RenderBlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
             nameof(RenderBlogPosts),
