@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.Modules.IO;
 
 namespace Wyam.Blog
 {
@@ -62,7 +63,14 @@ namespace Wyam.Blog
         /// </summary>
         /// <type><see cref="IEnumerable{IMarkdownExtension}"/></type>
         public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
-        
+
+        /// <summary>
+        /// Indicates that include statements should be processed using the <see cref="Include"/> module.
+        /// The default behavior is not to process includes.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ProcessIncludes = nameof(ProcessIncludes);
+
         /// <summary>
         /// Setting this to <c>true</c> uses
         /// the year and date in the output path of blog posts.
@@ -140,6 +148,12 @@ namespace Wyam.Blog
         public const string TagPageSize = nameof(TagPageSize);
 
         /// <summary>
+        /// The page size for the archive page (if not specified, no paging will be used).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string ArchivePageSize = nameof(ArchivePageSize);
+
+        /// <summary>
         /// The date of the post.
         /// </summary>
         /// <type><see cref="DateTime"/> or <see cref="string"/></type>
@@ -171,13 +185,6 @@ namespace Wyam.Blog
         public const string ShowInNavbar = nameof(ShowInNavbar);
 
         /// <summary>
-        /// Set by the recipe to the content of the post (without any of the wrapping HTML elements).
-        /// Used primarily by the feed generation module to ensure feed items don't include the whole layout.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Content = nameof(Content);
-
-        /// <summary>
         /// Set by the recipe for tag groups. Contains the set of documents with a given tag.
         /// </summary>
         /// <type><c>IEnumerable&lt;IDocument&gt;</c></type>
@@ -204,5 +211,8 @@ namespace Wyam.Blog
 
         [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
         public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
+
+        [Obsolete("BlogKeys.Content is obsolete. You can get the content of a post from the Blog.BlogPosts pipline by reading the IDocument.Content property for each post document.")]
+        public const string Content = nameof(Content);
     }
 }

@@ -1,0 +1,34 @@
+Title: Archive
+---
+@{
+    Layout = "/_Layout.cshtml";
+}
+
+@{
+    foreach(IGrouping<int, IDocument> year in Model.DocumentList(Keys.PageDocuments)
+        .Where(x => x.ContainsKey(BlogKeys.Published))
+        .OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published))
+        .GroupBy(x => x.Get<DateTime>(BlogKeys.Published).Year)
+        .OrderByDescending(x => x.Key))
+    {
+        <h1>@year.Key</h1>
+        <hr />
+        @Html.Partial("_PostList", year);
+    }
+
+    IDocument[] pages = Documents[Blog.BlogArchive].ToArray();    
+    <ul class="pager">
+        <li class="previous">                
+            @if(Model.Bool(Keys.HasPreviousPage))
+            {
+                <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage) - 2]))"><span aria-hidden="true">&larr;</span> Newer</a>
+            }                
+        </li>
+        <li class="next">
+            @if(Model.Bool(Keys.HasNextPage))
+            {
+                <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage)]))">Older <span aria-hidden="true">&rarr;</span></a>
+            }
+        </li>
+    </ul>
+}

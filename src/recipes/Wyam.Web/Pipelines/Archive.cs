@@ -184,18 +184,19 @@ namespace Wyam.Web.Pipelines
                         : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
                     new Meta(Keys.RelativeFilePath, (doc, ctx) =>
                     {
-                        string path = relativePath.Invoke<string>(doc, ctx)
-                            .ToLowerInvariant()
+                        string path = relativePath.Invoke<string>(doc, ctx).ToLowerInvariant();
+                        bool htmlExtension = path.EndsWith(".html", StringComparison.OrdinalIgnoreCase);
+                        if (htmlExtension)
+                        {
+                            path = path.Substring(0, path.Length - 5);
+                        }
+                        path = path
                             .Replace(' ', '-')
                             .Replace("'", string.Empty)
                             .Replace(".", string.Empty);
                         return doc.Get<int>(Keys.CurrentPage) <= 1
-                            ? (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                                ? path
-                                : $"{path}/index.html")
-                            : (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase)
-                                ? path.Insert(path.Length - 5, doc.String(Keys.CurrentPage))
-                                : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
+                            ? (htmlExtension ? $"{path}.html" : $"{path}/index.html")
+                            : (htmlExtension ? $"{path}{doc.String(Keys.CurrentPage)}.html" : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
                     }))
                     .WithoutUnmatchedDocuments()
             };

@@ -23,6 +23,8 @@ namespace Wyam.BookSite
     /// </summary>
     /// <metadata cref="BookSiteKeys.Title" usage="Setting">The title of the book.</metadata>
     /// <metadata cref="BookSiteKeys.Title" usage="Input">The title of the post, chapter, or page.</metadata>
+    /// <metadata cref="BookSiteKeys.ProcessIncludes" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.ProcessIncludes" usage="Input" />
     /// <metadata cref="BookSiteKeys.Subtitle" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Input">Used with chapters to provide an optional description of the chapter.</metadata>
@@ -66,6 +68,7 @@ namespace Wyam.BookSite
             null,
             ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
             (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber)),
             false,
             null)
@@ -80,6 +83,7 @@ namespace Wyam.BookSite
             BookSiteKeys.Published,
             ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
             ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
             ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath);
 
@@ -97,6 +101,7 @@ namespace Wyam.BookSite
                 .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
             ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
             (x, y) =>
             {
                 int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));
@@ -117,6 +122,7 @@ namespace Wyam.BookSite
             null,
             ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
             (x, y) =>
             {
                 int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));

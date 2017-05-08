@@ -52,13 +52,7 @@
     <Compile Include="Blog.cs" />
     <Compile Include="BlogKeys.cs" />
     <Compile Include="BlogPipelines.cs" />
-    <Compile Include="Pipelines\Feed.cs" />
-    <Compile Include="Pipelines\Posts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Pipelines\Redirects.cs" />
-    <Compile Include="Pipelines\RenderPages.cs" />
-    <Compile Include="Pipelines\Resources.cs" />
-    <Compile Include="Pipelines\ValidateLinks.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">

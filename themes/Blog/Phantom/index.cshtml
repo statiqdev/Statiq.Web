@@ -5,7 +5,7 @@
 <div class="row">
     <div class="8u 12u$(medium)">
         @{
-            foreach(IDocument doc in Documents[Blog.Posts].Take(3))
+            foreach(IDocument doc in Documents[Blog.BlogPosts].Take(3))
             {                
                 string lead = doc.String(BlogKeys.Lead);
                 <div>
@@ -39,7 +39,7 @@
         </ul>
         <h5>Older Posts</h5>
         <ul>
-            @foreach(IDocument doc in Documents[Blog.Posts].Skip(3).Take(4))
+            @foreach(IDocument doc in Documents[Blog.BlogPosts].Skip(3).Take(4))
             {        
                 <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
             }

@@ -6,7 +6,7 @@
     <div class="col-sm-8 right-border">
         @{
             bool first = true;
-            foreach(IDocument doc in Documents[Blog.Posts].Take(3))
+            foreach(IDocument doc in Documents[Blog.BlogPosts].Take(3))
             {                
                 if (!first)
                 {
@@ -49,7 +49,7 @@
         <hr />
         <h5>Older Posts</h5>
         <ul class="list-unstyled">
-            @foreach(IDocument doc in Documents[Blog.Posts].Skip(3).Take(4))
+            @foreach(IDocument doc in Documents[Blog.BlogPosts].Skip(3).Take(4))
             {        
                 <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
             }

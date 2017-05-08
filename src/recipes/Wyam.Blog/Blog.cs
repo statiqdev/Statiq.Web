@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wyam.Blog.Pipelines;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -18,10 +17,6 @@ using Wyam.Core.Modules.IO;
 using Wyam.Core.Modules.Metadata;
 using Wyam.Feeds;
 using Wyam.Web.Pipelines;
-using Redirects = Wyam.Blog.Pipelines.Redirects;
-using RenderPages = Wyam.Blog.Pipelines.RenderPages;
-using Resources = Wyam.Blog.Pipelines.Resources;
-using ValidateLinks = Wyam.Blog.Pipelines.ValidateLinks;
 
 namespace Wyam.Blog
 {
@@ -32,6 +27,8 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.Title" usage="Input">The title of the post or page.</metadata>
     /// <metadata cref="BlogKeys.Image" usage="Setting">The relative path to an image to display on the home page.</metadata>
     /// <metadata cref="BlogKeys.Image" usage="Input">The relative path to an image for the current post or page (often shown in the header of the page).</metadata>
+    /// <metadata cref="BlogKeys.ProcessIncludes" usage="Setting" />
+    /// <metadata cref="BlogKeys.ProcessIncludes" usage="Input" />
     /// <metadata cref="BlogKeys.HeaderTextColor" usage="Setting">
     /// Changes the header and nav bar text color on the home page.
     /// The value should be a valid CSS color. This setting has no effect in themes where the header
@@ -59,13 +56,13 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="BlogKeys.ValidateLinksAsError" usage="Setting" />
     /// <metadata cref="BlogKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.ArchivePageSize" usage="Setting" />
     /// <metadata cref="BlogKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BlogKeys.Published" usage="Input" />
     /// <metadata cref="BlogKeys.Tags" usage="Input" />
     /// <metadata cref="BlogKeys.Lead" usage="Input" />
     /// <metadata cref="BlogKeys.Excerpt" usage="Output" />
     /// <metadata cref="BlogKeys.ShowInNavbar" usage="Input" />
-    /// <metadata cref="BlogKeys.Content" usage="Output" />
     /// <metadata cref="BlogKeys.Posts" usage="Output" />
     /// <metadata cref="BlogKeys.Tag" usage="Output" />
     public class Blog : Recipe
@@ -79,6 +76,7 @@ namespace Wyam.Blog
                 .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
             ctx => ctx.String(BlogKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
             null,
             false,
             null);
@@ -90,6 +88,7 @@ namespace Wyam.Blog
             BlogKeys.Published,
             ctx => ctx.String(BlogKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
             ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
             ctx => ctx.DirectoryPath(BlogKeys.PostsPath).FullPath);
 
@@ -111,34 +110,77 @@ namespace Wyam.Blog
             BlogKeys.Posts,
             BlogKeys.Tag);
 
-        /// <inheritdoc cref="Pipelines.Posts" />
+        /// <summary>
+        /// Generates the index pages for blog posts.
+        /// </summary>
         [SourceInfo]
-        public static Posts Posts { get; } = new Posts();
+        public static Archive BlogArchive { get; } = new Archive(
+            nameof(BlogArchive),
+            new string[] { BlogPosts },
+            "_PostIndex.cshtml",
+            "/_Layout.cshtml",
+            null,
+            null,
+            ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
+            null,
+            (doc, ctx) => "Archive",
+            (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}",
+            null,
+            null);
 
-        /// <inheritdoc cref="Pipelines.Feed" />
+        /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
-        public static Feed Feed { get; } = new Feed();
+        public static Web.Pipelines.Feeds Feed { get; } = new Web.Pipelines.Feeds(
+            nameof(Feed),
+            new string[] { BlogPosts },
+            ctx => ctx.FilePath(BlogKeys.RssPath),
+            ctx => ctx.FilePath(BlogKeys.AtomPath),
+            ctx => ctx.FilePath(BlogKeys.RdfPath));
 
-        /// <inheritdoc cref="Pipelines.RenderPages" />
+        /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
-        public static RenderPages RenderPages { get; } = new RenderPages();
+        public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
+            nameof(RenderBlogPosts),
+            new string[] { BlogPosts },
+            BlogKeys.Published,
+            (doc, ctx) => "/_PostLayout.cshtml");
 
-        /// <inheritdoc cref="Pipelines.Redirects" />
+        /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
-        public static Redirects Redirects { get; } = new Redirects();
+        public static RenderPages RenderPages { get; } = new RenderPages(
+            nameof(RenderPages),
+            new string[] { Pages },
+            (doc, ctx) => "/_Layout.cshtml",
+            null);
 
-        /// <inheritdoc cref="Pipelines.Resources" />
+        /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
-        public static Resources Resources { get; } = new Resources();
+        public static Redirects Redirects { get; } = new Redirects(
+            nameof(Redirects),
+            new string[] { RenderPages, RenderBlogPosts },
+            ctx => ctx.Bool(BlogKeys.MetaRefreshRedirects),
+            ctx => ctx.Bool(BlogKeys.NetlifyRedirects));
 
-        /// <inheritdoc cref="Pipelines.ValidateLinks" />
+        /// <inheritdoc cref="Web.Pipelines.Resources" />
         [SourceInfo]
-        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks();
+        public static Resources Resources { get; } = new Resources(nameof(Resources));
+
+        /// <inheritdoc cref="Web.Pipelines.ValidateLinks" />
+        [SourceInfo]
+        public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
+            nameof(ValidateLinks),
+            new string[] { RenderPages, RenderBlogPosts, Resources },
+            ctx => ctx.Bool(BlogKeys.ValidateAbsoluteLinks),
+            ctx => ctx.Bool(BlogKeys.ValidateRelativeLinks),
+            ctx => ctx.Bool(BlogKeys.ValidateLinksAsError));
 
         // Obsolete pipeline keys
 
         [Obsolete("The Blog.RawPosts pipeline key is obsolete, please use Blog.BlogPosts instead.")]
         public const string RawPosts = nameof(BlogPosts);
+
+        [Obsolete("The Blog.Posts pipeline key is obsolete, please use Blog.RenderBlogPosts instead.")]
+        public const string Posts = nameof(RenderBlogPosts);
 
         /// <inheritdoc/>
         public override void Apply(IEngine engine)

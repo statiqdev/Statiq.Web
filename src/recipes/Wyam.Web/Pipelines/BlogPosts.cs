@@ -60,6 +60,7 @@ namespace Wyam.Web.Pipelines
         /// <param name="publishedKey">The metadata key where <see cref="DateTime"/> published dates are stored for each post.</param>
         /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
         /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
+        /// <param name="processIncludes">A delegate that returns a <see cref="bool"/> indicating if documents should be processed with the <see cref="Include"/> module.</param>
         /// <param name="includeDateInPostPath">A delegate that returns a <see cref="bool"/> indicating if post dates should be included in the output path.</param>
         /// <param name="postsPath">A delegate that should return a <see cref="string"/> with the path to blog post files.</param>
         public BlogPosts(
@@ -67,9 +68,10 @@ namespace Wyam.Web.Pipelines
             string publishedKey,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
+            DocumentConfig processIncludes,
             ContextConfig includeDateInPostPath,
             ContextConfig postsPath)
-            : base(name, GetModules(publishedKey, markdownConfiguration, markdownExtensionTypes, includeDateInPostPath, postsPath))
+            : base(name, GetModules(publishedKey, markdownConfiguration, markdownExtensionTypes, processIncludes, includeDateInPostPath, postsPath))
         {
         }
 
@@ -77,6 +79,7 @@ namespace Wyam.Web.Pipelines
             string publishedKey,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
+            DocumentConfig processIncludes,
             ContextConfig includeDateInPostPath,
             ContextConfig postsPath) => new ModuleList
         {
@@ -86,7 +89,7 @@ namespace Wyam.Web.Pipelines
                 {
                     new ReadFiles(ctx => $"{postsPath.Invoke<string>(ctx)}/{{!_,}}*.md"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                    new Include(),
+                    new If(processIncludes, new Include()),
                     new FrontMatter(new Yaml.Yaml()),
                     new Execute(ctx => new Markdown.Markdown()
                         .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
@@ -99,7 +102,7 @@ namespace Wyam.Web.Pipelines
                 {
                     new ReadFiles(ctx => $"{postsPath.Invoke<string>(ctx)}/{{!_,!index,}}*.cshtml"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                    new Include(),
+                    new If(processIncludes, new Include()),
                     new FrontMatter(new Yaml.Yaml())
                 }
             },

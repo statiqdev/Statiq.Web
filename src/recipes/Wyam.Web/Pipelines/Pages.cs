@@ -61,6 +61,7 @@ namespace Wyam.Web.Pipelines
         /// </param>
         /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
         /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
+        /// <param name="processIncludes">A delegate that returns a <see cref="bool"/> indicating if documents should be processed with the <see cref="Include"/> module.</param>
         /// <param name="sort">Sorts the documents based on a comparison. If <c>null</c>, the sorting will be based on the document title.</param>
         /// <param name="createTree"><c>true</c> to create a tree from the pages, <c>false</c> to leave the pages flat.</param>
         /// <param name="treePlaceholderFactory">
@@ -73,10 +74,11 @@ namespace Wyam.Web.Pipelines
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
+            DocumentConfig processIncludes,
             Comparison<IDocument> sort,
             bool createTree,
             Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, sort, createTree, treePlaceholderFactory))
+            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, processIncludes, sort, createTree, treePlaceholderFactory))
         {
         }
 
@@ -85,6 +87,7 @@ namespace Wyam.Web.Pipelines
             ContextConfig ignoreFolders,
             ContextConfig markdownConfiguration,
             ContextConfig markdownExtensionTypes,
+            DocumentConfig processIncludes,
             Comparison<IDocument> sort,
             bool createTree,
             Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
@@ -97,7 +100,7 @@ namespace Wyam.Web.Pipelines
                     {
                         new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.md"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                        new Include(),
+                        new If(processIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml()),
                         new Execute(ctx => new Markdown.Markdown()
                             .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
@@ -111,7 +114,7 @@ namespace Wyam.Web.Pipelines
                         new ReadFiles(
                             ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.cshtml"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                        new Include(),
+                        new If(processIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml())
                     }
                 },

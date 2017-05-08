@@ -32,7 +32,7 @@ namespace Wyam.Blog
         /// pipeline so that the listing of tags on each blog post page
         /// will have the correct counts.
         /// </summary>
-        [Obsolete("Please use Blog.Posts instead of BlogPipelines.Posts which will be removed in a future version")]
+        [Obsolete("Please use Blog.RenderBlogPosts instead of BlogPipelines.Posts which will be removed in a future version")]
         public const string Posts = nameof(Posts);
 
         /// <summary>

@@ -30,6 +30,8 @@ namespace Wyam.Docs
     /// </summary>
     /// <metadata cref="DocsKeys.Title" usage="Setting">The title of the site.</metadata>
     /// <metadata cref="DocsKeys.Title" usage="Input">The title of the post or page.</metadata>
+    /// <metadata cref="DocsKeys.ProcessIncludes" usage="Setting" />
+    /// <metadata cref="DocsKeys.ProcessIncludes" usage="Input" />
     /// <metadata cref="DocsKeys.Logo" usage="Setting" />
     /// <metadata cref="DocsKeys.SourceFiles" usage="Setting" />
     /// <metadata cref="DocsKeys.SolutionFiles" usage="Setting" />
@@ -97,6 +99,7 @@ namespace Wyam.Docs
             DocsKeys.Published,
             ctx => ctx.String(DocsKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
             ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
             ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
             .InsertAfter(
@@ -121,6 +124,7 @@ namespace Wyam.Docs
                 .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
             ctx => ctx.String(DocsKeys.MarkdownConfiguration),
             ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+            (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
             null,
             true,
             TreePlaceholderFactory)
@@ -333,6 +337,7 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
             engine.Settings[DocsKeys.IncludeDateInPostPath] = false;
             engine.Settings[DocsKeys.MarkdownConfiguration] = "advanced+bootstrap";
+            engine.Settings[DocsKeys.ProcessIncludes] = true;
             engine.Settings[DocsKeys.SearchIndex] = true;
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
