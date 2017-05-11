@@ -16,18 +16,17 @@ Title: Archive
         @Html.Partial("_PostList", year);
     }
 
-    IDocument[] pages = Documents[Blog.BlogArchive].ToArray();    
     <ul class="pager">
         <li class="previous">                
             @if(Model.Bool(Keys.HasPreviousPage))
             {
-                <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage) - 2]))"><span aria-hidden="true">&larr;</span> Newer</a>
+                <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
             }                
         </li>
         <li class="next">
             @if(Model.Bool(Keys.HasNextPage))
             {
-                <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage)]))">Older <span aria-hidden="true">&rarr;</span></a>
+                <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
             }
         </li>
     </ul>

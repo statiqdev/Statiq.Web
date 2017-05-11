@@ -6,20 +6,17 @@ Title: All Tags
             @Html.Partial("_PostList", Model.DocumentList(Keys.PageDocuments).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
 
             <nav>
-                @{
-                    IDocument[] pages = Documents[Blog.Tags].ToArray();
-                }
                 <ul class="pager">
                     <li class="previous">                
                         @if(Model.Bool(Keys.HasPreviousPage))
                         {
-                            <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage) - 2]))"><span aria-hidden="true">&larr;</span> Newer</a>
+                            <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
                         }                
                     </li>
                     <li class="next">
                         @if(Model.Bool(Keys.HasNextPage))
                         {
-                            <a href="@(Context.GetLink(pages[Model.Get<int>(Keys.CurrentPage)]))">Older <span aria-hidden="true">&rarr;</span></a>
+                            <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
                         }
                     </li>
                 </ul>
@@ -29,8 +26,8 @@ Title: All Tags
 		
         <div class="col-sm-4 col-sm-height">
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
             {
                 string tagName = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);

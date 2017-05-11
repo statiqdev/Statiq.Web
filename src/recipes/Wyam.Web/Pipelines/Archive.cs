@@ -166,23 +166,25 @@ namespace Wyam.Web.Pipelines
                 : new IModule[] { indexDocuments, new Sort(sort) };
             return new ModuleCollection
             {
-                new Execute(ctx => new Paginate(pageSize?.Invoke<int>(ctx) ?? int.MaxValue, paginateModules)),
-                new If(
-                    (doc, ctx) => doc.ContainsKey(Keys.TotalItems),
-                    new Meta(Keys.Title, (doc, ctx) =>
+                new Execute(c =>
+                {
+                    Paginate paginate = new Paginate(pageSize?.Invoke<int>(c) ?? int.MaxValue, paginateModules);
+                    paginate = paginate.WithPageMetadata(Keys.Title, (doc, ctx) =>
                     {
                         string indexTitle = title.Invoke<string>(doc, ctx);
                         return doc.Get<int>(Keys.CurrentPage) <= 1
                             ? indexTitle
                             : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
-                    }),
-                    string.IsNullOrEmpty(groupDocumentsMetadataKey)
-                        ? null
-                        : new Meta(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]),
-                    string.IsNullOrEmpty(groupKeyMetadataKey)
-                        ? null
-                        : new Meta(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey)),
-                    new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+                    });
+                    if (!string.IsNullOrEmpty(groupDocumentsMetadataKey))
+                    {
+                        paginate = paginate.WithPageMetadata(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]);
+                    }
+                    if (!string.IsNullOrEmpty(groupKeyMetadataKey))
+                    {
+                        paginate = paginate.WithPageMetadata(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey));
+                    }
+                    paginate = paginate.WithPageMetadata(Keys.RelativeFilePath, (doc, ctx) =>
                     {
                         string path = relativePath.Invoke<string>(doc, ctx).ToLowerInvariant();
                         bool htmlExtension = path.EndsWith(".html", StringComparison.OrdinalIgnoreCase);
@@ -197,8 +199,9 @@ namespace Wyam.Web.Pipelines
                         return doc.Get<int>(Keys.CurrentPage) <= 1
                             ? (htmlExtension ? $"{path}.html" : $"{path}/index.html")
                             : (htmlExtension ? $"{path}{doc.String(Keys.CurrentPage)}.html" : $"{path}/page{doc.String(Keys.CurrentPage)}.html");
-                    }))
-                    .WithoutUnmatchedDocuments()
+                    });
+                    return paginate;
+                })
             };
         }
     }
