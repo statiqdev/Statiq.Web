@@ -200,7 +200,14 @@ namespace Wyam.Blog
         public override void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
             // Config file
-            configFile?.WriteAllText(@"#recipe Blog");
+            configFile?.WriteAllText(@"#recipe Blog
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = ""host.com"";
+Settings[BlogKeys.Title] = ""My Blog"";
+Settings[BlogKeys.Description] = ""Welcome!"";
+
+// Add any pipeline customizations here");
 
             // Add info page
             inputDirectory.GetFile("about.md").WriteAllText(

@@ -259,13 +259,17 @@ namespace Wyam.BookSite
             // Config file
             configFile?.WriteAllText(@"#recipe BookSite
 
+// Customize your settings and add new ones here
+Settings[Keys.Host] = ""host.com"";
 Settings[BookSiteKeys.Title] = ""Your Book Title"";
 Settings[BookSiteKeys.Subtitle] = ""The Subtitle Of Your Book."";
 Settings[BookSiteKeys.Description] = ""A short description of your book."";
 Settings[BookSiteKeys.BookLink] = ""https://a/link/to/your/book"";
 Settings[BookSiteKeys.BookImage] = ""/images/book.jpg"";  // Add an image at this path to your input folder
 Settings[BookSiteKeys.Image] = ""/images/banner.jpg"";  // Add an image at this path to your input folder
-Settings[BookSiteKeys.ChaptersIntro] = ""A short introduction to the content of your book."";");
+Settings[BookSiteKeys.ChaptersIntro] = ""A short introduction to the content of your book."";
+
+// Add any pipeline customizations here");
 
             // Chapter
             inputDirectory.GetFile("chapters/first-chapter.md").WriteAllText(
