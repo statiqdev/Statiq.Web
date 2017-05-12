@@ -1,3 +1,7 @@
+# 0.18.2
+
+- [Fix] Fix for invalid metadata key in Docs theme (#515)
+
 # 0.18.1
 
 - **[Breaking Change]**[Refactoring] Moved a couple theme template files in Blog themes: `posts/index.cshtml` -> `_PostIndex.cshtml`, `tags/tag.cshtml` -> `_Tag.cshtml` - if you were overriding these theme files, you'll need to move and rename your override file to match
