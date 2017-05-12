@@ -7,12 +7,12 @@
         
         <div>
             <a href="@Context.GetLink(doc)">
-                <h3>@doc.WithoutSettings.String(BlogKeys.Title)</h3>
-                @if(!string.IsNullOrWhiteSpace(lead))
-                {
-                    <p>@lead</p>
-                }
+                <h2>@doc.WithoutSettings.String(BlogKeys.Title)</h2>
             </a>
+            @if(!string.IsNullOrWhiteSpace(lead))
+            {
+                <p>@lead</p>
+            }
             <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</em></p>            
         </div>   
     }

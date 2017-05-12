@@ -21,10 +21,6 @@ namespace Wyam.Blog
         /// <type><see cref="string"/></type>
         public const string Image = nameof(Image);
 
-        /// <summary>Changes the header and nav bar text color.</summary>
-        /// <type><see cref="string"/></type>
-        public const string HeaderTextColor = nameof(HeaderTextColor);
-
         /// <summary>The description of your blog (usually placed on the home page).</summary>
         /// <type><see cref="string"/></type>
         public const string Description = nameof(Description);
@@ -205,6 +201,9 @@ namespace Wyam.Blog
         /// </summary>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string IgnoreFolders = nameof(IgnoreFolders);
+
+        [Obsolete("The HeaderTextColor key no longer has any effect, instead the header text color is calculated from the background image using JavaScript.")]
+        public const string HeaderTextColor = nameof(HeaderTextColor);
 
         [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
         public const string MarkdownExtensions = nameof(MarkdownConfiguration);

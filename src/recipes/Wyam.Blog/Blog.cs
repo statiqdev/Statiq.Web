@@ -29,17 +29,6 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.Image" usage="Input">The relative path to an image for the current post or page (often shown in the header of the page).</metadata>
     /// <metadata cref="BlogKeys.ProcessIncludes" usage="Setting" />
     /// <metadata cref="BlogKeys.ProcessIncludes" usage="Input" />
-    /// <metadata cref="BlogKeys.HeaderTextColor" usage="Setting">
-    /// Changes the header and nav bar text color on the home page.
-    /// The value should be a valid CSS color. This setting has no effect in themes where the header
-    /// text is not over an image.
-    /// </metadata>
-    /// <metadata cref="BlogKeys.HeaderTextColor" usage="Input">
-    /// Changes the header and nav bar text color on the current post or page.
-    /// The value should be a valid CSS color and you should surround it
-    /// in quotes when defining in front matter. This setting has no effect in themes where the header
-    /// text is not over an image.
-    /// </metadata>
     /// <metadata cref="BlogKeys.Description" usage="Setting" />
     /// <metadata cref="BlogKeys.Intro" usage="Setting" />
     /// <metadata cref="BlogKeys.PostsPath" usage="Setting" />

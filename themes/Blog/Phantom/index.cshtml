@@ -11,11 +11,11 @@
                 <div>
                     <a href="@Context.GetLink(doc)">
                         <h2>@doc.String(BlogKeys.Title)</h2>
-                        @if(!string.IsNullOrWhiteSpace(lead))
-                        {
-                            <h3>@lead</h3>
-                        }
                     </a>
+                    @if(!string.IsNullOrWhiteSpace(lead))
+                    {
+                        <h4>@lead</h4>
+                    }
                     <p>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
                     @Html.Raw(doc.String(BlogKeys.Excerpt))             
                 </div>       
