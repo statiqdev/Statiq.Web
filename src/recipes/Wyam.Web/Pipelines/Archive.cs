@@ -105,51 +105,57 @@ namespace Wyam.Web.Pipelines
             string groupDocumentsMetadataKey,
             string groupKeyMetadataKey) => new ModuleList
         {
-            {
-                ReadFile,
+            // Use the If module to make sure at least one of the source pipelines contains documents
+            new If(
+                ctx => pipelines.Any(x => ctx.Documents[x].Any()),
                 new ModuleCollection
                 {
-                    new ReadFiles(file),
-                    new FrontMatter(new Yaml.Yaml())
-                }
-            },
-            {
-                Populate,
-                group != null
-                    ? new ModuleCollection
                     {
-                        new Execute(ctx =>
-                            new GroupByMany(group, new Documents().FromPipelines(pipelines))
-                                .WithComparer(caseInsensitiveGroupComparer != null && caseInsensitiveGroupComparer.Invoke<bool>(ctx) ? StringComparer.OrdinalIgnoreCase : null)),
-                        new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
-                        new ForEach((IModule)GetIndexPageModules(
-                            new Documents((doc, _) => doc[Keys.GroupDocuments]),
-                            pageSize,
-                            sort,
-                            title,
-                            relativePath,
-                            groupDocumentsMetadataKey,
-                            groupKeyMetadataKey))
+                        ReadFile,
+                        new ModuleCollection
+                        {
+                            new ReadFiles(file),
+                            new FrontMatter(new Yaml.Yaml())
+                        }
+                    },
+                    {
+                        Populate,
+                        group != null
+                            ? new ModuleCollection
+                            {
+                                new Execute(ctx =>
+                                    new GroupByMany(group, new Documents().FromPipelines(pipelines))
+                                        .WithComparer(caseInsensitiveGroupComparer != null && caseInsensitiveGroupComparer.Invoke<bool>(ctx) ? StringComparer.OrdinalIgnoreCase : null)),
+                                new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
+                                new ForEach((IModule)GetIndexPageModules(
+                                    new Documents((doc, _) => doc[Keys.GroupDocuments]),
+                                    pageSize,
+                                    sort,
+                                    title,
+                                    relativePath,
+                                    groupDocumentsMetadataKey,
+                                    groupKeyMetadataKey))
+                            }
+                            : GetIndexPageModules(
+                                new Documents().FromPipelines(pipelines),
+                                pageSize,
+                                sort,
+                                title,
+                                relativePath,
+                                groupDocumentsMetadataKey,
+                                groupKeyMetadataKey)
+                    },
+                    {
+                        Render,
+                        new Razor.Razor()
+                            .IgnorePrefix(null)
+                            .WithLayout(layout)
+                    },
+                    {
+                        WriteFiles,
+                        new WriteFiles()
                     }
-                    : GetIndexPageModules(
-                        new Documents().FromPipelines(pipelines),
-                        pageSize,
-                        sort,
-                        title,
-                        relativePath,
-                        groupDocumentsMetadataKey,
-                        groupKeyMetadataKey)
-            },
-            {
-                Render,
-                new Razor.Razor()
-                    .IgnorePrefix(null)
-                    .WithLayout(layout)
-            },
-            {
-                WriteFiles,
-                new WriteFiles()
-            }
+                })
         };
 
         private static ModuleCollection GetIndexPageModules(

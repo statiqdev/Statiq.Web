@@ -8,6 +8,7 @@
 - [Feature] Added `WithPageMetadata()` method to `Paginate` module to add metadata to generated page documents
 - [Feature] Added `NextPage` and `PreviousPage` output metadata to `Paginate` module
 - [Refactoring] Prefixed all Less include files in the Docs theme with an underscore and excluded underscore files from being processed directly by recipe (#507)
+- [Feature] `Less` module now sets `Keys.WritePath` with a `.css` extension - this may result in warnings if you follow the `Less` module with the `WriteFiles` module with an extension specified, remove the extension from the `WriteFiles` module and the warnings should go away
 - [Feature] `Less` module will now automatically check for underscore prefixes and add `.less` extension when looking for includes (#507)
 - [Feature] New `Sass` module (#7, thanks @enkafan)
 - [Feature] New `Sort` module for ordering documents using a comparison delegate
