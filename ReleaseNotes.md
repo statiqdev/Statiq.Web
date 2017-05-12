@@ -1,4 +1,4 @@
-# 0.18.0
+# 0.18.1
 
 - **[Breaking Change]**[Refactoring] Moved a couple theme template files in Blog themes: `posts/index.cshtml` -> `_PostIndex.cshtml`, `tags/tag.cshtml` -> `_Tag.cshtml` - if you were overriding these theme files, you'll need to move and rename your override file to match
 - [Refactoring] Deprecated `BlogKeys.HeaderTextColor` and the CleanBlog theme now automatically calculates header text color from background image using JS
