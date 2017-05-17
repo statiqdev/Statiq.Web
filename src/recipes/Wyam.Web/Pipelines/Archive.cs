@@ -46,7 +46,7 @@ namespace Wyam.Web.Pipelines
         /// <param name="name">The name of this pipeline.</param>
         /// <param name="pipelines">The name of the pipeline that contains the posts.</param>
         /// <param name="file">The relative path to the index file template.</param>
-        /// <param name="layout">The layout to use for each index file.</param>
+        /// <param name="layout">The layout to use for each index file, if <c>null</c> no explicit layout is specified.</param>
         /// <param name="group">A delegate to use for grouping documents or <c>null</c> if no grouping should be performed.</param>
         /// <param name="caseInsensitiveGroupComparer">
         /// A delegate that should return <c>true</c> the use the case-insensitive group key comparer,

@@ -331,8 +331,8 @@ namespace Wyam.Docs
             // Global metadata defaults
             engine.Settings[DocsKeys.SourceFiles] = new[]
             {
-                "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs",
-                "../src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs"
+                "src/**/{!.git,!bin,!obj,!packages,!*.Tests,}/**/*.cs",
+                "../src/**/{!.git,!bin,!obj,!packages,!*.Tests,}/**/*.cs"
             };
             engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
             engine.Settings[DocsKeys.IncludeDateInPostPath] = false;

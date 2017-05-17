@@ -98,7 +98,7 @@ namespace Wyam.Web.Pipelines
                     MarkdownFiles,
                     new ModuleCollection
                     {
-                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.md"),
+                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!.git,}}/**/{{!_,}}*.md"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new If(processIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml()),
@@ -112,7 +112,7 @@ namespace Wyam.Web.Pipelines
                     new Concat
                     {
                         new ReadFiles(
-                            ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!_,}}*.cshtml"),
+                            ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!.git,}}/**/{{!_,}}*.cshtml"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new If(processIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml())
