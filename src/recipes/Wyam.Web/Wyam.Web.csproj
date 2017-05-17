@@ -48,6 +48,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Pipelines\Archive.cs" />
+    <Compile Include="Pipelines\ConditionalPipeline.cs" />
     <Compile Include="Pipelines\Feeds.cs" />
     <Compile Include="Pipelines\BlogPosts.cs" />
     <Compile Include="Pipelines\Less.cs" />

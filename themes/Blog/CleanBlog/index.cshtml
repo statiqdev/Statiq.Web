@@ -33,8 +33,8 @@
         <h5>Tags</h5>
         <div>
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
             {
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);
@@ -51,14 +51,19 @@
         <ul class="list-unstyled">
             @foreach(IDocument doc in Documents[Blog.BlogPosts].Skip(3).Take(4))
             {        
+                // TODO: The skip above needs to line up with the number of posts on the index page
+                // Also turn this section off if the index is paged
                 <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
             }
         </ul>
-        <ul class="pager">
-            <li class="next">
-                <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Archive &rarr;</a>
-            </li>
-        </ul>
+        @if(Context.Bool(BlogKeys.GenerateArchive))
+        {
+            <ul class="pager">
+                <li class="next">
+                    <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Archive &rarr;</a>
+                </li>
+            </ul>
+        }
 
         @Html.Partial("_Sidebar")
     </div> 

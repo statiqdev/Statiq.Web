@@ -45,7 +45,12 @@ namespace Wyam.Blog
     /// <metadata cref="BlogKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="BlogKeys.ValidateLinksAsError" usage="Setting" />
     /// <metadata cref="BlogKeys.TagPageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.IndexPageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.IndexPaging" usage="Setting" />
+    /// <metadata cref="BlogKeys.IndexFullPosts" usage="Setting" />
     /// <metadata cref="BlogKeys.ArchivePageSize" usage="Setting" />
+    /// <metadata cref="BlogKeys.ArchiveExcerpts" usage="Setting" />
+    /// <metadata cref="BlogKeys.GenerateArchive" usage="Setting" />
     /// <metadata cref="BlogKeys.IgnoreFolders" usage="Setting" />
     /// <metadata cref="BlogKeys.Published" usage="Input" />
     /// <metadata cref="BlogKeys.Tags" usage="Input" />
@@ -103,19 +108,21 @@ namespace Wyam.Blog
         /// Generates the index pages for blog posts.
         /// </summary>
         [SourceInfo]
-        public static Archive BlogArchive { get; } = new Archive(
-            nameof(BlogArchive),
-            new string[] { BlogPosts },
-            "_PostIndex.cshtml",
-            "/_Layout.cshtml",
-            null,
-            null,
-            ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
-            null,
-            (doc, ctx) => "Archive",
-            (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}",
-            null,
-            null);
+        public static ConditionalPipeline BlogArchive { get; } = new ConditionalPipeline(
+            ctx => ctx.Bool(BlogKeys.GenerateArchive),
+            new Archive(
+                nameof(BlogArchive),
+                new string[] { BlogPosts },
+                "_PostIndex.cshtml",
+                "/_Layout.cshtml",
+                null,
+                null,
+                ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
+                null,
+                (doc, ctx) => "Archive",
+                (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}",
+                null,
+                null));
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
@@ -189,6 +196,7 @@ namespace Wyam.Blog
             engine.Settings[BlogKeys.IncludeDateInPostPath] = false;
             engine.Settings[BlogKeys.PostsPath] = new DirectoryPath("posts");
             engine.Settings[BlogKeys.MetaRefreshRedirects] = true;
+            engine.Settings[BlogKeys.GenerateArchive] = true;
             engine.Settings[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;

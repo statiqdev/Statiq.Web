@@ -144,10 +144,43 @@ namespace Wyam.Blog
         public const string TagPageSize = nameof(TagPageSize);
 
         /// <summary>
+        /// The page size for the index page(s) (if not specified, a default of 3 will be used).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string IndexPageSize = nameof(IndexPageSize);
+
+        /// <summary>
+        /// Specifies whether index pages should be generated (if not specified or <c>false</c>,
+        /// only the first index page will be generated).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IndexPaging = nameof(IndexPaging);
+
+        /// <summary>
+        /// Specifies whether the full post content should be output on the index page(s)
+        /// (if not specified or <c>false</c>, only the excerpt will be output).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IndexFullPosts = nameof(IndexFullPosts);
+
+        /// <summary>
         /// The page size for the archive page (if not specified, no paging will be used).
         /// </summary>
         /// <type><see cref="int"/></type>
         public const string ArchivePageSize = nameof(ArchivePageSize);
+
+        /// <summary>
+        /// Specifies whether the excerpts should be output on the archive page(s)
+        /// (if not specified or <c>false</c>, only the title and description will be displayed).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ArchiveExcerpts = nameof(ArchiveExcerpts);
+
+        /// <summary>
+        /// Specifies whether an archive should be generated (the default is <c>true</c>).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string GenerateArchive = nameof(GenerateArchive);
 
         /// <summary>
         /// The date of the post.

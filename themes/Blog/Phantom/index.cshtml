@@ -44,9 +44,12 @@
                 <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
             }
         </ul>
-        <ul class="actions small">
-            <li><a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))" class="button small">Archive &rarr;</a></li>
-        </ul>
+        @if(Context.Bool(BlogKeys.GenerateArchive))
+        {
+            <ul class="actions small">
+                <li><a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))" class="button small">Archive &rarr;</a></li>
+            </ul>
+        }
 
         @Html.Partial("_Sidebar")
     </div> 
