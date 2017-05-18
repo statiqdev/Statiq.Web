@@ -23,21 +23,18 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pipelines">The name of pipelines from which links should be validated.</param>
-        /// <param name="validateAbsoluteLinks">A delegate to indicate whether absolute links should be validated.</param>
-        /// <param name="validateRelativeLinks">A delegate to indicate whether relative links should be validated.</param>
-        /// <param name="validateLinksAsError">A delegate to indicate whether links should validate as errors.</param>
-        public ValidateLinks(string name, string[] pipelines, ContextConfig validateAbsoluteLinks, ContextConfig validateRelativeLinks, ContextConfig validateLinksAsError)
-            : base(name, GetModules(pipelines, validateAbsoluteLinks, validateRelativeLinks, validateLinksAsError))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public ValidateLinks(string name, ValidateLinksSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines, ContextConfig validateAbsoluteLinks, ContextConfig validateRelativeLinks, ContextConfig validateLinksAsError) => new ModuleList
+        private static IModuleList GetModules(ValidateLinksSettings settings) => new ModuleList
         {
             new If(
-                ctx => validateAbsoluteLinks.Invoke<bool>(ctx) || validateRelativeLinks.Invoke<bool>(ctx),
+                ctx => settings.ValidateAbsoluteLinks.Invoke<bool>(ctx) || settings.ValidateRelativeLinks.Invoke<bool>(ctx),
                 new Documents()
-                    .FromPipelines(pipelines),
+                    .FromPipelines(settings.Pipelines),
                 new Where((doc, ctx) =>
                 {
                     FilePath destinationPath = doc.FilePath(Keys.DestinationFilePath);
@@ -46,9 +43,9 @@ namespace Wyam.Web.Pipelines
                 }),
                 new Execute(ctx =>
                     new Html.ValidateLinks()
-                        .ValidateAbsoluteLinks(validateAbsoluteLinks.Invoke<bool>(ctx))
-                        .ValidateRelativeLinks(validateRelativeLinks.Invoke<bool>(ctx))
-                        .AsError(validateLinksAsError.Invoke<bool>(ctx))))
+                        .ValidateAbsoluteLinks(settings.ValidateAbsoluteLinks.Invoke<bool>(ctx))
+                        .ValidateRelativeLinks(settings.ValidateRelativeLinks.Invoke<bool>(ctx))
+                        .AsError(settings.ValidateLinksAsError.Invoke<bool>(ctx))))
         };
     }
 }

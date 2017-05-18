@@ -53,29 +53,27 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pipelines">The pipelines from which to get page documents.</param>
-        /// <param name="layout">The Razor layout to use.</param>
-        /// <param name="sort">Sorts the documents based on a comparison. If <c>null</c>, the sorting will be based on the document title.</param>
-        public RenderPages(string name, string[] pipelines, DocumentConfig layout, Comparison<IDocument> sort)
-            : base(name, GetModules(pipelines, layout, sort))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public RenderPages(string name, RenderPagesSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines, DocumentConfig layout, Comparison<IDocument> sort) => new ModuleList
+        private static IModuleList GetModules(RenderPagesSettings settings) => new ModuleList
         {
             {
                 GetDocuments,
                 new ModuleCollection
                 {
                     new Documents()
-                        .FromPipelines(pipelines),
+                        .FromPipelines(settings.Pipelines),
                     new Flatten()
                 }
             },
             {
                 Render,
                 new Razor.Razor()
-                    .WithLayout(layout)
+                    .WithLayout(settings.Layout)
             },
             {
                 WriteMetadata,
@@ -87,7 +85,7 @@ namespace Wyam.Web.Pipelines
             },
             {
                 Sort,
-                new Sort(sort ?? ((x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title))))
+                new Sort(settings.Sort ?? ((x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title))))
             }
         };
     }

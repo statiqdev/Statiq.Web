@@ -65,26 +65,29 @@ namespace Wyam.Blog
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
-            null,
-            ctx => new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
-                .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
-            ctx => ctx.String(BlogKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
-            (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
-            null,
-            false,
-            null);
+            new PagesSettings
+            {
+                IgnorePaths = ctx => 
+                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
+                    .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
+                MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes)
+            });
 
         /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         [SourceInfo]
         public static BlogPosts BlogPosts { get; } = new BlogPosts(
             nameof(BlogPosts),
-            BlogKeys.Published,
-            ctx => ctx.String(BlogKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
-            (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
-            ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
-            ctx => ctx.DirectoryPath(BlogKeys.PostsPath).FullPath);
+            new BlogPostsSettings
+            {
+                PublishedKey = BlogKeys.Published,
+                MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
+                IncludeDateInPostPath = ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
+                PostsPath = ctx => ctx.DirectoryPath(BlogKeys.PostsPath).FullPath
+            });
 
         /// <summary>
         /// Generates the tag pages for blog posts.
@@ -92,17 +95,19 @@ namespace Wyam.Blog
         [SourceInfo]
         public static Archive Tags { get; } = new Archive(
             nameof(Tags),
-            new string[] { BlogPosts },
-            "_Tag.cshtml",
-            "/_Layout.cshtml",
-            (doc, ctx) => doc.List<string>(BlogKeys.Tags),
-            ctx => ctx.Bool(BlogKeys.CaseInsensitiveTags),
-            ctx => ctx.Get(BlogKeys.TagPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.String(Keys.GroupKey),
-            (doc, ctx) => $"tags/{doc.String(Keys.GroupKey)}.html",
-            BlogKeys.Posts,
-            BlogKeys.Tag);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_Tag.cshtml",
+                Layout = "/_Layout.cshtml",
+                Group = (doc, ctx) => doc.List<string>(BlogKeys.Tags),
+                CaseInsensitiveGroupComparer = ctx => ctx.Bool(BlogKeys.CaseInsensitiveTags),
+                PageSize = ctx => ctx.Get(BlogKeys.TagPageSize, int.MaxValue),
+                Title = (doc, ctx) => doc.String(Keys.GroupKey),
+                RelativePath = (doc, ctx) => $"tags/{doc.String(Keys.GroupKey)}.html",
+                GroupDocumentsMetadataKey = BlogKeys.Posts,
+                GroupKeyMetadataKey = BlogKeys.Tag
+            });
 
         /// <summary>
         /// Generates the index pages for blog posts.
@@ -112,50 +117,59 @@ namespace Wyam.Blog
             ctx => ctx.Bool(BlogKeys.GenerateArchive),
             new Archive(
                 nameof(BlogArchive),
-                new string[] { BlogPosts },
-                "_PostIndex.cshtml",
-                "/_Layout.cshtml",
-                null,
-                null,
-                ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
-                null,
-                (doc, ctx) => "Archive",
-                (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}",
-                null,
-                null));
+                new ArchiveSettings
+                {
+                    Pipelines = new string[] { BlogPosts },
+                    File = "_PostIndex.cshtml",
+                    Layout = "/_Layout.cshtml",
+                    PageSize = ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
+                    Title = (doc, ctx) => "Archive",
+                    RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}"
+                }));
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
         public static Web.Pipelines.Feeds Feed { get; } = new Web.Pipelines.Feeds(
             nameof(Feed),
-            new string[] { BlogPosts },
-            ctx => ctx.FilePath(BlogKeys.RssPath),
-            ctx => ctx.FilePath(BlogKeys.AtomPath),
-            ctx => ctx.FilePath(BlogKeys.RdfPath));
+            new FeedsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                RssPath = ctx => ctx.FilePath(BlogKeys.RssPath),
+                AtomPath = ctx => ctx.FilePath(BlogKeys.AtomPath),
+                RdfPath = ctx => ctx.FilePath(BlogKeys.RdfPath)
+            });
 
         /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
             nameof(RenderBlogPosts),
-            new string[] { BlogPosts },
-            BlogKeys.Published,
-            (doc, ctx) => "/_PostLayout.cshtml");
+            new RenderBlogPostsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                PublishedKey = BlogKeys.Published,
+                Layout = (doc, ctx) => "/_PostLayout.cshtml"
+            });
 
         /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
-            new string[] { Pages },
-            (doc, ctx) => "/_Layout.cshtml",
-            null);
+            new RenderPagesSettings
+            {
+                Pipelines = new string[] { Pages },
+                Layout = (doc, ctx) => "/_Layout.cshtml"
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
         public static Redirects Redirects { get; } = new Redirects(
             nameof(Redirects),
-            new string[] { RenderPages, RenderBlogPosts },
-            ctx => ctx.Bool(BlogKeys.MetaRefreshRedirects),
-            ctx => ctx.Bool(BlogKeys.NetlifyRedirects));
+            new RedirectsSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts },
+                MetaRefreshRedirects = ctx => ctx.Bool(BlogKeys.MetaRefreshRedirects),
+                NetlifyRedirects = ctx => ctx.Bool(BlogKeys.NetlifyRedirects)
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Less" />
         [SourceInfo]
@@ -173,10 +187,13 @@ namespace Wyam.Blog
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
             nameof(ValidateLinks),
-            new string[] { RenderPages, RenderBlogPosts, Resources },
-            ctx => ctx.Bool(BlogKeys.ValidateAbsoluteLinks),
-            ctx => ctx.Bool(BlogKeys.ValidateRelativeLinks),
-            ctx => ctx.Bool(BlogKeys.ValidateLinksAsError));
+            new ValidateLinksSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts, Resources },
+                ValidateAbsoluteLinks = ctx => ctx.Bool(BlogKeys.ValidateAbsoluteLinks),
+                ValidateRelativeLinks = ctx => ctx.Bool(BlogKeys.ValidateRelativeLinks),
+                ValidateLinksAsError = ctx => ctx.Bool(BlogKeys.ValidateLinksAsError)
+            });
 
         // Obsolete pipeline keys
 

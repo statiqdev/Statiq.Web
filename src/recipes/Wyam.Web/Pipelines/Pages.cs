@@ -50,47 +50,13 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pagesPattern">
-        /// A delegate that should return a <see cref="string"/> with the glob to pages.
-        /// If <c>null</c>, a default globbing pattern of "**" is used.
-        /// </param>
-        /// <param name="ignoreFolders">
-        /// A delegate that should return a <see cref="string"/>
-        /// or <c>IEnumerable&lt;string&gt;</c> with ignore paths.
-        /// If the delegate is <c>null</c>, no paths will be ignored.
-        /// </param>
-        /// <param name="markdownConfiguration">A delegate that returns the string configuration for the Markdown processor.</param>
-        /// <param name="markdownExtensionTypes">A delegate that returns a sequence of <see cref="Type"/> for Markdown extensions.</param>
-        /// <param name="processIncludes">A delegate that returns a <see cref="bool"/> indicating if documents should be processed with the <see cref="Include"/> module.</param>
-        /// <param name="sort">Sorts the documents based on a comparison. If <c>null</c>, the sorting will be based on the document title.</param>
-        /// <param name="createTree"><c>true</c> to create a tree from the pages, <c>false</c> to leave the pages flat.</param>
-        /// <param name="treePlaceholderFactory">
-        /// A factory to use for creating tree placeholders at points in the tree where no actual pages were found.
-        /// If <c>null</c>, the default placeholder factory will be used which outputs empty index files.
-        /// </param>
-        public Pages(
-            string name,
-            ContextConfig pagesPattern,
-            ContextConfig ignoreFolders,
-            ContextConfig markdownConfiguration,
-            ContextConfig markdownExtensionTypes,
-            DocumentConfig processIncludes,
-            Comparison<IDocument> sort,
-            bool createTree,
-            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
-            : base(name, GetModules(pagesPattern, ignoreFolders, markdownConfiguration, markdownExtensionTypes, processIncludes, sort, createTree, treePlaceholderFactory))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public Pages(string name, PagesSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(
-            ContextConfig pagesPath,
-            ContextConfig ignoreFolders,
-            ContextConfig markdownConfiguration,
-            ContextConfig markdownExtensionTypes,
-            DocumentConfig processIncludes,
-            Comparison<IDocument> sort,
-            bool createTree,
-            Func<object[], MetadataItems, IExecutionContext, IDocument> treePlaceholderFactory)
+        private static IModuleList GetModules(PagesSettings settings)
         {
             ModuleList moduleList = new ModuleList
             {
@@ -98,13 +64,13 @@ namespace Wyam.Web.Pipelines
                     MarkdownFiles,
                     new ModuleCollection
                     {
-                        new ReadFiles(ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!.git,}}/**/{{!_,}}*.md"),
+                        new ReadFiles(ctx => $"{GetIgnorePathsGlob(ctx, settings.PagesPattern, settings.IgnorePaths)}/{{!.git,}}/**/{{!_,}}*.md"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                        new If(processIncludes, new Include()),
+                        new If(settings.ProcessIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml()),
                         new Execute(ctx => new Markdown.Markdown()
-                            .UseConfiguration(markdownConfiguration.Invoke<string>(ctx))
-                            .UseExtensions(markdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
+                            .UseConfiguration(settings.MarkdownConfiguration.Invoke<string>(ctx))
+                            .UseExtensions(settings.MarkdownExtensionTypes.Invoke<IEnumerable<Type>>(ctx)))
                     }
                 },
                 {
@@ -112,9 +78,9 @@ namespace Wyam.Web.Pipelines
                     new Concat
                     {
                         new ReadFiles(
-                            ctx => $"{GetIgnoreFoldersGlob(ctx, pagesPath, ignoreFolders)}/{{!.git,}}/**/{{!_,}}*.cshtml"),
+                            ctx => $"{GetIgnorePathsGlob(ctx, settings.PagesPattern, settings.IgnorePaths)}/{{!.git,}}/**/{{!_,}}*.cshtml"),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
-                        new If(processIncludes, new Include()),
+                        new If(settings.ProcessIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml())
                     }
                 },
@@ -130,15 +96,13 @@ namespace Wyam.Web.Pipelines
             };
 
             // Tree and sort
-            if (sort == null)
+            Comparison<IDocument> sort = settings.Sort 
+                ?? ((x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)));
+            if (settings.CreateTree)
             {
-                sort = (x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title));
-            }
-            if (createTree)
-            {
-                Tree tree = treePlaceholderFactory == null
+                Tree tree = settings.TreePlaceholderFactory == null
                     ? new Tree().WithNesting(true, true)
-                    : new Tree().WithNesting(true, true).WithPlaceholderFactory(treePlaceholderFactory);
+                    : new Tree().WithNesting(true, true).WithPlaceholderFactory(settings.TreePlaceholderFactory);
                 tree.WithSort(sort);
                 moduleList.Add(CreateTreeAndSort, tree);
             }
@@ -149,10 +113,10 @@ namespace Wyam.Web.Pipelines
             return moduleList;
         }
 
-        private static string GetIgnoreFoldersGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignoreFolders)
+        private static string GetIgnorePathsGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignorePaths)
         {
             string[] segments =
-                (ignoreFolders?.Invoke<IEnumerable<string>>(context).Select(x => "!" + x) ?? Array.Empty<string>())
+                (ignorePaths?.Invoke<IEnumerable<string>>(context).Select(x => "!" + x) ?? Array.Empty<string>())
                 .Concat(new[] { pagesPattern == null ? "**" : pagesPattern.Invoke<string>(context) })
                 .ToArray();
             return segments.Length == 1 ? segments[0] : $"{{{string.Join(",", segments)}}}";

@@ -44,112 +44,49 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pipelines">The name of the pipeline that contains the posts.</param>
-        /// <param name="file">The relative path to the index file template.</param>
-        /// <param name="layout">The layout to use for each index file, if <c>null</c> no explicit layout is specified.</param>
-        /// <param name="group">A delegate to use for grouping documents or <c>null</c> if no grouping should be performed.</param>
-        /// <param name="caseInsensitiveGroupComparer">
-        /// A delegate that should return <c>true</c> the use the case-insensitive group key comparer,
-        /// <c>false</c> or <c>null</c> to use the default comparer (including for non-string group keys).
-        /// </param>
-        /// <param name="pageSize">A delegate to get the page size. If <c>null</c>, no paging will be used.</param>
-        /// <param name="sort">Sorts the documents before generating the archive pages. If <c>null</c> the documents will maintain the order of their source pipeline(s).</param>
-        /// <param name="title">A delegate to get the title of each page.</param>
-        /// <param name="relativePath">
-        /// A delegate to get the relative output path of each page. If the result contains a ".html" extension, the page
-        /// number will be appended to the result file name, otherwise if no ".html" extension is in the result value then
-        /// it will be considered a folder path and the first page will be output as "index.html" followed by "page2.html", etc.
-        /// </param>
-        /// <param name="groupDocumentsMetadataKey">An additional metadata key to store the group documents in, or <c>null</c> not to store them.</param>
-        /// <param name="groupKeyMetadataKey">A metadata key to store the group key in, or <c>null</c> not to store it.</param>
-        public Archive(
-            string name,
-            string[] pipelines,
-            string file,
-            string layout,
-            DocumentConfig group,
-            ContextConfig caseInsensitiveGroupComparer,
-            ContextConfig pageSize,
-            Comparison<IDocument> sort,
-            DocumentConfig title,
-            DocumentConfig relativePath,
-            string groupDocumentsMetadataKey,
-            string groupKeyMetadataKey)
-            : base(
-                name,
-                GetModules(
-                    pipelines,
-                    file,
-                    layout,
-                    group,
-                    caseInsensitiveGroupComparer,
-                    pageSize,
-                    sort,
-                    title,
-                    relativePath,
-                    groupDocumentsMetadataKey,
-                    groupKeyMetadataKey))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public Archive(string name, ArchiveSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(
-            string[] pipelines,
-            string file,
-            string layout,
-            DocumentConfig group,
-            ContextConfig caseInsensitiveGroupComparer,
-            ContextConfig pageSize,
-            Comparison<IDocument> sort,
-            DocumentConfig title,
-            DocumentConfig relativePath,
-            string groupDocumentsMetadataKey,
-            string groupKeyMetadataKey) => new ModuleList
+        private static IModuleList GetModules(ArchiveSettings settings) => new ModuleList
         {
             // Use the If module to make sure at least one of the source pipelines contains documents
             new If(
-                ctx => pipelines.Any(x => ctx.Documents[x].Any()),
+                ctx => settings.Pipelines.Any(x => ctx.Documents[x].Any()),
                 new ModuleCollection
                 {
                     {
                         ReadFile,
                         new ModuleCollection
                         {
-                            new ReadFiles(file),
+                            new ReadFiles(settings.File),
                             new FrontMatter(new Yaml.Yaml())
                         }
                     },
                     {
                         Populate,
-                        group != null
+                        settings.Group != null
                             ? new ModuleCollection
                             {
                                 new Execute(ctx =>
-                                    new GroupByMany(group, new Documents().FromPipelines(pipelines))
-                                        .WithComparer(caseInsensitiveGroupComparer != null && caseInsensitiveGroupComparer.Invoke<bool>(ctx) ? StringComparer.OrdinalIgnoreCase : null)),
+                                    new GroupByMany(settings.Group, new Documents().FromPipelines(settings.Pipelines))
+                                        .WithComparer(settings.CaseInsensitiveGroupComparer != null && settings.CaseInsensitiveGroupComparer.Invoke<bool>(ctx) ? StringComparer.OrdinalIgnoreCase : null)),
                                 new Where((doc, ctx) => !string.IsNullOrEmpty(doc.String(Keys.GroupKey))),
                                 new ForEach((IModule)GetIndexPageModules(
                                     new Documents((doc, _) => doc[Keys.GroupDocuments]),
-                                    pageSize,
-                                    sort,
-                                    title,
-                                    relativePath,
-                                    groupDocumentsMetadataKey,
-                                    groupKeyMetadataKey))
+                                    settings))
                             }
                             : GetIndexPageModules(
-                                new Documents().FromPipelines(pipelines),
-                                pageSize,
-                                sort,
-                                title,
-                                relativePath,
-                                groupDocumentsMetadataKey,
-                                groupKeyMetadataKey)
+                                new Documents().FromPipelines(settings.Pipelines),
+                                settings)
                     },
                     {
                         Render,
                         new Razor.Razor()
                             .IgnorePrefix(null)
-                            .WithLayout(layout)
+                            .WithLayout(settings.Layout)
                     },
                     {
                         WriteFiles,
@@ -158,41 +95,34 @@ namespace Wyam.Web.Pipelines
                 })
         };
 
-        private static ModuleCollection GetIndexPageModules(
-            Documents indexDocuments,
-            ContextConfig pageSize,
-            Comparison<IDocument> sort,
-            DocumentConfig title,
-            DocumentConfig relativePath,
-            string groupDocumentsMetadataKey,
-            string groupKeyMetadataKey)
+        private static ModuleCollection GetIndexPageModules(Documents indexDocuments, ArchiveSettings settings)
         {
-            IModule[] paginateModules = sort == null
+            IModule[] paginateModules = settings.Sort == null
                 ? new IModule[] { indexDocuments }
-                : new IModule[] { indexDocuments, new Sort(sort) };
+                : new IModule[] { indexDocuments, new Sort(settings.Sort) };
             return new ModuleCollection
             {
                 new Execute(c =>
                 {
-                    Paginate paginate = new Paginate(pageSize?.Invoke<int>(c) ?? int.MaxValue, paginateModules);
+                    Paginate paginate = new Paginate(settings.PageSize?.Invoke<int>(c) ?? int.MaxValue, paginateModules);
                     paginate = paginate.WithPageMetadata(Keys.Title, (doc, ctx) =>
                     {
-                        string indexTitle = title.Invoke<string>(doc, ctx);
+                        string indexTitle = settings.Title.Invoke<string>(doc, ctx);
                         return doc.Get<int>(Keys.CurrentPage) <= 1
                             ? indexTitle
                             : $"{indexTitle} (Page {doc[Keys.CurrentPage]})";
                     });
-                    if (!string.IsNullOrEmpty(groupDocumentsMetadataKey))
+                    if (!string.IsNullOrEmpty(settings.GroupDocumentsMetadataKey))
                     {
-                        paginate = paginate.WithPageMetadata(groupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]);
+                        paginate = paginate.WithPageMetadata(settings.GroupDocumentsMetadataKey, (doc, ctx) => doc[Keys.GroupDocuments]);
                     }
-                    if (!string.IsNullOrEmpty(groupKeyMetadataKey))
+                    if (!string.IsNullOrEmpty(settings.GroupKeyMetadataKey))
                     {
-                        paginate = paginate.WithPageMetadata(groupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey));
+                        paginate = paginate.WithPageMetadata(settings.GroupKeyMetadataKey, (doc, ctx) => doc.String(Keys.GroupKey));
                     }
                     paginate = paginate.WithPageMetadata(Keys.RelativeFilePath, (doc, ctx) =>
                     {
-                        string path = relativePath.Invoke<string>(doc, ctx).ToLowerInvariant();
+                        string path = settings.RelativePath.Invoke<string>(doc, ctx).ToLowerInvariant();
                         bool htmlExtension = path.EndsWith(".html", StringComparison.OrdinalIgnoreCase);
                         if (htmlExtension)
                         {
