@@ -64,7 +64,7 @@ namespace Wyam.Web.Pipelines
                     MarkdownFiles,
                     new ModuleCollection
                     {
-                        new ReadFiles(ctx => $"{GetIgnorePathsGlob(ctx, settings.PagesPattern, settings.IgnorePaths)}/{{!.git,}}/**/{{!_,}}*.md"),
+                        new ReadFiles(ctx => GetGlobbingPattern(ctx, settings.PagesPattern, settings.IgnorePaths, "md")),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new If(settings.ProcessIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml()),
@@ -78,7 +78,7 @@ namespace Wyam.Web.Pipelines
                     new Concat
                     {
                         new ReadFiles(
-                            ctx => $"{GetIgnorePathsGlob(ctx, settings.PagesPattern, settings.IgnorePaths)}/{{!.git,}}/**/{{!_,}}*.cshtml"),
+                            ctx => GetGlobbingPattern(ctx, settings.PagesPattern, settings.IgnorePaths, "cshtml")),
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new If(settings.ProcessIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml())
@@ -96,7 +96,7 @@ namespace Wyam.Web.Pipelines
             };
 
             // Tree and sort
-            Comparison<IDocument> sort = settings.Sort 
+            Comparison<IDocument> sort = settings.Sort
                 ?? ((x, y) => Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)));
             if (settings.CreateTree)
             {
@@ -113,13 +113,16 @@ namespace Wyam.Web.Pipelines
             return moduleList;
         }
 
-        private static string GetIgnorePathsGlob(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignorePaths)
+        private static string GetGlobbingPattern(IExecutionContext context, ContextConfig pagesPattern, ContextConfig ignorePaths, string extension)
         {
-            string[] segments =
-                (ignorePaths?.Invoke<IEnumerable<string>>(context).Select(x => "!" + x) ?? Array.Empty<string>())
-                .Concat(new[] { pagesPattern == null ? "**" : pagesPattern.Invoke<string>(context) })
-                .ToArray();
-            return segments.Length == 1 ? segments[0] : $"{{{string.Join(",", segments)}}}";
+            List<string> segments = new List<string>();
+            IEnumerable<string> ignorePatterns = ignorePaths?.Invoke<IEnumerable<string>>(context).Select(x => "!" + x);
+            if (ignorePatterns != null)
+            {
+                segments.AddRange(ignorePatterns);
+            }
+            segments.Add($"{(pagesPattern == null ? string.Empty : pagesPattern + "/")}**/{{!.git,}}/**/{{!_,}}*.{extension}");
+            return segments.Count == 1 ? segments[0] : $"{{{string.Join(",", segments)}}}";
         }
     }
 }

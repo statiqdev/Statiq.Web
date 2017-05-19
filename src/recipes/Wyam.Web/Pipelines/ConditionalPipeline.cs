@@ -13,6 +13,12 @@ namespace Wyam.Web.Pipelines
     public class ConditionalPipeline : Pipeline
     {
         /// <summary>
+        /// An <see cref="If"/> module that checks the condition.
+        /// The other modules in the pipeline are all children of this module.
+        /// </summary>
+        public const string Condition = nameof(Condition);
+
+        /// <summary>
         /// Create the pipeline.
         /// </summary>
         /// <param name="condition">A delegate that specifies the condition.</param>
@@ -35,7 +41,10 @@ namespace Wyam.Web.Pipelines
 
         private static IModuleList GetModules(ContextConfig condition, Pipeline pipeline) => new ModuleList
         {
-            new If(condition, pipeline.ToArray())
+            {
+                Condition,
+                new If(condition, pipeline.ToArray())
+            }
         };
     }
 }

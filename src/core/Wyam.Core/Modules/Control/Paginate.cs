@@ -22,6 +22,8 @@ namespace Wyam.Core.Modules.Control
     /// to the pages, including the sequence of documents for each page,
     /// is added to each clone. For example, if you have 2 input documents
     /// and the result of paging is 3 pages, this module will output 6 documents.
+    /// Note that if there are no documents to paginate, this module will still
+    /// output an empty page without any documents inside the page.
     /// </remarks>
     /// <example>
     /// If your input document is a Razor template for a blog archive, you can use
@@ -59,6 +61,8 @@ namespace Wyam.Core.Modules.Control
         private readonly int _pageSize;
         private readonly Dictionary<string, DocumentConfig> _pageMetadata = new Dictionary<string, DocumentConfig>();
         private Func<IDocument, IExecutionContext, bool> _predicate;
+        private int _takePages = int.MaxValue;
+        private int _skipPages = 0;
 
         /// <summary>
         /// Partitions the result of the specified modules into the specified number of pages. The
@@ -103,6 +107,28 @@ namespace Wyam.Core.Modules.Control
         }
 
         /// <summary>
+        /// Only outputs a specific number of pages.
+        /// </summary>
+        /// <param name="count">The number of pages to output.</param>
+        /// <returns>The current module instance.</returns>
+        public Paginate TakePages(int count)
+        {
+            _takePages = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Skips a specified number of pages before outputting pages.
+        /// </summary>
+        /// <param name="count">The number of pages to skip.</param>
+        /// <returns>The current module instance.</returns>
+        public Paginate SkipPages(int count)
+        {
+            _skipPages = count;
+            return this;
+        }
+
+        /// <summary>
         /// Adds the specified metadata to each page index document. This must be performed
         /// within the paginate module. If you attempt to process the page index documents
         /// from the paginate module after execution, it will "disconnect" metadata for
@@ -137,23 +163,34 @@ namespace Wyam.Core.Modules.Control
                         .ToList(),
                     _pageSize)
                 .ToArray();
-
-            // Check and calculate lengths and totals
-            if (partitions.Length == 0)
-            {
-                return inputs;
-            }
             int totalItems = partitions.Sum(x => x.Length);
 
             // Create the documents
             return inputs.SelectMany(context, input =>
             {
+                // Create the pages
                 Page[] pages = partitions
+                    .Skip(_skipPages)
+                    .Take(_takePages)
                     .Select(x => new Page
                     {
                         PageDocuments = x
                     })
                     .ToArray();
+
+                // Special case for no pages, create an empty one
+                if (pages.Length == 0)
+                {
+                    pages = new[]
+                    {
+                        new Page
+                        {
+                            PageDocuments = Array.Empty<IDocument>()
+                        }
+                    };
+                }
+
+                // Create the documents per page
                 for (int i = 0; i < pages.Length; i++)
                 {
                     // Get the current page document

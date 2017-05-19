@@ -5,15 +5,15 @@ Title: Archive
 }
 
 @{
-    foreach(IGrouping<int, IDocument> year in Model.DocumentList(Keys.PageDocuments)
+    foreach(IGrouping<int, IDocument> group in Model.DocumentList(Keys.PageDocuments)
         .Where(x => x.ContainsKey(BlogKeys.Published))
         .OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published))
         .GroupBy(x => x.Get<DateTime>(BlogKeys.Published).Year)
         .OrderByDescending(x => x.Key))
     {
-        <h1>@year.Key</h1>
+        <h1>@group.Key</h1>
         <hr />
-        @Html.Partial("_PostList", year);
+        @Html.Partial("_PostList", group);
     }
 
     <ul class="pager">

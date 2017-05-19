@@ -18,7 +18,8 @@ namespace Wyam.Web.Pipelines
     {
         /// <summary>
         /// A delegate that should return a <see cref="string"/> with the glob to pages.
-        /// If <c>null</c>, a default globbing pattern of "**" is used.
+        /// If <c>null</c>, a default globbing pattern of "**" is used. This should match
+        /// one or more directories.
         /// </summary>
         public ContextConfig PagesPattern { get; set; }
 

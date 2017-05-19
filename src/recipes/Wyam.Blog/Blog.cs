@@ -67,8 +67,8 @@ namespace Wyam.Blog
             nameof(Pages),
             new PagesSettings
             {
-                IgnorePaths = ctx => 
-                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
+                IgnorePaths = ctx =>
+                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath, "index.cshtml" }
                     .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
                 MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
@@ -126,6 +126,22 @@ namespace Wyam.Blog
                     Title = (doc, ctx) => "Archive",
                     RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}"
                 }));
+
+        /// <summary>
+        /// Generates the index page(s).
+        /// </summary>
+        [SourceInfo]
+        public static Archive Index { get; } = new Archive(
+            nameof(Index),
+            new ArchiveSettings
+            {
+                Pipelines = new string[] {BlogPosts},
+                File = "index.cshtml",
+                Layout = "/_Layout.cshtml",
+                PageSize = ctx => ctx.Get(BlogKeys.IndexPageSize, int.MaxValue),
+                WriteIfEmpty = true,
+                TakePages = ctx => ctx.Bool(BlogKeys.IndexPaging) ? int.MaxValue : 1
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
@@ -214,6 +230,7 @@ namespace Wyam.Blog
             engine.Settings[BlogKeys.PostsPath] = new DirectoryPath("posts");
             engine.Settings[BlogKeys.MetaRefreshRedirects] = true;
             engine.Settings[BlogKeys.GenerateArchive] = true;
+            engine.Settings[BlogKeys.IndexPageSize] = 3;
             engine.Settings[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;

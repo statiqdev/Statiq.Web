@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
+using Wyam.Common.Meta;
 
 namespace Wyam.Web.Pipelines
 {
@@ -70,5 +71,21 @@ namespace Wyam.Web.Pipelines
         /// A metadata key to store the group key in, or <c>null</c> not to store it.
         /// </summary>
         public string GroupKeyMetadataKey { get; set; }
+
+        /// <summary>
+        /// If <c>true</c> the archive index page will be written, even if it's empty. The default behavior
+        /// is to suppress writing empty pages (though they're still rendered).
+        /// </summary>
+        public bool WriteIfEmpty { get; set; }
+
+        /// <summary>
+        /// A delegate that specifies a number of pages to take. Must return an <c>int</c>.
+        /// </summary>
+        public ContextConfig TakePages { get; set; }
+
+        /// <summary>
+        /// A delegate that specifies a number of pages to skip. Must return an <c>int</c>.
+        /// </summary>
+        public ContextConfig SkipPages { get; set; }
     }
 }

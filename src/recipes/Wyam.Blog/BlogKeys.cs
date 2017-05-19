@@ -172,6 +172,7 @@ namespace Wyam.Blog
         /// <summary>
         /// Specifies whether the excerpts should be output on the archive page(s)
         /// (if not specified or <c>false</c>, only the title and description will be displayed).
+        /// Note that this also controls displaying excerpts on the tag archive pages.
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ArchiveExcerpts = nameof(ArchiveExcerpts);
