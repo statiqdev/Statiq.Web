@@ -1,3 +1,14 @@
+# 0.18.3
+
+- **[Breaking Change]**[Refactoring] Moved Blog recipe theme file `/_PostIndex.cshtml` to `/_Archive.cshtml`, no other changes should be needed to this file in themes other than to move it - sorry for the rename (again), the first name was kind of dumb, this one is better
+- **[Breaking Change]**[Refactoring] Moved Blog recipe theme file `/tags/index.cshtml` to `/_Tags.cshtml`, no other changes should be needed to this file in themes other than to move it
+- [Feature] Suppressed tag page generation if no tags are present in Blog recipe (#456)
+- [Refactoring] Refactored `Wyam.Web` pipelines to encapsulate settings in classes
+- [Feature] Added a ton of flexibility and new settings to index and archive pages for the Blog recipe (#516)
+- [Feature] Adds the background check JS to BookSite Velocity theme
+- [Feature] Excludes `.git` from all recipes in case an input subfolder was closed from a repository
+- [Fix] Resolved some edge-case bugs with the globbing engine
+
 # 0.18.2
 
 - [Fix] Fix for invalid metadata key in Docs theme (#515)
