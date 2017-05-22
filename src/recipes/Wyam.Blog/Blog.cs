@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wyam.Blog.Pipelines;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -109,6 +110,10 @@ namespace Wyam.Blog
                 GroupKeyMetadataKey = BlogKeys.Tag
             });
 
+        /// <inheritdoc cref="Pipelines.TagIndex" />
+        [SourceInfo]
+        public static TagIndex TagIndex { get; } = new TagIndex();
+
         /// <summary>
         /// Generates the index pages for blog posts.
         /// </summary>
@@ -120,7 +125,7 @@ namespace Wyam.Blog
                 new ArchiveSettings
                 {
                     Pipelines = new string[] { BlogPosts },
-                    File = "_PostIndex.cshtml",
+                    File = "_Archive.cshtml",
                     Layout = "/_Layout.cshtml",
                     PageSize = ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
                     Title = (doc, ctx) => "Archive",

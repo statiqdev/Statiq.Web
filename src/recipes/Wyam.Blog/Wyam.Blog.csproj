@@ -52,6 +52,7 @@
     <Compile Include="Blog.cs" />
     <Compile Include="BlogKeys.cs" />
     <Compile Include="BlogPipelines.cs" />
+    <Compile Include="Pipelines\TagIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
