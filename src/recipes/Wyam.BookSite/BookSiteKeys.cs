@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.Modules.IO;
 
 namespace Wyam.BookSite
 {
@@ -67,6 +68,13 @@ namespace Wyam.BookSite
         /// </summary>
         /// <type><see cref="IEnumerable{Type}"/></type>
         public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
+
+        /// <summary>
+        /// Indicates that include statements should be processed using the <see cref="Include"/> module.
+        /// The default behavior is not to process includes.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ProcessIncludes = nameof(ProcessIncludes);
 
         /// <summary>The title of the book, chapter, or page.</summary>
         /// <type><see cref="string"/></type>

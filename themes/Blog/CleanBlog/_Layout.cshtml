@@ -49,6 +49,7 @@
         <script src="@Context.GetLink("/assets/js/d3.v3.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/trianglify.min.js")"></script>
         <script src="@Context.GetLink("/assets/js/Please-compressed.js")"></script>
+        <script src="@Context.GetLink("/assets/js/background-check.min.js")"></script>
                 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -56,15 +57,6 @@
                 <script src="@Context.GetLink("/assets/js/html5shiv.js")"></script>
                 <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
         <![endif]-->
-
-        @if(Model.ContainsKey(BlogKeys.HeaderTextColor))
-        {
-                <style>
-                        .intro-header *, .navbar:not(.is-fixed) * { color: @(Model.String(BlogKeys.HeaderTextColor)) !important; }
-                        hr { border-color: @(Model.String(BlogKeys.HeaderTextColor)) !important; }
-                        .btn { color: initial !important }
-                </style>
-        }
         
         @Html.Partial("_Head")
 
@@ -157,6 +149,13 @@
                                 header.setAttribute('style', 'background-image: ' + pattern.dataUrl);                        
                         </script>
                 }
+
+                <script>
+                        BackgroundCheck.init({
+                                targets: '.intro-header,.navbar',
+                                images: '.intro-header'
+                        });
+                </script>
         </body>
 </html>
 

@@ -89,6 +89,41 @@ namespace Wyam.Core.Tests.Modules.Control
             }
 
             [Test]
+            public void SetsPreviousAndNextDocuments()
+            {
+                // Given
+                List<IList<string>> previousPages = new List<IList<string>>();
+                List<IList<string>> nextPages = new List<IList<string>>();
+                Engine engine = new Engine();
+                CountModule count = new CountModule("A")
+                {
+                    AdditionalOutputs = 7
+                };
+                Paginate paginate = new Paginate(3, count);
+                Execute gatherData = new Execute(
+                    (d, c) =>
+                    {
+                        previousPages.Add(d.Document(Keys.PreviousPage)?.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
+                        nextPages.Add(d.Document(Keys.NextPage)?.Get<IList<IDocument>>(Keys.PageDocuments).Select(x => x.Content).ToList());
+                        return null;
+                    }, false);
+                engine.Pipelines.Add(paginate, gatherData);
+
+                // When
+                engine.Execute();
+
+                // Then
+                Assert.AreEqual(3, previousPages.Count);
+                Assert.AreEqual(3, nextPages.Count);
+                CollectionAssert.AreEqual(null, previousPages[0]);
+                CollectionAssert.AreEqual(new[] { "1", "2", "3" }, previousPages[1]);
+                CollectionAssert.AreEqual(new[] { "4", "5", "6" }, previousPages[2]);
+                CollectionAssert.AreEqual(new[] { "4", "5", "6" }, nextPages[0]);
+                CollectionAssert.AreEqual(new[] { "7", "8" }, nextPages[1]);
+                CollectionAssert.AreEqual(null, nextPages[2]);
+            }
+
+            [Test]
             public void ExcludesDocumentsThatFailPredicate()
             {
                 // Given

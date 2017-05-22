@@ -30,6 +30,8 @@ namespace Wyam.Docs
     /// </summary>
     /// <metadata cref="DocsKeys.Title" usage="Setting">The title of the site.</metadata>
     /// <metadata cref="DocsKeys.Title" usage="Input">The title of the post or page.</metadata>
+    /// <metadata cref="DocsKeys.ProcessIncludes" usage="Setting" />
+    /// <metadata cref="DocsKeys.ProcessIncludes" usage="Input" />
     /// <metadata cref="DocsKeys.Logo" usage="Setting" />
     /// <metadata cref="DocsKeys.SourceFiles" usage="Setting" />
     /// <metadata cref="DocsKeys.SolutionFiles" usage="Setting" />
@@ -88,42 +90,48 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Api Api { get; } = new Api(TypeNamesToLink);
 
-        /// <inheritdoc cref="BlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
         // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
         public static BlogPosts BlogPosts { get; } = new BlogPosts(
             nameof(BlogPosts),
-            DocsKeys.Published,
-            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
-            ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
-            ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath)
-            .InsertAfter(
-                BlogPosts.RazorPosts,
-                new If(
-                    ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
-                    new AutoLink(TypeNamesToLink)
-                        .WithQuerySelector("code")
-                        .WithMatchOnlyWholeWord(),
+            new BlogPostsSettings
+            {
+                PublishedKey = DocsKeys.Published,
+                MarkdownConfiguration = ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
+                IncludeDateInPostPath = ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
+                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath
+            })
+                .InsertAfter(
+                    BlogPosts.RazorPosts,
                     new If(
-                        (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
-                        new Replace("@", "&#64;"))));
+                        ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
+                        new AutoLink(TypeNamesToLink)
+                            .WithQuerySelector("code")
+                            .WithMatchOnlyWholeWord(),
+                        new If(
+                            (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
+                            new Replace("@", "&#64;"))));
 
-        /// <inheritdoc cref="Pages" />
+        /// <inheritdoc cref="Web.Pipelines.Pages" />
         // Contains an ugly hack to re-escape @ symbols in Markdown since AngleSharp unescapes them if it
         // changes text content to add an auto link, can be removed if AngleSharp #494 is addressed
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
-            null,
-            ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
-                .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
-            ctx => ctx.String(DocsKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
-            null,
-            true,
-            TreePlaceholderFactory)
+            new PagesSettings
+            {
+                IgnorePaths = ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
+                    .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
+                MarkdownConfiguration = ctx => ctx.String(DocsKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
+                CreateTree = true,
+                TreePlaceholderFactory = TreePlaceholderFactory
+            })
                 .InsertAfter(
                     Pages.RazorFiles,
                     new If(
@@ -141,17 +149,15 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogIndexes { get; } = new Archive(
             nameof(BlogIndexes),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            null,
-            null,
-            ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => "Blog",
-            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                PageSize = ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
+                Title = (doc, ctx) => "Blog",
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}"
+            });
 
         /// <summary>
         /// Generates the category pages for blog posts.
@@ -159,17 +165,17 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogCategories { get; } = new Archive(
             nameof(BlogCategories),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            (doc, ctx) => doc.List<string>(DocsKeys.Category),
-            ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
-            ctx => ctx.Get(DocsKeys.CategoryPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.String(Keys.GroupKey),
-            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/{doc.String(Keys.GroupKey)}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                Group = (doc, ctx) => doc.List<string>(DocsKeys.Category),
+                CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
+                PageSize = ctx => ctx.Get(DocsKeys.CategoryPageSize, int.MaxValue),
+                Title = (doc, ctx) => doc.String(Keys.GroupKey),
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/{doc.String(Keys.GroupKey)}"
+            });
 
         /// <summary>
         /// Generates the tag pages for blog posts.
@@ -177,17 +183,17 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogTags { get; } = new Archive(
             nameof(BlogTags),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            (doc, ctx) => doc.List<string>(DocsKeys.Tags),
-            ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
-            ctx => ctx.Get(DocsKeys.TagPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.String(Keys.GroupKey),
-            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                Group = (doc, ctx) => doc.List<string>(DocsKeys.Tags),
+                CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
+                PageSize = ctx => ctx.Get(DocsKeys.TagPageSize, int.MaxValue),
+                Title = (doc, ctx) => doc.String(Keys.GroupKey),
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}"
+            });
 
         /// <summary>
         /// Generates the author pages for blog posts.
@@ -195,17 +201,17 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogAuthors { get; } = new Archive(
             nameof(BlogAuthors),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            (doc, ctx) => doc.List<string>(DocsKeys.Author),
-            ctx => ctx.Bool(DocsKeys.CaseInsensitiveAuthors),
-            ctx => ctx.Get(DocsKeys.AuthorPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.String(Keys.GroupKey),
-            (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/author/{doc.String(Keys.GroupKey)}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                Group = (doc, ctx) => doc.List<string>(key: DocsKeys.Author),
+                CaseInsensitiveGroupComparer = ctx => ctx.Bool(key: DocsKeys.CaseInsensitiveAuthors),
+                PageSize = ctx => ctx.Get(key: DocsKeys.AuthorPageSize, defaultValue: int.MaxValue),
+                Title = (doc, ctx) => doc.String(key: Keys.GroupKey),
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(key: DocsKeys.BlogPath).FullPath}/author/{doc.String(key: Keys.GroupKey)}"
+            });
 
         /// <summary>
         /// Generates the monthly archive pages for blog posts.
@@ -213,17 +219,16 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogArchives { get; } = new Archive(
             nameof(BlogArchives),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, doc.Get<DateTime>(DocsKeys.Published).Month, 1),
-            null,
-            ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("MMMM, yyyy"),
-            (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy/MM}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: doc.Get<DateTime>(key: DocsKeys.Published).Month, day: 1),
+                PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
+                Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "MMMM, yyyy"),
+                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy/MM}"
+            });
 
         /// <summary>
         /// Generates the yearly archive pages for blog posts.
@@ -231,34 +236,38 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Archive BlogYearlyArchives { get; } = new Archive(
             nameof(BlogYearlyArchives),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_BlogLayout.cshtml",
-            (doc, ctx) => new DateTime(doc.Get<DateTime>(DocsKeys.Published).Year, 1, 1),
-            null,
-            ctx => ctx.Get(DocsKeys.MonthPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => doc.Get<DateTime>(Keys.GroupKey).ToString("yyyy"),
-            (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(Keys.GroupKey):yyyy}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_BlogLayout.cshtml",
+                Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: 1, day: 1),
+                PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
+                Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "yyyy"),
+                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy}"
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
         public static Web.Pipelines.Feeds BlogFeed { get; } = new Web.Pipelines.Feeds(
             nameof(BlogFeed),
-            new string[] { BlogPosts },
-            ctx => ctx.FilePath(DocsKeys.BlogRssPath),
-            ctx => ctx.FilePath(DocsKeys.BlogAtomPath),
-            ctx => ctx.FilePath(DocsKeys.BlogRdfPath));
+            new FeedsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                RssPath = ctx => ctx.FilePath(DocsKeys.BlogRssPath),
+                AtomPath = ctx => ctx.FilePath(DocsKeys.BlogAtomPath),
+                RdfPath = ctx => ctx.FilePath(DocsKeys.BlogRdfPath)
+            });
 
-        /// <inheritdoc cref="RenderPages" />
+        /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
-            new string[] { Pages },
-            (doc, ctx) => "/_Layout.cshtml",
-            null)
+            new RenderPagesSettings
+            {
+                Pipelines = new string[] { Pages },
+                Layout = (doc, ctx) => "/_Layout.cshtml"
+            })
                 .InsertAfter(
                     RenderPages.GetDocuments,
                     new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(
@@ -269,13 +278,16 @@ namespace Wyam.Docs
                     RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
 
-        /// <inheritdoc cref="RenderBlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
             nameof(RenderBlogPosts),
-            new string[] { BlogPosts },
-            DocsKeys.Published,
-            (doc, ctx) => "/_BlogPost.cshtml")
+            new RenderBlogPostsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                PublishedKey = DocsKeys.Published,
+                Layout = (doc, ctx) => "/_BlogPost.cshtml"
+            })
                 .InsertAfter(
                     RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
@@ -284,9 +296,12 @@ namespace Wyam.Docs
         [SourceInfo]
         public static Redirects Redirects { get; } = new Redirects(
             nameof(Redirects),
-            new string[] { RenderPages, RenderBlogPosts },
-            ctx => ctx.Bool(DocsKeys.MetaRefreshRedirects),
-            ctx => ctx.Bool(DocsKeys.NetlifyRedirects));
+            new RedirectsSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts },
+                MetaRefreshRedirects = ctx => ctx.Bool(DocsKeys.MetaRefreshRedirects),
+                NetlifyRedirects = ctx => ctx.Bool(DocsKeys.NetlifyRedirects)
+            });
 
         /// <inheritdoc cref="Pipelines.RenderApi" />
         [SourceInfo]
@@ -316,10 +331,13 @@ namespace Wyam.Docs
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
             nameof(ValidateLinks),
-            new string[] { RenderPages, RenderBlogPosts, RenderApi, Resources },
-            ctx => ctx.Bool(DocsKeys.ValidateAbsoluteLinks),
-            ctx => ctx.Bool(DocsKeys.ValidateRelativeLinks),
-            ctx => ctx.Bool(DocsKeys.ValidateLinksAsError));
+            new ValidateLinksSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts, RenderApi, Resources },
+                ValidateAbsoluteLinks = ctx => ctx.Bool(DocsKeys.ValidateAbsoluteLinks),
+                ValidateRelativeLinks = ctx => ctx.Bool(DocsKeys.ValidateRelativeLinks),
+                ValidateLinksAsError = ctx => ctx.Bool(DocsKeys.ValidateLinksAsError)
+            });
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
@@ -327,12 +345,13 @@ namespace Wyam.Docs
             // Global metadata defaults
             engine.Settings[DocsKeys.SourceFiles] = new[]
             {
-                "src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs",
-                "../src/**/{!bin,!obj,!packages,!*.Tests,}/**/*.cs"
+                "src/**/{!.git,!bin,!obj,!packages,!*.Tests,}/**/*.cs",
+                "../src/**/{!.git,!bin,!obj,!packages,!*.Tests,}/**/*.cs"
             };
             engine.Settings[DocsKeys.IncludeGlobalNamespace] = true;
             engine.Settings[DocsKeys.IncludeDateInPostPath] = false;
             engine.Settings[DocsKeys.MarkdownConfiguration] = "advanced+bootstrap";
+            engine.Settings[DocsKeys.ProcessIncludes] = true;
             engine.Settings[DocsKeys.SearchIndex] = true;
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
@@ -354,7 +373,13 @@ namespace Wyam.Docs
         public override void Scaffold(IFile configFile, IDirectory inputDirectory)
         {
             // Config file
-            configFile?.WriteAllText(@"#recipe Docs");
+            configFile?.WriteAllText(@"#recipe Docs
+
+// Customize your settings and add new ones here
+Settings[Keys.Host] = ""host.com"";
+Settings[DocsKeys.Title] = ""My Docs"";
+
+// Add any pipeline customizations here");
 
             // Add info page
             inputDirectory.GetFile("about.md").WriteAllText(

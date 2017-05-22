@@ -35,6 +35,8 @@ namespace Wyam.Core.Execution
 
         public Engine Engine { get; }
 
+        public Guid ExecutionId { get; }
+
         public IReadOnlyCollection<byte[]> DynamicAssemblies => Engine.DynamicAssemblies;
 
         public IReadOnlyCollection<string> Namespaces => Engine.Namespaces;
@@ -56,15 +58,17 @@ namespace Wyam.Core.Execution
         [Obsolete]
         public IMetadata GlobalMetadata => Engine.GlobalMetadata;
 
-        public ExecutionContext(Engine engine, ExecutionPipeline pipeline)
+        public ExecutionContext(Engine engine, Guid executionId, ExecutionPipeline pipeline)
         {
             Engine = engine;
+            ExecutionId = executionId;
             _pipeline = pipeline;
         }
 
         private ExecutionContext(ExecutionContext original, IModule module)
         {
             Engine = original.Engine;
+            ExecutionId = original.ExecutionId;
             _pipeline = original._pipeline;
             Module = module;
         }

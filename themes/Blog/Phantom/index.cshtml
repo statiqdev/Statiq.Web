@@ -5,48 +5,80 @@
 <div class="row">
     <div class="8u 12u$(medium)">
         @{
-            foreach(IDocument doc in Documents[Blog.Posts].Take(3))
+            foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
             {                
-                string lead = doc.String(BlogKeys.Lead);
+                string lead = post.String(BlogKeys.Lead);
                 <div>
-                    <a href="@Context.GetLink(doc)">
-                        <h2>@doc.String(BlogKeys.Title)</h2>
-                        @if(!string.IsNullOrWhiteSpace(lead))
-                        {
-                            <h3>@lead</h3>
-                        }
+                    <a href="@Context.GetLink(post)">
+                        <h2>@post.String(BlogKeys.Title)</h2>
                     </a>
-                    <p>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
-                    @Html.Raw(doc.String(BlogKeys.Excerpt))             
+                    @if(!string.IsNullOrWhiteSpace(lead))
+                    {
+                        <h4>@lead</h4>
+                    }
+                    <p>Posted on @(post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
+                    @if(Context.Bool(BlogKeys.IndexFullPosts))
+                    {
+                        @Html.Raw(post.Content)
+                    }
+                    else
+                    {
+                        @Html.Raw(post.String(BlogKeys.Excerpt))
+                    }              
                 </div>       
             }
         }
+        <ul class="pager">
+            <li class="previous">                
+                @if(Model.Bool(Keys.HasPreviousPage))
+                {
+                    <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
+                }                
+            </li>
+            <li class="next">
+                @if(Model.Bool(Keys.HasNextPage))
+                {
+                    <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
+                }
+            </li>
+        </ul>
     </div>
     <div class="4u 12u$(medium)">
-        <h5>Tags</h5>
-        <ul class="actions small">
-            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+
+        @if(Documents[Blog.Tags].Any())
+        {
+            <h5>Tags</h5>
+            <ul class="actions small">
+                @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+                    .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                    .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+                {
+                    string tag = tagDocument.String(BlogKeys.Tag);
+                    string postCount = tagDocument.String(Keys.TotalItems);
+                    <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small">@tag (@postCount)</a></li>
+                }
+            </ul>
+            <ul class="actions small">
+                <li><a href="/tags" class="button small">View All Tags &rarr;</a></li>
+            </ul>    
+        }
+
+        @if(!Context.Bool(BlogKeys.IndexPaging))
+        {
+            <h5>Older Posts</h5>
+            <ul>
+                @foreach(IDocument post in Documents[Blog.BlogPosts].Skip(Model.DocumentList(Keys.PageDocuments).Count).Take(4))
+                {        
+                    <li><a href="@Context.GetLink(post)">@post.String(BlogKeys.Title)</a></li>
+                }
+            </ul>
+            @if(Context.Bool(BlogKeys.GenerateArchive))
             {
-                string tag = tagDocument.String(BlogKeys.Tag);
-                string postCount = tagDocument.String(Keys.TotalItems);
-                <li><a role="button" href="@Context.GetLink(tagDocument)" class="button small">@tag (@postCount)</a></li>
+                <ul class="actions small">
+                    <li><a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))" class="button small">Archive &rarr;</a></li>
+                </ul>
             }
-        </ul>
-        <ul class="actions small">
-            <li><a href="/tags" class="button small">View All Tags &rarr;</a></li>
-        </ul>
-        <h5>Older Posts</h5>
-        <ul>
-            @foreach(IDocument doc in Documents[Blog.Posts].Skip(3).Take(4))
-            {        
-                <li><a href="@Context.GetLink(doc)">@doc.String(BlogKeys.Title)</a></li>
-            }
-        </ul>
-        <ul class="actions small">
-            <li><a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))" class="button small">Archive &rarr;</a></li>
-        </ul>
+        }
 
         @Html.Partial("_Sidebar")
     </div> 

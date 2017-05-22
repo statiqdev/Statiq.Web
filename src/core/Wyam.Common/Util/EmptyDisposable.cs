@@ -9,6 +9,9 @@ namespace Wyam.Common.Util
     {
         public static EmptyDisposable Instance = new EmptyDisposable();
 
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
         public void Dispose()
         {
             // Do nothing

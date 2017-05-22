@@ -22,6 +22,8 @@ namespace Wyam.Core.Modules.Control
     /// to the pages, including the sequence of documents for each page,
     /// is added to each clone. For example, if you have 2 input documents
     /// and the result of paging is 3 pages, this module will output 6 documents.
+    /// Note that if there are no documents to paginate, this module will still
+    /// output an empty page without any documents inside the page.
     /// </remarks>
     /// <example>
     /// If your input document is a Razor template for a blog archive, you can use
@@ -51,11 +53,16 @@ namespace Wyam.Core.Modules.Control
     /// <metadata cref="Keys.TotalItems" usage="Output" />
     /// <metadata cref="Keys.HasNextPage" usage="Output" />
     /// <metadata cref="Keys.HasPreviousPage" usage="Output" />
+    /// <metadata cref="Keys.NextPage" usage="Output" />
+    /// <metadata cref="Keys.PreviousPage" usage="Output" />
     /// <category>Control</category>
     public class Paginate : ContainerModule
     {
         private readonly int _pageSize;
+        private readonly Dictionary<string, DocumentConfig> _pageMetadata = new Dictionary<string, DocumentConfig>();
         private Func<IDocument, IExecutionContext, bool> _predicate;
+        private int _takePages = int.MaxValue;
+        private int _skipPages = 0;
 
         /// <summary>
         /// Partitions the result of the specified modules into the specified number of pages. The
@@ -99,48 +106,141 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <summary>
+        /// Only outputs a specific number of pages.
+        /// </summary>
+        /// <param name="count">The number of pages to output.</param>
+        /// <returns>The current module instance.</returns>
+        public Paginate TakePages(int count)
+        {
+            _takePages = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Skips a specified number of pages before outputting pages.
+        /// </summary>
+        /// <param name="count">The number of pages to skip.</param>
+        /// <returns>The current module instance.</returns>
+        public Paginate SkipPages(int count)
+        {
+            _skipPages = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified metadata to each page index document. This must be performed
+        /// within the paginate module. If you attempt to process the page index documents
+        /// from the paginate module after execution, it will "disconnect" metadata for
+        /// those documents like <see cref="Keys.NextPage"/> since you're effectivly
+        /// creating new documents and the ones those keys refer to will be outdated.
+        /// </summary>
+        /// <param name="key">The key of the metadata to add.</param>
+        /// <param name="metadata">A delegate with the value for the metadata.</param>
+        /// <returns>The current module instance.</returns>
+        public Paginate WithPageMetadata(string key, DocumentConfig metadata)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (metadata == null)
+            {
+                throw new ArgumentNullException(nameof(metadata));
+            }
+            _pageMetadata[key] = metadata;
+            return this;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            ImmutableArray<ImmutableArray<IDocument>> partitions
-                = Partition(
+            // Partition the pages
+            IDocument[][] partitions =
+                Partition(
                     context.Execute(this, inputs)
                         .Where(context, x => _predicate?.Invoke(x, context) ?? true)
                         .ToList(),
                     _pageSize)
-                        .ToImmutableArray();
-            if (partitions.Length == 0)
-            {
-                return inputs;
-            }
+                .ToArray();
             int totalItems = partitions.Sum(x => x.Length);
+
+            // Create the documents
             return inputs.SelectMany(context, input =>
             {
-                return partitions.Select((x, i) => context.GetDocument(
-                    input,
-                    new Dictionary<string, object>
+                // Create the pages
+                Page[] pages = partitions
+                    .Skip(_skipPages)
+                    .Take(_takePages)
+                    .Select(x => new Page
                     {
-                        { Keys.PageDocuments, partitions[i] },
-                        { Keys.CurrentPage, i + 1 },
-                        { Keys.TotalPages, partitions.Length },
-                        { Keys.TotalItems, totalItems },
-                        { Keys.HasNextPage, partitions.Length > i + 1 },
-                        { Keys.HasPreviousPage, i != 0 }
-                    }));
+                        PageDocuments = x
+                    })
+                    .ToArray();
+
+                // Special case for no pages, create an empty one
+                if (pages.Length == 0)
+                {
+                    pages = new[]
+                    {
+                        new Page
+                        {
+                            PageDocuments = Array.Empty<IDocument>()
+                        }
+                    };
+                }
+
+                // Create the documents per page
+                for (int i = 0; i < pages.Length; i++)
+                {
+                    // Get the current page document
+                    int currentI = i;  // Avoid modified closure for previous/next matadata delegate
+                    IDocument document = context.GetDocument(
+                        input,
+                        new Dictionary<string, object>
+                        {
+                            { Keys.PageDocuments, pages[i].PageDocuments },
+                            { Keys.CurrentPage, i + 1 },
+                            { Keys.TotalPages, pages.Length },
+                            { Keys.TotalItems, totalItems },
+                            { Keys.HasNextPage, pages.Length > i + 1 },
+                            { Keys.HasPreviousPage, i != 0 },
+                            { Keys.NextPage, new CachedDelegateMetadataValue(_ => pages.Length > currentI + 1 ? pages[currentI + 1].Document : null) },
+                            { Keys.PreviousPage, new CachedDelegateMetadataValue(_ => currentI != 0 ? pages[currentI - 1].Document : null) }
+                        });
+
+                    // Apply any page metadata
+                    if (_pageMetadata.Count > 0)
+                    {
+                        Dictionary<string, object> pageMetadata = _pageMetadata
+                            .Select(kvp => new KeyValuePair<string, object>(kvp.Key, kvp.Value.Invoke<object>(document, context)))
+                            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                        document = context.GetDocument(document, pageMetadata);
+                    }
+
+                    pages[i].Document = document;
+                }
+                return pages.Select(x => x.Document);
             });
         }
 
         // Interesting discussion of partitioning at
         // http://stackoverflow.com/questions/419019/split-list-into-sublists-with-linq
         // Note that this implementation won't work for very long sequences because it enumerates twice per chunk
-        private static IEnumerable<ImmutableArray<T>> Partition<T>(IReadOnlyList<T> source, int size)
+        private static IEnumerable<T[]> Partition<T>(IReadOnlyList<T> source, int size)
         {
             int pos = 0;
             while (source.Skip(pos).Any())
             {
-                yield return source.Skip(pos).Take(size).ToImmutableArray();
+                yield return source.Skip(pos).Take(size).ToArray();
                 pos += size;
             }
+        }
+
+        private class Page
+        {
+            public IDocument Document { get; set; }
+            public IDocument[] PageDocuments { get; set; }
         }
     }
 }

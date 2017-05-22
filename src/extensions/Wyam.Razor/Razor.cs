@@ -71,7 +71,9 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
-        private readonly ConcurrentDictionary<string, CompilationResult> _compilationCache = new ConcurrentDictionary<string, CompilationResult>();
+        private static readonly RazorService RazorService = new RazorService();
+        private static Guid _executionId = Guid.Empty;
+
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private DocumentConfig _layoutPath;
@@ -141,7 +143,7 @@ namespace Wyam.Razor
         /// <returns>The current module instance.</returns>
         public Razor WithLayout(FilePath path)
         {
-            _layoutPath = (doc, ctx) => path;
+            _layoutPath = path == null ? (DocumentConfig)null : (doc, ctx) => path;
             return this;
         }
 
@@ -197,27 +199,14 @@ namespace Wyam.Razor
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            // Register all the MVC and Razor services
-            // In the future, if DI is implemented for all Wyam, the IExecutionContext would be registered as a service
-            // and the IHostingEnviornment would be registered as transient with the execution context provided in ctor
-            IServiceCollection serviceCollection = new ServiceCollection();
-            IMvcCoreBuilder builder = serviceCollection
-                .AddMvcCore()
-                .AddRazorViewEngine();
-            builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(context));
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            // Expire the internal Razor cache if this is a new execution
+            // This needs to be done so that layouts/partials can be re-rendered if they've changed,
+            // otherwise Razor will just use the previously cached version of them
+            if (_executionId != Guid.Empty && _executionId != context.ExecutionId)
             {
-                options.ViewLocationExpanders.Add(new ViewLocationExpander());
-            });
-            serviceCollection
-                .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
-                .AddSingleton<DiagnosticSource, SilentDiagnosticSource>()
-                .AddSingleton<IHostingEnvironment, HostingEnvironment>()
-                .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
-                .AddSingleton<IExecutionContext>(context)
-                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(_basePageType ?? typeof(WyamRazorPage<>)))
-                .AddScoped<IMvcRazorHost, RazorHost>();
-            IServiceProvider services = serviceCollection.BuildServiceProvider();
+                RazorService.ExpireChangeTokens();
+            }
+            _executionId = context.ExecutionId;
 
             // Eliminate input documents that we shouldn't process
             List<IDocument> validInputs = inputs
@@ -225,172 +214,40 @@ namespace Wyam.Razor
                     || !x.ContainsKey(Keys.SourceFileName)
                     || !x.FilePath(Keys.SourceFileName).FullPath.StartsWith(_ignorePrefix))
                 .ToList();
+
             if (validInputs.Count < inputs.Count)
             {
                 Trace.Information($"Ignoring {inputs.Count - validInputs.Count} inputs due to source file name prefix");
             }
 
             // Compile and evaluate the pages in parallel
-            IServiceScopeFactory scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
             return validInputs.AsParallel().Select(context, input =>
             {
                 Trace.Verbose("Processing Razor for {0}", input.SourceString());
-                using (IServiceScope scope = scopeFactory.CreateScope())
+
+                Stream contentStream = context.GetContentStream();
+                using (Stream inputStream = input.GetStream())
                 {
-                    // Get services
-                    IRazorViewEngine viewEngine = scope.ServiceProvider.GetRequiredService<IRazorViewEngine>();
-                    IRazorPageActivator pageActivator = scope.ServiceProvider.GetRequiredService<IRazorPageActivator>();
-                    HtmlEncoder htmlEncoder = scope.ServiceProvider.GetRequiredService<HtmlEncoder>();
-                    IRazorPageFactoryProvider pageFactoryProvider = scope.ServiceProvider.GetRequiredService<IRazorPageFactoryProvider>();
-                    IRazorCompilationService razorCompilationService = scope.ServiceProvider.GetRequiredService<IRazorCompilationService>();
-                    IHostingEnvironment hostingEnviornment = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
-
-                    // Compile the view
-                    string relativePath = GetRelativePath(input, context);
                     FilePath viewStartLocationPath = _viewStartPath?.Invoke<FilePath>(input, context);
-                    string viewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null;
-                    string layoutLocation = _layoutPath?.Invoke<FilePath>(input, context)?.FullPath;
-                    IView view;
-                    using (Stream stream = input.GetStream())
-                    {
-                        view = GetViewFromStream(
-                            relativePath,
-                            stream,
-                            viewStartLocation,
-                            layoutLocation,
-                            viewEngine,
-                            pageActivator,
-                            htmlEncoder,
-                            pageFactoryProvider,
-                            hostingEnviornment.WebRootFileProvider,
-                            razorCompilationService);
-                    }
 
-                    // Render the view
-                    object model = _model == null ? input : _model.Invoke(input, context);
-                    Stream contentStream = context.GetContentStream();
-                    using (StreamWriter writer = contentStream.GetWriter())
+                    RenderRequest request = new RenderRequest
                     {
-                        Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext =
-                            GetViewContext(scope.ServiceProvider, view, model, input, context, writer);
-                        viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
-                        writer.Flush();
-                    }
-                    return context.GetDocument(input, contentStream);
+                        Input = inputStream,
+                        Output = contentStream,
+                        BaseType = _basePageType,
+                        Context = context,
+                        Document = input,
+                        LayoutLocation = _layoutPath?.Invoke<FilePath>(input, context)?.FullPath,
+                        ViewStartLocation = viewStartLocationPath != null ? GetRelativePath(viewStartLocationPath, context) : null,
+                        RelativePath = GetRelativePath(input, context),
+                        Model = _model == null ? input : _model.Invoke(input, context),
+                    };
+
+                    RazorService.Render(request);
                 }
+
+                return context.GetDocument(input, contentStream);
             });
-        }
-
-        private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(
-            IServiceProvider services,
-            IView view,
-            object model,
-            IDocument document,
-            IExecutionContext executionContext,
-            TextWriter output)
-        {
-            HttpContext httpContext = new DefaultHttpContext
-            {
-                RequestServices = services
-            };
-            ActionContext actionContext = new ActionContext(
-                httpContext, new RouteData(), new ActionDescriptor());
-            ViewDataDictionary viewData = new ViewDataDictionary(
-                new EmptyModelMetadataProvider(), actionContext.ModelState)
-            {
-                Model = model
-            };
-            ITempDataDictionary tempData = new TempDataDictionary(
-                actionContext.HttpContext, services.GetRequiredService<ITempDataProvider>());
-            ViewContext viewContext = new ViewContext(
-                actionContext,
-                view,
-                viewData,
-                tempData,
-                output,
-                new HtmlHelperOptions(),
-                document,
-                executionContext);
-            return viewContext;
-        }
-
-        /// <summary>
-        /// Gets the view for an input document (which is different than the view for a layout, partial, or
-        /// other indirect view because it's not necessarily on disk or in the file system).
-        /// </summary>
-        private IView GetViewFromStream(
-            string relativePath,
-            Stream stream,
-            string viewStartLocation,
-            string layoutLocation,
-            IRazorViewEngine viewEngine,
-            IRazorPageActivator pageActivator,
-            HtmlEncoder htmlEncoder,
-            IRazorPageFactoryProvider pageFactoryProvider,
-            IFileProvider rootFileProvider,
-            IRazorCompilationService razorCompilationService)
-        {
-            IEnumerable<string> viewStartLocations = viewStartLocation != null
-                ? new [] { viewStartLocation }
-                : ViewHierarchyUtility.GetViewStartLocations(relativePath);
-            List<IRazorPage> viewStartPages = viewStartLocations
-                .Select(pageFactoryProvider.CreateFactory)
-                .Where(x => x.Success)
-                .Select(x => x.RazorPageFactory())
-                .Reverse()
-                .ToList();
-            IRazorPage page = GetPageFromStream(relativePath, viewStartLocation, layoutLocation, stream, rootFileProvider, razorCompilationService);
-            if (layoutLocation != null)
-            {
-                page.Layout = layoutLocation;
-            }
-            return new RazorView(viewEngine, pageActivator, viewStartPages, page, htmlEncoder);
-        }
-
-        /// <summary>
-        /// Gets the Razor page for an input document stream. This is roughly modeled on
-        /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother
-        /// with caching the page if it's from a live stream.
-        /// </summary>
-        private IRazorPage GetPageFromStream(
-            string relativePath,
-            string viewStartLocation,
-            string layoutLocation,
-            Stream stream,
-            IFileProvider rootFileProvider,
-            IRazorCompilationService razorCompilationService)
-        {
-            if (relativePath.StartsWith("~/", StringComparison.Ordinal))
-            {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                relativePath = relativePath.Substring(1);
-            }
-
-            // Get the file info by combining the stream content with info found at the document's original location (if any)
-            IFileInfo fileInfo = new StreamFileInfo(rootFileProvider.GetFileInfo(relativePath), stream);
-            RelativeFileInfo relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
-
-            // Try to get the compilation from the cache, but only if the stream is empty
-            // Cache key is relative path if no explicit view start or layout OR either/both of those if specified
-            CompilationResult compilationResult = stream.Length == 0
-                ? _compilationCache.GetOrAdd(
-                    viewStartLocation == null
-                        ? (layoutLocation ?? relativePath)
-                        : (layoutLocation == null ? viewStartLocation : viewStartLocation + layoutLocation),
-                    _ => GetCompilation(relativeFileInfo, razorCompilationService))
-                : GetCompilation(relativeFileInfo, razorCompilationService);
-
-            // Create and return the page
-            // We're not actually using the ASP.NET cache, but the CompilerCacheResult ctor contains the logic to create the page factory
-            CompilerCacheResult compilerCacheResult = new CompilerCacheResult(relativePath, compilationResult, Array.Empty<IChangeToken>());
-            return compilerCacheResult.PageFactory();
-        }
-
-        private CompilationResult GetCompilation(RelativeFileInfo relativeFileInfo, IRazorCompilationService razorCompilationService)
-        {
-            CompilationResult compilationResult = razorCompilationService.Compile(relativeFileInfo);
-            compilationResult.EnsureSuccessful();
-            return compilationResult;
         }
 
         private string GetRelativePath(IDocument document, IExecutionContext context)

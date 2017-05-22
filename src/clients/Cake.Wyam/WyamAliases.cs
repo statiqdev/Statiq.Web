@@ -46,7 +46,7 @@ namespace Cake.Wyam
         /// <code>
         ///     Wyam(new WyamSettings()
         ///     {
-        ///         OutputDirectory = Directory("C:/Output")
+        ///         OutputPath = Directory("C:/Output")
         ///     });
         /// </code>
         /// </example>
