@@ -6,35 +6,57 @@
     <div class="col-sm-8 right-border">
         @{
             bool first = true;
-            foreach(IDocument doc in Documents[Blog.Posts].Take(3))
+            foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
             {                
                 if (!first)
                 {
                     <hr /> 
                 }
                 first = false;
-                string lead = doc.String(BlogKeys.Lead);
+                string lead = post.String(BlogKeys.Lead);
                 <div class="post-preview">
-                    <a href="@Context.GetLink(doc)">
-                        <h2 class="post-title">@doc.WithoutSettings.String(BlogKeys.Title)</h2>
+                    <a href="@Context.GetLink(post)">
+                        <h2 class="post-title">@post.WithoutSettings.String(BlogKeys.Title)</h2>
                         @if(!string.IsNullOrWhiteSpace(lead))
                         {
                             <h3 class="post-subtitle">@lead</h3>
                         }
                     </a>
-                    <p class="post-meta">Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
-                    @Html.Raw(doc.String(BlogKeys.Excerpt))             
+                    <p class="post-meta">Posted on @(post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</p>
+                    @if(Context.Bool(BlogKeys.IndexFullPosts))
+                    {
+                        @Html.Raw(post.Content)
+                    }
+                    else
+                    {
+                        @Html.Raw(post.String(BlogKeys.Excerpt))
+                    }             
                 </div>       
             }
         }
+        <ul class="pager">
+            <li class="previous">                
+                @if(Model.Bool(Keys.HasPreviousPage))
+                {
+                    <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
+                }                
+            </li>
+            <li class="next">
+                @if(Model.Bool(Keys.HasNextPage))
+                {
+                    <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
+                }
+            </li>
+        </ul>
     </div>
     <div class="col-sm-4 sidebar">
         <hr class="visible-xs-block" />
+
         <h5>Tags</h5>
         <div>
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
             {
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);
@@ -46,19 +68,28 @@
                 <a href="/tags">View All Tags &rarr;</a>
             </li>
         </ul>
-        <hr />
-        <h5>Older Posts</h5>
-        <ul class="list-unstyled">
-            @foreach(IDocument doc in Documents[Blog.Posts].Skip(3).Take(4))
-            {        
-                <li><a href="@Context.GetLink(doc)">@doc.WithoutSettings.String(BlogKeys.Title)</a></li>
+
+        @if(!Context.Bool(BlogKeys.IndexPaging))
+        {
+            <hr />
+            <h5>Older Posts</h5>
+            <ul class="list-unstyled">
+                @foreach(IDocument post in Documents[Blog.BlogPosts].Skip(Model.DocumentList(Keys.PageDocuments).Count).Take(4))
+                {        
+                    // TODO: The skip above needs to line up with the number of posts on the index page
+                    // Also turn this section off if the index is paged
+                    <li><a href="@Context.GetLink(post)">@post.WithoutSettings.String(BlogKeys.Title)</a></li>
+                }
+            </ul>
+            @if(Context.Bool(BlogKeys.GenerateArchive))
+            {
+                <ul class="pager">
+                    <li class="next">
+                        <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Archive &rarr;</a>
+                    </li>
+                </ul>
             }
-        </ul>
-        <ul class="pager">
-            <li class="next">
-                <a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Archive &rarr;</a>
-            </li>
-        </ul>
+        }
 
         @Html.Partial("_Sidebar")
     </div> 

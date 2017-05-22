@@ -24,23 +24,21 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pipelines">The name of pipelines for which redirects should be calculated.</param>
-        /// <param name="metaRefreshRedirects">A delegate specifying whether META-REFRESH redirects should be generated.</param>
-        /// <param name="netlifyRedirects">A delegate specifying whether Netlify-style redirects file should be generated.</param>
-        public Redirects(string name, string[] pipelines, ContextConfig metaRefreshRedirects, ContextConfig netlifyRedirects)
-            : base(name, GetModules(pipelines, metaRefreshRedirects, netlifyRedirects))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public Redirects(string name, RedirectsSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines, ContextConfig metaRefreshRedirects, ContextConfig netlifyRedirects) => new ModuleList
+        private static IModuleList GetModules(RedirectsSettings settings) => new ModuleList
         {
             new Documents()
-                .FromPipelines(pipelines),
+                .FromPipelines(settings.Pipelines),
             new Execute(ctx =>
             {
                 Redirect redirect = new Redirect()
-                    .WithMetaRefreshPages(metaRefreshRedirects.Invoke<bool>(ctx));
-                if (netlifyRedirects.Invoke<bool>(ctx))
+                    .WithMetaRefreshPages(settings.MetaRefreshRedirects.Invoke<bool>(ctx));
+                if (settings.NetlifyRedirects.Invoke<bool>(ctx))
                 {
                     redirect.WithAdditionalOutput("_redirects", redirects =>
                         string.Join(Environment.NewLine, redirects.Select(r => $"/{r.Key} {r.Value}")));

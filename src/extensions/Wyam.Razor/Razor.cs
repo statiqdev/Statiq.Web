@@ -141,7 +141,7 @@ namespace Wyam.Razor
         /// <returns>The current module instance.</returns>
         public Razor WithLayout(FilePath path)
         {
-            _layoutPath = (doc, ctx) => path;
+            _layoutPath = path == null ? (DocumentConfig)null : (doc, ctx) => path;
             return this;
         }
 

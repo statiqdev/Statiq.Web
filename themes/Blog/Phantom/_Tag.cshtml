@@ -13,16 +13,13 @@ Title: All Tags
                 <li class="previous">            
                     @if(Model.Bool(Keys.HasPreviousPage))
                     {
-                        string previousPage = Model.Get<int>(Keys.CurrentPage) == 2
-                            ? $"/tags/{tag}.html" : $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) - 1}";
-                        <a href="@previousPage"><span aria-hidden="true">&larr;</span> Newer</a>
+                        <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
                     }                
                 </li>
                 <li class="next">
                     @if(Model.Bool(Keys.HasNextPage))
                     {
-                        string nextPage = $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) + 1}";
-                        <a href="@nextPage">Older <span aria-hidden="true">&rarr;</span></a>
+                        <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
                     }
                 </li>
             </ul>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.Modules.IO;
 
 namespace Wyam.Blog
 {
@@ -19,10 +20,6 @@ namespace Wyam.Blog
         /// <summary>The relative path to a page image.</summary>
         /// <type><see cref="string"/></type>
         public const string Image = nameof(Image);
-
-        /// <summary>Changes the header and nav bar text color.</summary>
-        /// <type><see cref="string"/></type>
-        public const string HeaderTextColor = nameof(HeaderTextColor);
 
         /// <summary>The description of your blog (usually placed on the home page).</summary>
         /// <type><see cref="string"/></type>
@@ -54,14 +51,21 @@ namespace Wyam.Blog
         /// Markdig Markdown renderer. The default value is "advanced+bootstrap".
         /// </summary>
         /// <type><see cref="string"/></type>
-        public const string MarkdownExtensions = nameof(MarkdownExtensions);
+        public const string MarkdownConfiguration = nameof(MarkdownConfiguration);
 
         /// <summary>
         /// Set this to add extension Markdown extensions for the Markdig Markdown
         /// renderer. The default value is null;
         /// </summary>
         /// <type><see cref="IEnumerable{IMarkdownExtension}"/></type>
-        public const string MarkdownExternalExtensions = nameof(MarkdownExternalExtensions);
+        public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
+
+        /// <summary>
+        /// Indicates that include statements should be processed using the <see cref="Include"/> module.
+        /// The default behavior is not to process includes.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ProcessIncludes = nameof(ProcessIncludes);
 
         /// <summary>
         /// Setting this to <c>true</c> uses
@@ -140,6 +144,46 @@ namespace Wyam.Blog
         public const string TagPageSize = nameof(TagPageSize);
 
         /// <summary>
+        /// The page size for the index page(s) (if not specified, a default of 3 will be used).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string IndexPageSize = nameof(IndexPageSize);
+
+        /// <summary>
+        /// Specifies whether index pages should be generated (if not specified or <c>false</c>,
+        /// only the first index page will be generated).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IndexPaging = nameof(IndexPaging);
+
+        /// <summary>
+        /// Specifies whether the full post content should be output on the index page(s)
+        /// (if not specified or <c>false</c>, only the excerpt will be output).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string IndexFullPosts = nameof(IndexFullPosts);
+
+        /// <summary>
+        /// The page size for the archive page (if not specified, no paging will be used).
+        /// </summary>
+        /// <type><see cref="int"/></type>
+        public const string ArchivePageSize = nameof(ArchivePageSize);
+
+        /// <summary>
+        /// Specifies whether the excerpts should be output on the archive page(s)
+        /// (if not specified or <c>false</c>, only the title and description will be displayed).
+        /// Note that this also controls displaying excerpts on the tag archive pages.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ArchiveExcerpts = nameof(ArchiveExcerpts);
+
+        /// <summary>
+        /// Specifies whether an archive should be generated (the default is <c>true</c>).
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string GenerateArchive = nameof(GenerateArchive);
+
+        /// <summary>
         /// The date of the post.
         /// </summary>
         /// <type><see cref="DateTime"/> or <see cref="string"/></type>
@@ -171,13 +215,6 @@ namespace Wyam.Blog
         public const string ShowInNavbar = nameof(ShowInNavbar);
 
         /// <summary>
-        /// Set by the recipe to the content of the post (without any of the wrapping HTML elements).
-        /// Used primarily by the feed generation module to ensure feed items don't include the whole layout.
-        /// </summary>
-        /// <type><see cref="string"/></type>
-        public const string Content = nameof(Content);
-
-        /// <summary>
         /// Set by the recipe for tag groups. Contains the set of documents with a given tag.
         /// </summary>
         /// <type><c>IEnumerable&lt;IDocument&gt;</c></type>
@@ -188,5 +225,27 @@ namespace Wyam.Blog
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string Tag = nameof(Tag);
+
+        /// <summary>
+        /// This should be a string or array of strings with the name(s)
+        /// of root-level folders to ignore when scanning for content pages.
+        /// Setting this global metadata value is useful when introducing
+        /// your own pipelines for files under certain folders and you don't
+        /// want the primary content page pipelines to pick them up.
+        /// </summary>
+        /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
+        public const string IgnoreFolders = nameof(IgnoreFolders);
+
+        [Obsolete("The HeaderTextColor key no longer has any effect, instead the header text color is calculated from the background image using JavaScript.")]
+        public const string HeaderTextColor = nameof(HeaderTextColor);
+
+        [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
+        public const string MarkdownExtensions = nameof(MarkdownConfiguration);
+
+        [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
+        public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
+
+        [Obsolete("BlogKeys.Content is obsolete. You can get the content of a post from the Blog.BlogPosts pipline by reading the IDocument.Content property for each post document.")]
+        public const string Content = nameof(Content);
     }
 }

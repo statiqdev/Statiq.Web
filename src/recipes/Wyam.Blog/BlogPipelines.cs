@@ -18,7 +18,7 @@ namespace Wyam.Blog
         /// <summary>
         /// Loads blog posts from Markdown and/or Razor files.
         /// </summary>
-        [Obsolete("Please use Blog.RawPosts instead of BlogPipelines.RawPosts which will be removed in a future version")]
+        [Obsolete("Please use Blog.BlogPosts instead of BlogPipelines.RawPosts which will be removed in a future version")]
         public const string RawPosts = nameof(RawPosts);
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Wyam.Blog
         /// pipeline so that the listing of tags on each blog post page
         /// will have the correct counts.
         /// </summary>
-        [Obsolete("Please use Blog.Posts instead of BlogPipelines.Posts which will be removed in a future version")]
+        [Obsolete("Please use Blog.RenderBlogPosts instead of BlogPipelines.Posts which will be removed in a future version")]
         public const string Posts = nameof(Posts);
 
         /// <summary>

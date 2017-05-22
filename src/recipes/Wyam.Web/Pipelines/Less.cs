@@ -20,7 +20,7 @@ namespace Wyam.Web.Pipelines
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
         public Less(string name)
-            : this(name, new[] { "**/{!_,}*.less" })
+            : this(name, new[] { "**/{!.git,}/**/{!_,}*.less" })
         {
         }
 
