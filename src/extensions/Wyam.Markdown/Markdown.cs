@@ -24,10 +24,15 @@ namespace Wyam.Markdown
     /// <category>Templates</category>
     public class Markdown : IModule
     {
+        /// <summary>
+        /// The default Markdown configuration.
+        /// </summary>
+        public const string DefaultConfiguration = "common";
+
         private readonly string _sourceKey;
         private readonly string _destinationKey;
         private readonly OrderedList<IMarkdownExtension> _extensions = new OrderedList<IMarkdownExtension>();
-        private string _configuration = "common";
+        private string _configuration = DefaultConfiguration;
         private bool _escapeAt = true;
 
         /// <summary>

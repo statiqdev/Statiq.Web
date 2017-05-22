@@ -28,8 +28,9 @@ Pipelines.Add("Content",
     Concat(
         ReadFiles("index.cshtml")
     ),
+	WriteFiles(".html").OnlyMetadata(),  // Sets the .html extension before rendering pages and generating links
 	Razor(),
-	WriteFiles(".html")
+	WriteFiles()
 );    
 
 Pipelines.Add("Resources",

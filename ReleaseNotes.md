@@ -1,3 +1,43 @@
+# 0.18.4
+
+- [Fix] Fixes feed content and description for common web pipelines (#528)
+
+# 0.18.3
+
+- **[Breaking Change]**[Refactoring] Moved Blog recipe theme file `/_PostIndex.cshtml` to `/_Archive.cshtml`, no other changes should be needed to this file in themes other than to move it - sorry for the rename (again), the first name was kind of dumb, this one is better
+- **[Breaking Change]**[Refactoring] Moved Blog recipe theme file `/tags/index.cshtml` to `/_Tags.cshtml`, no other changes should be needed to this file in themes other than to move it
+- [Feature] Suppressed tag page generation if no tags are present in Blog recipe (#456)
+- [Refactoring] Refactored `Wyam.Web` pipelines to encapsulate settings in classes
+- [Feature] Added a ton of flexibility and new settings to index and archive pages for the Blog recipe (#516)
+- [Feature] Adds the background check JS to BookSite Velocity theme
+- [Feature] Excludes `.git` from all recipes in case an input subfolder was closed from a repository
+- [Fix] Resolved some edge-case bugs with the globbing engine
+
+# 0.18.2
+
+- [Fix] Fix for invalid metadata key in Docs theme (#515)
+
+# 0.18.1
+
+- **[Breaking Change]**[Refactoring] Moved a couple theme template files in Blog themes: `posts/index.cshtml` -> `_PostIndex.cshtml`, `tags/tag.cshtml` -> `_Tag.cshtml` - if you were overriding these theme files, you'll need to move and rename your override file to match
+- [Refactoring] Deprecated `BlogKeys.HeaderTextColor` and the CleanBlog theme now automatically calculates header text color from background image using JS
+- [Feature] Added default settings to recipe scaffolding (#503)
+- [Fix] Manually copies the native git libraries for the `Git` module (#506)
+- [Feature] Added support for Less and Sass files to the Blog recipe
+- [Feature] Added `WithPageMetadata()` method to `Paginate` module to add metadata to generated page documents
+- [Feature] Added `NextPage` and `PreviousPage` output metadata to `Paginate` module
+- [Refactoring] Prefixed all Less include files in the Docs theme with an underscore and excluded underscore files from being processed directly by recipe (#507)
+- [Feature] `Less` module now sets `Keys.WritePath` with a `.css` extension - this may result in warnings if you follow the `Less` module with the `WriteFiles` module with an extension specified, remove the extension from the `WriteFiles` module and the warnings should go away
+- [Feature] `Less` module will now automatically check for underscore prefixes and add `.less` extension when looking for includes (#507)
+- [Feature] New `Sass` module (#7, thanks @enkafan)
+- [Feature] New `Sort` module for ordering documents using a comparison delegate
+- [Feature] `If` module can now ignore unmatched input documents
+- [Refactoring] Made `IModuleList` extensions fluent
+- [Feature] `Documents` module can now get documents from more than one pipeline at a time
+- [Refactoring] Moved source code for recipes to a dedicated folder
+- [Refactoring] All current recipes now share a common set of reusable pipelines from the new `Wyam.Web` library (#501)
+- [Feature] New BookSite recipe for book and ebook marketing sites (#488)
+
 # 0.17.7
 
 - [Fix] Fixes LiveReload support when under a virtual directory (#496)

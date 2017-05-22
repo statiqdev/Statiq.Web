@@ -85,6 +85,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <!-- HACK, required until VS2017 and the new project structure. -->
+    <Content Include="..\..\..\packages\LibGit2Sharp.NativeBinaries.1.0.164\runtimes\win7-x64\native\git2-a5cf255.dll">
+      <Link>git2-a5cf255.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />

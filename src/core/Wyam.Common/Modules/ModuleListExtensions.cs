@@ -437,6 +437,37 @@ namespace Wyam.Common.Modules
             return moduleList;
         }
 
+        /// <summary>
+        /// Modifies an inner module with the specified name.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="modifyName">The name of the inner module to modify.</param>
+        /// <param name="action">The action to apply to the inner module.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Modify<TModuleList>(this TModuleList moduleList, string modifyName, Action<IModule> action)
+            where TModuleList : IModuleList
+            => moduleList.Modify(moduleList.GuardIndexOf(modifyName), action);
+
+        /// <summary>
+        /// Modifies an inner module list with the specified index.
+        /// </summary>
+        /// <typeparam name="TModuleList">The type of the module list.</typeparam>
+        /// <param name="moduleList">The <see cref="ModuleList"/>.</param>
+        /// <param name="index">The index of the inner module to modify.</param>
+        /// <param name="action">The action to apply to the inner module.</param>
+        /// <returns>The current instance.</returns>
+        public static TModuleList Modify<TModuleList>(this TModuleList moduleList, int index, Action<IModule> action)
+            where TModuleList : IModuleList
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+            action(moduleList[index]);
+            return moduleList;
+        }
+
         private static int GuardIndexOfLast<T>(this IModuleList moduleList, Predicate<T> filter)
             where T : class, IModule
         {

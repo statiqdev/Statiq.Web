@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.IO;
+using Wyam.Core.Modules.IO;
 using Wyam.Web;
 
 namespace Wyam.Docs
@@ -299,6 +300,13 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="IEnumerable{Type}"/></type>
         public const string MarkdownExtensionTypes = nameof(MarkdownExtensionTypes);
+
+        /// <summary>
+        /// Indicates that include statements should be processed using the <see cref="Include"/> module.
+        /// The default behavior is to process all includes.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ProcessIncludes = nameof(ProcessIncludes);
 
         /// <summary>
         /// This should be a string or array of strings with the name(s)

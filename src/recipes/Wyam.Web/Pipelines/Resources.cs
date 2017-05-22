@@ -19,7 +19,7 @@ namespace Wyam.Web.Pipelines
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
         public Resources(string name)
-            : this(name, new[] { "**/*{!.cshtml,!.md,!.less,!.scss,}" })
+            : this(name, new[] { "**/{!.git,}/**/*{!.cshtml,!.md,!.less,!.scss,}" })
         {
         }
 

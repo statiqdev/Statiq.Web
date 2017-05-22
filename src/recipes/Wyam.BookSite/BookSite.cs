@@ -23,6 +23,8 @@ namespace Wyam.BookSite
     /// </summary>
     /// <metadata cref="BookSiteKeys.Title" usage="Setting">The title of the book.</metadata>
     /// <metadata cref="BookSiteKeys.Title" usage="Input">The title of the post, chapter, or page.</metadata>
+    /// <metadata cref="BookSiteKeys.ProcessIncludes" usage="Setting" />
+    /// <metadata cref="BookSiteKeys.ProcessIncludes" usage="Input" />
     /// <metadata cref="BookSiteKeys.Subtitle" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Setting" />
     /// <metadata cref="BookSiteKeys.Description" usage="Input">Used with chapters to provide an optional description of the chapter.</metadata>
@@ -62,48 +64,56 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static Pages Chapters { get; } = new Pages(
             nameof(Chapters),
-            ctx => ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath,
-            null,
-            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
-            (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber)),
-            false,
-            null)
+            new PagesSettings
+            {
+                PagesPattern = ctx => ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath,
+                MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
+                Sort = (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber))
+            })
                 .InsertBefore(
                     Pages.CreateTreeAndSort,
                     new Where((doc, ctx) => doc.Get<int>(BookSiteKeys.ChapterNumber) > 0));
 
-        /// <inheritdoc cref="BlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.BlogPosts" />
         [SourceInfo]
         public static BlogPosts BlogPosts { get; } = new BlogPosts(
             nameof(BlogPosts),
-            BookSiteKeys.Published,
-            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
-            ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
-            ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath);
+            new BlogPostsSettings
+            {
+                PublishedKey = BookSiteKeys.Published,
+                MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
+                IncludeDateInPostPath = ctx => ctx.Bool(BookSiteKeys.IncludeDateInPostPath),
+                PostsPath = ctx => ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath
+            });
 
-        /// <inheritdoc cref="Pages" />
+        /// <inheritdoc cref="Web.Pipelines.Pages" />
         [SourceInfo]
         public static Pages Pages { get; } = new Pages(
             nameof(Pages),
-            null,
-            ctx => new[]
+            new PagesSettings
+            {
+                IgnorePaths = ctx => new[]
                 {
                     ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath,
                     ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath,
                     ctx.DirectoryPath(BookSiteKeys.SectionsPath).FullPath
                 }
-                .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
-            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
-            (x, y) =>
-            {
-                int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));
-                return order == 0 ? Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)) : order;
-            },
-            true,
-            TreePlaceholderFactory);
+                    .Concat(ctx.List(BookSiteKeys.IgnoreFolders, Array.Empty<string>())),
+                MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
+                Sort = (x, y) =>
+                {
+                    int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));
+                    return order == 0 ? Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)) : order;
+                },
+                CreateTree = true,
+                TreePlaceholderFactory = TreePlaceholderFactory
+            });
 
         /// <summary>
         /// Reads sections for the homepage. These files can be either Markdown or Razor format
@@ -113,17 +123,18 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static Pages Sections { get; } = new Pages(
             nameof(Sections),
-            ctx => ctx.DirectoryPath(BookSiteKeys.SectionsPath).FullPath,
-            null,
-            ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
-            ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
-            (x, y) =>
+            new PagesSettings
             {
-                int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));
-                return order == 0 ? Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)) : order;
-            },
-            false,
-            null);
+                PagesPattern = ctx => ctx.DirectoryPath(BookSiteKeys.SectionsPath).FullPath,
+                MarkdownConfiguration = ctx => ctx.String(BookSiteKeys.MarkdownConfiguration),
+                MarkdownExtensionTypes = ctx => ctx.List<Type>(BookSiteKeys.MarkdownExtensionTypes),
+                ProcessIncludes = (doc, ctx) => doc.Bool(BookSiteKeys.ProcessIncludes),
+                Sort = (x, y) =>
+                {
+                    int order = Comparer.Default.Compare(x.String(BookSiteKeys.Order), y.String(BookSiteKeys.Order));
+                    return order == 0 ? Comparer.Default.Compare(x.String(Keys.Title), y.String(Keys.Title)) : order;
+                }
+            });
 
         /// <summary>
         /// Generates the index pages for blog posts.
@@ -131,17 +142,15 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static Archive BlogIndexes { get; } = new Archive(
             nameof(BlogIndexes),
-            new string[] { BlogPosts },
-            "_BlogIndex.cshtml",
-            "/_Layout.cshtml",
-            null,
-            null,
-            ctx => ctx.Get(BookSiteKeys.BlogPageSize, int.MaxValue),
-            null,
-            (doc, ctx) => "Blog",
-            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                File = "_BlogIndex.cshtml",
+                Layout = "/_Layout.cshtml",
+                PageSize = ctx => ctx.Get(BookSiteKeys.BlogPageSize, int.MaxValue),
+                Title = (doc, ctx) => "Blog",
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.BlogPath).FullPath}"
+            });
 
         /// <summary>
         /// Generates the chapter index.
@@ -149,34 +158,36 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static Archive ChapterIndex { get; } = new Archive(
             nameof(ChapterIndex),
-            new string[] { Chapters },
-            "_ChapterIndex.cshtml",
-            "/_Layout.cshtml",
-            null,
-            null,
-            null,
-            null,
-            (doc, ctx) => "Chapters",
-            (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath}",
-            null,
-            null);
+            new ArchiveSettings
+            {
+                Pipelines = new string[] { Chapters },
+                File = "_ChapterIndex.cshtml",
+                Layout = "/_Layout.cshtml",
+                Title = (doc, ctx) => "Chapters",
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath}"
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
         [SourceInfo]
         public static Web.Pipelines.Feeds BlogFeed { get; } = new Web.Pipelines.Feeds(
             nameof(BlogFeed),
-            new string[] { BlogPosts },
-            ctx => ctx.FilePath(BookSiteKeys.BlogRssPath),
-            ctx => ctx.FilePath(BookSiteKeys.BlogAtomPath),
-            ctx => ctx.FilePath(BookSiteKeys.BlogRdfPath));
+            new FeedsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                RssPath = ctx => ctx.FilePath(BookSiteKeys.BlogRssPath),
+                AtomPath = ctx => ctx.FilePath(BookSiteKeys.BlogAtomPath),
+                RdfPath = ctx => ctx.FilePath(BookSiteKeys.BlogRdfPath)
+            });
 
-        /// <inheritdoc cref="RenderPages" />
+        /// <inheritdoc cref="Web.Pipelines.RenderPages" />
         [SourceInfo]
         public static RenderPages RenderPages { get; } = new RenderPages(
             nameof(RenderPages),
-            new string[] { Pages },
-            (doc, ctx) => "/_Layout.cshtml",
-            null);
+            new RenderPagesSettings
+            {
+                Pipelines = new string[] { Pages },
+                Layout = (doc, ctx) => "/_Layout.cshtml"
+            });
 
         /// <summary>
         /// Renders the chapter pages if they have content.
@@ -184,25 +195,34 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static RenderPages RenderChapters { get; } = new RenderPages(
             nameof(RenderChapters),
-            new string[] { Chapters },
-            (doc, ctx) => "/_Chapter.cshtml",
-            (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber)));
+            new RenderPagesSettings
+            {
+                Pipelines = new string[] { Chapters },
+                Layout = (doc, ctx) => "/_Chapter.cshtml",
+                Sort = (x, y) => Comparer.Default.Compare(x.Get<int>(BookSiteKeys.ChapterNumber), y.Get<int>(BookSiteKeys.ChapterNumber))
+            });
 
-        /// <inheritdoc cref="RenderBlogPosts" />
+        /// <inheritdoc cref="Web.Pipelines.RenderBlogPosts" />
         [SourceInfo]
         public static RenderBlogPosts RenderBlogPosts { get; } = new RenderBlogPosts(
             nameof(RenderBlogPosts),
-            new string[] { BlogPosts },
-            BookSiteKeys.Published,
-            (doc, ctx) => "/_BlogPost.cshtml");
+            new RenderBlogPostsSettings
+            {
+                Pipelines = new string[] { BlogPosts },
+                PublishedKey = BookSiteKeys.Published,
+                Layout = (doc, ctx) => "/_BlogPost.cshtml"
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Redirects" />
         [SourceInfo]
         public static Redirects Redirects { get; } = new Redirects(
             nameof(Redirects),
-            new string[] { RenderPages, RenderBlogPosts },
-            ctx => ctx.Bool(BookSiteKeys.MetaRefreshRedirects),
-            ctx => ctx.Bool(BookSiteKeys.NetlifyRedirects));
+            new RedirectsSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts },
+                MetaRefreshRedirects = ctx => ctx.Bool(BookSiteKeys.MetaRefreshRedirects),
+                NetlifyRedirects = ctx => ctx.Bool(BookSiteKeys.NetlifyRedirects)
+            });
 
         /// <inheritdoc cref="Web.Pipelines.Less" />
         [SourceInfo]
@@ -220,10 +240,13 @@ namespace Wyam.BookSite
         [SourceInfo]
         public static ValidateLinks ValidateLinks { get; } = new ValidateLinks(
             nameof(ValidateLinks),
-            new string[] { RenderPages, RenderBlogPosts, Resources },
-            ctx => ctx.Bool(BookSiteKeys.ValidateAbsoluteLinks),
-            ctx => ctx.Bool(BookSiteKeys.ValidateRelativeLinks),
-            ctx => ctx.Bool(BookSiteKeys.ValidateLinksAsError));
+            new ValidateLinksSettings
+            {
+                Pipelines = new string[] { RenderPages, RenderBlogPosts, Resources },
+                ValidateAbsoluteLinks = ctx => ctx.Bool(BookSiteKeys.ValidateAbsoluteLinks),
+                ValidateRelativeLinks = ctx => ctx.Bool(BookSiteKeys.ValidateRelativeLinks),
+                ValidateLinksAsError = ctx => ctx.Bool(BookSiteKeys.ValidateLinksAsError)
+            });
 
         /// <inheritdoc />
         public override void Apply(IEngine engine)
@@ -253,13 +276,17 @@ namespace Wyam.BookSite
             // Config file
             configFile?.WriteAllText(@"#recipe BookSite
 
+// Customize your settings and add new ones here
+Settings[Keys.Host] = ""host.com"";
 Settings[BookSiteKeys.Title] = ""Your Book Title"";
 Settings[BookSiteKeys.Subtitle] = ""The Subtitle Of Your Book."";
 Settings[BookSiteKeys.Description] = ""A short description of your book."";
 Settings[BookSiteKeys.BookLink] = ""https://a/link/to/your/book"";
 Settings[BookSiteKeys.BookImage] = ""/images/book.jpg"";  // Add an image at this path to your input folder
 Settings[BookSiteKeys.Image] = ""/images/banner.jpg"";  // Add an image at this path to your input folder
-Settings[BookSiteKeys.ChaptersIntro] = ""A short introduction to the content of your book."";");
+Settings[BookSiteKeys.ChaptersIntro] = ""A short introduction to the content of your book."";
+
+// Add any pipeline customizations here");
 
             // Chapter
             inputDirectory.GetFile("chapters/first-chapter.md").WriteAllText(

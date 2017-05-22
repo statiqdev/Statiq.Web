@@ -14,7 +14,7 @@ namespace Wyam.Web.Pipelines
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
         public Sass(string name)
-            : this(name, new[] { "**/{!_,}*.scss" })
+            : this(name, new[] { "**/{!.git,}/**/{!_,}*.scss" })
         {
         }
 

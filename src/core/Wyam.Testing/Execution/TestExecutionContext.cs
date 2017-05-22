@@ -138,6 +138,9 @@ namespace Wyam.Testing.Execution
         }
 
         /// <inheritdoc/>
+        public Guid ExecutionId { get; set; } = Guid.NewGuid();
+
+        /// <inheritdoc/>
         public IReadOnlyCollection<byte[]> DynamicAssemblies { get; set; } = new List<byte[]>();
 
         /// <inheritdoc/>

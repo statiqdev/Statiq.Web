@@ -543,9 +543,6 @@
 	}
 
 	#header-wrapper {
-		background: url('../../images/banner.jpg') center center;
-		background-size: cover;
-
 		&:before {
 			content: '';
 			position: absolute;
@@ -647,13 +644,24 @@
 		h1 {
 			font-weight: 900;
 			text-transform: uppercase;
+			color: #000;
+		}
+
+		p {
+			color: #808080;
+			color: rgba(0, 0, 0, 0.5);
+			text-transform: uppercase;
+		}
+	}
+
+	#logo.background--dark {
+		h1 {
 			color: #fff;
 		}
 
 		p {
 			color: #eee;
 			color: rgba(255, 255, 255, 0.5);
-			text-transform: uppercase;
 		}
 	}
 
@@ -979,7 +987,7 @@
 				> ul {
 					display: inline-block;
 					border-radius: 0.35em;
-					box-shadow: inset 0px 0px 1px 1px rgba(255, 255, 255, 0.25);
+					box-shadow: inset 0px 0px 1px 1px rgba(0, 0, 0, 0.25);
 					padding: 0 1.5em 0 1.5em;
 
 					> li {
@@ -993,8 +1001,8 @@
 
 						> a, > span {
 							display: block;
-							color: #eee;
-							color: rgba(255, 255, 255, 0.75);
+							color: #444;
+							color: rgba(0, 0, 0, 0.75);
 							text-transform: uppercase;
 							text-decoration: none;
 							font-size: 0.7em;
@@ -1007,6 +1015,32 @@
 							-ms-transition: all .25s ease-in-out;
 							transition: all .25s ease-in-out;
 							outline: 0;
+						}
+
+						&:hover {
+							> a {
+								color: #000;
+							}
+						}
+
+						&.active {
+							> a, > span {
+								color: #000;
+							}
+						}
+					}
+				}
+			}
+
+			#nav.background--dark {
+				> ul {
+					box-shadow: inset 0px 0px 1px 1px rgba(255, 255, 255, 0.25);
+
+					> li {
+
+						> a, > span {
+							color: #eee;
+							color: rgba(255, 255, 255, 0.75);
 						}
 
 						&:hover {

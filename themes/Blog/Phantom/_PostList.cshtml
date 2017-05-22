@@ -1,19 +1,23 @@
 @model IEnumerable<IDocument>
 
 @{
-    foreach (IDocument doc in Model)
+    foreach (IDocument post in Model)
     {
-        string lead = doc.String(BlogKeys.Lead);
+        string lead = post.String(BlogKeys.Lead);
         
         <div>
-            <a href="@Context.GetLink(doc)">
-                <h3>@doc.WithoutSettings.String(BlogKeys.Title)</h3>
-                @if(!string.IsNullOrWhiteSpace(lead))
-                {
-                    <p>@lead</p>
-                }
+            <a href="@Context.GetLink(post)">
+                <h2>@post.WithoutSettings.String(BlogKeys.Title)</h2>
             </a>
-            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</em></p>            
+            @if(!string.IsNullOrWhiteSpace(lead))
+            {
+                <p>@lead</p>
+            }
+            <p><em>Posted on @(post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</em></p>      
+            @if(Context.Bool(BlogKeys.ArchiveExcerpts))
+            {
+                @Html.Raw(post.String(BlogKeys.Excerpt))
+            }
         </div>   
     }
 }

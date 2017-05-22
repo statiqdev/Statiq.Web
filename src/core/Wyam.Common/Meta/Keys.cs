@@ -230,6 +230,18 @@ namespace Wyam.Common.Meta
         /// <type><see cref="bool"/></type>
         public const string HasPreviousPage = nameof(HasPreviousPage);
 
+        /// <summary>
+        /// The next page.
+        /// </summary>
+        /// <type><see cref="IDocument"/></type>
+        public const string NextPage = nameof(NextPage);
+
+        /// <summary>
+        /// The previous page.
+        /// </summary>
+        /// <type><see cref="IDocument"/></type>
+        public const string PreviousPage = nameof(PreviousPage);
+
         // GroupBy
 
         /// <summary>
