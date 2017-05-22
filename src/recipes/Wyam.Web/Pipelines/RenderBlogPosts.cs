@@ -49,28 +49,26 @@ namespace Wyam.Web.Pipelines
         /// Creates the pipeline.
         /// </summary>
         /// <param name="name">The name of this pipeline.</param>
-        /// <param name="pipelines">The pipelines from which to get page documents.</param>
-        /// <param name="publishedKey">The metadata key where <see cref="DateTime"/> published dates are stored for each post.</param>
-        /// <param name="layout">The Razor layout to use.</param>
-        public RenderBlogPosts(string name, string[] pipelines, string publishedKey, DocumentConfig layout)
-            : base(name, GetModules(pipelines, publishedKey, layout))
+        /// <param name="settings">The settings for the pipeline.</param>
+        public RenderBlogPosts(string name, RenderBlogPostsSettings settings)
+            : base(name, GetModules(settings))
         {
         }
 
-        private static IModuleList GetModules(string[] pipelines, string publishedKey, DocumentConfig layout) => new ModuleList
+        private static IModuleList GetModules(RenderBlogPostsSettings settings) => new ModuleList
         {
             {
                 GetDocuments,
                 new ModuleCollection
                 {
                     new Documents()
-                        .FromPipelines(pipelines)
+                        .FromPipelines(settings.Pipelines)
                 }
             },
             {
                 Render,
                 new Razor.Razor()
-                    .WithLayout(layout)
+                    .WithLayout(settings.Layout)
             },
             {
                 WriteMetadata,
@@ -82,7 +80,7 @@ namespace Wyam.Web.Pipelines
             },
             {
                 OrderByPublished,
-                new OrderBy((doc, ctx) => doc.Get<DateTime>(publishedKey)).Descending()
+                new OrderBy((doc, ctx) => doc.Get<DateTime>(settings.PublishedKey)).Descending()
             }
         };
     }

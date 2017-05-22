@@ -124,7 +124,6 @@ namespace Wyam.Core.Tests.IO.Globbing
 
         public class ExpandBracesTests : GlobberFixture
         {
-            [Test]
             [TestCase("a/b", new[] { "a/b" })]
             [TestCase("!a/b", new[] { "!a/b" })]
             [TestCase("a/b{x,y}", new[] { "a/bx", "a/by" })]
@@ -153,6 +152,7 @@ namespace Wyam.Core.Tests.IO.Globbing
             [TestCase("a{b,c{d,e},{f,g}h}x{y,z}", new[] { "abxy", "abxz", "acdxy", "acdxz", "acexy", "acexz", "afhxy", "afhxz", "aghxy", "aghxz" })]
             [TestCase("{a,b}", new[] { "a", "b" })]
             [TestCase("**/{!_,}*.cshtml", new[] { "**/*.cshtml", "!**/_*.cshtml" })]
+            [TestCase("**/{!.foo,}/{!_,}*.cshtml", new[] { "!**/.foo/*.cshtml", "!**/.foo/_*.cshtml", "**/*.cshtml", "!**/_*.cshtml" })]
             public void ShouldExpandBraces(string pattern, string[] expected)
             {
                 // Given, When

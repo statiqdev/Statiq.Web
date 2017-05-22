@@ -6,24 +6,17 @@ Title: All Tags
             @Html.Partial("_PostList", Model.DocumentList(Keys.PageDocuments).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published)))
 
             <nav>
-                @{
-                    string tag = Model.String(BlogKeys.Tag).ToLowerInvariant().Replace(' ', '-');
-                    tag = tag.StartsWith(".") ? tag.Substring(1) : tag;
-                }
                 <ul class="pager">
                     <li class="previous">                
                         @if(Model.Bool(Keys.HasPreviousPage))
                         {
-                            string previousPage = Model.Get<int>(Keys.CurrentPage) == 2
-                                ? $"/tags/{tag}.html" : $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) - 1}";
-                            <a href="@previousPage"><span aria-hidden="true">&larr;</span> Newer</a>
+                            <a href="@(Context.GetLink(Model.Document(Keys.PreviousPage)))"><span aria-hidden="true">&larr;</span> Newer</a>
                         }                
                     </li>
                     <li class="next">
                         @if(Model.Bool(Keys.HasNextPage))
                         {
-                            string nextPage = $"/tags/{tag}{Model.Get<int>(Keys.CurrentPage) + 1}";
-                            <a href="@nextPage">Older <span aria-hidden="true">&rarr;</span></a>
+                            <a href="@(Context.GetLink(Model.Document(Keys.NextPage)))">Older <span aria-hidden="true">&rarr;</span></a>
                         }
                     </li>
                 </ul>
@@ -33,8 +26,8 @@ Title: All Tags
 		
         <div class="col-sm-4 col-sm-height">
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
             {
                 string tagName = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);

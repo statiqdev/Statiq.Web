@@ -37,7 +37,7 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="@Context.GetLink(Model, true)" />
 		<!-- TODO: More social graph meta tags -->
-
+		
 		<style>
 			@if(Context.ContainsKey(BookSiteKeys.Image))
 			{
@@ -96,6 +96,14 @@
 				<script src="@Context.GetLink("/assets/js/util.js")"></script>
 				<!--[if lte IE 8]><script src="@Context.GetLink("/assets/js/ie/respond.min.js")"></script><![endif]-->
 				<script src="@Context.GetLink("/assets/js/main.js")"></script>
+        		<script src="@Context.GetLink("/assets/js/background-check.min.js")"></script>
+				
+                <script>
+                        BackgroundCheck.init({
+                                targets: '#nav,#logo',
+                                images: '#header-wrapper'
+                        });
+                </script>
 
 	</body>
 </html>

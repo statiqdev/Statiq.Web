@@ -20,7 +20,6 @@ namespace Wyam.Git.Tests
         public class ExecuteTests : GitCommitsFixture
         {
             [Test]
-            [Ignore("Too slow")]
             public void GetAllCommitsFromInputPath()
             {
                 // Given

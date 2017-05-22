@@ -26,6 +26,7 @@
       <dependency id="Wyam.Feeds" version="$version$" />
       <dependency id="Wyam.SearchIndex" version="$version$" />
       <dependency id="Wyam.Sass" version="$version$" />
+      <dependency id="Wyam.Web" version="$version$" />
     </dependencies>
   </metadata>
   <files></files>

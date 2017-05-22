@@ -4,6 +4,15 @@
 .intro-header .site-heading .subheading {
   line-height: 1.6;
 }
+.intro-header .site-heading *, .intro-header .post-heading * {
+  text-shadow: 0 0 80px rgba(0,0,0,0.8);
+}
+.intro-header.background--light .site-heading *, .intro-header.background--light .post-heading * {
+  text-shadow: 0 0 80px rgba(255,255,255,0.8);
+}
+.intro-header.background--light *, .navbar:not(.is-fixed).background--light * { color: #000 !important; }
+hr.background--light { border-color: #000 !important; }
+.btn.background--light { color: initial !important }
 .btn {
   margin-bottom: 6px;
 }
@@ -115,6 +124,7 @@ code {
   display: table-cell;
   float: none;
 }
+
 @media (min-width: 768px) {
   .container-sm-height {
     display: table;

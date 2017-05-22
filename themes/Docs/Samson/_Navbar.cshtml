@@ -9,7 +9,7 @@
         .ToList();
     if(Documents[Docs.BlogPosts].Any())
     {
-        pages.Add(Tuple.Create("Blog", Context.GetLink(Context.String(BookSiteKeys.BlogPath))));
+        pages.Add(Tuple.Create("Blog", Context.GetLink(Context.String(DocsKeys.BlogPath))));
     }
     if(Documents[Docs.Api].Any())
     {
