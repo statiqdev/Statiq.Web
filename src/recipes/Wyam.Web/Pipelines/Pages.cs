@@ -121,7 +121,7 @@ namespace Wyam.Web.Pipelines
             {
                 segments.AddRange(ignorePatterns);
             }
-            segments.Add($"{(pagesPattern == null ? string.Empty : pagesPattern + "/")}**/{{!.git,}}/**/{{!_,}}*.{extension}");
+            segments.Add($"{(pagesPattern == null ? string.Empty : pagesPattern.Invoke(context) + "/")}**/{{!.git,}}/**/{{!_,}}*.{extension}");
             return segments.Count == 1 ? segments[0] : $"{{{string.Join(",", segments)}}}";
         }
     }
