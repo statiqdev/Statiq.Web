@@ -28,7 +28,7 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="/chapters/the-boscombe-valley-mystery" />
 		<!-- TODO: More social graph meta tags -->
-
+		
 		<style>
 
 					#header-wrapper {
@@ -187,6 +187,14 @@
 				<script src="/assets/js/util.js"></script>
 				<!--[if lte IE 8]><script src="/assets/js/ie/respond.min.js"></script><![endif]-->
 				<script src="/assets/js/main.js"></script>
+        		<script src="/assets/js/background-check.min.js"></script>
+				
+                <script>
+                        BackgroundCheck.init({
+                                targets: '#nav,#logo',
+                                images: '#header-wrapper'
+                        });
+                </script>
 
 	</body>
 </html>
