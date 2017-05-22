@@ -1,0 +1,19 @@
+@{
+    Layout="_Layout";
+    var Published = Model.Get<DateTime>(BlogKeys.Published);   
+    var Tags = Model.Get<string[]>(BlogKeys.Tags) ?? new string[] {};
+}
+
+<h2>@Model.WithoutSettings.String(BlogKeys.Title)</h2>
+<h3>Published @Published.ToShortDateString()</h3>
+
+@foreach (string tag in Tags.OrderBy(x => x)){ 
+    IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag)== tag && x.Get<int>(Keys.CurrentPage) == 1); 
+    if(tagDocument != null) {
+        <a href="@Context.GetLink(tagDocument)">@tag</a> 
+    } 
+} 
+
+@RenderBody()
+
+<a href="@Context.GetLink(Context.String(BlogKeys.PostsPath))">Back To posts</a>
