@@ -1,0 +1,20 @@
+@{
+        string Title = Model.WithoutSettings.String(BlogKeys.Title);
+        string PageTitle = Context.String(BlogKeys.Title) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>@PageTitle</title>
+  <meta name="description" content="@Context.String(BlogKeys.Description)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+
+  <link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Lora|Space+Mono:700">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link href="@Context.GetLink("/assets/css/main.css")" rel="stylesheet" />
+</head>

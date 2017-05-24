@@ -1,0 +1,16 @@
+@model IEnumerable<IDocument>
+      <ul>
+        @foreach(IDocument post in Model)   
+    { 
+        string lead = post.String(BlogKeys.Excerpt);
+          <li class="preview">
+            <a class="preview__link" href="@Context.GetLink(post)">
+              <span class="preview__date">@(post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</span>
+
+              <h2 class="preview__header">@post.WithoutSettings.String(BlogKeys.Title)</h2>
+              <p class="preview__excerpt">@Html.Raw(lead) ...</p>
+              <span class="preview__more">Read More</span>
+            </a>
+          </li>
+        }
+      </ul>

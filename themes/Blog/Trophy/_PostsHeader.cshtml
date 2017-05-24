@@ -1,0 +1,27 @@
+@model IEnumerable<string>
+<div>
+
+    @foreach(var indexedPost in Model.Select((v,i) => new {image= v,index=i}))   
+    { 
+        var imageString = indexedPost.image;
+         if(string.IsNullOrEmpty(imageString)){
+             imageString = "//unsplash.it/2000/1200/?random&sig=" + indexedPost.index.ToString();
+         }
+      <figure class="absolute-bg preview__img" style="background-image: url('@imageString');"></figure>
+    }
+    <div class="previews__container">
+      <span>Welcome to</span>
+      @if(Context.String(BlogKeys.Description) != null)
+    {
+        <h1>@Context.String(BlogKeys.Description)</h1>
+    }
+    @if(Context.String(BlogKeys.Intro) != null)
+    {            
+        @if(Context.String(BlogKeys.Description) != null)
+        {
+            <hr class="small">
+        }
+        <span class="subheading">@Context.String(BlogKeys.Intro)</span>
+    }
+    </div>
+  </div>

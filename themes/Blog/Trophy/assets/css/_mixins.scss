@@ -1,0 +1,91 @@
+/**
+ * Underline Slide from left and back
+ */
+@mixin border-slide($mainColor: $color-black, $borderColor: $color-alpha, $height: 3px) {
+  position: relative;
+
+  color: $mainColor;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 0%;
+    border-bottom: $height solid $borderColor;
+    transition: width 0.4s ease-in-out;
+  }
+
+  &:hover:after {
+    width: 100%;
+  }
+}
+
+/**
+ * Button Slide
+ * Need to still add hover state in parent element
+ * box-shadow: inset 175px 0 0 0 $color-alpha;
+ * color: $color-white;
+ */
+@mixin button-slide($pad: 0.5em, $border: 3px) {
+  @extend %letter-spacing;
+
+  display: inline-block;
+  padding: $pad;
+
+  font-family: $font-header;
+  color: $color-alpha;
+  border: $border solid $color-alpha;
+  box-shadow: inset 0 0 0 0 $color-alpha;
+  transition: all 0.4s ease-in-out;
+}
+
+/**
+ * Flex Grid
+ */
+@mixin flex-grid($sm: null, $md: null, $lg: null, $xl: null, $xxl: null, $pad: 0) {
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+
+  & > * {
+    padding: $pad;
+    flex-basis: 100% / $sm;
+    max-width: 100% / $sm;
+    
+    @media (min-width: $mq-md) {
+      flex-basis: 100% / $md;
+      max-width: 100% / $md;
+    }
+
+    @if $lg {
+      @media (min-width: $mq-lg) {
+        flex-basis: 100%/$lg;
+        max-width: 100%/$lg;
+      }
+    }
+
+    @if $xl {
+      @media (min-width: $mq-xl) {
+        flex-basis: 100% / $xl;
+        max-width: 100% / $xl;
+      }
+    }
+
+    @if $xxl {
+      @media (min-width: $mq-xxl) {
+        flex-basis: 100% / $xxl;
+        max-width: 100% / $xxl;
+      }
+    }
+  }
+}
+
+
+/**
+ * Box Shadow
+ */
+@mixin box-shadow($size, $color: $color-black) {
+  box-shadow: 0 $size $size * 2 rgba($color, 0.1), 0 $size $size * 2 rgba($color, 0.2);
+}

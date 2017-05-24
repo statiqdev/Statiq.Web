@@ -1,0 +1,27 @@
+@{
+  Layout = "_LayoutBase";
+    var postPages = Model.DocumentList(Keys.PageDocuments);
+    @*var postPages = Documents[Blog.BlogPosts].Take(10);*@
+}
+
+<section class="previews">
+    
+  @Html.Partial("_PostsHeader",postPages.Select(p => p.WithoutSettings.String(BlogKeys.Image)))
+
+  <div>
+    <header>
+      <ul class="tabs">
+        <li class="tabs__item">Posts</li>
+        <li class="tabs__item">Tags</li>
+      </ul>
+    </header>
+<div class="tab">
+    @Html.Partial("_PostsSection",postPages)
+    @Html.Partial("_Pagination") 
+<!--page footer -->
+@Html.Partial("_PageFooter", true)
+    </div>
+    @Html.Partial("_TagSection") 
+  </div>
+ 
+</section> 
