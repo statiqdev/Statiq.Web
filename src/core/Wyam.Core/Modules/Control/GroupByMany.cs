@@ -38,6 +38,7 @@ namespace Wyam.Core.Modules.Control
         private readonly DocumentConfig _key;
         private Func<IDocument, IExecutionContext, bool> _predicate;
         private IEqualityComparer<object> _comparer;
+        private bool _emptyOutputIfNoGroups;
 
         /// <summary>
         /// Partitions the result of the specified modules into groups with matching keys
@@ -147,6 +148,18 @@ namespace Wyam.Core.Modules.Control
             return this;
         }
 
+        /// <summary>
+        /// Specifies that no documents should be output if there are no groups. This is in contrast to the
+        /// default behavior of outputting the unmodified input documents if no groups were found.
+        /// </summary>
+        /// <param name="emptyOutput"><c>true</c> to not output documents when no groups are found.</param>
+        /// <returns>The current module instance.</returns>
+        public GroupByMany WithEmptyOutputIfNoGroups(bool emptyOutput = true)
+        {
+            _emptyOutputIfNoGroups = emptyOutput;
+            return this;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -156,7 +169,7 @@ namespace Wyam.Core.Modules.Control
                 .ToImmutableArray();
             if (groupings.Length == 0)
             {
-                return inputs;
+                return _emptyOutputIfNoGroups ? Array.Empty<IDocument>() : inputs;
             }
             return inputs.SelectMany(context, input =>
             {
