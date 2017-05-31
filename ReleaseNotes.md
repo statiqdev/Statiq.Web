@@ -1,3 +1,7 @@
+# 0.18.4
+
+- [Fix] Fixes feed content and description for common web pipelines (#528)
+
 # 0.18.3
 
 - **[Breaking Change]**[Refactoring] Moved Blog recipe theme file `/_PostIndex.cshtml` to `/_Archive.cshtml`, no other changes should be needed to this file in themes other than to move it - sorry for the rename (again), the first name was kind of dumb, this one is better
