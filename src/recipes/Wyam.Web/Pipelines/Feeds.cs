@@ -11,6 +11,7 @@ using Wyam.Common.Util;
 using Wyam.Core.Modules.Control;
 using Wyam.Core.Modules.IO;
 using Wyam.Feeds;
+using Wyam.Html;
 
 namespace Wyam.Web.Pipelines
 {
@@ -33,10 +34,13 @@ namespace Wyam.Web.Pipelines
         {
             new Documents()
                 .FromPipelines(settings.Pipelines),
-            new GenerateFeeds()
-                .WithRssPath(settings.RssPath)
-                .WithAtomPath(settings.AtomPath)
-                .WithRdfPath(settings.RdfPath),
+            settings.Customization(
+                new GenerateFeeds()
+                    .WithRssPath(settings.RssPath)
+                    .WithAtomPath(settings.AtomPath)
+                    .WithRdfPath(settings.RdfPath)
+                    .WithItemDescription((doc, ctx) => doc.String(HtmlKeys.Excerpt))
+                    .WithItemContent((doc, ctx) => doc.Content)),
             new WriteFiles()
         };
     }
