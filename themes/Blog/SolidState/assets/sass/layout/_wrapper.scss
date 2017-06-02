@@ -1,0 +1,303 @@
+///
+/// Solid State by HTML5 UP
+/// html5up.net | @ajlkn
+/// Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+///
+
+/* Wrapper */
+
+	/// Sets the colors of the wrapper's top/bottom edges.
+	/// @param {string} $color Color.
+	@mixin wrapper-edges-color($color: black) {
+		&:before, &:after {
+			background-image: svg-url('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="0,100 100,0 100,100" style="fill:#{$color};" /></svg>');
+		}
+
+		&:before {
+			box-shadow: inset 0 -1px 0 0 $color, 0 1px 0 0 $color;
+		}
+
+		&:after {
+			box-shadow: inset 0 -1px 0 0 $color, 0 1px 0 0 $color;
+		}
+	}
+
+	#wrapper {
+		> header {
+			@include padding(7.5em, 0, (3.5em, 0, _size(wrapper-edges, large) * -0.5, 0));
+
+			.inner {
+				margin: 0 auto;
+				width: _size(inner);
+			}
+
+			h2 {
+				border-bottom: solid 2px _palette(border);
+				font-size: 2em;
+				margin-bottom: _size(element-margin) * 0.4;
+				padding-bottom: _size(element-margin) * 0.2;
+			}
+
+			p {
+				font-family: _font(family-heading);
+				font-size: 1em;
+				font-weight: _font(weight-heading);
+				letter-spacing: _font(kern-heading);
+				line-height: 2;
+				text-transform: uppercase;
+			}
+		}
+
+		@include breakpoint(large) {
+			> header {
+				@include padding(5em, 0, (4em, 0, _size(wrapper-edges, large) * 0.5, 0));
+
+				background-color:		_palette(bg);
+
+				background-image:		linear-gradient(to top, transparentize(_palette(bg), 0.2), transparentize(_palette(bg), 0.2)),
+										url('../../images/bg.jpg');
+
+				background-size:		auto,
+										cover;
+
+				background-position:	center,
+										0% 30%;
+
+		 		margin-bottom: (_size(wrapper-edges, large) * -1);
+			}
+		}
+
+		@include breakpoint(medium) {
+			> header {
+				@include padding(7em, 3em, (4em, 0, _size(wrapper-edges, medium) * 0.5, 0));
+
+				background-size:		auto,
+										cover;
+
+				background-position:	center,
+										0% 0%;
+
+		 		margin-bottom: (_size(wrapper-edges, medium) * -1);
+
+				.inner {
+					width: 100%;
+				}
+			}
+		}
+
+		@include breakpoint(small) {
+			> header {
+				@include padding(3.75em, 2em, (2.75em, 0, _size(wrapper-edges, small) * 0.5, 0));
+
+				background-size:		auto,
+										125%;
+
+		 		margin-bottom: (_size(wrapper-edges, small) * -1);
+
+				h2 {
+					font-size: 1.25em;
+				}
+
+				p {
+					font-size: 0.8em;
+				}
+			}
+		}
+	}
+
+	.wrapper {
+		background-color: _palette(bg);
+		margin: _size(wrapper-edges, large) 0;
+		position: relative;
+		@include wrapper-edges-color(_palette(bg));
+
+		&:before, &:after {
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+			content: '';
+			display: block;
+			height: _size(wrapper-edges, large);
+			position: absolute;
+			width: 100%;
+		}
+
+		&:before {
+			left: 0;
+			top: (_size(wrapper-edges, large) * -1);
+		}
+
+		&:after {
+			@include vendor('transform', 'scaleY(-1)');
+			bottom: (_size(wrapper-edges, large) * -1);
+			left: 0;
+		}
+
+		&.alt {
+			&:before {
+				@include vendor('transform', 'scaleX(-1)');
+			}
+
+			&:after {
+				@include vendor('transform', 'scaleY(-1) scaleX(-1)');
+			}
+		}
+
+		.inner {
+			@include padding(3em, 0);
+			margin: 0 auto;
+			width: _size(inner);
+		}
+
+		@for $i from 2 through _misc(max-wrapper-styles) {
+			$j: 3 * ($i - 1);
+			$color: desaturate(lighten(_palette(bg), $j), $j * 0.5);
+
+			&.style#{$i} {
+				background-color: $color;
+				@include wrapper-edges-color($color);
+			}
+		}
+
+		&.spotlight {
+			@include wrapper-edges-color(_palette(accent));
+			background-color: _palette(accent);
+
+			.inner {
+				@include vendor('display', 'flex');
+				@include vendor('align-items', 'center');
+				@include vendor('flex-direction', 'row');
+			}
+
+			.image {
+				border-radius: 100%;
+				margin: 0 _size(section-spacing, large) _size(element-margin) 0;
+				width: 22em;
+				overflow: hidden;
+				-ms-flex: 1;
+
+				img {
+					border-radius: 100%;
+					width: 100%;
+				}
+			}
+
+			.content {
+				width: 100%;
+				-ms-flex: 2;
+			}
+
+			&:nth-child(2n - 1) {
+				.inner {
+					@include vendor('flex-direction', 'row-reverse');
+					text-align: right;
+				}
+
+				.image {
+					margin: 0 0 _size(element-margin) _size(section-spacing, large);
+				}
+			}
+
+			@for $i from 2 through _misc(max-wrapper-styles) {
+				$j: 3 * ($i - 1);
+				$color: saturate(darken(_palette(accent), $j), $j * 0.5);
+
+				&.style#{$i} {
+					background-color: $color;
+					@include wrapper-edges-color($color);
+				}
+			}
+		}
+
+		@include breakpoint(medium) {
+			margin: _size(wrapper-edges, medium) 0;
+
+			&:before, &:after {
+				height: _size(wrapper-edges, medium);
+			}
+
+			&:before {
+				top: (_size(wrapper-edges, medium) * -1);
+			}
+
+			&:after {
+				bottom: (_size(wrapper-edges, medium) * -1);
+				left: 0;
+			}
+
+			.inner {
+				@include padding(3em, 3em);
+				width: 100%;
+			}
+
+			&.spotlight {
+				.image {
+					margin: 0 _size(section-spacing, medium) _size(element-margin) 0;
+					width: 32em;
+				}
+
+				&:nth-child(2n - 1) {
+					.image {
+						margin: 0 0 _size(element-margin) _size(section-spacing, medium);
+					}
+				}
+			}
+		}
+
+		@include breakpoint(small) {
+			margin: _size(wrapper-edges, small) 0;
+
+			&:before, &:after {
+				height: _size(wrapper-edges, small);
+			}
+
+			&:before {
+				top: (_size(wrapper-edges, small) * -1);
+			}
+
+			&:after {
+				bottom: (_size(wrapper-edges, small) * -1);
+				left: 0;
+			}
+
+			.inner {
+				@include padding(2em, 2em);
+			}
+
+			&.spotlight {
+				.inner {
+					@include vendor('align-items', 'flex-start');
+				}
+
+				.image {
+					width: 19em;
+					margin: 0 _size(section-spacing, small) _size(element-margin) 0;
+				}
+
+				&:nth-child(2n - 1) {
+					.image {
+						margin: 0 0 _size(element-margin) _size(section-spacing, small);
+					}
+				}
+			}
+		}
+
+		@include breakpoint(xsmall) {
+			&.spotlight {
+				.inner {
+					display: block;
+				}
+
+				.image {
+					margin: 0 0 (_size(element-margin) * 0.5) 0 !important;
+					max-width: 85%;
+					width: 12em;
+				}
+			}
+		}
+
+		@include breakpoint(xxsmall) {
+			.inner {
+				@include padding(2em, 1.5em);
+			}
+		}
+	}
