@@ -11,7 +11,6 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
 using img = ImageProcessor;
 
 namespace Wyam.Images
@@ -367,6 +366,18 @@ namespace Wyam.Images
         }
 
         /// <summary>
+        /// Compress size of output image if possible.
+        /// Depending of count and size of input images this process can take some minutes
+        /// </summary>
+        /// <param name="lossless">defines if output should have same quality (true) or with quality loss (false)</param>
+        public Image Compress(bool lossless)
+        {
+            EnsureCurrentInstruction();
+            _currentInstruction.CompressLossless = lossless;
+            return this;
+        }
+
+        /// <summary>
         /// Mark the beginning of another set of processing instructions to be applied to the images.
         /// </summary>
         /// <returns>The current module instance.</returns>
@@ -442,6 +453,11 @@ namespace Wyam.Images
                     Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
 
                     Stream output = ProcessImage(input, format, instruction);
+
+                    if (instruction.CompressLossless.HasValue)
+                    {
+                        output = Compressor.Compress(output, format.ImageFormat, instruction.CompressLossless.Value);
+                    }
 
                     return context.GetDocument(input, output, new MetadataItems
                     {

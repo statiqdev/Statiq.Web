@@ -1,0 +1,32 @@
+- jpegtran
+-> this software is based in part on the work of the Independent JPEG Group
+
+################################################################################################
+
+- cjpeg
+-> this software is based in part on the work of the Independent JPEG Group
+
+#################################################################################################
+
+- gifsicle
+-> https://github.com/kohler/gifsicle/blob/master/COPYING
+
+#################################################################################################
+
+- zopflipng
+-> https://github.com/google/zopfli/blob/master/COPYING
+
+#################################################################################################
+
+- pngout
+-> http://advsys.net/ken/utils.htm#pngoutkziplicense
+
+#################################################################################################
+
+- pngquant
+-> https://github.com/pornel/pngquant/blob/master/COPYRIGHT
+
+#################################################################################################
+
+truepng
+-> ???
