@@ -37,7 +37,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                     engine.Settings[Keys.Host] = hostname;
                 }
                 ExecutionPipeline contentPipeline = new ExecutionPipeline("Content", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, contentPipeline);
 
                 IDocument doc = context.GetDocument(context.GetContentStream("Test"), new[]
                 {
@@ -83,7 +83,7 @@ namespace Wyam.Core.Tests.Modules.Contents
                     engine.Settings[Keys.Host] = hostname;
                 }
                 ExecutionPipeline contentPipeline = new ExecutionPipeline("Content", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, contentPipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, contentPipeline);
 
                 IDocument doc = context.GetDocument(context.GetContentStream("Test"), new[]
                 {

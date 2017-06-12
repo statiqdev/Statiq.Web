@@ -39,7 +39,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 // Given
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -65,7 +65,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -91,7 +91,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -118,7 +118,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -145,7 +145,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 // Given
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 string manyCharactersWow = new string(character[0], 10);
                 IDocument[] inputs =
                 {
@@ -173,7 +173,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
                 // Given
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -199,7 +199,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems
@@ -225,7 +225,7 @@ namespace Wyam.Core.Tests.Modules.Metadata
 
                 Engine engine = new Engine();
                 ExecutionPipeline pipeline = new ExecutionPipeline("Pipeline", (IModuleList)null);
-                IExecutionContext context = new ExecutionContext(engine, pipeline);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, pipeline);
                 IDocument[] inputs =
                 {
                     context.GetDocument(new MetadataItems

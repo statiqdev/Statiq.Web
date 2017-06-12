@@ -71,6 +71,9 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
+        private static readonly RazorService _razorService = new RazorService();
+        private static Guid _executionId = Guid.Empty;
+
         private readonly Type _basePageType;
         private DocumentConfig _viewStartPath;
         private DocumentConfig _layoutPath;
@@ -196,6 +199,15 @@ namespace Wyam.Razor
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            // Expire the internal Razor cache if this is a new execution
+            // This needs to be done so that layouts/partials can be re-rendered if they've changed,
+            // otherwise Razor will just use the previously cached version of them
+            if (_executionId != Guid.Empty && _executionId != context.ExecutionId)
+            {
+                _razorService.ExpireChangeTokens();
+            }
+            _executionId = context.ExecutionId;
+
             // Eliminate input documents that we shouldn't process
             List<IDocument> validInputs = inputs
                 .Where(context, x => _ignorePrefix == null
@@ -231,7 +243,7 @@ namespace Wyam.Razor
                         Model = _model == null ? input : _model.Invoke(input, context),
                     };
 
-                    RazorService.Instance.Render(request);
+                    _razorService.Render(request);
                 }
 
                 return context.GetDocument(input, contentStream);

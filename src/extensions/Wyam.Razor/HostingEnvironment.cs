@@ -21,6 +21,8 @@ namespace Wyam.Razor
             ContentRootFileProvider = WebRootFileProvider;
         }
 
+        public void ExpireChangeTokens() => ((FileSystemFileProvider) WebRootFileProvider).ExpireChangeTokens();
+
         public string EnvironmentName { get; set; }
         public string ApplicationName { get; set; }
         public string WebRootPath { get; set; }
