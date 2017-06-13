@@ -33,11 +33,7 @@ namespace Wyam.Razor
     internal class RazorCompiler
     {
         private readonly ConcurrentDictionary<CompilerCacheKey, CompilationResult> _compilationCache = new ConcurrentDictionary<CompilerCacheKey, CompilationResult>();
-        private readonly IServiceProvider _serviceProvider;
-
-        // Razor is apparently not thread safe when reusing the same host for multiple threads.
-        // We should investigate where to put the lock.
-        private readonly object _lock = new object();
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         internal RazorCompiler(CompilationParameters parameters)
         {
@@ -48,47 +44,58 @@ namespace Wyam.Razor
                 .AddRazorViewEngine();
 
             builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(parameters.DynamicAssemblies));
-            serviceCollection.Configure<RazorViewEngineOptions>(options => { options.ViewLocationExpanders.Add(new ViewLocationExpander()); });
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new ViewLocationExpander());
+            });
 
-            serviceCollection.AddSingleton(parameters.FileSystem);
-            serviceCollection.AddSingleton<ILoggerFactory, TraceLoggerFactory>();
-            serviceCollection.AddSingleton<ILoggerFactory, TraceLoggerFactory>();
-            serviceCollection.AddSingleton<DiagnosticSource, SilentDiagnosticSource>();
-            serviceCollection.AddSingleton<IHostingEnvironment, HostingEnvironment>();
-            serviceCollection.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
-            serviceCollection.AddSingleton(parameters.Namespaces);
-            serviceCollection.AddSingleton(parameters.DynamicAssemblies);
-            serviceCollection.AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(parameters.BasePageType ?? typeof(WyamRazorPage<>)));
-            serviceCollection.AddSingleton<IMvcRazorHost, RazorHost>();
+            serviceCollection
+                .AddSingleton(parameters.FileSystem)
+                .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
+                .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
+                .AddSingleton<DiagnosticSource, SilentDiagnosticSource>()
+                .AddSingleton<IHostingEnvironment, HostingEnvironment>()
+                .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
+                .AddSingleton(parameters.Namespaces)
+                .AddSingleton(parameters.DynamicAssemblies)
+                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(parameters.BasePageType ?? typeof(WyamRazorPage<>)))
+                .AddScoped<IMvcRazorHost, RazorHost>();
 
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+            IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
 
-        public IServiceProvider ServiceProvider => _serviceProvider;
+        public void ExpireChangeTokens()
+        {
+            // Use a new scope to get the hosting enviornment
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+            {
+                HostingEnvironment hostingEnvironment = (HostingEnvironment)scope.ServiceProvider.GetService<IHostingEnvironment>();
+                hostingEnvironment.ExpireChangeTokens();
+            }
+        }
 
         public void RenderPage(RenderRequest request)
         {
-            IRazorPage page = GetPageFromStream(request);
-
-            // Razor is apparently not thread safe when reusing the same host for multiple threads.
-            // We should investigate where to put the lock.
-            lock (_lock)
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                IView view = GetViewFromStream(request, page);
+                IServiceProvider serviceProvider = scope.ServiceProvider;
+                IRazorPage page = GetPageFromStream(serviceProvider, request);
+                IView view = GetViewFromStream(serviceProvider, request, page);
 
                 using (StreamWriter writer = request.Output.GetWriter())
                 {
-                    Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = GetViewContext(request, view, writer);
+                    Microsoft.AspNetCore.Mvc.Rendering.ViewContext viewContext = GetViewContext(serviceProvider, request, view, writer);
                     viewContext.View.RenderAsync(viewContext).GetAwaiter().GetResult();
                 }
             }
         }
 
-        private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(RenderRequest request, IView view, TextWriter output)
+        private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(IServiceProvider serviceProvider, RenderRequest request, IView view, TextWriter output)
         {
             HttpContext httpContext = new DefaultHttpContext
             {
-                RequestServices = _serviceProvider
+                RequestServices = serviceProvider
             };
 
             ActionContext actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
@@ -98,7 +105,7 @@ namespace Wyam.Razor
                 Model = request.Model
             };
 
-            ITempDataDictionary tempData = new TempDataDictionary(actionContext.HttpContext, _serviceProvider.GetRequiredService<ITempDataProvider>());
+            ITempDataDictionary tempData = new TempDataDictionary(actionContext.HttpContext, serviceProvider.GetRequiredService<ITempDataProvider>());
 
             ViewContext viewContext = new ViewContext(
                 actionContext,
@@ -117,14 +124,14 @@ namespace Wyam.Razor
         /// Gets the view for an input document (which is different than the view for a layout, partial, or
         /// other indirect view because it's not necessarily on disk or in the file system).
         /// </summary>
-        private IView GetViewFromStream(RenderRequest request, IRazorPage page)
+        private IView GetViewFromStream(IServiceProvider serviceProvider, RenderRequest request, IRazorPage page)
         {
             IEnumerable<string> viewStartLocations = request.ViewStartLocation != null
                 ? new[] { request.ViewStartLocation }
                 : ViewHierarchyUtility.GetViewStartLocations(request.RelativePath);
 
             List<IRazorPage> viewStartPages = viewStartLocations
-                .Select(_serviceProvider.GetRequiredService<IRazorPageFactoryProvider>().CreateFactory)
+                .Select(serviceProvider.GetRequiredService<IRazorPageFactoryProvider>().CreateFactory)
                 .Where(x => x.Success)
                 .Select(x => x.RazorPageFactory())
                 .Reverse()
@@ -135,9 +142,9 @@ namespace Wyam.Razor
                 page.Layout = request.LayoutLocation;
             }
 
-            IRazorViewEngine viewEngine = _serviceProvider.GetRequiredService<IRazorViewEngine>();
-            IRazorPageActivator pageActivator = _serviceProvider.GetRequiredService<IRazorPageActivator>();
-            HtmlEncoder htmlEncoder = _serviceProvider.GetRequiredService<HtmlEncoder>();
+            IRazorViewEngine viewEngine = serviceProvider.GetRequiredService<IRazorViewEngine>();
+            IRazorPageActivator pageActivator = serviceProvider.GetRequiredService<IRazorPageActivator>();
+            HtmlEncoder htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
             return new RazorView(viewEngine, pageActivator, viewStartPages, page, htmlEncoder);
         }
@@ -147,7 +154,7 @@ namespace Wyam.Razor
         /// DefaultRazorPageFactory and CompilerCache. Note that we don't actually bother
         /// with caching the page if it's from a live stream.
         /// </summary>
-        private IRazorPage GetPageFromStream(RenderRequest request)
+        private IRazorPage GetPageFromStream(IServiceProvider serviceProvider, RenderRequest request)
         {
             string relativePath = request.RelativePath;
 
@@ -158,7 +165,7 @@ namespace Wyam.Razor
             }
 
             // Get the file info by combining the stream content with info found at the document's original location (if any)
-            IHostingEnvironment hostingEnvironment = _serviceProvider.GetRequiredService<IHostingEnvironment>();
+            IHostingEnvironment hostingEnvironment = serviceProvider.GetRequiredService<IHostingEnvironment>();
             IFileInfo fileInfo = new StreamFileInfo(hostingEnvironment.WebRootFileProvider.GetFileInfo(relativePath), request.Input);
             RelativeFileInfo relativeFileInfo = new RelativeFileInfo(fileInfo, relativePath);
 
@@ -167,17 +174,17 @@ namespace Wyam.Razor
             byte[] hash = MD5.Create().ComputeHash(request.Input);
             request.Input.Position = 0;
 
-            CompilerCacheResult compilerCacheResult = CompilePage(request, hash, relativeFileInfo, relativePath);
+            CompilerCacheResult compilerCacheResult = CompilePage(serviceProvider, request, hash, relativeFileInfo, relativePath);
 
             IRazorPage result = compilerCacheResult.PageFactory();
 
             return result;
         }
 
-        private CompilerCacheResult CompilePage(RenderRequest request, byte[] hash, RelativeFileInfo relativeFileInfo, string relativePath)
+        private CompilerCacheResult CompilePage(IServiceProvider serviceProvider, RenderRequest request, byte[] hash, RelativeFileInfo relativeFileInfo, string relativePath)
         {
             CompilerCacheKey cacheKey = new CompilerCacheKey(request, hash);
-            IRazorCompilationService razorCompilationService = _serviceProvider.GetRequiredService<IRazorCompilationService>();
+            IRazorCompilationService razorCompilationService = serviceProvider.GetRequiredService<IRazorCompilationService>();
             CompilationResult compilationResult = _compilationCache.GetOrAdd(cacheKey, _ => GetCompilation(relativeFileInfo, razorCompilationService));
 
             // Create and return the page

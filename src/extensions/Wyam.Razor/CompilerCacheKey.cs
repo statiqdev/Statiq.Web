@@ -3,6 +3,12 @@ using System.Linq;
 
 namespace Wyam.Razor
 {
+    /// <summary>
+    /// Used as a key for the Razor compiler cache to persist page compilations from one generation to the next.
+    /// A composite of layout location, view start location, and file hash. Note that file path is not included
+    /// so that documents with the same content (or not content) and with the same layout and view start can
+    /// use the same cached compilation.
+    /// </summary>
     internal class CompilerCacheKey : IEquatable<CompilerCacheKey>
     {
         private readonly RenderRequest _request;
@@ -18,7 +24,6 @@ namespace Wyam.Razor
             _hashCode = 17;
             _hashCode = (_hashCode * 31) + (_request.LayoutLocation?.GetHashCode() ?? 0);
             _hashCode = (_hashCode * 31) + (_request.ViewStartLocation?.GetHashCode() ?? 0);
-            _hashCode = (_hashCode * 31) + (_request.RelativePath?.GetHashCode() ?? 0);
             foreach (byte b in _fileHash)
             {
                 _hashCode = (_hashCode * 31) ^ b;
@@ -37,7 +42,6 @@ namespace Wyam.Razor
             }
             return _request.LayoutLocation == other._request.LayoutLocation
                 && _request.ViewStartLocation == other._request.ViewStartLocation
-                && _request.RelativePath == other._request.RelativePath
                 && _fileHash.SequenceEqual(other._fileHash);
         }
     }

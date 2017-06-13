@@ -71,7 +71,7 @@ namespace Wyam.Razor
     /// <include file='Documentation.xml' path='/Documentation/Razor/*' />
     public class Razor : IModule
     {
-        private static readonly RazorService _razorService = new RazorService();
+        private static readonly RazorService RazorService = new RazorService();
         private static Guid _executionId = Guid.Empty;
 
         private readonly Type _basePageType;
@@ -204,7 +204,7 @@ namespace Wyam.Razor
             // otherwise Razor will just use the previously cached version of them
             if (_executionId != Guid.Empty && _executionId != context.ExecutionId)
             {
-                _razorService.ExpireChangeTokens();
+                RazorService.ExpireChangeTokens();
             }
             _executionId = context.ExecutionId;
 
@@ -243,7 +243,7 @@ namespace Wyam.Razor
                         Model = _model == null ? input : _model.Invoke(input, context),
                     };
 
-                    _razorService.Render(request);
+                    RazorService.Render(request);
                 }
 
                 return context.GetDocument(input, contentStream);

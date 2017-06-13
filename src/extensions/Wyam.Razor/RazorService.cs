@@ -28,10 +28,9 @@ namespace Wyam.Razor
 
         public void ExpireChangeTokens()
         {
-            foreach (RazorCompiler interpreter in _compilers.Values)
+            foreach (RazorCompiler compiler in _compilers.Values)
             {
-                HostingEnvironment hostingEnviornment = (HostingEnvironment)interpreter.ServiceProvider.GetService<IHostingEnvironment>();
-                hostingEnviornment.ExpireChangeTokens();
+                compiler.ExpireChangeTokens();
             }
         }
     }
