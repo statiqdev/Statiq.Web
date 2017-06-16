@@ -170,7 +170,15 @@ namespace Wyam.Configuration.ConfigScript
             // Get the compilation
             var parseOptions = new CSharpParseOptions();
             var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(Code, Encoding.UTF8), parseOptions, AssemblyName);
-            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).
+                WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
+                {
+                    // ensure that specific warnings about assembly references are always suppressed
+                    // https://github.com/dotnet/roslyn/issues/5501
+                    { "CS1701", ReportDiagnostic.Suppress },
+                    { "CS1702", ReportDiagnostic.Suppress },
+                    { "CS1705", ReportDiagnostic.Suppress }
+                 });
             var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
                 referenceAssemblies
@@ -193,7 +201,6 @@ namespace Wyam.Configuration.ConfigScript
                 // Trace warnings
                 List<string> warningMessages = result.Diagnostics
                     .Where(x => x.Severity == DiagnosticSeverity.Warning)
-                    .Where(x => x.Id != "CS1701")  // Assembly binding redirects, we don't care about these in the script
                     .Select(GetCompilationErrorMessage)
                     .ToList();
                 if (warningMessages.Count > 0)
