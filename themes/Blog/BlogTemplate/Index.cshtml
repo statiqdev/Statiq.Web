@@ -1,13 +1,12 @@
 <ul>
-    @foreach(var post in Model.DocumentList(Keys.PageDocuments)){
-
-    <li>
-        <a href="@Context.GetLink(post)">
-            <h2>@post.WithoutSettings.String(BlogKeys.Title)</h2>
-            @post.String(BlogKeys.Excerpt)
-        </a>
-    </li>
-    
+    @foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
+    {
+        <li>
+            <a href="@Context.GetLink(post)">
+                <h2>@post.WithoutSettings.String(BlogKeys.Title)</h2>
+            </a>
+            @Html.Raw(post.String(BlogKeys.Excerpt))
+        </li>    
     }
 </ul>
 
