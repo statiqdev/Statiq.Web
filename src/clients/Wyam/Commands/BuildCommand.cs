@@ -226,10 +226,19 @@ namespace Wyam.Commands
                     // Start the key listening thread
                     Thread thread = new Thread(() =>
                     {
-                        Trace.Information("Hit any key to exit");
-                        Console.ReadKey();
-                        _exit.Set();
-                        _messageEvent.Set();
+                        Trace.Information("Hit Ctrl-C to exit");
+                        Console.TreatControlCAsInput = true;
+                        while (true)
+                        {
+                            // Would have prefered to use Console.CancelKeyPress, but that bubbles up to calling batch files
+                            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+                            if (consoleKey.Key == (ConsoleKey)3 || (consoleKey.Key == ConsoleKey.C && (consoleKey.Modifiers & ConsoleModifiers.Control) != 0))
+                            {
+                                _exit.Set();
+                                _messageEvent.Set();
+                                break;
+                            }
+                        }
                     })
                     {
                         IsBackground = true
@@ -304,7 +313,7 @@ namespace Wyam.Commands
                     {
                         break;
                     }
-                    Trace.Information("Hit any key to exit");
+                    Trace.Information("Hit Ctrl-C to exit");
                     _messageEvent.Reset();
                 }
 
