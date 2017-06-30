@@ -37,6 +37,7 @@ namespace Wyam.Commands
                 while (true)
                 {
                     // Would have prefered to use Console.CancelKeyPress, but that bubbles up to calling batch files
+                    // The (ConsoleKey)3 check is to support a bug in VS Code: https://github.com/Microsoft/vscode/issues/9347
                     ConsoleKeyInfo consoleKey = Console.ReadKey(true);
                     if (consoleKey.Key == (ConsoleKey)3 || (consoleKey.Key == ConsoleKey.C && (consoleKey.Modifiers & ConsoleModifiers.Control) != 0))
                     {

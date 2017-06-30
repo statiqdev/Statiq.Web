@@ -22,9 +22,9 @@ namespace Wyam
                 return null;
             }
 
-            Trace.Information($"Preview server listening on port {port} and serving from path {path}"
-                + (virtualDirectory == null ? string.Empty : $" with virtual directory {virtualDirectory.FullPath}")
-                + (liveReload ? " and LiveReload support" : string.Empty));
+            string urlPath = virtualDirectory == null ? string.Empty : virtualDirectory.FullPath;
+            Trace.Information($"Preview server listening at http://localhost:{port}{urlPath} and serving from path {path}"
+                + (liveReload ? " with LiveReload support" : string.Empty));
             return server;
         }
     }
