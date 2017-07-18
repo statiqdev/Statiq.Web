@@ -24,6 +24,10 @@ Hit any key to exit...
 
 For more information see [Wyam.io](https://wyam.io).
 
+## Limitations
+
+* Only runs on .NET Framework (i.e. Windows) at the moment. Work is underway to make it run on .NET Core also: [#300](https://github.com/Wyamio/Wyam/issues/300).
+
 ## Acknowledgements
 
 * Portions of the IO support were originally inspired from [Cake](http://cakebuild.net) under an MIT license.
