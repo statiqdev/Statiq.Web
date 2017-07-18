@@ -52,7 +52,7 @@ namespace Wyam.Web.Pipelines
                 ReadFile,
                 new ModuleCollection
                 {
-                    new ReadFiles(settings.File),
+                    new ReadFiles(settings.TemplateFile),
                     new FrontMatter(new Yaml.Yaml())
                 }
             },
@@ -124,7 +124,7 @@ namespace Wyam.Web.Pipelines
                     }
                     paginate = paginate.WithPageMetadata(Keys.RelativeFilePath, (doc, ctx) =>
                     {
-                        FilePath filePath = settings.RelativePath?.Invoke<string>(doc, ctx) ?? settings.File.Invoke<FilePath>(ctx);
+                        FilePath filePath = settings.RelativePath?.Invoke<FilePath>(doc, ctx) ?? settings.TemplateFile.Invoke<FilePath>(ctx);
                         bool hasExtension = filePath.HasExtension;
                         if (hasExtension)
                         {

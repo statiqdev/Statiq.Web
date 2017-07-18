@@ -92,16 +92,24 @@ namespace Wyam.Blog
         public const string NetlifyRedirects = nameof(NetlifyRedirects);
 
         /// <summary>
-        /// Specifies the path of the archive file that lists your blog posts.
-        /// By default this is also the site's index file and this setting is
-        /// "index.cshtml". The file path will be used to read the archive template
-        /// and as the output path of the archive. If you change it, you are
-        /// responsible for providing this file in your input path (for example,
-        /// by copying the "index.cshtml" from a theme to the specified file name
-        /// in your input folder).
+        /// Specifies the path of the template file that lists your blog posts
+        /// (which is also typically used as the home page by default).
+        /// By default this setting is "_Index.cshtml". The file path will be used to
+        /// read the index template. If you change it, you are responsible for providing
+        /// this file in your input path (for example, by copying the "_Index.cshtml" from
+        /// a theme to the specified file name in your input folder).
         /// </summary>
         /// <type><see cref="FilePath"/> or <see cref="string"/></type>
-        public const string ArchiveFile = nameof(ArchiveFile);
+        public const string IndexTemplate = nameof(IndexTemplate);
+
+        /// <summary>
+        /// Specifies the output path of the generated index. By default this
+        /// is the home page of your site at "index.html". If you change this
+        /// it lets you provide an alternate home page for your site while still
+        /// generating a list of posts at the specified output location.
+        /// </summary>
+        /// <type><see cref="FilePath"/> or <see cref="string"/></type>
+        public const string IndexPath = nameof(IndexPath);
 
         /// <summary>
         /// Specifies the path where the blog RSS file will be output.
