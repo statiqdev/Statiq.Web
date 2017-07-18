@@ -1,3 +1,17 @@
+# 0.18.5
+
+- [Refactoring] Moved the blog theme index template file from `index.cshtml` to `_Index.cshtml` to match other template conventions (#520)
+- [Feature] Added settings to the blog recipe to configure index template and output path (#541)
+- [Feature] Added note to readme file about platform support (#540, thanks @perlun)
+- [Fix] CLI commands are now case-insensitive, though options and flags are still case-sensitive for now (#539)
+- [Refactoring] Preview server now logs a full localhost URL so terminals can link it (#533)
+- [Refactoring] Switching exit key combination to Ctrl-C instead of any key (#534)
+- [Feature] New BlogTemplate theme for the blog recipe to use as basis for new themes (#518, thanks @adamclifford)
+- [Fix] Docs fix for Cake addin (#535, thanks @ghuntley)
+- [Refactoring] Suppress CS1701 in config file compilation instead of filtering (#529, thanks @filipw)
+- [Refactoring] Performance boost for Razor rending (#509, thanks @jontdelorme)
+- [Feature] New SolidState theme for the blog recipe (#514, thanks @RLittlesII)
+
 # 0.18.4
 
 - [Fix] Fixes feed content and description for common web pipelines (#528)
