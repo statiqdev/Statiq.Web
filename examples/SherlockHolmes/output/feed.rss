@@ -1,27 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0">
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
 	<channel>
 		<title>The Adventures of Sherlock Holmes</title>
 		<link>/</link>
 		<description>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</description>
 		<copyright>2017</copyright>
-		<pubDate>Mon, 22 May 2017 21:42:23 GMT</pubDate>
-		<lastBuildDate>Mon, 22 May 2017 21:42:23 GMT</lastBuildDate>
+		<pubDate>Tue, 18 Jul 2017 21:00:57 GMT</pubDate>
+		<lastBuildDate>Tue, 18 Jul 2017 21:00:57 GMT</lastBuildDate>
 		<item>
 			<title>On Doyle's Name</title>
 			<link>/blog/on-doyles-name</link>
-			<description>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</description>
+			<description>&lt;p&gt;Doyle is often referred to as "Sir Arthur Conan Doyle" or simply "Conan Doyle" (implying that Conan is part of a compound surname, as opposed to his given middle name). His baptism entry in the register of St Mary's Cathedral, Edinburgh, gives "Arthur Ignatius Conan" as his given names and "Doyle" as his surname. It also names Michael Conan as his godfather. The cataloguers of the British Library and the Library of Congress treat "Doyle" alone as his surname.&lt;/p&gt;</description>
 			<enclosure url="/images/banner.jpg" length="0" type="image" />
 			<guid isPermaLink="false">/blog/on-doyles-name</guid>
 			<pubDate>Tue, 14 Mar 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Doyle is often referred to as &amp;quot;Sir Arthur Conan Doyle&amp;quot; or simply &amp;quot;Conan Doyle&amp;quot; (implying that Conan is part of a compound surname, as opposed to his given middle name). His baptism entry in the register of St Mary's Cathedral, Edinburgh, gives &amp;quot;Arthur Ignatius Conan&amp;quot; as his given names and &amp;quot;Doyle&amp;quot; as his surname. It also names Michael Conan as his godfather. The cataloguers of the British Library and the Library of Congress treat &amp;quot;Doyle&amp;quot; alone as his surname.&lt;/p&gt;
+&lt;p&gt;Steven Doyle, editor of the Baker Street Journal, wrote, &amp;quot;Conan was Arthur's middle name. Shortly after he graduated from high school he began using Conan as a sort of surname. But technically his last name is simply 'Doyle'.&amp;quot; When knighted, he was gazetted as Doyle, not under the compound Conan Doyle. Nevertheless, the actual use of a compound surname is demonstrated by the fact that Doyle's second wife was known as Jean Conan Doyle rather than Jean Doyle.&lt;/p&gt;
+</content:encoded>
 		</item>
 		<item>
 			<title>Putting The Stories In Context</title>
 			<link>/blog/putting-the-stories-in-context</link>
-			<description>First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.</description>
+			<description>&lt;p&gt;Arthur Conan Doyle began writing while studying medicine at university in the late 1870s, and had his first short story, "The Mystery of Sasassa Valley", published in September 1879. Eight years later, A Study in Scarlet, Doyle's first Sherlock Holmes story, was published by Ward Lock &amp;amp; Co.&lt;/p&gt;</description>
 			<enclosure url="/images/banner.jpg" length="0" type="image" />
 			<guid isPermaLink="false">/blog/putting-the-stories-in-context</guid>
 			<pubDate>Wed, 22 Feb 2017 00:00:00 GMT</pubDate>
+			<content:encoded>&lt;p&gt;Arthur Conan Doyle began writing while studying medicine at university in the late 1870s, and had his first short story, &amp;quot;The Mystery of Sasassa Valley&amp;quot;, published in September 1879. Eight years later, A Study in Scarlet, Doyle's first Sherlock Holmes story, was published by Ward Lock &amp;amp; Co.&lt;/p&gt;
+&lt;p&gt;The novel was well received, but Doyle was paid little for it, and despite a sequel novel, The Sign of the Four, also being published by Ward Lock, he shifted his focus to short stories. In early 1891, the first editor of The Strand Magazine, Herbert Greenhough Smith, received two submissions from Doyle for the newly established magazine. He later described his reaction; &amp;quot;I at once realised that here was the greatest short story writer since Edgar Allan Poe.&amp;quot; The first of these, &amp;quot;A Scandal in Bohemia&amp;quot; was published near the back of The Strand Magazine in July 1891. The stories proved popular, helping to boost the circulation of the magazine, and Doyle received 30 guineas for each short story in the initial run of twelve. These first twelve stories were published monthly from July 1891 until June 1892, and then were collected together and published as a book, The Adventures of Sherlock Holmes on 14 October 1892 by George Newnes, the publisher of The Strand Magazine. The initial print run of the book was for 10,000 copies in the United Kingdom, and a further 4,500 copies in the United States, which were published by Harper Brothers the following day.&lt;/p&gt;
+</content:encoded>
 		</item>
 	</channel>
 </rss>
