@@ -22,7 +22,7 @@ namespace Wyam.Web.Pipelines
         /// <summary>
         /// The relative path to the index file template.
         /// </summary>
-        public string File { get; set; }
+        public ContextConfig File { get; set; }
 
         /// <summary>
         /// The layout to use for each index file, if <c>null</c> no explicit layout is specified.

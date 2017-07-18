@@ -152,7 +152,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 PageSize = ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
                 Title = (doc, ctx) => "Blog",
@@ -168,7 +168,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 Group = (doc, ctx) => doc.List<string>(DocsKeys.Category),
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
@@ -186,7 +186,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 Group = (doc, ctx) => doc.List<string>(DocsKeys.Tags),
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
@@ -204,7 +204,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 Group = (doc, ctx) => doc.List<string>(key: DocsKeys.Author),
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(key: DocsKeys.CaseInsensitiveAuthors),
@@ -222,7 +222,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: doc.Get<DateTime>(key: DocsKeys.Published).Month, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
@@ -239,7 +239,7 @@ namespace Wyam.Docs
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: 1, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),

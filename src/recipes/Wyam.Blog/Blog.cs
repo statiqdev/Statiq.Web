@@ -99,7 +99,7 @@ namespace Wyam.Blog
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_Tag.cshtml",
+                File = ctx => "_Tag.cshtml",
                 Layout = "/_Layout.cshtml",
                 Group = (doc, ctx) => doc.List<string>(BlogKeys.Tags),
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(BlogKeys.CaseInsensitiveTags),
@@ -125,7 +125,7 @@ namespace Wyam.Blog
                 new ArchiveSettings
                 {
                     Pipelines = new string[] { BlogPosts },
-                    File = "_Archive.cshtml",
+                    File = ctx => "_Archive.cshtml",
                     Layout = "/_Layout.cshtml",
                     PageSize = ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
                     Title = (doc, ctx) => "Archive",
@@ -140,8 +140,8 @@ namespace Wyam.Blog
             nameof(Index),
             new ArchiveSettings
             {
-                Pipelines = new string[] {BlogPosts},
-                File = "index.cshtml",
+                Pipelines = new string[] { BlogPosts },
+                File = ctx => ctx.Get(BlogKeys.ArchiveFile, "index.cshtml"),
                 Layout = "/_Layout.cshtml",
                 PageSize = ctx => ctx.Get(BlogKeys.IndexPageSize, int.MaxValue),
                 WriteIfEmpty = true,
@@ -239,6 +239,7 @@ namespace Wyam.Blog
             engine.Settings[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[BlogKeys.ArchiveFile] = "index.cshtml";
 
             base.Apply(engine);
         }

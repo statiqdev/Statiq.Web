@@ -124,7 +124,7 @@ namespace Wyam.Web.Pipelines
                     }
                     paginate = paginate.WithPageMetadata(Keys.RelativeFilePath, (doc, ctx) =>
                     {
-                        FilePath filePath = settings.RelativePath?.Invoke<string>(doc, ctx) ?? settings.File;
+                        FilePath filePath = settings.RelativePath?.Invoke<string>(doc, ctx) ?? settings.File.Invoke<FilePath>(ctx);
                         bool hasExtension = filePath.HasExtension;
                         if (hasExtension)
                         {

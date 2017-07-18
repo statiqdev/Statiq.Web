@@ -145,7 +145,7 @@ namespace Wyam.BookSite
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_BlogIndex.cshtml",
+                File = ctx => "_BlogIndex.cshtml",
                 Layout = "/_Layout.cshtml",
                 PageSize = ctx => ctx.Get(BookSiteKeys.BlogPageSize, int.MaxValue),
                 Title = (doc, ctx) => "Blog",
@@ -161,7 +161,7 @@ namespace Wyam.BookSite
             new ArchiveSettings
             {
                 Pipelines = new string[] { Chapters },
-                File = "_ChapterIndex.cshtml",
+                File = ctx => "_ChapterIndex.cshtml",
                 Layout = "/_Layout.cshtml",
                 Title = (doc, ctx) => "Chapters",
                 RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BookSiteKeys.ChaptersPath).FullPath}"
