@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JavaScriptEngineSwitcher.Core;
+using JSPool;
+using NSubstitute;
 using NUnit.Framework;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
-using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -221,12 +224,14 @@ namespace Wyam.Testing.Execution
         };
 
         /// <inheritdoc/>
-        public IJsEnginePool GetJsEnginePool(Action<IJsEngine> initializer = null,
-            int startEngines = 10, int maxEngines = 25,
-            int maxUsagesPerEngine = 100, TimeSpan? engineTimeout = null) =>
-            new TestJsEnginePool(JsEngineFunc, initializer);
+        public IJsPool GetJsEnginePool(
+            Action<IJsEngine> initializer = null,
+            int startEngines = 10, 
+            int maxEngines = 25,
+            int maxUsagesPerEngine = 100, 
+            TimeSpan? engineTimeout = null) => new TestJsEnginePool(JsEngineFunc, initializer);
 
-        private class TestJsEnginePool : IJsEnginePool
+        private class TestJsEnginePool : IJsPool
         {
             private readonly Func<IJsEngine> _engineFunc;
             private readonly Action<IJsEngine> _initializer;
@@ -237,26 +242,43 @@ namespace Wyam.Testing.Execution
                 _initializer = initializer;
             }
 
-            public IJsEngine GetEngine(TimeSpan? timeout = null)
+            public PooledJsEngine GetEngine(TimeSpan? timeout = null)
             {
-                IJsEngine engine = _engineFunc();
-                _initializer?.Invoke(engine);
-                return engine;
+                // PooledJsEngine's InnerEngine setter is internal, so we need to do some reflection acrobatics for now.
+                // TODO: https://github.com/Daniel15/JSPool/issues/24
+                PooledJsEngine pooledEngine = new PooledJsEngine();
+                Type engineType = pooledEngine.GetType();
+                engineType.GetProperty("InnerEngine").SetValue(pooledEngine, _engineFunc());
+                var returnToPoolProp = engineType.GetProperty(
+                    "ReturnEngineToPool",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                returnToPoolProp.SetValue(pooledEngine, (Action)(() => { }));
+
+                _initializer?.Invoke(pooledEngine);
+                return pooledEngine;
             }
 
             public void Dispose()
             {
             }
 
-            public void RecycleEngine(IJsEngine engine)
+            public void ReturnEngineToPool(PooledJsEngine engine)
             {
                 throw new NotImplementedException();
             }
 
-            public void RecycleAllEngines()
+            public void DisposeEngine(PooledJsEngine engine, bool repopulateEngines = true)
             {
                 throw new NotImplementedException();
             }
+
+            public void Recycle()
+            {
+                throw new NotImplementedException();
+            }
+
+            public int EngineCount { get; }
+            public int AvailableEngineCount { get; }
         }
 
         /// <inheritdoc/>

@@ -17,13 +17,10 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
-using Wyam.Common.JavaScript;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 using Wyam.Core.Documents;
-using Wyam.Core.JavaScript;
 using Wyam.Core.Meta;
-using IJsEngine = Wyam.Common.JavaScript.IJsEngine;
 
 namespace Wyam.Core.Execution
 {
@@ -218,14 +215,32 @@ namespace Wyam.Core.Execution
             return results;
         }
 
-        public IJsEnginePool GetJsEnginePool(
+        public IJsPool GetJsEnginePool(
             Action<IJsEngine> initializer = null,
             int startEngines = 10,
             int maxEngines = 25,
             int maxUsagesPerEngine = 100,
-            TimeSpan? engineTimeout = null) =>
-            new JsEnginePool(initializer, startEngines, maxEngines, maxUsagesPerEngine,
-                engineTimeout ?? TimeSpan.FromSeconds(5));
+            TimeSpan? engineTimeout = null)
+        {
+            // First we need to check if the JsEngineSwitcher has been configured. We'll do this
+            // by checking the DefaultEngineName being set. If that's there we can safely assume
+            // its been configured somehow (maybe via a configuration file). If not we'll wire up
+            // Jint as the default engine.
+            if (string.IsNullOrWhiteSpace(JsEngineSwitcher.Instance.DefaultEngineName))
+            {
+                JsEngineSwitcher.Instance.EngineFactories.Add(new JintJsEngineFactory());
+                JsEngineSwitcher.Instance.DefaultEngineName = JintJsEngine.EngineName;
+            }
+
+            return new JsPool(new JsPoolConfig
+            {
+                Initializer = initializer,
+                StartEngines = startEngines,
+                MaxEngines = maxEngines,
+                MaxUsagesPerEngine = maxUsagesPerEngine,
+                GetEngineTimeout = engineTimeout ?? TimeSpan.FromSeconds(5),
+            });
+        }
 
         // IMetadata
 

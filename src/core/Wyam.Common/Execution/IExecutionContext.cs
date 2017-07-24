@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using JavaScriptEngineSwitcher.Core;
+using JSPool;
 using Wyam.Common.Caching;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
-using Wyam.Common.JavaScript;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
@@ -253,7 +254,7 @@ namespace Wyam.Common.Execution
         IReadOnlyList<IDocument> Execute(IEnumerable<IModule> modules, IEnumerable<MetadataItem> metadata);
 
         /// <summary>
-        /// Gets a new <see cref="IJsEnginePool"/>. The returned engine pool should be disposed
+        /// Gets a new <see cref="IJsPool"/>. The returned engine pool should be disposed
         /// when no longer needed.
         /// </summary>
         /// <param name="initializer">
@@ -268,7 +269,7 @@ namespace Wyam.Common.Execution
         /// If an engine can not be acquired in this timeframe, an exception will be thrown.
         /// </param>
         /// <returns>A new JavaScript engine pool.</returns>
-        IJsEnginePool GetJsEnginePool(
+        IJsPool GetJsEnginePool(
             Action<IJsEngine> initializer = null,
             int startEngines = 10,
             int maxEngines = 25,

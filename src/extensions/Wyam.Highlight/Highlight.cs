@@ -6,9 +6,10 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Html;
 using AngleSharp.Parser.Html;
+using JavaScriptEngineSwitcher.Core;
+using JSPool;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
-using Wyam.Common.JavaScript;
 using Wyam.Common.Modules;
 using Wyam.Common.Util;
 using Trace = Wyam.Common.Tracing.Trace;
@@ -74,7 +75,8 @@ namespace Wyam.Highlight
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
             HtmlParser parser = new HtmlParser();
-            using (IJsEnginePool enginePool = context.GetJsEnginePool(x =>
+
+            using (IJsPool enginePool = context.GetJsEnginePool(x =>
             {
                 if (string.IsNullOrWhiteSpace(_highlightJsFile))
                 {

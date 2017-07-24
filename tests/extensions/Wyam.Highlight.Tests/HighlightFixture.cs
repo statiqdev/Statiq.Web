@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -59,7 +58,7 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight();
@@ -98,7 +97,7 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight();
@@ -132,7 +131,7 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight();
@@ -168,7 +167,7 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight();
@@ -208,17 +207,19 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight();
 
                 // When, Then
-                Assert.Throws<AggregateException>(() =>
+                AggregateException ex = Assert.Throws<AggregateException>(() =>
                 {
                     List<IDocument> results = highlight.Execute(new[] { document }, context).ToList();
                     Assert.IsNull(results, "Should never get here due to exception");
                 });
+                Assert.AreEqual(1, ex.InnerExceptions.Count);
+                StringAssert.Contains("Unknown language: \"zorg\"", ex.InnerExceptions[0].Message);
             }
 
             [Test]
@@ -249,7 +250,7 @@ namespace Wyam.Highlight.Tests
                 IDocument document = new TestDocument(input);
                 IExecutionContext context = new TestExecutionContext()
                 {
-                    JsEngineFunc = () => new TestJsEngine()
+                    JsEngineFunc = () => TestJsEngine.Create()
                 };
 
                 Highlight highlight = new Highlight()
