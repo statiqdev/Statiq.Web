@@ -50,6 +50,12 @@ namespace Wyam.Common.Meta
         public const string LinkHideExtensions = nameof(LinkHideExtensions);
 
         /// <summary>
+        /// Indicates that links should always be rendered in lowercase.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string LinkLowercase = nameof(LinkLowercase);
+
+        /// <summary>
         /// Indicates whether caching should be used.
         /// </summary>
         /// <type><see cref="bool"/></type>
