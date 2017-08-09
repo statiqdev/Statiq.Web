@@ -272,8 +272,8 @@ namespace Wyam.Docs
                     RenderPages.GetDocuments,
                     new Meta(DocsKeys.NoSidebar, (doc, ctx) => doc.Get(
                         DocsKeys.NoSidebar,
-                        (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0)
-                        && doc.Document(Keys.Parent) == null))
+                        (doc.DocumentList(Keys.Children)?.Count ?? 0) == 0
+                        && doc.Document(Keys.Parent) == null)))
                 .InsertAfter(
                     RenderPages.WriteMetadata,
                     new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)));
