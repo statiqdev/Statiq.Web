@@ -84,6 +84,41 @@ namespace Wyam.Html.Tests
             }
 
             [Test]
+            public void AddsLinkWithoutImpactingEscapes()
+            {
+                // Given
+                string input = @"<html>
+                        <head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This A&lt;string, List&lt;B&gt;&gt; is some Foobar text</p>
+                        </body>
+                    </html>";
+                string output = @"<html><head>
+                            <title>Foobar</title>
+                        </head>
+                        <body>
+                            <h1>Title</h1>
+                            <p>This A&lt;string, List&lt;B&gt;&gt; is some <a href=""http://www.google.com"">Foobar</a> text</p>
+                        
+                    </body></html>";
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                AutoLink autoLink = new AutoLink(new Dictionary<string, string>()
+                {
+                    { "Foobar", "http://www.google.com" }
+                });
+
+                // When
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+            }
+
+            [Test]
             public void AddsLinkWithAlternateQuerySelector()
             {
                 // Given

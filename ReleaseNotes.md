@@ -1,5 +1,6 @@
 # 0.18.6
 
+- [Fix] Fixed a bug in the `AutoLink` module when containing node also has escaped HTML content (#550)
 - [Fix] Fixed a bug with `If` module when using a `ContextConfig` delegate, unmatched documents were not falling through. You may need to add `.WithUnmatchedDocuments()` if you are using an `If` module with the incorrect behavior.
 - [Feature] Added `Keys.LinkLowercase] to always generate lowercase links (default is false) (#546)
 - [Fix] Fixed a bug when using `NoSidebar` in docs recipe (#549)

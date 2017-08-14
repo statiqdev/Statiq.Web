@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
@@ -178,7 +179,7 @@ namespace Wyam.Html
 
         private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText)
         {
-            string s = text.Text;
+            string s = WebUtility.HtmlEncode(text.Text);  // The text content is unencoded so we need to reencode it before performing replacements
             Trie<char> lookup = new Trie<char>(map.Keys);
             StringBuilder builder = new StringBuilder();
             int lastIdx = -1;
