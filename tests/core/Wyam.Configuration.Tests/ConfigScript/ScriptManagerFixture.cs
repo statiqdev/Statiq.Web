@@ -66,7 +66,7 @@ $@"#line 1
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             [Test]
@@ -128,7 +128,7 @@ public class Baz
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             [Test]
@@ -184,7 +184,7 @@ public string Self(string x)
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             [Test]
@@ -232,7 +232,7 @@ public string Self(string x)
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             [Test]
@@ -280,7 +280,7 @@ public static string Self(this string x)
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             [Test]
@@ -338,7 +338,7 @@ public string Self(string x)
                 string actual = scriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
-                Assert.AreEqual(expected, actual);
+                Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
             }
 
             // Assumes just the Content module is used
@@ -424,7 +424,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(Content), memberNames);
 
                 // Then
-                Assert.AreEqual(expected, generated);
+                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
             }
 
             [Test]
@@ -446,7 +446,7 @@ public string Self(string x)
                 string generated = ScriptManager.GenerateModuleConstructorMethods(typeof(GenericModule<>), memberNames);
 
                 // Then
-                Assert.AreEqual(expected, generated);
+                Assert.AreEqual(expected.NormalizeLineEndings(), generated.NormalizeLineEndings());
             }
         }
 

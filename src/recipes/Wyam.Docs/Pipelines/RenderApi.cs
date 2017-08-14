@@ -30,8 +30,8 @@ namespace Wyam.Docs.Pipelines
                     .WithLayout("/_ApiLayout.cshtml"),
                 new Headings(),
                 new HtmlInsert("div#infobar-headings", (doc, ctx) => ctx.GenerateInfobarHeadings(doc)),
-                new WriteFiles()
-            )
+                new WriteFiles())
+                .WithoutUnmatchedDocuments()
         };
     }
 }

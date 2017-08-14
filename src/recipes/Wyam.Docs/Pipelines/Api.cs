@@ -65,8 +65,8 @@ namespace Wyam.Docs.Pipelines
                     {
                         typeNamesToLink.AddOrUpdate(name, ctx.GetLink(doc), (x, y) => string.Empty);
                     }
-                })
-            )
+                }))
+                .WithoutUnmatchedDocuments()
         };
     }
 }

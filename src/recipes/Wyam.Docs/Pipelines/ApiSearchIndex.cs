@@ -58,8 +58,8 @@ lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
                         return scriptBuilder.ToString();
                     })
                     .WithPath("assets/js/searchIndex.js"),
-                new WriteFiles()
-            )
+                new WriteFiles())
+                .WithoutUnmatchedDocuments()
         };
     }
 }

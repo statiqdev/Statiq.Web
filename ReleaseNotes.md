@@ -1,3 +1,9 @@
+# 0.18.6
+
+- [Fix] Fixed a bug with `If` module when using a `ContextConfig` delegate, unmatched documents were not falling through. You may need to add `.WithUnmatchedDocuments()` if you are using an `If` module with the incorrect behavior.
+- [Feature] Added `Keys.LinkLowercase] to always generate lowercase links (default is false) (#546)
+- [Fix] Fixed a bug when using `NoSidebar` in docs recipe (#549)
+
 # 0.18.5
 
 - [Refactoring] Moved the blog theme index template file from `index.cshtml` to `_Index.cshtml` to match other template conventions (#520)

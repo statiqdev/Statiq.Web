@@ -252,10 +252,10 @@ namespace Wyam.Core.Tests.Modules.Control
                 Assert.AreEqual(1, c.ExecuteCount);
                 Assert.AreEqual(1, a.InputCount);
                 Assert.AreEqual(0, b.InputCount);
-                Assert.AreEqual(0, c.InputCount);
+                Assert.AreEqual(3, c.InputCount);
                 Assert.AreEqual(3, a.OutputCount);
                 Assert.AreEqual(0, b.OutputCount);
-                Assert.AreEqual(0, c.OutputCount);
+                Assert.AreEqual(12, c.OutputCount);
             }
 
             [Test]

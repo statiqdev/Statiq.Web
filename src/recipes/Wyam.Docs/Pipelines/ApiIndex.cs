@@ -30,8 +30,8 @@ namespace Wyam.Docs.Pipelines
                 new Meta(Keys.SourceFileName, "index.html"),
                 new Title("API"),
                 new Razor.Razor(),
-                new WriteFiles()
-            )
+                new WriteFiles())
+                .WithoutUnmatchedDocuments()
         };
     }
 }
