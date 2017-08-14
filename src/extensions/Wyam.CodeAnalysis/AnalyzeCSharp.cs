@@ -125,6 +125,19 @@ namespace Wyam.CodeAnalysis
         private bool _docsForImplicitSymbols = false;
         private bool _inputDocuments = true;
         private bool _assemblySymbols = false;
+        private bool _implicitInheritDoc = false;
+
+        /// <summary>
+        /// This will assume <c>inheritdoc</c> if a symbol has no other code comments.
+        /// </summary>
+        /// <param name="implicitInheritDoc">If set to <c>true</c>, the symbol will inherit documentation comments
+        /// if no other comments are provided.</param>
+        /// <returns>The current module instance.</returns>
+        public AnalyzeCSharp WithImplicitInheritDoc(bool implicitInheritDoc = true)
+        {
+            _implicitInheritDoc = implicitInheritDoc;
+            return this;
+        }
 
         /// <summary>
         /// By default, XML documentation comments are not parsed and rendered for documents that are not part
@@ -472,7 +485,8 @@ namespace Wyam.CodeAnalysis
                 _writePath ?? (x => DefaultWritePath(x, _writePathPrefix)),
                 _cssClasses,
                 _docsForImplicitSymbols,
-                _assemblySymbols);
+                _assemblySymbols,
+                _implicitInheritDoc);
             foreach (ISymbol symbol in symbols)
             {
                 visitor.Visit(symbol);

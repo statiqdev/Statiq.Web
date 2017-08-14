@@ -36,6 +36,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
         private readonly bool _assemblySymbols;
+        private readonly bool _implicitInheritDoc;
         private readonly MethodInfo _getAccessibleMembersInThisAndBaseTypes;
         private readonly Type _documentationCommentCompiler;
         private readonly MethodInfo _documentationCommentCompilerDefaultVisit;
@@ -52,7 +53,8 @@ namespace Wyam.CodeAnalysis.Analysis
             Func<IMetadata, FilePath> writePath,
             ConcurrentDictionary<string, string> cssClasses,
             bool docsForImplicitSymbols,
-            bool assemblySymbols)
+            bool assemblySymbols,
+            bool implicitInheritDoc)
         {
             _compilation = compilation;
             _context = context;
@@ -61,6 +63,7 @@ namespace Wyam.CodeAnalysis.Analysis
             _cssClasses = cssClasses;
             _docsForImplicitSymbols = docsForImplicitSymbols;
             _assemblySymbols = assemblySymbols;
+            _implicitInheritDoc = implicitInheritDoc;
 
             // Get any reflected methods we need
             Assembly reflectedAssembly = typeof(Microsoft.CodeAnalysis.Workspace).Assembly;
@@ -417,6 +420,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private void AddXmlDocumentation(ISymbol symbol, MetadataItems metadata)
         {
+            // Get the documentation comments
             INamespaceSymbol namespaceSymbol = symbol as INamespaceSymbol;
             string documentationCommentXml;
             lock (XmlDocLock)
@@ -426,6 +430,14 @@ namespace Wyam.CodeAnalysis.Analysis
                     ? symbol.GetDocumentationCommentXml(expandIncludes: true)
                     : GetNamespaceDocumentationCommentXml(namespaceSymbol);
             }
+
+            // Should we assume inheritdoc?
+            if (string.IsNullOrEmpty(documentationCommentXml) && _implicitInheritDoc)
+            {
+                documentationCommentXml = "<inheritdoc/>";
+            }
+
+            // Create and parse the documentation comments
             XmlDocumentationParser xmlDocumentationParser
                 = new XmlDocumentationParser(_context, symbol, _compilation, _symbolToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);

@@ -23,8 +23,8 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly Compilation _compilation;
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
-        private List<Action> _processActions;
         private readonly object _processLock = new object();
+        private List<Action> _processActions;
 
         public string Example { get; private set; } = string.Empty;
         public string Remarks { get; private set; } = string.Empty;

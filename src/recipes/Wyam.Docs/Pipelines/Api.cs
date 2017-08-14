@@ -43,7 +43,8 @@ namespace Wyam.Docs.Pipelines
                     .WithAssemblies(ctx.List<string>(DocsKeys.AssemblyFiles))
                     .WithProjects(ctx.List<string>(DocsKeys.ProjectFiles))
                     .WithSolutions(ctx.List<string>(DocsKeys.SolutionFiles))
-                    .WithAssemblySymbols()),
+                    .WithAssemblySymbols()
+                    .WithImplicitInheritDoc(ctx.Bool(DocsKeys.ImplicitInheritDoc))),
                 new Execute((doc, ctx) =>
                 {
                     // Calculate a type name to link lookup for auto linking
