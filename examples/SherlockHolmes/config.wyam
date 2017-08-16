@@ -11,6 +11,10 @@
 
 #recipe BookSite
 
+// Normalize the culture for the examples so they produce the same output regardless of system culture
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture
+    = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
 Settings[BookSiteKeys.Title] = "The Adventures of Sherlock Holmes";
 Settings[BookSiteKeys.Subtitle] = "A collection of twelve short stories featuring the fictional detective Sherlock Holmes.";
 Settings[BookSiteKeys.Description] = "First published in 1892, The Adventures of Sherlock Holmes is the first and greatest of the short story collections written by Arthur Conan Doyle featuring his famous detective.";
