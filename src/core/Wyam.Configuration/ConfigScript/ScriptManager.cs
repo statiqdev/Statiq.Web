@@ -32,7 +32,7 @@ namespace Wyam.Configuration.ConfigScript
         }
 
         // Internal for testing
-        internal string Parse(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
+        internal static string Parse(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Rewrite the lambda shorthand expressions
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
@@ -169,7 +169,8 @@ namespace Wyam.Configuration.ConfigScript
         {
             // Get the compilation
             var parseOptions = new CSharpParseOptions();
-            var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(Code, Encoding.UTF8), parseOptions, AssemblyName);
+            var sourceText = SourceText.From(Code, Encoding.UTF8);
+            var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).
                 WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
                 {
@@ -179,7 +180,7 @@ namespace Wyam.Configuration.ConfigScript
                     { "CS1702", ReportDiagnostic.Suppress },
                     { "CS1705", ReportDiagnostic.Suppress }
                  });
-            var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
+            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
                 referenceAssemblies
                     .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
@@ -187,14 +188,14 @@ namespace Wyam.Configuration.ConfigScript
                     .AddReferences(
                         // For some reason, Roslyn really wants these added by filename
                         // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
             );
 
             // Emit the assembly
-            using (var ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
 
@@ -229,16 +230,22 @@ namespace Wyam.Configuration.ConfigScript
                 }
 
                 ms.Seek(0, SeekOrigin.Begin);
-                RawAssembly = ms.ToArray();
+                byte[] rawAssembly = ms.ToArray();
+                LoadAssembly(rawAssembly);
             }
-            Assembly = Assembly.Load(RawAssembly);
-            AssemblyFullName = Assembly.FullName;
         }
 
         private static string GetCompilationErrorMessage(Diagnostic diagnostic)
         {
             string line = diagnostic.Location.IsInSource ? "Line " + (diagnostic.Location.GetMappedLineSpan().Span.Start.Line + 1) : "Metadata";
             return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
+        }
+
+        public void LoadAssembly(byte[] rawAssembly)
+        {
+            RawAssembly = rawAssembly;
+            Assembly = Assembly.Load(rawAssembly);
+            AssemblyFullName = Assembly.FullName;
         }
 
         public void Evaluate(Engine engine)

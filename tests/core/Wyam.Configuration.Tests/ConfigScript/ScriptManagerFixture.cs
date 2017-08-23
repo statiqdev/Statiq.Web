@@ -53,7 +53,6 @@ namespace Wyam.Configuration.Tests.ConfigScript
             public void CorrectlyParsesScriptCode(string input, string output)
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string usingStatements = "using Foo.Bar;";
@@ -63,7 +62,7 @@ $@"#line 1
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, string.Empty, string.Empty);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
@@ -73,7 +72,6 @@ $@"#line 1
             public void LiftsClassDeclarations()
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string input =
@@ -125,7 +123,7 @@ public class Baz
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, typeDeclarations, string.Empty);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
@@ -135,7 +133,6 @@ public class Baz
             public void LiftsUsingDirectives()
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string input =
@@ -181,7 +178,7 @@ public string Self(string x)
                 string expected = GetExpected(usingStatements, usingDirectives, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
@@ -191,7 +188,6 @@ public string Self(string x)
             public void LiftsMethodDeclarations()
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string input =
@@ -229,7 +225,7 @@ public string Self(string x)
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
@@ -239,7 +235,6 @@ public string Self(string x)
             public void LiftsExtensionMethodDeclarations()
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string input =
@@ -277,7 +272,7 @@ public static string Self(this string x)
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, string.Empty, typeDeclarations, extensionMethodDeclarations);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
@@ -287,7 +282,6 @@ public static string Self(this string x)
             public void LiftsCommentsWithDeclarations()
             {
                 // Given
-                ScriptManager scriptManager = new ScriptManager();
                 HashSet<Type> moduleTypes = new HashSet<Type> { typeof(Content) };
                 string[] namespaces = { "Foo.Bar" };
                 string input =
@@ -335,7 +329,7 @@ public string Self(string x)
                 string expected = GetExpected(usingStatements, string.Empty, scriptCode, methodDeclarations, typeDeclarations, string.Empty);
 
                 // When
-                string actual = scriptManager.Parse(input, moduleTypes, namespaces);
+                string actual = ScriptManager.Parse(input, moduleTypes, namespaces);
 
                 // Then
                 Assert.AreEqual(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
