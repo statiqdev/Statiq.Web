@@ -26,12 +26,13 @@ namespace Wyam.Docs.Pipelines
 
         private static IModuleList GetModules() => new ModuleList
         {
-            new If(ctx => ctx.Documents[Docs.Api].Any() && ctx.Bool(DocsKeys.SearchIndex),
+            new If(
+                ctx => ctx.Documents[Docs.Api].Any() && ctx.Bool(DocsKeys.SearchIndex),
                 new Documents(Docs.Api),
                 new Where((doc, ctx) => doc.String(CodeAnalysisKeys.Kind) == "NamedType"),
                 new SearchIndex.SearchIndex((doc, ctx) =>
-                        new SearchIndexItem(
-                            ctx.GetLink(doc),
+                        new DocSearchIndexItem(
+                            doc,
                             doc.String(CodeAnalysisKeys.DisplayName),
                             doc.String(CodeAnalysisKeys.DisplayName)
                         ))

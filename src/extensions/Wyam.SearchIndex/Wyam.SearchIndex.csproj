@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocSearchIndexItem.cs" />
+    <Compile Include="ISearchIndexItem.cs" />
     <Compile Include="SearchIndexKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\..\SolutionInfo.cs">

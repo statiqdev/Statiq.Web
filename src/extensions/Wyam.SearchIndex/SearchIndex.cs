@@ -196,12 +196,9 @@ namespace Wyam.SearchIndex
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            SearchIndexItem[] searchIndexItems = inputs
-                .Select(context, x => _searchIndexItem.TryInvoke<SearchIndexItem>(x, context))
-                .Where(x => x != null
-                    && !string.IsNullOrEmpty(x.Url)
-                    && !string.IsNullOrEmpty(x.Title)
-                    && !string.IsNullOrEmpty(x.Content))
+            ISearchIndexItem[] searchIndexItems = inputs
+                .Select(context, x => _searchIndexItem.TryInvoke<ISearchIndexItem>(x, context))
+                .Where(x => !string.IsNullOrEmpty(x?.Title) && !string.IsNullOrEmpty(x.Content))
                 .ToArray();
 
             if ( searchIndexItems.Length == 0 )
@@ -233,7 +230,7 @@ namespace Wyam.SearchIndex
             return new []{ context.GetDocument(context.GetContentStream(script), metadata) };
         }
 
-        private StringBuilder BuildScript(IList<SearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
+        private StringBuilder BuildScript(IList<ISearchIndexItem> searchIndexItems, string[] stopwords, IExecutionContext context)
         {
             StringBuilder scriptBuilder = new StringBuilder($@"
 var searchModule = function() {{
@@ -258,7 +255,7 @@ var searchModule = function() {{
 
             for (int i = 0; i < searchIndexItems.Count; ++i)
             {
-                SearchIndexItem itm = searchIndexItems.ElementAt(i);
+                ISearchIndexItem itm = searchIndexItems.ElementAt(i);
                 scriptBuilder.AppendLine($@"
     a({{
         id:{i},
@@ -269,11 +266,18 @@ var searchModule = function() {{
     }});");
             }
 
-            foreach (SearchIndexItem itm in searchIndexItems)
+            foreach (ISearchIndexItem itm in searchIndexItems)
             {
+                // Get the URL and skip if not valid
+                string url = itm.GetLink(context, _includeHost);
+                if (string.IsNullOrEmpty(url))
+                {
+                    continue;
+                }
+
                 scriptBuilder.AppendLine($@"
     y({{
-        url:'{context.GetLink(new FilePath(itm.Url), _includeHost)}',
+        url:'{url}',
         title:{ToJsonString(itm.Title)},
         description:{ToJsonString(itm.Description)}
     }});");
