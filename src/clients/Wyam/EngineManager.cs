@@ -123,8 +123,8 @@ namespace Wyam
                 {
                     Trace.Information("Loading configuration from {0}", configFile.Path);
                     Configurator.OutputScriptPath = configFile.Path.ChangeExtension(".generated.cs");
-                    Configurator.ConfigDllPath = configFile.Path.ChangeExtension(".dll");
-                    Configurator.ConfigHashPath = configFile.Path.ChangeExtension(".hash");
+                    Configurator.ConfigDllPath = configFile.Path.ChangeExtension(".wyam.dll");
+                    Configurator.ConfigHashPath = configFile.Path.ChangeExtension(".wyam.hash");
                     Configurator.Configure(configFile.ReadAllText());
                 }
                 else
