@@ -8,12 +8,26 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
+
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Core.Execution;
 
 namespace Wyam.Configuration.ConfigScript
 {
-    internal class ScriptManager
+    internal interface IScriptManager
+    {
+        string Code { get; }
+        Assembly Assembly { get; }
+        string AssemblyFullName { get; }
+        byte[] RawAssembly { get; }
+        void Compile(IReadOnlyCollection<Assembly> referenceAssemblies);
+        void LoadCompiledConfig(byte[] rawAssembly);
+        void Evaluate(IEngine engine);
+        void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces);
+    }
+
+    internal class ScriptManager : IScriptManager
     {
         public const string AssemblyName = "WyamConfig";
         public const string ScriptClassName = "Script";
@@ -26,7 +40,7 @@ namespace Wyam.Configuration.ConfigScript
 
         public byte[] RawAssembly { get; private set; }
 
-        internal void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
+        public void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             Code = Parse(code, moduleTypes, namespaces);
         }
@@ -231,7 +245,7 @@ namespace Wyam.Configuration.ConfigScript
 
                 ms.Seek(0, SeekOrigin.Begin);
                 byte[] rawAssembly = ms.ToArray();
-                LoadAssembly(rawAssembly);
+                LoadCompiledConfig(rawAssembly);
             }
         }
 
@@ -241,14 +255,14 @@ namespace Wyam.Configuration.ConfigScript
             return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
 
-        public void LoadAssembly(byte[] rawAssembly)
+        public void LoadCompiledConfig(byte[] rawAssembly)
         {
             RawAssembly = rawAssembly;
             Assembly = Assembly.Load(rawAssembly);
             AssemblyFullName = Assembly.FullName;
         }
 
-        public void Evaluate(Engine engine)
+        public void Evaluate(IEngine engine)
         {
             Type scriptType = Assembly.GetExportedTypes().First(t => t.Name == ScriptClassName);
             ScriptBase script = (ScriptBase)Activator.CreateInstance(scriptType, engine);
