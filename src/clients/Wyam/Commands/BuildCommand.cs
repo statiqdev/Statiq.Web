@@ -68,7 +68,7 @@ namespace Wyam.Commands
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
             syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPathFromArg, "The packages path to use (only if use-local is true).");
-            syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging.");
+            syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging. Consider using the --ignore-config-hash directive when using this option.");
             syntax.DefineOption("ignore-config-hash", ref _configOptions.IgnoreConfigHash, "Force evaluating the configuration file, even when no changes were detected.");
             syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute. Consider using the --ignore-config-hash directive when using this option.");
             syntax.DefineOption("noclean", ref _configOptions.NoClean, "Prevents cleaning of the output path on each execution.");
