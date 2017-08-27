@@ -6,6 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Encodings.Web;
+using System.Threading;
+using System.Xml.Linq;
+
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +23,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
@@ -48,6 +54,9 @@ namespace Wyam.Razor
             {
                 options.ViewLocationExpanders.Add(new ViewLocationExpander());
             });
+
+            // Disables the configuration of the DataProtection services, which we don't need for just razor generation.
+            serviceCollection.AddTransient<IXmlRepository, DummyXmlRepository>();
 
             serviceCollection
                 .AddSingleton(parameters.FileSystem)
@@ -198,6 +207,18 @@ namespace Wyam.Razor
             CompilationResult compilationResult = razorCompilationService.Compile(relativeFileInfo);
             compilationResult.EnsureSuccessful();
             return compilationResult;
+        }
+    }
+
+    internal class DummyXmlRepository : IXmlRepository
+    {
+        public IReadOnlyCollection<XElement> GetAllElements()
+        {
+            return new List<XElement>();
+        }
+
+        public void StoreElement(XElement element, string friendlyName)
+        {
         }
     }
 }
