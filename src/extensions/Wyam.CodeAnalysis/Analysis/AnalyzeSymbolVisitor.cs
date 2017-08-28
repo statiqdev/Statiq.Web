@@ -126,8 +126,8 @@ namespace Wyam.CodeAnalysis.Analysis
             ConcurrentHashSet<INamespaceSymbol> symbols = _namespaceDisplayNameToSymbols.GetOrAdd(displayName, _ => new ConcurrentHashSet<INamespaceSymbol>());
             symbols.Add(symbol);
 
-            // Create the document
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            // Create the document (but not if none of the members would be included)
+            if (_finished || _symbolPredicate == null || (_symbolPredicate(symbol) && symbol.GetMembers().Any(m => _symbolPredicate(m))))
             {
                 _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
                     _ => AddNamespaceDocument(symbol, true),
