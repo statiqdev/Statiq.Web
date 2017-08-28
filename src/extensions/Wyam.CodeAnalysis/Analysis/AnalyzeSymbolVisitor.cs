@@ -20,6 +20,8 @@ using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis.Analysis
 {
+    // If types aren't matching (I.e., not linking in the docs recipe due to mismatched documents), may need to use ISymbol.OriginalDefinition when
+    // creating the document for a symbol (or document metadata) to counteract new symbols due to type substitution for generics
     internal class AnalyzeSymbolVisitor : SymbolVisitor
     {
         private static readonly object XmlDocLock = new object();
@@ -207,7 +209,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
@@ -228,7 +230,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
+                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -243,7 +245,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.HasConstantValue, _ => symbol.HasConstantValue),
                     new MetadataItem(CodeAnalysisKeys.ConstantValue, _ => symbol.ConstantValue),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
@@ -259,7 +261,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenEvent)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
@@ -274,7 +276,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -412,7 +414,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(
-                symbol,
+                symbol.OriginalDefinition,
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -620,7 +622,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public bool TryGetDocument(ISymbol symbol, out IDocument document)
         {
-            return _symbolToDocument.TryGetValue(symbol, out document);
+            return _symbolToDocument.TryGetValue(symbol.OriginalDefinition, out document);
         }
     }
 }
