@@ -69,7 +69,7 @@ namespace Wyam.Web.Pipelines
                 MarkdownPosts,
                 new ModuleCollection
                 {
-                    new ReadFiles(ctx => $"{settings.PostsPath.Invoke<string>(ctx)}/{{!_,}}*.md"),
+                    new ReadFiles(ctx => $"{settings.PostsPath.Invoke<string>(ctx)}/**/{{!_,}}*.md"),
                     new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                     new If(settings.ProcessIncludes, new Include()),
                     new FrontMatter(new Yaml.Yaml()),
