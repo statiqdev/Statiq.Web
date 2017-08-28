@@ -24,7 +24,7 @@ namespace Wyam.Core.Execution
         private readonly ConcurrentHashSet<FilePath> _documentSources = new ConcurrentHashSet<FilePath>();
         private readonly IModuleList _modules;
         private ConcurrentBag<IDocument> _clonedDocuments = new ConcurrentBag<IDocument>();
-        private Cache<List<IDocument>>  _previouslyProcessedCache;
+        private Cache<List<IDocument>> _previouslyProcessedCache;
         private Dictionary<FilePath, List<IDocument>> _processedSources;
         private bool _disposed;
 
@@ -249,10 +249,28 @@ namespace Wyam.Core.Execution
                 throw new ObjectDisposedException(nameof(ExecutionPipeline));
             }
             _disposed = true;
+
+            // Clean up the documents
             ResetClonedDocuments();
             if (_previouslyProcessedCache != null)
             {
                 Parallel.ForEach(_previouslyProcessedCache.GetValues().SelectMany(x => x), x => x.Dispose());
+            }
+
+            // Clean up the modules
+            DisposeModules(_modules);
+        }
+
+        private void DisposeModules(IEnumerable<IModule> modules)
+        {
+            foreach (IModule module in modules)
+            {
+                (module as IDisposable)?.Dispose();
+                IEnumerable<IModule> childModules = module as IEnumerable<IModule>;
+                if (childModules != null)
+                {
+                    DisposeModules(childModules);
+                }
             }
         }
 
