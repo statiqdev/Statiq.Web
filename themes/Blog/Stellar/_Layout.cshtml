@@ -1,0 +1,107 @@
+@{ 
+	string Title = Model.WithoutSettings.String(BlogKeys.Title); 
+	string PageTitle = Context.String(BlogKeys.Title) + (string.IsNullOrWhiteSpace(Title) ? string.Empty : " - " + Title);
+}
+<!DOCTYPE html>
+<!--
+	Stellar by HTML5 UP
+	html5up.net | @@ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+	<head>
+		<title>@PageTitle</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="@Context.GetLink("/assets/js/ie/html5shiv.js")"></script><![endif]-->
+		<link rel="stylesheet" href="@Context.GetLink("/assets/css/main.css")" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="@Context.GetLink("/assets/css/ie9.css")" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="@Context.GetLink("/assets/css/ie8.css")" /><![endif]-->
+
+		<meta name="description" content="@Context.String(BlogKeys.Description)" />
+		@if (Context.String(BlogKeys.RssPath) != null) {
+		<link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.RssPath))" />
+		}
+		@if (Context.String(BlogKeys.AtomPath) != null) {
+		<link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" />
+		}
+		<link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+		<link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
+	    <!--<link rel="icon" href="@Context.GetLink("/images/number8wire.png")" type="image/png">-->
+		<link rel="apple-touch-icon" href="@Context.GetLink("/images/number8wire.png")">
+
+		<meta name="application-name" content="@Context.String(BlogKeys.Title)" />
+		<meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
+		<meta name="msapplication-starturl" content="@Context.GetLink("/")" />
+
+		<meta property="og:title" content="@PageTitle" /> @*
+		<meta property="og:image" content="@Blog.Image" /> *@
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="@Context.GetLink(Model, true)" />
+		<!-- TODO: More social graph meta tags -->
+        @Html.Partial("_Head")
+		
+	</head>
+
+	<body>
+		<!-- Wrapper -->
+		<div id="wrapper">
+
+			<!-- Header -->
+			@if(IsSectionDefined("Header"))
+			{
+				@RenderSection("Header")
+			}
+			else
+			{
+				@Html.Partial("_Header")                                           
+			}
+
+			<!-- Main -->
+			<div id="main">
+
+				<!-- Content -->
+					<section id="content" class="main">
+					@if(Model.String(BlogKeys.Image) != null)
+					{
+						<span class="image main"><img src="@Model.String(BlogKeys.Image)" alt="@PageTitle image" /></span>
+					}
+					else
+					{
+						<span class="image main"><img src="@Context.GetLink("/images/banner.jpg")" alt="" /></span>
+					}
+						@RenderBody()
+					</section>
+
+			</div>
+
+			<!-- Footer -->
+			<footer id="footer">
+				@Html.Partial("_Footer")
+			</footer>
+
+		</div>
+		
+		@Html.Partial("_Scripts")
+
+	<!-- Scripts -->
+	<script src="@Context.GetLink("/assets/js/jquery.min.js")"></script>
+	<script src="@Context.GetLink("/assets/js/jquery.scrollex.min.js")"></script>
+	<script src="@Context.GetLink("/assets/js/jquery.scrolly.min.js")"></script>
+	<script src="@Context.GetLink("/assets/js/skel.min.js")"></script>
+	<script src="@Context.GetLink("/assets/js/util.js")"></script>
+	<!--[if lte IE 8]><script src="@Context.GetLink("/assets/js/ie/respond.min.js")"></script><![endif]-->
+	<script src="@Context.GetLink("/assets/js/main.js")"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-6253423-1', 'auto');
+		ga('send', 'pageview');
+
+	</script>
+	</body>
+
+</html>
