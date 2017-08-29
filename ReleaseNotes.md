@@ -1,3 +1,9 @@
+# 1.0.0
+
+- **[Breaking Change]**[Refactoring] Renamed `Download.CacheResponse()` to `Download.CacheResponses()`.
+- **[Breaking Change]**[Refactoring] Renamed `RequestHeader` class for use with the `Download` module to `RequestHeaders`.
+- [Feature] Added support for custom headers to `RequestHeaders` for use with `Download` module.
+
 # 0.18.6
 
 - [Feature] Added flag `DocsKeys.ImplicitInheritDoc` to docs recipe to globally assume `inheritdoc` (#551)

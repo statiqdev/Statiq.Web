@@ -72,6 +72,7 @@
     <Compile Include="Modules\NamedModule.cs" />
     <Compile Include="JavaScript\IJsEngine.cs" />
     <Compile Include="Execution\DateTimeCultureExtensions.cs" />
+    <Compile Include="Modules\ReadDataModule.cs" />
     <Compile Include="Util\ActionDisposable.cs" />
     <Compile Include="Util\EmptyDisposable.cs" />
     <Compile Include="Execution\LinkExtensions.cs" />

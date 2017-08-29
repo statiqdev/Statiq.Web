@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,6 +13,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Tracing;
 using Wyam.Core.Documents;
 using Wyam.Core.Meta;
 using Wyam.Core.Modules.Control;
@@ -31,8 +33,9 @@ namespace Wyam.Core.Modules.IO
     /// <category>Input/Output</category>
     public class Download : IModule
     {
-        private readonly List<DownloadInstruction> _urls = new List<DownloadInstruction>();
-        private bool _cacheResponse = false;
+        private readonly List<DownloadRequest> _requests = new List<DownloadRequest>();
+        private List<DownloadResponse> _cachedResponses;
+        private bool _cacheResponses;
 
         /// <summary>
         /// Downloads the specified URIs with a default request header.
@@ -47,10 +50,10 @@ namespace Wyam.Core.Modules.IO
         /// Downloads the specified URI with the specified request header.
         /// </summary>
         /// <param name="uri">The URI to download.</param>
-        /// <param name="requestHeader">The request header to use.</param>
-        public Download(string uri, RequestHeader requestHeader)
+        /// <param name="requestHeaders">The request header to use.</param>
+        public Download(string uri, RequestHeaders requestHeaders)
         {
-            WithUri(uri, requestHeader);
+            WithUri(uri, requestHeaders);
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace Wyam.Core.Modules.IO
         {
             foreach (string uri in uris)
             {
-                _urls.Add(new DownloadInstruction(uri));
+                _requests.Add(new DownloadRequest(uri));
             }
             return this;
         }
@@ -71,216 +74,154 @@ namespace Wyam.Core.Modules.IO
         /// Downloads the specified URI with the specified request header.
         /// </summary>
         /// <param name="uri">The URI to download.</param>
-        /// <param name="requestHeader">The request header to use.</param>
+        /// <param name="requestHeaders">The request header to use.</param>
         /// <returns>The current module instance.</returns>
-        public Download WithUri(string uri, RequestHeader requestHeader = null)
+        public Download WithUri(string uri, RequestHeaders requestHeaders = null)
         {
-            _urls.Add(new DownloadInstruction(uri, requestHeader));
+            _requests.Add(new DownloadRequest(uri)
+            {
+                RequestHeaders = requestHeaders
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Downloads the specified requests.
+        /// </summary>
+        /// <param name="requests">The requests to download.</param>
+        /// <returns>The current module instance.</returns>
+        public Download WithRequests(params DownloadRequest[] requests)
+        {
+            if (requests == null)
+            {
+                throw new ArgumentNullException(nameof(requests));
+            }
+            _requests.AddRange(requests.Where(x => x != null));
             return this;
         }
 
         /// <summary>
         /// Indicates whether the downloaded response should be cached between regenerations.
         /// </summary>
-        /// <param name="cacheResponse">If set to <c>true</c>, the response is cached (the default is <c>false</c>).</param>
+        /// <param name="cacheResponses">If set to <c>true</c>, the response is cached (the default is <c>false</c>).</param>
         /// <returns>The current module instance.</returns>
-        public Download CacheResponse(bool cacheResponse)
+        public Download CacheResponses(bool cacheResponses = true)
         {
-            _cacheResponse = cacheResponse;
+            _cacheResponses = cacheResponses;
             return this;
         }
 
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            List<Task<DownloadResult>> tasks = _urls.Select(DownloadUrl).ToList();
-
-            Task.WhenAll(tasks).Wait();
-
-            return tasks.Where(x => !x.IsFaulted).Select(t =>
+            List<DownloadResponse> responses = _cachedResponses;
+            if (responses == null)
             {
-                string key = t.Result.Uri.ToString();
-                IDocument doc;
-
-                if (_cacheResponse && context.ExecutionCache.TryGetValue(key, out doc))
+                List<Task<DownloadResponse>> tasks = _requests.Select(GetResponse).ToList();
+                Task.WhenAll(tasks).Wait();
+                responses = tasks
+                    .Where(x => !x.IsFaulted)
+                    .Select(t => t.Result)
+                    .Where(x => x != null)
+                    .ToList();
+                if (_cacheResponses)
                 {
-                    return doc;
+                    _cachedResponses = responses;
                 }
-
-                DownloadResult result = t.Result;
-
-                string uri = result.Uri.ToString();
-                doc = context.GetDocument(new FilePath((Uri)null, uri, PathKind.Absolute), result.Stream, new MetadataItems
-                {
-                    { Keys.SourceUri, uri },
-                    { Keys.SourceHeaders, result.Headers }
-                });
-
-                if (_cacheResponse)
-                {
-                    context.ExecutionCache.Set(key, doc);
-                }
-
+            }
+            return responses.AsParallel().Select(r =>
+            {
+                string uri = r.Uri.ToString();
+                IDocument doc = context.GetDocument(
+                    new FilePath((Uri) null, uri, PathKind.Absolute),
+                    r.Stream,
+                    new MetadataItems
+                    {
+                        { Keys.SourceUri, uri },
+                        { Keys.SourceHeaders, r.Headers }
+                    });
                 return doc;
             });
         }
 
-        private async Task<DownloadResult> DownloadUrl(DownloadInstruction instruction)
-        {
-            using (HttpClient client = new HttpClient())
+        private static readonly Dictionary<HttpMethod, Func<HttpClient, Uri, HttpContent, Task<HttpResponseMessage>>> MethodMapping =
+            new Dictionary<HttpMethod, Func<HttpClient, Uri, HttpContent, Task<HttpResponseMessage>>>
             {
-                // Prepare request headers
-                if (instruction.ContainRequestHeader)
-                {
-                    ModifyRequestHeader(client.DefaultRequestHeaders, instruction.RequestHeader);
-                }
+                { HttpMethod.Get, (client, uri, content) => client.GetAsync(uri) },
+                { HttpMethod.Post, (client, uri, content) => client.PostAsync(uri, content) },
+                { HttpMethod.Delete, (client, uri, content) => client.DeleteAsync(uri) },
+                { HttpMethod.Put, (client, uri, content) => client.PutAsync(uri, content) }
+            };
+
+        private async Task<DownloadResponse> GetResponse(DownloadRequest request)
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            if (request.Credentials != null)
+            {
+                clientHandler.Credentials = request.Credentials;
+            }
+            using (HttpClient client = new HttpClient(clientHandler))
+            {
+                // Apply request headers
+                request.RequestHeaders?.ApplyTo(client.DefaultRequestHeaders);
+
+                // Apply the query string
+                Uri uri = ApplyQueryString(request.Uri, request.QueryString);
 
                 // Now that we are set and ready, go and do the download call
-                using (HttpResponseMessage response = await client.GetAsync(instruction.Uri))
+                Func<HttpClient, Uri, HttpContent, Task<HttpResponseMessage>> requestFunc;
+                if (!MethodMapping.TryGetValue(request.Method, out requestFunc))
+                {
+                    Trace.Error($"Invalid download method for {request.Uri}: {request.Method.Method}");
+                    return null;
+                }
+                using (HttpResponseMessage response = await requestFunc(client, uri, request.Content))
                 {
                     using (HttpContent content = response.Content)
                     {
                         Stream result = await content.ReadAsStreamAsync();
-
                         MemoryStream mem = new MemoryStream();
                         result.CopyTo(mem);
-
                         Dictionary<string, string> headers = content.Headers.ToDictionary(
                             x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x.Key), x => string.Join(",", x.Value));
-                        return new DownloadResult(instruction.Uri, mem, headers);
+                        return new DownloadResponse(request.Uri, mem, headers);
                     }
                 }
             }
         }
 
-        private void ModifyRequestHeader(HttpRequestHeaders request, RequestHeader requestHeader)
+        private Uri ApplyQueryString(Uri uri, IDictionary<string, string> queryString)
         {
-            foreach (string a in requestHeader.Accept)
+            UriBuilder builder = new UriBuilder(uri);
+            if (queryString.Count > 0)
             {
-                request.Accept.Add(new MediaTypeWithQualityHeaderValue(a));
+                string query = builder.Query;
+                if (string.IsNullOrEmpty(query))
+                {
+                    query = "?";
+                }
+                else
+                {
+                    query = query + "&";
+                }
+                query = query
+                    + string.Join(
+                        "&",
+                        queryString.Select(x => string.IsNullOrEmpty(x.Value)
+                            ? WebUtility.UrlEncode(x.Key)
+                            : $"{WebUtility.UrlEncode(x.Key)}={WebUtility.UrlEncode(x.Value)}"));
+                builder.Query = query;
             }
-
-            foreach (string a in requestHeader.AcceptCharset)
-            {
-                request.AcceptCharset.Add(new StringWithQualityHeaderValue(a));
-            }
-
-            foreach (string a in requestHeader.AcceptEncoding)
-            {
-                request.AcceptEncoding.Add(new StringWithQualityHeaderValue(a));
-            }
-
-            foreach (string a in requestHeader.AcceptLanguage)
-            {
-                request.AcceptLanguage.Add(new StringWithQualityHeaderValue(a));
-            }
-
-            if (requestHeader.BasicAuthorization != null)
-            {
-                Tuple<string, string> auth = requestHeader.BasicAuthorization;
-
-                request.Authorization =
-                new AuthenticationHeaderValue(
-                    "Basic",
-                    Convert.ToBase64String(Encoding.ASCII.GetBytes($"{auth.Item1}:{auth.Item2}")));
-            }
-
-            foreach (string c in requestHeader.Connection)
-            {
-                request.Connection.Add(c);
-            }
-
-            if (requestHeader.Date.HasValue)
-            {
-                request.Date = requestHeader.Date;
-            }
-
-            foreach (string e in requestHeader.Expect)
-            {
-                request.Expect.Add(new NameValueWithParametersHeaderValue(e));
-            }
-
-            if (requestHeader.ExpectContinue.HasValue)
-            {
-                request.ExpectContinue = requestHeader.ExpectContinue;
-            }
-
-            if (!string.IsNullOrWhiteSpace(requestHeader.From))
-            {
-                request.From = requestHeader.From;
-            }
-
-            if (!string.IsNullOrWhiteSpace(requestHeader.Host))
-            {
-                request.Host = requestHeader.Host;
-            }
-
-            foreach (string i in requestHeader.IfMatch)
-            {
-                request.IfMatch.Add(new EntityTagHeaderValue(i));
-            }
-
-            if (requestHeader.IfModifiedSince.HasValue)
-            {
-                request.IfModifiedSince = requestHeader.IfModifiedSince;
-            }
-
-            foreach (string i in requestHeader.IfNoneMatch)
-            {
-                request.IfNoneMatch.Add(new EntityTagHeaderValue(i));
-            }
-
-            if (requestHeader.IfUnmodifiedSince.HasValue)
-            {
-                request.IfUnmodifiedSince = requestHeader.IfUnmodifiedSince;
-            }
-
-            if (requestHeader.MaxForwards.HasValue)
-            {
-                request.MaxForwards = requestHeader.MaxForwards;
-            }
-
-            if (requestHeader.Referrer != null)
-            {
-                request.Referrer = requestHeader.Referrer;
-            }
-
-            foreach (string t in requestHeader.TransferEncoding)
-            {
-                request.TransferEncoding.Add(new TransferCodingHeaderValue(t));
-            }
-
-            if (requestHeader.TransferEncodingChunked.HasValue)
-            {
-                request.TransferEncodingChunked = requestHeader.TransferEncodingChunked;
-            }
+            return builder.Uri;
         }
 
-        private class DownloadInstruction
-        {
-            public Uri Uri { get; }
-            public RequestHeader RequestHeader { get; }
-            public bool ContainRequestHeader => RequestHeader != null;
-
-            public DownloadInstruction(string uri)
-            {
-                Uri = new Uri(uri);
-            }
-
-            public DownloadInstruction(string uri, RequestHeader requestHeader)
-                : this(uri)
-            {
-                RequestHeader = requestHeader;
-            }
-        }
-
-        private class DownloadResult
+        private class DownloadResponse
         {
             public Uri Uri { get; }
             public Stream Stream { get; }
             public Dictionary<string, string> Headers { get; }
 
-            public DownloadResult(Uri uri, Stream stream, Dictionary<string, string> headers)
+            public DownloadResponse(Uri uri, Stream stream, Dictionary<string, string> headers)
             {
                 Uri = uri;
                 Stream = stream;
