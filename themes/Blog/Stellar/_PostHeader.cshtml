@@ -20,7 +20,7 @@
 <!-- Nav -->
 <nav id="nav">
     <ul>
-        <li><a href="http://@Context.String(Keys.Host)"><img src="@Context.GetLink("images/number8wire_56.png")"></a></li>
+        <li><a href="http://@Context.String(Keys.Host)"><img src="@Context.GetLink("images/logo.png")"></a></li>
         @{
     var pages = Documents[Blog.Pages]
         .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
