@@ -27,17 +27,17 @@ namespace Wyam.Common.Modules
         private readonly Dictionary<string, string> _keyConversions = new Dictionary<string, string>();
         private readonly List<string> _includedKeys = new List<string>();
         private readonly List<string> _excludedKeys = new List<string>();
-        private string _contentPropertyName = null;
+        private string _contentKey = null;
         private int _limit = int.MaxValue;
 
         /// <summary>
         /// Specifies which metakey should be used for the document content
         /// </summary>
-        /// <param name="contentPropertyName">The name of the content property.</param>
+        /// <param name="contentKey">The name of the content property.</param>
         /// <returns>The current module instance.</returns>
-        public TModule WithContentProperty(string contentPropertyName)
+        public TModule WithContentKey(string contentKey)
         {
-            _contentPropertyName = contentPropertyName;
+            _contentKey = contentKey;
             return (TModule)this;
         }
 
@@ -155,7 +155,7 @@ namespace Wyam.Common.Modules
                 // Loop all the keys in the dictionary
                 foreach (KeyValuePair<string, object> kvp in dict)
                 {
-                    if (kvp.Key == _contentPropertyName)
+                    if (kvp.Key == _contentKey)
                     {
                         // This is the contentPropertyName, so this will be the content of the document
                         content = kvp.Value.ToString();
