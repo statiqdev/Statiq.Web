@@ -18,7 +18,7 @@ namespace Wyam.Core.Modules.IO
         /// <summary>
         /// Request headers.
         /// </summary>
-        public RequestHeaders RequestHeaders { get; set; }
+        public RequestHeaders Headers { get; set; }
 
         /// <summary>
         /// The query string parameters. These will be combined with any that already exist in <see cref="Uri"/>.
@@ -50,6 +50,7 @@ namespace Wyam.Core.Modules.IO
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(uri));
             }
+
             Uri = new Uri(uri);
         }
 
@@ -57,14 +58,96 @@ namespace Wyam.Core.Modules.IO
         /// Creates a new download request.
         /// </summary>
         /// <param name="uri">The URI to download from.</param>
-        public DownloadRequest(Uri uri)
+        public DownloadRequest(Uri uri) =>
+            Uri = uri ?? throw new ArgumentNullException(nameof(uri));
+
+        /// <summary>
+        /// Sets the request headers.
+        /// </summary>
+        /// <param name="headers">The request headers to set.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithHeaders(RequestHeaders headers)
         {
-            if (uri == null)
+            Headers = headers ?? throw new ArgumentNullException(nameof(headers));
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a query string value.
+        /// </summary>
+        /// <param name="name">The name of the query string parameter.</param>
+        /// <param name="value">The value of the query string parameter.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithQueryString(string name, string value)
+        {
+            if (name == null)
             {
-                throw new ArgumentNullException(nameof(uri));
+                throw new ArgumentNullException(nameof(name));
             }
 
-            Uri = uri;
+            QueryString[name] = value;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the request method.
+        /// </summary>
+        /// <param name="method">The method to set.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithMethod(HttpMethod method)
+        {
+            Method = method ?? throw new ArgumentNullException(nameof(method));
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the content of the request (only applicable to some request methods).
+        /// </summary>
+        /// <param name="content">The content to set.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithContent(HttpContent content)
+        {
+            Content = content;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the string content of the request (only applicable to some request methods).
+        /// </summary>
+        /// <param name="content">The content to set.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithContent(string content)
+        {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            Content = new StringContent(content);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the credentials to use for the request.
+        /// </summary>
+        /// <param name="credentials">The credentials to use.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithCredentials(NetworkCredential credentials)
+        {
+            Credentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the credentials to use for the request.
+        /// </summary>
+        /// <param name="userName">The username to use.</param>
+        /// <param name="password">The password to use.</param>
+        /// <returns>The current instance.</returns>
+        public DownloadRequest WithCredentials(string userName, string password)
+        {
+            Credentials = new NetworkCredential(userName, password);
+            return this;
         }
     }
 }

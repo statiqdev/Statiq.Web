@@ -25,12 +25,33 @@ namespace Wyam.Core.Modules.Metadata
         private string _itemXPath;
 
         /// <summary>
-        /// Creates new documents from the specified XML data or from input documents.
+        /// Creates new documents from input documents. The child elements of the root element will be used.
         /// </summary>
-        /// <param name="data">The XML data. If <c>null</c>, the content of each input document will be used.</param>
-        /// <param name="itemXPath">The XPath expression to use to find child items. If null, all child elements will be used.</param>
-        public Xml(string data = null, string itemXPath = null)
+        public Xml()
         {
+        }
+
+        /// <summary>
+        /// Creates new documents from input documents.
+        /// </summary>
+        /// <param name="itemXPath">The XPath expression to use to find child items. If null, all child elements will be used.</param>
+        public Xml(string itemXPath)
+        {
+            _itemXPath = itemXPath;
+        }
+
+        /// <summary>
+        /// Creates new documents from the specified XML data.
+        /// </summary>
+        /// <param name="data">The XML data.</param>
+        /// <param name="itemXPath">The XPath expression to use to find child items. If <c>null</c>, all child elements will be used.</param>
+        public Xml(string data, string itemXPath)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             _data = data;
             _itemXPath = itemXPath;
         }

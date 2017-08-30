@@ -50,10 +50,10 @@ namespace Wyam.Core.Modules.IO
         /// Downloads the specified URI with the specified request header.
         /// </summary>
         /// <param name="uri">The URI to download.</param>
-        /// <param name="requestHeaders">The request header to use.</param>
-        public Download(string uri, RequestHeaders requestHeaders)
+        /// <param name="headers">The request header to use.</param>
+        public Download(string uri, RequestHeaders headers)
         {
-            WithUri(uri, requestHeaders);
+            WithUri(uri, headers);
         }
 
         /// <summary>
@@ -74,13 +74,13 @@ namespace Wyam.Core.Modules.IO
         /// Downloads the specified URI with the specified request header.
         /// </summary>
         /// <param name="uri">The URI to download.</param>
-        /// <param name="requestHeaders">The request header to use.</param>
+        /// <param name="headers">The request header to use.</param>
         /// <returns>The current module instance.</returns>
-        public Download WithUri(string uri, RequestHeaders requestHeaders = null)
+        public Download WithUri(string uri, RequestHeaders headers = null)
         {
             _requests.Add(new DownloadRequest(uri)
             {
-                RequestHeaders = requestHeaders
+                Headers = headers
             });
             return this;
         }
@@ -163,7 +163,7 @@ namespace Wyam.Core.Modules.IO
             using (HttpClient client = new HttpClient(clientHandler))
             {
                 // Apply request headers
-                request.RequestHeaders?.ApplyTo(client.DefaultRequestHeaders);
+                request.Headers?.ApplyTo(client.DefaultRequestHeaders);
 
                 // Apply the query string
                 Uri uri = ApplyQueryString(request.Uri, request.QueryString);

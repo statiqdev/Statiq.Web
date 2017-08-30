@@ -66,7 +66,7 @@ namespace Wyam.Common.Modules
         /// </summary>
         /// <param name="keys">The keys to keep.</param>
         /// <returns>The current module instance.</returns>
-        public TModule IncludeMetaKeys(params string[] keys)
+        public TModule IncludeKeys(params string[] keys)
         {
             _includedKeys.AddRange(keys.Where(x => !string.IsNullOrEmpty(x)));
             return (TModule)this;
@@ -77,7 +77,7 @@ namespace Wyam.Common.Modules
         /// </summary>
         /// <param name="keys">The keys to discard.</param>
         /// <returns>The current module instance.</returns>
-        public TModule ExcludeMetaKeys(params string[] keys)
+        public TModule ExcludeKeys(params string[] keys)
         {
             _excludedKeys.AddRange(keys.Where(x => !string.IsNullOrEmpty(x)));
             return (TModule)this;
