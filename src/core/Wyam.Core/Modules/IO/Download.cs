@@ -170,7 +170,7 @@ namespace Wyam.Core.Modules.IO
 
                 // Now that we are set and ready, go and do the download call
                 Func<HttpClient, Uri, HttpContent, Task<HttpResponseMessage>> requestFunc;
-                if (!MethodMapping.TryGetValue(request.Method, out requestFunc))
+                if (!MethodMapping.TryGetValue(request.Method ?? HttpMethod.Get, out requestFunc))
                 {
                     Trace.Error($"Invalid download method for {request.Uri}: {request.Method.Method}");
                     return null;
