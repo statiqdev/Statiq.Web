@@ -9,7 +9,7 @@ using Wyam.Common.IO;
 
 namespace Wyam.Configuration.ConfigScript
 {
-    public class CacheManager
+    internal class CacheManager
     {
         private readonly IEngine _engine;
         private readonly IScriptManager _scriptManager;
@@ -72,10 +72,12 @@ namespace Wyam.Configuration.ConfigScript
         {
             IFile configDllFile = _engine.FileSystem.GetRootFile(ConfigDllPath);
             using (Stream stream = configDllFile.OpenRead())
-            using (MemoryStream memory = new MemoryStream())
             {
-                stream.CopyTo(memory);
-                return memory.ToArray();
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    stream.CopyTo(memory);
+                    return memory.ToArray();
+                }
             }
         }
 
@@ -91,9 +93,11 @@ namespace Wyam.Configuration.ConfigScript
 
             IFile configDllFile = _engine.FileSystem.GetRootFile(ConfigDllPath);
             using (MemoryStream memory = new MemoryStream(_scriptManager.RawAssembly))
-            using (Stream stream = configDllFile.OpenWrite())
             {
-                memory.CopyTo(stream);
+                using (Stream stream = configDllFile.OpenWrite())
+                {
+                    memory.CopyTo(stream);
+                }
             }
         }
 
