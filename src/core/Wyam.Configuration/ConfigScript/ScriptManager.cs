@@ -11,22 +11,9 @@ using Microsoft.CodeAnalysis.Text;
 
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
-using Wyam.Core.Execution;
 
 namespace Wyam.Configuration.ConfigScript
 {
-    internal interface IScriptManager
-    {
-        string Code { get; }
-        Assembly Assembly { get; }
-        string AssemblyFullName { get; }
-        byte[] RawAssembly { get; }
-        void Compile(IReadOnlyCollection<Assembly> referenceAssemblies);
-        void LoadCompiledConfig(byte[] rawAssembly);
-        void Evaluate(IEngine engine);
-        void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces);
-    }
-
     internal class ScriptManager : IScriptManager
     {
         public const string AssemblyName = "WyamConfig";
