@@ -86,6 +86,7 @@ namespace Wyam
             Configurator.OutputScript = _configOptions.OutputScript;
 
             // Config caching options
+            Configurator.NoOutputConfigAssembly = _configOptions.NoOutputConfigAssembly;
             Configurator.IgnoreConfigHash = _configOptions.IgnoreConfigHash;
 
             // Application input

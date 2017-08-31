@@ -29,7 +29,7 @@ namespace Wyam.Configuration.ConfigScript
             OutputScriptPath = outputScriptPath;
         }
 
-        public void EvaluateCode(string code, IReadOnlyCollection<Type> classes, bool outputScript, bool ignoreConfigHash)
+        public void EvaluateCode(string code, IReadOnlyCollection<Type> classes, bool outputScript, bool ignoreConfigHash, bool noOutputConfigAssembly)
         {
             string cachedHash = GetCachedConfigHash();
             string currentHash = HashString(code);
@@ -41,7 +41,7 @@ namespace Wyam.Configuration.ConfigScript
                 _scriptManager.Create(code, classes, _engine.Namespaces);
                 WriteScript(_scriptManager.Code, outputScript);
                 _scriptManager.Compile(AppDomain.CurrentDomain.GetAssemblies());
-                SaveCompiledScript(currentHash);
+                SaveCompiledScript(currentHash, noOutputConfigAssembly);
             }
             else
             {
@@ -81,9 +81,9 @@ namespace Wyam.Configuration.ConfigScript
             }
         }
 
-        private void SaveCompiledScript(string scriptHash)
+        private void SaveCompiledScript(string scriptHash, bool noOutputConfigAssembly)
         {
-            if (ConfigHashPath == null || ConfigDllPath == null)
+            if (noOutputConfigAssembly || ConfigHashPath == null || ConfigDllPath == null)
             {
                 return;
             }

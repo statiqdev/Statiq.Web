@@ -37,7 +37,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenWrite().Returns(new MemoryStream());
 
                 // When
-                cacheManager.EvaluateCode(fakeCode, fakeClasses, false, false);
+                cacheManager.EvaluateCode(fakeCode, fakeClasses, false, false, true);
 
                 // Then
                 mockScriptManager.Received().Create(fakeCode, fakeClasses, Arg.Any<IEnumerable<string>>());
@@ -55,7 +55,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenWrite().Returns(new MemoryStream());
 
                 // When
-                cacheManager.EvaluateCode(fakeCode, Autofixture.CreateMany<Type>().ToList(), false, false);
+                cacheManager.EvaluateCode(fakeCode, Autofixture.CreateMany<Type>().ToList(), false, false, false);
 
                 // Then
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigHashPath).Received().WriteAllText(fakeCodeHash);
@@ -74,10 +74,29 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenWrite().Returns(cacheStream);
 
                 // When
-                cacheManager.EvaluateCode(Autofixture.Create<string>(), Autofixture.CreateMany<Type>().ToList(), false, false);
+                cacheManager.EvaluateCode(Autofixture.Create<string>(), Autofixture.CreateMany<Type>().ToList(), false, false, false);
 
                 // Then
                 Assert.AreEqual(scriptManager.RawAssembly, cacheStream.MemoryStream.ToArray());
+            }
+
+            [Test]
+            public void WhenNoCacheExistsAndCachingSavingDisabledThenDoNotSaveCompiledDll()
+            {
+                // Given
+                CacheManager cacheManager = CreateCacheManager(out IEngine mockEngine, out IScriptManager scriptManager);
+                mockEngine.FileSystem.GetRootFile(cacheManager.ConfigHashPath).Exists.Returns(false);
+
+                scriptManager.RawAssembly.Returns(Autofixture.CreateMany<byte>().ToArray());
+
+                MockStream cacheStream = new MockStream();
+                mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenWrite().Returns(cacheStream);
+
+                // When
+                cacheManager.EvaluateCode(Autofixture.Create<string>(), Autofixture.CreateMany<Type>().ToList(), false, false, true);
+
+                // Then
+                Assert.IsEmpty(cacheStream.MemoryStream.ToArray());
             }
 
             [Test]
@@ -97,7 +116,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenRead().Returns(cacheStream);
 
                 // When
-                cacheManager.EvaluateCode(fakeCode, Autofixture.CreateMany<Type>().ToList(), false, false);
+                cacheManager.EvaluateCode(fakeCode, Autofixture.CreateMany<Type>().ToList(), false, false, true);
 
                 // Then
                 scriptManager.Received().LoadCompiledConfig(Arg.Is<byte[]>(x => fakeAssembly.SequenceEqual(x)));

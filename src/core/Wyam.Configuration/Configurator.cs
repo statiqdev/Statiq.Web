@@ -44,6 +44,8 @@ namespace Wyam.Configuration
 
         public bool IgnoreConfigHash { get; set; }
 
+        public bool NoOutputConfigAssembly { get; set; }
+
         public FilePath ConfigDllPath { get; set; }
 
         public FilePath ConfigHashPath { get; set; }
@@ -337,7 +339,7 @@ namespace Wyam.Configuration
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
                 CacheManager cacheManager = new CacheManager(_engine, _scriptManager, ConfigDllPath, ConfigHashPath, OutputScriptPath);
-                cacheManager.EvaluateCode(code, ClassCatalog.GetClasses<IModule>().ToList(), OutputScript, IgnoreConfigHash);
+                cacheManager.EvaluateCode(code, ClassCatalog.GetClasses<IModule>().ToList(), OutputScript, IgnoreConfigHash, NoOutputConfigAssembly);
 
                 stopwatch.Stop();
                 Trace.Information($"Evaluated configuration script in {stopwatch.ElapsedMilliseconds} ms");

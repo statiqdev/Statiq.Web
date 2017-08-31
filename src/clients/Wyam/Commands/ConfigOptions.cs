@@ -14,6 +14,7 @@ namespace Wyam.Commands
         public DirectoryPath PackagesPath = null;
         public bool OutputScript = false;
         public bool IgnoreConfigHash = false;
+        public bool NoOutputConfigAssembly = false;
         public string Stdin = null;
         public DirectoryPath RootPath = null;
         public IReadOnlyList<DirectoryPath> InputPaths = null;
