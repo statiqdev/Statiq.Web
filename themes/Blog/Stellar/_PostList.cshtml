@@ -1,0 +1,19 @@
+@model IEnumerable<IDocument>
+
+@{
+    foreach (IDocument doc in Model)
+    {
+        string lead = doc.String(BlogKeys.Lead);
+        
+        <div>
+            <a href="@(Context.GetLink(doc)).html">
+                <h3>@doc.WithoutSettings.String(BlogKeys.Title)</h3>
+                @if(!string.IsNullOrWhiteSpace(lead))
+                {
+                    <p>@lead</p>
+                }
+            </a>
+            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</em></p>            
+        </div>   
+    }
+}
