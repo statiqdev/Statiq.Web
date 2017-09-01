@@ -8,13 +8,15 @@
             foreach(IDocument doc in Documents[Blog.Posts].Take(3))
             {                
                 string lead = doc.String(BlogKeys.Lead);
-                <div>
+                <div class="content">
                     <a href="@Context.GetLink(doc)">
-                        <h2>@doc.String(BlogKeys.Title)</h2>
-                        @if(!string.IsNullOrWhiteSpace(lead))
-                        {
-                            <h3>@lead</h3>
-                        }
+                        <header class="major">
+                            <h2>@doc.String(BlogKeys.Title)</h2>                                
+                            @if(!string.IsNullOrWhiteSpace(lead))
+                            {
+                                <h3>@lead</h3>
+                            }
+                        </header>
                     </a>
                     <p>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</p>
                     @Html.Raw(doc.String(BlogKeys.Excerpt))             
@@ -22,13 +24,12 @@
             }
         }
     </div>
-    <h2>RICHARD</h2>
     <div class="4u 12u$(medium)">
         <h5>Tags</h5>
         <ul class="actions small">
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
             {
                 string tag = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);
