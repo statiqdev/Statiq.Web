@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Modules;
-using Wyam.Common.Tracing;
 using Wyam.Configuration.Assemblies;
 using Wyam.Configuration.ConfigScript;
 using Wyam.Configuration.NuGet;
 using Wyam.Configuration.Preprocessing;
 using Wyam.Core.Execution;
+
+using Trace = Wyam.Common.Tracing.Trace;
 
 namespace Wyam.Configuration
 {
@@ -36,6 +41,14 @@ namespace Wyam.Configuration
         public bool OutputScript { get; set; }
 
         public FilePath OutputScriptPath { get; set; }
+
+        public bool IgnoreConfigHash { get; set; }
+
+        public bool NoOutputConfigAssembly { get; set; }
+
+        public FilePath ConfigDllPath { get; set; }
+
+        public FilePath ConfigHashPath { get; set; }
 
         public IReadOnlyDictionary<string, object> Settings { get; set; }
 
@@ -220,7 +233,7 @@ namespace Wyam.Configuration
 
         private void InstallPackages()
         {
-            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
                 PackageInstaller.InstallPackages();
@@ -231,7 +244,7 @@ namespace Wyam.Configuration
 
         private void LoadAssemblies()
         {
-            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Recursively loading assemblies"))
             {
                 AssemblyLoader.Load();
@@ -242,7 +255,7 @@ namespace Wyam.Configuration
 
         private void CatalogClasses()
         {
-            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Cataloging classes"))
             {
                 ClassCatalog.CatalogTypes(AssemblyLoader.DirectAssemblies);
@@ -322,26 +335,14 @@ namespace Wyam.Configuration
                 return;
             }
 
-            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                _scriptManager.Create(code, ClassCatalog.GetClasses<IModule>().ToList(), _engine.Namespaces);
-                WriteScript(_scriptManager.Code);
-                _scriptManager.Compile(AppDomain.CurrentDomain.GetAssemblies());
-                _engine.DynamicAssemblies.Add(_scriptManager.RawAssembly);
-                _scriptManager.Evaluate(_engine);
+                CacheManager cacheManager = new CacheManager(_engine, _scriptManager, ConfigDllPath, ConfigHashPath, OutputScriptPath);
+                cacheManager.EvaluateCode(code, ClassCatalog.GetClasses<IModule>().ToList(), OutputScript, IgnoreConfigHash, NoOutputConfigAssembly);
+
                 stopwatch.Stop();
                 Trace.Information($"Evaluated configuration script in {stopwatch.ElapsedMilliseconds} ms");
-            }
-        }
-
-        private void WriteScript(string code)
-        {
-            // Output only if requested
-            if (OutputScript)
-            {
-                FilePath outputPath = _engine.FileSystem.RootPath.CombineFile(OutputScriptPath ?? new FilePath($"{ScriptManager.AssemblyName}.cs"));
-                _engine.FileSystem.GetFile(outputPath)?.WriteAllText(code);
             }
         }
     }

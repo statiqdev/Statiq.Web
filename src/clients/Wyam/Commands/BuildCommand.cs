@@ -68,8 +68,21 @@ namespace Wyam.Commands
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
             syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPathFromArg, "The packages path to use (only if use-local is true).");
-            syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging.");
-            syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute.");
+
+            syntax.DefineOption("no-output-config-assembly", ref _configOptions.NoOutputConfigAssembly, "Disable caching configuration file compulation.");
+            syntax.DefineOption("ignore-config-hash", ref _configOptions.IgnoreConfigHash, "Force evaluating the configuration file, even when no changes were detected.");
+            syntax.DefineOption("output-script", ref _configOptions.OutputScript, "Outputs the config script after it's been processed for further debugging. The directive --ignore-config-hash is required when using this option.");
+            syntax.DefineOption("verify-config", ref _verifyConfig, false, "Compile the configuration but do not execute. The directive --ignore-config-hash is required when using this option.");
+
+            if (_configOptions.OutputScript && !_configOptions.IgnoreConfigHash)
+            {
+                syntax.ReportError("The directive --output-script can only be specified if --ignore-config-hash is also specified.");
+            }
+            if (_verifyConfig && !_configOptions.IgnoreConfigHash)
+            {
+                syntax.ReportError("The directive --verify-config can only be specified if --ignore-config-hash is also specified.");
+            }
+
             syntax.DefineOption("noclean", ref _configOptions.NoClean, "Prevents cleaning of the output path on each execution.");
             syntax.DefineOption("nocache", ref _configOptions.NoCache, "Prevents caching information during execution (less memory usage but slower execution).");
 
