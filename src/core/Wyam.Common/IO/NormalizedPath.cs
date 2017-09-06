@@ -85,7 +85,8 @@ namespace Wyam.Common.IO
                 throw new ArgumentException("Path cannot be empty");
             }
 
-            FullPath = providerAndPath.Item2.Replace('\\', '/').Trim();
+            // Leave spaces since they're valid path chars
+            FullPath = providerAndPath.Item2.Replace('\\', '/').Trim('\r', '\n', '\t');
 
             // Remove relative part of a path, but only if it's not the only part
             if (FullPath.StartsWith("./", StringComparison.Ordinal) && FullPath.Length > 2)

@@ -88,13 +88,13 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
-            public void ShouldTrimWhiteSpaceFromPath()
+            public void ShouldTrimWhiteSpaceFromPathAndLeaveSpaces()
             {
                 // Given, When
-                TestPath path = new TestPath(" shaders/basic ");
+                TestPath path = new TestPath("\t\r\nshaders/basic ");
 
                 // Then
-                Assert.AreEqual("shaders/basic", path.FullPath);
+                Assert.AreEqual("shaders/basic ", path.FullPath);
             }
 
             [Test]
