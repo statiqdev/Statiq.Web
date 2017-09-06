@@ -56,19 +56,22 @@
 				@Html.Partial("_Header")                                           
 			}
 
+			<!-- Nav -->
+			<nav id="nav">
+				<ul>
+					@Html.Partial("_Navbar")
+				</ul>
+			</nav>
+
 			<!-- Main -->
 			<div id="main">
 
 				<!-- Content -->
 					<section id="content" class="main">
-					@if(Model.String(BlogKeys.Image) != null)
-					{
-						<span class="image main"><img src="@Model.String(BlogKeys.Image)" alt="@PageTitle image" /></span>
-					}
-					else
-					{
-						<span class="image main"><img src="@Context.GetLink("/images/banner.jpg")" alt="" /></span>
-					}
+						@if(Model.String(BlogKeys.Image) != null)
+						{
+							<span class="image main"><img src="@Model.String(BlogKeys.Image)" alt="@PageTitle image" /></span>
+						}
 						@RenderBody()
 					</section>
 

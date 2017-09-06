@@ -5,15 +5,19 @@
     {
         string lead = doc.String(BlogKeys.Lead);
         
-        <div>
+        <div style="margin-bottom: 12px;">
             <a href="@(Context.GetLink(doc)).html">
-                <h3>@doc.WithoutSettings.String(BlogKeys.Title)</h3>
+                <div><strong>@doc.WithoutSettings.String(BlogKeys.Title)</strong></div>
                 @if(!string.IsNullOrWhiteSpace(lead))
                 {
-                    <p>@lead</p>
+                    <div>@lead</div>
                 }
             </a>
-            <p><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</em></p>            
+            <div><em>Posted on @(doc.Get<DateTime>(BlogKeys.Published).ToLongDateString())</em></div>            
+            @if(Context.Bool(BlogKeys.ArchiveExcerpts))
+            {
+                @Html.Raw(doc.String(BlogKeys.Excerpt))
+            } 
         </div>   
     }
 }

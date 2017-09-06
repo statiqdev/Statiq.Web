@@ -30,15 +30,23 @@ Title: All Tags
     </div>
     
     <div class="4u 12u$(medium)">
-        <ul class="actions small">
+        <ul class="icons">
             @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
-                                                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
-                                                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
+                .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
+                .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
             {
                 string tagName = tagDocument.String(BlogKeys.Tag);
                 string postCount = tagDocument.String(Keys.TotalItems);
-                string buttonStyle = tagName == Model.String(BlogKeys.Tag) ? "special" : string.Empty;
-                <li><a role="button" href="@(Context.GetLink(tagDocument)).html" class="button small @buttonStyle">@tagName (@postCount)</a></li>
+                <li>
+                    @if(tagName == Model.String(BlogKeys.Tag))
+                    {
+                        <strong><a href="@(Context.GetLink(tagDocument)).html">@tagName (@postCount)</a></strong>
+                    }
+                    else
+                    {
+                        <a href="@(Context.GetLink(tagDocument)).html">@tagName (@postCount)</a>
+                    }
+                </li>
             }
         </ul>
     </div>

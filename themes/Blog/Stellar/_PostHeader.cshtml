@@ -9,28 +9,10 @@
     @if(!string.IsNullOrWhiteSpace(Lead))
     {
         <p>@Lead</p>
-    }                  
+    }             
+    <hr/>     
     @if (Published != default(DateTime))
     {
-        <p>Published on @Published.ToLongDateString()</p>
-    }
-   
+        <p><em>Published on @Published.ToLongDateString()</em></p>
+    }   
 </header>
-
-<!-- Nav -->
-<nav id="nav">
-    <ul>
-        <li><a href="http://@Context.String(Keys.Host)"><img src="@Context.GetLink("images/logo.png")"></a></li>
-        @{
-    var pages = Documents[Blog.Pages]
-        .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
-        .Select(x => Tuple.Create(x.WithoutSettings.String(BlogKeys.Title), Context.GetLink(x)))
-        .Where(x => !string.IsNullOrEmpty(x.Item1))
-        .OrderBy(x => x.Item1);
-    foreach(var page in pages)
-    {
-        <li><a href="@page.Item2">@page.Item1</a></li>
-    }
-}
-    </ul>
-</nav>

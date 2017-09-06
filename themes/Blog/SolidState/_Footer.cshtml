@@ -1,15 +1,15 @@
 <div class="inner">
     <section>
         @if (Context.String(BlogKeys.RssPath) != null && Context.String(BlogKeys.AtomPath) != null) {
-        <h2>Feeds</h2>
-        <ul class="actions">
-            @if (Context.String(BlogKeys.RssPath) != null) {
-            <li><a href="@Context.GetLink(Context.String(BlogKeys.RssPath))" class="button small"><i class="fa fa-rss"></i> RSS Feed</a></li>
-            }
-            @if (Context.String(BlogKeys.AtomPath) != null) {
-            <li><a href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" class="button small"><i class="fa fa-rss"></i> Atom Feed</a></li>
-            }
-        </ul>
+            <h2>Feeds</h2>
+            <ul class="actions">
+                @if (Context.String(BlogKeys.RssPath) != null) {
+                <li><a href="@Context.GetLink(Context.String(BlogKeys.RssPath))" class="button small"><i class="fa fa-rss"></i> RSS Feed</a></li>
+                }
+                @if (Context.String(BlogKeys.AtomPath) != null) {
+                <li><a href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" class="button small"><i class="fa fa-rss"></i> Atom Feed</a></li>
+                }
+            </ul>
         }
     </section>
     <section>
