@@ -414,7 +414,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(
-                symbol.OriginalDefinition,
+                GetOriginal(symbol),
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -579,50 +579,39 @@ namespace Wyam.CodeAnalysis.Analysis
             return GetFullName(symbol);
         }
 
-        private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol)
-        {
-            return _namedTypes
-                .Where(x => x.Key.BaseType != null && x.Key.BaseType.Equals(symbol))
+        private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol) =>
+            _namedTypes
+                .Where(x => x.Key.BaseType != null && GetOriginal(x.Key.BaseType).Equals(GetOriginal(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
-        }
 
-        private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol)
-        {
-            return _namedTypes
-                .Where(x => x.Key.AllInterfaces.Contains(symbol))
+        private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol) =>
+            _namedTypes
+                .Where(x => x.Key.AllInterfaces.Select(GetOriginal).Contains(GetOriginal(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
-        }
 
-        private string GetSyntax(ISymbol symbol)
-        {
-            return SyntaxHelper.GetSyntax(symbol);
-        }
+        private string GetSyntax(ISymbol symbol) => SyntaxHelper.GetSyntax(symbol);
 
-        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol)
-        {
-            return symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
+        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol) =>
+            symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
             {
                 { CodeAnalysisKeys.AttributeData, attributeData },
                 { CodeAnalysisKeys.Type, DocumentFor(attributeData.AttributeClass) },
                 { CodeAnalysisKeys.Name, attributeData.AttributeClass.Name }
             })).ToList();
-        }
 
-        private SymbolDocumentValue DocumentFor(ISymbol symbol)
-        {
-            return new SymbolDocumentValue(symbol, this);
-        }
+        private SymbolDocumentValue DocumentFor(ISymbol symbol) =>
+            new SymbolDocumentValue(GetOriginal(symbol), this);
 
-        private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols)
-        {
-            return new SymbolDocumentValues(symbols, this);
-        }
+        private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols) =>
+            new SymbolDocumentValues(symbols.Select(GetOriginal), this);
 
-        public bool TryGetDocument(ISymbol symbol, out IDocument document)
-        {
-            return _symbolToDocument.TryGetValue(symbol.OriginalDefinition, out document);
-        }
+        public bool TryGetDocument(ISymbol symbol, out IDocument document) =>
+            _symbolToDocument.TryGetValue(GetOriginal(symbol), out document);
+
+        // We need this because we don't really care about concrete generic types, only their definition
+        // This converts all concrete generics into their original defintion
+        private static ISymbol GetOriginal(ISymbol symbol) => symbol?.OriginalDefinition ?? symbol;
     }
 }
