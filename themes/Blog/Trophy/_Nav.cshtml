@@ -1,0 +1,24 @@
+@{
+        List<Tuple<string, string>> pages = Context
+                .Documents[Blog.Pages]
+                .Where(x => x.Bool(BlogKeys.ShowInNavbar, true))
+                .Where(x => x.FilePath(Keys.RelativeFilePath)?.FullPath?.StartsWith("index") == (bool?)false)
+                .Select(x => Tuple.Create(x.WithoutSettings.String(Keys.Title), Context.GetLink(x)))
+                .Where(x => !string.IsNullOrEmpty(x.Item1))
+                .OrderBy(x => x.Item1)
+                .ToList();
+    }
+<div class="sidenav">
+  <a class="closebtn"><i class="fa fa-times"></i></a>
+  <a class="" href="@Context.GetLink(Context.String(Keys.Host))"><span>@Context.String(BlogKeys.Description)</span></a>
+  <hr />
+  @foreach(Tuple<string, string> page in pages)
+            {
+                <a class="" href="@page.Item2"><span>@page.Item1</span></a>
+            }
+</div>
+
+<a class="nav nav--white openbtn">
+      <i class="fa fa-bars fa-2x"></i>
+    </a>
+    

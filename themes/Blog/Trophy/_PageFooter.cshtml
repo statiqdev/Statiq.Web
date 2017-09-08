@@ -6,7 +6,8 @@
   }
   </span>
   <ul class="footer__social">
-    @foreach(var social in Context.Get<Dictionary<string,string>>("SocialMedia")){
+    <li><a class="fa fa-lg fa-rss" href="/feed.rss" target="_blank"></a></li>
+    @foreach(var social in Context.Get<Dictionary<string,string>>("SocialMedia") ?? new Dictionary<string,string>()){
       <li><a class="fa fa-lg fa-@social.Key" href="@social.Value" target="_blank"></a></li>
       }
   </ul>

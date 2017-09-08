@@ -8,8 +8,6 @@ namespace Wyam.Configuration
 		public static readonly KnownTheme SolidState = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.SolidState" });
 		public static readonly KnownTheme Stellar = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Stellar" });
 		public static readonly KnownTheme Trophy = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Trophy" });
-		public static readonly KnownTheme SolidState = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.SolidState" });
-		public static readonly KnownTheme Stellar = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Stellar" });
 		public static readonly KnownTheme Velocity = new KnownTheme(nameof(KnownRecipe.BookSite), null, new[] { "Wyam.BookSite.Velocity" });
 		public static readonly KnownTheme Samson = new KnownTheme(nameof(KnownRecipe.Docs), null, new[] { "Wyam.Docs.Samson" });
     }

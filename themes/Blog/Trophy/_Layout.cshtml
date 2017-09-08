@@ -12,10 +12,7 @@
     <figure class="absolute-bg mast__img" style="background-image: url('@image');"></figure>
     <div class="mast__container">
       <span>Welcome to</span>
-      @if(Context.String(BlogKeys.Description) != null)
-    {
-        <h1>@Context.String(BlogKeys.Description)</h1>
-    }
+      <h1>@Context.String(BlogKeys.Description)</h1>
     @if(Context.String(BlogKeys.Intro) != null)
     {            
         @if(Context.String(BlogKeys.Description) != null)
