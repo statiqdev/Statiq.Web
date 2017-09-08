@@ -5,6 +5,8 @@ namespace Wyam.Configuration
 		public static readonly KnownTheme BlogTemplate = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.BlogTemplate" });
 		public static readonly KnownTheme CleanBlog = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.CleanBlog" });
 		public static readonly KnownTheme Phantom = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Phantom" });
+		public static readonly KnownTheme SolidState = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.SolidState" });
+		public static readonly KnownTheme Stellar = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Stellar" });
 		public static readonly KnownTheme Trophy = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Trophy" });
 		public static readonly KnownTheme SolidState = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.SolidState" });
 		public static readonly KnownTheme Stellar = new KnownTheme(nameof(KnownRecipe.Blog), null, new[] { "Wyam.Blog.Stellar" });
