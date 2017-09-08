@@ -20,7 +20,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with a new source, new content, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>
@@ -33,7 +33,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with a new source and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>
@@ -44,7 +44,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>
@@ -56,7 +56,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
@@ -72,7 +72,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with a new content stream, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the
         /// document takes ownership of the <see cref="Stream"/>).
@@ -87,7 +87,7 @@ namespace Wyam.Common.Documents
 
         /// <summary>
         /// Clones the specified source document with identical content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewocuments()</c> was called on the module.
+        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
         /// <param name="context">The current execution context.</param>
         /// <param name="sourceDocument">The source document.</param>

@@ -177,6 +177,7 @@
     <Compile Include="Modules\Contents\JoinedMetadata.cs" />
     <Compile Include="Modules\Contents\Redirect.cs" />
     <Compile Include="Modules\Control\Sort.cs" />
+    <Compile Include="Modules\IO\DownloadRequest.cs" />
     <Compile Include="Modules\IO\Include.cs" />
     <Compile Include="Modules\Control\Combine.cs" />
     <Compile Include="Modules\Control\GroupByMany.cs" />
@@ -187,9 +188,13 @@
     <Compile Include="Modules\IO\Download.cs" />
     <Compile Include="Modules\IO\ReadApplicationInput.cs" />
     <Compile Include="Modules\IO\ReadFiles.cs" />
+    <Compile Include="Modules\IO\ReadNetworkData.cs" />
+    <Compile Include="Modules\Metadata\Objects.cs" />
+    <Compile Include="Modules\Metadata\Sql.cs" />
+    <Compile Include="Modules\Metadata\Xml.cs" />
     <Compile Include="Modules\Metadata\CopyMeta.cs" />
     <Compile Include="Modules\Metadata\DirectoryMeta.cs" />
-    <Compile Include="Modules\IO\RequestHeader.cs" />
+    <Compile Include="Modules\IO\RequestHeaders.cs" />
     <Compile Include="Modules\Metadata\FileName.cs" />
     <Compile Include="Modules\Control\ForEach.cs" />
     <Compile Include="Modules\Control\ConcatBranch.cs" />

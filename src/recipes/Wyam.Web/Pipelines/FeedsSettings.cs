@@ -1,4 +1,6 @@
+using System;
 using Wyam.Common.Configuration;
+using Wyam.Feeds;
 
 namespace Wyam.Web.Pipelines
 {
@@ -26,5 +28,11 @@ namespace Wyam.Web.Pipelines
         /// A delegate that returns the RDF path to use.
         /// </summary>
         public ContextConfig RdfPath { get; set; }
+
+        /// <summary>
+        /// Allows customization of the <see cref="GenerateFeeds"/> module for
+        /// setting metadata fields, etc.
+        /// </summary>
+        public Func<GenerateFeeds, GenerateFeeds> Customization { get; set; } = x => x;
     }
 }

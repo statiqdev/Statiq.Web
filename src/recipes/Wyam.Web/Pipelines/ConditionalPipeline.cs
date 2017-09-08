@@ -44,6 +44,7 @@ namespace Wyam.Web.Pipelines
             {
                 Condition,
                 new If(condition, pipeline.ToArray())
+                    .WithoutUnmatchedDocuments()
             }
         };
     }

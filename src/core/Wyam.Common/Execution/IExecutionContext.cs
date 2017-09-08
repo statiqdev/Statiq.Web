@@ -20,6 +20,13 @@ namespace Wyam.Common.Execution
     public interface IExecutionContext : IMetadata
     {
         /// <summary>
+        /// Uniquly identifies the current execution cycle. This can be used to initialize and/or
+        /// reset static data for a module on new generations (I.e., due to watching).
+        /// For example, cache data could be cleared when this changes between runs.
+        /// </summary>
+        Guid ExecutionId { get; }
+
+        /// <summary>
         /// Gets the raw bytes for dynamically compiled assemblies (such as the configuration script).
         /// </summary>
         IReadOnlyCollection<byte[]> DynamicAssemblies { get; }

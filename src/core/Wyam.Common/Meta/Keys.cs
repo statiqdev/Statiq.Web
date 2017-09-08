@@ -27,7 +27,12 @@ namespace Wyam.Common.Meta
         public const string LinksUseHttps = nameof(LinksUseHttps);
 
         /// <summary>
-        /// The default root path to use when generating links.
+        /// The default root path to use when generating links
+        /// (for example, <code>"/virtual/directory"</code>).
+        /// Note that you may also want to use the <code>--virtual-dir</code>
+        /// argument on the command line when using this setting so that
+        /// the preview server serves the site at the same path as the generated links
+        /// (for example, <code>--virtual-dir "/virtual/directory"</code>).
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string LinkRoot = nameof(LinkRoot);
@@ -43,6 +48,12 @@ namespace Wyam.Common.Meta
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string LinkHideExtensions = nameof(LinkHideExtensions);
+
+        /// <summary>
+        /// Indicates that links should always be rendered in lowercase.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string LinkLowercase = nameof(LinkLowercase);
 
         /// <summary>
         /// Indicates whether caching should be used.

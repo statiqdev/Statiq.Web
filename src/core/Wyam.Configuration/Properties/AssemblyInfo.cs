@@ -7,3 +7,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("43ccbef4-c940-457e-b6d7-4d2675532926")]
 [assembly: InternalsVisibleTo("Wyam.Configuration.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

@@ -8,12 +8,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
+
+using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
-using Wyam.Core.Execution;
 
 namespace Wyam.Configuration.ConfigScript
 {
-    internal class ScriptManager
+    internal class ScriptManager : IScriptManager
     {
         public const string AssemblyName = "WyamConfig";
         public const string ScriptClassName = "Script";
@@ -26,13 +27,13 @@ namespace Wyam.Configuration.ConfigScript
 
         public byte[] RawAssembly { get; private set; }
 
-        internal void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
+        public void Create(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             Code = Parse(code, moduleTypes, namespaces);
         }
 
         // Internal for testing
-        internal string Parse(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
+        internal static string Parse(string code, IReadOnlyCollection<Type> moduleTypes, IEnumerable<string> namespaces)
         {
             // Rewrite the lambda shorthand expressions
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(kind: SourceCodeKind.Script));
@@ -169,9 +170,18 @@ namespace Wyam.Configuration.ConfigScript
         {
             // Get the compilation
             var parseOptions = new CSharpParseOptions();
-            var syntaxTree = CSharpSyntaxTree.ParseText(SourceText.From(Code, Encoding.UTF8), parseOptions, AssemblyName);
-            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var assemblyPath = System.IO.Path.GetDirectoryName(typeof(object).Assembly.Location);
+            var sourceText = SourceText.From(Code, Encoding.UTF8);
+            var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, parseOptions, AssemblyName);
+            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).
+                WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
+                {
+                    // ensure that specific warnings about assembly references are always suppressed
+                    // https://github.com/dotnet/roslyn/issues/5501
+                    { "CS1701", ReportDiagnostic.Suppress },
+                    { "CS1702", ReportDiagnostic.Suppress },
+                    { "CS1705", ReportDiagnostic.Suppress }
+                 });
+            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var compilation = CSharpCompilation.Create(AssemblyName, new[] { syntaxTree },
                 referenceAssemblies
                     .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
@@ -179,21 +189,20 @@ namespace Wyam.Configuration.ConfigScript
                     .AddReferences(
                         // For some reason, Roslyn really wants these added by filename
                         // See http://stackoverflow.com/questions/23907305/roslyn-has-no-reference-to-system-runtime
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "mscorlib.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Core.dll")),
-                        MetadataReference.CreateFromFile(System.IO.Path.Combine(assemblyPath, "System.Runtime.dll"))
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                        MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll"))
             );
 
             // Emit the assembly
-            using (var ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
 
                 // Trace warnings
                 List<string> warningMessages = result.Diagnostics
                     .Where(x => x.Severity == DiagnosticSeverity.Warning)
-                    .Where(x => x.Id != "CS1701")  // Assembly binding redirects, we don't care about these in the script
                     .Select(GetCompilationErrorMessage)
                     .ToList();
                 if (warningMessages.Count > 0)
@@ -222,10 +231,9 @@ namespace Wyam.Configuration.ConfigScript
                 }
 
                 ms.Seek(0, SeekOrigin.Begin);
-                RawAssembly = ms.ToArray();
+                byte[] rawAssembly = ms.ToArray();
+                LoadCompiledConfig(rawAssembly);
             }
-            Assembly = Assembly.Load(RawAssembly);
-            AssemblyFullName = Assembly.FullName;
         }
 
         private static string GetCompilationErrorMessage(Diagnostic diagnostic)
@@ -234,7 +242,14 @@ namespace Wyam.Configuration.ConfigScript
             return $"{line}: {diagnostic.Id}: {diagnostic.GetMessage()}";
         }
 
-        public void Evaluate(Engine engine)
+        public void LoadCompiledConfig(byte[] rawAssembly)
+        {
+            RawAssembly = rawAssembly;
+            Assembly = Assembly.Load(rawAssembly);
+            AssemblyFullName = Assembly.FullName;
+        }
+
+        public void Evaluate(IEngine engine)
         {
             Type scriptType = Assembly.GetExportedTypes().First(t => t.Name == ScriptClassName);
             ScriptBase script = (ScriptBase)Activator.CreateInstance(scriptType, engine);

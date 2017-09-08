@@ -46,6 +46,7 @@ namespace Wyam.Web.Pipelines
                         .ValidateAbsoluteLinks(settings.ValidateAbsoluteLinks.Invoke<bool>(ctx))
                         .ValidateRelativeLinks(settings.ValidateRelativeLinks.Invoke<bool>(ctx))
                         .AsError(settings.ValidateLinksAsError.Invoke<bool>(ctx))))
+                .WithoutUnmatchedDocuments()
         };
     }
 }

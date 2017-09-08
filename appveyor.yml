@@ -3,6 +3,9 @@ branches:
     - master
     - develop
     
+hosts:
+  api.nuget.org: 93.184.221.200
+
 init:
   - git config --global core.autocrlf true
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace Wyam.Razor
     /// </summary>
     internal class FileSystemFileProvider : IFileProvider
     {
+        private readonly ConcurrentBag<ExecutionChangeToken> _executionChangeTokens =
+            new ConcurrentBag<ExecutionChangeToken>();
+
         private readonly IReadOnlyFileSystem _fileSystem;
 
         public FileSystemFileProvider(IReadOnlyFileSystem fileSystem)
@@ -53,7 +57,21 @@ namespace Wyam.Razor
             return new EnumerableDirectoryContents(fileInfos);
         }
 
-        IChangeToken IFileProvider.Watch(string filter) => new EmptyChangeToken();
+        IChangeToken IFileProvider.Watch(string filter)
+        {
+            ExecutionChangeToken token = new ExecutionChangeToken();
+            _executionChangeTokens.Add(token);
+            return token;
+        }
+
+        public void ExpireChangeTokens()
+        {
+            ExecutionChangeToken token;
+            while (_executionChangeTokens.TryTake(out token))
+            {
+                token.Expire();
+            }
+        }
 
         private class EnumerableDirectoryContents : IDirectoryContents
         {

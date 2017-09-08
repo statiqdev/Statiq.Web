@@ -324,6 +324,13 @@ namespace Wyam.Docs
         /// <type><see cref="bool"/></type>
         public const string ShowInNavbar = nameof(ShowInNavbar);
 
+        /// <summary>
+        /// Setting this to <c>true</c> will assume <c>inheritdoc</c> for all API symbols
+        /// that don't provide their own documentation comments.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ImplicitInheritDoc = nameof(ImplicitInheritDoc);
+
         [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
         public const string MarkdownExtensions = nameof(MarkdownConfiguration);
 

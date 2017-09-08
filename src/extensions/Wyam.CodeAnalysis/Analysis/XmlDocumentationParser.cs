@@ -23,8 +23,8 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly Compilation _compilation;
         private readonly ConcurrentDictionary<ISymbol, IDocument> _symbolToDocument;
         private readonly ConcurrentDictionary<string, string> _cssClasses;
-        private List<Action> _processActions;
         private readonly object _processLock = new object();
+        private List<Action> _processActions;
 
         public string Example { get; private set; } = string.Empty;
         public string Remarks { get; private set; } = string.Empty;
@@ -200,6 +200,8 @@ namespace Wyam.CodeAnalysis.Analysis
                     {
                         INamedTypeSymbol currentTypeSymbol = currentSymbol as INamedTypeSymbol;
                         IMethodSymbol currentMethodSymbol = currentSymbol as IMethodSymbol;
+                        IPropertySymbol currentPropertySymbol = currentSymbol as IPropertySymbol;
+                        IEventSymbol currentEventSymbol = currentSymbol as IEventSymbol;
                         if (currentTypeSymbol != null)
                         {
                             // Types and interfaces, inherit from all base types
@@ -241,32 +243,15 @@ namespace Wyam.CodeAnalysis.Analysis
                         }
                         else if (currentMethodSymbol != null)
                         {
-                            IMethodSymbol overriddenMethodSymbol = null;
-                            if (currentMethodSymbol.IsOverride)
-                            {
-                                // Override, get overridden method
-                                overriddenMethodSymbol = currentMethodSymbol.OverriddenMethod;
-                                if (overriddenMethodSymbol != null
-                                    && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
-                                {
-                                    inheritedSymbols.Add(overriddenMethodSymbol);
-                                }
-                            }
-
-                            // Check if this is an interface implementation
-                            IMethodSymbol interfaceMethodSymbol = currentMethodSymbol.ContainingType.AllInterfaces
-                                .SelectMany(x => x.GetMembers().OfType<IMethodSymbol>())
-                                .FirstOrDefault(x =>
-                                {
-                                    ISymbol implementationSymbol = currentSymbol.ContainingType.FindImplementationForInterfaceMember(x);
-                                    return currentSymbol.Equals(implementationSymbol)
-                                    || (overriddenMethodSymbol != null && overriddenMethodSymbol.Equals(implementationSymbol));
-                                });
-                            if (interfaceMethodSymbol != null
-                                && inheritedSymbolCommentIds.Add(interfaceMethodSymbol.GetDocumentationCommentId()))
-                            {
-                                inheritedSymbols.Add(interfaceMethodSymbol);
-                            }
+                            PopulateInheritedMemberSymbols(currentMethodSymbol, x => x.OverriddenMethod, inheritedSymbolCommentIds, inheritedSymbols);
+                        }
+                        else if (currentPropertySymbol != null)
+                        {
+                            PopulateInheritedMemberSymbols(currentPropertySymbol, x => x.OverriddenProperty, inheritedSymbolCommentIds, inheritedSymbols);
+                        }
+                        else if (currentEventSymbol != null)
+                        {
+                            PopulateInheritedMemberSymbols(currentEventSymbol, x => x.OverriddenEvent, inheritedSymbolCommentIds, inheritedSymbols);
                         }
                     }
                     else if (inheritDocElementCref != null)
@@ -341,6 +326,41 @@ namespace Wyam.CodeAnalysis.Analysis
                         }
                     }
                 }
+            }
+        }
+
+        private void PopulateInheritedMemberSymbols<TSymbol>(
+            TSymbol symbol,
+            Func<TSymbol, TSymbol> getOverriddenSymbol,
+            HashSet<string> inheritedSymbolCommentIds,
+            List<ISymbol> inheritedSymbols)
+            where TSymbol : class, ISymbol
+        {
+            TSymbol overriddenMethodSymbol = null;
+            if (symbol.IsOverride)
+            {
+                // Override, get overridden method
+                overriddenMethodSymbol = getOverriddenSymbol(symbol);
+                if (overriddenMethodSymbol != null
+                    && inheritedSymbolCommentIds.Add(overriddenMethodSymbol.GetDocumentationCommentId()))
+                {
+                    inheritedSymbols.Add(overriddenMethodSymbol);
+                }
+            }
+
+            // Check if this is an interface implementation
+            TSymbol interfaceSymbol = symbol.ContainingType.AllInterfaces
+                .SelectMany(x => x.GetMembers().OfType<TSymbol>())
+                .FirstOrDefault(x =>
+                {
+                    ISymbol implementationSymbol = symbol.ContainingType.FindImplementationForInterfaceMember(x);
+                    return symbol.Equals(implementationSymbol)
+                           || (overriddenMethodSymbol != null && overriddenMethodSymbol.Equals(implementationSymbol));
+                });
+            if (interfaceSymbol != null
+                && inheritedSymbolCommentIds.Add(interfaceSymbol.GetDocumentationCommentId()))
+            {
+                inheritedSymbols.Add(interfaceSymbol);
             }
         }
 

@@ -18,8 +18,9 @@ namespace Wyam.Common.Util
         /// <param name="scheme">The scheme for the link (or <c>null</c> for "http").</param>
         /// <param name="hidePages">An array of page names to hide (or <c>null</c> to not hide any pages).</param>
         /// <param name="hideExtensions">An array of file extensions to hide (or <c>null</c> to not hide extensions or an empty array to hide all file extensions).</param>
+        /// <param name="lowercase">Indicates that the link should be rendered in all lowercase.</param>
         /// <returns>A generated link.</returns>
-        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, string scheme, string[] hidePages, string[] hideExtensions)
+        public static string GetLink(NormalizedPath path, string host, DirectoryPath root, string scheme, string[] hidePages, string[] hideExtensions, bool lowercase)
         {
             // Remove index pages and extensions if a file path
             FilePath filePath = path as FilePath;
@@ -72,7 +73,8 @@ namespace Wyam.Common.Util
                 hasHost = true;
             }
             Uri uri = builder.Uri;
-            return hasHost ? uri.AbsoluteUri : uri.AbsolutePath;
+            string renderedLink = hasHost ? uri.AbsoluteUri : uri.AbsolutePath;
+            return lowercase ? renderedLink.ToLowerInvariant() : renderedLink;
         }
     }
 }

@@ -9,7 +9,7 @@
         .Distinct()
         .OrderBy(x => x))
     {
-        string link = category.ToLower().Replace(" ", "-").Replace("'", string.Empty);
+        string link = category.Replace(" ", "-").Replace("'", string.Empty);
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/{link}/") ? "selected" : null;
         <li class="@selected"><a href="@Context.GetLink("/blog/" + link)">@category</a></li>
     }
@@ -32,7 +32,7 @@
         .Distinct()
         .OrderBy(x => x))
     {
-        string link = author.ToLower().Replace(" ", "-").Replace("'", string.Empty);
+        string link = author.Replace(" ", "-").Replace("'", string.Empty);
         string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/author/{link}/") ? "selected" : null;
         <li class="@selected"><a href="@Context.GetLink("/blog/author/" + link)">@author</a></li>
     }

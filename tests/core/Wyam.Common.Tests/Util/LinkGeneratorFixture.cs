@@ -29,7 +29,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, null, null);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, null, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -52,7 +52,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = path == null ? null : new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), null, null, null);
+                string link = LinkGenerator.GetLink(filePath, host, root == null ? null : new DirectoryPath(root), null, null, null, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -73,7 +73,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, new[] { "index" }, null);
+                string link = LinkGenerator.GetLink(filePath, null, null, null, new[] { "index" }, null, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -94,7 +94,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, null, Array.Empty<string>());
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, Array.Empty<string>(), false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -109,7 +109,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath filePath = new FilePath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(filePath, null, null, null, null, new[] { "html", ".htm" });
+                string link = LinkGenerator.GetLink(filePath, null, null, null, null, new[] { "html", ".htm" }, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -136,7 +136,7 @@ namespace Wyam.Common.Tests.Util
                 DirectoryPath directoryPath = path == null ? null : new DirectoryPath(path);
 
                 // When
-                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), null, null, null);
+                string link = LinkGenerator.GetLink(directoryPath, host, root == null ? null : new DirectoryPath(root), null, null, null, false);
 
                 // Then
                 Assert.AreEqual(expected, link);
@@ -149,7 +149,7 @@ namespace Wyam.Common.Tests.Util
                 DirectoryPath directoryPath = new DirectoryPath("/foo/bar");
 
                 // When
-                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "https", null, null);
+                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "https", null, null, false);
 
                 // Then
                 Assert.AreEqual("https://www.google.com/foo/bar", link);
@@ -162,7 +162,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, null, null, null, null);
+                string link = LinkGenerator.GetLink(path, null, null, null, null, null, false);
 
                 // Then
                 Assert.AreEqual("/", link);
@@ -175,7 +175,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, "root", null, null, null);
+                string link = LinkGenerator.GetLink(path, null, "root", null, null, null, false);
 
                 // Then
                 Assert.AreEqual("/root/", link);
@@ -188,7 +188,7 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, null, null, new[] { "index" }, null);
+                string link = LinkGenerator.GetLink(path, null, null, null, new[] { "index" }, null, false);
 
                 // Then
                 Assert.AreEqual("/", link);
@@ -201,10 +201,36 @@ namespace Wyam.Common.Tests.Util
                 FilePath path = new FilePath("/");
 
                 // When
-                string link = LinkGenerator.GetLink(path, null, null, null, null, new[] { "html" });
+                string link = LinkGenerator.GetLink(path, null, null, null, null, new[] { "html" }, false);
 
                 // Then
                 Assert.AreEqual("/", link);
+            }
+
+            [Test]
+            public void ShouldGenerateMixedCaseLinks()
+            {
+                // Given
+                DirectoryPath directoryPath = new DirectoryPath("/Foo/Bar");
+
+                // When
+                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "http", null, null, false);
+
+                // Then
+                Assert.AreEqual("http://www.google.com/Foo/Bar", link);
+            }
+
+            [Test]
+            public void ShouldGenerateLowercaseLinks()
+            {
+                // Given
+                DirectoryPath directoryPath = new DirectoryPath("/Foo/Bar");
+
+                // When
+                string link = LinkGenerator.GetLink(directoryPath, "www.google.com", null, "http", null, null, true);
+
+                // Then
+                Assert.AreEqual("http://www.google.com/foo/bar", link);
             }
         }
     }

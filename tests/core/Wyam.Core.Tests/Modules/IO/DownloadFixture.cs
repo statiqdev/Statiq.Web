@@ -151,7 +151,7 @@ namespace Wyam.Core.Tests.Modules.IO
                         metadata = x.Arg<IEnumerable<KeyValuePair<string, object>>>();
                     });
 
-                var header = new RequestHeader();
+                var header = new RequestHeaders();
                 header.Accept.Add("image/jpeg");
 
                 IModule download = new Download().WithUri("https://wyam.io/Content/images/nav-logo.png", header);
