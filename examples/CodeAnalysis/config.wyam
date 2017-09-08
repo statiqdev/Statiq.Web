@@ -7,6 +7,10 @@
 // NOTE: If running the example against modules built from source, call wyam.exe from the Wyam.Examples.Tests/bin/Debug folder 
 #a **/*
 
+// Normalize the culture for the examples so they produce the same output regardless of system culture
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture
+    = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
 // This pipeline generates a document for each symbol, uses Razor to generate a file for each one, and then outputs it to disk
 Pipelines.Add("Code",
 	ReadFiles("../Code/*.cs"),

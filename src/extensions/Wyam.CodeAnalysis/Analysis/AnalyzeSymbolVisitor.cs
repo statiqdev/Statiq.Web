@@ -20,6 +20,8 @@ using Wyam.Common.Util;
 
 namespace Wyam.CodeAnalysis.Analysis
 {
+    // If types aren't matching (I.e., not linking in the docs recipe due to mismatched documents), may need to use ISymbol.OriginalDefinition when
+    // creating the document for a symbol (or document metadata) to counteract new symbols due to type substitution for generics
     internal class AnalyzeSymbolVisitor : SymbolVisitor
     {
         private static readonly object XmlDocLock = new object();
@@ -36,6 +38,7 @@ namespace Wyam.CodeAnalysis.Analysis
         private readonly ConcurrentDictionary<string, string> _cssClasses;
         private readonly bool _docsForImplicitSymbols;
         private readonly bool _assemblySymbols;
+        private readonly bool _implicitInheritDoc;
         private readonly MethodInfo _getAccessibleMembersInThisAndBaseTypes;
         private readonly Type _documentationCommentCompiler;
         private readonly MethodInfo _documentationCommentCompilerDefaultVisit;
@@ -52,7 +55,8 @@ namespace Wyam.CodeAnalysis.Analysis
             Func<IMetadata, FilePath> writePath,
             ConcurrentDictionary<string, string> cssClasses,
             bool docsForImplicitSymbols,
-            bool assemblySymbols)
+            bool assemblySymbols,
+            bool implicitInheritDoc)
         {
             _compilation = compilation;
             _context = context;
@@ -61,6 +65,7 @@ namespace Wyam.CodeAnalysis.Analysis
             _cssClasses = cssClasses;
             _docsForImplicitSymbols = docsForImplicitSymbols;
             _assemblySymbols = assemblySymbols;
+            _implicitInheritDoc = implicitInheritDoc;
 
             // Get any reflected methods we need
             Assembly reflectedAssembly = typeof(Microsoft.CodeAnalysis.Workspace).Assembly;
@@ -123,8 +128,8 @@ namespace Wyam.CodeAnalysis.Analysis
             ConcurrentHashSet<INamespaceSymbol> symbols = _namespaceDisplayNameToSymbols.GetOrAdd(displayName, _ => new ConcurrentHashSet<INamespaceSymbol>());
             symbols.Add(symbol);
 
-            // Create the document
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            // Create the document (but not if none of the members would be included)
+            if (_finished || _symbolPredicate == null || (_symbolPredicate(symbol) && symbol.GetMembers().Any(m => _symbolPredicate(m))))
             {
                 _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
                     _ => AddNamespaceDocument(symbol, true),
@@ -204,7 +209,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
@@ -225,7 +230,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
+                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -240,7 +245,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.HasConstantValue, _ => symbol.HasConstantValue),
                     new MetadataItem(CodeAnalysisKeys.ConstantValue, _ => symbol.ConstantValue),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
@@ -256,7 +261,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenEvent)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
@@ -271,7 +276,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -409,7 +414,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(
-                symbol,
+                GetOriginal(symbol),
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -417,6 +422,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private void AddXmlDocumentation(ISymbol symbol, MetadataItems metadata)
         {
+            // Get the documentation comments
             INamespaceSymbol namespaceSymbol = symbol as INamespaceSymbol;
             string documentationCommentXml;
             lock (XmlDocLock)
@@ -426,6 +432,14 @@ namespace Wyam.CodeAnalysis.Analysis
                     ? symbol.GetDocumentationCommentXml(expandIncludes: true)
                     : GetNamespaceDocumentationCommentXml(namespaceSymbol);
             }
+
+            // Should we assume inheritdoc?
+            if (string.IsNullOrEmpty(documentationCommentXml) && _implicitInheritDoc)
+            {
+                documentationCommentXml = "<inheritdoc/>";
+            }
+
+            // Create and parse the documentation comments
             XmlDocumentationParser xmlDocumentationParser
                 = new XmlDocumentationParser(_context, symbol, _compilation, _symbolToDocument, _cssClasses);
             IEnumerable<string> otherHtmlElementNames = xmlDocumentationParser.Parse(documentationCommentXml);
@@ -565,50 +579,39 @@ namespace Wyam.CodeAnalysis.Analysis
             return GetFullName(symbol);
         }
 
-        private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol)
-        {
-            return _namedTypes
-                .Where(x => x.Key.BaseType != null && x.Key.BaseType.Equals(symbol))
+        private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol) =>
+            _namedTypes
+                .Where(x => x.Key.BaseType != null && GetOriginal(x.Key.BaseType).Equals(GetOriginal(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
-        }
 
-        private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol)
-        {
-            return _namedTypes
-                .Where(x => x.Key.AllInterfaces.Contains(symbol))
+        private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol) =>
+            _namedTypes
+                .Where(x => x.Key.AllInterfaces.Select(GetOriginal).Contains(GetOriginal(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
-        }
 
-        private string GetSyntax(ISymbol symbol)
-        {
-            return SyntaxHelper.GetSyntax(symbol);
-        }
+        private string GetSyntax(ISymbol symbol) => SyntaxHelper.GetSyntax(symbol);
 
-        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol)
-        {
-            return symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
+        private IReadOnlyList<IDocument> GetAttributeDocuments(ISymbol symbol) =>
+            symbol.GetAttributes().Select(attributeData => _context.GetDocument(new MetadataItems
             {
                 { CodeAnalysisKeys.AttributeData, attributeData },
                 { CodeAnalysisKeys.Type, DocumentFor(attributeData.AttributeClass) },
                 { CodeAnalysisKeys.Name, attributeData.AttributeClass.Name }
             })).ToList();
-        }
 
-        private SymbolDocumentValue DocumentFor(ISymbol symbol)
-        {
-            return new SymbolDocumentValue(symbol, this);
-        }
+        private SymbolDocumentValue DocumentFor(ISymbol symbol) =>
+            new SymbolDocumentValue(GetOriginal(symbol), this);
 
-        private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols)
-        {
-            return new SymbolDocumentValues(symbols, this);
-        }
+        private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols) =>
+            new SymbolDocumentValues(symbols.Select(GetOriginal), this);
 
-        public bool TryGetDocument(ISymbol symbol, out IDocument document)
-        {
-            return _symbolToDocument.TryGetValue(symbol, out document);
-        }
+        public bool TryGetDocument(ISymbol symbol, out IDocument document) =>
+            _symbolToDocument.TryGetValue(GetOriginal(symbol), out document);
+
+        // We need this because we don't really care about concrete generic types, only their definition
+        // This converts all concrete generics into their original defintion
+        private static ISymbol GetOriginal(ISymbol symbol) => symbol?.OriginalDefinition ?? symbol;
     }
 }

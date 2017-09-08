@@ -32,6 +32,7 @@ namespace Wyam.Blog.Pipelines
                     .IgnorePrefix(null)
                     .WithLayout("/_Layout.cshtml"),
                 new WriteFiles((doc, ctx) => "tags/index.html"))
+            .WithoutUnmatchedDocuments()
         };
     }
 }

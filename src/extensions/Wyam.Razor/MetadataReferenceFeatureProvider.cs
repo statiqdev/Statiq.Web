@@ -5,17 +5,16 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.CodeAnalysis;
-using Wyam.Common.Execution;
 
 namespace Wyam.Razor
 {
     internal class MetadataReferenceFeatureProvider : IApplicationFeatureProvider<MetadataReferenceFeature>
     {
-        private readonly IExecutionContext _executionContext;
+        private readonly DynamicAssemblyCollection _dynamicAssemblies;
 
-        public MetadataReferenceFeatureProvider(IExecutionContext executionContext)
+        public MetadataReferenceFeatureProvider(DynamicAssemblyCollection dynamicAssemblies)
         {
-            _executionContext = executionContext;
+            _dynamicAssemblies = dynamicAssemblies;
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
@@ -36,7 +35,7 @@ namespace Wyam.Razor
             {
                 feature.MetadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
             }
-            foreach (byte[] image in _executionContext.DynamicAssemblies)
+            foreach (byte[] image in _dynamicAssemblies ?? Enumerable.Empty<byte[]>())
             {
                 feature.MetadataReferences.Add(MetadataReference.CreateFromImage(image));
             }

@@ -1,0 +1,19 @@
+ @{
+    var Lead = Model.String(BlogKeys.Lead);
+    var Published = Model.Get<DateTime>(BlogKeys.Published);   
+    var Tags = Model.Get<string[]>(BlogKeys.Tags);
+}
+ 
+ @if (Tags != null)
+    {
+        <ul class="actions small">
+            @foreach (string tag in Tags.OrderBy(x => x))
+            {
+                IDocument tagDocument = Documents[Blog.Tags].FirstOrDefault(x => x.String(BlogKeys.Tag) == tag && x.Get<int>(Keys.CurrentPage) == 1);
+                if(tagDocument != null)
+                {                
+                    <li><a role="button" href="@(Context.GetLink(tagDocument)).html" class="button small special">@tag</a></li>
+                }
+            }
+        </ul>     
+    } 

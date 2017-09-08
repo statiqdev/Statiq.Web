@@ -33,7 +33,17 @@ namespace Wyam.Commands
             using (PreviewServer.Start(_path, _port, _forceExtension, _virtualDirectory, false))
             {
                 Trace.Information("Hit any key to exit");
-                Console.ReadKey();
+                Console.TreatControlCAsInput = true;
+                while (true)
+                {
+                    // Would have prefered to use Console.CancelKeyPress, but that bubbles up to calling batch files
+                    // The (ConsoleKey)3 check is to support a bug in VS Code: https://github.com/Microsoft/vscode/issues/9347
+                    ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+                    if (consoleKey.Key == (ConsoleKey)3 || (consoleKey.Key == ConsoleKey.C && (consoleKey.Modifiers & ConsoleModifiers.Control) != 0))
+                    {
+                        break;
+                    }
+                }
                 Trace.Information("Shutting down");
             }
             return ExitCode.Normal;

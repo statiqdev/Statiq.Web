@@ -85,6 +85,10 @@ namespace Wyam
             // Script output
             Configurator.OutputScript = _configOptions.OutputScript;
 
+            // Config caching options
+            Configurator.NoOutputConfigAssembly = _configOptions.NoOutputConfigAssembly;
+            Configurator.IgnoreConfigHash = _configOptions.IgnoreConfigHash;
+
             // Application input
             Engine.ApplicationInput = _configOptions.Stdin;
         }
@@ -120,6 +124,8 @@ namespace Wyam
                 {
                     Trace.Information("Loading configuration from {0}", configFile.Path);
                     Configurator.OutputScriptPath = configFile.Path.ChangeExtension(".generated.cs");
+                    Configurator.ConfigDllPath = configFile.Path.ChangeExtension(".wyam.dll");
+                    Configurator.ConfigHashPath = configFile.Path.ChangeExtension(".wyam.hash");
                     Configurator.Configure(configFile.ReadAllText());
                 }
                 else

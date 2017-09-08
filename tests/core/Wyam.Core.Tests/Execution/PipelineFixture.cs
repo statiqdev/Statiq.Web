@@ -181,6 +181,39 @@ namespace Wyam.Core.Tests.Execution
                 // When, Then
                 Assert.Throws<Exception>(() => engine.Execute());
             }
+
+            [Test]
+            public void DisposingPipelineDisposesModules()
+            {
+                // Given
+                Engine engine = new Engine();
+                DisposableCountModule a = new DisposableCountModule("A");
+                DisposableCountModule b = new DisposableCountModule("B");
+                CountModule c = new CountModule("C");
+                engine.Pipelines.Add("Count", a, new Concat(b, c));
+
+                // When
+                engine.Dispose();
+
+                // Then
+                Assert.IsTrue(a.Disposed);
+                Assert.IsTrue(b.Disposed);
+            }
+
+            private class DisposableCountModule : CountModule, IDisposable
+            {
+                public bool Disposed { get; private set; }
+
+                public DisposableCountModule(string valueKey)
+                    : base(valueKey)
+                {
+                }
+
+                public void Dispose()
+                {
+                    Disposed = true;
+                }
+            }
         }
     }
 }

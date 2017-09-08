@@ -1314,6 +1314,34 @@ namespace Wyam.CodeAnalysis.Tests
             }
 
             [Test]
+            public void ImplicitInheritFromBaseClass()
+            {
+                // Given
+                string code = @"
+                    namespace Foo
+                    {
+                        /// <summary>This is a summary.</summary>
+                        class Green
+                        {
+                        }
+
+                        class Blue : Green
+                        {
+                        }
+                    }
+                ";
+                IDocument document = GetDocument(code);
+                IExecutionContext context = GetContext();
+                IModule module = new AnalyzeCSharp().WithImplicitInheritDoc();
+
+                // When
+                List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.AreEqual("This is a summary.", GetResult(results, "Blue")["Summary"]);
+            }
+
+            [Test]
             public void InheritFromCref()
             {
                 // Given

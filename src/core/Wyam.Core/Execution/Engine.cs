@@ -260,6 +260,7 @@ namespace Wyam.Core.Execution
                     ExecutionCacheManager.ResetEntryHits();
 
                     // Enumerate pipelines and execute each in order
+                    Guid executionId = Guid.NewGuid();
                     int c = 1;
                     foreach (IPipeline pipeline in _pipelines.Pipelines)
                     {
@@ -269,7 +270,7 @@ namespace Wyam.Core.Execution
                         {
                             try
                             {
-                                ((ExecutionPipeline)pipeline).Execute(this);
+                                ((ExecutionPipeline)pipeline).Execute(this, executionId);
                                 pipelineStopwatch.Stop();
                                 Trace.Information(
                                     "Executed pipeline \"{0}\" ({1}/{2}) in {3} ms resulting in {4} output document(s)",

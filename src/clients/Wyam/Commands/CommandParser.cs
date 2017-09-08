@@ -41,24 +41,34 @@ namespace Wyam.Commands
 
             // If the first argument is not a valid command, set it to the first command as a default
             // Make sure to allow the default help flags to handle help output
-            if (args == null || args.Length == 0)
+            List<string> arguments = args == null ? new List<string>() : new List<string>(args);
+            if (arguments.Count == 0)
             {
-                args = new[] { commands[0].Item1 };
+                arguments.Add(commands[0].Item1);
             }
-            else if (args[0] != "-?" && args[0] != "-h" && args[0] != "--help"
-                && commands.All(x => x.Item1 != args[0]))
+            else if (arguments[0] != "-?"
+                && !arguments[0].Equals("-h", StringComparison.OrdinalIgnoreCase)
+                && !arguments[0].Equals("--help", StringComparison.OrdinalIgnoreCase)
+                && commands.All(x => !x.Item1.Equals(arguments[0], StringComparison.OrdinalIgnoreCase)))
             {
-                args = new[] { commands[0].Item1 }.Concat(args).ToArray();
+                arguments.Insert(0, commands[0].Item1);
             }
-            else if (args.Length == 1 && args[0] == "help")
+            else if (arguments.Count == 1 && arguments[0].Equals("help", StringComparison.OrdinalIgnoreCase))
             {
                 // Special case for the help command without any additional arguments, output global help instead
-                args = new[] { "--help" };
+                arguments[0] = "--help";
+            }
+
+            // If the first arg is a command, convert it to lowercase
+            // TODO: Add feature to upstream System.CommandLine to ignore case of commands, options, and arguments then remove this
+            if (commands.Any(x => x.Item1.Equals(arguments[0], StringComparison.OrdinalIgnoreCase)))
+            {
+                arguments[0] = arguments[0].ToLowerInvariant();
             }
 
             // Parse the command line arguments
             Command command = null;
-            ArgumentSyntax parsed = ArgumentSyntax.Parse(args, syntax =>
+            ArgumentSyntax parsed = ArgumentSyntax.Parse(arguments, syntax =>
             {
                 // Add all commands
                 foreach (Tuple<string, Command> cmd in commands)

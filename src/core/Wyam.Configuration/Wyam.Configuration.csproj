@@ -232,6 +232,8 @@
     <Compile Include="Assemblies\AssemblyCollection.cs" />
     <Compile Include="Assemblies\AssemblyResolver.cs" />
     <Compile Include="Assemblies\AssemblyLoader.cs" />
+    <Compile Include="ConfigScript\CacheManager.cs" />
+    <Compile Include="ConfigScript\IScriptManager.cs" />
     <Compile Include="ConfigScript\LiftingWalker.cs" />
     <Compile Include="ConfigScript\ScriptCompilationException.cs" />
     <Compile Include="Directives\AssemblyDirective.cs" />

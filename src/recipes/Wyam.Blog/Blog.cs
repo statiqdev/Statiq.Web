@@ -69,7 +69,7 @@ namespace Wyam.Blog
             new PagesSettings
             {
                 IgnorePaths = ctx =>
-                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath, "index.cshtml" }
+                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
                     .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
                 MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
@@ -99,7 +99,7 @@ namespace Wyam.Blog
             new ArchiveSettings
             {
                 Pipelines = new string[] { BlogPosts },
-                File = "_Tag.cshtml",
+                TemplateFile = ctx => "_Tag.cshtml",
                 Layout = "/_Layout.cshtml",
                 Group = (doc, ctx) => doc.List<string>(BlogKeys.Tags),
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(BlogKeys.CaseInsensitiveTags),
@@ -125,7 +125,7 @@ namespace Wyam.Blog
                 new ArchiveSettings
                 {
                     Pipelines = new string[] { BlogPosts },
-                    File = "_Archive.cshtml",
+                    TemplateFile = ctx => "_Archive.cshtml",
                     Layout = "/_Layout.cshtml",
                     PageSize = ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
                     Title = (doc, ctx) => "Archive",
@@ -140,12 +140,13 @@ namespace Wyam.Blog
             nameof(Index),
             new ArchiveSettings
             {
-                Pipelines = new string[] {BlogPosts},
-                File = "index.cshtml",
+                Pipelines = new string[] { BlogPosts },
+                TemplateFile = ctx => ctx.FilePath(BlogKeys.IndexTemplate, "_Index.cshtml"),
                 Layout = "/_Layout.cshtml",
                 PageSize = ctx => ctx.Get(BlogKeys.IndexPageSize, int.MaxValue),
                 WriteIfEmpty = true,
-                TakePages = ctx => ctx.Bool(BlogKeys.IndexPaging) ? int.MaxValue : 1
+                TakePages = ctx => ctx.Bool(BlogKeys.IndexPaging) ? int.MaxValue : 1,
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.IndexPath).FullPath}"
             });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
@@ -239,6 +240,8 @@ namespace Wyam.Blog
             engine.Settings[BlogKeys.RssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[BlogKeys.AtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[BlogKeys.RdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[BlogKeys.IndexPath] = "index.html";
+            engine.Settings[BlogKeys.IndexTemplate] = "_Index.cshtml";
 
             base.Apply(engine);
         }
