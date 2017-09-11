@@ -3,11 +3,11 @@
     Layout="_LayoutBase";
     var Published = Model.Get<DateTime>(BlogKeys.Published);   
     var Tags = Model.Get<string[]>(BlogKeys.Tags) ?? new string[] {};
-    var image = Model.Get<string>(BlogKeys.Image) ?? "//unsplash.it/2000/1200/?random&sig=" + rnd.Next();
+    var image = Model.Get<string>(BlogKeys.Image) ?? "/assets/images/background.jpg";
       var nextPost = Documents[Blog.BlogPosts].OrderBy(p => p.Get<DateTime>(BlogKeys.Published)).SkipWhile(x => !x.Source.Equals(Model.Source)).Skip(1).FirstOrDefault();
-        var nextPostImage = "//unsplash.it/2000/1200/?random&sig=" + rnd.Next();
+        var nextPostImage = string.Empty;
         if(nextPost != null){
-          nextPostImage = nextPost.Get<string>(BlogKeys.Image) ?? nextPostImage;
+          nextPostImage = nextPost.Get<string>(BlogKeys.Image) ?? "/assets/images/background.jpg";
         }
 }
 <article>

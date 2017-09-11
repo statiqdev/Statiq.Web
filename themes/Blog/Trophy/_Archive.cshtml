@@ -2,9 +2,8 @@ Title: Archive
 ---
 @{
   Layout = "_LayoutBase";
-    var postPages = Model.DocumentList(Keys.PageDocuments).Select((v,i) => new {post= v,index=i});    
+  var postPages = Model.DocumentList(Keys.PageDocuments).Select((v,i) => new {post= v,index=i});    
 }
-
 <section class="archives" itemscope itemtype="http://schema.org/Blog">
   <a class="nav nav--black" href="@Context.GetLink(Context.String(Keys.Host))">
     <i class="fa fa-lg fa-arrow-left"></i>
@@ -16,9 +15,6 @@ Title: Archive
   <div class="section-padding archives__container">
     @foreach(var indexedPost in postPages){
       var imageString = indexedPost.post.WithoutSettings.String(BlogKeys.Image);
-         if(string.IsNullOrEmpty(imageString)){
-             imageString = "//unsplash.it/2000/1200/?random&sig=" + indexedPost.index.ToString();
-         }
          var Tags = indexedPost.post.Get<List<string>>(BlogKeys.Tags) ?? new List<string>();
            if(Tags.Any()){
              Tags.Insert(0, "in");
@@ -37,6 +33,7 @@ Title: Archive
               @(string.Join(" ", Tags));
                 }
             </p>
+            <span>@Html.Raw(indexedPost.post.String(BlogKeys.Lead))</span><br />
             <span class="card__more">Read Post</span>
           </div>
         </a>

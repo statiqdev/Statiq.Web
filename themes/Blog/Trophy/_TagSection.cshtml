@@ -16,7 +16,7 @@
                 <a class="card__link" href="@Context.GetLink(tagDocument)">
                   <div class="card__img">
                       @if(firstTagDoc != null){
-                        var image = Model.Get<string>(BlogKeys.Image) ?? "//unsplash.it/2000/1200/?random&sig=" + rnd.Next() ;
+                        var image = Model.Get<string>(BlogKeys.Image)  ?? "/assets/images/background.jpg";
                         <figure class="absolute-bg" style="background-image: url('@image');"></figure>
                       }
                   </div>

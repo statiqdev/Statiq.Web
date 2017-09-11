@@ -11,6 +11,14 @@
   <meta name="description" content="@Context.String(BlogKeys.Description)" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">    
 
+  @if (Context.String(BlogKeys.RssPath) != null) {
+    <link type="application/rss+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.RssPath))" />
+  }
+  @if (Context.String(BlogKeys.AtomPath) != null) {
+    <link type="application/atom+xml" rel="alternate" title="@Context.String(BlogKeys.Title)" href="@Context.GetLink(Context.String(BlogKeys.AtomPath))" />
+  }
+
+  <link rel="shortcut icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
   <link rel="icon" href="@Context.GetLink("/favicon.ico")" type="image/x-icon">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Lora|Space+Mono:700">
@@ -18,4 +26,20 @@
 
   <link href="@Context.GetLink("/assets/css/main.css")" rel="stylesheet" />
   <link href="@Context.GetLink("/assets/css/custom.css")" rel="stylesheet" />
+
+  <meta name="application-name" content="@Context.String(BlogKeys.Title)" />
+  <meta name="msapplication-tooltip" content="@Context.String(BlogKeys.Title)" />
+  <meta name="msapplication-starturl" content="@Context.GetLink("/")" />
+
+  <meta property="og:title" content="@PageTitle" />
+  @* <meta property="og:image" content="@Blog.Image" /> *@
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="@Context.GetLink(Model, true)" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="@Context.GetLink("/assets/js/html5shiv.js")"></script>
+      <script src="@Context.GetLink("/assets/js/respond.min.js")"></script>
+    <![endif]-->
 </head>

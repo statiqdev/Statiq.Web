@@ -46,6 +46,9 @@
     color: $color-black;
 }
 
+main>.nav{
+    top: 1.75em;
+}
 .nav {
     left: 4em !important;
 }
@@ -59,3 +62,15 @@
     cursor: pointer;
     
 }
+
+footer {
+
+    bottom:0;
+    height:60px;   /* Height of the footer */
+ }
+
+ .fa.fa-bars, .fa.fa-arrow-left{
+    color: $color-alpha;
+    -webkit-text-stroke-width: 0.5px;
+    -webkit-text-stroke-color: black;
+ }

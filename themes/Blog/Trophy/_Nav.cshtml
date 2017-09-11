@@ -7,18 +7,22 @@
                 .Where(x => !string.IsNullOrEmpty(x.Item1))
                 .OrderBy(x => x.Item1)
                 .ToList();
+
+        var buttonClass = "nav openbtn";
+        var useBlack = @Model.Bool("UseBlackNav");
+        //buttonClass+= useBlack? " nav--black": " nav--white";
+
+        
     }
 <div class="sidenav">
   <a class="closebtn"><i class="fa fa-times"></i></a>
-  <a class="" href="@Context.GetLink(Context.String(Keys.Host))"><span>@Context.String(BlogKeys.Description)</span></a>
-  <hr />
+  <h2><a class="" href="@Context.GetLink(Context.String(Keys.Host))"><span>@Context.String(BlogKeys.Description)</span></a></h2>
   @foreach(Tuple<string, string> page in pages)
             {
                 <a class="" href="@page.Item2"><span>@page.Item1</span></a>
             }
 </div>
-
-<a class="nav nav--white openbtn">
+<a class="@buttonClass">
       <i class="fa fa-bars fa-2x"></i>
     </a>
     

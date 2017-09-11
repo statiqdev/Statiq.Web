@@ -5,7 +5,7 @@
 
 <section class="previews">
     
-  @Html.Partial("_PostsHeader",postPages.Select(p => p.WithoutSettings.String(BlogKeys.Image)))
+  @Html.Partial("_PostsHeader",postPages.Select(p => p.WithoutSettings.String(BlogKeys.Image) ?? "/assets/images/background.jpg"))
 
   <div>
     <header>

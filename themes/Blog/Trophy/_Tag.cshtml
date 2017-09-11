@@ -3,22 +3,18 @@
     var postPages = Model.DocumentList(Keys.PageDocuments).OrderByDescending(x => x.Get<DateTime>(BlogKeys.Published));
         string tag = Model.String(BlogKeys.Tag).ToLowerInvariant().Replace(' ', '-');
         tag = tag.StartsWith(".") ? tag.Substring(1) : tag;
-  Random rnd = new Random();
 }
-<section class="previews">
-  <div>
+
       <a class="nav nav--white" href="@Context.GetLink(Context.String(Keys.Host))">
       <i class="fa fa-lg fa-arrow-left"></i>
       <span>Back to Posts</span>
     </a>
 
-
+<section class="previews">
+  <div>
     @foreach(var post in postPages)   
     { 
-        var imageString = post.WithoutSettings.String(BlogKeys.Image);
-         if(string.IsNullOrEmpty(imageString)){
-             imageString = "//unsplash.it/2000/1200/?random&sig=" + rnd.Next();
-         }
+        var imageString = post.String(BlogKeys.Image) ?? "/assets/images/background.jpg";
       <figure class="absolute-bg preview__img" style="background-image: url('@imageString');"></figure>
     }
     <div id="particles-js" class="previews__container">

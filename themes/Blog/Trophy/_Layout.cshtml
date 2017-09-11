@@ -1,6 +1,6 @@
 @{
     Layout="_LayoutBase";
-    var image = Model.Get<string>(BlogKeys.Image) ?? "//unsplash.it/2000/1200/?random" ;
+    var image = Model.Get<string>(BlogKeys.Image) ?? "/assets/images/background.jpg";
 }
 <article>
 
@@ -11,16 +11,6 @@
     </a>
     <figure class="absolute-bg mast__img" style="background-image: url('@image');"></figure>
     <div class="mast__container">
-      <span>Welcome to</span>
-      <h1>@Context.String(BlogKeys.Description)</h1>
-    @if(Context.String(BlogKeys.Intro) != null)
-    {            
-        @if(Context.String(BlogKeys.Description) != null)
-        {
-            <hr class="small">
-        }
-        <span class="subheading">@Context.String(BlogKeys.Intro)</span>
-    }
        <h2>@Model.WithoutSettings.String(BlogKeys.Title)</h2>
     </div>
   </header>
