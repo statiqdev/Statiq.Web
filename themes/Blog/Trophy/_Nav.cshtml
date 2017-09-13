@@ -16,7 +16,7 @@
     }
 <div class="sidenav">
   <a class="closebtn"><i class="fa fa-times"></i></a>
-  <h2><a class="" href="@Context.GetLink(Context.String(Keys.Host))"><span>@Context.String(BlogKeys.Description)</span></a></h2>
+  <h2><a class="" href="@Context.GetLink("/")"><span>@Context.String(BlogKeys.Description)</span></a></h2>
   @foreach(Tuple<string, string> page in pages)
             {
                 <a class="" href="@page.Item2"><span>@page.Item1</span></a>

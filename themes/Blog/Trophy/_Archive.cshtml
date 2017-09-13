@@ -5,7 +5,7 @@ Title: Archive
   var postPages = Model.DocumentList(Keys.PageDocuments).Select((v,i) => new {post= v,index=i});    
 }
 <section class="archives" itemscope itemtype="http://schema.org/Blog">
-  <a class="nav nav--black" href="@Context.GetLink(Context.String(Keys.Host))">
+  <a class="nav nav--black" href="@Context.GetLink("/")">
     <i class="fa fa-lg fa-arrow-left"></i>
     <span>Back to Posts</span>
   </a>

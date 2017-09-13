@@ -1,19 +1,27 @@
 @model IEnumerable<IDocument>
-      <ul>
-        @foreach(IDocument post in Model)   
-    { 
-      var excerpt = Html.Raw(post.String(BlogKeys.Excerpt));
+<ul>
+  @foreach(IDocument post in Model)   
+  { 
+    var title = post.WithoutSettings.String(BlogKeys.Title);
+    var lead = post.String(BlogKeys.Lead);
+    var published = post.Get<DateTime>(BlogKeys.Published);   
+    var excerpt = Html.Raw(post.String(BlogKeys.Excerpt));
 
-          <li class="preview">
-            <a class="preview__link" href="@Context.GetLink(post)">
-              <span class="preview__date">@(post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))</span>
-
-              <h2 class="preview__header">@post.WithoutSettings.String(BlogKeys.Title)</h2>
-              <span class="preview__excerpt">
-                @excerpt
-              </span>
-              <span class="preview__more">Read More</span>
-            </a>
-          </li>
-        }
-      </ul>
+    <li class="preview">
+      <a class="preview__link" href="@Context.GetLink(post)">
+        <span class="preview__date">@(published.ToLongDateString(Context))</span>
+        <h2 class="preview__header">@title</h2>    
+        @if(!string.IsNullOrWhiteSpace(lead))
+        {
+            <h3>@lead</h3>
+        } 
+      </a>
+      <div class="preview__link preview__excerpt" style="padding-top: 0; padding-bottom: 0;">
+        @excerpt
+      </div>
+      <a class="preview__link" href="@Context.GetLink(post)">
+        <span class="preview__more">Read More</span>
+      </a>
+    </li>
+  }
+</ul>
