@@ -1,0 +1,24 @@
+@{
+    Layout="_LayoutBase";
+    var image = Model.Get<string>(BlogKeys.Image) ?? "/assets/images/background.jpg";
+}
+<article>
+
+  <header class="section-padding--lg mast rellax" data-rellax-speed="-4">
+    <a class="nav nav--white" href="@Context.GetLink(Context.String(Keys.Host))">
+      <i class="fa fa-lg fa-arrow-left"></i>
+      <span>Back to Posts</span>
+    </a>
+    <figure class="absolute-bg mast__img" style="background-image: url('@image');"></figure>
+    <div class="mast__container">
+       <h2>@Model.WithoutSettings.String(BlogKeys.Title)</h2>
+    </div>
+  </header>
+  <section class="section-padding bg-grey">
+    <div class="post">
+      @RenderBody() 
+    </div>
+  </section>
+
+</article>
+@Html.Partial("_PageFooter", false)

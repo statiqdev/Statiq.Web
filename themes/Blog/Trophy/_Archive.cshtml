@@ -1,0 +1,44 @@
+Title: Archive
+---
+@{
+  Layout = "_LayoutBase";
+  var postPages = Model.DocumentList(Keys.PageDocuments).Select((v,i) => new {post= v,index=i});    
+}
+<section class="archives" itemscope itemtype="http://schema.org/Blog">
+  <a class="nav nav--black" href="@Context.GetLink(Context.String(Keys.Host))">
+    <i class="fa fa-lg fa-arrow-left"></i>
+    <span>Back to Posts</span>
+  </a>
+  <header class="archives__header">
+    <span>Archive</span>
+  </header>
+  <div class="section-padding archives__container">
+    @foreach(var indexedPost in postPages){
+      var imageString = indexedPost.post.WithoutSettings.String(BlogKeys.Image);
+         var Tags = indexedPost.post.Get<List<string>>(BlogKeys.Tags) ?? new List<string>();
+           if(Tags.Any()){
+             Tags.Insert(0, "in");
+           }
+      <article class="card" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+        <a class="card__link" href="@Context.GetLink(indexedPost.post)" itemprop="url">
+          <div class="card__img">
+              <figure class="absolute-bg wow" style="background-image: url('@imageString');"></figure>
+          </div>
+          <div class="card__container">
+            <h2 class="card__header" itemprop="name">@indexedPost.post.WithoutSettings.String(BlogKeys.Title)</h2>
+            <p class="card__count" itemprop="datePublished" datetime="@(indexedPost.post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))">
+              @(indexedPost.post.Get<DateTime>(BlogKeys.Published).ToLongDateString(Context))
+                @if(Tags.Any()){
+
+              @(string.Join(" ", Tags));
+                }
+            </p>
+            <span>@Html.Raw(indexedPost.post.String(BlogKeys.Lead))</span><br />
+            <span class="card__more">Read Post</span>
+          </div>
+        </a>
+      </article>
+    }
+  </div>
+</section>
+
