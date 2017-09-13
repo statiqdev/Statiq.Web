@@ -31,3 +31,5 @@ ipch
 TestResult.xml
 /debug.log
 /packages.xml
+config.wyam.hash
+config.wyam.dll

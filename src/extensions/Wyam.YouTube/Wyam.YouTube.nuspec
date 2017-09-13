@@ -4,7 +4,7 @@
     <id>Wyam.YouTube</id>
     <version>$version$</version>
     <title>Wyam.YouTube</title>
-    <authors>Dave Glick</authors>
+    <authors>Geoffrey Huntley, Dave Glick</authors>
     <owners>Dave Glick</owners>
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
     <iconUrl>https://wyam.io/Content/images/logo-square-64.png</iconUrl>

@@ -24,9 +24,9 @@ namespace Wyam.YouTube
     /// will be sent for each input document.
     /// </remarks>
     /// <category>Metadata</category>
-    public class YouTube : IModule, IAsNewDocuments
+    public class YouTube : IModule, IAsNewDocuments, IDisposable
     {
-        private readonly BaseClientService.Initializer _initializer;
+        private readonly YouTubeService _youtube;
         private readonly Dictionary<string, Func<IDocument, IExecutionContext, YouTubeService, object>> _requests
             = new Dictionary<string, Func<IDocument, IExecutionContext, YouTubeService, object>>();
 
@@ -36,12 +36,15 @@ namespace Wyam.YouTube
         /// <param name="apiKey">The apikey to use.</param>
         public YouTube(string apiKey)
         {
-            _initializer = new BaseClientService.Initializer()
-            {
-                ApplicationName = "Wyam",
-                ApiKey = apiKey
-            };
+            _youtube = new YouTubeService(
+                new BaseClientService.Initializer
+                {
+                    ApplicationName = "Wyam",
+                    ApiKey = apiKey
+                });
         }
+
+        public void Dispose() => _youtube.Dispose();
 
         /// <summary>
         /// Submits a request to the YouTube client. This allows you to incorporate data from the execution context in your request.
@@ -88,9 +91,6 @@ namespace Wyam.YouTube
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            // YouTubeService is IDisposable.... how do you want this handled?
-            YouTubeService youtube = new YouTubeService(_initializer);
-
             return inputs.AsParallel().Select(context, input =>
             {
                 ConcurrentDictionary<string, object> results = new ConcurrentDictionary<string, object>();
@@ -99,7 +99,7 @@ namespace Wyam.YouTube
                     Trace.Verbose("Submitting {0} YouTube request for {1}", request.Key, input.SourceString());
                     try
                     {
-                        results[request.Key] = request.Value(input, context, youtube);
+                        results[request.Key] = request.Value(input, context, _youtube);
                     }
                     catch (Exception ex)
                     {
