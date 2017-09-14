@@ -1,8 +1,28 @@
 # 1.0.0
 
-- **[Breaking Change]**[Refactoring] Renamed `Download.CacheResponse()` to `Download.CacheResponses()`.
-- **[Breaking Change]**[Refactoring] Renamed `RequestHeader` class for use with the `Download` module to `RequestHeaders`.
-- [Feature] Added support for custom headers to `RequestHeaders` for use with `Download` module.
+- **[Breaking Change]**[Refactoring] Removed all deprecated code including string-based document creation methods
+- **[Breaking Change]**[Refactoring] Renamed `Download.CacheResponse()` to `Download.CacheResponses()`
+- **[Breaking Change]**[Refactoring] Renamed `RequestHeader` class for use with the `Download` module to `RequestHeaders`
+- [Feature] Added support for custom headers to `RequestHeaders` for use with `Download` module
+- [Feature] New `YouTube` module for interacting with the YouTube API (#547, thanks @ghuntley)
+- [Feature] New Trophy theme for Blog recipe (#522, thanks @adamclifford)
+- [Fix] Fixed a bug in Docs recipe when generating lowercase links
+- [Fix] `NormalizedPath` no longer trims spaces (#566) 
+- [Feature] New Stellar theme for Blog recipe (#563, thanks @arebee)
+- [Feature] The compiled config script is now cached to disk as `config.wyam.dll` and `config.wyam.hash` (prefixed with whatever the config file name is) (#557, thanks @Silvenga)
+- [Feature] New `Objects` module for populating metadata by reflecting on an arbitrary object (#539, thanks @deanebarker)
+- [Feature] New `Xml` module for populating metadata by reading elements from XML content (#539, thanks @deanebarker)
+- [Feature] New `Sql` module for populating metadata by reading data from a SQL server (#539, thanks @deanebarker)
+- [Feature] New `ReadDataModule` abstract base module for populating metadata from arbitrary data (#539, thanks @deanebarker)
+- [Fix] Several fixes related to generic types in `AnalyzeCSharp` module and Docs recipe (#494, #564)
+- [Fix] Excludes empty namespaces from `AnalyzeCSharp` module by default (#526)
+- [Feature] Updated globbing pattern in Blog and Docs recipes to include blog posts in subfolders (#560, thanks @archnaut)
+- [Feature] If a module implements `IDisposable` it will now be disposed when the engine is
+- [Refactoring] Disabled data protection services in `Razor` module (#559, thanks @Silvenga)
+- [Fix] Additional inherit doc support for properties and events in `AnalyzeCSharp` module (#553)
+- [Fix] Fix for search index items when virtual directory is used (#554)
+- [Fix] Normalizes culture in all the examples (#544)
+- [Fix] Fixes HTML escaping in API search results in Docs theme (#552)
 
 # 0.18.6
 
