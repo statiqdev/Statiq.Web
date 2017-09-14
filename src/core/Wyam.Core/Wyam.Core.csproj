@@ -188,7 +188,6 @@
     <Compile Include="Modules\IO\Download.cs" />
     <Compile Include="Modules\IO\ReadApplicationInput.cs" />
     <Compile Include="Modules\IO\ReadFiles.cs" />
-    <Compile Include="Modules\IO\ReadNetworkData.cs" />
     <Compile Include="Modules\Metadata\Objects.cs" />
     <Compile Include="Modules\Metadata\Sql.cs" />
     <Compile Include="Modules\Metadata\Xml.cs" />
