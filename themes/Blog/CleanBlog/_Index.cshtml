@@ -56,7 +56,7 @@
         {
             <h5>Tags</h5>
             <div>
-                @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+                @foreach (IDocument tagDocument in Documents[Blog.Tags]
                     .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
                     .OrderByDescending(x => x.Get<int>(Keys.TotalItems)).Take(10))
                 {

@@ -25,7 +25,7 @@ Title: All Tags
         </div>
 		
         <div class="col-sm-4 col-sm-height">
-            @foreach (IDocument tagDocument in Documents[BlogPipelines.Tags]
+            @foreach (IDocument tagDocument in Documents[Blog.Tags]
                 .GroupBy(x => x.String(BlogKeys.Tag)).Select(x => x.Where(p => p.Get<int>(Keys.CurrentPage) == 1).First())
                 .OrderByDescending(x => x.Get<int>(Keys.TotalItems)))
             {
