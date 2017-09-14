@@ -19,19 +19,6 @@ namespace Wyam.Common.Documents
         IDocument GetDocument(IExecutionContext context);
 
         /// <summary>
-        /// Clones the specified source document with a new source, new content, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// </summary>
-        /// <param name="context">The current execution context.</param>
-        /// <param name="sourceDocument">The source document.</param>
-        /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The cloned or new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
-
-        /// <summary>
         /// Clones the specified source document with a new source and additional metadata (all existing metadata is retained)
         /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
         /// </summary>
@@ -41,18 +28,6 @@ namespace Wyam.Common.Documents
         /// <param name="items">The metadata items.</param>
         /// <returns>The cloned or new document.</returns>
         IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null);
-
-        /// <summary>
-        /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// </summary>
-        /// <param name="context">The current execution context.</param>
-        /// <param name="sourceDocument">The source document.</param>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The cloned or new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(IExecutionContext context, IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
         /// Clones the specified source document with a new source, new content stream, and additional metadata (all existing metadata is retained)

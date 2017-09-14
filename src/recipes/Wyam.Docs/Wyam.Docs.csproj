@@ -129,7 +129,6 @@
     </Compile>
     <Compile Include="Docs.cs" />
     <Compile Include="DocsKeys.cs" />
-    <Compile Include="DocsPipelines.cs" />
     <Compile Include="DocsTable.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Pipelines\Api.cs" />

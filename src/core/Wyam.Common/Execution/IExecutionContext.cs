@@ -67,12 +67,6 @@ namespace Wyam.Common.Execution
         IDocumentCollection Documents { get; }
 
         /// <summary>
-        /// Gets the global metadata.
-        /// </summary>
-        [Obsolete]
-        IMetadata GlobalMetadata { get; }
-
-        /// <summary>
         /// Gets any input that was passed to the application (for example, on stdin via piping).
         /// </summary>
         /// <value>
@@ -96,48 +90,6 @@ namespace Wyam.Common.Execution
         /// </summary>
         /// <returns>The new document.</returns>
         IDocument GetDocument();
-
-        /// <summary>
-        /// Gets a new document with the specified source, content, and metadata (in addition to the default initial metadata).
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
-
-        /// <summary>
-        /// Gets a new document with the specified content and metadata (in addition to the default initial metadata).
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null);
-
-        /// <summary>
-        /// Clones the specified source document with a new source, new content, and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// </summary>
-        /// <param name="sourceDocument">The source document.</param>
-        /// <param name="source">The source (if the source document contains a source, then this is ignored and the source document's source is used instead).</param>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The cloned or new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null);
-
-        /// <summary>
-        /// Clones the specified source document with new content and additional metadata (all existing metadata is retained)
-        /// or gets a new document if the source document is null or <c>AsNewDocuments()</c> was called on the module.
-        /// </summary>
-        /// <param name="sourceDocument">The source document.</param>
-        /// <param name="content">The content.</param>
-        /// <param name="items">The metadata items.</param>
-        /// <returns>The cloned or new document.</returns>
-        [Obsolete("Document content strings are deprecated, please use " + nameof(IExecutionContext) + "." + nameof(IExecutionContext.GetContentStream) + " to get a stream and use the stream instead")]
-        IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null);
 
         /// <summary>
         /// Gets a new document with the specified source, content stream, and metadata (in addition to the default initial metadata).

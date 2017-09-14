@@ -119,18 +119,6 @@ namespace Cake.Wyam
         public bool Verbose { get; set; }
 
         /// <summary>
-        /// Gets or sets the global metadata.
-        /// </summary>
-        [Obsolete]
-        public IDictionary<string, object> GlobalMetadata { get; set; }
-
-        /// <summary>
-        /// Gets or sets the initial document metadata.
-        /// </summary>
-        [Obsolete]
-        public IDictionary<string, object> InitialMetadata { get; set; }
-
-        /// <summary>
         /// Gets or sets metadata settings.
         /// </summary>
         public IDictionary<string, object> Settings { get; set; }

@@ -77,32 +77,6 @@ namespace Wyam.Core.Execution
         public IPipelineCollection Pipelines => _pipelines;
 
         /// <summary>
-        /// Gets the initial metadata.
-        /// </summary>
-        [Obsolete]
-        public IMetadataDictionary InitialMetadata
-        {
-            get
-            {
-                Trace.Warning("InitialMetadata is deprecated and will be removed in a future version. Please use Settings instead.");
-                return Settings;
-            }
-        }
-
-        /// <summary>
-        /// Gets the global metadata.
-        /// </summary>
-        [Obsolete]
-        public IMetadataDictionary GlobalMetadata
-        {
-            get
-            {
-                Trace.Warning("GlobalMetadata is deprecated and will be removed in a future version. Please use Settings instead.");
-                return Settings;
-            }
-        }
-
-        /// <summary>
         /// Gets the documents.
         /// </summary>
         public IDocumentCollection Documents => DocumentCollection;

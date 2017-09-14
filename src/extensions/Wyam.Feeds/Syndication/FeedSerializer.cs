@@ -125,10 +125,6 @@ namespace Wyam.Feeds.Syndication
                         {
                             return typeof(AtomFeed);
                         }
-                        case AtomFeedOld.Namespace:
-                        {
-                            return typeof(AtomFeedOld);
-                        }
                     }
                     break;
                 }

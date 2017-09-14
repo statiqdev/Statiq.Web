@@ -162,10 +162,6 @@ namespace Wyam.Testing.Execution
         public IDocumentCollection Documents { get; set; }
 
         /// <inheritdoc/>
-        [Obsolete]
-        public IMetadata GlobalMetadata { get; set; }
-
-        /// <inheritdoc/>
         public string ApplicationInput { get; set; }
 
         /// <inheritdoc/>

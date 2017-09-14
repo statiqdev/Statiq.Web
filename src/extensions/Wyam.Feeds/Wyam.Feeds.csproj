@@ -59,9 +59,7 @@
     <Compile Include="Syndication\Atom\AtomContent.cs" />
     <Compile Include="Syndication\Atom\AtomDate.cs" />
     <Compile Include="Syndication\Atom\AtomEntry.cs" />
-    <Compile Include="Syndication\Atom\AtomEntryOld.cs" />
     <Compile Include="Syndication\Atom\AtomFeed.cs" />
-    <Compile Include="Syndication\Atom\AtomFeedOld.cs" />
     <Compile Include="Syndication\Atom\AtomGenerator.cs" />
     <Compile Include="Syndication\Atom\AtomInReplyTo.cs" />
     <Compile Include="Syndication\Atom\AtomLink.cs" />

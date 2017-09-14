@@ -55,9 +55,6 @@ namespace Wyam.Core.Execution
 
         public string ApplicationInput => Engine.ApplicationInput;
 
-        [Obsolete]
-        public IMetadata GlobalMetadata => Engine.GlobalMetadata;
-
         public ExecutionContext(Engine engine, Guid executionId, ExecutionPipeline pipeline)
         {
             Engine = engine;
@@ -102,12 +99,6 @@ namespace Wyam.Core.Execution
 
         // GetDocument
 
-        public IDocument GetDocument(FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null) =>
-            GetDocument((IDocument)null, source, content, items);
-
-        public IDocument GetDocument(string content, IEnumerable<KeyValuePair<string, object>> items = null) =>
-            GetDocument((IDocument)null, content, items);
-
         public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) =>
             GetDocument((IDocument)null, source, stream, items, disposeStream);
 
@@ -127,19 +118,6 @@ namespace Wyam.Core.Execution
             return document;
         }
 
-        public IDocument GetDocument(IDocument sourceDocument, FilePath source, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            CheckDisposed();
-            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, source, content, items);
-            if (sourceDocument != null && sourceDocument.Source == null)
-            {
-                // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
-                _pipeline.AddDocumentSource(source);
-            }
-            _pipeline.AddClonedDocument(document);
-            return document;
-        }
-
         public IDocument GetDocument(IDocument sourceDocument, FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
         {
             CheckDisposed();
@@ -149,14 +127,6 @@ namespace Wyam.Core.Execution
                 // Only add a new source if the source document didn't already contain one (otherwise the one it contains will be used)
                 _pipeline.AddDocumentSource(source);
             }
-            _pipeline.AddClonedDocument(document);
-            return document;
-        }
-
-        public IDocument GetDocument(IDocument sourceDocument, string content, IEnumerable<KeyValuePair<string, object>> items = null)
-        {
-            CheckDisposed();
-            IDocument document = Engine.DocumentFactory.GetDocument(this, sourceDocument, content, items);
             _pipeline.AddClonedDocument(document);
             return document;
         }

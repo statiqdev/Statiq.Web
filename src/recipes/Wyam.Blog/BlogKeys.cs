@@ -255,17 +255,5 @@ namespace Wyam.Blog
         /// </summary>
         /// <type><see cref="string"/> or <c>IEnumerable&lt;string&gt;</c></type>
         public const string IgnoreFolders = nameof(IgnoreFolders);
-
-        [Obsolete("The HeaderTextColor key no longer has any effect, instead the header text color is calculated from the background image using JavaScript.")]
-        public const string HeaderTextColor = nameof(HeaderTextColor);
-
-        [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
-        public const string MarkdownExtensions = nameof(MarkdownConfiguration);
-
-        [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
-        public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
-
-        [Obsolete("BlogKeys.Content is obsolete. You can get the content of a post from the Blog.BlogPosts pipline by reading the IDocument.Content property for each post document.")]
-        public const string Content = nameof(Content);
     }
 }

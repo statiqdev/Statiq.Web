@@ -217,14 +217,6 @@ namespace Wyam.Blog
                 ValidateLinksAsError = ctx => ctx.Bool(BlogKeys.ValidateLinksAsError)
             });
 
-        // Obsolete pipeline keys
-
-        [Obsolete("The Blog.RawPosts pipeline key is obsolete, please use Blog.BlogPosts instead.")]
-        public const string RawPosts = nameof(BlogPosts);
-
-        [Obsolete("The Blog.Posts pipeline key is obsolete, please use Blog.RenderBlogPosts instead.")]
-        public const string Posts = nameof(RenderBlogPosts);
-
         /// <inheritdoc/>
         public override void Apply(IEngine engine)
         {

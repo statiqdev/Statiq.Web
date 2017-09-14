@@ -27,12 +27,6 @@ namespace Wyam.Configuration.ConfigScript
 
         public IFileSystem FileSystem => _engine.FileSystem;
 
-#pragma warning disable CS0612
-        public IMetadataDictionary InitialMetadata => _engine.InitialMetadata;
-
-        public IMetadataDictionary GlobalMetadata => _engine.GlobalMetadata;
-#pragma warning restore CS0612
-
         public ISettings Settings => _engine.Settings;
 
         public string ApplicationInput => _engine.ApplicationInput;

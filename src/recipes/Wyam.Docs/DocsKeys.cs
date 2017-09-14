@@ -330,11 +330,5 @@ namespace Wyam.Docs
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ImplicitInheritDoc = nameof(ImplicitInheritDoc);
-
-        [Obsolete("The MarkdownExtensions key is obsolete, please use MarkdownConfiguration instead.")]
-        public const string MarkdownExtensions = nameof(MarkdownConfiguration);
-
-        [Obsolete("The MarkdownExternalExtensions key is obsolete, please use MarkdownExtensionTypes instead.")]
-        public const string MarkdownExternalExtensions = nameof(MarkdownExtensionTypes);
     }
 }

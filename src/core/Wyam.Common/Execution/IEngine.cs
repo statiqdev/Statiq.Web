@@ -31,18 +31,6 @@ namespace Wyam.Common.Execution
         IPipelineCollection Pipelines { get; }
 
         /// <summary>
-        /// Gets the initial metadata.
-        /// </summary>
-        [Obsolete]
-        IMetadataDictionary InitialMetadata { get; }
-
-        /// <summary>
-        /// Gets the global metadata.
-        /// </summary>
-        [Obsolete]
-        IMetadataDictionary GlobalMetadata { get; }
-
-        /// <summary>
         /// Gets the documents.
         /// </summary>
         IDocumentCollection Documents { get; }
