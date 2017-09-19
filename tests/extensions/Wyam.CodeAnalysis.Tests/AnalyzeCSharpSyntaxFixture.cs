@@ -127,7 +127,7 @@ namespace Wyam.CodeAnalysis.Tests
                     namespace Foo
                     {
                         [  Foo]
-                        [Bar  ]
+                        [Bar ,Foo ]
                         class Green
                         {
                         }
@@ -143,7 +143,7 @@ namespace Wyam.CodeAnalysis.Tests
                 // Then
                 Assert.AreEqual(
                     @"[Foo]
-[Bar]
+[Bar, Foo]
 internal class Green",
                     GetResult(results, "Green")["Syntax"]);
             }

@@ -82,8 +82,10 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Attributes
             foreach (SyntaxNode attributeListNode in symbol.GetAttributes()
-                .Select(x => x.ApplicationSyntaxReference?.GetSyntax()?.Parent?.NormalizeWhitespace())
-                .Where(x => x != null))
+                .Select(x => x.ApplicationSyntaxReference?.GetSyntax()?.Parent)
+                .Where(x => x != null)
+                .Distinct()
+                .Select(parent => parent.NormalizeWhitespace()))
             {
                 builder.AppendLine(attributeListNode.ReplaceTrivia(attributeListNode.DescendantTrivia(), (x, y) => new SyntaxTrivia()).NormalizeWhitespace().ToString());
             }
