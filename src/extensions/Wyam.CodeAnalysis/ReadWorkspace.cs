@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Buildalyzer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.Extensions.Logging;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -99,6 +101,7 @@ namespace Wyam.CodeAnalysis
         /// Sends workspace diagnostics messages to trace listeners.
         /// </summary>
         /// <param name="workspace">The workspace.</param>
+        // TODO: Replace with Buildalyzer error logging
         protected internal static void TraceMsBuildWorkspaceDiagnostics(MSBuildWorkspace workspace)
         {
             if (!workspace.Diagnostics.IsEmpty)
@@ -115,6 +118,25 @@ namespace Wyam.CodeAnalysis
                     }
                 }
             }
+        }
+
+        protected internal static Analyzer GetLoggingAnalyzer(StringBuilder log, string solutionDirectory = null)
+        {
+            LoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.AddProvider(new StringBuilderLoggerProvider(log));
+            return solutionDirectory == null ? new Analyzer(loggerFactory) : new Analyzer(solutionDirectory, loggerFactory);
+        }
+
+        protected internal static ProjectAnalyzer GetProjectAndTrace(Analyzer analyzer, string projectPath, StringBuilder log)
+        {
+            log.Clear();
+            ProjectAnalyzer project = analyzer.GetProject(projectPath);
+            if (project.Compile() == null)
+            {
+                Trace.Error($"Could not compile project at {projectPath}");
+                Trace.Warning(log.ToString());
+            }
+            return project;
         }
 
         /// <inheritdoc />

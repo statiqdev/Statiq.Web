@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Buildalyzer;
+using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -546,7 +548,9 @@ namespace Wyam.CodeAnalysis
         private Compilation AddProjectReferences(IExecutionContext context, List<ISymbol> symbols, Compilation compilation)
         {
             // Generate a single Workspace and add all of the projects to it
-            MSBuildWorkspace workspace = MSBuildWorkspace.Create();
+            StringBuilder log = new StringBuilder();
+            Analyzer analyzer = ReadWorkspace.GetLoggingAnalyzer(log);
+            AdhocWorkspace workspace = new AdhocWorkspace();
             IEnumerable<IFile> projectFiles = context.FileSystem.GetInputFiles(_projectGlobs)
                 .Where(x => x.Path.Extension == ".csproj" && x.Exists);
             List<Project> projects = new List<Project>();
@@ -560,11 +564,11 @@ namespace Wyam.CodeAnalysis
                 else
                 {
                     Trace.Verbose($"Creating workspace project for {projectFile.Path.FullPath}");
-                    project = workspace.OpenProjectAsync(projectFile.Path.FullPath).Result;
-                    ReadWorkspace.TraceMsBuildWorkspaceDiagnostics(workspace);
+                    ProjectAnalyzer projectAnalyzer = ReadWorkspace.GetProjectAndTrace(analyzer, projectFile.Path.FullPath, log);
+                    project = projectAnalyzer.AddToWorkspace(workspace);
                     if (!project.Documents.Any())
                     {
-                        Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (view verbose output for any MSBuild errors)");
+                        Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (check previous log output for any MSBuild warnings)");
                     }
                 }
                 projects.Add(project);

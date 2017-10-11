@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Buildalyzer;
+using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
@@ -55,14 +58,11 @@ namespace Wyam.CodeAnalysis
         /// <inheritdoc />
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
-            MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-            Project project = workspace.OpenProjectAsync(file.Path.FullPath).Result;
-            TraceMsBuildWorkspaceDiagnostics(workspace);
-            if (!project.Documents.Any())
-            {
-                Trace.Warning($"Project at {file.Path.FullPath} contains no documents, which may be an error (view verbose output for any MSBuild errors)");
-            }
-            return new[] { project };
+            StringBuilder log = new StringBuilder();
+            Analyzer analyzer = GetLoggingAnalyzer(log);
+            ProjectAnalyzer project = GetProjectAndTrace(analyzer, file.Path.FullPath, log);
+            AdhocWorkspace workspace = project.GetWorkspace();
+            return workspace.CurrentSolution.Projects;
         }
     }
 }

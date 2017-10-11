@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using Buildalyzer;
+using Buildalyzer.Workspaces;
+using Microsoft.Build.Construction;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
@@ -53,10 +57,16 @@ namespace Wyam.CodeAnalysis
         /// <inheritdoc />
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
-            MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-            Solution solution = workspace.OpenSolutionAsync(file.Path.FullPath).Result;
-            TraceMsBuildWorkspaceDiagnostics(workspace);
-            return solution == null ? Array.Empty<Project>() : solution.Projects;
+            StringBuilder log = new StringBuilder();
+            Analyzer analyzer = GetLoggingAnalyzer(log, file.Path.Directory.FullPath);
+            SolutionFile solution = SolutionFile.Parse(file.Path.FullPath);
+            AdhocWorkspace workspace = new AdhocWorkspace();
+            foreach (ProjectInSolution solutionProject in solution.ProjectsInOrder)
+            {
+                ProjectAnalyzer project = GetProjectAndTrace(analyzer, solutionProject.AbsolutePath, log);
+                project.AddToWorkspace(workspace);
+            }
+            return workspace.CurrentSolution.Projects;
         }
     }
 }
