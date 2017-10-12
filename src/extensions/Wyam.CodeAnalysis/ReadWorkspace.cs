@@ -120,23 +120,23 @@ namespace Wyam.CodeAnalysis
             }
         }
 
-        protected internal static Analyzer GetLoggingAnalyzer(StringBuilder log, string solutionDirectory = null)
+        protected internal static AnalyzerManager GetLoggingAnalyzerManager(StringBuilder log, string solutionDirectory = null)
         {
             LoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddProvider(new StringBuilderLoggerProvider(log));
-            return solutionDirectory == null ? new Analyzer(loggerFactory) : new Analyzer(solutionDirectory, loggerFactory);
+            return solutionDirectory == null ? new AnalyzerManager(loggerFactory) : new AnalyzerManager(solutionDirectory, loggerFactory);
         }
 
-        protected internal static ProjectAnalyzer GetProjectAndTrace(Analyzer analyzer, string projectPath, StringBuilder log)
+        protected internal static ProjectAnalyzer GetProjectAndTrace(AnalyzerManager manager, string projectPath, StringBuilder log)
         {
             log.Clear();
-            ProjectAnalyzer project = analyzer.GetProject(projectPath);
-            if (project.Compile() == null)
+            ProjectAnalyzer analyzer = manager.GetProject(projectPath);
+            if (analyzer.Compile() == null)
             {
                 Trace.Error($"Could not compile project at {projectPath}");
                 Trace.Warning(log.ToString());
             }
-            return project;
+            return analyzer;
         }
 
         /// <inheritdoc />

@@ -58,13 +58,13 @@ namespace Wyam.CodeAnalysis
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
             StringBuilder log = new StringBuilder();
-            Analyzer analyzer = GetLoggingAnalyzer(log, file.Path.Directory.FullPath);
+            AnalyzerManager manager = GetLoggingAnalyzerManager(log, file.Path.Directory.FullPath);
             SolutionFile solution = SolutionFile.Parse(file.Path.FullPath);
             AdhocWorkspace workspace = new AdhocWorkspace();
             foreach (ProjectInSolution solutionProject in solution.ProjectsInOrder)
             {
-                ProjectAnalyzer project = GetProjectAndTrace(analyzer, solutionProject.AbsolutePath, log);
-                project.AddToWorkspace(workspace);
+                ProjectAnalyzer analyzer = GetProjectAndTrace(manager, solutionProject.AbsolutePath, log);
+                analyzer.AddToWorkspace(workspace);
             }
             return workspace.CurrentSolution.Projects;
         }

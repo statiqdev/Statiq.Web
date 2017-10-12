@@ -549,7 +549,7 @@ namespace Wyam.CodeAnalysis
         {
             // Generate a single Workspace and add all of the projects to it
             StringBuilder log = new StringBuilder();
-            Analyzer analyzer = ReadWorkspace.GetLoggingAnalyzer(log);
+            AnalyzerManager manager = ReadWorkspace.GetLoggingAnalyzerManager(log);
             AdhocWorkspace workspace = new AdhocWorkspace();
             IEnumerable<IFile> projectFiles = context.FileSystem.GetInputFiles(_projectGlobs)
                 .Where(x => x.Path.Extension == ".csproj" && x.Exists);
@@ -564,8 +564,8 @@ namespace Wyam.CodeAnalysis
                 else
                 {
                     Trace.Verbose($"Creating workspace project for {projectFile.Path.FullPath}");
-                    ProjectAnalyzer projectAnalyzer = ReadWorkspace.GetProjectAndTrace(analyzer, projectFile.Path.FullPath, log);
-                    project = projectAnalyzer.AddToWorkspace(workspace);
+                    ProjectAnalyzer analyzer = ReadWorkspace.GetProjectAndTrace(manager, projectFile.Path.FullPath, log);
+                    project = analyzer.AddToWorkspace(workspace);
                     if (!project.Documents.Any())
                     {
                         Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (check previous log output for any MSBuild warnings)");
