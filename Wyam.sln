@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "src\clients\Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
@@ -144,6 +144,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.YouTube", "src\extensions\Wyam.YouTube\Wyam.YouTube.csproj", "{CBD166F0-F93E-48E7-83E0-99DB2CCED36A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.YouTube.Tests", "tests\extensions\Wyam.YouTube.Tests\Wyam.YouTube.Tests.csproj", "{9C1DA009-EADE-451A-9EB8-4075B079B0F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Liquid", "src\extensions\Wyam.Liquid\Wyam.Liquid.csproj", "{3D92F0D5-3D81-4452-815D-3CE42B2D02F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -371,6 +373,10 @@ Global
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D92F0D5-3D81-4452-815D-3CE42B2D02F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D92F0D5-3D81-4452-815D-3CE42B2D02F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D92F0D5-3D81-4452-815D-3CE42B2D02F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D92F0D5-3D81-4452-815D-3CE42B2D02F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -439,5 +445,9 @@ Global
 		{AC85A818-00B5-468B-A4F9-A8C90E493363} = {DA9CFA76-E730-4707-A312-01470C89FA6E}
 		{CBD166F0-F93E-48E7-83E0-99DB2CCED36A} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
+		{3D92F0D5-3D81-4452-815D-3CE42B2D02F1} = {5A431149-2B88-40C3-9717-CA6CCF214317}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {887DFBB7-3950-480F-B7EE-A1F3CB038E7A}
 	EndGlobalSection
 EndGlobal

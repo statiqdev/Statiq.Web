@@ -19,6 +19,7 @@ namespace Wyam.Configuration
 		public static readonly KnownExtension Images = new KnownExtension("Wyam.Images");
 		public static readonly KnownExtension Json = new KnownExtension("Wyam.Json");
 		public static readonly KnownExtension Less = new KnownExtension("Wyam.Less");
+		public static readonly KnownExtension Liquid = new KnownExtension("Wyam.Liquid");
 		public static readonly KnownExtension Markdown = new KnownExtension("Wyam.Markdown");
 		public static readonly KnownExtension Minification = new KnownExtension("Wyam.Minification");
 		public static readonly KnownExtension Razor = new KnownExtension("Wyam.Razor");
