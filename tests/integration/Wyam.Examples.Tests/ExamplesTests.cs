@@ -49,6 +49,7 @@ namespace Wyam.Examples.Tests
             Directory.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "packages"), true);
         }
 
+        [Ignore("Caught by local threat detection")]
         [Test]
         [TestCaseSource(typeof(ExamplesTests), nameof(Paths))]
         public void ExecuteExample(string example)
