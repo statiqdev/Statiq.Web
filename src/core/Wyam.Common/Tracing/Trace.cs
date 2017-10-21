@@ -18,6 +18,7 @@ namespace Wyam.Common.Tracing
     {
         private static readonly TraceSource TraceSource = new TraceSource("Wyam", SourceLevels.Information);
         private static int _indent = 0;
+        private static object _lock = new object();
 
         public static ITrace Current { get; } = new Trace();
 
@@ -33,18 +34,29 @@ namespace Wyam.Common.Tracing
 
         public static void AddListener(TraceListener listener)
         {
-            TraceSource.Listeners.Add(listener);
-            listener.IndentLevel = _indent;
+            lock (_lock)
+            {
+                TraceSource.Listeners.Add(listener);
+                listener.IndentLevel = _indent;
+            }
         }
 
         public static void RemoveListener(TraceListener listener)
         {
-            listener.IndentLevel = 0;
-            TraceSource.Listeners.Remove(listener);
+            lock (_lock)
+            {
+                listener.IndentLevel = 0;
+                TraceSource.Listeners.Remove(listener);
+            }
         }
 
-        public static IEnumerable<TraceListener> Listeners =>
-            TraceSource.Listeners.OfType<TraceListener>();
+        public static IEnumerable<TraceListener> GetListeners()
+        {
+            lock (_lock)
+            {
+                return TraceSource.Listeners.OfType<TraceListener>().ToArray();
+            }
+        }
 
         // Stops the application
         public static void Critical(string messageOrFormat, params object[] args) =>
@@ -109,7 +121,7 @@ namespace Wyam.Common.Tracing
 
         void ITrace.RemoveListener(TraceListener listener) => RemoveListener(listener);
 
-        IEnumerable<TraceListener> ITrace.Listeners => Listeners;
+        IEnumerable<TraceListener> ITrace.Listeners => GetListeners();
 
         void ITrace.Critical(string messageOrFormat, params object[] args) =>
             Critical(messageOrFormat, args);

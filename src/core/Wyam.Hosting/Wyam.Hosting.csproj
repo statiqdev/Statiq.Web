@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="CommonServiceLocator" Version="1.3" />
     <PackageReference Include="Fleck" Version="0.14.0.59" />
-    <PackageReference Include="Libuv" Version="1.9.1" />
+    <PackageReference Include="Libuv" Version="1.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="1.1.1" />

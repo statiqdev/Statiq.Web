@@ -29,7 +29,7 @@ namespace Wyam.Testing
 
         public void RemoveListener()
         {
-            TestTraceListener listener = Trace.Listeners.OfType<TestTraceListener>()
+            TestTraceListener listener = Trace.GetListeners().OfType<TestTraceListener>()
                 .FirstOrDefault(x => x.TestId == TestContext.CurrentContext.Test.ID);
             if (listener != null)
             {
@@ -39,7 +39,7 @@ namespace Wyam.Testing
 
         public void ThrowOnTraceEventType(TraceEventType? traceEventType)
         {
-            TestTraceListener listener = Trace.Listeners.OfType<TestTraceListener>()
+            TestTraceListener listener = Trace.GetListeners().OfType<TestTraceListener>()
                 .FirstOrDefault(x => x.TestId == TestContext.CurrentContext.Test.ID);
             if (listener != null)
             {

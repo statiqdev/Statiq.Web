@@ -12,6 +12,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <HasRuntimeOutput>true</HasRuntimeOutput>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
