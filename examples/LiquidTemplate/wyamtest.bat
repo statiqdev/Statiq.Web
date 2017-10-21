@@ -1,1 +1,0 @@
-"%~dp0..\..\src\clients\Wyam\bin\Debug\wyam.exe" -a "../../../../extensions/**/bin/Debug/*.dll" --attach
