@@ -15,6 +15,11 @@
     <HasRuntimeOutput>true</HasRuntimeOutput>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Owin\Documents\BasicHtmlDocument.html" />
+    <None Remove="Owin\Documents\BasicHtmlDocumentNoBodyEnd.html" />
+    <None Remove="Owin\Documents\NonHtmlDocument.css" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Hosting\Wyam.Hosting.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>
@@ -128,5 +133,10 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Owin\Documents\BasicHtmlDocument.html" />
+    <EmbeddedResource Include="Owin\Documents\BasicHtmlDocumentNoBodyEnd.html" />
+    <EmbeddedResource Include="Owin\Documents\NonHtmlDocument.css" />
   </ItemGroup>
 </Project>
