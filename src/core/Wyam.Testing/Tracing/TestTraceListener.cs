@@ -24,13 +24,19 @@ namespace Wyam.Testing.Tracing
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
-            Messages.Add(new KeyValuePair<TraceEventType, string>(eventType, message));
+            if (TestContext.CurrentContext.Test.ID == TestId)
+            {
+                Messages.Add(new KeyValuePair<TraceEventType, string>(eventType, message));
+            }
             ThrowOnErrorOrWarning(eventType, message);
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            Messages.Add(new KeyValuePair<TraceEventType, string>(eventType, string.Format(format, args)));
+            if (TestContext.CurrentContext.Test.ID == TestId)
+            {
+                Messages.Add(new KeyValuePair<TraceEventType, string>(eventType, string.Format(format, args)));
+            }
             ThrowOnErrorOrWarning(eventType, string.Format(format, args));
         }
 

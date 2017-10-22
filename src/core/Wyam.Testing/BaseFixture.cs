@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +14,18 @@ namespace Wyam.Testing
 {
     public abstract class BaseFixture
     {
-        public TestTraceListener Listener { get; private set; }
+        private readonly ConcurrentDictionary<string, TestTraceListener> _listeners =
+            new ConcurrentDictionary<string, TestTraceListener>();
+
+        public TestTraceListener Listener => 
+            _listeners.TryGetValue(TestContext.CurrentContext.Test.ID, out var listener) ? listener : null;
 
         [SetUp]
         public void BaseSetUp()
         {
-            Listener = new TestTraceListener(TestContext.CurrentContext.Test.ID);
+            Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
+            TestTraceListener listener = new TestTraceListener(TestContext.CurrentContext.Test.ID);
+            _listeners.AddOrUpdate(TestContext.CurrentContext.Test.ID, listener, (x, y) => listener);
             Trace.AddListener(Listener);
         }
 
@@ -29,8 +37,7 @@ namespace Wyam.Testing
 
         public void RemoveListener()
         {
-            TestTraceListener listener = Trace.GetListeners().OfType<TestTraceListener>()
-                .FirstOrDefault(x => x.TestId == TestContext.CurrentContext.Test.ID);
+            TestTraceListener listener = Listener;
             if (listener != null)
             {
                 Trace.RemoveListener(listener);
@@ -39,8 +46,7 @@ namespace Wyam.Testing
 
         public void ThrowOnTraceEventType(TraceEventType? traceEventType)
         {
-            TestTraceListener listener = Trace.GetListeners().OfType<TestTraceListener>()
-                .FirstOrDefault(x => x.TestId == TestContext.CurrentContext.Test.ID);
+            TestTraceListener listener = Listener;
             if (listener != null)
             {
                 listener.ThrowTraceEventType = traceEventType;

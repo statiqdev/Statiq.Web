@@ -17,7 +17,7 @@ using Wyam.Testing.IO;
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class WriteFilesFixture : BaseFixture
     {
         private Engine Engine { get; set; }
