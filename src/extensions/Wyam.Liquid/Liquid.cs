@@ -58,16 +58,12 @@ namespace Wyam.Liquid
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
                         Template liquidTemplate = Template.Parse(input.Content);
-
-                        // TODO: We need to pass in the MetaData
-                        result = liquidTemplate.Render();
+                        result = liquidTemplate.Render(ExtendedHash.FromReadOnlyDictionary(input));
                     }
                     else if (input.ContainsKey(_sourceKey))
                     {
                         Template liquidTemplate = Template.Parse(input.String(_sourceKey) ?? string.Empty);
-
-                        // TODO: We need to pass in the MetaData
-                        result = liquidTemplate.Render();
+                        result = liquidTemplate.Render(ExtendedHash.FromReadOnlyDictionary(input));
                     }
                     else
                     {
@@ -115,5 +111,6 @@ namespace Wyam.Liquid
                 .Select(p => p.Name)
                 .ToArray());
         }
+
     }
 }
