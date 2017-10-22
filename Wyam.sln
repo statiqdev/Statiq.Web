@@ -1,98 +1,94 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam", "src\clients\Wyam\Wyam.csproj", "{9CADDE07-290F-4958-B0D4-2E613B8F127F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Core", "src\core\Wyam.Core\Wyam.Core.csproj", "{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Core", "src\core\Wyam.Core\Wyam.Core.csproj", "{BC8C5DE2-6692-4E39-A0BB-689C316AEFF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Core.Tests", "tests\core\Wyam.Core.Tests\Wyam.Core.Tests.csproj", "{862B500E-D6C3-4026-868C-4097C3AD1D5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Core.Tests", "tests\core\Wyam.Core.Tests\Wyam.Core.Tests.csproj", "{862B500E-D6C3-4026-868C-4097C3AD1D5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Markdown", "src\extensions\Wyam.Markdown\Wyam.Markdown.csproj", "{AF8F5C85-2C54-4CFE-A509-C30515B7B943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Markdown", "src\extensions\Wyam.Markdown\Wyam.Markdown.csproj", "{AF8F5C85-2C54-4CFE-A509-C30515B7B943}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Common", "src\core\Wyam.Common\Wyam.Common.csproj", "{F40B73E9-C0CC-465C-925E-B51E686C1D5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Common", "src\core\Wyam.Common\Wyam.Common.csproj", "{F40B73E9-C0CC-465C-925E-B51E686C1D5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Yaml", "src\extensions\Wyam.Yaml\Wyam.Yaml.csproj", "{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Yaml", "src\extensions\Wyam.Yaml\Wyam.Yaml.csproj", "{AB59F7BD-0FC3-43AD-A3AE-2E3C7551E947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Yaml.Tests", "tests\extensions\Wyam.Yaml.Tests\Wyam.Yaml.Tests.csproj", "{E5F18C7B-08A6-4F2C-9999-34F54BA2212A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Yaml.Tests", "tests\extensions\Wyam.Yaml.Tests\Wyam.Yaml.Tests.csproj", "{E5F18C7B-08A6-4F2C-9999-34F54BA2212A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Razor", "src\extensions\Wyam.Razor\Wyam.Razor.csproj", "{D044419D-363A-47CC-A4ED-466A6128D7A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Razor", "src\extensions\Wyam.Razor\Wyam.Razor.csproj", "{D044419D-363A-47CC-A4ED-466A6128D7A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Razor.Tests", "tests\extensions\Wyam.Razor.Tests\Wyam.Razor.Tests.csproj", "{97C9B323-A7C4-415A-994A-FB4350ED26D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Razor.Tests", "tests\extensions\Wyam.Razor.Tests\Wyam.Razor.Tests.csproj", "{97C9B323-A7C4-415A-994A-FB4350ED26D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Examples.Tests", "tests\integration\Wyam.Examples.Tests\Wyam.Examples.Tests.csproj", "{6BDD24AD-D0CE-4B76-BC20-128299237505}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Examples.Tests", "tests\integration\Wyam.Examples.Tests\Wyam.Examples.Tests.csproj", "{6BDD24AD-D0CE-4B76-BC20-128299237505}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Less", "src\extensions\Wyam.Less\Wyam.Less.csproj", "{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Less", "src\extensions\Wyam.Less\Wyam.Less.csproj", "{FBB9FB85-A0FC-4201-BC29-30FF16C93E76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Images", "src\extensions\Wyam.Images\Wyam.Images.csproj", "{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Images", "src\extensions\Wyam.Images\Wyam.Images.csproj", "{D6AD32C7-3B15-4F1C-8A2D-403D97F0CD41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Html", "src\extensions\Wyam.Html\Wyam.Html.csproj", "{68085EE3-BB21-4E52-9A86-DD1820A0D010}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Html", "src\extensions\Wyam.Html\Wyam.Html.csproj", "{68085EE3-BB21-4E52-9A86-DD1820A0D010}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Html.Tests", "tests\extensions\Wyam.Html.Tests\Wyam.Html.Tests.csproj", "{822FDD27-DAA4-4816-A0EA-DC079430445C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Html.Tests", "tests\extensions\Wyam.Html.Tests\Wyam.Html.Tests.csproj", "{822FDD27-DAA4-4816-A0EA-DC079430445C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F40B73E9-C0CC-465C-925E-B51E686C1D5C} = {F40B73E9-C0CC-465C-925E-B51E686C1D5C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Common.Tests", "tests\core\Wyam.Common.Tests\Wyam.Common.Tests.csproj", "{3E93B31C-5670-413A-947A-77A46456CD13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Common.Tests", "tests\core\Wyam.Common.Tests\Wyam.Common.Tests.csproj", "{3E93B31C-5670-413A-947A-77A46456CD13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.TextGeneration", "src\extensions\Wyam.TextGeneration\Wyam.TextGeneration.csproj", "{0D7F4902-C048-46AA-BDD1-B87B657003FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.TextGeneration", "src\extensions\Wyam.TextGeneration\Wyam.TextGeneration.csproj", "{0D7F4902-C048-46AA-BDD1-B87B657003FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.TextGeneration.Tests", "tests\extensions\Wyam.TextGeneration.Tests\Wyam.TextGeneration.Tests.csproj", "{704624AF-5081-4EC7-BD47-AB93292D7B4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.TextGeneration.Tests", "tests\extensions\Wyam.TextGeneration.Tests\Wyam.TextGeneration.Tests.csproj", "{704624AF-5081-4EC7-BD47-AB93292D7B4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.CodeAnalysis", "src\extensions\Wyam.CodeAnalysis\Wyam.CodeAnalysis.csproj", "{F4C0C025-5E08-4ED2-A089-67C41702AE7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.CodeAnalysis", "src\extensions\Wyam.CodeAnalysis\Wyam.CodeAnalysis.csproj", "{F4C0C025-5E08-4ED2-A089-67C41702AE7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.CodeAnalysis.Tests", "tests\extensions\Wyam.CodeAnalysis.Tests\Wyam.CodeAnalysis.Tests.csproj", "{9BF3B222-0B52-46E8-B3E2-5A5EB62EFFF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.CodeAnalysis.Tests", "tests\extensions\Wyam.CodeAnalysis.Tests\Wyam.CodeAnalysis.Tests.csproj", "{9BF3B222-0B52-46E8-B3E2-5A5EB62EFFF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Git", "src\extensions\Wyam.Git\Wyam.Git.csproj", "{D339951E-DFAC-4766-825B-36E69479044B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Git", "src\extensions\Wyam.Git\Wyam.Git.csproj", "{D339951E-DFAC-4766-825B-36E69479044B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Xmp", "src\extensions\Wyam.Xmp\Wyam.Xmp.csproj", "{F17862D9-8B53-44C0-9102-B1B84BE72E76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Xmp", "src\extensions\Wyam.Xmp\Wyam.Xmp.csproj", "{F17862D9-8B53-44C0-9102-B1B84BE72E76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Xmp.Tests", "tests\extensions\Wyam.Xmp.Tests\Wyam.Xmp.Tests.csproj", "{2BA7C7E0-FCA7-4A46-98E6-C43B52D07CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Xmp.Tests", "tests\extensions\Wyam.Xmp.Tests\Wyam.Xmp.Tests.csproj", "{2BA7C7E0-FCA7-4A46-98E6-C43B52D07CE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.SearchIndex", "src\extensions\Wyam.SearchIndex\Wyam.SearchIndex.csproj", "{957FE3A0-7CE0-48A1-9767-D122B9F43907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.SearchIndex", "src\extensions\Wyam.SearchIndex\Wyam.SearchIndex.csproj", "{957FE3A0-7CE0-48A1-9767-D122B9F43907}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tables", "src\extensions\Wyam.Tables\Wyam.Tables.csproj", "{18E8DFBE-436C-4477-A5A2-61551CE268A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Tables", "src\extensions\Wyam.Tables\Wyam.Tables.csproj", "{18E8DFBE-436C-4477-A5A2-61551CE268A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tables.Tests", "tests\extensions\Wyam.Tables.Tests\Wyam.Tables.Tests.csproj", "{5BB70078-E81A-48F8-A4A0-69F312BADCC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Tables.Tests", "tests\extensions\Wyam.Tables.Tests\Wyam.Tables.Tests.csproj", "{5BB70078-E81A-48F8-A4A0-69F312BADCC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Git.Tests", "tests\extensions\Wyam.Git.Tests\Wyam.Git.Tests.csproj", "{441ACC49-1642-414F-B551-BE7370004EDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Git.Tests", "tests\extensions\Wyam.Git.Tests\Wyam.Git.Tests.csproj", "{441ACC49-1642-414F-B551-BE7370004EDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Markdown.Tests", "tests\extensions\Wyam.Markdown.Tests\Wyam.Markdown.Tests.csproj", "{2392BE38-2D56-4F72-8659-A3435FB1EC86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Markdown.Tests", "tests\extensions\Wyam.Markdown.Tests\Wyam.Markdown.Tests.csproj", "{2392BE38-2D56-4F72-8659-A3435FB1EC86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.GitHub", "src\extensions\Wyam.GitHub\Wyam.GitHub.csproj", "{F835BE84-9121-4E31-B2DA-0C7E5391DAC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.GitHub", "src\extensions\Wyam.GitHub\Wyam.GitHub.csproj", "{F835BE84-9121-4E31-B2DA-0C7E5391DAC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Json", "src\extensions\Wyam.Json\Wyam.Json.csproj", "{F55FB154-8722-450C-B641-6DE331ED94A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Json", "src\extensions\Wyam.Json\Wyam.Json.csproj", "{F55FB154-8722-450C-B641-6DE331ED94A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Json.Tests", "tests\extensions\Wyam.Json.Tests\Wyam.Json.Tests.csproj", "{25A5AC38-6AE9-49F4-B87B-08EAFD11AB5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Json.Tests", "tests\extensions\Wyam.Json.Tests\Wyam.Json.Tests.csproj", "{25A5AC38-6AE9-49F4-B87B-08EAFD11AB5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Testing", "src\core\Wyam.Testing\Wyam.Testing.csproj", "{7726D040-4192-49C7-B9EA-E192397127C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Testing", "src\core\Wyam.Testing\Wyam.Testing.csproj", "{7726D040-4192-49C7-B9EA-E192397127C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.AmazonWebServices", "src\extensions\Wyam.AmazonWebServices\Wyam.AmazonWebServices.csproj", "{327A23F7-AE78-48B3-97B0-7180492CF08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.AmazonWebServices", "src\extensions\Wyam.AmazonWebServices\Wyam.AmazonWebServices.csproj", "{327A23F7-AE78-48B3-97B0-7180492CF08C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{596452BD-AE34-4989-A36F-88FF72B2DFD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Minification", "src\extensions\Wyam.Minification\Wyam.Minification.csproj", "{AD223A29-5736-4914-9D24-66D8329E663E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Minification", "src\extensions\Wyam.Minification\Wyam.Minification.csproj", "{AD223A29-5736-4914-9D24-66D8329E663E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Minification.Tests", "tests\extensions\Wyam.Minification.Tests\Wyam.Minification.Tests.csproj", "{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Minification.Tests", "tests\extensions\Wyam.Minification.Tests\Wyam.Minification.Tests.csproj", "{6AD5C161-7FF7-4875-B71A-9F95EA3342AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Tests", "tests\clients\Wyam.Tests\Wyam.Tests.csproj", "{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Tests", "tests\clients\Wyam.Tests\Wyam.Tests.csproj", "{49D807FA-5199-4707-A7DD-B41FBBEFD8FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Wyam", "src\clients\Cake.Wyam\Cake.Wyam.csproj", "{690065CB-CECD-4DF6-A547-38C96B1A7F55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.Wyam.Tests", "tests\clients\Cake.Wyam.Tests\Cake.Wyam.Tests.csproj", "{CE803777-2293-4909-A9A5-7D6248C4A6A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake.Wyam.Tests", "tests\clients\Cake.Wyam.Tests\Cake.Wyam.Tests.csproj", "{CE803777-2293-4909-A9A5-7D6248C4A6A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Configuration", "src\core\Wyam.Configuration\Wyam.Configuration.csproj", "{43CCBEF4-C940-457E-B6D7-4D2675532926}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Configuration.Tests", "tests\core\Wyam.Configuration.Tests\Wyam.Configuration.Tests.csproj", "{491238B1-B760-4CBB-A971-01EC1E29C8D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Configuration.Tests", "tests\core\Wyam.Configuration.Tests\Wyam.Configuration.Tests.csproj", "{491238B1-B760-4CBB-A971-01EC1E29C8D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Blog", "src\recipes\Wyam.Blog\Wyam.Blog.csproj", "{0CE39B26-B141-4645-A941-8B14779CA348}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Blog", "src\recipes\Wyam.Blog\Wyam.Blog.csproj", "{0CE39B26-B141-4645-A941-8B14779CA348}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Feeds", "src\extensions\Wyam.Feeds\Wyam.Feeds.csproj", "{BD7F456D-2576-43CC-B554-C03EB02BE8B7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Xslt2", "src\extensions\Wyam.Xslt2\Wyam.Xslt2.csproj", "{E3732509-F173-4D1B-A1C1-6F121C183C97}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Xslt2.Tests", "tests\extensions\Wyam.Xslt2.Tests\Wyam.Xslt2.Tests.csproj", "{9A14DD8B-9345-4436-A91E-6FA61267FD9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Feeds", "src\extensions\Wyam.Feeds\Wyam.Feeds.csproj", "{BD7F456D-2576-43CC-B554-C03EB02BE8B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA9CFA76-E730-4707-A312-01470C89FA6E}"
 EndProject
@@ -110,21 +106,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{C5AED397-4463-4DE7-8A7E-74A4C949E417}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Docs", "src\recipes\Wyam.Docs\Wyam.Docs.csproj", "{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Docs", "src\recipes\Wyam.Docs\Wyam.Docs.csproj", "{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Highlight", "src\extensions\Wyam.Highlight\Wyam.Highlight.csproj", "{5FE758A2-1221-48FE-8A3C-8B3B9A32AFAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Highlight", "src\extensions\Wyam.Highlight\Wyam.Highlight.csproj", "{5FE758A2-1221-48FE-8A3C-8B3B9A32AFAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Highlight.Tests", "tests\extensions\Wyam.Highlight.Tests\Wyam.Highlight.Tests.csproj", "{A6DE4586-1398-4071-90AB-5CCC1C949720}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Highlight.Tests", "tests\extensions\Wyam.Highlight.Tests\Wyam.Highlight.Tests.csproj", "{A6DE4586-1398-4071-90AB-5CCC1C949720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Testing.JavaScript", "src\core\Wyam.Testing.JavaScript\Wyam.Testing.JavaScript.csproj", "{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Testing.JavaScript", "src\core\Wyam.Testing.JavaScript\Wyam.Testing.JavaScript.csproj", "{95080CB0-DC4E-4617-8F73-6E06A6CA2F5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Hosting", "src\core\Wyam.Hosting\Wyam.Hosting.csproj", "{A3041B22-8A32-4ADB-89F3-A808AC60899B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Hosting", "src\core\Wyam.Hosting\Wyam.Hosting.csproj", "{A3041B22-8A32-4ADB-89F3-A808AC60899B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Hosting.Tests", "tests\core\Wyam.Hosting.Tests\Wyam.Hosting.Tests.csproj", "{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Hosting.Tests", "tests\core\Wyam.Hosting.Tests\Wyam.Hosting.Tests.csproj", "{9C59DA3D-6A41-4DC4-A4BB-0927C6978367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Sass", "src\extensions\Wyam.Sass\Wyam.Sass.csproj", "{90A0AB19-0146-4931-BEFA-D895B192E050}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Sass", "src\extensions\Wyam.Sass\Wyam.Sass.csproj", "{90A0AB19-0146-4931-BEFA-D895B192E050}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Sass.Tests", "tests\extensions\Wyam.Sass.Tests\Wyam.Sass.Tests.csproj", "{A6B7B1A6-7BE5-4E98-9286-D03A0F936E98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Sass.Tests", "tests\extensions\Wyam.Sass.Tests\Wyam.Sass.Tests.csproj", "{A6B7B1A6-7BE5-4E98-9286-D03A0F936E98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{9B01F618-6AB3-4DCD-A044-4CA58EEF6419}"
 	ProjectSection(SolutionItems) = preProject
@@ -135,15 +131,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{9B01F618-6
 		Wyam.sln.DotSettings = Wyam.sln.DotSettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.BookSite", "src\recipes\Wyam.BookSite\Wyam.BookSite.csproj", "{8A4FBE8F-B009-4EA7-B941-9B6406B4E55D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.BookSite", "src\recipes\Wyam.BookSite\Wyam.BookSite.csproj", "{8A4FBE8F-B009-4EA7-B941-9B6406B4E55D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Web", "src\recipes\Wyam.Web\Wyam.Web.csproj", "{A4038D8B-40ED-4802-AA95-1E6171EF6036}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.Web", "src\recipes\Wyam.Web\Wyam.Web.csproj", "{A4038D8B-40ED-4802-AA95-1E6171EF6036}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "recipes", "recipes", "{AC85A818-00B5-468B-A4F9-A8C90E493363}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.YouTube", "src\extensions\Wyam.YouTube\Wyam.YouTube.csproj", "{CBD166F0-F93E-48E7-83E0-99DB2CCED36A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.YouTube", "src\extensions\Wyam.YouTube\Wyam.YouTube.csproj", "{CBD166F0-F93E-48E7-83E0-99DB2CCED36A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.YouTube.Tests", "tests\extensions\Wyam.YouTube.Tests\Wyam.YouTube.Tests.csproj", "{9C1DA009-EADE-451A-9EB8-4075B079B0F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.YouTube.Tests", "tests\extensions\Wyam.YouTube.Tests\Wyam.YouTube.Tests.csproj", "{9C1DA009-EADE-451A-9EB8-4075B079B0F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -315,14 +311,6 @@ Global
 		{BD7F456D-2576-43CC-B554-C03EB02BE8B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD7F456D-2576-43CC-B554-C03EB02BE8B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD7F456D-2576-43CC-B554-C03EB02BE8B7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3732509-F173-4D1B-A1C1-6F121C183C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3732509-F173-4D1B-A1C1-6F121C183C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3732509-F173-4D1B-A1C1-6F121C183C97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3732509-F173-4D1B-A1C1-6F121C183C97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A14DD8B-9345-4436-A91E-6FA61267FD9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EB71E59-8D5C-45F3-BF1D-8649BA76D139}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -417,8 +405,6 @@ Global
 		{491238B1-B760-4CBB-A971-01EC1E29C8D6} = {12931CA5-E734-4CD9-883D-27D897512183}
 		{0CE39B26-B141-4645-A941-8B14779CA348} = {AC85A818-00B5-468B-A4F9-A8C90E493363}
 		{BD7F456D-2576-43CC-B554-C03EB02BE8B7} = {5A431149-2B88-40C3-9717-CA6CCF214317}
-		{E3732509-F173-4D1B-A1C1-6F121C183C97} = {5A431149-2B88-40C3-9717-CA6CCF214317}
-		{9A14DD8B-9345-4436-A91E-6FA61267FD9E} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
 		{43F26311-B67F-4F8D-BBAC-9C6F4B9F5C52} = {DA9CFA76-E730-4707-A312-01470C89FA6E}
 		{4813B17D-EFCA-401D-B0E6-7B24B3946A70} = {DA9CFA76-E730-4707-A312-01470C89FA6E}
 		{5A431149-2B88-40C3-9717-CA6CCF214317} = {DA9CFA76-E730-4707-A312-01470C89FA6E}
@@ -439,5 +425,8 @@ Global
 		{AC85A818-00B5-468B-A4F9-A8C90E493363} = {DA9CFA76-E730-4707-A312-01470C89FA6E}
 		{CBD166F0-F93E-48E7-83E0-99DB2CCED36A} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0CD133C-B843-4178-8976-B04AE6B2021A}
 	EndGlobalSection
 EndGlobal
