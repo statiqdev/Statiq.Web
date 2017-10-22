@@ -14,6 +14,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="highlight-all.js" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -31,5 +34,8 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="highlight-all.js" />
   </ItemGroup>
 </Project>
