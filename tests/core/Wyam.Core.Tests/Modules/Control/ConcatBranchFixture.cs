@@ -9,7 +9,7 @@ using Wyam.Testing.Modules;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class ConcatBranchFixture : BaseFixture
     {
         public class ExecuteTests : ConcatBranchFixture
