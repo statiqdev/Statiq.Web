@@ -162,6 +162,7 @@ Task("Create-Library-Packages")
         // The Wyam.All and Wyam.Windows are packaged specially
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
         nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
+        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Cake.Wyam");
         
         // Package all nuspecs
         foreach (var nuspec in nuspecs)
