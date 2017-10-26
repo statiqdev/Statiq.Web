@@ -9,7 +9,7 @@
     <li>
         <a href="@Context.GetLink(post)">
             <h2>@post.WithoutSettings.String(BlogKeys.Title)</h2>
-            @post.String(BlogKeys.Excerpt)
+            @Html.Raw(post.String(BlogKeys.Excerpt))
         </a>
     </li>
     }
