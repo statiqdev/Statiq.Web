@@ -548,8 +548,8 @@ namespace Wyam.CodeAnalysis
         private Compilation AddProjectReferences(IExecutionContext context, List<ISymbol> symbols, Compilation compilation)
         {
             // Generate a single Workspace and add all of the projects to it
-            StringBuilder log = new StringBuilder();
-            AnalyzerManager manager = ReadWorkspace.GetLoggingAnalyzerManager(log);
+            StringWriter log = new StringWriter();
+            AnalyzerManager manager = new AnalyzerManager(log);
             AdhocWorkspace workspace = new AdhocWorkspace();
             IEnumerable<IFile> projectFiles = context.FileSystem.GetInputFiles(_projectGlobs)
                 .Where(x => x.Path.Extension == ".csproj" && x.Exists);
@@ -564,7 +564,8 @@ namespace Wyam.CodeAnalysis
                 else
                 {
                     Trace.Verbose($"Creating workspace project for {projectFile.Path.FullPath}");
-                    ProjectAnalyzer analyzer = ReadWorkspace.GetProjectAndTrace(manager, projectFile.Path.FullPath, log);
+                    ProjectAnalyzer analyzer = manager.GetProject(projectFile.Path.FullPath);
+                    ReadWorkspace.CompileProjectAndTrace(analyzer, log);
                     project = analyzer.AddToWorkspace(workspace);
                     if (!project.Documents.Any())
                     {
@@ -584,10 +585,14 @@ namespace Wyam.CodeAnalysis
             foreach (IFile solutionFile in solutionFiles)
             {
                 Trace.Verbose($"Creating workspace solution for {solutionFile.Path.FullPath}");
-                MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-                Solution solution = workspace.OpenSolutionAsync(solutionFile.Path.FullPath).Result;
-                ReadWorkspace.TraceMsBuildWorkspaceDiagnostics(workspace);
-                compilation = AddProjectReferences(solution.Projects, symbols, compilation);
+                StringWriter log = new StringWriter();
+                AnalyzerManager manager = new AnalyzerManager(solutionFile.Path.FullPath, log);
+                foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
+                {
+                    ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                }
+                Workspace workspace = manager.GetWorkspace();
+                compilation = AddProjectReferences(workspace.CurrentSolution.Projects, symbols, compilation);
             }
             return compilation;
         }

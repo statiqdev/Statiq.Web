@@ -97,46 +97,14 @@ namespace Wyam.CodeAnalysis
         /// <returns>A sequence of Roslyn <see cref="Project"/> instances in the workspace.</returns>
         protected abstract IEnumerable<Project> GetProjects(IFile file);
 
-        /// <summary>
-        /// Sends workspace diagnostics messages to trace listeners.
-        /// </summary>
-        /// <param name="workspace">The workspace.</param>
-        // TODO: Replace with Buildalyzer error logging
-        protected internal static void TraceMsBuildWorkspaceDiagnostics(MSBuildWorkspace workspace)
+        protected internal static void CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
         {
-            if (!workspace.Diagnostics.IsEmpty)
-            {
-                foreach (WorkspaceDiagnostic diagnostic in workspace.Diagnostics)
-                {
-                    if (diagnostic.Kind == WorkspaceDiagnosticKind.Warning)
-                    {
-                        Trace.Verbose("Workspace diagnostic (warning): " + diagnostic.Message);
-                    }
-                    else if (diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
-                    {
-                        Trace.Verbose("Workspace diagnostic (failure): " + diagnostic.Message);
-                    }
-                }
-            }
-        }
-
-        protected internal static AnalyzerManager GetLoggingAnalyzerManager(StringBuilder log, string solutionDirectory = null)
-        {
-            LoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.AddProvider(new StringBuilderLoggerProvider(log));
-            return solutionDirectory == null ? new AnalyzerManager(loggerFactory) : new AnalyzerManager(solutionDirectory, loggerFactory);
-        }
-
-        protected internal static ProjectAnalyzer GetProjectAndTrace(AnalyzerManager manager, string projectPath, StringBuilder log)
-        {
-            log.Clear();
-            ProjectAnalyzer analyzer = manager.GetProject(projectPath);
+            log.GetStringBuilder().Clear();
             if (analyzer.Compile() == null)
             {
-                Trace.Error($"Could not compile project at {projectPath}");
+                Trace.Error($"Could not compile project at {analyzer.ProjectFilePath}");
                 Trace.Warning(log.ToString());
             }
-            return analyzer;
         }
 
         /// <inheritdoc />

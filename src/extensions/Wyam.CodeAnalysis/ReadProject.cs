@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Buildalyzer;
@@ -58,9 +59,10 @@ namespace Wyam.CodeAnalysis
         /// <inheritdoc />
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
-            StringBuilder log = new StringBuilder();
-            AnalyzerManager manager = GetLoggingAnalyzerManager(log);
-            ProjectAnalyzer analyzer = GetProjectAndTrace(manager, file.Path.FullPath, log);
+            StringWriter log = new StringWriter();
+            AnalyzerManager manager = new AnalyzerManager(log);
+            ProjectAnalyzer analyzer = manager.GetProject(file.Path.FullPath);
+            CompileProjectAndTrace(analyzer, log);
             AdhocWorkspace workspace = analyzer.GetWorkspace();
             return workspace.CurrentSolution.Projects;
         }
