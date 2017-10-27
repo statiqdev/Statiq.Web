@@ -22,7 +22,9 @@
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj" />
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ConcurrentHashSet" Version="0.3.1" />

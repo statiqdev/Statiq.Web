@@ -16,7 +16,7 @@ using Wyam.Testing.Execution;
 namespace Wyam.Core.Tests.Modules.Templates
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class XsltFixture : BaseFixture
     {
         public class ExecuteTests : XsltFixture

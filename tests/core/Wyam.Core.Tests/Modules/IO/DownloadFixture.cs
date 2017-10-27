@@ -18,7 +18,7 @@ using Wyam.Testing;
 namespace Wyam.Core.Tests.Modules.IO
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class DownloadFixture : BaseFixture
     {
         public class ExecuteTests : DownloadFixture

@@ -16,7 +16,7 @@ using Wyam.Testing.Execution;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class CombineFixture : BaseFixture
     {
         public class ExecuteTests : CombineFixture

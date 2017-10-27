@@ -20,7 +20,7 @@ using ExecutionContext = Wyam.Core.Execution.ExecutionContext;
 namespace Wyam.Core.Tests.Modules.Contents
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class SitemapFixture : BaseFixture
     {
         public class ExecuteTests : SitemapFixture

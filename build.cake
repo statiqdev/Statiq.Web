@@ -131,15 +131,20 @@ Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        var settings = new NUnit3Settings
+        DotNetCoreTestSettings testSettings = new DotNetCoreTestSettings()
         {
-            Work = buildResultDir.Path.FullPath
+            NoBuild = true,
+            ArgumentCustomization = x => x.Append("--no-restore")
         };
         if (isRunningOnAppVeyor)
         {
-            settings.Where = "cat != ExcludeFromAppVeyor";
+            testSettings.Filter = "TestCategory!=ExcludeFromAppVeyor";
         }
-        NUnit3("./tests/**/bin/" + configuration + "/*.Tests.dll", settings);
+
+        foreach (var project in GetFiles("./tests/**/*.csproj"))
+        {
+            DotNetCoreTest(MakeAbsolute(project).ToString(), testSettings);
+        }
     });
 
 Task("Copy-Files")
@@ -169,7 +174,6 @@ Task("Create-Library-Packages")
         // Wyam client and Wyam.Windows is packaged separatly
         projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam");
         projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
-        projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Configuration");
         
         // Package all nuspecs
         foreach (var project in projects)

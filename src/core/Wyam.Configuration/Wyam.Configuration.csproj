@@ -1,281 +1,98 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{43CCBEF4-C940-457E-B6D7-4D2675532926}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wyam.Configuration</RootNamespace>
-    <AssemblyName>Wyam.Configuration</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFramework>net462</TargetFramework>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\Wyam.Configuration.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Wyam.Configuration.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Dave Glick</Authors>
+    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
+    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright © Wyam Contributors</Copyright>
+    <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides services for configuring the engine using configuration files and Roslyn.</Description>
+    <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConcurrentHashSet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\ConcurrentHashSet.0.3.1\lib\netstandard1.0\ConcurrentHashSet.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Client, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Client.4.0.0\lib\net45\NuGet.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Commands, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Commands.4.0.0\lib\net45\NuGet.Commands.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Common.4.0.0\lib\net45\NuGet.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Configuration.4.0.0\lib\net45\NuGet.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.ContentModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.ContentModel.4.0.0\lib\net45\NuGet.ContentModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Core, Version=2.14.0.832, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Core.2.14.0\lib\net40-Client\NuGet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.DependencyResolver, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.DependencyResolver.3.5.0\lib\net45\NuGet.DependencyResolver.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.DependencyResolver.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.DependencyResolver.Core.4.0.0\lib\net45\NuGet.DependencyResolver.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Frameworks, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Frameworks.4.0.0\lib\net45\NuGet.Frameworks.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.LibraryModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.LibraryModel.4.0.0\lib\net45\NuGet.LibraryModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.PackageManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.PackageManagement.4.0.0\lib\net45\NuGet.PackageManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Packaging.4.0.0\lib\net45\NuGet.Packaging.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Packaging.Core.4.0.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Packaging.Core.Types, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Packaging.Core.Types.4.0.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.ProjectManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.ProjectManagement.4.0.0\lib\net45\NuGet.ProjectManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.ProjectModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.ProjectModel.4.0.0\lib\net45\NuGet.ProjectModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Protocol.Core.Types, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Protocol.Core.Types.4.0.0\lib\net45\NuGet.Protocol.Core.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Protocol.Core.v2, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Protocol.Core.v2.3.5.0\lib\net45\NuGet.Protocol.Core.v2.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Protocol.Core.v3, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Protocol.Core.v3.4.0.0\lib\net45\NuGet.Protocol.Core.v3.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Repositories, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Repositories.4.0.0\lib\net45\NuGet.Repositories.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Resolver, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Resolver.4.0.0\lib\net45\NuGet.Resolver.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.RuntimeModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.RuntimeModel.4.0.0\lib\net45\NuGet.RuntimeModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Versioning, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NuGet.Versioning.4.0.0\lib\net45\NuGet.Versioning.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ConcurrentHashSet" Version="0.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="1.1.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="NuGet.Client" Version="4.0.0" />
+    <PackageReference Include="NuGet.Commands" Version="4.0.0" />
+    <PackageReference Include="NuGet.Common" Version="4.0.0" />
+    <PackageReference Include="NuGet.Configuration" Version="4.0.0" />
+    <PackageReference Include="NuGet.ContentModel" Version="4.0.0" />
+    <PackageReference Include="NuGet.Core" Version="2.14.0" />
+    <PackageReference Include="NuGet.DependencyResolver" Version="3.5.0" />
+    <PackageReference Include="NuGet.DependencyResolver.Core" Version="4.0.0" />
+    <PackageReference Include="NuGet.Frameworks" Version="4.0.0" />
+    <PackageReference Include="NuGet.LibraryModel" Version="4.0.0" />
+    <PackageReference Include="NuGet.PackageManagement" Version="4.0.0" />
+    <PackageReference Include="NuGet.Packaging" Version="4.0.0" />
+    <PackageReference Include="NuGet.Packaging.Core" Version="4.0.0" />
+    <PackageReference Include="NuGet.Packaging.Core.Types" Version="4.0.0" />
+    <PackageReference Include="NuGet.ProjectManagement" Version="4.0.0" />
+    <PackageReference Include="NuGet.ProjectModel" Version="4.0.0" />
+    <PackageReference Include="NuGet.Protocol.Core.Types" Version="4.0.0" />
+    <PackageReference Include="NuGet.Protocol.Core.v2" Version="3.5.0" />
+    <PackageReference Include="NuGet.Protocol.Core.v3" Version="4.0.0" />
+    <PackageReference Include="NuGet.Repositories" Version="4.0.0" />
+    <PackageReference Include="NuGet.Resolver" Version="4.0.0" />
+    <PackageReference Include="NuGet.RuntimeModel" Version="4.0.0" />
+    <PackageReference Include="NuGet.Versioning" Version="4.0.0" />
+    <PackageReference Include="Scripty.MsBuild" Version="0.7.3">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.CommandLine">
       <HintPath>..\..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Diagnostics.DiagnosticSource.4.3.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.FileVersionInfo, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.StackTrace, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
-    </Reference>
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Net.Http.4.3.1\lib\net46\System.Net.Http.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.4.2\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.InteropServices.4.3.0\lib\net462\System.Runtime.InteropServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-    </Reference>
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Text.Encoding.CodePages, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Text.Encoding.CodePages.4.3.0\lib\net46\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Xml.XPath.4.3.0\lib\net46\System.Xml.XPath.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath.XDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Assemblies\AssemblyCollection.cs" />
-    <Compile Include="Assemblies\AssemblyResolver.cs" />
-    <Compile Include="Assemblies\AssemblyLoader.cs" />
-    <Compile Include="ConfigScript\CacheManager.cs" />
-    <Compile Include="ConfigScript\IScriptManager.cs" />
-    <Compile Include="ConfigScript\LiftingWalker.cs" />
-    <Compile Include="ConfigScript\ScriptCompilationException.cs" />
-    <Compile Include="Directives\AssemblyDirective.cs" />
-    <Compile Include="Assemblies\ClassCatalog.cs" />
-    <Compile Include="ConfigScript\ScriptManager.cs" />
-    <Compile Include="ConfigScript\DirectiveParser.cs" />
-    <Compile Include="ConfigScript\LambdaRewriter.cs" />
-    <Compile Include="ConfigScript\ScriptBase.cs" />
-    <Compile Include="Configurator.cs" />
-    <Compile Include="Directives\ThemeDirective.cs" />
-    <Compile Include="ClassEnum.cs" />
-    <Compile Include="KnownExtension.cs" />
-    <Compile Include="KnownExtensionGenerated.cs">
+    <None Include="KnownExtensionGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>KnownExtensionGenerated.csx</DependentUpon>
-    </Compile>
-    <Compile Include="KnownRecipe.cs" />
-    <Compile Include="KnownTheme.cs" />
-    <Compile Include="KnownThemeGenerated.cs">
+    </None>
+    <None Include="KnownThemeGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>KnownThemeGenerated.csx</DependentUpon>
-    </Compile>
-    <Compile Include="NuGet\CachedPackage.cs" />
-    <Compile Include="NuGet\Package.cs" />
-    <Compile Include="NuGet\PackageInstaller.cs" />
-    <Compile Include="Directives\ArgumentSyntaxDirective.cs" />
-    <Compile Include="NuGet\InstalledPackagesCache.cs" />
-    <Compile Include="Preprocessing\DirectiveValue.cs" />
-    <Compile Include="NuGet\MachineWideSettings.cs" />
-    <Compile Include="NuGet\NuGetLogger.cs" />
-    <Compile Include="NuGet\WyamFolderNuGetProject.cs" />
-    <Compile Include="NuGet\NuGetProjectContext.cs" />
-    <Compile Include="NuGet\SourceRepositoryProvider.cs" />
-    <Compile Include="Preprocessing\ArgumentSplitter.cs" />
-    <Compile Include="Preprocessing\IDirective.cs" />
-    <Compile Include="Preprocessing\IPreprocessor.cs" />
-    <Compile Include="Directives\NuGetDirective.cs" />
-    <Compile Include="Directives\NuGetSourceDirective.cs" />
-    <Compile Include="Preprocessing\Preprocessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Directives\RecipeDirective.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
+    </None>
     <None Include="KnownExtensionGenerated.csx">
       <Generator>ScriptyGenerator</Generator>
       <LastGenOutput>KnownExtensionGenerated.log</LastGenOutput>
@@ -294,38 +111,5 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>KnownThemeGenerated.csx</DependentUpon>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
-      <Project>{f40b73e9-c0cc-465c-925e-b51e686c1d5c}</Project>
-      <Name>Wyam.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wyam.Core\Wyam.Core.csproj">
-      <Project>{bc8c5de2-6692-4e39-a0bb-689c316aeff1}</Project>
-      <Name>Wyam.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
-    <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\..\packages\Scripty.MsBuild.0.7.3\build\Scripty.MsBuild.targets" Condition="Exists('..\..\..\packages\Scripty.MsBuild.0.7.3\build\Scripty.MsBuild.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\Scripty.MsBuild.0.7.3\build\Scripty.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Scripty.MsBuild.0.7.3\build\Scripty.MsBuild.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

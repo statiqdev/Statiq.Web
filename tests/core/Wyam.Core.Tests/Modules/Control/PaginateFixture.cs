@@ -16,7 +16,7 @@ using Wyam.Common.Util;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class PaginateFixture : BaseFixture
     {
         public class ExecuteTests : PaginateFixture

@@ -15,7 +15,7 @@ using Wyam.Testing.Execution;
 namespace Wyam.Core.Tests.Modules.Control
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class FrontMatterFixture : BaseFixture
     {
         public class ExecuteTests : FrontMatterFixture

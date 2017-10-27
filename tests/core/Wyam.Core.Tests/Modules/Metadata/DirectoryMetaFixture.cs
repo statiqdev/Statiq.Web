@@ -14,7 +14,7 @@ using Wyam.Testing;
 namespace Wyam.Core.Tests.Modules.Metadata
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class DirectoryMetaFixture : BaseFixture
     {
         public class ExecuteTests : DirectoryMetaFixture

@@ -2,7 +2,6 @@ namespace Wyam.Configuration
 {
     public partial class KnownExtension
     {
-		public static readonly KnownExtension Configuration = new KnownExtension("Wyam.Configuration");
 		public static readonly KnownExtension All = new KnownExtension("Wyam.All");
 		public static readonly KnownExtension BlogTemplateTheme = new KnownExtension("Wyam.Blog.BlogTemplate");
 		public static readonly KnownExtension CleanBlogTheme = new KnownExtension("Wyam.Blog.CleanBlog");

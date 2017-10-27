@@ -9,7 +9,7 @@ using Trace = Wyam.Core.Modules.Extensibility.Trace;
 namespace Wyam.Core.Tests.Modules.Extensibility
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class TraceFixture : BaseFixture
     {
         public class ExecuteTests : TraceFixture

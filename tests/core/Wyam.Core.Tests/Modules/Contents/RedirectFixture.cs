@@ -17,7 +17,7 @@ using Wyam.Testing.Execution;
 namespace Wyam.Core.Tests.Modules.Contents
 {
     [TestFixture]
-    [Parallelizable(ParallelScope.Self | ParallelScope.Children)]
+    [NonParallelizable]
     public class RedirectFixture : BaseFixture
     {
         [Test]
