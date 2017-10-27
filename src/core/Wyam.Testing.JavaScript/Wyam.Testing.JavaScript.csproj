@@ -12,6 +12,14 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Phil Scott, Dave Glick</Authors>
+    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
+    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright © Wyam Contributors</Copyright>
+    <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides utility classes to make testing JavaScript components easier.</Description>
+    <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj" />

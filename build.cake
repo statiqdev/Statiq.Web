@@ -72,19 +72,8 @@ Task("Clean")
         CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot, windowsDir });
     });
 
-Task("Restore-Packages")
-    .IsDependentOn("Clean")
-    .Does(() =>
-    {
-        NuGetRestore("./Wyam.sln");
-        if (isRunningOnWindows)
-        {
-            NuGetRestore("./Wyam.Windows.sln");
-        }
-    });
-
 Task("Patch-Assembly-Info")
-    .IsDependentOn("Restore-Packages")
+    .IsDependentOn("Clean")
     .Does(() =>
     {
         var file = "./SolutionInfo.cs";
@@ -97,26 +86,44 @@ Task("Patch-Assembly-Info")
         });
     });
 
-Task("Build")
+Task("Restore-Packages")
     .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
     {
+        NuGetRestore("./Wyam.sln");
+        if (isRunningOnWindows)
+        {
+            NuGetRestore("./Wyam.Windows.sln");
+        }
+
+        // Need to pass version to restore so assets file is updated
+        // See https://github.com/NuGet/Home/issues/4790
+        // and https://github.com/NuGet/Home/issues/5371
         MSBuild("./Wyam.sln", new MSBuildSettings()
-            {
-                ArgumentCustomization = args => args.Append("/p:WarningLevel=0")    
-            }
+            .SetConfiguration(configuration)
+            .WithTarget("restore")
+            .WithProperty("Version", $"\"{semVersion}\"")
+            .WithProperty("WarningLevel", "0")
+            .SetMaxCpuCount(0)
+            .SetVerbosity(Verbosity.Minimal)
+        );
+    });
+
+Task("Build")
+    .IsDependentOn("Restore-Packages")
+    .Does(() =>
+    {
+        MSBuild("./Wyam.sln", new MSBuildSettings()
             .SetConfiguration(configuration)
             .SetMaxCpuCount(0)
             .SetVerbosity(Verbosity.Minimal)
-            .UseToolVersion(MSBuildToolVersion.VS2017)            
+            .WithProperty("WarningLevel", "0")  
         );
         MSBuild("./Wyam.Windows.sln", new MSBuildSettings()
-            {
-                ArgumentCustomization = args => args.Append("/p:WarningLevel=0")    
-            }
             .SetConfiguration(configuration)
             .SetMaxCpuCount(0)
             .SetVerbosity(Verbosity.Minimal)
+            .WithProperty("WarningLevel", "0")
         );
     });
 
@@ -156,29 +163,23 @@ Task("Create-Library-Packages")
     .IsDependentOn("Build")
     .Does(() =>
     {        
-        // Get the set of nuspecs to package
-        List<FilePath> nuspecs = new List<FilePath>(GetFiles("./src/**/*.nuspec"));
+        // Get the set of projects to package
+        List<FilePath> projects = new List<FilePath>(GetFiles("./src/**/*.csproj"));
 
-        // The Wyam.All and Wyam.Windows are packaged specially
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.All");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
-        nuspecs.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Cake.Wyam");
+        // Wyam client and Wyam.Windows is packaged separatly
+        projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam");
+        projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Windows");
+        projects.RemoveAll(x => x.GetDirectory().GetDirectoryName() == "Wyam.Configuration");
         
         // Package all nuspecs
-        foreach (var nuspec in nuspecs)
+        foreach (var project in projects)
         {
-            NuGetPack(nuspec.ChangeExtension(".csproj"), new NuGetPackSettings
-            {
-                Version = semVersion,
-                BasePath = nuspec.GetDirectory(),
-                OutputDirectory = nugetRoot,
-                Symbols = false,
-                Files = new NuSpecContent[] {},
-                Properties = new Dictionary<string, string>
-                {
-                    { "Configuration", configuration }
-                }
-            });
+            MSBuild(project, new MSBuildSettings()
+                .SetConfiguration(configuration)
+                .WithTarget("pack")
+                .WithProperty("PackageOutputPath", $"\"{MakeAbsolute(nugetRoot)}\"")
+                .WithProperty("PackageVersion", $"\"{semVersion}\"")
+            );
         }
     });
 

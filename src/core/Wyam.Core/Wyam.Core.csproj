@@ -12,6 +12,14 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Dave Glick</Authors>
+    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
+    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright © Wyam Contributors</Copyright>
+    <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This is the core engine and can be used to embed Wyam into your application. If you just want to create sites, download the Wyam executable from GitHub the Wyam website.</Description>
+    <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj" />

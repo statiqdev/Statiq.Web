@@ -1,3 +1,13 @@
+# 1.1.0
+
+- **[Breaking Change]**[Refactoring] Removed the `Xslt2` module since it uses packages that are not cross platform or SDK compatible
+- [Fix] Fix for excerpts in the BlogTemplate blog theme (#580, thanks @AWulkan)
+- [Fix] Fix for "Back to Posts" link in the BlogTemplate blog theme (#581, #583, thanks @jbrinkman)
+- [Fix] `CodeAnalysis` and the docs recipe can now read SDK and .NET Core projects via [Buildalyzer](https://github.com/daveaglick/Buildalyzer) (#575)
+- [Refactoring] Updated Cake.Wyam to Cake 0.22.2 and targeting .NET Framework 4.6 and .NET Standard 1.6 (#579, #573, thanks @ProgrammerAl and @RLittlesII)
+- [Fix] Fix for generated syntax from `CodeAnalysis` for more than one attribute within a bracket (#577, thanks @jonasdoerr)
+- [Refactoring] Converted most of the projects to the SDK (no impact on release artifacts, but important for contributors)
+
 # 1.0.0
 
 - **[Breaking Change]**[Refactoring] Removed all deprecated code including string-based document creation methods

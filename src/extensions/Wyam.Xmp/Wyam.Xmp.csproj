@@ -12,9 +12,19 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Dave Glick</Authors>
+    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
+    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright © Wyam Contributors</Copyright>
+    <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for analyzing XML metadata.</Description>
+    <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine XMP Metadata</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj" />
+    <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="1.5.3" />

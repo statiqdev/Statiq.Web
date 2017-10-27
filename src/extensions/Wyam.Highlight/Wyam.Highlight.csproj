@@ -12,12 +12,22 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Phil Scott, Dave Glick</Authors>
+    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
+    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright © Wyam Contributors</Copyright>
+    <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library performs server side highlighting of code blocks.</Description>
+    <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine Highlight.js</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="highlight-all.js" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj" />
+    <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.9.9" />
