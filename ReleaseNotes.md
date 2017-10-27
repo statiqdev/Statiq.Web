@@ -1,5 +1,6 @@
 # 1.1.0
 
+- **[Breaking Change]**[Refactoring] Removed the `Git` module since it's not fully SDK compatible
 - **[Breaking Change]**[Refactoring] Removed the `Xslt2` module since it uses packages that are not cross platform or SDK compatible
 - [Fix] Fix for excerpts in the BlogTemplate blog theme (#580, thanks @AWulkan)
 - [Fix] Fix for "Back to Posts" link in the BlogTemplate blog theme (#581, #583, thanks @jbrinkman)

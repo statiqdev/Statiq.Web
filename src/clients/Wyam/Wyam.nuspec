@@ -15,6 +15,6 @@
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>
   <files>
-    <file src="bin\$configuration$\*" target="tools" />
+    <file src="bin\$configuration$\net462\*" target="tools" />
   </files>
 </package>

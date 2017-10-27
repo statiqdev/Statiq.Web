@@ -143,6 +143,7 @@ Task("Run-Unit-Tests")
 
         foreach (var project in GetFiles("./tests/**/*.csproj"))
         {
+            Information($"Running tests in {project}");
             DotNetCoreTest(MakeAbsolute(project).ToString(), testSettings);
         }
     });
@@ -151,7 +152,7 @@ Task("Copy-Files")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        CopyDirectory(buildDir, binDir);
+        CopyDirectory(buildDir.Path.FullPath + "/net462", binDir);
         CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
     });
 
