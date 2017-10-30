@@ -55,7 +55,7 @@ namespace Wyam.Configuration.NuGet
                     DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
                     string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
                     PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
-                    Trace.Verbose($"Processing package contents for {packageIdentity}");
+                    Trace.Verbose($"Processing package contents for {packageIdentity} targeting framework {_currentFramework.DotNetFrameworkName}");
                     AddReferencedAssemblies(packageIdentity, installedPath, archiveReader);
                     return GetContentDirectories(packageIdentity, installedPath, archiveReader);
                 })
@@ -73,7 +73,7 @@ namespace Wyam.Configuration.NuGet
             FrameworkSpecificGroup referenceGroup = GetMostCompatibleGroup(_currentFramework, referenceItems);
             if (referenceGroup != null)
             {
-                Trace.Verbose($"Found compatible reference group {referenceGroup} for package {packageIdentify}");
+                Trace.Verbose($"Found compatible reference group {referenceGroup.TargetFramework.DotNetFrameworkName} for package {packageIdentify}");
                 foreach (FilePath itemPath in referenceGroup.Items
                     .Select(x => new FilePath(x))
                     .Where(x => x.FileName.Extension == ".dll" || x.FileName.Extension == ".exe"))
@@ -83,9 +83,15 @@ namespace Wyam.Configuration.NuGet
                     Trace.Verbose($"Added NuGet reference {assemblyPath} from package {packageIdentify} for loading");
                 }
             }
+            else if (referenceItems.Count == 0)
+            {
+                // Only show a verbose message if there were no reference items (I.e., it's probably a content-only package or a metapackage and not a mismatch)
+                Trace.Verbose($"Could not find any reference items in package {packageIdentify}");
+
+            }
             else
             {
-                Trace.Warning($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.ToString()))})");
+                Trace.Warning($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.TargetFramework.DotNetFrameworkName))})");
             }
         }
 
@@ -101,7 +107,7 @@ namespace Wyam.Configuration.NuGet
                     .Distinct())
                 {
                     DirectoryPath contentPath = installedPath.Combine(contentSegment);
-                    Trace.Verbose($"Added content path {contentPath} from package {packageIdentify} to included paths");
+                    Trace.Verbose($"Added content path {contentPath} from compatible content group {contentGroup.TargetFramework.DotNetFrameworkName} from package {packageIdentify} to included paths");
                     yield return contentPath;
                 }
             }

@@ -42,7 +42,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="2.4.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="2.4.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.4.0" />
-    <PackageReference Include="Microsoft.Composition" Version="1.0.30" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="NUnit" Version="3.8.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
