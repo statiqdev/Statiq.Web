@@ -34,9 +34,8 @@ namespace Wyam.Configuration.NuGet
             // Create the package source provider (needed primarily to get default sources)
             PackageSourceProvider = new PackageSourceProvider(settings);
 
-            // Create the set of default v2 and v3 resource providers
+            // Add the v3 provider as default
             _resourceProviders = new List<Lazy<INuGetResourceProvider>>();
-            _resourceProviders.AddRange(global::NuGet.Protocol.Core.v2.FactoryExtensionsV2.GetCoreV2(Repository.Provider));
             _resourceProviders.AddRange(Repository.Provider.GetCoreV3());
 
             // Add the default sources

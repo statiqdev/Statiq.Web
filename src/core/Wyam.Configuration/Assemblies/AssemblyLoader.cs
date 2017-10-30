@@ -254,6 +254,7 @@ namespace Wyam.Configuration.Assemblies
                 // Enqueue all referenced assemblies
                 foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
                 {
+                    Trace.Verbose($"Added referenced assembly {referencedAssemblyName}");
                     _referencedAssemblyNames.Enqueue(referencedAssemblyName.ToString());
                 }
             }

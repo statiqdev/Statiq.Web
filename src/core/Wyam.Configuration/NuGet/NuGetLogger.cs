@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NuGet.Common;
 using Wyam.Common.Tracing;
 
@@ -20,6 +21,25 @@ namespace Wyam.Configuration.NuGet
 
         public void LogError(string data) => Trace.Error(data);
 
-        public void LogErrorSummary(string data) => Trace.Error(data);
+        public async Task LogAsync(LogLevel level, string data) => Log(level, data);
+
+        public async Task LogAsync(ILogMessage message) => Log(message.Level, message.Message);
+
+        public void Log(ILogMessage message) => Log(message.Level, message.Message);
+
+        public void Log(LogLevel level, string data)
+        {
+            if (level == LogLevel.Error)
+            {
+                Trace.Error(data);
+                return;
+            }
+            if (level == LogLevel.Warning)
+            {
+                Trace.Warning(data);
+                return;
+            }
+            Trace.Verbose(data);
+        }
     }
 }

@@ -55,36 +55,42 @@ namespace Wyam.Configuration.NuGet
                     DirectoryPath installedPath = new DirectoryPath(GetInstalledPath(packageIdentity));
                     string packageFilePath = GetInstalledPackageFilePath(packageIdentity);
                     PackageArchiveReader archiveReader = new PackageArchiveReader(packageFilePath, null, null);
-                    AddReferencedAssemblies(installedPath, archiveReader);
-                    return GetContentDirectories(installedPath, archiveReader);
+                    Trace.Verbose($"Processing package contents for {packageIdentity}");
+                    AddReferencedAssemblies(packageIdentity, installedPath, archiveReader);
+                    return GetContentDirectories(packageIdentity, installedPath, archiveReader);
                 })
                 .ToList();
             foreach (DirectoryPath contentPath in contentPaths)
             {
                 _fileSystem.InputPaths.Insert(0, contentPath);
-                Trace.Verbose($"Added content path {contentPath} to included paths");
             }
         }
 
         // Add all reference items to the assembly list
-        private void AddReferencedAssemblies(DirectoryPath installedPath, PackageArchiveReader archiveReader)
+        private void AddReferencedAssemblies(PackageIdentity packageIdentify, DirectoryPath installedPath, PackageArchiveReader archiveReader)
         {
-            FrameworkSpecificGroup referenceGroup = GetMostCompatibleGroup(_currentFramework, archiveReader.GetReferenceItems().ToList());
+            List<FrameworkSpecificGroup> referenceItems = archiveReader.GetReferenceItems().ToList();
+            FrameworkSpecificGroup referenceGroup = GetMostCompatibleGroup(_currentFramework, referenceItems);
             if (referenceGroup != null)
             {
+                Trace.Verbose($"Found compatible reference group {referenceGroup} for package {packageIdentify}");
                 foreach (FilePath itemPath in referenceGroup.Items
                     .Select(x => new FilePath(x))
                     .Where(x => x.FileName.Extension == ".dll" || x.FileName.Extension == ".exe"))
                 {
                     FilePath assemblyPath = installedPath.CombineFile(itemPath);
                     _assemblyLoader.Add(assemblyPath.FullPath);
-                    Trace.Verbose($"Added NuGet reference {assemblyPath} for loading");
+                    Trace.Verbose($"Added NuGet reference {assemblyPath} from package {packageIdentify} for loading");
                 }
+            }
+            else
+            {
+                Trace.Warning($"Could not find compatible reference group for package {packageIdentify} (found {string.Join(",", referenceItems.Select(x => x.ToString()))})");
             }
         }
 
         // Add content directories to the input paths
-        private IEnumerable<DirectoryPath> GetContentDirectories(DirectoryPath installedPath, PackageArchiveReader archiveReader)
+        private IEnumerable<DirectoryPath> GetContentDirectories(PackageIdentity packageIdentify, DirectoryPath installedPath, PackageArchiveReader archiveReader)
         {
             FrameworkSpecificGroup contentGroup = GetMostCompatibleGroup(_currentFramework, archiveReader.GetContentItems().ToList());
             if (contentGroup != null)
@@ -94,7 +100,9 @@ namespace Wyam.Configuration.NuGet
                     .Select(x => new FilePath(x).Segments[0])
                     .Distinct())
                 {
-                    yield return installedPath.Combine(contentSegment);
+                    DirectoryPath contentPath = installedPath.Combine(contentSegment);
+                    Trace.Verbose($"Added content path {contentPath} from package {packageIdentify} to included paths");
+                    yield return contentPath;
                 }
             }
         }
