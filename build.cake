@@ -134,7 +134,8 @@ Task("Run-Unit-Tests")
         DotNetCoreTestSettings testSettings = new DotNetCoreTestSettings()
         {
             NoBuild = true,
-            ArgumentCustomization = x => x.Append("--no-restore")
+            ArgumentCustomization = x => x.Append("--no-restore"),
+            Configuration = configuration
         };
         if (isRunningOnAppVeyor)
         {
