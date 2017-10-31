@@ -274,18 +274,28 @@ namespace Wyam.Configuration.Assemblies
                     loadedAssemblies.Add(assemblyName);
                     using (Trace.WithIndent().Verbose($"Loading referenced assembly {assemblyName}"))
                     {
-                        try
+                        // Make sure we haven't already loaded this assembly
+                        Assembly loadedAssembly;
+                        if (_assemblyResolver.TryGet(assemblyName, out loadedAssembly))
                         {
-                            Assembly assembly = Assembly.Load(assemblyName);
-                            if (assembly != null && assembly.FullName != assemblyName)
-                            {
-                                Trace.Verbose($"Assembly {assemblyName} redirected to {assembly.FullName}");
-                            }
-                            ProcessLoadedAssembly(assembly, false);
+                            Trace.Verbose($"Assembly {assemblyName} already loaded as {loadedAssembly.FullName}");
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            Trace.Verbose($"{ex.GetType().Name} exception while loading referenced assembly {assemblyName}: {ex.Message}");
+                            // It wasn't already loaded, so try to load it
+                            try
+                            {
+                                Assembly assembly = Assembly.Load(assemblyName);
+                                if (assembly != null && assembly.FullName != assemblyName)
+                                {
+                                    Trace.Verbose($"Assembly {assemblyName} redirected to {assembly.FullName}");
+                                }
+                                ProcessLoadedAssembly(assembly, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.Verbose($"{ex.GetType().Name} exception while loading referenced assembly {assemblyName}: {ex.Message}");
+                            }
                         }
                     }
                 }

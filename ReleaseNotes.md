@@ -2,6 +2,7 @@
 
 - **[Breaking Change]**[Refactoring] Removed the `Git` module since it's not fully SDK compatible
 - **[Breaking Change]**[Refactoring] Removed the `Xslt2` module since it uses packages that are not cross platform or SDK compatible
+- [Fix] Referenced assemblies are not loaded if a version was already directly loaded
 - [Fix] Fix for excerpts in the BlogTemplate blog theme (#580, thanks @AWulkan)
 - [Fix] Fix for "Back to Posts" link in the BlogTemplate blog theme (#581, #583, thanks @jbrinkman)
 - [Fix] `CodeAnalysis` and the docs recipe can now read SDK and .NET Core projects via [Buildalyzer](https://github.com/daveaglick/Buildalyzer) (#575)
