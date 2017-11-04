@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
@@ -109,30 +107,17 @@ namespace Wyam.Core.Modules.Control
             List<IDocument> results = new List<IDocument>();
             context.ForEach(inputs, input =>
             {
-                List<string> inputLines = input.Content.Split(new[] { '\n' }, StringSplitOptions.None).ToList();
-                int delimiterLine = inputLines.FindIndex(x =>
+                Splitter splitter =
+                    new Splitter(_delimiter, _repeated)
+                        .IgnoreDelimiterOnFirstLine(_ignoreDelimiterOnFirstLine);
+
+                List<string> sections = splitter.Split(input.Content);
+
+                if (sections.Count == 2)
                 {
-                    string trimmed = x.TrimEnd();
-                    return trimmed.Length > 0 && (_repeated ? trimmed.All(y => y == _delimiter[0]) : trimmed == _delimiter);
-                });
-                int startLine = 0;
-                if (delimiterLine == 0 && _ignoreDelimiterOnFirstLine)
-                {
-                    startLine = 1;
-                    delimiterLine = inputLines.FindIndex(1, x =>
+                    foreach (IDocument result in context.Execute(this, new[] { context.GetDocument(input, context.GetContentStream(sections[0])) }))
                     {
-                        string trimmed = x.TrimEnd();
-                        return trimmed.Length > 0 && (_repeated ? trimmed.All(y => y == _delimiter[0]) : trimmed == _delimiter);
-                    });
-                }
-                if (delimiterLine != -1)
-                {
-                    string frontMatter = string.Join("\n", inputLines.Skip(startLine).Take(delimiterLine - startLine)) + "\n";
-                    inputLines.RemoveRange(0, delimiterLine + 1);
-                    string content = string.Join("\n", inputLines);
-                    foreach (IDocument result in context.Execute(this, new[] { context.GetDocument(input, context.GetContentStream(frontMatter)) }))
-                    {
-                        results.Add(context.GetDocument(result, context.GetContentStream(content)));
+                        results.Add(context.GetDocument(result, context.GetContentStream(sections[1])));
                     }
                 }
                 else
