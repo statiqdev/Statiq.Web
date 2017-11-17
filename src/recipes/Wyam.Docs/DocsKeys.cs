@@ -230,6 +230,12 @@ namespace Wyam.Docs
         public const string BlogPath = nameof(BlogPath);
 
         /// <summary>
+        /// Controls the parent path where API docs are placed. The default is "api".
+        /// </summary>
+        /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
+        public const string ApiPath = nameof(ApiPath);
+
+        /// <summary>
         /// Used by blog posts and pages to indicate the author.
         /// </summary>
         /// <type><see cref="string"/></type>

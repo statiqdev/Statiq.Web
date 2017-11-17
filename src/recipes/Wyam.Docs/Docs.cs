@@ -366,6 +366,7 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.BlogRssPath] = GenerateFeeds.DefaultRssPath;
             engine.Settings[DocsKeys.BlogAtomPath] = GenerateFeeds.DefaultAtomPath;
             engine.Settings[DocsKeys.BlogRdfPath] = GenerateFeeds.DefaultRdfPath;
+            engine.Settings[DocsKeys.ApiPath] = "api";
 
             base.Apply(engine);
         }
