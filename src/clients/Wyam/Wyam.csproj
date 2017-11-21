@@ -51,4 +51,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
   </ItemGroup>
+  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != ''" AfterTargets="AfterBuild">
+    <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />
+  </Target>
 </Project>
