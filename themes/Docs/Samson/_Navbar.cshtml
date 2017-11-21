@@ -13,7 +13,7 @@
     }
     if(Documents[Docs.Api].Any())
     {
-        pages.Add(Tuple.Create("API", Context.GetLink("api")));
+        pages.Add(Tuple.Create("API", Context.GetLink(Context.DirectoryPath(DocsKeys.ApiPath))));
     }
     foreach(Tuple<string, string> page in pages)
     {

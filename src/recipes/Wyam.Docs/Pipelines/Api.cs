@@ -39,7 +39,7 @@ namespace Wyam.Docs.Pipelines
                     .WhereNamespaces(ctx.Bool(DocsKeys.IncludeGlobalNamespace))
                     .WherePublic()
                     .WithCssClasses("code", "cs")
-                    .WithWritePathPrefix(ctx.String(DocsKeys.ApiPath))
+                    .WithWritePathPrefix(ctx.DirectoryPath(DocsKeys.ApiPath))
                     .WithAssemblies(ctx.List<string>(DocsKeys.AssemblyFiles))
                     .WithProjects(ctx.List<string>(DocsKeys.ProjectFiles))
                     .WithSolutions(ctx.List<string>(DocsKeys.SolutionFiles))

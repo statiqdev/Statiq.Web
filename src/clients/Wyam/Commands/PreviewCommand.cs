@@ -32,7 +32,7 @@ namespace Wyam.Commands
             _path = new DirectoryPath(Environment.CurrentDirectory).Combine(_path ?? "output");
             using (PreviewServer.Start(_path, _port, _forceExtension, _virtualDirectory, false))
             {
-                Trace.Information("Hit any key to exit");
+                Trace.Information("Hit Ctrl-C to exit");
                 Console.TreatControlCAsInput = true;
                 while (true)
                 {

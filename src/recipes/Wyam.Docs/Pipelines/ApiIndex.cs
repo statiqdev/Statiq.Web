@@ -24,9 +24,10 @@ namespace Wyam.Docs.Pipelines
 
         private static IModuleList GetModules() => new ModuleList
         {
-            new If(ctx => ctx.Documents[Docs.Api].Any(),
+            new If(
+                ctx => ctx.Documents[Docs.Api].Any(),
                 new ReadFiles("_ApiIndex.cshtml"),
-                new Meta(Keys.RelativeFilePath, "api/index.html"),
+                new Meta(Keys.RelativeFilePath, ctx => ctx.DirectoryPath(DocsKeys.ApiPath).CombineFile("index.html")),
                 new Meta(Keys.SourceFileName, "index.html"),
                 new Title("API"),
                 new Razor.Razor(),
