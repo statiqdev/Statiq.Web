@@ -20,6 +20,13 @@ namespace Wyam.Testing.IO
         public StringBuilderStream(StringBuilder resultBuilder)
         {
             _buffer = new MemoryStream();
+
+            // Copy the old result into the current buffer.
+            StreamWriter writer = new StreamWriter(_buffer);
+            writer.Write(resultBuilder.ToString());
+            writer.Flush();
+            _buffer.Position = 0;
+
             _bufferReader = new StreamReader(_buffer, true);
             _resultBuilder = resultBuilder;
         }
@@ -30,13 +37,18 @@ namespace Wyam.Testing.IO
 
         public override bool CanWrite => true;
 
-        public override long Length => 0;
+        public override long Length => _buffer.Length;
 
-        public override long Position { get; set; }
+        public override long Position
+        {
+            get => _buffer.Position;
+            set => _buffer.Position = value;
+        }
 
         public override void Flush()
         {
             _buffer.Position = 0;
+            _resultBuilder.Clear();
             _resultBuilder.Append(_bufferReader.ReadToEnd());
             _buffer.SetLength(0);
         }

@@ -102,19 +102,23 @@ namespace Wyam.Testing.IO
         public Stream OpenWrite(bool createDirectory = true)
         {
             CreateDirectory(createDirectory, this);
-            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => new StringBuilder()));
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
         }
 
         public Stream OpenAppend(bool createDirectory = true)
         {
             CreateDirectory(createDirectory, this);
-            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
+            StringBuilderStream stream = new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
+
+            // Start appending at the end of the stream.
+            stream.Position = stream.Length;
+            return stream;
         }
 
         public Stream Open(bool createDirectory = true)
         {
             CreateDirectory(createDirectory, this);
-            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => new StringBuilder()));
+            return new StringBuilderStream(_fileProvider.Files.AddOrUpdate(_path.FullPath, new StringBuilder(), (x, y) => y));
         }
     }
 }
