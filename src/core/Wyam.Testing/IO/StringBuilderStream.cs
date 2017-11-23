@@ -48,7 +48,7 @@ namespace Wyam.Testing.IO
 
         public override void SetLength(long value)
         {
-            throw new NotSupportedException();
+            _buffer.SetLength(value);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
