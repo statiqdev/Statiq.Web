@@ -104,7 +104,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
             {
                 // Given
                 const string fakeCode = "8AC5716A-3272-4CBA-A787-B93B198E77B4";
-                const string fakeCodeHash = "60FB4943418545ECE2A9CAB2B07C5C17";
+                const string fakeCodeHash = "6ED6D026FFFFB8CB85ED6AA8410D942EBB277792EC9C71EC9F88E5F6AFB67DA56AB2AD217C7907FFFE450F25646D78E73D5356FBA4FE8BDB09A1383EDF3970F7";
 
                 CacheManager cacheManager = CreateCacheManager(out IEngine mockEngine, out IScriptManager scriptManager);
 
