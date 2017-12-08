@@ -114,10 +114,10 @@ namespace Wyam.Configuration.ConfigScript
         private static string HashString(string input)
         {
             // https://stackoverflow.com/a/24031467/2001966 with simplifications.
-            using (MD5 md5 = MD5.Create())
+            using (SHA512 sha = SHA512.Create())
             {
                 byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
+                byte[] hashBytes = sha.ComputeHash(inputBytes);
 
                 StringBuilder sb = new StringBuilder();
                 foreach (byte t in hashBytes)

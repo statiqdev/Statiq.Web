@@ -180,7 +180,7 @@ namespace Wyam.Razor
 
             // Compute a hash for the content since pipelines could have changed it from the underlying file
             // We have to pre-compute the hash (I.e., no CryptoStream) since we need to check for a hit before reading/compiling the view
-            byte[] hash = MD5.Create().ComputeHash(request.Input);
+            byte[] hash = SHA512.Create().ComputeHash(request.Input);
             request.Input.Position = 0;
 
             CompilerCacheResult compilerCacheResult = CompilePage(serviceProvider, request, hash, relativeFileInfo, relativePath);
