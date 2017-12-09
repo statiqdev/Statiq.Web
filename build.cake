@@ -5,6 +5,9 @@
 // The following environment variables need to be set for Publish-MyGet target:
 // MYGET_API_KEY
 
+// The following environment variables need to be set for Publich-Chocolatey target:
+// CHOCOLATEY_API_KEY
+
 // Publishing workflow:
 // - Update ReleaseNotes.md and RELEASE in develop branch
 // - Run a normal build with Cake to set SolutionInfo.cs in the repo and run through unit tests (`build.cmd`)
@@ -48,6 +51,7 @@ var semVersion = version + (isLocal ? string.Empty : string.Concat("-build-", bu
 var buildDir = Directory("./src/clients/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build") + Directory(semVersion);
 var nugetRoot = buildResultDir + Directory("nuget");
+var chocoRoot = buildResultDir + Directory("choco");
 var binDir = buildResultDir + Directory("bin");
 var windowsDir = buildResultDir + Directory("windows");
 
@@ -69,7 +73,7 @@ Setup(context =>
 Task("Clean")
     .Does(() =>
     {
-        CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot, windowsDir });
+        CleanDirectories(new DirectoryPath[] { buildDir, buildResultDir, binDir, nugetRoot, chocoRoot, windowsDir });
     });
 
 Task("Patch-Assembly-Info")
@@ -289,6 +293,17 @@ Task("Create-Tools-Package")
         });
     });
 
+Task("Create-Chocolatey-Package")
+    .IsDependentOn("Build")
+    .Does(() => {
+        var nuspecFile = GetFiles("./nuspec/chocolatey/**/*.nuspec").FirstOrDefault();
+        ChocolateyPack(nuspecFile, new ChocolateyPackSettings {
+            Version = semVersion,
+            OutputDirectory = string.Format("./build/{0}/choco", semVersion),
+            WorkingDirectory = string.Format("./build/{0}", semVersion)
+        });
+    });
+
 // Note that we're not creating a differential release files since we're using a new releases folder per-version
 // That's by design - in order to distribute diffs from GitHub and have them get picked up by Squirrel, *all* prior
 // versions have to be included in *every* GitHub release. That stinks, and we're not going to do it. Since Squirrel
@@ -377,7 +392,27 @@ Task("Publish-Packages")
             });
         }
     });
-    
+
+Task("Publish-Chocolatey-Package")
+    .IsDependentOn("Create-Chocolatey-Package")
+    .WithCriteria(()=> isLocal)
+    .Does(()=> 
+    {
+        var chocolateyApiKey = EnvironmentVariable("CHOCOLATEY_API_KEY");
+        if (string.IsNullOrEmpty(chocolateyApiKey))
+        {
+            throw new InvalidOperationException("Could not resolve Chocolatey API key.");
+        }
+
+        foreach(var chocoPkg in GetFiles(chocoRoot.Path.FullPath + "/*.nupkg"))
+        {
+            ChocolateyPush(chocoPkg, new ChocolateyPushSettings {
+                ApiKey = chocolateyApiKey,
+                Source = "https://push.chocolatey.org/"
+            });
+        }
+    });
+
 Task("Publish-Release")
     .IsDependentOn("Zip-Files")
     .IsDependentOn("Create-Windows")
@@ -444,7 +479,8 @@ Task("Create-Packages")
     .IsDependentOn("Create-Library-Packages")
     .IsDependentOn("Create-Theme-Packages")   
     .IsDependentOn("Create-AllModules-Package")    
-    .IsDependentOn("Create-Tools-Package");
+    .IsDependentOn("Create-Tools-Package")
+    .IsDependentOn("Create-Chocolatey-Package");
     
 Task("Package")
     .IsDependentOn("Run-Unit-Tests")
@@ -457,6 +493,7 @@ Task("Default")
 
 Task("Publish")
     .IsDependentOn("Publish-Packages")
+    .IsDependentOn("Publish-Chocolatey-Package")
     .IsDependentOn("Publish-Release");
     
 Task("AppVeyor")
