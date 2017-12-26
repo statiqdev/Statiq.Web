@@ -3,6 +3,7 @@ using System.Linq;
 using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using System;
 
 namespace Wyam.Core.Modules.Control
 {
@@ -17,6 +18,8 @@ namespace Wyam.Core.Modules.Control
     /// <category>Control</category>
     public class Concat : ContainerModule
     {
+        private Func<IExecutionContext, IDocument, IReadOnlyList<IDocument>, bool> _predicate;
+
         /// <summary>
         /// Executes the specified modules with an empty initial input document.
         /// </summary>
@@ -35,10 +38,27 @@ namespace Wyam.Core.Modules.Control
         {
         }
 
+        /// <summary>
+        /// Specifies a predicate to use when determining which documents to concatenate with the original list.
+        /// </summary>
+        /// <param name="predicate">The predicate to evaluate.</param>
+        /// <returns>The current module instance.</returns>
+        public Concat Where(Func<IExecutionContext, IDocument, IReadOnlyList<IDocument>, bool> predicate)
+        {
+            Func<IExecutionContext, IDocument, IReadOnlyList<IDocument>, bool> currentPredicate = _predicate;
+            _predicate = currentPredicate == null ? predicate : (ctx, doc, orig) => currentPredicate(ctx, doc, orig) && predicate(ctx, doc, orig);
+            return this;
+        }
+
         /// <inheritdoc />
         public override IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.Concat(context.Execute(this));
+            IEnumerable<IDocument> docs = context.Execute(this);
+            if (_predicate != null)
+            {
+                docs = docs.Where(x => _predicate(context, x, inputs));
+            }
+            return inputs.Concat(docs);
         }
     }
 }

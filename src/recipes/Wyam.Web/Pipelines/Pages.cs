@@ -82,7 +82,7 @@ namespace Wyam.Web.Pipelines
                         new Meta(WebKeys.EditFilePath, (doc, ctx) => doc.FilePath(Keys.RelativeFilePath)),
                         new If(settings.ProcessIncludes, new Include()),
                         new FrontMatter(new Yaml.Yaml())
-                    }
+                    }.Where((ctx, doc, inputs) => !inputs.Any(x => string.Equals(x.Source.ChangeExtension(null).FullPath, x.Source.ChangeExtension(null).FullPath, StringComparison.OrdinalIgnoreCase)))
                 },
                 {
                     WriteMetadata,
