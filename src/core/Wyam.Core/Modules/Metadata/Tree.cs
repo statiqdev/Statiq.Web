@@ -76,7 +76,7 @@ namespace Wyam.Core.Modules.Metadata
                 }
 
                 // Promote "index." pages up a level
-                if (segments.Count > 0 && segments[segments.Count - 1].StartsWith("index."))
+                if (segments.Count > 0 && segments[segments.Count - 1].StartsWith("index.", StringComparison.OrdinalIgnoreCase))
                 {
                     segments.RemoveAt(segments.Count - 1);
                 }
