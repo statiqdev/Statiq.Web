@@ -325,10 +325,16 @@ namespace Wyam.Docs
         public const string IgnoreFolders = nameof(IgnoreFolders);
 
         /// <summary>
-        /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.
+        /// Set to <c>false</c> to hide a particular page from the top-level navigation bar.
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ShowInNavbar = nameof(ShowInNavbar);
+
+        /// <summary>
+        /// Set to <c>false</c> to hide a particular page from the side navigation bar.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string ShowInSidebar = nameof(ShowInSidebar);
 
         /// <summary>
         /// Setting this to <c>true</c> will assume <c>inheritdoc</c> for all API symbols
