@@ -110,11 +110,13 @@
                 <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     @RenderSection("Infobar", false)
                 </section>
-                <section class="sidebar">                    
+                <section class="sidebar">    
+                    @Html.Partial("_SidebarHeader")                 
                     @RenderSection("Search", false)
                     <ul class="sidebar-menu">
                         @RenderSection("Sidebar", false)
                     </ul>
+                    @Html.Partial("_SidebarFooter")        
                 </section>                
             </aside>
             
