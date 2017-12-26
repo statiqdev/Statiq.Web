@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
+using Microsoft.Owin.StaticFiles.ContentTypes;
 using Owin;
 using Owin.WebSocket.Extensions;
 using Wyam.Hosting.LiveReload;
@@ -173,6 +174,10 @@ namespace Wyam.Hosting
                 });
             }
 
+            // Add JSON content type
+            FileExtensionContentTypeProvider contentTypeProvider = new FileExtensionContentTypeProvider();
+            contentTypeProvider.Mappings.Add(".json", "application/json");
+
             // Serve up all static files
             app.UseDefaultFiles(new DefaultFilesOptions
             {
@@ -184,7 +189,8 @@ namespace Wyam.Hosting
             {
                 RequestPath = PathString.Empty,
                 FileSystem = outputFolder,
-                ServeUnknownFileTypes = true
+                ServeUnknownFileTypes = true,
+                ContentTypeProvider = contentTypeProvider
             });
 
             if (LiveReloadClients != null)
@@ -197,7 +203,8 @@ namespace Wyam.Hosting
                 {
                     RequestPath = PathString.Empty,
                     FileSystem = reloadFilesystem,
-                    ServeUnknownFileTypes = true
+                    ServeUnknownFileTypes = true,
+                    ContentTypeProvider = contentTypeProvider
                 });
             }
         }
