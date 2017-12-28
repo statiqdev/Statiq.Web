@@ -323,6 +323,10 @@ namespace Wyam.Core.Modules.IO
                         using (Stream outputStream = _append ? output.OpenAppend() : output.OpenWrite())
                         {
                             inputStream.CopyTo(outputStream);
+                            if (!_append)
+                            {
+                                outputStream.SetLength(inputStream.Length);
+                            }
                         }
                     }
                 }

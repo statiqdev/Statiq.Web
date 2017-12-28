@@ -108,6 +108,28 @@ namespace Wyam.Core.Tests.Modules.IO
             }
 
             [Test]
+            public void ShouldTruncateOldFileOnWrite()
+            {
+                // Given
+                const string fileName = "test.txt";
+                const string oldContent = "TestTest";
+                const string newContent = "Test";
+
+                IFile fileMock = Engine.FileSystem.GetOutputFile(fileName);
+                fileMock.WriteAllText(oldContent);
+
+                WriteFiles writeFiles = new WriteFiles((x, y) => fileName);
+                IDocument[] inputs = { Context.GetDocument(Context.GetContentStream(newContent)) };
+
+                // When
+                writeFiles.Execute(inputs, Context).ToList();
+
+                // Then
+                IFile outputFile = Engine.FileSystem.GetOutputFile(fileName);
+                Assert.AreEqual(newContent, outputFile.ReadAllText());
+            }
+
+            [Test]
             public void ShouldReturnNullBasePathsForDotFiles()
             {
                 // Given
