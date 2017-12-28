@@ -33,3 +33,5 @@ TestResult.xml
 /packages.xml
 config.wyam.hash
 config.wyam.dll
+*.ncrunch*
+.*crunch*.local.xml
