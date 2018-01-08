@@ -143,12 +143,10 @@ namespace Wyam.Markdown
                 {
                     // Need - public void AddIfNotAlready<TElement>(TElement telement) where TElement : T;
                     // Kind of hack'ish, but no other way to preserve types.
-                    MethodInfo addIfNotAlready = (from methodInfo in typeof(OrderedList<IMarkdownExtension>).GetMethods()
-                                                where methodInfo.IsGenericMethod
-                                                      && methodInfo.Name == nameof(OrderedList<IMarkdownExtension>.AddIfNotAlready)
-                                                      && methodInfo.GetParameters().Length == 1
-                                                select methodInfo.MakeGenericMethod(type)).Single();
-
+                    MethodInfo addIfNotAlready = typeof(OrderedList<IMarkdownExtension>).GetMethods()
+                        .Where(x => x.IsGenericMethod && x.Name == nameof(OrderedList<IMarkdownExtension>.AddIfNotAlready) && x.GetParameters().Length == 1)
+                        .Select(x => x.MakeGenericMethod(type))
+                        .Single();
                     addIfNotAlready.Invoke(_extensions, new object[] { extension });
                 }
             }
