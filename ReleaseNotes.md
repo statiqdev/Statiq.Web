@@ -1,3 +1,21 @@
+# 1.2.0
+
+- [Refactoring] Some docs updates (#604, thanks @olevett)
+- [Feature] Can add Markdown extension instances directly (#602, thanks @Silvenga)
+- [Fix] Fixes adding multiple custom Markdown extensions (#601, thanks @Silvenga)
+- [Fix] Fixes output corruption when using `--noclean` (#593, thanks @Silvenga)
+- [Feature] Added support for generating a Chocolatey package (#598, #95, thanks @phillipsj)
+- [Fix] CSS cleanup for arrows in the docs theme
+- [Feature] Docs recipe now ignores Razor pages from the theme if an equivalent Markdown page exists (#595)
+- [Feature] Added a `Where()` method to the `Concat` module 
+- [Feature] Added `DocsKeys.ShowInSidebar` to hide pages from the sidebar in the docs recipe
+- [Fix] Ignore case when locating index files for the `Tree` module
+- [Feature] Added support for JSON content types to the embedded web server
+- [Feature] Added sidebar header and footer overrides to docs theme
+- [Refactoring] Updated MD5 hashes to SHA512 for FIPS compliance (#597, thanks @kakrofoon)
+- [Feature] Enabled code signing for wyam.exe
+- [Feature] Adds `DocsKeys.ApiPath` to allow changing the path where API docs are placed in the docs recipe
+
 # 1.1.0
 
 - **[Breaking Change]**[Refactoring] Removed the `Git` module since it's not fully SDK compatible

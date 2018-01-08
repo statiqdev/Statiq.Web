@@ -5,7 +5,7 @@
 // The following environment variables need to be set for Publish-MyGet target:
 // MYGET_API_KEY
 
-// The following environment variables need to be set for Publich-Chocolatey target:
+// The following environment variables need to be set for Publish-Chocolatey target:
 // CHOCOLATEY_API_KEY
 
 // Publishing workflow:
