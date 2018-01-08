@@ -104,8 +104,8 @@ namespace Wyam.Html
         /// <summary>
         /// Controls whether the inner HTML (not including the containing element's HTML) or
         /// outer HTML (including the containing element's HTML) of the first result from
-        /// the query selector is added to metadata. The default is to get outer HTML content.
-        /// This setting has no effect if a separator comment is found.
+        /// the query selector is added to metadata. The default is true, which gets the outer 
+        /// HTML content. This setting has no effect if a separator comment is found.
         /// </summary>
         /// <param name="outerHtml">If set to <c>true</c>, outer HTML will be stored.</param>
         /// <returns>The current module instance.</returns>
