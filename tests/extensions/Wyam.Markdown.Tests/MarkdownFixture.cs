@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Markdig;
+
+using NSubstitute;
+
 using NUnit.Framework;
 using Wyam.Common.Documents;
 using Wyam.Common.Meta;
@@ -36,6 +41,21 @@ namespace Wyam.Markdown.Tests
 
                 // Then
                 Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+            }
+
+            [Test]
+            public void CanUseExternalExtensionDirectly()
+            {
+                IMarkdownExtension mockExtension = Substitute.For<IMarkdownExtension>();
+                Markdown markdown = new Markdown().UseExtension(mockExtension);
+
+                // When
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+                markdown.Execute(new[] { new TestDocument(string.Empty) }, new TestExecutionContext()).ToList();  // Make sure to materialize the result list
+
+                // Then
+                // Setup will always be called during markdown pipeline setup.
+                mockExtension.Received().Setup(Arg.Any<MarkdownPipelineBuilder>());
             }
 
             [Test]

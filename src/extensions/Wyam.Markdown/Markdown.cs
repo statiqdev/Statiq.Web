@@ -106,6 +106,24 @@ namespace Wyam.Markdown
         }
 
         /// <summary>
+        /// Includes a custom extension in the markdown processing given by a object implementing
+        /// the IMarkdownExtension interface.
+        /// </summary>
+        /// <param name="extension">A object that that implement <see cref="IMarkdownExtension"/>.</param>
+        /// <typeparam name="TExtension">The type of the extension to use.</typeparam>
+        /// <returns>The current module instance.</returns>
+        public Markdown UseExtension<TExtension>(TExtension extension)
+            where TExtension : IMarkdownExtension
+        {
+            if (extension != null)
+            {
+                _extensions.AddIfNotAlready(extension);
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Includes multiple custom extension in the markdown processing given by classes implementing
         /// the <see cref="IMarkdownExtension"/> interface.
         /// </summary>
