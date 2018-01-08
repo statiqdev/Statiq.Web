@@ -20,7 +20,7 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Buildalyzer.Workspaces" Version="0.2.1" />
+    <PackageReference Include="Buildalyzer.Workspaces" Version="0.2.2" />
     <PackageReference Include="Castle.Core" Version="4.0.0" />
     <PackageReference Include="ManagedEsent" Version="1.9.4" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.4.0" />
