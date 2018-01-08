@@ -49,7 +49,6 @@ namespace Wyam.Examples.Tests
             Directory.Delete(Path.Combine(TestContext.CurrentContext.TestDirectory, "packages"), true);
         }
 
-        [Ignore("Caught by local threat detection")]
         [Test]
         [TestCaseSource(typeof(ExamplesTests), nameof(Paths))]
         public void ExecuteExample(string example)
@@ -61,7 +60,7 @@ namespace Wyam.Examples.Tests
             // When
             Process process = new Process();
             process.StartInfo.FileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.exe");
-            process.StartInfo.Arguments = $@"--use-local-packages --packages-path ""{packagesPath}"" ""{example}""";
+            process.StartInfo.Arguments = $@"--no-output-config-assembly --use-local-packages --packages-path ""{packagesPath}"" ""{example}""";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
