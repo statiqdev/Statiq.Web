@@ -58,6 +58,29 @@ namespace Wyam.Markdown.Tests
             }
 
             [Test]
+            public void CanUseMultipleExternalExtensions()
+            {
+                const string input = @"![Alt text](/path/to/img.jpg)";
+                const string output = @"<p><img src=""/path/to/img.jpg"" class=""ui spaced image second"" alt=""Alt text"" /></p>";
+
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                Type[] o =
+                {
+                    typeof(ExternalMarkdownExtension),
+                    typeof(SecondExternalMarkdownExtension)
+                };
+                IEnumerable<Type> cast = o;
+                Markdown markdown = new Markdown().UseExtensions(cast);
+
+                // When
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();
+
+                // Then
+                Assert.That(results.Select(x => x.Content.Trim()), Is.EquivalentTo(new[] { output }));
+            }
+
+            [Test]
             public void DoesNotRenderSpecialAttributesByDefault()
             {
                 // Given

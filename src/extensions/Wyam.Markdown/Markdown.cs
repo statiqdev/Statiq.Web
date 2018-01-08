@@ -1,15 +1,17 @@
 ﻿using System;
-using Markdig;
-using Markdig.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+
+using Markdig;
+using Markdig.Helpers;
+
 using Wyam.Common.Caching;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
 
 namespace Wyam.Markdown
 {
@@ -121,7 +123,15 @@ namespace Wyam.Markdown
                 IMarkdownExtension extension = Activator.CreateInstance(type) as IMarkdownExtension;
                 if (extension != null)
                 {
-                    _extensions.AddIfNotAlready(extension);
+                    // Need - public void AddIfNotAlready<TElement>(TElement telement) where TElement : T;
+                    // Kind of hack'ish, but no other way to preserve types.
+                    MethodInfo addIfNotAlready = (from methodInfo in typeof(OrderedList<IMarkdownExtension>).GetMethods()
+                                                where methodInfo.IsGenericMethod
+                                                      && methodInfo.Name == nameof(OrderedList<IMarkdownExtension>.AddIfNotAlready)
+                                                      && methodInfo.GetParameters().Length == 1
+                                                select methodInfo.MakeGenericMethod(type)).Single();
+
+                    addIfNotAlready.Invoke(_extensions, new object[] { extension });
                 }
             }
 
@@ -170,7 +180,7 @@ namespace Wyam.Markdown
                     ? context.GetDocument(input, context.GetContentStream(result))
                     : context.GetDocument(input, new MetadataItems
                     {
-                        { string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result }
+                        {string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result}
                     });
             });
         }
