@@ -24,17 +24,15 @@ namespace Wyam.Configuration
         public string InputPath { get; }
 
         /// <summary>
-        /// Gets the packages needed for this theme (content package, file provider packages, etc.).
-        /// If the theme uses a non-core file provider for the provided path, the NuGet package(s)
-        /// containing the provider(s) should be in this value.
+        /// Gets the package containing this theme.
         /// </summary>
-        public string[] PackageIds { get; }
+        public string PackageId { get; }
 
-        private KnownTheme(string recipe, string inputPath, string[] packageIds)
+        private KnownTheme(string recipe, string inputPath, string packageId)
         {
             Recipe = recipe;
             InputPath = inputPath;
-            PackageIds = packageIds;
+            PackageId = packageId;
         }
     }
 }

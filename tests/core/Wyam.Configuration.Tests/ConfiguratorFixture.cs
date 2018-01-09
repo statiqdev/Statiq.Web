@@ -434,7 +434,7 @@ SetCustomDocumentType<MyDocument>();
                 // Given
                 Configurator configurator = GetConfigurator();
                 configurator.Theme = nameof(KnownTheme.CleanBlog);
-                configurator.PackageInstaller.AddPackage(KnownTheme.CleanBlog.PackageIds.First());
+                configurator.PackageInstaller.AddPackage(KnownTheme.CleanBlog.PackageId);
 
                 // When
                 configurator.AddThemePackagesAndPath();

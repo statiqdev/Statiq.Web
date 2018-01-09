@@ -161,7 +161,7 @@ namespace Wyam.Configuration
                         // Add the package, but only if it wasn't added manually
                         if (!string.IsNullOrEmpty(knownRecipe.PackageId) && !PackageInstaller.ContainsPackage(knownRecipe.PackageId))
                         {
-                            PackageInstaller.AddPackage(knownRecipe.PackageId);
+                            PackageInstaller.AddPackage(knownRecipe.PackageId, versionRange: $"[{Engine.Version}]", allowPrereleaseVersions: true);
                         }
                     }
                     else
@@ -204,13 +204,10 @@ namespace Wyam.Configuration
                     // Make sure we're not ignoring theme packages
                     if (!IgnoreKnownThemePackages)
                     {
-                        // Add any packages needed for the theme
-                        if (knownTheme.PackageIds != null)
+                        // Add the package, but only if it wasn't added manually
+                        if (!string.IsNullOrEmpty(knownTheme.PackageId) && !PackageInstaller.ContainsPackage(knownTheme.PackageId))
                         {
-                            foreach (string themePackageId in knownTheme.PackageIds.Where(x => !PackageInstaller.ContainsPackage(x)))
-                            {
-                                PackageInstaller.AddPackage(themePackageId, allowPrereleaseVersions: true);
-                            }
+                            PackageInstaller.AddPackage(knownTheme.PackageId, versionRange: $"[{Engine.Version}]", allowPrereleaseVersions: true);
                         }
                     }
                     else

@@ -8,7 +8,7 @@ string[] recipes = Directory
     .SelectMany(x => Directory
         .GetDirectories(x.Item2, "*", SearchOption.TopDirectoryOnly)
         .Select(y => Path.GetFileName(y))
-        .Select(y => $"\t\tpublic static readonly KnownTheme {y} = new KnownTheme(nameof(KnownRecipe.{x.Item1}), null, new[] {{ \"Wyam.{x.Item1}.{y}\" }});"))
+        .Select(y => $"\t\tpublic static readonly KnownTheme {y} = new KnownTheme(nameof(KnownRecipe.{x.Item1}), null, \"Wyam.{x.Item1}.{y}\");"))
     .ToArray();
 Output.Write($@"namespace Wyam.Configuration
 {{

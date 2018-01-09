@@ -1,5 +1,6 @@
 # 1.2.0
 
+- [Feature] Locks in matching recipe and theme package versions (#587)
 - [Refactoring] Some docs updates (#604, thanks @olevett)
 - [Feature] Can add Markdown extension instances directly (#602, thanks @Silvenga)
 - [Fix] Fixes adding multiple custom Markdown extensions (#601, thanks @Silvenga)
