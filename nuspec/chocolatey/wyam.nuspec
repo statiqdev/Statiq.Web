@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>wyam.install</id>
+    <id>wyam</id>
     <version>$version$</version>
     <title>Wyam</title>
     <authors>Dave Glick</authors>
