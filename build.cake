@@ -49,7 +49,7 @@ var version = releaseNotes.Version.ToString();
 var semVersion = version + (isLocal ? string.Empty : string.Concat("-build-", buildNumber));
 
 var buildDir = Directory("./src/clients/Wyam/bin") + Directory(configuration);
-var buildResultDir = Directory("./build") + Directory(semVersion);
+var buildResultDir = Directory("./build");
 var nugetRoot = buildResultDir + Directory("nuget");
 var chocoRoot = buildResultDir + Directory("choco");
 var binDir = buildResultDir + Directory("bin");
@@ -282,13 +282,13 @@ Task("Create-Tools-Package")
     });
 
 Task("Create-Chocolatey-Package")
-    .IsDependentOn("Build")
+    .IsDependentOn("Copy-Files")
     .Does(() => {
-        var nuspecFile = GetFiles("./nuspec/chocolatey/**/*.nuspec").FirstOrDefault();
+        var nuspecFile = GetFiles("./src/clients/Chocolatey/*.nuspec").FirstOrDefault();
         ChocolateyPack(nuspecFile, new ChocolateyPackSettings {
             Version = semVersion,
-            OutputDirectory = string.Format("./build/{0}/choco", semVersion),
-            WorkingDirectory = string.Format("./build/{0}", semVersion)
+            OutputDirectory = "./build/choco",
+            WorkingDirectory = "./build"
         });
     });
     

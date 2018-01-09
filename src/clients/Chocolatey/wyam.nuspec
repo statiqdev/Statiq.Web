@@ -21,8 +21,7 @@ All release notes for Wyam can be found on the GitHub site - https://github.com/
     <tags>Wyam Static StaticContent StaticSite Blog BlogEngine</tags>
   </metadata>
   <files>
-    <file src="..\..\build\**\bin\*" target="tools"/>
-    <file src="..\..\LICENSE" target="LICENSE"/>
+    <file src="..\..\..\build\bin\**\*" target="/"/>
     <file src="VERIFICATION.txt" target="VERIFICATION.txt"/>
   </files>
 </package>
