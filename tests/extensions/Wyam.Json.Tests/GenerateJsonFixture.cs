@@ -166,7 +166,48 @@ namespace Wyam.Json.Tests
 
                 // Then
                 Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { _camelCaseJsonContent }));
+            }
 
+            [Test]
+            public void SerializesMetadataKeys()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "Foo", "fuz" },
+                    { "Bar", "baz" }
+                });
+                GenerateJson generateJson = new GenerateJson(new[] { "Bar" });
+
+                // When
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { @"{
+  ""Bar"": ""baz""
+}" }));
+            }
+
+            [Test]
+            public void SerializesMetadataKeysWithCamelCase()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "Foo", "fuz" },
+                    { "Bar", "baz" }
+                });
+                GenerateJson generateJson = new GenerateJson(new[] { "Bar" }).WithCamelCase();
+
+                // When
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { @"{
+  ""bar"": ""baz""
+}" }));
             }
         }
     }

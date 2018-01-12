@@ -72,6 +72,18 @@ namespace Wyam.Json
         }
 
         /// <summary>
+        /// Allows you to specify metadata keys for each input document that should be serialized as properties in a JSON object.
+        /// </summary>
+        /// <param name="keys">The metadata keys to serialize as properties.</param>
+        /// <param name="destinationKey">The metadata key where the JSON should be stored (or <c>null</c>
+        /// to replace the content of each input document).</param>
+        public GenerateJson(IEnumerable<string> keys, string destinationKey = null)
+        {
+            _destinationKey = destinationKey;
+            _data = (doc, ctx) => keys.Where(k => doc.ContainsKey(k)).ToDictionary(k => k, k => doc[k]);
+        }
+
+        /// <summary>
         /// Specifies whether the generated JSON should be indented.
         /// </summary>
         /// <param name="indenting">If set to <c>true</c>, the JSON is indented.</param>
