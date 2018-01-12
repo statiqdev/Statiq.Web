@@ -1,5 +1,5 @@
 # Wyam
-
+[![AppVeyor](https://img.shields.io/appveyor/ci/Wyam/wyam/master.svg?label=appveyor)](https://ci.appveyor.com/project/Wyam/wyam/branch/master) 
 [![Join the chat at https://gitter.im/Wyamio/Wyam](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Wyamio/Wyam?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Wyam is a simple to use, highly modular, and extremely configurable static content generator that can be used to generate web sites, produce documentation, create ebooks, and much more. Since everything is configured by chaining together flexible modules (that you can even write yourself), the only limits to what it can create are your imagination.
