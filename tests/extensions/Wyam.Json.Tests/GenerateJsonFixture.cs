@@ -48,6 +48,16 @@ namespace Wyam.Json.Tests
   ]
 }";
 
+        private static string _camelCaseJsonContent = @"{
+  ""email"": ""james@example.com"",
+  ""active"": true,
+  ""createdDate"": ""2013-01-20T00:00:00Z"",
+  ""roles"": [
+    ""User"",
+    ""Admin""
+  ]
+}";
+
         public class ExecuteTests : GenerateJsonFixture
         {
             [Test]
@@ -138,6 +148,25 @@ namespace Wyam.Json.Tests
 
                 // Then
                 Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { nonIndentedJsonContent }));
+            }
+
+            [Test]
+            public void GeneratesCamelCasePropertyNames()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(new MetadataItems
+                {
+                    { "JsonObject", _jsonObject }
+                });
+                GenerateJson generateJson = new GenerateJson("JsonObject").WithCamelCase();
+
+                // When
+                IList<IDocument> results = generateJson.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { _camelCaseJsonContent }));
+
             }
         }
     }

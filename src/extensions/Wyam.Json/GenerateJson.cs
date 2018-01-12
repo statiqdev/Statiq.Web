@@ -12,6 +12,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using Newtonsoft.Json.Serialization;
 
 namespace Wyam.Json
 {
@@ -28,6 +29,8 @@ namespace Wyam.Json
         private readonly DocumentConfig _data;
         private readonly string _destinationKey;
         private bool _indenting = true;
+        private bool _camelCase = false;
+        private Action<JsonSerializerSettings> _settings = null;
 
         /// <summary>
         /// The object stored in metadata at the specified key is converted to JSON, which then either
@@ -51,6 +54,7 @@ namespace Wyam.Json
         /// to replace the content of each input document).</param>
         public GenerateJson(ContextConfig data, string destinationKey = null)
         {
+            _destinationKey = destinationKey;
             _data = (doc, ctx) => data(ctx);
         }
 
@@ -63,6 +67,7 @@ namespace Wyam.Json
         /// to replace the content of each input document).</param>
         public GenerateJson(DocumentConfig data, string destinationKey = null)
         {
+            _destinationKey = destinationKey;
             _data = data;
         }
 
@@ -74,6 +79,29 @@ namespace Wyam.Json
         public GenerateJson WithIndenting(bool indenting = true)
         {
             _indenting = indenting;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies whether the generated JSON should use a camel case naming strategy for property names.
+        /// The default behavior is not to generate camel case property names.
+        /// </summary>
+        /// <param name="camelCase">If set to <c>true</c>, camel case property names are generated.</param>
+        /// <returns>The current module instance.</returns>
+        public GenerateJson WithCamelCase(bool camelCase = true)
+        {
+            _camelCase = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Allows changing the JSON serializer settings.
+        /// </summary>
+        /// <param name="settings">An action that manipulates the serializer settings.</param>
+        /// <returns>The current module instance.</returns>
+        public GenerateJson WithSettings(Action<JsonSerializerSettings> settings)
+        {
+            _settings = settings;
             return this;
         }
 
@@ -90,9 +118,16 @@ namespace Wyam.Json
                        object data = _data(input, context);
                        if (data != null)
                        {
-                           string result = JsonConvert.SerializeObject(
-                               data,
-                               _indenting ? Formatting.Indented : Formatting.None);
+                           JsonSerializerSettings settings = new JsonSerializerSettings()
+                           {
+                               Formatting = _indenting ? Formatting.Indented : Formatting.None
+                           };
+                           if (_camelCase)
+                           {
+                               settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                           }
+                           _settings?.Invoke(settings);
+                           string result = JsonConvert.SerializeObject(data, settings);
                            if (string.IsNullOrEmpty(_destinationKey))
                            {
                                return context.GetDocument(input, context.GetContentStream(result));
