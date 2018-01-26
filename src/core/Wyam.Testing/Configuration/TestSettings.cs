@@ -93,6 +93,9 @@ namespace Wyam.Testing.Configuration
         public T Get<T>(string key, T defaultValue) => _metadata.Get(key, defaultValue);
 
         /// <inheritdoc />
+        public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
+
+        /// <inheritdoc />
         ICollection<string> IMetadataDictionary.Keys
         {
             get { throw new NotImplementedException(); }
@@ -116,6 +119,7 @@ namespace Wyam.Testing.Configuration
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_metadata).GetEnumerator();
+
 
         /// <inheritdoc />
         public int Count => _metadata.Count;

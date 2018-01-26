@@ -197,6 +197,8 @@ namespace Wyam.Core.Documents
 
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
+        public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
+
         public int Count => _metadata.Count;
     }
 }

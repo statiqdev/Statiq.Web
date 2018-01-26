@@ -106,6 +106,8 @@ namespace Wyam.Core.Meta
 
         public int Count => Stack.Sum(x => x.Count);
 
+        public IMetadata GetMetadata(params string[] keys) => new MetadataDictionary(keys.Where(ContainsKey).ToDictionary(x => x, x => this[x]));
+
         /// <summary>
         /// This resolves the metadata value by recursively expanding IMetadataValue.
         /// </summary>

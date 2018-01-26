@@ -54,6 +54,14 @@ namespace Wyam.Common.Meta
         /// <param name="defaultValue">The default value to use if the key is not found or cannot be converted to type T.</param>
         /// <returns>The value for the specified key converted to type T or the specified default value.</returns>
         T Get<T>(string key, T defaultValue);
+
+        /// <summary>
+        /// Gets a new <see cref="IMetadata"/> containing only the specified keys and their values. If a key is not present in the current
+        /// metadata, it will be ignored and will not be copied to the new metadata object.
+        /// </summary>
+        /// <param name="keys">The keys to include in the new metadata object.</param>
+        /// <returns>A new <see cref="IMetadata"/> containing the specified keys and their values.</returns>
+        IMetadata GetMetadata(params string[] keys);
     }
 
     /// <summary>

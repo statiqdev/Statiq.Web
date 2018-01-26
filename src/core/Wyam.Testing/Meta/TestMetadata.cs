@@ -15,7 +15,17 @@ namespace Wyam.Testing.Meta
     /// </summary>
     public class TestMetadata : IMetadata, IDictionary<string, object>
     {
-        private readonly IDictionary<string, object> _metadata = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> _metadata;
+
+        public TestMetadata()
+        {
+            _metadata = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        public TestMetadata(IDictionary<string, object> initialMetadata)
+        {
+            _metadata = new Dictionary<string, object>(initialMetadata, StringComparer.OrdinalIgnoreCase);
+        }
 
         /// <inhertdoc />
         public bool ContainsKey(string key)
@@ -69,6 +79,9 @@ namespace Wyam.Testing.Meta
 
         /// <inhertdoc />
         public T Get<T>(string key, T defaultValue) => (T)Get(key, (object)defaultValue);
+
+        /// <inhertdoc />
+        public IMetadata GetMetadata(params string[] keys) => new TestMetadata(keys.Where(ContainsKey).ToDictionary(x => x, x => this[x]));
 
         /// <inhertdoc />
         public object this[string key]
@@ -151,5 +164,6 @@ namespace Wyam.Testing.Meta
             IMetadataValue metadataValue = item.Value as IMetadataValue;
             return metadataValue != null ? new KeyValuePair<string, object>(item.Key, GetValue(metadataValue.Get(this))) : item;
         }
+
     }
 }

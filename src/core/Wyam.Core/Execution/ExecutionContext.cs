@@ -224,5 +224,7 @@ namespace Wyam.Core.Execution
         public T Get<T>(string key) => Settings.Get<T>(key);
 
         public T Get<T>(string key, T defaultValue) => Settings.Get(key, defaultValue);
+
+        public IMetadata GetMetadata(params string[] keys) => Settings.GetMetadata(keys);
     }
 }

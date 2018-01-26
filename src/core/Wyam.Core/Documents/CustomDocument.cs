@@ -67,6 +67,9 @@ namespace Wyam.Core.Documents
         public T Get<T>(string key, T defaultValue) => Document.Get(key, defaultValue);
 
         /// <inheritdoc />
+        public IMetadata GetMetadata(params string[] keys) => Document.GetMetadata(keys);
+
+        /// <inheritdoc />
         public void Dispose() => Document.Dispose();
 
         /// <inheritdoc />

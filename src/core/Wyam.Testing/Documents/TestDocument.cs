@@ -81,6 +81,8 @@ namespace Wyam.Testing.Documents
         /// <inhertdoc />
         public T Get<T>(string key, T defaultValue) => _metadata.Get<T>(key, defaultValue);
 
+        public IMetadata GetMetadata(params string[] keys) => _metadata.GetMetadata(keys);
+
         /// <inhertdoc />
         public object this[string key] => _metadata[key];
 
@@ -133,6 +135,7 @@ namespace Wyam.Testing.Documents
         {
             return ((IEnumerable) _metadata).GetEnumerator();
         }
+
 
         /// <inhertdoc />
         public int Count => _metadata.Count;
