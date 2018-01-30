@@ -478,6 +478,29 @@ namespace Cake.Wyam.Tests
                 // Then
                 Assert.AreEqual("\"/Working/a/b\"", result.Args);
             }
+
+            [Test]
+            public void ShouldSetContentType()
+            {
+                // Given
+                WyamToolFixture fixture = new WyamToolFixture
+                {
+                    Settings =
+                    {
+                        ContentTypes = new Dictionary<string, string>
+                        {
+                            { ".foo", " application/xml" },
+                            { "bar", "text/bar" }
+                        }
+                    }
+                };
+
+                // When
+                ToolFixtureResult result = fixture.Run();
+
+                // Then
+                Assert.AreEqual("--content-type .foo=application/xml --content-type bar=text/bar \"/Working\"", result.Args);
+            }
         }
     }
 }

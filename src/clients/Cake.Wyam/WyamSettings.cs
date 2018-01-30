@@ -158,5 +158,10 @@ namespace Cake.Wyam
         /// Gets or sets the theme.
         /// </summary>
         public string Theme { get; set; }
+
+        /// <summary>
+        /// Specifies additional supported content types for the preview server.
+        /// </summary>
+        public IDictionary<string, string> ContentTypes { get; set; }
     }
 }

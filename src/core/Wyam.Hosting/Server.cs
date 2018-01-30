@@ -27,6 +27,7 @@ namespace Wyam.Hosting
     {
         private readonly ILoggerProvider _loggerProvider;
         private readonly IWebHost _host;
+        private readonly IDictionary<string, string> _contentTypes;
 
         /// <summary>
         /// Creates the HTTP server.
@@ -48,6 +49,21 @@ namespace Wyam.Hosting
         /// <param name="liveReload">Enables support for LiveReload.</param>
         /// <param name="loggerProvider">The logger provider to use.</param>
         public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, ILoggerProvider loggerProvider)
+            : this(localPath, port, extensionless, virtualDirectory, liveReload, null, loggerProvider)
+        {
+        }
+
+        /// <summary>
+        /// Creates the HTTP server.
+        /// </summary>
+        /// <param name="localPath">The local path to serve files from.</param>
+        /// <param name="port">The port the server will serve HTTP requests on.</param>
+        /// <param name="extensionless"><c>true</c> if the server should support extensionless URLs, <c>false</c> otherwise.</param>
+        /// <param name="virtualDirectory">The virtual directory the server should respond to, or <c>null</c> to use the root URL.</param>
+        /// <param name="liveReload">Enables support for LiveReload.</param>
+        /// <param name="loggerProvider">The logger provider to use.</param>
+        /// <param name="contentTypes">Additional content types the server should support.</param>
+        public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, ILoggerProvider loggerProvider)
         {
             if (localPath == null)
             {
@@ -59,6 +75,7 @@ namespace Wyam.Hosting
             }
 
             _loggerProvider = loggerProvider;
+            _contentTypes = contentTypes;
             LocalPath = localPath;
             Port = port;
             Extensionless = extensionless;
@@ -176,7 +193,14 @@ namespace Wyam.Hosting
 
             // Add JSON content type
             FileExtensionContentTypeProvider contentTypeProvider = new FileExtensionContentTypeProvider();
-            contentTypeProvider.Mappings.Add(".json", "application/json");
+            contentTypeProvider.Mappings[".json"] = "application/json";
+            if (_contentTypes != null)
+            {
+                foreach (KeyValuePair<string, string> contentType in _contentTypes)
+                {
+                    contentTypeProvider.Mappings[contentType.Key.StartsWith(".") ? contentType.Key : "." + contentType.Key] = contentType.Value;
+                }
+            }
 
             // Serve up all static files
             app.UseDefaultFiles(new DefaultFilesOptions

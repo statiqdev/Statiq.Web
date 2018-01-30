@@ -179,6 +179,15 @@ namespace Cake.Wyam
                 SetMetadata(builder, "--setting", settings.Settings);
             }
 
+            if (settings.ContentTypes != null)
+            {
+                foreach (KeyValuePair<string, string> contentType in settings.ContentTypes)
+                {
+                    builder.Append("--content-type");
+                    builder.Append($"{contentType.Key.Trim()}={contentType.Value.Trim()}");
+                }
+            }
+
             if (settings.LogFilePath != null)
             {
                 builder.Append("--log");

@@ -19,6 +19,7 @@ namespace Wyam.Commands
         private readonly InterlockedBool _exit = new InterlockedBool(false);
         private readonly InterlockedBool _newEngine = new InterlockedBool(false);
         private readonly ConfigOptions _configOptions = new ConfigOptions();
+        private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
 
         private bool _preview = false;
         private int _previewPort = 5080;
@@ -60,6 +61,18 @@ namespace Wyam.Commands
             if (syntax.DefineOption("noreload", ref _noReload, "Turns off LiveReload support in the preview server.").IsSpecified && (!_preview || !_watch))
             {
                 syntax.ReportError("noreload can only be specified if both the preview server is running and watching is enabled.");
+            }
+            IReadOnlyList<string> contentTypes = null;
+            if (syntax.DefineOptionList("content-type", ref contentTypes, "Specifies additional supported content types for the preview server as extension=contenttype.").IsSpecified)
+            {
+                if (!_preview)
+                {
+                    syntax.ReportError("content-type can only be specified if the preview server is running.");
+                }
+                else
+                {
+                    PreviewCommand.AddContentTypes(contentTypes, _contentTypes, syntax);
+                }
             }
             syntax.DefineOptionList("i|input", ref _configOptions.InputPaths, DirectoryPathFromArg, "The path(s) of input files, can be absolute or relative to the current folder.");
             syntax.DefineOption("o|output", ref _configOptions.OutputPath, DirectoryPathFromArg, "The path to output files, can be absolute or relative to the current folder.");
@@ -187,7 +200,7 @@ namespace Wyam.Commands
                 DirectoryPath previewPath = _previewRoot == null
                     ? engineManager.Engine.FileSystem.GetOutputDirectory().Path
                     : engineManager.Engine.FileSystem.GetOutputDirectory(_previewRoot).Path;
-                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory, _watch && !_noReload);
+                previewServer = PreviewServer.Start(previewPath, _previewPort, _previewForceExtension, _previewVirtualDirectory, _watch && !_noReload, _contentTypes);
             }
 
             // Start the watchers
