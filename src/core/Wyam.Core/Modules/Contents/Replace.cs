@@ -15,7 +15,7 @@ namespace Wyam.Core.Modules.Contents
     public class Replace : ContentModule
     {
         private readonly string _search;
-        private readonly Func<Match, object> _contentFinder;
+        private readonly Func<Match, IDocument, object> _contentFinder;
         private bool _isRegex;
         private RegexOptions _regexOptions = RegexOptions.None;
 
@@ -81,6 +81,21 @@ namespace Wyam.Core.Modules.Contents
             : base(null as object)
         {
             _search = search;
+            _contentFinder = (match, doc) => contentFinder(match);
+            _isRegex = true;
+        }
+
+        /// <summary>
+        /// Replaces all occurrences of the search string in every input document
+        /// with the string value of the objects returned by the delegate. The delegate will be called
+        /// for each Match in the supplied regular expression.
+        /// </summary>
+        /// <param name="search">The string to search for (interpreted as a regular expression).</param>
+        /// <param name="contentFinder">A delegate that returns the content to replace the match.</param>
+        public Replace(string search, Func<Match, IDocument, object> contentFinder)
+            : base(null as object)
+        {
+            _search = search;
             _contentFinder = contentFinder;
             _isRegex = true;
         }
@@ -112,7 +127,11 @@ namespace Wyam.Core.Modules.Contents
             if (_contentFinder != null)
             {
                 string currentDocumentContent = input.Content;
-                string newDocumentContent = Regex.Replace(input.Content, _search, x => _contentFinder(x)?.ToString() ?? string.Empty, _regexOptions);
+                string newDocumentContent = Regex.Replace(
+                    input.Content,
+                    _search,
+                    match => _contentFinder(match, input)?.ToString() ?? string.Empty,
+                    _regexOptions);
                 return new[]
                 {
                     currentDocumentContent == newDocumentContent ? input : context.GetDocument(input, context.GetContentStream(newDocumentContent))
