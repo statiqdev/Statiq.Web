@@ -113,6 +113,7 @@ namespace Wyam.Configuration.Tests.ConfigScript
 
                 byte[] fakeAssembly = Autofixture.CreateMany<byte>().ToArray();
                 MemoryStream cacheStream = new MemoryStream(fakeAssembly);
+                mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).Exists.Returns(true);
                 mockEngine.FileSystem.GetRootFile(cacheManager.ConfigDllPath).OpenRead().Returns(cacheStream);
 
                 // When

@@ -34,19 +34,19 @@ namespace Wyam.Configuration.ConfigScript
             string cachedHash = GetCachedConfigHash();
             string currentHash = HashString(code);
 
-            bool discardCache = cachedHash != currentHash || ignoreConfigHash;
-
-            if (discardCache)
+            byte[] cachedConfig = (cachedHash != currentHash || ignoreConfigHash) ? null : GetCachedConfig();
+            if (cachedConfig != null)
             {
+                // Load from cache if the hashes match and we got a cached config file
+                _scriptManager.LoadCompiledConfig(cachedConfig);
+            }
+            else
+            {
+                // Otherwise compile the config and save it as a (new) cached version
                 _scriptManager.Create(code, classes, _engine.Namespaces);
                 WriteScript(_scriptManager.Code, outputScript);
                 _scriptManager.Compile(AppDomain.CurrentDomain.GetAssemblies());
                 SaveCompiledScript(currentHash, noOutputConfigAssembly);
-            }
-            else
-            {
-                byte[] cachedConfig = GetCachedConfig();
-                _scriptManager.LoadCompiledConfig(cachedConfig);
             }
 
             _engine.DynamicAssemblies.Add(_scriptManager.RawAssembly);
@@ -70,7 +70,15 @@ namespace Wyam.Configuration.ConfigScript
 
         private byte[] GetCachedConfig()
         {
+            if (ConfigDllPath == null)
+            {
+                return null;
+            }
             IFile configDllFile = _engine.FileSystem.GetRootFile(ConfigDllPath);
+            if (!configDllFile.Exists)
+            {
+                return null;
+            }
             using (Stream stream = configDllFile.OpenRead())
             {
                 using (MemoryStream memory = new MemoryStream())
