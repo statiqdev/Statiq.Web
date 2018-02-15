@@ -116,6 +116,47 @@ namespace Wyam.Core.Tests.Modules.Contents
                 Assert.AreEqual(1, results.Count);
                 Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
             }
+
+            [TestCase("www.example.org", null, "http://www.example.org/sub/testfile")]
+            [TestCase(null, "http://www.example.com", "http://www.example.com")]
+            [TestCase("www.example.org", "http://www.example.com{0}", "http://www.example.com/sub/testfile")]
+            public void SitemapGeneratedWhenNoSitemapItem(string hostname, string formatterString, string expected)
+            {
+                // Given
+                Engine engine = new Engine();
+                if (!string.IsNullOrWhiteSpace(hostname))
+                {
+                    engine.Settings[Keys.Host] = hostname;
+                }
+                ExecutionPipeline contentPipeline = new ExecutionPipeline("Content", (IModuleList)null);
+                IExecutionContext context = new ExecutionContext(engine, Guid.Empty, contentPipeline);
+
+                IDocument doc = context.GetDocument(context.GetContentStream("Test"), new[]
+                {
+                    new KeyValuePair<string, object>(Keys.RelativeFilePath, "sub/testfile.html")
+                });
+                IDocument[] inputs = { doc };
+
+                Func<string, string> formatter = null;
+
+                if (!string.IsNullOrWhiteSpace(formatterString))
+                {
+                    formatter = f => string.Format(formatterString, f);
+                }
+
+                // When
+                Sitemap sitemap = new Sitemap(formatter);
+                List<IDocument> results = sitemap.Execute(inputs.ToList(), context).ToList();
+
+                foreach (IDocument document in inputs)
+                {
+                    document.Dispose();
+                }
+
+                // Then
+                Assert.AreEqual(1, results.Count);
+                Assert.That(results[0].Content, Does.Contain($"<loc>{expected}</loc>"));
+            }
         }
     }
 }

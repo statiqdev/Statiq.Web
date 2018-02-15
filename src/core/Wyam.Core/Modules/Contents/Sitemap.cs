@@ -38,7 +38,8 @@ namespace Wyam.Core.Modules.Contents
         /// <summary>
         /// Creates a sitemap using the metadata key <c>SitemapItem</c> which should contain either a <c>string</c> that
         /// contains the location for each input document or a <c>SitemapItem</c> instance with the location
-        /// and other information.
+        /// and other information. If the key <c>SitemapItem</c> is not found or does not contain the correct type of object,
+        /// a link to the document will be used.
         /// </summary>
         /// <param name="locationFormatter">A location formatter that will be applied to the location of each input after
         /// getting the value of the <c>SitemapItem</c> metadata key.</param>
@@ -50,7 +51,8 @@ namespace Wyam.Core.Modules.Contents
         /// <summary>
         /// Creates a sitemap using the specified metadata key which should contain either a <c>string</c> that
         /// contains the location for each input document or a <c>SitemapItem</c> instance with the location
-        /// and other information.
+        /// and other information. If the metadata key is not found or does not contain the correct type of object,
+        /// a link to the document will be used.
         /// </summary>
         /// <param name="sitemapItemOrLocationMetadataKey">A metadata key that contains either a <c>SitemapItem</c> or
         /// a <c>string</c> location for each input document.</param>
@@ -68,7 +70,8 @@ namespace Wyam.Core.Modules.Contents
         /// <summary>
         /// Creates a sitemap using the specified delegate which should return either a <c>string</c> that
         /// contains the location for each input document or a <c>SitemapItem</c> instance with the location
-        /// and other information.
+        /// and other information. If the delegate returns <c>null</c> or does not return the correct type of object,
+        /// a link to the document will be used.
         /// </summary>
         /// <param name="sitemapItemOrLocation">A delegate that either returns a <c>SitemapItem</c> instance or a <c>string</c>
         /// with the desired item location. If the delegate returns <c>null</c>, the input document is not added to the sitemap.</param>
@@ -94,15 +97,8 @@ namespace Wyam.Core.Modules.Contents
             {
                 // Try to get a SitemapItem
                 object delegateResult = _sitemapItemOrLocation(input, context);
-                SitemapItem sitemapItem = delegateResult as SitemapItem;
-                if (sitemapItem == null)
-                {
-                    string locationDelegateResult = delegateResult as string;
-                    if (!string.IsNullOrWhiteSpace(locationDelegateResult))
-                    {
-                        sitemapItem = new SitemapItem(locationDelegateResult);
-                    }
-                }
+                SitemapItem sitemapItem = delegateResult as SitemapItem
+                    ?? new SitemapItem((delegateResult as string) ?? context.GetLink(input));
 
                 // Add a sitemap entry if we got an item and valid location
                 if (!string.IsNullOrWhiteSpace(sitemapItem?.Location))
