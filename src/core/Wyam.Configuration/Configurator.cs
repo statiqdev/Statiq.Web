@@ -374,9 +374,9 @@ namespace Wyam.Configuration
                 CacheManager cacheManager = new CacheManager(
                     _engine,
                     _scriptManager,
-                    configFilePath?.ChangeExtension(".wyam.dll"),
-                    configFilePath?.ChangeExtension(".wyam.hash"),
-                    configFilePath?.ChangeExtension(".generated.cs"));
+                    configFilePath?.AppendExtension(".dll"),
+                    configFilePath?.AppendExtension(".hash"),
+                    configFilePath?.AppendExtension(".generated.cs"));
                 cacheManager.EvaluateCode(code, ClassCatalog.GetClasses<IModule>().ToList(), OutputScript, IgnoreConfigHash, NoOutputConfigAssembly);
 
                 stopwatch.Stop();

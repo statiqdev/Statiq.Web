@@ -158,7 +158,7 @@ namespace Wyam.Configuration.NuGet
                 SourceRepository localRepository = _sourceRepositories.CreateRepository(packagesPath.FullPath);
 
                 // Cache the packages in a packages file
-                FilePath packagesFilePath = configFilePath?.ChangeExtension(".packages.xml");
+                FilePath packagesFilePath = configFilePath?.AppendExtension(".packages.xml");
                 if (packagesFilePath == null)
                 {
                     Trace.Verbose("Will not write packages file since no config file was provided");
