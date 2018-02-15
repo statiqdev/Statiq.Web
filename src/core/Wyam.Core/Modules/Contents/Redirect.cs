@@ -138,7 +138,12 @@ namespace Wyam.Core.Modules.Contents
                             redirects.TryAdd(fromPath, url);
 
                             // Meta refresh documents
-                            FilePath outputPath = fromPath.ChangeExtension(".html");
+                            FilePath outputPath = fromPath;
+                            if (!string.Equals(outputPath.Extension, ".html", StringComparison.OrdinalIgnoreCase))
+                            {
+                                outputPath = outputPath.AppendExtension(".html");
+                            }
+
                             if (_metaRefreshPages)
                             {
                                 metaRefreshDocuments.Add(

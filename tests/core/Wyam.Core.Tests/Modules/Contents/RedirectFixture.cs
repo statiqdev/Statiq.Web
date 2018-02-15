@@ -39,13 +39,15 @@ namespace Wyam.Core.Tests.Modules.Contents
             CollectionAssert.AreEqual(new[] { "foo.html" }, results.Select(x => x.Get<FilePath>(Keys.WritePath).FullPath));
         }
 
-        [Test]
-        public void AddsExtension()
+        [TestCase("foo/bar", "foo/bar.html")]
+        [TestCase("foo/bar.html", "foo/bar.html")]
+        [TestCase("foo/bar.baz", "foo/bar.baz.html")]
+        public void AddsExtension(string input, string expected)
         {
             // Given
             IDocument redirected = new TestDocument(new MetadataItems
             {
-                { Keys.RedirectFrom, new List<FilePath> { new FilePath("foo/bar") } }
+                { Keys.RedirectFrom, new List<FilePath> { new FilePath(input) } }
             });
             IDocument notRedirected = new TestDocument();
             IExecutionContext context = new TestExecutionContext();
@@ -55,7 +57,7 @@ namespace Wyam.Core.Tests.Modules.Contents
             List<IDocument> results = redirect.Execute(new[] { redirected, notRedirected }, context).ToList();  // Make sure to materialize the result list
 
             // Then
-            CollectionAssert.AreEqual(new[] { "foo/bar.html" }, results.Select(x => x.Get<FilePath>(Keys.WritePath).FullPath));
+            CollectionAssert.AreEqual(new[] { expected }, results.Select(x => x.Get<FilePath>(Keys.WritePath).FullPath));
         }
 
         [Test]
