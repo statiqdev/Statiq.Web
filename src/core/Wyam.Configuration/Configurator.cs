@@ -40,15 +40,9 @@ namespace Wyam.Configuration
 
         public bool OutputScript { get; set; }
 
-        public FilePath OutputScriptPath { get; set; }
-
         public bool IgnoreConfigHash { get; set; }
 
         public bool NoOutputConfigAssembly { get; set; }
-
-        public FilePath ConfigDllPath { get; set; }
-
-        public FilePath ConfigHashPath { get; set; }
 
         public IReadOnlyDictionary<string, object> Settings { get; set; }
 
@@ -108,10 +102,49 @@ namespace Wyam.Configuration
         }
 
         /// <summary>
+        /// Configures the engine using the specified config file.
+        /// </summary>
+        /// <param name="configFilePath">The path to the config file.</param>
+        /// <returns><c>true</c> if the file exists and the engine was configured, <c>false</c> otherwise.</returns>
+        public bool Configure(FilePath configFilePath)
+        {
+            if (configFilePath == null)
+            {
+                throw new ArgumentNullException(nameof(configFilePath));
+            }
+
+            return Configure(_engine.FileSystem.GetRootFile(configFilePath));
+        }
+
+        /// <summary>
+        /// Configures the engine using the specified config file.
+        /// </summary>
+        /// <param name="configFile">The config file.</param>
+        /// <returns><c>true</c> if the file exists and the engine was configured, <c>false</c> otherwise.</returns>
+        public bool Configure(IFile configFile)
+        {
+            if (configFile == null)
+            {
+                throw new ArgumentNullException(nameof(configFile));
+            }
+
+            if (configFile.Exists)
+            {
+                Configure(configFile.ReadAllText(), configFile.Path);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Configures the engine using the specified script.
         /// </summary>
         /// <param name="script">The script.</param>
-        public void Configure(string script)
+        /// <param name="configFilePath">
+        /// The path to the config file. This is used for calculating file names and paths for caching files.
+        /// If it is not supplied, no cache files will be generated.
+        /// </param>
+        public void Configure(string script, FilePath configFilePath = null)
         {
             CheckDisposed();
             if (_configured)
@@ -119,6 +152,9 @@ namespace Wyam.Configuration
                 throw new InvalidOperationException("Configuration has already been performed.");
             }
             _configured = true;
+
+            // Make sure the config file path is rooted
+            configFilePath = configFilePath == null ? null : _engine.FileSystem.RootPath.CombineFile(configFilePath);
 
             // Parse the script (or use an empty result if no script)
             DirectiveParser directiveParser = new DirectiveParser(_preprocessor);
@@ -133,7 +169,7 @@ namespace Wyam.Configuration
             // Initialize everything (order here is very important)
             AddRecipePackageAndSetTheme();
             AddThemePackagesAndPath();
-            InstallPackages();
+            InstallPackages(configFilePath);
             LoadAssemblies();
             CatalogClasses();
             AddNamespaces();
@@ -142,7 +178,7 @@ namespace Wyam.Configuration
             SetMetadata();
 
             // Finally evaluate the script
-            Evaluate(directiveParser.Code);
+            Evaluate(directiveParser.Code, configFilePath);
         }
 
         // Internal for testing
@@ -228,12 +264,12 @@ namespace Wyam.Configuration
             }
         }
 
-        private void InstallPackages()
+        private void InstallPackages(FilePath configFilePath)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Installing NuGet packages"))
             {
-                PackageInstaller.InstallPackages();
+                PackageInstaller.InstallPackages(configFilePath);
                 stopwatch.Stop();
                 Trace.Information($"NuGet packages installed in {stopwatch.ElapsedMilliseconds} ms");
             }
@@ -325,7 +361,7 @@ namespace Wyam.Configuration
             }
         }
 
-        private void Evaluate(string code)
+        private void Evaluate(string code, FilePath configFilePath)
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -335,7 +371,12 @@ namespace Wyam.Configuration
             Stopwatch stopwatch = Stopwatch.StartNew();
             using (Trace.WithIndent().Information("Evaluating configuration script"))
             {
-                CacheManager cacheManager = new CacheManager(_engine, _scriptManager, ConfigDllPath, ConfigHashPath, OutputScriptPath);
+                CacheManager cacheManager = new CacheManager(
+                    _engine,
+                    _scriptManager,
+                    configFilePath?.ChangeExtension(".wyam.dll"),
+                    configFilePath?.ChangeExtension(".wyam.hash"),
+                    configFilePath?.ChangeExtension(".generated.cs"));
                 cacheManager.EvaluateCode(code, ClassCatalog.GetClasses<IModule>().ToList(), OutputScript, IgnoreConfigHash, NoOutputConfigAssembly);
 
                 stopwatch.Stop();

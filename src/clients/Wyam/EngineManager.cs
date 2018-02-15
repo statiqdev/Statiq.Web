@@ -119,19 +119,11 @@ namespace Wyam
                 }
 
                 // If we have a configuration file use it, otherwise configure with defaults
-                IFile configFile = Engine.FileSystem.GetRootFile(_configOptions.ConfigFilePath);
-                if (configFile.Exists)
+                Trace.Information($"Loading configuration from {_configOptions.ConfigFilePath}");
+                if (!Configurator.Configure(_configOptions.ConfigFilePath))
                 {
-                    Trace.Information("Loading configuration from {0}", configFile.Path);
-                    Configurator.OutputScriptPath = configFile.Path.ChangeExtension(".generated.cs");
-                    Configurator.ConfigDllPath = configFile.Path.ChangeExtension(".wyam.dll");
-                    Configurator.ConfigHashPath = configFile.Path.ChangeExtension(".wyam.hash");
-                    Configurator.Configure(configFile.ReadAllText());
-                }
-                else
-                {
-                    Trace.Information("Could not find configuration file at {0}", _configOptions.ConfigFilePath);
-                    Configurator.Configure(null);
+                    Trace.Information($"Could not find configuration file at {_configOptions.ConfigFilePath}");
+                    Configurator.Configure((string)null);
                 }
             }
             catch (ScriptCompilationException)

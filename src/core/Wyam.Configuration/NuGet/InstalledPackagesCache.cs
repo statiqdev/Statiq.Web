@@ -9,6 +9,7 @@ using NuGet.Frameworks;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
+using Wyam.Common.IO;
 using Wyam.Common.Tracing;
 using Wyam.Common.Util;
 
@@ -17,28 +18,24 @@ namespace Wyam.Configuration.NuGet
     internal class InstalledPackagesCache : IDisposable
     {
         private readonly List<CachedPackage> _installedPackages = new List<CachedPackage>(); // The packages installed during this session
-        private readonly string _fullPath;
+        private readonly FilePath _filePath;
         private readonly CachedPackage[] _cachedPackages;
 
         private CachedPackageEntry _currentlyInstallingPackage = null;
 
-        public InstalledPackagesCache(string fullPath, bool updatePackages)
+        public InstalledPackagesCache(FilePath filePath, bool updatePackages)
         {
-            if (fullPath == null)
-            {
-                throw new ArgumentNullException(nameof(fullPath));
-            }
-            _fullPath = fullPath;
-            _cachedPackages = ReadCacheFile(fullPath, updatePackages);
+            _filePath = filePath;
+            _cachedPackages = ReadCacheFile(filePath, updatePackages);
         }
 
-        private static CachedPackage[] ReadCacheFile(string fullPath, bool updatePackages)
+        private static CachedPackage[] ReadCacheFile(FilePath filePath, bool updatePackages)
         {
-            if (!updatePackages && File.Exists(fullPath))
+            if (!updatePackages && filePath != null && File.Exists(filePath.FullPath))
             {
                 try
                 {
-                    XDocument packagesDocument = XDocument.Load(fullPath);
+                    XDocument packagesDocument = XDocument.Load(filePath.FullPath);
                     if (packagesDocument.Root == null)
                     {
                         Trace.Warning("No root element in packages file");
@@ -107,10 +104,17 @@ namespace Wyam.Configuration.NuGet
             return _currentlyInstallingPackage;
         }
 
-        public void Dispose() =>
-            new XDocument(
-                new XElement(CachedPackage.PackagesElementName,
-                    _installedPackages.Select(x => (object)x.Element).ToArray())).Save(_fullPath);
+        public void Dispose()
+        {
+            if (_filePath != null)
+            {
+                new XDocument(
+                    new XElement(
+                        CachedPackage.PackagesElementName,
+                        _installedPackages.Select(x => (object)x.Element).ToArray()))
+                    .Save(_filePath.FullPath);
+            }
+        }
 
         private class CachedPackageEntry : IDisposable
         {

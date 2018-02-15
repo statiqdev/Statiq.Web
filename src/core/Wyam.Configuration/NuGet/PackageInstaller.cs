@@ -39,6 +39,27 @@ namespace Wyam.Configuration.NuGet
             _sourceRepositories = new SourceRepositoryProvider(_settings);
         }
 
+        public ICollection<string> PackageIds => _packages.Keys;
+
+        public bool UpdatePackages { get; set; }
+
+        public bool UseLocalPackagesFolder { get; set; }
+
+        public bool UseGlobalPackageSources { get; set; }
+
+        public DirectoryPath PackagesPath
+        {
+            get { return _packagesPath; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(PackagesPath));
+                }
+                _packagesPath = value;
+            }
+        }
+
         private NuGetFramework GetCurrentFramework()
         {
             string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
@@ -66,8 +87,14 @@ namespace Wyam.Configuration.NuGet
         /// <param name="allowPrereleaseVersions">If set to <c>true</c>, allow prerelease versions.</param>
         /// <param name="allowUnlisted">If set to <c>true</c>, allow unlisted versions.</param>
         /// <param name="exclusive">If set to <c>true</c>, only use the package sources defined for this package.</param>
-        public void AddPackage(string packageId, IEnumerable<string> packageSources = null, string versionRange = null,
-            bool getLatest = false, bool allowPrereleaseVersions = false, bool allowUnlisted = false, bool exclusive = false)
+        public void AddPackage(
+            string packageId,
+            IEnumerable<string> packageSources = null,
+            string versionRange = null,
+            bool getLatest = false,
+            bool allowPrereleaseVersions = false,
+            bool allowUnlisted = false,
+            bool exclusive = false)
         {
             if (_packages.ContainsKey(packageId))
             {
@@ -81,9 +108,17 @@ namespace Wyam.Configuration.NuGet
                 Trace.Verbose($"Added known extension package {packageId} without version, setting version to {versionRange}");
             }
 
-            _packages.Add(packageId, new Package(_currentFramework, packageId,
-                packageSources?.Select(_sourceRepositories.CreateRepository).ToList(),
-                versionRange, getLatest, allowPrereleaseVersions, allowUnlisted, exclusive));
+            _packages.Add(
+                packageId,
+                new Package(
+                    _currentFramework,
+                    packageId,
+                    packageSources?.Select(_sourceRepositories.CreateRepository).ToList(),
+                    versionRange,
+                    getLatest,
+                    allowPrereleaseVersions,
+                    allowUnlisted,
+                    exclusive));
         }
 
         /// <summary>
@@ -91,27 +126,6 @@ namespace Wyam.Configuration.NuGet
         /// </summary>
         /// <param name="packageId">The package identifier.</param>
         public bool ContainsPackage(string packageId) => _packages.ContainsKey(packageId);
-
-        public ICollection<string> PackageIds => _packages.Keys;
-
-        public bool UpdatePackages { get; set; }
-
-        public bool UseLocalPackagesFolder { get; set; }
-
-        public bool UseGlobalPackageSources { get; set; }
-
-        public DirectoryPath PackagesPath
-        {
-            get { return _packagesPath; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(PackagesPath));
-                }
-                _packagesPath = value;
-            }
-        }
 
         private DirectoryPath GetAbsolutePackagesPath()
         {
@@ -127,7 +141,7 @@ namespace Wyam.Configuration.NuGet
             return packagesPath;
         }
 
-        internal void InstallPackages()
+        internal void InstallPackages(FilePath configFilePath)
         {
             DirectoryPath packagesPath = GetAbsolutePackagesPath();
             Trace.Information($"Installing packages to {packagesPath.FullPath} (using {(UseLocalPackagesFolder ? "local" : "global")} packages folder)");
@@ -144,8 +158,15 @@ namespace Wyam.Configuration.NuGet
                 SourceRepository localRepository = _sourceRepositories.CreateRepository(packagesPath.FullPath);
 
                 // Cache the packages in a packages file
-                string packagesFilePath = _fileSystem.RootPath.CombineFile(new FilePath("packages.xml")).FullPath;
-                Trace.Verbose($"Writing packages file to {packagesFilePath}");
+                FilePath packagesFilePath = configFilePath?.ChangeExtension(".packages.xml");
+                if (packagesFilePath == null)
+                {
+                    Trace.Verbose("Will not write packages file since no config file was provided");
+                }
+                else
+                {
+                    Trace.Verbose($"Writing packages file to {packagesFilePath.FullPath}");
+                }
                 using (InstalledPackagesCache installedPackages = new InstalledPackagesCache(packagesFilePath, UpdatePackages))
                 {
                     // Get the package manager and repositories

@@ -111,7 +111,7 @@ namespace Wyam.Commands
                 // Configure everything (primarily to get the recipe)
                 try
                 {
-                    engineManager.Configurator.Configure(null);
+                    engineManager.Configurator.Configure((string)null);
                 }
                 catch (Exception ex)
                 {
