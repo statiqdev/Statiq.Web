@@ -1,3 +1,20 @@
+# 1.3.0
+
+- [Refactoring] Configuration caches will always append to original configuration file ("config.wyam.dll", "config.wyam.hash", "config.wyam.packages.xml", etc.) (#619) - **Note** while this isn't a breaking change, it may require you to change your `.gitignore` files to handle the revised cache file names
+- [Fix] Graceful handling of missing cached config dll file (#617)
+- [Refactoring] Trace settings at startup as verbose (#618)
+- [Feature] Added an overload to `Replace` module that allows using the document in the content finder delegate (#625)
+- [Fix] Switches to `Regex.Replace()` when using a replacement delegate in the `Replace` module to avoid an infinite recursion edge case (#624)
+- [Fix] Better handling of . (dot) character in `RedirectFrom` module (#620, #621, thanks @wozzo)
+- [Feature] Added a new default behavior for `Sitemap` to generate a document link if no `SitemapItem` key is provided or usable (#622)
+- [Feature] Adds support for defining custom content types in the preview server
+- [Feature] Added `IMetadata.GetMetadata()` to get a new metadata object with only the specified keys
+- [Feature] Adds an additional constructor to the `Execute` module to process the entire input set at once
+- [Feature] Adds ability to serialize selected metadata keys to a JSON object in `GenerateJson` module
+- [Feature] Adds ability to specify additional serializer settings for `GenerateJson` module
+- [Fix] Fixes bug with `GenerateJson` module not setting metadata key
+- [Refactoring] Removed the Wyam.Windows installer, it's been replaced by Chocolatey and eventually a .NET CLI global tool
+
 # 1.2.0
 
 - [Feature] Locks in matching recipe and theme package versions (#587)
