@@ -111,20 +111,12 @@ namespace Wyam.Core.Modules.Contents
             }
             if (_contentFinder != null)
             {
-                Match match = Regex.Match(input.Content, _search, _regexOptions);
-                if (!match.Success)
-                {
-                    return new[] { input };
-                }
                 string currentDocumentContent = input.Content;
-                while (match.Success)
+                string newDocumentContent = Regex.Replace(input.Content, _search, x => _contentFinder(x)?.ToString() ?? string.Empty, _regexOptions);
+                return new[]
                 {
-                    object result = _contentFinder(match);
-                    currentDocumentContent = currentDocumentContent.Remove(match.Index, match.Length);
-                    currentDocumentContent = currentDocumentContent.Insert(match.Index, result.ToString());
-                    match = Regex.Match(currentDocumentContent, _search, _regexOptions);
-                }
-                return new[] { context.GetDocument(input, context.GetContentStream(currentDocumentContent)) };
+                    currentDocumentContent == newDocumentContent ? input : context.GetDocument(input, context.GetContentStream(newDocumentContent))
+                };
             }
             return new[]
             {
