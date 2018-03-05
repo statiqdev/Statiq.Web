@@ -32,13 +32,7 @@ namespace Wyam.Razor
                 NamespaceImports.Add(ns);
             }
         }
-
-        public RazorHost(string root)
-            : base(root)
-        {
-            throw new NotSupportedException();
-        }
-
+        
         public override string DefaultModel => "IDocument";
     }
 }
