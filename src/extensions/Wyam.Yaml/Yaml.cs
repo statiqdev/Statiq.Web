@@ -9,6 +9,7 @@ using Wyam.Common.Documents;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using YamlDotNet.RepresentationModel;
+using Wyam.Yaml.Dynamic;
 
 namespace Wyam.Yaml
 {
@@ -89,8 +90,7 @@ namespace Wyam.Yaml
             // Get the dynamic representation
             if (!string.IsNullOrEmpty(_key))
             {
-                // TODO: YamlDotNet.Dynamic doesn't support .NET Core.
-                //metadata[_key] = new DynamicYaml(node);
+                metadata[_key] = new DynamicYaml(node);
             }
 
             // Also get the flat metadata if requested

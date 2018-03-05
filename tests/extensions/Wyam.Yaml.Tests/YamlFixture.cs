@@ -12,6 +12,7 @@ using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
+using Wyam.Yaml.Dynamic;
 
 namespace Wyam.Yaml.Tests
 {
@@ -60,12 +61,11 @@ C: Yes
 
                 // Then
                 context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                // TODO: YamlDotNet.Dynamic doesn't support .NET Core.
-                //Assert.AreEqual(1, items.Count());
-                //Assert.IsInstanceOf<DynamicYaml>(items.First().Value);
-                //Assert.AreEqual(1, (int)((dynamic)items.First().Value).A);
-                //Assert.AreEqual(true, (bool)((dynamic)items.First().Value).B);
-                //Assert.AreEqual("Yes", (string)((dynamic)items.First().Value).C);
+                Assert.AreEqual(1, items.Count());
+                Assert.IsInstanceOf<DynamicYaml>(items.First().Value);
+                Assert.AreEqual(1, (int)((dynamic)items.First().Value).A);
+                Assert.AreEqual(true, (bool)((dynamic)items.First().Value).B);
+                Assert.AreEqual("Yes", (string)((dynamic)items.First().Value).C);
             }
 
             [Test]
