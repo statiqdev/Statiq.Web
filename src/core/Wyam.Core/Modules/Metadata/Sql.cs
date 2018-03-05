@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FULLFRAMEWORK
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -49,14 +50,12 @@ namespace Wyam.Core.Modules.Metadata
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                // TODO: SqlDataAdapter is in System.Data.SqlClient 4.4. Waiting to fix until all nuget packages are updated.
-                return Enumerable.Empty<DataRow>();
-                //using (SqlDataAdapter adapter = new SqlDataAdapter(_sql, conn))
-                //{
-                //    DataTable dataTable = new DataTable();
-                //    adapter.Fill(dataTable);
-                //    return dataTable.AsEnumerable();
-                //}
+                using (SqlDataAdapter adapter = new SqlDataAdapter(_sql, conn))
+                {
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    return dataTable.AsEnumerable();
+                }
             }
         }
 
@@ -65,3 +64,4 @@ namespace Wyam.Core.Modules.Metadata
             row.Table.Columns.Cast<DataColumn>().ToDictionary(col => col.ColumnName, col => row[col]);
     }
 }
+#endif
