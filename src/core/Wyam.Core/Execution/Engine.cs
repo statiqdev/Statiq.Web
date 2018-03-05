@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JavaScriptEngineSwitcher.Core;
-using Microsoft.IO;
 using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -47,7 +46,7 @@ namespace Wyam.Core.Execution
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
 
-        private IContentStreamFactory _contentStreamFactory = new RecyclableMemoryContentStreamFactory();
+        private IContentStreamFactory _contentStreamFactory = new MemoryContentStreamFactory();
         private IDocumentFactory _documentFactory;
 
         private bool _disposed;
