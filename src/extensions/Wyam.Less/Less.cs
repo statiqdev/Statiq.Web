@@ -10,8 +10,6 @@ using dotless.Core.Cache;
 using dotless.Core.Parser.Infrastructure.Nodes;
 using dotless.Core.Parser.Tree;
 using dotless.Core.Plugins;
-using Microsoft.Practices.ServiceLocation;
-using Pandora.Fluent;
 using ReflectionMagic;
 using Wyam.Common;
 using Wyam.Common.Configuration;
