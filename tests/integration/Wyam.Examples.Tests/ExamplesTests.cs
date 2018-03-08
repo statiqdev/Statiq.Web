@@ -60,7 +60,7 @@ namespace Wyam.Examples.Tests
             // When
             Process process = new Process();
             process.StartInfo.FileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.exe");
-            process.StartInfo.Arguments = $@"--no-output-config-assembly --use-local-packages --packages-path ""{packagesPath}"" ""{example}""";
+            process.StartInfo.Arguments = $@"--no-output-config-assembly --use-local-packages --verbose --packages-path ""{packagesPath}"" ""{example}""";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
