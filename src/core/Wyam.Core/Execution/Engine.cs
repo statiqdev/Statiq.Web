@@ -46,7 +46,7 @@ namespace Wyam.Core.Execution
         private readonly PipelineCollection _pipelines = new PipelineCollection();
         private readonly DiagnosticsTraceListener _diagnosticsTraceListener = new DiagnosticsTraceListener();
 
-        private IContentStreamFactory _contentStreamFactory = new MemoryContentStreamFactory();
+        private IContentStreamFactory _contentStreamFactory = new RecyclableMemoryContentStreamFactory();
         private IDocumentFactory _documentFactory;
 
         private bool _disposed;
