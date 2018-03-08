@@ -53,9 +53,6 @@
     <PackageReference Include="NuGet.Resolver" Version="4.4.0" />
     <PackageReference Include="NuGet.RuntimeModel" Version="4.2.0" />
     <PackageReference Include="NuGet.Versioning" Version="4.4.0" />
-    <PackageReference Include="Scripty.MsBuild" Version="0.7.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -77,33 +74,5 @@
     <Compile Include="..\..\..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <None Include="KnownExtensionGenerated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KnownExtensionGenerated.csx</DependentUpon>
-    </None>
-    <None Include="KnownThemeGenerated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KnownThemeGenerated.csx</DependentUpon>
-    </None>
-    <None Include="KnownExtensionGenerated.csx">
-      <Generator>ScriptyGenerator</Generator>
-      <LastGenOutput>KnownExtensionGenerated.log</LastGenOutput>
-    </None>
-    <None Include="KnownExtensionGenerated.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KnownExtensionGenerated.csx</DependentUpon>
-    </None>
-    <None Include="KnownThemeGenerated.csx">
-      <Generator>ScriptyGenerator</Generator>
-      <LastGenOutput>KnownThemeGenerated.log</LastGenOutput>
-    </None>
-    <None Include="KnownThemeGenerated.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KnownThemeGenerated.csx</DependentUpon>
-    </None>
   </ItemGroup>
 </Project>
