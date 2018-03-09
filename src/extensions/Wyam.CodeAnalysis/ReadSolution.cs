@@ -59,7 +59,10 @@ namespace Wyam.CodeAnalysis
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
             StringWriter log = new StringWriter();
-            AnalyzerManager manager = new AnalyzerManager(file.Path.Directory.FullPath, log);
+            AnalyzerManager manager = new AnalyzerManager(file.Path.Directory.FullPath, new AnalyzerManagerOptions
+            {
+                LogWriter = log
+            });
             foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
             {
                 CompileProjectAndTrace(analyzer, log);

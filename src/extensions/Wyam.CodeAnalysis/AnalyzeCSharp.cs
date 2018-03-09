@@ -549,7 +549,10 @@ namespace Wyam.CodeAnalysis
         {
             // Generate a single Workspace and add all of the projects to it
             StringWriter log = new StringWriter();
-            AnalyzerManager manager = new AnalyzerManager(log);
+            AnalyzerManager manager = new AnalyzerManager(new AnalyzerManagerOptions
+            {
+                LogWriter = log
+            });
             AdhocWorkspace workspace = new AdhocWorkspace();
             IEnumerable<IFile> projectFiles = context.FileSystem.GetInputFiles(_projectGlobs)
                 .Where(x => x.Path.Extension == ".csproj" && x.Exists);
@@ -586,7 +589,12 @@ namespace Wyam.CodeAnalysis
             {
                 Trace.Verbose($"Creating workspace solution for {solutionFile.Path.FullPath}");
                 StringWriter log = new StringWriter();
-                AnalyzerManager manager = new AnalyzerManager(solutionFile.Path.FullPath, log);
+                AnalyzerManager manager = new AnalyzerManager(
+                    solutionFile.Path.FullPath,
+                    new AnalyzerManagerOptions
+                    {
+                        LogWriter = log
+                    });
                 foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
                 {
                     ReadWorkspace.CompileProjectAndTrace(analyzer, log);

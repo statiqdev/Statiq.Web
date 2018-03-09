@@ -20,6 +20,8 @@
     <Copyright>Copyright © Wyam Contributors</Copyright>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains the docs recipe.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
+    <!-- This silences NuGet package downgrade warnings (which are treated as errors in netstandard projects by default - see if we can turn them back on at some point -->
+    <NoWarn>$(NoWarn);NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">

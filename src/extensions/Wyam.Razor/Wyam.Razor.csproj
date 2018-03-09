@@ -55,16 +55,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="1.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.7.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
     <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="1.1.0" />
@@ -72,9 +72,9 @@
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.WebEncoders" Version="1.1.1" />

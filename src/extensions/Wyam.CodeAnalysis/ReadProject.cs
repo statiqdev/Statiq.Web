@@ -60,7 +60,10 @@ namespace Wyam.CodeAnalysis
         protected override IEnumerable<Project> GetProjects(IFile file)
         {
             StringWriter log = new StringWriter();
-            AnalyzerManager manager = new AnalyzerManager(log);
+            AnalyzerManager manager = new AnalyzerManager(new AnalyzerManagerOptions
+            {
+                LogWriter = log
+            });
             ProjectAnalyzer analyzer = manager.GetProject(file.Path.FullPath);
             CompileProjectAndTrace(analyzer, log);
             AdhocWorkspace workspace = analyzer.GetWorkspace();

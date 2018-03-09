@@ -13,6 +13,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
     <HasRuntimeOutput>true</HasRuntimeOutput>
+    <!-- This silences NuGet package downgrade warnings (which are treated as errors in netstandard projects by default - see if we can turn them back on at some point -->
+    <NoWarn>$(NoWarn);NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
@@ -20,23 +22,24 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Buildalyzer.Workspaces" Version="0.2.3" />
+    <PackageReference Include="Buildalyzer" Version="0.3.0" />
+    <PackageReference Include="Buildalyzer.Workspaces" Version="0.3.0" />
     <PackageReference Include="Castle.Core" Version="4.0.0" />
     <PackageReference Include="ManagedEsent" Version="1.9.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Elfie" Version="0.10.6" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="2.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="2.7.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.7.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
