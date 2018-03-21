@@ -164,7 +164,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string code = @"
                     class Yellow
                     {
-                        public X()
+                        public void X()
                         {
                         }
 
@@ -172,7 +172,7 @@ namespace Wyam.CodeAnalysis.Tests
                         {
                         }
 
-                        Z(bool a)
+                        void Z(bool a)
                         {
                         }
                     }
@@ -303,7 +303,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string code = @"
                     class Yellow
                     {
-                        public X(int z)
+                        public void X(int z)
                         {
                         }
                     }
@@ -326,7 +326,7 @@ namespace Wyam.CodeAnalysis.Tests
                 string code = @"
                     class Yellow
                     {
-                        public X(params int[] z)
+                        public void X(params int[] z)
                         {
                         }
                     }
