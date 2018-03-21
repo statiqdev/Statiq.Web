@@ -201,6 +201,24 @@ the family Rosaceae.</dd>
             }
 
             [Test]
+            public void UnescapesDoubleAt()
+            {
+                // Given
+                string input = @"Looking @Good, \\@Man!";
+                string output = @"<p>Looking &#64;Good, @Man!</p>
+".Replace(Environment.NewLine, "\n");
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                Markdown markdown = new Markdown();
+
+                // When
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+            }
+
+            [Test]
             public void DoesNotEscapeAtIfDisabled()
             {
                 // Given

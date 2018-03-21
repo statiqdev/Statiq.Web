@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Helpers;
 
@@ -20,8 +20,9 @@ namespace Wyam.Markdown
     /// </summary>
     /// <remarks>
     /// Parses markdown content in each input document and outputs documents with rendered HTML content.
-    /// Note that @ (at) symbols will be automatically escaped for better compatibility with downstream
-    /// Razor modules. Use the <c>EscapeAt()</c> fluent method to modify this behavior.
+    /// Note that <c>@</c> (at) symbols will be automatically HTML escaped for better compatibility with downstream
+    /// Razor modules. If you want to include a raw <c>@</c> symbol when <c>EscapeAt()</c> is <c>true</c>, use
+    /// <c>\@</c>. Use the <c>EscapeAt()</c> fluent method to modify this behavior.
     /// </remarks>
     /// <category>Templates</category>
     public class Markdown : IModule
@@ -30,6 +31,8 @@ namespace Wyam.Markdown
         /// The default Markdown configuration.
         /// </summary>
         public const string DefaultConfiguration = "common";
+
+        private static readonly Regex EscapeAtRegex = new Regex("(?<!\\\\)@");
 
         private readonly string _sourceKey;
         private readonly string _destinationKey;
@@ -60,6 +63,7 @@ namespace Wyam.Markdown
         /// This is important if the Markdown documents are going to be passed to the Razor module,
         /// otherwise the Razor processor will interpret the unescaped <c>@</c> symbols as code
         /// directives.
+        /// If you want to include a raw <c>@</c> symbol when <c>EscapeAt()</c> is <c>true</c>, use <c>\@</c>.
         /// </summary>
         /// <param name="escapeAt">If set to <c>true</c>, <c>@</c> symbols are HTML escaped.</param>
         /// <returns>The current module instance.</returns>
@@ -186,7 +190,8 @@ namespace Wyam.Markdown
 
                     if (_escapeAt)
                     {
-                        result = result.Replace("@", "&#64;");
+                        result = EscapeAtRegex.Replace(result, "&#64;");
+                        result = result.Replace("\\@", "@");
                     }
 
                     executionCache.Set(input, _sourceKey, result);
