@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
@@ -22,7 +22,7 @@
     <PackageTags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cake.Core" Version="0.22.2">
+    <PackageReference Include="Cake.Core" Version="0.26.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
