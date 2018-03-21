@@ -133,9 +133,9 @@ namespace Wyam.Hosting
         /// </summary>
         public void Start() => _host.Start();
 
-        public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StartAsync(cancellationToken);
-
-        public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StopAsync(cancellationToken);
+        // These will be needed once the hosting package is updated to 2.x
+        //public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StartAsync(cancellationToken);
+        //public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StopAsync(cancellationToken);
 
         public IFeatureCollection ServerFeatures => _host.ServerFeatures;
 

@@ -72,7 +72,7 @@
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.WebEncoders" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="1.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
