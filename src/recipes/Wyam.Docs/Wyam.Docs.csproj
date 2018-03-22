@@ -20,8 +20,6 @@
     <Copyright>Copyright © Wyam Contributors</Copyright>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains the docs recipe.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
-    <!-- This silences NuGet package downgrade warnings (which are treated as errors in netstandard projects by default - see if we can turn them back on at some point -->
-    <NoWarn>$(NoWarn);NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
@@ -53,7 +51,7 @@
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageReference Include="System.Console" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.3.1" />
     <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Tracing" Version="4.3.0" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />
@@ -85,7 +83,7 @@
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />

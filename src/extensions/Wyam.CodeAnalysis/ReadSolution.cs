@@ -1,12 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
-using Microsoft.Build.Construction;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;

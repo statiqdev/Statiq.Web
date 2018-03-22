@@ -8,7 +8,7 @@ namespace Wyam.Testing.Tracing
     /// <summary>
     /// Throws exceptions on error or warning traces, but only for the current thread
     /// </summary>
-    public class TestTraceListener : ConsoleTraceListener
+    public class TestTraceListener : TextWriterTraceListener
     {
         public string TestId { get; private set; }
 

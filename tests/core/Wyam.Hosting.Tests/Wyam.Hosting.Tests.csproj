@@ -13,8 +13,6 @@
     <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <HasRuntimeOutput>true</HasRuntimeOutput>
-    <!-- This silences NuGet package downgrade warnings (which are treated as errors in netstandard projects by default - see if we can turn them back on at some point -->
-    <NoWarn>$(NoWarn);NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Owin\Documents\BasicHtmlDocument.html" />
@@ -26,7 +24,7 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Castle.Core" Version="4.0.0" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="CommonServiceLocator" Version="1.3" />
     <PackageReference Include="Fleck" Version="0.14.0.59" />
     <PackageReference Include="Libuv" Version="1.10.0" />
@@ -34,7 +32,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="1.1.2" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
     <PackageReference Include="Microsoft.Owin" Version="3.1.0" />
@@ -45,7 +43,7 @@
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="NSubstitute" Version="2.0.2" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="Owin" Version="1.0" />
     <PackageReference Include="Owin.WebSocket.Fleck" Version="1.6.1" />

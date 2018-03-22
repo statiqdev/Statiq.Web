@@ -68,7 +68,7 @@ If you need to make a new project, there are a number of things that need to be 
 Make sure to run all unit tests before creating a pull request. You code should also have reasonable unit test coverage.
 
 The tests in Wyam follow a very specific pattern, please attempt to follow the same pattern in the tests for your code:
-- Tests use [NUnit](https://github.com/nunit). [NSubstitute](http://nsubstitute.github.io/) is also used when mocks are needed, but it's preferred to use stub classes from `Wyam.Testing` instead of mocking.
+- Tests use [NUnit](https://github.com/nunit). Instead of mocks, use stub classes from `Wyam.Testing`. Add new stub behavior there if needed to support your tests.
 - All tests are placed into a fixture class with the name `ObjectNameFixture` where `ObjectName` is the name of the object under test.
 - The fixture class should be placed in the appropriate test project at the same relative path as the primary source file for the object being tested.
 - The fixture class should inherit from `BaseFixture` in the `Wyam.Testing` library.
@@ -76,7 +76,7 @@ The tests in Wyam follow a very specific pattern, please attempt to follow the s
 - The nested symbol test class should inherit from the outer containing fixture class.
 - Test methods for the symbol should be placed in the nested symbol test class and should have explanatory names that follow standard naming conventions. The names of test methods don't have to follow any specific guideline as long as it's reasonably clear what the purpose of the test is.
 - Each test method should contain the comments `\\ Given`, `\\ When`, and `\\ Then` to separate the test code into three clear sections (though these can be combined for simple tests so you might have a comment like `\\ When, Then`).
-- Use the [NUnit constraint-based model](https://github.com/nunit/docs/wiki/Assertions) for assertions in new test code.
+- Use [Shouldly](https://github.com/shouldly/shouldly) for assertions in new test code.
 
 If there are any questions about how to format test code just take a look at the existing test code.
 
@@ -88,5 +88,4 @@ Making updates to the Wyam documentation is just as helpful as writing code (if 
 By contributing to Wyam, you assert that:
 
 * The contribution is your own original work.
-* You have the right to assign the copyright for the work (it is not owned by your employer, or
-  you have been given copyright assignment in writing).
+* You have the right to assign the copyright for the work (it is not owned by your employer, or you have been given copyright assignment in writing).

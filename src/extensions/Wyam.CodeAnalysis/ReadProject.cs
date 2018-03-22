@@ -1,16 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
 using Wyam.Common.Configuration;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
-using Wyam.Common.Tracing;
 
 namespace Wyam.CodeAnalysis
 {
