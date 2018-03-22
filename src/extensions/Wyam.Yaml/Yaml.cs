@@ -78,6 +78,10 @@ namespace Wyam.Yaml
                             }
                         }
                     }
+                    if (documentMetadata.Count == 0 && _flatten)
+                    {
+                        return new[] { input };
+                    }
                     return documentMetadata.Select(metadata => context.GetDocument(input, metadata));
                 })
                 .Where(x => x != null);

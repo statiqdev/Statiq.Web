@@ -55,6 +55,80 @@ Content2", documents.First().Content);
             }
 
             [Test]
+            public void EmptyFirstLineWithDelimiterTreatsAsFrontMatter()
+            {
+                // Given
+                IExecutionContext context = new TestExecutionContext();
+                IDocument[] inputs =
+                {
+                    new TestDocument(@"
+---
+FM1
+FM2
+---
+Content1
+Content2")
+                };
+                string frontMatterContent = null;
+                FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
+                {
+                    frontMatterContent = x.Content;
+                    return new[] { x };
+                }));
+
+                // When
+                IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
+
+                // Then
+                Assert.AreEqual(1, documents.Count());
+                Assert.AreEqual(
+                    @"
+", frontMatterContent);
+                Assert.AreEqual(
+                    @"FM1
+FM2
+---
+Content1
+Content2", documents.First().Content);
+            }
+
+            [Test]
+            public void EmptyFirstLineWithoutDelimiterTreatsAsFrontMatter()
+            {
+                // Given
+                IExecutionContext context = new TestExecutionContext();
+                IDocument[] inputs =
+                {
+                    new TestDocument(@"
+FM1
+FM2
+---
+Content1
+Content2")
+                };
+                string frontMatterContent = null;
+                FrontMatter frontMatter = new FrontMatter(new Execute((x, ctx) =>
+                {
+                    frontMatterContent = x.Content;
+                    return new[] { x };
+                }));
+
+                // When
+                IEnumerable<IDocument> documents = frontMatter.Execute(inputs, context);
+
+                // Then
+                Assert.AreEqual(1, documents.Count());
+                Assert.AreEqual(
+                    @"
+FM1
+FM2
+", frontMatterContent);
+                Assert.AreEqual(
+                    @"Content1
+Content2", documents.First().Content);
+            }
+
+            [Test]
             public void DashStringDoesNotSplitAtNonmatchingDashes()
             {
                 // Given
