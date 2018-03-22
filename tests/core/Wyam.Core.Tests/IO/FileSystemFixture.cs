@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Wyam.Common.IO;
 using Wyam.Core.IO;
 using Wyam.Testing;

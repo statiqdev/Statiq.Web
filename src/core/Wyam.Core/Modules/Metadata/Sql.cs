@@ -1,5 +1,4 @@
-﻿#if FULLFRAMEWORK
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -54,7 +53,7 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
-                    return dataTable.AsEnumerable();
+                    return dataTable.Rows.Cast<DataRow>();
                 }
             }
         }
@@ -64,4 +63,3 @@ namespace Wyam.Core.Modules.Metadata
             row.Table.Columns.Cast<DataColumn>().ToDictionary(col => col.ColumnName, col => row[col]);
     }
 }
-#endif

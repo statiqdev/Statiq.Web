@@ -63,7 +63,7 @@ namespace Wyam.Razor.Tests
                 CollectionAssert.Contains(traceListener.Messages, "Test");
             }
 
-            public class TraceListener : System.Diagnostics.ConsoleTraceListener
+            public class TraceListener : System.Diagnostics.TextWriterTraceListener
             {
                 public List<string> Messages { get; set; } = new List<string>();
 
