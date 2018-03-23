@@ -2,17 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <OutputType>Exe</OutputType>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />
@@ -24,20 +13,12 @@
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.1" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.CommandLine">
       <HintPath>..\..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
   </ItemGroup>
   <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != ''" AfterTargets="AfterBuild">
     <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />

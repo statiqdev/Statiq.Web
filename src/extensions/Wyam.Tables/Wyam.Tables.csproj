@@ -1,23 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Authors>Dave Glick</Authors>
-    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
-    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright © Wyam Contributors</Copyright>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for importing and exporting CSV and Excel files.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine CSV Excel</PackageTags>
   </PropertyGroup>
@@ -28,16 +11,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="4.1.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Tabular.Csv.dll" Version="2.1.5" />
     <PackageReference Include="Tabular.dll" Version="2.1.5" />
     <PackageReference Include="Tabular.Excel.dll" Version="2.1.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>

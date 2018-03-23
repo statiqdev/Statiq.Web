@@ -21,7 +21,7 @@ namespace Wyam.Configuration.Assemblies
     {
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _assemblies = new ConcurrentHashSet<string>();
-        private readonly ConcurrentQueue<string> _referencedAssemblyNames = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<(AssemblyName, Assembly)> _referencedAssemblyNames = new ConcurrentQueue<(AssemblyName, Assembly)>();
 
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly AssemblyResolver _assemblyResolver;
@@ -255,7 +255,7 @@ namespace Wyam.Configuration.Assemblies
                 foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
                 {
                     Trace.Verbose($"Added referenced assembly {referencedAssemblyName}");
-                    _referencedAssemblyNames.Enqueue(referencedAssemblyName.ToString());
+                    _referencedAssemblyNames.Enqueue((referencedAssemblyName, assembly));
                 }
             }
         }
@@ -266,35 +266,52 @@ namespace Wyam.Configuration.Assemblies
             // Need to keep track of the assemblies we've seen since assembly binding redirects may result in a different loaded assembly for the input name
             HashSet<string> loadedAssemblies = new HashSet<string>();
 
-            string assemblyName;
-            while (_referencedAssemblyNames.TryDequeue(out assemblyName))
+            (AssemblyName Name, Assembly ReferencingAssembly) reference;
+            while (_referencedAssemblyNames.TryDequeue(out reference))
             {
-                if (!loadedAssemblies.Contains(assemblyName) && !_assemblyCollection.ContainsFullName(assemblyName))
+                string referenceName = reference.Name.ToString();
+                if (!loadedAssemblies.Contains(referenceName) && !_assemblyCollection.ContainsFullName(referenceName))
                 {
-                    loadedAssemblies.Add(assemblyName);
-                    using (Trace.WithIndent().Verbose($"Loading referenced assembly {assemblyName}"))
+                    loadedAssemblies.Add(referenceName);
+                    using (Trace.WithIndent().Verbose($"Loading referenced assembly {referenceName} from {reference.ReferencingAssembly.GetName().Name}"))
                     {
                         // Make sure we haven't already loaded this assembly
-                        Assembly loadedAssembly;
-                        if (_assemblyResolver.TryGet(assemblyName, out loadedAssembly))
+                        Assembly assembly = null;
+                        if (_assemblyResolver.TryGet(referenceName, out assembly))
                         {
-                            Trace.Verbose($"Assembly {assemblyName} already loaded as {loadedAssembly.FullName}");
+                            Trace.Verbose($"Referenced assembly {reference} already loaded as {assembly.FullName}");
                         }
                         else
                         {
                             // It wasn't already loaded, so try to load it
                             try
                             {
-                                Assembly assembly = Assembly.Load(assemblyName);
-                                if (assembly != null && assembly.FullName != assemblyName)
+                                assembly = Assembly.Load(reference.Name);
+                                if (assembly != null && assembly.FullName != referenceName)
                                 {
-                                    Trace.Verbose($"Assembly {assemblyName} redirected to {assembly.FullName}");
+                                    Trace.Verbose($"Referenced assembly {reference} redirected to {assembly.FullName}");
                                 }
                                 ProcessLoadedAssembly(assembly, false);
                             }
                             catch (Exception ex)
                             {
-                                Trace.Verbose($"{ex.GetType().Name} exception while loading referenced assembly {assemblyName}: {ex.Message}");
+                                Trace.Verbose($"{ex.GetType().Name} exception while loading referenced assembly {referenceName}: {ex.Message}");
+                                assembly = null;
+                            }
+                        }
+
+                        // It wasn't already loaded or loaded by name, so try polling at the referencing assembly location
+                        if (assembly == null)
+                        {
+                            string assemblyFile = Path.Combine(Path.GetDirectoryName(reference.ReferencingAssembly.Location), reference.Name.Name) + ".dll";
+                            Trace.Verbose($"Attempting to load referenced assembly {referenceName} from {assemblyFile}");
+                            try
+                            {
+                                assembly = Assembly.LoadFrom(assemblyFile);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyFile}: {ex.Message}");
                             }
                         }
                     }

@@ -1,18 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <CodeAnalysisRuleSet>..\..\..\test.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <HasRuntimeOutput>true</HasRuntimeOutput>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Owin\Documents\BasicHtmlDocument.html" />
@@ -25,41 +13,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.2.1" />
-    <PackageReference Include="CommonServiceLocator" Version="1.3" />
-    <PackageReference Include="Fleck" Version="0.14.0.59" />
-    <PackageReference Include="Libuv" Version="1.10.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
-    <PackageReference Include="Microsoft.Net.Http.Headers" Version="1.1.2" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Owin" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Owin.FileSystems" Version="3.1.0" />
     <PackageReference Include="Microsoft.Owin.Hosting" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="3.1.0" />
     <PackageReference Include="Microsoft.Owin.Testing" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.1" />
     <PackageReference Include="NSubstitute" Version="2.0.2" />
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
-    <PackageReference Include="Owin" Version="1.0" />
-    <PackageReference Include="Owin.WebSocket.Fleck" Version="1.6.1" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Owin\Documents\BasicHtmlDocument.html" />

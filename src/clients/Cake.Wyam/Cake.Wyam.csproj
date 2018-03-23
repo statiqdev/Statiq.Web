@@ -1,23 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Authors>Gary Ewan Park, Dave Glick</Authors>
-    <PackageLicenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://wyam.io/Content/images/logo-square-64.png</PackageIconUrl>
-    <PackageProjectUrl>https://wyam.io</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright © Wyam Contributors</Copyright>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains an addin for Cake for interacting with Wyam.</Description>
     <PackageTags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
   </PropertyGroup>
@@ -25,13 +8,5 @@
     <PackageReference Include="Cake.Core" Version="0.26.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>
