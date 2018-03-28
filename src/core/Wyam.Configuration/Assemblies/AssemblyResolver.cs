@@ -46,9 +46,12 @@ namespace Wyam.Configuration.Assemblies
 
         private void AddToCache(Assembly assembly)
         {
-            AssemblyName assemblyName = assembly.GetName();
-            _fullNameCache.TryAdd(assemblyName.FullName, assembly);
-            _nameCache.TryAdd(assemblyName.Name, assembly);
+            if (!assembly.ReflectionOnly)
+            {
+                AssemblyName assemblyName = assembly.GetName();
+                _fullNameCache.TryAdd(assemblyName.FullName, assembly);
+                _nameCache.TryAdd(assemblyName.Name, assembly);
+            }
         }
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)

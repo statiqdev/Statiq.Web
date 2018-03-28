@@ -6,10 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Encodings.Web;
-using System.Threading;
 using System.Xml.Linq;
-
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +21,6 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
@@ -44,6 +41,8 @@ namespace Wyam.Razor
         internal RazorCompiler(CompilationParameters parameters)
         {
             ServiceCollection serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddDataProtection().DisableAutomaticKeyGeneration();
 
             IMvcCoreBuilder builder = serviceCollection
                 .AddMvcCore()

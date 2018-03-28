@@ -21,7 +21,18 @@ namespace Wyam.Configuration.Assemblies
     {
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _assemblies = new ConcurrentHashSet<string>();
-        private readonly ConcurrentQueue<(AssemblyName, Assembly)> _referencedAssemblyNames = new ConcurrentQueue<(AssemblyName, Assembly)>();
+
+        // First = referenced assembly name, Second = referencing assembly path (for locating the referenced assembly)
+        private readonly Queue<(AssemblyName, string)> _referencedAssemblies = new Queue<(AssemblyName, string)>();
+
+        // Keeps track of the names we've already processed as referenced so we don't add them again
+        private readonly HashSet<string> _referencedAssemblyNames = new HashSet<string>();
+
+        // Key = assembly simple name, Value = assembly version, assembly path, direct
+        private readonly Dictionary<string, (AssemblyName, string, bool)> _assembliesToLoad = new Dictionary<string, (AssemblyName, string, bool)>();
+
+        // The full name of assemblies that have already been reflected
+        private readonly HashSet<string> _reflectedAssemblyNames = new HashSet<string>();
 
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly AssemblyResolver _assemblyResolver;
@@ -52,6 +63,12 @@ namespace Wyam.Configuration.Assemblies
             DirectAssemblies.Add(Assembly.GetAssembly(typeof(Engine)));
         }
 
+        /// <summary>
+        /// Adds a new assembly or pattern to those to be loaded.
+        /// </summary>
+        /// <param name="assembly">
+        /// The assembly or pattern to load. If the string contains a "*" then it is considered a globbing pattern, otherwise it's considered an assembly.
+        /// </param>
         public void Add(string assembly)
         {
             if (_loaded)
@@ -70,7 +87,9 @@ namespace Wyam.Configuration.Assemblies
             }
         }
 
-        // Adds all specified assemblies and those in packages path, finds all modules, and adds their namespaces and all assembly references to the options
+        /// <summary>
+        /// Loads all specified assemblies and their references.
+        /// </summary>
         internal void Load()
         {
             if (_loaded)
@@ -80,8 +99,10 @@ namespace Wyam.Configuration.Assemblies
             _loaded = true;
 
             ProcessPatterns();
+
+            ReflectAssemblies();
+            ReflectReferencedAssemblies();
             LoadAssemblies();
-            LoadReferencedAssemblies();
         }
 
         private void ProcessPatterns()
@@ -99,7 +120,7 @@ namespace Wyam.Configuration.Assemblies
                 .Select(x => x.Path.FullPath));
         }
 
-        private void LoadAssemblies()
+        private void ReflectAssemblies()
         {
             foreach (string assemblyDeclaration in _assemblies)
             {
@@ -107,122 +128,40 @@ namespace Wyam.Configuration.Assemblies
                 if (assembly.EndsWith(".dll") || assembly.EndsWith(".exe"))
                 {
                     // If the path ends with .dll or .exe, attempt to load it as a path
-                    LoadAssemblyFromPath(assembly);
+                    ReflectAssemblyFromPath(assembly);
                 }
                 else
                 {
-                    // Attempt to load as a full name first
-                    if (LoadAssemblyFromFullName(assembly) == null)
+                    // Attempt to load as a full name first and then by simple name if that fails
+                    if (!ReflectionOnlyLoad(assembly, true))
                     {
-                        LoadAssemblyFromSimpleName(assembly);
+                        ReflectAssemblyFromSimpleName(assembly);
                     }
                 }
             }
         }
 
-        private void LoadAssemblyFromPath(string path)
+        private void ReflectAssemblyFromPath(string path)
         {
             FilePath filePath = new FilePath(path);
 
             // Attempt to load directly, and we're done if it's absolute regardless
-            if (LoadAssemblyFromFile(filePath.FullPath) != null || filePath.IsAbsolute)
+            if (ReflectionOnlyLoadFrom(filePath.FullPath, true) || filePath.IsAbsolute)
             {
                 return;
             }
 
             // Attempt to load from the entry assembly path
-            if (LoadAssemblyFromFile(_entryAssemblyDirectory.Path.CombineFile(filePath).FullPath) != null)
+            if (ReflectionOnlyLoadFrom(_entryAssemblyDirectory.Path.CombineFile(filePath).FullPath, true))
             {
                 return;
             }
 
             // Attempt to load from the build root
-            LoadAssemblyFromFile(_fileSystem.RootPath.CombineFile(filePath).FullPath);
+            ReflectionOnlyLoadFrom(_fileSystem.RootPath.CombineFile(filePath).FullPath, true);
         }
 
-        private Assembly LoadAssemblyFromFile(string assemblyFile)
-        {
-            using (Trace.WithIndent().Verbose($"Loading assembly file {assemblyFile}"))
-            {
-
-                // First load the name so we can check if it's already loaded
-                AssemblyName assemblyName = null;
-                try
-                {
-                    assemblyName = AssemblyName.GetAssemblyName(assemblyFile);
-                }
-                catch (Exception ex)
-                {
-                    Trace.Verbose($"{ex.GetType().Name} exception while getting assembly name from file {assemblyFile}: {ex.Message}");
-                }
-
-                // If we didn't get a name, then it's not a valid assembly file
-                if (assemblyName == null)
-                {
-                    return null;
-                }
-
-                // Attempt to load by name first
-                Assembly assembly = LoadAssemblyFromFullName(assemblyName.FullName);
-                if (assembly != null)
-                {
-                    if (assembly.FullName != assemblyName.FullName)
-                    {
-                        Trace.Verbose($"Assembly {assemblyName} redirected to {assembly.FullName}");
-                    }
-                    return assembly;
-                }
-                Trace.Verbose($"Assembly {assemblyName.FullName} could not be loaded by full name, attempting to load by file");
-
-                // Check if the assembly has already been loaded, then attempt to load it if it hasn't
-                if (_assemblyResolver.TryGet(assemblyName.FullName, out assembly))
-                {
-                    Trace.Verbose($"Assembly {assemblyName.FullName} has already been loaded from {assembly.Location}");
-                }
-                else
-                {
-                    try
-                    {
-                        assembly = Assembly.LoadFrom(assemblyFile);
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyFile}: {ex.Message}");
-                    }
-                }
-
-                ProcessLoadedAssembly(assembly, true);
-                return assembly;
-            }
-        }
-
-        private Assembly LoadAssemblyFromFullName(string name)
-        {
-            using (Trace.WithIndent().Verbose($"Loading assembly {name} by full name"))
-            {
-                Assembly assembly = null;
-                if (_assemblyCollection.TryGetAssembly(name, out assembly))
-                {
-                    Trace.Verbose($"Assembly {name} has already been loaded from {assembly.Location}");
-                }
-                else
-                {
-                    try
-                    {
-                        assembly = Assembly.Load(name);
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.Verbose($"{ex.GetType().Name} exception while loading assembly {name} by full name: {ex.Message}");
-                        return null;
-                    }
-                    ProcessLoadedAssembly(assembly, true);
-                }
-                return assembly;
-            }
-        }
-
-        private void LoadAssemblyFromSimpleName(string name)
+        private void ReflectAssemblyFromSimpleName(string name)
         {
             // Current algorithm is pretty hacky, take the assembly simple name and use the same version, etc. as a known framework library
             string fullName = typeof(object).Assembly.FullName;
@@ -230,89 +169,181 @@ namespace Wyam.Configuration.Assemblies
             if (firstSpace != -1)
             {
                 fullName = name + fullName.Substring(firstSpace);
-                Trace.Verbose($"Loading assembly {name} as full name {fullName}");
-                LoadAssemblyFromFullName(fullName);
+                Trace.Verbose($"Reflecting assembly {name} as full name {fullName}");
+                ReflectionOnlyLoad(fullName, true);
             }
         }
 
-        private void ProcessLoadedAssembly(Assembly assembly, bool direct)
+        private bool ReflectionOnlyLoad(string assemblyString, bool direct)
         {
-            if (assembly != null)
+            // Check if we've already loaded it
+            if (_reflectedAssemblyNames.Contains(assemblyString))
             {
-                // Even though we probably already checked, be sure the assembly is in the collection
-                if (_assemblyCollection.Add(assembly))
+                return true;
+            }
+
+            // Load the assembly for reflection
+            using (Trace.WithIndent().Verbose($"Loading assembly {assemblyString} for reflection"))
+            {
+                Assembly assembly = null;
+                try
                 {
-                    Trace.Verbose($"Added assembly {assembly.FullName} from {assembly.Location} to the collection");
+                    assembly = Assembly.ReflectionOnlyLoad(assemblyString);
+                }
+                catch (Exception ex)
+                {
+                    Trace.Verbose($"{ex.GetType().Name} exception while reflecting assembly {assemblyString}: {ex.Message}");
+                }
+                if (assembly != null)
+                {
+                    _reflectedAssemblyNames.Add(assembly.FullName);
+                    AddAssemblyToLoad(assembly, assembly.Location, direct);
+                    AddReferencedAssemblies(assembly, assembly.Location);
+                }
+                return assembly != null;
+            }
+        }
+
+        private bool ReflectionOnlyLoadFrom(string assemblyFile, bool direct)
+        {
+            // First load the name to verify the assembly and make sure it wasn't already loaded
+            AssemblyName assemblyName = null;
+            try
+            {
+                assemblyName = AssemblyName.GetAssemblyName(assemblyFile);
+            }
+            catch (Exception ex)
+            {
+                Trace.Verbose($"{ex.GetType().Name} exception while getting assembly name from file {assemblyFile}: {ex.Message}");
+            }
+
+            // If we didn't get a name, then it's not a valid assembly file
+            if (assemblyName == null)
+            {
+                return false;
+            }
+
+            // Check if we've already loaded it
+            if (_reflectedAssemblyNames.Contains(assemblyName.FullName))
+            {
+                Trace.Verbose($"Skipping assembly file {assemblyFile} because {assemblyName.FullName} has already been reflected");
+                return true;
+            }
+
+            // Load the assembly for reflection
+            using (Trace.WithIndent().Verbose($"Loading assembly {assemblyName.FullName} from file {assemblyFile} for reflection"))
+            {
+                Assembly assembly = null;
+                try
+                {
+                    assembly = Assembly.ReflectionOnlyLoad(File.ReadAllBytes(assemblyFile));
+                }
+                catch (Exception ex)
+                {
+                    Trace.Verbose($"{ex.GetType().Name} exception while reflecting assembly from file {assemblyFile}: {ex.Message}");
+                }
+                if (assembly != null)
+                {
+                    _reflectedAssemblyNames.Add(assembly.FullName);
+                    AddAssemblyToLoad(assembly, assemblyFile, direct);
+                    AddReferencedAssemblies(assembly, assemblyFile);
+                }
+                return assembly != null;
+            }
+        }
+
+        private void AddAssemblyToLoad(Assembly assembly, string assemblyLocation, bool direct)
+        {
+            AssemblyName assemblyName = assembly.GetName();
+            (AssemblyName Name, string Location, bool Direct) existing;
+            if (_assembliesToLoad.TryGetValue(assemblyName.Name, out existing))
+            {
+                if (existing.Name.Version > assemblyName.Version)
+                {
+                    // The existing version is higher, check if the direct flag needs to change
+                    if (!existing.Direct && direct)
+                    {
+                        _assembliesToLoad[assemblyName.Name] = (existing.Name, existing.Location, true);
+                    }
+                    return;
                 }
 
-                // Keep track of assemblies we directly asked for so we can scan them for the class catalog
-                if (direct)
-                {
-                    DirectAssemblies.Add(assembly);
-                }
+                // The new version is higher, resolve the direct flag
+                direct = direct || existing.Direct;
+            }
+            _assembliesToLoad[assemblyName.Name] = (assemblyName, assemblyLocation, direct);
+        }
 
-                // Enqueue all referenced assemblies
-                foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+        private void AddReferencedAssemblies(Assembly assembly, string assemblyLocation)
+        {
+            foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+            {
+                if (!_referencedAssemblyNames.Contains(referencedAssemblyName.FullName))
                 {
                     Trace.Verbose($"Added referenced assembly {referencedAssemblyName}");
-                    _referencedAssemblyNames.Enqueue((referencedAssemblyName, assembly));
+                    _referencedAssemblies.Enqueue((referencedAssemblyName, assemblyLocation));
+                    _referencedAssemblyNames.Add(referencedAssemblyName.FullName);
                 }
             }
         }
 
-        // We need to go ahead and load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
-        private void LoadReferencedAssemblies()
+        // We need to load all referenced assemblies so they can be provided in the execution context to any modules doing dynamic compilation (I.e., Razor)
+        private void ReflectReferencedAssemblies()
         {
-            // Need to keep track of the assemblies we've seen since assembly binding redirects may result in a different loaded assembly for the input name
-            HashSet<string> loadedAssemblies = new HashSet<string>();
-
-            (AssemblyName Name, Assembly ReferencingAssembly) reference;
-            while (_referencedAssemblyNames.TryDequeue(out reference))
+            while (_referencedAssemblies.Count > 0)
             {
+                (AssemblyName Name, string ReferencingAssemblyPath) reference = _referencedAssemblies.Dequeue();
                 string referenceName = reference.Name.ToString();
-                if (!loadedAssemblies.Contains(referenceName) && !_assemblyCollection.ContainsFullName(referenceName))
+
+                if (!_reflectedAssemblyNames.Contains(referenceName))
                 {
-                    loadedAssemblies.Add(referenceName);
-                    using (Trace.WithIndent().Verbose($"Loading referenced assembly {referenceName} from {reference.ReferencingAssembly.GetName().Name}"))
+                    using (Trace.WithIndent().Verbose($"Reflecting referenced assembly {referenceName}"))
                     {
-                        // Make sure we haven't already loaded this assembly
-                        Assembly assembly = null;
-                        if (_assemblyResolver.TryGet(referenceName, out assembly))
+                        // Try to load it by name
+                        if (!ReflectionOnlyLoad(reference.Name.FullName, false))
                         {
-                            Trace.Verbose($"Referenced assembly {reference} already loaded as {assembly.FullName}");
+                            // It wasn't loaded by name, so try polling at the referencing assembly location
+                            string assemblyFile = Path.Combine(Path.GetDirectoryName(reference.ReferencingAssemblyPath), reference.Name.Name) + ".dll";
+                            ReflectionOnlyLoadFrom(assemblyFile, false);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void LoadAssemblies()
+        {
+            foreach ((AssemblyName Name, string Location, bool Direct) assemblyToLoad in _assembliesToLoad.OrderBy(x => x.Key).Select(x => x.Value))
+            {
+                using (Trace.WithIndent().Verbose($"Loading assembly {assemblyToLoad.Name.FullName} from {assemblyToLoad.Location}"))
+                {
+                    Assembly assembly = null;
+
+                    try
+                    {
+                        assembly = Assembly.Load(File.ReadAllBytes(assemblyToLoad.Location));
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyToLoad.Location}: {ex.Message}");
+                    }
+
+                    if (assembly != null)
+                    {
+                        // Even though we probably already checked, be sure the assembly is in the collection
+                        if (_assemblyCollection.Add(assembly))
+                        {
+                            Trace.Verbose($"Added assembly {assembly.FullName} from {assemblyToLoad.Location} to the assembly collection");
                         }
                         else
                         {
-                            // It wasn't already loaded, so try to load it
-                            try
-                            {
-                                assembly = Assembly.Load(reference.Name);
-                                if (assembly != null && assembly.FullName != referenceName)
-                                {
-                                    Trace.Verbose($"Referenced assembly {reference} redirected to {assembly.FullName}");
-                                }
-                                ProcessLoadedAssembly(assembly, false);
-                            }
-                            catch (Exception ex)
-                            {
-                                Trace.Verbose($"{ex.GetType().Name} exception while loading referenced assembly {referenceName}: {ex.Message}");
-                                assembly = null;
-                            }
+                            Trace.Verbose($"Assembly {assembly.FullName} already added to assembly collection");
                         }
 
-                        // It wasn't already loaded or loaded by name, so try polling at the referencing assembly location
-                        if (assembly == null)
+                        // Keep track of assemblies we directly asked for so we can scan them for the class catalog
+                        if (assemblyToLoad.Direct)
                         {
-                            string assemblyFile = Path.Combine(Path.GetDirectoryName(reference.ReferencingAssembly.Location), reference.Name.Name) + ".dll";
-                            Trace.Verbose($"Attempting to load referenced assembly {referenceName} from {assemblyFile}");
-                            try
-                            {
-                                assembly = Assembly.LoadFrom(assemblyFile);
-                            }
-                            catch (Exception ex)
-                            {
-                                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyFile}: {ex.Message}");
-                            }
+                            DirectAssemblies.Add(assembly);
                         }
                     }
                 }
