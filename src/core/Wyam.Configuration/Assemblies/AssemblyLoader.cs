@@ -408,7 +408,7 @@ namespace Wyam.Configuration.Assemblies
             if (_assemblyCollection.Add(assembly))
             {
                 string framework = assembly.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName ?? "unknown target";
-                Trace.Verbose($"Added assembly {assembly.FullName} from {assembly.Location} ({framework}) to the assembly collection");
+                Trace.Verbose($"Added assembly {assembly.FullName} from {(assembly.IsDynamic ? "dynamic" : assembly.Location)} ({framework}) to the assembly collection");
             }
             else
             {
