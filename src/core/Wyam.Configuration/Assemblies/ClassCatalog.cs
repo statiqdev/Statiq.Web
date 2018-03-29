@@ -54,14 +54,14 @@ namespace Wyam.Configuration.Assemblies
 
         public void CatalogTypes(IEnumerable<Assembly> assemblies)
         {
-            Parallel.ForEach(assemblies, assembly =>
+            foreach (Assembly assembly in assemblies.OrderBy(x => x.FullName))
             {
                 Trace.Verbose($"Cataloging types in assembly {assembly.FullName}");
                 foreach (Type type in GetLoadableTypes(assembly).Where(x => x.IsPublic && !x.IsAbstract && x.IsClass))
                 {
                     _types.TryAdd(type.FullName, type);
                 }
-            });
+            }
         }
 
         private static Type[] GetLoadableTypes(Assembly assembly)
@@ -74,7 +74,7 @@ namespace Wyam.Configuration.Assemblies
             {
                 foreach (Exception loaderException in ex.LoaderExceptions)
                 {
-                    Trace.Verbose($"Loader Exception for assembly {assembly.FullName}: {loaderException.Message}");
+                    Trace.Verbose($"ReflectionTypeLoadException for assembly {assembly.FullName}: {loaderException.Message}");
                 }
                 return ex.Types.Where(t => t != null).ToArray();
             }
