@@ -2,7 +2,5 @@
   <Import Project="../Directory.Build.props" />
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\..\wyam.ruleset</CodeAnalysisRuleSet>
-    <!-- Copies netstandard library dependencies to output folder, see https://github.com/dotnet/cli/issues/6261#issuecomment-292242804 -->
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 </Project>

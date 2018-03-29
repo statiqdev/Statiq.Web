@@ -1,24 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\clients\Wyam\Wyam.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Configuration\Wyam.Configuration.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Core\Wyam.Core.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.CodeAnalysis\Wyam.CodeAnalysis.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Feeds\Wyam.Feeds.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Html\Wyam.Html.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Images\Wyam.Images.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Less\Wyam.Less.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Markdown\Wyam.Markdown.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Razor\Wyam.Razor.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.SearchIndex\Wyam.SearchIndex.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.TextGeneration\Wyam.TextGeneration.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\Wyam.Yaml\Wyam.Yaml.csproj" />
-    <ProjectReference Include="..\..\..\src\clients\Wyam\Wyam.csproj" />
-    <ProjectReference Include="..\..\..\src\recipes\Wyam.BookSite\Wyam.BookSite.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\**\*.csproj" />
+    <ProjectReference Include="..\..\..\src\recipes\**\*.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />

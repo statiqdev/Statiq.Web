@@ -278,7 +278,7 @@ namespace Wyam.Configuration
         private void LoadAssemblies()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
-            using (Trace.WithIndent().Information("Recursively loading assemblies"))
+            using (Trace.WithIndent().Information("Loading assemblies"))
             {
                 AssemblyLoader.Load();
                 stopwatch.Stop();
