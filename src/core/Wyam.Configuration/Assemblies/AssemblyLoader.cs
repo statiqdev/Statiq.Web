@@ -22,14 +22,14 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentHashSet<string> _patterns = new ConcurrentHashSet<string>();
         private readonly ConcurrentHashSet<string> _assemblies = new ConcurrentHashSet<string>();
 
-        // First = referenced assembly name, Second = referencing assembly path (for locating the referenced assembly)
-        private readonly Queue<(AssemblyName, string)> _referencedAssemblies = new Queue<(AssemblyName, string)>();
+        // First = referenced assembly name, Second = referencing assembly (for locating the referenced assembly)
+        private readonly Queue<(AssemblyName, Assembly)> _referencedAssemblies = new Queue<(AssemblyName, Assembly)>();
 
         // Keeps track of the names we've already processed as referenced so we don't add them again
         private readonly HashSet<string> _referencedAssemblyNames = new HashSet<string>();
 
-        // Key = assembly simple name, Value = assembly version, assembly path, direct
-        private readonly Dictionary<string, (AssemblyName, string, bool)> _assembliesToLoad = new Dictionary<string, (AssemblyName, string, bool)>();
+        // Key = assembly simple name, Value = assembly, direct
+        private readonly Dictionary<string, (Assembly, bool)> _assembliesToLoad = new Dictionary<string, (Assembly, bool)>();
 
         // The full name of assemblies that have already been reflected
         private readonly HashSet<string> _reflectedAssemblyNames = new HashSet<string>();
@@ -197,8 +197,8 @@ namespace Wyam.Configuration.Assemblies
                 if (assembly != null)
                 {
                     _reflectedAssemblyNames.Add(assembly.FullName);
-                    AddAssemblyToLoad(assembly, assembly.Location, direct);
-                    AddReferencedAssemblies(assembly, assembly.Location);
+                    AddAssemblyToLoad(assembly, direct);
+                    AddReferencedAssemblies(assembly);
                 }
                 return assembly != null;
             }
@@ -236,7 +236,7 @@ namespace Wyam.Configuration.Assemblies
                 Assembly assembly = null;
                 try
                 {
-                    assembly = Assembly.ReflectionOnlyLoad(File.ReadAllBytes(assemblyFile));
+                    assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
                 }
                 catch (Exception ex)
                 {
@@ -245,25 +245,25 @@ namespace Wyam.Configuration.Assemblies
                 if (assembly != null)
                 {
                     _reflectedAssemblyNames.Add(assembly.FullName);
-                    AddAssemblyToLoad(assembly, assemblyFile, direct);
-                    AddReferencedAssemblies(assembly, assemblyFile);
+                    AddAssemblyToLoad(assembly, direct);
+                    AddReferencedAssemblies(assembly);
                 }
                 return assembly != null;
             }
         }
 
-        private void AddAssemblyToLoad(Assembly assembly, string assemblyLocation, bool direct)
+        private void AddAssemblyToLoad(Assembly assembly, bool direct)
         {
             AssemblyName assemblyName = assembly.GetName();
-            (AssemblyName Name, string Location, bool Direct) existing;
+            (Assembly Assembly, bool Direct) existing;
             if (_assembliesToLoad.TryGetValue(assemblyName.Name, out existing))
             {
-                if (existing.Name.Version > assemblyName.Version)
+                if (existing.Assembly.GetName().Version > assemblyName.Version)
                 {
                     // The existing version is higher, check if the direct flag needs to change
                     if (!existing.Direct && direct)
                     {
-                        _assembliesToLoad[assemblyName.Name] = (existing.Name, existing.Location, true);
+                        _assembliesToLoad[assemblyName.Name] = (existing.Assembly, true);
                     }
                     return;
                 }
@@ -271,17 +271,17 @@ namespace Wyam.Configuration.Assemblies
                 // The new version is higher, resolve the direct flag
                 direct = direct || existing.Direct;
             }
-            _assembliesToLoad[assemblyName.Name] = (assemblyName, assemblyLocation, direct);
+            _assembliesToLoad[assemblyName.Name] = (assembly, direct);
         }
 
-        private void AddReferencedAssemblies(Assembly assembly, string assemblyLocation)
+        private void AddReferencedAssemblies(Assembly assembly)
         {
             foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
             {
                 if (!_referencedAssemblyNames.Contains(referencedAssemblyName.FullName))
                 {
                     Trace.Verbose($"Added referenced assembly {referencedAssemblyName}");
-                    _referencedAssemblies.Enqueue((referencedAssemblyName, assemblyLocation));
+                    _referencedAssemblies.Enqueue((referencedAssemblyName, assembly));
                     _referencedAssemblyNames.Add(referencedAssemblyName.FullName);
                 }
             }
@@ -292,18 +292,16 @@ namespace Wyam.Configuration.Assemblies
         {
             while (_referencedAssemblies.Count > 0)
             {
-                (AssemblyName Name, string ReferencingAssemblyPath) reference = _referencedAssemblies.Dequeue();
-                string referenceName = reference.Name.ToString();
-
-                if (!_reflectedAssemblyNames.Contains(referenceName))
+                (AssemblyName AssemblyName, Assembly ReferencingAssembly) reference = _referencedAssemblies.Dequeue();
+                if (!_reflectedAssemblyNames.Contains(reference.AssemblyName.ToString()))
                 {
-                    using (Trace.WithIndent().Verbose($"Reflecting referenced assembly {referenceName}"))
+                    using (Trace.WithIndent().Verbose($"Reflecting referenced assembly {reference.AssemblyName} (from {reference.ReferencingAssembly.GetName().Name})"))
                     {
                         // Try to load it by name
-                        if (!ReflectionOnlyLoad(reference.Name.FullName, false))
+                        if (!ReflectionOnlyLoad(reference.AssemblyName.FullName, false))
                         {
                             // It wasn't loaded by name, so try polling at the referencing assembly location
-                            string assemblyFile = Path.Combine(Path.GetDirectoryName(reference.ReferencingAssemblyPath), reference.Name.Name) + ".dll";
+                            string assemblyFile = Path.Combine(Path.GetDirectoryName(reference.ReferencingAssembly.Location), reference.AssemblyName.Name) + ".dll";
                             ReflectionOnlyLoadFrom(assemblyFile, false);
                         }
                     }
@@ -313,19 +311,20 @@ namespace Wyam.Configuration.Assemblies
 
         private void LoadAssemblies()
         {
-            foreach ((AssemblyName Name, string Location, bool Direct) assemblyToLoad in _assembliesToLoad.OrderBy(x => x.Key).Select(x => x.Value))
+            // Need to load assemblies in dependency order or else loading will fail with missing methods, etc.
+            foreach ((Assembly Assembly, bool Direct) assemblyToLoad in _assembliesToLoad.OrderBy(x => x.Key).Select(x => x.Value))
             {
-                using (Trace.WithIndent().Verbose($"Loading assembly {assemblyToLoad.Name.FullName} from {assemblyToLoad.Location}"))
+                using (Trace.WithIndent().Verbose($"Loading assembly {assemblyToLoad.Assembly.FullName} from {assemblyToLoad.Assembly.Location}"))
                 {
                     Assembly assembly = null;
 
                     try
                     {
-                        assembly = Assembly.Load(File.ReadAllBytes(assemblyToLoad.Location));
+                        assembly = Assembly.LoadFrom(assemblyToLoad.Assembly.Location);
                     }
                     catch (Exception ex)
                     {
-                        Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyToLoad.Location}: {ex.Message}");
+                        Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyToLoad.Assembly.Location}: {ex.Message}");
                     }
 
                     if (assembly != null)
@@ -333,7 +332,7 @@ namespace Wyam.Configuration.Assemblies
                         // Even though we probably already checked, be sure the assembly is in the collection
                         if (_assemblyCollection.Add(assembly))
                         {
-                            Trace.Verbose($"Added assembly {assembly.FullName} from {assemblyToLoad.Location} to the assembly collection");
+                            Trace.Verbose($"Added assembly {assembly.FullName} from {assemblyToLoad.Assembly.Location} to the assembly collection");
                         }
                         else
                         {

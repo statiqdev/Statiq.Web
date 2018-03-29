@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Wyam.Common.Tracing;
 using Wyam.Configuration.ConfigScript;
 
 namespace Wyam.Configuration.Assemblies

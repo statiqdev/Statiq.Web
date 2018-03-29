@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Wyam.Common.IO;
@@ -161,6 +162,18 @@ namespace Wyam.Commands
             // Set up the log file
             if (_logFilePath != null)
             {
+                // Delete an exiting log file if one exists
+                if (File.Exists(_logFilePath.FullPath))
+                {
+                    try
+                    {
+                        File.Delete(_logFilePath.FullPath);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
                 Trace.AddListener(new SimpleFileTraceListener(_logFilePath.FullPath));
             }
 
