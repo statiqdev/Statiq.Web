@@ -110,7 +110,7 @@ namespace Wyam.Hosting
                     builder.UseWebSockets();
                     builder.UseOwinBuilder(OwinBuilder);
                 })
-                .Build();
+                .BuildWebHost();  // .Build() once the AspNetCore packages are updated to 2.x
         }
 
         public string LocalPath { get; }
