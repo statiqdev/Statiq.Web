@@ -55,6 +55,8 @@ namespace Wyam.Configuration.Assemblies
             }
         }
 
+        public bool ReportCacheMisses { get; set; } = false;
+
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
             // Resolve the config compilation if we have one
@@ -65,8 +67,15 @@ namespace Wyam.Configuration.Assemblies
             }
 
             // Return an assembly from the cache (check for a full name first)
-            Assembly assembly;
-            return TryGet(args.Name, out assembly) ? assembly : null;
+            if (TryGet(args.Name, out Assembly assembly))
+            {
+                return assembly;
+            }
+            if (ReportCacheMisses)
+            {
+                Trace.Verbose($"Assembly resolver cache miss for {args.Name} requested from {args.RequestingAssembly?.GetName()?.Name ?? "unknown"}");
+            }
+            return null;
         }
     }
 }

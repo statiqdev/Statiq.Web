@@ -11,7 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />

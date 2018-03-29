@@ -188,7 +188,7 @@ namespace Wyam.Configuration.Assemblies
             using (Trace.WithIndent().Verbose($"Loading {_assembliesToLoad.Count} assemblies (including references)"))
             {
                 // Need to load assemblies in dependency order or else loading will fail with missing methods, etc.
-                foreach ((Assembly Assembly, bool Direct) assemblyToLoad in _assembliesToLoad.OrderBy(x => x.Key).Select(x => x.Value))
+                foreach ((Assembly Assembly, bool Direct) assemblyToLoad in _assembliesToLoad.Values.OrderBy(x => x.Item1, new AssemblyDependencyComparer()).ToArray())
                 {
                     using (Trace.WithIndent().Verbose($"Loading assembly {assemblyToLoad.Assembly.FullName} from {assemblyToLoad.Assembly.Location}"))
                     {
@@ -196,11 +196,29 @@ namespace Wyam.Configuration.Assemblies
 
                         try
                         {
-                            assembly = Assembly.LoadFrom(assemblyToLoad.Assembly.Location);
+                            assembly = Assembly.Load(assemblyToLoad.Assembly.FullName);
                         }
                         catch (Exception ex)
                         {
-                            Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file {assemblyToLoad.Assembly.Location}: {ex.Message}");
+                            Trace.Verbose($"{ex.GetType().Name} exception while loading assembly by full name: {ex.Message}");
+                            assembly = null;
+                        }
+
+                        if (assembly != null && assembly.FullName != assemblyToLoad.Assembly.FullName)
+                        {
+                            Trace.Verbose($"Assembly redirected to {assembly.FullName}");
+                        }
+
+                        if (assembly == null)
+                        {
+                            try
+                            {
+                                assembly = Assembly.LoadFrom(assemblyToLoad.Assembly.Location);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.Verbose($"{ex.GetType().Name} exception while loading assembly from file: {ex.Message}");
+                            }
                         }
 
                         if (assembly != null)
@@ -209,10 +227,34 @@ namespace Wyam.Configuration.Assemblies
                         }
                     }
                 }
+
+                // Now that we're done, all required assemblies should be loaded and we can report cache misses
+                _assemblyResolver.ReportCacheMisses = true;
             }
         }
 
         // ** Helpers
+
+        /// <summary>
+        /// Returns assemblies in dependency order.
+        /// </summary>
+        private class AssemblyDependencyComparer : IComparer<Assembly>
+        {
+            public int Compare(Assembly a, Assembly b)
+            {
+                string aName = a.GetName().Name;
+                string bName = b.GetName().Name;
+                if (a.GetReferencedAssemblies().Any(x => x.Name == bName))
+                {
+                    return 1;
+                }
+                if (b.GetReferencedAssemblies().Any(x => x.Name == aName))
+                {
+                    return -1;
+                }
+                return a.GetReferencedAssemblies().Length - b.GetReferencedAssemblies().Length;
+            }
+        }
 
         private void ReflectAssemblyFromPath(string path)
         {
