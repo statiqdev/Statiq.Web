@@ -54,14 +54,14 @@ namespace Wyam.Configuration.Assemblies
 
         public void CatalogTypes(IEnumerable<Assembly> assemblies)
         {
-            foreach (Assembly assembly in assemblies.OrderBy(x => x.FullName))
+            Parallel.ForEach(assemblies, assembly =>
             {
                 Trace.Verbose($"Cataloging types in assembly {assembly.FullName}");
                 foreach (Type type in GetLoadableTypes(assembly).Where(x => x.IsPublic && !x.IsAbstract && x.IsClass))
                 {
                     _types.TryAdd(type.FullName, type);
                 }
-            }
+            });
         }
 
         private static Type[] GetLoadableTypes(Assembly assembly)
