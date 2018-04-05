@@ -62,7 +62,8 @@ namespace Wyam.Configuration.NuGet
 
         private NuGetFramework GetCurrentFramework()
         {
-            string frameworkName = Assembly.GetExecutingAssembly().GetCustomAttributes(true)
+            Assembly assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            string frameworkName = assembly.GetCustomAttributes(true)
                 .OfType<System.Runtime.Versioning.TargetFrameworkAttribute>()
                 .Select(x => x.FrameworkName)
                 .FirstOrDefault();
