@@ -1,3 +1,8 @@
+# 1.4.0
+
+- [Refactoring] Totally rewrote assembly loading
+- [Refactoring] Converted a bunch of support and extension libraries to .NET Standard (#646, thanks @pauldotknopf)
+
 # 1.3.0
 
 - [Refactoring] Configuration caches will always append to original configuration file ("config.wyam.dll", "config.wyam.hash", "config.wyam.packages.xml", etc.) (#619) - **Note** while this isn't a breaking change, it may require you to change your `.gitignore` files to handle the revised cache file names
