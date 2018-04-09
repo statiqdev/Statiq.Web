@@ -4,6 +4,7 @@ using Buildalyzer;
 using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
 using Wyam.Common.Configuration;
+using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 
@@ -30,6 +31,7 @@ namespace Wyam.CodeAnalysis
     /// <metadata cref="Keys.RelativeFilePath" usage="Output" />
     /// <metadata cref="Keys.RelativeFilePathBase" usage="Output" />
     /// <metadata cref="Keys.RelativeFileDir" usage="Output" />
+    /// <metadata cref="CodeAnalysisKeys.OutputBuildLog" usage="Setting"/>
     /// <category>Input/Output</category>
     public class ReadSolution : ReadWorkspace
     {
@@ -52,7 +54,7 @@ namespace Wyam.CodeAnalysis
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<Project> GetProjects(IFile file)
+        protected override IEnumerable<Project> GetProjects(IExecutionContext context, IFile file)
         {
             StringWriter log = new StringWriter();
             AnalyzerManager manager = new AnalyzerManager(file.Path.Directory.FullPath, new AnalyzerManagerOptions
@@ -61,6 +63,10 @@ namespace Wyam.CodeAnalysis
             });
             foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
             {
+                if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+                {
+                    analyzer.WithBinaryLog();
+                }
                 CompileProjectAndTrace(analyzer, log);
             }
             Workspace workspace = manager.GetWorkspace();

@@ -87,9 +87,10 @@ namespace Wyam.CodeAnalysis
         /// <summary>
         /// Gets the projects in the workspace (solution or project).
         /// </summary>
+        /// <param name="context">The execution context.</param>
         /// <param name="file">The project file.</param>
         /// <returns>A sequence of Roslyn <see cref="Project"/> instances in the workspace.</returns>
-        protected abstract IEnumerable<Project> GetProjects(IFile file);
+        protected abstract IEnumerable<Project> GetProjects(IExecutionContext context, IFile file);
 
         protected internal static void CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
         {
@@ -117,7 +118,7 @@ namespace Wyam.CodeAnalysis
                 if (projectPath != null)
                 {
                     IFile projectFile = context.FileSystem.GetInputFile(projectPath);
-                    return GetProjects(projectFile)
+                    return GetProjects(context, projectFile)
                         .AsParallel()
                         .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
                         .SelectMany(project =>

@@ -351,5 +351,12 @@ namespace Wyam.CodeAnalysis
         /// </summary>
         /// <type><see cref="string"/></type>
         public const string Syntax = nameof(Syntax);
+
+        /// <summary>
+        /// Set this to <c>true</c> in the global settings to generate a binary build log when analyzing projects or solutions. The log will
+        /// be output alongside the project file.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string OutputBuildLog = nameof(OutputBuildLog);
     }
 }

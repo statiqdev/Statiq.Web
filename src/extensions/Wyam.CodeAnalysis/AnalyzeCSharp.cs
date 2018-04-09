@@ -100,6 +100,7 @@ namespace Wyam.CodeAnalysis
     /// will check for any WritePath metadata values when outputting documents, this metadata also makes writing
     /// symbol documents to disk easier (presumably after they've been sent through a templating module).
     /// </metadata>
+    /// <metadata cref="CodeAnalysisKeys.OutputBuildLog" usage="Setting"/>
     /// <category>Metadata</category>
     public class AnalyzeCSharp : IModule
     {
@@ -564,6 +565,10 @@ namespace Wyam.CodeAnalysis
                 {
                     Trace.Verbose($"Creating workspace project for {projectFile.Path.FullPath}");
                     ProjectAnalyzer analyzer = manager.GetProject(projectFile.Path.FullPath);
+                    if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+                    {
+                        analyzer.WithBinaryLog();
+                    }
                     ReadWorkspace.CompileProjectAndTrace(analyzer, log);
                     project = analyzer.AddToWorkspace(workspace);
                     if (!project.Documents.Any())
@@ -593,6 +598,10 @@ namespace Wyam.CodeAnalysis
                     });
                 foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
                 {
+                    if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+                    {
+                        analyzer.WithBinaryLog();
+                    }
                     ReadWorkspace.CompileProjectAndTrace(analyzer, log);
                 }
                 Workspace workspace = manager.GetWorkspace();
