@@ -226,7 +226,10 @@ namespace Wyam.Configuration.Assemblies
                         {
                             try
                             {
-                                assembly = Assembly.LoadFrom(assemblyToLoad.Assembly.Location);
+                                // This should act the same as calling .LoadFrom() but will load the assembly into the default context
+                                // See https://github.com/Microsoft/MSBuildLocator/issues/8#issue-285040083
+                                AssemblyName name = AssemblyName.GetAssemblyName(assemblyToLoad.Assembly.Location);
+                                assembly = Assembly.Load(name);
                             }
                             catch (Exception ex)
                             {
