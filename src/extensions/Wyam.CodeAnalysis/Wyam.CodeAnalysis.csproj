@@ -10,8 +10,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Buildalyzer" Version="0.3.0" />
-    <PackageReference Include="Buildalyzer.Workspaces" Version="0.3.0" />
+    <PackageReference Include="Buildalyzer" Version="0.4.0" />
+    <PackageReference Include="Buildalyzer.Workspaces" Version="0.4.0" />
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
   </ItemGroup>
 </Project>
