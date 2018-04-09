@@ -1,3 +1,9 @@
+# 1.4.1
+
+- [Fix] Fixed missing known extensions which should help make future version updates smoother (#652)
+- [Feature] Added ability to turn on binary logging from MSBuild for `CodeAnalysis` modules
+- [Feature] Updated Buildalyzer/MSBuild for `CodeAnalysis` modules
+
 # 1.4.0
 
 - [Refactoring] Totally rewrote assembly loading
