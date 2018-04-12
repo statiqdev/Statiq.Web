@@ -157,5 +157,31 @@ namespace Wyam.Common.Tests.Util
                 Assert.That(result, Is.EqualTo(CultureInfo.GetCultureInfo("en-GB")));
             }
         }
+
+        public class ToShortDateStringTests : DateTimeCultureExtensionsFixture
+        {
+            [SetUp]
+            public void SetThreadCulture()
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            }
+
+            [Test]
+            public void IncludesShortNameOfFrenchDayAndMonth()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                CultureInfo culture = (CultureInfo) CultureInfo.GetCultureInfo("fr-FR").Clone();
+                culture.DateTimeFormat.ShortDatePattern = "ddd MMM";
+                context.Settings[Keys.DateTimeDisplayCulture] = culture;
+                DateTime dateTime = new DateTime(2000, 3, 1);
+
+                // When
+                string result = dateTime.ToShortDateString(context);
+
+                // Then
+                Assert.That(result, Is.EqualTo("mer. mars"));
+            }
+        }
     }
 }
