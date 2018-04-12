@@ -183,5 +183,29 @@ namespace Wyam.Common.Tests.Util
                 Assert.That(result, Is.EqualTo("mer. mars"));
             }
         }
+
+        public class ToLongDateStringTests : DateTimeCultureExtensionsFixture
+        {
+            [SetUp]
+            public void SetThreadCulture()
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            }
+
+            [Test]
+            public void IncludesNameOfGermanDayAndMonth()
+            {
+                // Given
+                TestExecutionContext context = new TestExecutionContext();
+                context.Settings[Keys.DateTimeDisplayCulture] = CultureInfo.GetCultureInfo("de-DE");
+                DateTime dateTime = new DateTime(2000, 3, 1);
+
+                // When
+                string result = dateTime.ToLongDateString(context);
+
+                // Then
+                Assert.That(result, Is.EqualTo("Mittwoch, 1. März 2000"));
+            }
+        }
     }
 }
