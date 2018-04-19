@@ -234,40 +234,18 @@ namespace Wyam.SearchIndex
         {
             StringBuilder scriptBuilder = new StringBuilder($@"
 var searchModule = function() {{
+    var documents = [];
     var idMap = [];
-    function y(e) {{ 
-        idMap.push(e); 
-    }}
-    var idx = lunr(function() {{
-        this.field('title', {{ boost: 10 }});
-        this.field('content');
-        this.field('description', {{ boost: 5 }});
-        this.field('tags', {{ boost: 50 }});
-        this.ref('id');
-
-        this.pipeline.remove(lunr.stopWordFilter);
-        {(_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);")}
-    }});
-    function a(e) {{ 
-        idx.add(e); 
+    function a(a,b) {{ 
+        documents.push(a);
+        idMap.push(b); 
     }}
 ");
 
             for (int i = 0; i < searchIndexItems.Count; ++i)
             {
-                ISearchIndexItem itm = searchIndexItems.ElementAt(i);
-                scriptBuilder.AppendLine($@"
-    a({{
-        id:{i},
-        title:{CleanString(itm.Title, stopwords)},
-        content:{CleanString(itm.Content, stopwords)},
-        description:{CleanString(itm.Description, stopwords)},
-        tags:'{itm.Tags}'
-    }});");
-            }
+                var itm = searchIndexItems[i];
 
-            foreach (ISearchIndexItem itm in searchIndexItems)
-            {
                 // Get the URL and skip if not valid
                 string url = itm.GetLink(context, _includeHost);
                 if (string.IsNullOrEmpty(url))
@@ -275,14 +253,36 @@ var searchModule = function() {{
                     continue;
                 }
 
-                scriptBuilder.AppendLine($@"
-    y({{
-        url:'{url}',
-        title:{ToJsonString(itm.Title)},
-        description:{ToJsonString(itm.Description)}
-    }});");
+                scriptBuilder.Append($@"
+    a(
+        {{
+            id:{i},
+            title:{CleanString(itm.Title, stopwords)},
+            content:{CleanString(itm.Content, stopwords)},
+            description:{CleanString(itm.Description, stopwords)},
+            tags:'{itm.Tags}'
+        }},
+        {{
+            url:'{url}',
+            title:{ToJsonString(itm.Title)},
+            description:{ToJsonString(itm.Description)}
+        }}
+    );");
             }
 
+            scriptBuilder.Append($@"
+    var idx = lunr(function() {{
+        this.field('title');
+        this.field('content');
+        this.field('description');
+        this.field('tags');
+        this.ref('id');
+
+        this.pipeline.remove(lunr.stopWordFilter);
+        {(_enableStemming ? "" : "this.pipeline.remove(lunr.stemmer);")}
+        documents.forEach(function (doc) {{ this.add(doc) }}, this)
+    }});
+");
             scriptBuilder.AppendLine($@"
     return {{
         search: function(q) {{
