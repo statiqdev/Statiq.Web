@@ -37,16 +37,17 @@ namespace Wyam.OpenAPI
                     var readerSetting = new OpenApiReaderSettings();
                     _readerSetup(readerSetting);
 
-                    OpenApiDiagnostic diagnostic;
+                    OpenApiDiagnostic diagnostic = null;
                     try
                     {
                         var openApiDocument = new OpenApiStringReader(readerSetting).Read(input.Content, out diagnostic);
                         var documentMetadata = new Dictionary<string, object>() { { _key, openApiDocument } };
                         return context.GetDocument(input, documentMetadata);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        return input;
+                        var msg = string.Join(Environment.NewLine, diagnostic.Errors.Select(e => e.Message).ToArray());
+                        throw new Exception(msg, innerException: ex);
                     }
                 })
                 .Where(x => x != null);

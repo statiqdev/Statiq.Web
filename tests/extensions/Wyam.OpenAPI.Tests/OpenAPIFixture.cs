@@ -189,10 +189,10 @@ components:
                 //// Given
                 IExecutionContext context = new TestExecutionContext();
                 IDocument document = new TestDocument(OPEN_API_3_DOCUMENT);
-                var module = new OpenAPI("myOpenApi");
+                var openAPI = new OpenAPI("myOpenApi");
 
                 // When
-                IList<IDocument> documents = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> documents = openAPI.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 documents.Count.ShouldBe(1);
@@ -224,10 +224,10 @@ components:
                 //// Given
                 IExecutionContext context = new TestExecutionContext();
                 IDocument document = new TestDocument(Environment.NewLine);
-                var module = new OpenAPI();
+                var openAPI = new OpenAPI();
 
                 // When
-                IList<IDocument> documents = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> documents = openAPI.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
                 documents.Count.ShouldBe(1);
