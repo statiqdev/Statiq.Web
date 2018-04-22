@@ -137,9 +137,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.YouTube", "src\extensi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.YouTube.Tests", "tests\extensions\Wyam.YouTube.Tests\Wyam.YouTube.Tests.csproj", "{9C1DA009-EADE-451A-9EB8-4075B079B0F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.OpenAPI", "src\extensions\Wyam.OpenAPI\Wyam.OpenAPI.csproj", "{7ABAC454-D6CB-442F-AF7C-6DCBE0EFD9AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.OpenAPI", "src\extensions\Wyam.OpenAPI\Wyam.OpenAPI.csproj", "{7ABAC454-D6CB-442F-AF7C-6DCBE0EFD9AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.OpenAPI.Tests", "tests\extensions\Wyam.OpenAPI.Tests\Wyam.OpenAPI.Tests.csproj", "{456F921A-26DB-4D5F-8EB5-C76C7839493A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wyam.OpenAPI.Tests", "tests\extensions\Wyam.OpenAPI.Tests\Wyam.OpenAPI.Tests.csproj", "{456F921A-26DB-4D5F-8EB5-C76C7839493A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Handlebars", "src\extensions\Wyam.Handlebars\Wyam.Handlebars.csproj", "{8FC906BA-94DE-492C-8757-254DD02C4C61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wyam.Handlebars.Tests", "tests\extensions\Wyam.Handlebars.Tests\Wyam.Handlebars.Tests.csproj", "{D86C0D07-0CEA-430F-9341-D41B67793888}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -359,6 +363,14 @@ Global
 		{456F921A-26DB-4D5F-8EB5-C76C7839493A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{456F921A-26DB-4D5F-8EB5-C76C7839493A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{456F921A-26DB-4D5F-8EB5-C76C7839493A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FC906BA-94DE-492C-8757-254DD02C4C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FC906BA-94DE-492C-8757-254DD02C4C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FC906BA-94DE-492C-8757-254DD02C4C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FC906BA-94DE-492C-8757-254DD02C4C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D86C0D07-0CEA-430F-9341-D41B67793888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D86C0D07-0CEA-430F-9341-D41B67793888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D86C0D07-0CEA-430F-9341-D41B67793888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D86C0D07-0CEA-430F-9341-D41B67793888}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -425,6 +437,8 @@ Global
 		{9C1DA009-EADE-451A-9EB8-4075B079B0F1} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
 		{7ABAC454-D6CB-442F-AF7C-6DCBE0EFD9AF} = {5A431149-2B88-40C3-9717-CA6CCF214317}
 		{456F921A-26DB-4D5F-8EB5-C76C7839493A} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
+		{8FC906BA-94DE-492C-8757-254DD02C4C61} = {5A431149-2B88-40C3-9717-CA6CCF214317}
+		{D86C0D07-0CEA-430F-9341-D41B67793888} = {2E5842F3-4797-4BB5-9A55-F3A005B434F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0CD133C-B843-4178-8976-B04AE6B2021A}
