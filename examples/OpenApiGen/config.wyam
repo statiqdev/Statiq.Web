@@ -3,6 +3,8 @@
 // #n Wyam.CodeAnalysis
 // #n Wyam.Razor
 // #n Wyam.OpenAPI
+// #n Wyam.Handlebars
+
 
 // This directive loads modules directly from the local build and is used for testing
 // NOTE: If running the example against modules built from source, call wyam.exe from the Wyam.Examples.Tests/bin/Debug folder 
@@ -15,6 +17,8 @@ System.Globalization.CultureInfo.DefaultThreadCurrentCulture
 // This pipeline generates a document for each symbol, uses Razor to generate a file for each one, and then outputs it to disk
 Pipelines.Add("Api",
 	ReadFiles("../Api/*.yaml"),
-	OpenAPI(),
+	OpenAPI("myapi"),
+	ReadFiles("../Templates/*.handlebars"),
+	Handlebars(),
 	WriteFiles()
 );
