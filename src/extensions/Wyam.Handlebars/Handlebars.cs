@@ -42,22 +42,36 @@ namespace Wyam.Handlebars
                 var json = Json(value, out var errors);
                 writer.WriteSafeString(json);
 
-                var writeErrors = (parameters.Length >= 2 && bool.TryParse(parameters[1].ToString(), out var parsed)) ? parsed : false;
-                if (writeErrors && errors.Length != 0)
-                {
-                    writer.WriteSafeString(
-                        "Serialisation errors" + Environment.NewLine + "- "
-                        + string.Join(Environment.NewLine + "- ", errors));
-                }
+                WriteErrors(writer, parameters, errors);
             });
 
             HDN.Handlebars.RegisterHelper("yaml", (writer, context, parameters) =>
             {
+                var value = (parameters.Length >= 1) ? parameters[0] : (object)context;
+                var json = Json(value, out var errors);
+                var reader = new YamlDotNet.Serialization.DeserializerBuilder()
+                    .Build();
+
+                var obj = reader.Deserialize<object>(json);
+
                 var serializer = new YamlDotNet.Serialization.SerializerBuilder()
                     .Build();
-                string yaml = serializer.Serialize(context);
+                string yaml = serializer.Serialize(obj);
                 writer.WriteSafeString(yaml);
+
+                WriteErrors(writer, parameters, errors);
             });
+        }
+
+        private static void WriteErrors(TextWriter writer, object[] parameters, string[] errors)
+        {
+            var writeErrors = (parameters.Length >= 2 && bool.TryParse(parameters[1].ToString(), out var parsed)) ? parsed : false;
+            if (writeErrors && errors.Length != 0)
+            {
+                writer.WriteSafeString(
+                    Environment.NewLine + "Serialisation errors :" + Environment.NewLine + "- "
+                    + string.Join(Environment.NewLine + "- ", errors));
+            }
         }
 
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
