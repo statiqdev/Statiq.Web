@@ -219,6 +219,7 @@ components:
             }
 
             [Test]
+            [Ignore("This is a question, should a empty document result something through this module, or an exception is legit ?")]
             public void ReturnsDocumentIfEmptyInput()
             {
                 //// Given
