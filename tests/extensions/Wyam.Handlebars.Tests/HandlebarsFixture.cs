@@ -67,7 +67,8 @@ namespace Wyam.Handlebars.Tests
       ""title"": ""My new post"",
       ""body"": ""This is my first post!""
     }
-  }
+  },
+  ""content"": ""{{json}}""
 }";
 
                 TestExecutionContext context = new TestExecutionContext();
@@ -118,10 +119,12 @@ Serialisation errors :
 
                 string input = @"{{yaml}}";
 
-                string output = @"metadata:
+                string output =
+@"metadata:
   data:
     title: My new post
     body: This is my first post!
+content: '{{yaml}}'
 ";
 
                 TestExecutionContext context = new TestExecutionContext();
