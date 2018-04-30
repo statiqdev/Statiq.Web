@@ -6,6 +6,7 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
     <ProjectReference Include="..\..\..\src\extensions\Wyam.Handlebars\Wyam.Handlebars.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.OpenAPI\Wyam.OpenAPI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.2.1" />

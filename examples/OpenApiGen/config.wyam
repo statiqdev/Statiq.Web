@@ -18,7 +18,9 @@ System.Globalization.CultureInfo.DefaultThreadCurrentCulture
 Pipelines.Add("Api",
 	ReadFiles("../Api/*.yaml"),
 	OpenAPI("myapi"),
-	ReadFiles("../Templates/*.handlebars"),
+	Merge(
+		ReadFiles("../Templates/*.handlebars")
+	),
 	Handlebars(),
-	WriteFiles()
+	WriteFiles("")
 );

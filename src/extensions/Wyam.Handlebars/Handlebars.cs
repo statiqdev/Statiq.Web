@@ -81,7 +81,9 @@ namespace Wyam.Handlebars
                 .Select(context, input =>
                 {
                     var template = HDN.Handlebars.Compile(input.Content);
-                    var templateValues = new { metadata = input.Metadata.ToDictionary(kv => kv.Key, kv => kv.Value) };
+                    var metadata = new Dictionary<string, object>();
+                    foreach (var meta in input.Metadata) metadata[meta.Key] = meta.Value;
+                    var templateValues = new { metadata, content = input.Content };
                     var output = template(templateValues);
                     var stream = new MemoryStream(Encoding.UTF8.GetBytes(output));
                     var document = context.GetDocument(input, stream);

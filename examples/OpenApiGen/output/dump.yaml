@@ -1,6 +1,15 @@
 
+TEST : Microsoft.OpenApi.Models.OpenApiDocument
+
+
+TEST : Microsoft.OpenApi.Models.OpenApiInfo
+TEST : v2
+TEST : Microsoft.OpenApi.Models.OpenApiInfo
+TEST : Simple API overview
+
+
 SourceFileRoot:
-  Name: Templates
+  Name: Api
   Parent:
     Name: OpenApiGen
     Parent:
@@ -273,7 +282,7 @@ SourceFileRoot:
       - 'C:'
       FileProvider: file:///
   RootRelative:
-    Name: Templates
+    Name: Api
     Parent:
       Name: OpenApiGen
       Parent:
@@ -349,7 +358,7 @@ SourceFileRoot:
         Segments:
         - .
         FileProvider: 
-    FullPath: _git/Wyam/examples/OpenApiGen/Templates
+    FullPath: _git/Wyam/examples/OpenApiGen/Api
     IsRelative: true
     IsAbsolute: false
     Segments:
@@ -357,7 +366,7 @@ SourceFileRoot:
     - Wyam
     - examples
     - OpenApiGen
-    - Templates
+    - Api
     FileProvider: 
     Root:
       Name: .
@@ -368,7 +377,7 @@ SourceFileRoot:
       Segments:
       - .
       FileProvider: 
-  FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates
+  FullPath: C:/_git/Wyam/examples/OpenApiGen/Api
   IsRelative: false
   IsAbsolute: true
   Segments:
@@ -377,7 +386,7 @@ SourceFileRoot:
   - Wyam
   - examples
   - OpenApiGen
-  - Templates
+  - Api
   FileProvider: file:///
   Root:
     Name: 'C:'
@@ -389,6 +398,34 @@ SourceFileRoot:
     - 'C:'
     FileProvider: file:///
 SourceFileBase:
+  HasExtension: false
+  Directory:
+    Name: .
+    Parent: 
+    FullPath: .
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - .
+    FileProvider: 
+  Extension: 
+  FullPath: api-with-examples
+  IsRelative: true
+  IsAbsolute: false
+  Segments:
+  - api-with-examples
+  FileProvider: 
+  Root:
+    Name: .
+    Parent: 
+    FullPath: .
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - .
+    FileProvider: 
+SourceFileExt: .yaml
+SourceFileName:
   HasExtension: true
   Directory:
     Name: .
@@ -411,11 +448,11 @@ SourceFileBase:
       - .
       FileProvider: 
     Extension: 
-    FullPath: dump
+    FullPath: api-with-examples
     IsRelative: true
     IsAbsolute: false
     Segments:
-    - dump
+    - api-with-examples
     FileProvider: 
     Root:
       Name: .
@@ -426,94 +463,12 @@ SourceFileBase:
       Segments:
       - .
       FileProvider: 
-  Extension: .txt
-  FullPath: dump.txt
+  Extension: .yaml
+  FullPath: api-with-examples.yaml
   IsRelative: true
   IsAbsolute: false
   Segments:
-  - dump.txt
-  FileProvider: 
-  Root:
-    Name: .
-    Parent: 
-    FullPath: .
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - .
-    FileProvider: 
-SourceFileExt: .handlebars
-SourceFileName:
-  HasExtension: true
-  Directory:
-    Name: .
-    Parent: 
-    FullPath: .
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - .
-    FileProvider: 
-  FileNameWithoutExtension:
-    HasExtension: true
-    Directory:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-    FileNameWithoutExtension:
-      HasExtension: false
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      Extension: 
-      FullPath: dump
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    Extension: .txt
-    FullPath: dump.txt
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - dump.txt
-    FileProvider: 
-    Root:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-  Extension: .handlebars
-  FullPath: dump.txt.handlebars
-  IsRelative: true
-  IsAbsolute: false
-  Segments:
-  - dump.txt.handlebars
+  - api-with-examples.yaml
   FileProvider: 
   Root:
     Name: .
@@ -525,7 +480,7 @@ SourceFileName:
     - .
     FileProvider: 
 SourceFileDir:
-  Name: Templates
+  Name: Api
   Parent:
     Name: OpenApiGen
     Parent:
@@ -798,7 +753,7 @@ SourceFileDir:
       - 'C:'
       FileProvider: file:///
   RootRelative:
-    Name: Templates
+    Name: Api
     Parent:
       Name: OpenApiGen
       Parent:
@@ -874,7 +829,7 @@ SourceFileDir:
         Segments:
         - .
         FileProvider: 
-    FullPath: _git/Wyam/examples/OpenApiGen/Templates
+    FullPath: _git/Wyam/examples/OpenApiGen/Api
     IsRelative: true
     IsAbsolute: false
     Segments:
@@ -882,7 +837,7 @@ SourceFileDir:
     - Wyam
     - examples
     - OpenApiGen
-    - Templates
+    - Api
     FileProvider: 
     Root:
       Name: .
@@ -893,7 +848,7 @@ SourceFileDir:
       Segments:
       - .
       FileProvider: 
-  FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates
+  FullPath: C:/_git/Wyam/examples/OpenApiGen/Api
   IsRelative: false
   IsAbsolute: true
   Segments:
@@ -902,7 +857,7 @@ SourceFileDir:
   - Wyam
   - examples
   - OpenApiGen
-  - Templates
+  - Api
   FileProvider: file:///
   Root:
     Name: 'C:'
@@ -916,7 +871,7 @@ SourceFileDir:
 SourceFilePath:
   HasExtension: true
   Directory:
-    Name: Templates
+    Name: Api
     Parent:
       Name: OpenApiGen
       Parent:
@@ -1189,7 +1144,7 @@ SourceFilePath:
         - 'C:'
         FileProvider: file:///
     RootRelative:
-      Name: Templates
+      Name: Api
       Parent:
         Name: OpenApiGen
         Parent:
@@ -1265,7 +1220,7 @@ SourceFilePath:
           Segments:
           - .
           FileProvider: 
-      FullPath: _git/Wyam/examples/OpenApiGen/Templates
+      FullPath: _git/Wyam/examples/OpenApiGen/Api
       IsRelative: true
       IsAbsolute: false
       Segments:
@@ -1273,7 +1228,7 @@ SourceFilePath:
       - Wyam
       - examples
       - OpenApiGen
-      - Templates
+      - Api
       FileProvider: 
       Root:
         Name: .
@@ -1284,7 +1239,7 @@ SourceFilePath:
         Segments:
         - .
         FileProvider: 
-    FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates
+    FullPath: C:/_git/Wyam/examples/OpenApiGen/Api
     IsRelative: false
     IsAbsolute: true
     Segments:
@@ -1293,7 +1248,7 @@ SourceFilePath:
     - Wyam
     - examples
     - OpenApiGen
-    - Templates
+    - Api
     FileProvider: file:///
     Root:
       Name: 'C:'
@@ -1307,7 +1262,7 @@ SourceFilePath:
   RootRelative:
     HasExtension: true
     Directory:
-      Name: Templates
+      Name: Api
       Parent:
         Name: OpenApiGen
         Parent:
@@ -1383,7 +1338,7 @@ SourceFilePath:
           Segments:
           - .
           FileProvider: 
-      FullPath: _git/Wyam/examples/OpenApiGen/Templates
+      FullPath: _git/Wyam/examples/OpenApiGen/Api
       IsRelative: true
       IsAbsolute: false
       Segments:
@@ -1391,809 +1346,7 @@ SourceFilePath:
       - Wyam
       - examples
       - OpenApiGen
-      - Templates
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    FileName:
-      HasExtension: true
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      FileNameWithoutExtension:
-        HasExtension: true
-        Directory:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-        FileNameWithoutExtension:
-          HasExtension: false
-          Directory:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-          Extension: 
-          FullPath: dump
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - dump
-          FileProvider: 
-          Root:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-        Extension: .txt
-        FullPath: dump.txt
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - dump.txt
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      Extension: .handlebars
-      FullPath: dump.txt.handlebars
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump.txt.handlebars
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    FileNameWithoutExtension:
-      HasExtension: true
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      FileNameWithoutExtension:
-        HasExtension: false
-        Directory:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-        Extension: 
-        FullPath: dump
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - dump
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      Extension: .txt
-      FullPath: dump.txt
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump.txt
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    Extension: .handlebars
-    FullPath: _git/Wyam/examples/OpenApiGen/Templates/dump.txt.handlebars
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - _git
-    - Wyam
-    - examples
-    - OpenApiGen
-    - Templates
-    - dump.txt.handlebars
-    FileProvider: 
-    Root:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-  FileName:
-    HasExtension: true
-    Directory:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-    FileNameWithoutExtension:
-      HasExtension: true
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      FileNameWithoutExtension:
-        HasExtension: false
-        Directory:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-        Extension: 
-        FullPath: dump
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - dump
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      Extension: .txt
-      FullPath: dump.txt
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump.txt
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    Extension: .handlebars
-    FullPath: dump.txt.handlebars
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - dump.txt.handlebars
-    FileProvider: 
-    Root:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-  FileNameWithoutExtension:
-    HasExtension: true
-    Directory:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-    FileNameWithoutExtension:
-      HasExtension: false
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      Extension: 
-      FullPath: dump
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    Extension: .txt
-    FullPath: dump.txt
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - dump.txt
-    FileProvider: 
-    Root:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-  Extension: .handlebars
-  FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates/dump.txt.handlebars
-  IsRelative: false
-  IsAbsolute: true
-  Segments:
-  - 'C:'
-  - _git
-  - Wyam
-  - examples
-  - OpenApiGen
-  - Templates
-  - dump.txt.handlebars
-  FileProvider: file:///
-  Root:
-    Name: 'C:'
-    Parent: 
-    FullPath: C:/
-    IsRelative: false
-    IsAbsolute: true
-    Segments:
-    - 'C:'
-    FileProvider: file:///
-SourceFilePathBase:
-  HasExtension: true
-  Directory:
-    Name: Templates
-    Parent:
-      Name: OpenApiGen
-      Parent:
-        Name: examples
-        Parent:
-          Name: Wyam
-          Parent:
-            Name: _git
-            Parent:
-              Name: 'C:'
-              Parent: 
-              FullPath: C:/
-              IsRelative: false
-              IsAbsolute: true
-              Segments:
-              - 'C:'
-              FileProvider: file:///
-            RootRelative:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: C:/_git
-            IsRelative: false
-            IsAbsolute: true
-            Segments:
-            - 'C:'
-            - _git
-            FileProvider: file:///
-            Root:
-              Name: 'C:'
-              Parent: 
-              FullPath: C:/
-              IsRelative: false
-              IsAbsolute: true
-              Segments:
-              - 'C:'
-              FileProvider: file:///
-          RootRelative:
-            Name: Wyam
-            Parent:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: _git/Wyam
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - _git
-            - Wyam
-            FileProvider: 
-            Root:
-              Name: .
-              Parent: 
-              FullPath: .
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - .
-              FileProvider: 
-          FullPath: C:/_git/Wyam
-          IsRelative: false
-          IsAbsolute: true
-          Segments:
-          - 'C:'
-          - _git
-          - Wyam
-          FileProvider: file:///
-          Root:
-            Name: 'C:'
-            Parent: 
-            FullPath: C:/
-            IsRelative: false
-            IsAbsolute: true
-            Segments:
-            - 'C:'
-            FileProvider: file:///
-        RootRelative:
-          Name: examples
-          Parent:
-            Name: Wyam
-            Parent:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: _git/Wyam
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - _git
-            - Wyam
-            FileProvider: 
-            Root:
-              Name: .
-              Parent: 
-              FullPath: .
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - .
-              FileProvider: 
-          FullPath: _git/Wyam/examples
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - _git
-          - Wyam
-          - examples
-          FileProvider: 
-          Root:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-        FullPath: C:/_git/Wyam/examples
-        IsRelative: false
-        IsAbsolute: true
-        Segments:
-        - 'C:'
-        - _git
-        - Wyam
-        - examples
-        FileProvider: file:///
-        Root:
-          Name: 'C:'
-          Parent: 
-          FullPath: C:/
-          IsRelative: false
-          IsAbsolute: true
-          Segments:
-          - 'C:'
-          FileProvider: file:///
-      RootRelative:
-        Name: OpenApiGen
-        Parent:
-          Name: examples
-          Parent:
-            Name: Wyam
-            Parent:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: _git/Wyam
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - _git
-            - Wyam
-            FileProvider: 
-            Root:
-              Name: .
-              Parent: 
-              FullPath: .
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - .
-              FileProvider: 
-          FullPath: _git/Wyam/examples
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - _git
-          - Wyam
-          - examples
-          FileProvider: 
-          Root:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-        FullPath: _git/Wyam/examples/OpenApiGen
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - _git
-        - Wyam
-        - examples
-        - OpenApiGen
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      FullPath: C:/_git/Wyam/examples/OpenApiGen
-      IsRelative: false
-      IsAbsolute: true
-      Segments:
-      - 'C:'
-      - _git
-      - Wyam
-      - examples
-      - OpenApiGen
-      FileProvider: file:///
-      Root:
-        Name: 'C:'
-        Parent: 
-        FullPath: C:/
-        IsRelative: false
-        IsAbsolute: true
-        Segments:
-        - 'C:'
-        FileProvider: file:///
-    RootRelative:
-      Name: Templates
-      Parent:
-        Name: OpenApiGen
-        Parent:
-          Name: examples
-          Parent:
-            Name: Wyam
-            Parent:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: _git/Wyam
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - _git
-            - Wyam
-            FileProvider: 
-            Root:
-              Name: .
-              Parent: 
-              FullPath: .
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - .
-              FileProvider: 
-          FullPath: _git/Wyam/examples
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - _git
-          - Wyam
-          - examples
-          FileProvider: 
-          Root:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-        FullPath: _git/Wyam/examples/OpenApiGen
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - _git
-        - Wyam
-        - examples
-        - OpenApiGen
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      FullPath: _git/Wyam/examples/OpenApiGen/Templates
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - _git
-      - Wyam
-      - examples
-      - OpenApiGen
-      - Templates
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates
-    IsRelative: false
-    IsAbsolute: true
-    Segments:
-    - 'C:'
-    - _git
-    - Wyam
-    - examples
-    - OpenApiGen
-    - Templates
-    FileProvider: file:///
-    Root:
-      Name: 'C:'
-      Parent: 
-      FullPath: C:/
-      IsRelative: false
-      IsAbsolute: true
-      Segments:
-      - 'C:'
-      FileProvider: file:///
-  RootRelative:
-    HasExtension: true
-    Directory:
-      Name: Templates
-      Parent:
-        Name: OpenApiGen
-        Parent:
-          Name: examples
-          Parent:
-            Name: Wyam
-            Parent:
-              Name: _git
-              Parent: 
-              FullPath: _git
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - _git
-              FileProvider: 
-              Root:
-                Name: .
-                Parent: 
-                FullPath: .
-                IsRelative: true
-                IsAbsolute: false
-                Segments:
-                - .
-                FileProvider: 
-            FullPath: _git/Wyam
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - _git
-            - Wyam
-            FileProvider: 
-            Root:
-              Name: .
-              Parent: 
-              FullPath: .
-              IsRelative: true
-              IsAbsolute: false
-              Segments:
-              - .
-              FileProvider: 
-          FullPath: _git/Wyam/examples
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - _git
-          - Wyam
-          - examples
-          FileProvider: 
-          Root:
-            Name: .
-            Parent: 
-            FullPath: .
-            IsRelative: true
-            IsAbsolute: false
-            Segments:
-            - .
-            FileProvider: 
-        FullPath: _git/Wyam/examples/OpenApiGen
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - _git
-        - Wyam
-        - examples
-        - OpenApiGen
-        FileProvider: 
-        Root:
-          Name: .
-          Parent: 
-          FullPath: .
-          IsRelative: true
-          IsAbsolute: false
-          Segments:
-          - .
-          FileProvider: 
-      FullPath: _git/Wyam/examples/OpenApiGen/Templates
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - _git
-      - Wyam
-      - examples
-      - OpenApiGen
-      - Templates
+      - Api
       FileProvider: 
       Root:
         Name: .
@@ -2227,11 +1380,11 @@ SourceFilePathBase:
           - .
           FileProvider: 
         Extension: 
-        FullPath: dump
+        FullPath: api-with-examples
         IsRelative: true
         IsAbsolute: false
         Segments:
-        - dump
+        - api-with-examples
         FileProvider: 
         Root:
           Name: .
@@ -2242,12 +1395,12 @@ SourceFilePathBase:
           Segments:
           - .
           FileProvider: 
-      Extension: .txt
-      FullPath: dump.txt
+      Extension: .yaml
+      FullPath: api-with-examples.yaml
       IsRelative: true
       IsAbsolute: false
       Segments:
-      - dump.txt
+      - api-with-examples.yaml
       FileProvider: 
       Root:
         Name: .
@@ -2270,11 +1423,11 @@ SourceFilePathBase:
         - .
         FileProvider: 
       Extension: 
-      FullPath: dump
+      FullPath: api-with-examples
       IsRelative: true
       IsAbsolute: false
       Segments:
-      - dump
+      - api-with-examples
       FileProvider: 
       Root:
         Name: .
@@ -2285,8 +1438,8 @@ SourceFilePathBase:
         Segments:
         - .
         FileProvider: 
-    Extension: .txt
-    FullPath: _git/Wyam/examples/OpenApiGen/Templates/dump.txt
+    Extension: .yaml
+    FullPath: _git/Wyam/examples/OpenApiGen/Api/api-with-examples.yaml
     IsRelative: true
     IsAbsolute: false
     Segments:
@@ -2294,8 +1447,8 @@ SourceFilePathBase:
     - Wyam
     - examples
     - OpenApiGen
-    - Templates
-    - dump.txt
+    - Api
+    - api-with-examples.yaml
     FileProvider: 
     Root:
       Name: .
@@ -2329,11 +1482,11 @@ SourceFilePathBase:
         - .
         FileProvider: 
       Extension: 
-      FullPath: dump
+      FullPath: api-with-examples
       IsRelative: true
       IsAbsolute: false
       Segments:
-      - dump
+      - api-with-examples
       FileProvider: 
       Root:
         Name: .
@@ -2344,12 +1497,12 @@ SourceFilePathBase:
         Segments:
         - .
         FileProvider: 
-    Extension: .txt
-    FullPath: dump.txt
+    Extension: .yaml
+    FullPath: api-with-examples.yaml
     IsRelative: true
     IsAbsolute: false
     Segments:
-    - dump.txt
+    - api-with-examples.yaml
     FileProvider: 
     Root:
       Name: .
@@ -2372,11 +1525,11 @@ SourceFilePathBase:
       - .
       FileProvider: 
     Extension: 
-    FullPath: dump
+    FullPath: api-with-examples
     IsRelative: true
     IsAbsolute: false
     Segments:
-    - dump
+    - api-with-examples
     FileProvider: 
     Root:
       Name: .
@@ -2387,8 +1540,8 @@ SourceFilePathBase:
       Segments:
       - .
       FileProvider: 
-  Extension: .txt
-  FullPath: C:/_git/Wyam/examples/OpenApiGen/Templates/dump.txt
+  Extension: .yaml
+  FullPath: C:/_git/Wyam/examples/OpenApiGen/Api/api-with-examples.yaml
   IsRelative: false
   IsAbsolute: true
   Segments:
@@ -2397,8 +1550,648 @@ SourceFilePathBase:
   - Wyam
   - examples
   - OpenApiGen
-  - Templates
-  - dump.txt
+  - Api
+  - api-with-examples.yaml
+  FileProvider: file:///
+  Root:
+    Name: 'C:'
+    Parent: 
+    FullPath: C:/
+    IsRelative: false
+    IsAbsolute: true
+    Segments:
+    - 'C:'
+    FileProvider: file:///
+SourceFilePathBase:
+  HasExtension: false
+  Directory:
+    Name: Api
+    Parent:
+      Name: OpenApiGen
+      Parent:
+        Name: examples
+        Parent:
+          Name: Wyam
+          Parent:
+            Name: _git
+            Parent:
+              Name: 'C:'
+              Parent: 
+              FullPath: C:/
+              IsRelative: false
+              IsAbsolute: true
+              Segments:
+              - 'C:'
+              FileProvider: file:///
+            RootRelative:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: C:/_git
+            IsRelative: false
+            IsAbsolute: true
+            Segments:
+            - 'C:'
+            - _git
+            FileProvider: file:///
+            Root:
+              Name: 'C:'
+              Parent: 
+              FullPath: C:/
+              IsRelative: false
+              IsAbsolute: true
+              Segments:
+              - 'C:'
+              FileProvider: file:///
+          RootRelative:
+            Name: Wyam
+            Parent:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: _git/Wyam
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - _git
+            - Wyam
+            FileProvider: 
+            Root:
+              Name: .
+              Parent: 
+              FullPath: .
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - .
+              FileProvider: 
+          FullPath: C:/_git/Wyam
+          IsRelative: false
+          IsAbsolute: true
+          Segments:
+          - 'C:'
+          - _git
+          - Wyam
+          FileProvider: file:///
+          Root:
+            Name: 'C:'
+            Parent: 
+            FullPath: C:/
+            IsRelative: false
+            IsAbsolute: true
+            Segments:
+            - 'C:'
+            FileProvider: file:///
+        RootRelative:
+          Name: examples
+          Parent:
+            Name: Wyam
+            Parent:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: _git/Wyam
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - _git
+            - Wyam
+            FileProvider: 
+            Root:
+              Name: .
+              Parent: 
+              FullPath: .
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - .
+              FileProvider: 
+          FullPath: _git/Wyam/examples
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - _git
+          - Wyam
+          - examples
+          FileProvider: 
+          Root:
+            Name: .
+            Parent: 
+            FullPath: .
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - .
+            FileProvider: 
+        FullPath: C:/_git/Wyam/examples
+        IsRelative: false
+        IsAbsolute: true
+        Segments:
+        - 'C:'
+        - _git
+        - Wyam
+        - examples
+        FileProvider: file:///
+        Root:
+          Name: 'C:'
+          Parent: 
+          FullPath: C:/
+          IsRelative: false
+          IsAbsolute: true
+          Segments:
+          - 'C:'
+          FileProvider: file:///
+      RootRelative:
+        Name: OpenApiGen
+        Parent:
+          Name: examples
+          Parent:
+            Name: Wyam
+            Parent:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: _git/Wyam
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - _git
+            - Wyam
+            FileProvider: 
+            Root:
+              Name: .
+              Parent: 
+              FullPath: .
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - .
+              FileProvider: 
+          FullPath: _git/Wyam/examples
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - _git
+          - Wyam
+          - examples
+          FileProvider: 
+          Root:
+            Name: .
+            Parent: 
+            FullPath: .
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - .
+            FileProvider: 
+        FullPath: _git/Wyam/examples/OpenApiGen
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - _git
+        - Wyam
+        - examples
+        - OpenApiGen
+        FileProvider: 
+        Root:
+          Name: .
+          Parent: 
+          FullPath: .
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - .
+          FileProvider: 
+      FullPath: C:/_git/Wyam/examples/OpenApiGen
+      IsRelative: false
+      IsAbsolute: true
+      Segments:
+      - 'C:'
+      - _git
+      - Wyam
+      - examples
+      - OpenApiGen
+      FileProvider: file:///
+      Root:
+        Name: 'C:'
+        Parent: 
+        FullPath: C:/
+        IsRelative: false
+        IsAbsolute: true
+        Segments:
+        - 'C:'
+        FileProvider: file:///
+    RootRelative:
+      Name: Api
+      Parent:
+        Name: OpenApiGen
+        Parent:
+          Name: examples
+          Parent:
+            Name: Wyam
+            Parent:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: _git/Wyam
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - _git
+            - Wyam
+            FileProvider: 
+            Root:
+              Name: .
+              Parent: 
+              FullPath: .
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - .
+              FileProvider: 
+          FullPath: _git/Wyam/examples
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - _git
+          - Wyam
+          - examples
+          FileProvider: 
+          Root:
+            Name: .
+            Parent: 
+            FullPath: .
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - .
+            FileProvider: 
+        FullPath: _git/Wyam/examples/OpenApiGen
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - _git
+        - Wyam
+        - examples
+        - OpenApiGen
+        FileProvider: 
+        Root:
+          Name: .
+          Parent: 
+          FullPath: .
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - .
+          FileProvider: 
+      FullPath: _git/Wyam/examples/OpenApiGen/Api
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - _git
+      - Wyam
+      - examples
+      - OpenApiGen
+      - Api
+      FileProvider: 
+      Root:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+    FullPath: C:/_git/Wyam/examples/OpenApiGen/Api
+    IsRelative: false
+    IsAbsolute: true
+    Segments:
+    - 'C:'
+    - _git
+    - Wyam
+    - examples
+    - OpenApiGen
+    - Api
+    FileProvider: file:///
+    Root:
+      Name: 'C:'
+      Parent: 
+      FullPath: C:/
+      IsRelative: false
+      IsAbsolute: true
+      Segments:
+      - 'C:'
+      FileProvider: file:///
+  RootRelative:
+    HasExtension: false
+    Directory:
+      Name: Api
+      Parent:
+        Name: OpenApiGen
+        Parent:
+          Name: examples
+          Parent:
+            Name: Wyam
+            Parent:
+              Name: _git
+              Parent: 
+              FullPath: _git
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - _git
+              FileProvider: 
+              Root:
+                Name: .
+                Parent: 
+                FullPath: .
+                IsRelative: true
+                IsAbsolute: false
+                Segments:
+                - .
+                FileProvider: 
+            FullPath: _git/Wyam
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - _git
+            - Wyam
+            FileProvider: 
+            Root:
+              Name: .
+              Parent: 
+              FullPath: .
+              IsRelative: true
+              IsAbsolute: false
+              Segments:
+              - .
+              FileProvider: 
+          FullPath: _git/Wyam/examples
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - _git
+          - Wyam
+          - examples
+          FileProvider: 
+          Root:
+            Name: .
+            Parent: 
+            FullPath: .
+            IsRelative: true
+            IsAbsolute: false
+            Segments:
+            - .
+            FileProvider: 
+        FullPath: _git/Wyam/examples/OpenApiGen
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - _git
+        - Wyam
+        - examples
+        - OpenApiGen
+        FileProvider: 
+        Root:
+          Name: .
+          Parent: 
+          FullPath: .
+          IsRelative: true
+          IsAbsolute: false
+          Segments:
+          - .
+          FileProvider: 
+      FullPath: _git/Wyam/examples/OpenApiGen/Api
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - _git
+      - Wyam
+      - examples
+      - OpenApiGen
+      - Api
+      FileProvider: 
+      Root:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+    FileName:
+      HasExtension: false
+      Directory:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+      Extension: 
+      FullPath: api-with-examples
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - api-with-examples
+      FileProvider: 
+      Root:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+    FileNameWithoutExtension:
+      HasExtension: false
+      Directory:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+      Extension: 
+      FullPath: api-with-examples
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - api-with-examples
+      FileProvider: 
+      Root:
+        Name: .
+        Parent: 
+        FullPath: .
+        IsRelative: true
+        IsAbsolute: false
+        Segments:
+        - .
+        FileProvider: 
+    Extension: 
+    FullPath: _git/Wyam/examples/OpenApiGen/Api/api-with-examples
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - _git
+    - Wyam
+    - examples
+    - OpenApiGen
+    - Api
+    - api-with-examples
+    FileProvider: 
+    Root:
+      Name: .
+      Parent: 
+      FullPath: .
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - .
+      FileProvider: 
+  FileName:
+    HasExtension: false
+    Directory:
+      Name: .
+      Parent: 
+      FullPath: .
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - .
+      FileProvider: 
+    Extension: 
+    FullPath: api-with-examples
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - api-with-examples
+    FileProvider: 
+    Root:
+      Name: .
+      Parent: 
+      FullPath: .
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - .
+      FileProvider: 
+  FileNameWithoutExtension:
+    HasExtension: false
+    Directory:
+      Name: .
+      Parent: 
+      FullPath: .
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - .
+      FileProvider: 
+    Extension: 
+    FullPath: api-with-examples
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - api-with-examples
+    FileProvider: 
+    Root:
+      Name: .
+      Parent: 
+      FullPath: .
+      IsRelative: true
+      IsAbsolute: false
+      Segments:
+      - .
+      FileProvider: 
+  Extension: 
+  FullPath: C:/_git/Wyam/examples/OpenApiGen/Api/api-with-examples
+  IsRelative: false
+  IsAbsolute: true
+  Segments:
+  - 'C:'
+  - _git
+  - Wyam
+  - examples
+  - OpenApiGen
+  - Api
+  - api-with-examples
   FileProvider: file:///
   Root:
     Name: 'C:'
@@ -2421,87 +2214,6 @@ RelativeFilePath:
     - .
     FileProvider: 
   FileNameWithoutExtension:
-    HasExtension: true
-    Directory:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-    FileNameWithoutExtension:
-      HasExtension: false
-      Directory:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-      Extension: 
-      FullPath: dump
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - dump
-      FileProvider: 
-      Root:
-        Name: .
-        Parent: 
-        FullPath: .
-        IsRelative: true
-        IsAbsolute: false
-        Segments:
-        - .
-        FileProvider: 
-    Extension: .txt
-    FullPath: dump.txt
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - dump.txt
-    FileProvider: 
-    Root:
-      Name: .
-      Parent: 
-      FullPath: .
-      IsRelative: true
-      IsAbsolute: false
-      Segments:
-      - .
-      FileProvider: 
-  Extension: .handlebars
-  FullPath: dump.txt.handlebars
-  IsRelative: true
-  IsAbsolute: false
-  Segments:
-  - dump.txt.handlebars
-  FileProvider: 
-  Root:
-    Name: .
-    Parent: 
-    FullPath: .
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - .
-    FileProvider: 
-RelativeFilePathBase:
-  HasExtension: true
-  Directory:
-    Name: .
-    Parent: 
-    FullPath: .
-    IsRelative: true
-    IsAbsolute: false
-    Segments:
-    - .
-    FileProvider: 
-  FileNameWithoutExtension:
     HasExtension: false
     Directory:
       Name: .
@@ -2513,11 +2225,11 @@ RelativeFilePathBase:
       - .
       FileProvider: 
     Extension: 
-    FullPath: dump
+    FullPath: api-with-examples
     IsRelative: true
     IsAbsolute: false
     Segments:
-    - dump
+    - api-with-examples
     FileProvider: 
     Root:
       Name: .
@@ -2528,12 +2240,39 @@ RelativeFilePathBase:
       Segments:
       - .
       FileProvider: 
-  Extension: .txt
-  FullPath: dump.txt
+  Extension: .yaml
+  FullPath: api-with-examples.yaml
   IsRelative: true
   IsAbsolute: false
   Segments:
-  - dump.txt
+  - api-with-examples.yaml
+  FileProvider: 
+  Root:
+    Name: .
+    Parent: 
+    FullPath: .
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - .
+    FileProvider: 
+RelativeFilePathBase:
+  HasExtension: false
+  Directory:
+    Name: .
+    Parent: 
+    FullPath: .
+    IsRelative: true
+    IsAbsolute: false
+    Segments:
+    - .
+    FileProvider: 
+  Extension: 
+  FullPath: api-with-examples
+  IsRelative: true
+  IsAbsolute: false
+  Segments:
+  - api-with-examples
   FileProvider: 
   Root:
     Name: .
@@ -2557,6 +2296,362 @@ LinkHideIndexPages: true
 LinkHideExtensions: true
 UseCache: true
 CleanOutputPath: true
+myapi:
+  Info:
+    Title: Simple API overview
+    Description: 
+    Version: v2
+    TermsOfService: 
+    Contact: 
+    License: 
+    Extensions: {}
+  Servers: []
+  Paths:
+    /:
+      Summary: 
+      Description: 
+      Operations:
+        Get:
+          Tags: []
+          Summary: List API versions
+          Description: 
+          ExternalDocs: 
+          OperationId: listVersionsv2
+          Parameters: []
+          RequestBody: 
+          Responses:
+            200:
+              Description: 200 response
+              Headers: {}
+              Content:
+                application/json:
+                  Schema: 
+                  Example: 
+                  Examples:
+                    foo:
+                      Summary: 
+                      Description: 
+                      Value:
+                        versions:
+                        - status:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: CURRENT
+                          updated:
+                            PrimitiveType: 9
+                            AnyType: 0
+                            Value: 2011-01-21T11:33:21+00:00
+                          id:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: v2.0
+                          links:
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://127.0.0.1:8774/v2/
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: self
+                        - status:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: EXPERIMENTAL
+                          updated:
+                            PrimitiveType: 9
+                            AnyType: 0
+                            Value: 2013-07-23T11:33:21+00:00
+                          id:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: v3.0
+                          links:
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://127.0.0.1:8774/v3/
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: self
+                      ExternalValue: 
+                      Extensions: {}
+                      Reference: 
+                      UnresolvedReference: false
+                  Encoding: {}
+                  Extensions: {}
+              Links: {}
+              Extensions: {}
+              UnresolvedReference: false
+              Reference: 
+            300:
+              Description: 300 response
+              Headers: {}
+              Content:
+                application/json:
+                  Schema: 
+                  Example: 
+                  Examples:
+                    foo:
+                      Summary: 
+                      Description: 
+                      Value:
+                        PrimitiveType: 4
+                        AnyType: 0
+                        Value: >
+                          {
+                           "versions": [
+                                 {
+                                   "status": "CURRENT",
+                                   "updated": "2011-01-21T11:33:21Z",
+                                   "id": "v2.0",
+                                   "links": [
+                                       {
+                                           "href": "http://127.0.0.1:8774/v2/",
+                                           "rel": "self"
+                                       }
+                                   ]
+                               },
+                               {
+                                   "status": "EXPERIMENTAL",
+                                   "updated": "2013-07-23T11:33:21Z",
+                                   "id": "v3.0",
+                                   "links": [
+                                       {
+                                           "href": "http://127.0.0.1:8774/v3/",
+                                           "rel": "self"
+                                       }
+                                   ]
+                               }
+                           ]
+                          }
+                      ExternalValue: 
+                      Extensions: {}
+                      Reference: 
+                      UnresolvedReference: false
+                  Encoding: {}
+                  Extensions: {}
+              Links: {}
+              Extensions: {}
+              UnresolvedReference: false
+              Reference: 
+          Callbacks: {}
+          Deprecated: false
+          Security: []
+          Servers: []
+          Extensions: {}
+      Servers: []
+      Parameters: []
+      Extensions: {}
+    /v2:
+      Summary: 
+      Description: 
+      Operations:
+        Get:
+          Tags: []
+          Summary: Show API version details
+          Description: 
+          ExternalDocs: 
+          OperationId: getVersionDetailsv2
+          Parameters: []
+          RequestBody: 
+          Responses:
+            200:
+              Description: 200 response
+              Headers: {}
+              Content:
+                application/json:
+                  Schema: 
+                  Example: 
+                  Examples:
+                    foo:
+                      Summary: 
+                      Description: 
+                      Value:
+                        version:
+                          status:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: CURRENT
+                          updated:
+                            PrimitiveType: 9
+                            AnyType: 0
+                            Value: 2011-01-21T11:33:21+00:00
+                          media-types:
+                          - base:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/xml
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.openstack.compute+xml;version=2
+                          - base:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/json
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.openstack.compute+json;version=2
+                          id:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: v2.0
+                          links:
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://127.0.0.1:8774/v2/
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: self
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://docs.openstack.org/api/openstack-compute/2/os-compute-devguide-2.pdf
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/pdf
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: describedby
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://docs.openstack.org/api/openstack-compute/2/wadl/os-compute-2.wadl
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.sun.wadl+xml
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: describedby
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://docs.openstack.org/api/openstack-compute/2/wadl/os-compute-2.wadl
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.sun.wadl+xml
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: describedby
+                      ExternalValue: 
+                      Extensions: {}
+                      Reference: 
+                      UnresolvedReference: false
+                  Encoding: {}
+                  Extensions: {}
+              Links: {}
+              Extensions: {}
+              UnresolvedReference: false
+              Reference: 
+            203:
+              Description: 203 response
+              Headers: {}
+              Content:
+                application/json:
+                  Schema: 
+                  Example: 
+                  Examples:
+                    foo:
+                      Summary: 
+                      Description: 
+                      Value:
+                        version:
+                          status:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: CURRENT
+                          updated:
+                            PrimitiveType: 9
+                            AnyType: 0
+                            Value: 2011-01-21T11:33:21+00:00
+                          media-types:
+                          - base:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/xml
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.openstack.compute+xml;version=2
+                          - base:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/json
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.openstack.compute+json;version=2
+                          id:
+                            PrimitiveType: 4
+                            AnyType: 0
+                            Value: v2.0
+                          links:
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://23.253.228.211:8774/v2/
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: self
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://docs.openstack.org/api/openstack-compute/2/os-compute-devguide-2.pdf
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/pdf
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: describedby
+                          - href:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: http://docs.openstack.org/api/openstack-compute/2/wadl/os-compute-2.wadl
+                            type:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: application/vnd.sun.wadl+xml
+                            rel:
+                              PrimitiveType: 4
+                              AnyType: 0
+                              Value: describedby
+                      ExternalValue: 
+                      Extensions: {}
+                      Reference: 
+                      UnresolvedReference: false
+                  Encoding: {}
+                  Extensions: {}
+              Links: {}
+              Extensions: {}
+              UnresolvedReference: false
+              Reference: 
+          Callbacks: {}
+          Deprecated: false
+          Security: []
+          Servers: []
+          Extensions: {}
+      Servers: []
+      Parameters: []
+      Extensions: {}
+  Components: 
+  SecurityRequirements: []
+  Tags: []
+  ExternalDocs: 
+  Extensions: {}
 
 
 

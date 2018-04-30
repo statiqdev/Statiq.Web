@@ -46,8 +46,8 @@ namespace Wyam.OpenAPI
                     }
                     catch (Exception ex)
                     {
-                        var msg = string.Join(Environment.NewLine, diagnostic.Errors.Select(e => e.Message).ToArray());
-                        throw new Exception(msg, innerException: ex);
+                        var msg = string.Join(Environment.NewLine, diagnostic?.Errors.Select(e => e.Message).ToArray() ?? new string[0]);
+                        throw new Exception(msg, innerException: ex); // TODO, find another more precise exception type
                     }
                 })
                 .Where(x => x != null);
