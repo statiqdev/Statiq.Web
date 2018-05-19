@@ -18,11 +18,6 @@ namespace Wyam.Configuration.NuGet
     /// </summary>
     internal class SourceRepositoryProvider : ISourceRepositoryProvider
     {
-        private static readonly string[] DefaultSources =
-        {
-            "https://api.nuget.org/v3/index.json"
-        };
-
         private readonly List<SourceRepository> _defaultRepositories = new List<SourceRepository>();
         private readonly ConcurrentDictionary<PackageSource, SourceRepository> _repositoryCache
             = new ConcurrentDictionary<PackageSource, SourceRepository>();
@@ -37,12 +32,6 @@ namespace Wyam.Configuration.NuGet
             // Add the v3 provider as default
             _resourceProviders = new List<Lazy<INuGetResourceProvider>>();
             _resourceProviders.AddRange(Repository.Provider.GetCoreV3());
-
-            // Add the default sources
-            foreach (string defaultSource in DefaultSources)
-            {
-                AddDefaultRepository(defaultSource);
-            }
         }
 
         /// <summary>
