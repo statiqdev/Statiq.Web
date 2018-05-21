@@ -15,39 +15,14 @@ namespace Wyam.Hosting.Tests
     [TestFixture]
     public class ServerFixture : BaseFixture
     {
-        public class TriggerReloadTests : ServerFixture
+        private static int GetEphemeralPort()
         {
-            [Test]
-            public void RebuildCompletedShouldNotifyConnectedClients()
-            {
-                // Given
-                IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
-                reloadClientMock.IsConnected.Returns(true);
-                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
-                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
-
-                // When
-                server.TriggerReload();
-
-                // Then
-                reloadClientMock.Received().NotifyOfChanges();
-            }
-
-            [Test]
-            public void RebuildCompletedShouldAvoidMissingClients()
-            {
-                // Given
-                IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
-                reloadClientMock.IsConnected.Returns(false);
-                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
-                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
-
-                // When
-                server.TriggerReload();
-
-                // Then
-                reloadClientMock.DidNotReceive().NotifyOfChanges();
-            }
+            // Based on http://stackoverflow.com/a/150974/2001966
+            TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
         }
 
         public class EndpointTests : ServerFixture
@@ -68,14 +43,21 @@ namespace Wyam.Hosting.Tests
         public class HostnameTests : ServerFixture
         {
             [Test]
-            public void ServerShouldBindWithoutUrlReservations()
+            public async Task ServerShouldAcceptRequestsFrom127001()
             {
                 // Given
                 int port = GetEphemeralPort();
                 Server server = new Server(string.Empty, port);
+                server.Start();
+
+                HttpClient client = new HttpClient
+                {
+                    BaseAddress = new Uri($"http://127.0.0.1:{port}/")
+                };
+                HttpResponseMessage response = await client.GetAsync("/");
 
                 // When, Then
-                Assert.DoesNotThrow(() => server.Start());
+                Assert.IsTrue(response.IsSuccessStatusCode);
                 server.Dispose();
             }
 
@@ -91,7 +73,7 @@ namespace Wyam.Hosting.Tests
                 {
                     BaseAddress = new Uri($"http://localhost:{port}/")
                 };
-                HttpResponseMessage response = await client.GetAsync("livereload.js");
+                HttpResponseMessage response = await client.GetAsync("/");
 
                 // When, Then
                 Assert.IsTrue(response.IsSuccessStatusCode);
@@ -99,33 +81,51 @@ namespace Wyam.Hosting.Tests
             }
 
             [Test]
-            public async Task ServerShouldAcceptRequestsFrom127001()
+            public void ServerShouldBindWithoutUrlReservations()
             {
                 // Given
                 int port = GetEphemeralPort();
                 Server server = new Server(string.Empty, port);
-                server.Start();
-
-                HttpClient client = new HttpClient
-                {
-                    BaseAddress = new Uri($"http://127.0.0.1:{port}/")
-                };
-                HttpResponseMessage response = await client.GetAsync("livereload.js");
 
                 // When, Then
-                Assert.IsTrue(response.IsSuccessStatusCode);
+                Assert.DoesNotThrow(() => server.Start());
                 server.Dispose();
             }
         }
 
-        private static int GetEphemeralPort()
+        public class TriggerReloadTests : ServerFixture
         {
-            // Based on http://stackoverflow.com/a/150974/2001966
-            TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
-            listener.Start();
-            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
+            [Test]
+            public void RebuildCompletedShouldAvoidMissingClients()
+            {
+                // Given
+                IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
+                reloadClientMock.IsConnected.Returns(false);
+                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
+                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
+
+                // When
+                server.TriggerReload();
+
+                // Then
+                reloadClientMock.DidNotReceive().NotifyOfChanges();
+            }
+
+            [Test]
+            public void RebuildCompletedShouldNotifyConnectedClients()
+            {
+                // Given
+                IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
+                reloadClientMock.IsConnected.Returns(true);
+                Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
+                server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
+
+                // When
+                server.TriggerReload();
+
+                // Then
+                reloadClientMock.Received().NotifyOfChanges();
+            }
         }
     }
 }

@@ -2,13 +2,14 @@
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.StaticFiles;
-using Microsoft.Owin.Testing;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Owin;
-using Wyam.Hosting.Owin;
+using Wyam.Common.IO;
+using Wyam.Hosting.Middleware;
 
 namespace Wyam.Hosting.Tests.Owin
 {
@@ -22,17 +23,10 @@ namespace Wyam.Hosting.Tests.Owin
 
         public ScriptInjectionMiddlewareTests()
         {
-            _host = TestServer.Create(app =>
-            {
-                app.UseScriptInjection("/livereload.js");
-                IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(ContentAssembly, ContentNamespace);
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = PathString.Empty,
-                    FileSystem = reloadFilesystem,
-                    ServeUnknownFileTypes = true
-                });
-            });
+            _host = new TestServer(new WebHostBuilder().UseStartup<Startup>().ConfigureServices(services =>
+                services
+                    .WithDefaultExtensions(new DefaultExtensionsOptions())
+                    .WithServerOptions(new PreviewServerOptions())));
         }
 
         [Test]
@@ -45,9 +39,9 @@ namespace Wyam.Hosting.Tests.Owin
         }
 
         [Test]
-        public async Task WhenServingNonHtmlDoNotModify()
+        public async Task WhenServingHtmlWithoutBodyDoNotModify()
         {
-            const string filename = "NonHtmlDocument.css";
+            const string filename = "BasicHtmlDocumentNoBodyEnd.html";
             HttpResponseMessage response = await _host.CreateRequest(filename).GetAsync();
             string body = await response.Content.ReadAsStringAsync();
 
@@ -56,9 +50,9 @@ namespace Wyam.Hosting.Tests.Owin
         }
 
         [Test]
-        public async Task WhenServingHtmlWithoutBodyDoNotModify()
+        public async Task WhenServingNonHtmlDoNotModify()
         {
-            const string filename = "BasicHtmlDocumentNoBodyEnd.html";
+            const string filename = "NonHtmlDocument.css";
             HttpResponseMessage response = await _host.CreateRequest(filename).GetAsync();
             string body = await response.Content.ReadAsStringAsync();
 
@@ -79,6 +73,25 @@ namespace Wyam.Hosting.Tests.Owin
                 string fileContent = reader.ReadToEnd();
                 return fileContent;
             }
+        }
+    }
+
+    public class ScriptInjectionStartup
+    {
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseScriptInjection("/livereload.js");
+            //IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(ContentAssembly, ContentNamespace);
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                RequestPath = PathString.Empty,
+                // FileSystem = reloadFilesystem,
+                ServeUnknownFileTypes = true
+            });
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
         }
     }
 }
