@@ -229,7 +229,7 @@ namespace Wyam.Blog
         public const string Excerpt = nameof(Excerpt);
 
         /// <summary>
-        /// Set to <c>true</c> to hide a particular page from the top-level navigation bar.
+        /// Set to <c>false</c> to hide a particular page from the top-level navigation bar.
         /// </summary>
         /// <type><see cref="bool"/></type>
         public const string ShowInNavbar = nameof(ShowInNavbar);
