@@ -229,7 +229,7 @@ namespace Wyam.Docs
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: doc.Get<DateTime>(key: DocsKeys.Published).Month, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
                 Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "MMMM, yyyy"),
-                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy/MM}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(key: DocsKeys.BlogPath).FullPath}/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy/MM}"
             });
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Wyam.Docs
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: 1, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
                 Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "yyyy"),
-                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(key: DocsKeys.BlogPath).FullPath}/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy}"
             });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
