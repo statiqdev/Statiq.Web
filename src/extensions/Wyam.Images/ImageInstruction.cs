@@ -144,24 +144,6 @@ namespace Wyam.Images
             return suffix;
         }
 
-        public IMatrixFilter GetMatrixFilter(ImageFilter filter)
-        {
-            switch (filter)
-            {
-                case ImageFilter.BlackAndWhite: return MatrixFilters.BlackWhite;
-                case ImageFilter.Comic: return MatrixFilters.Comic;
-                case ImageFilter.Gotham: return MatrixFilters.Gotham;
-                case ImageFilter.GreyScale: return MatrixFilters.GreyScale;
-                case ImageFilter.HiSatch: return MatrixFilters.HiSatch;
-                case ImageFilter.Invert: return MatrixFilters.Invert;
-                case ImageFilter.Lomograph: return MatrixFilters.Lomograph;
-                case ImageFilter.LoSatch: return MatrixFilters.LoSatch;
-                case ImageFilter.Polariod: return MatrixFilters.Polaroid;
-                case ImageFilter.Sepia: return MatrixFilters.Sepia;
-                default: return MatrixFilters.Comic;
-            }
-        }
-
         public AnchorPositionMode GetAnchorPosition()
         {
             if (!Enum.IsDefined(typeof(AnchorPositionMode), AnchorPosition))
