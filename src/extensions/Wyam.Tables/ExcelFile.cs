@@ -7,10 +7,11 @@ namespace Wyam.Tables
 {
     internal static class ExcelFile
     {
-        public static IEnumerable<IEnumerable<string>> GetAllRecords(Stream stream, int sheetNumber = 1)
+        public static IEnumerable<IEnumerable<string>> GetAllRecords(Stream stream, int sheetNumber = 0)
         {
             using (var excel = new ExcelPackage(stream))
             {
+                excel.Compatibility.IsWorksheets1Based = false;
                 if (sheetNumber > excel.Workbook.Worksheets.Count)
                 {
                     return null;
