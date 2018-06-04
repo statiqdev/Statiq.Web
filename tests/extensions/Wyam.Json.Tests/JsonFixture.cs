@@ -105,7 +105,6 @@ namespace Wyam.Json.Tests
                 RemoveListener();
                 IDocument document = Substitute.For<IDocument>();
                 document.Content.Returns("asdf");
-                document.Source.Returns(string.Empty);
                 IExecutionContext context = Substitute.For<IExecutionContext>();
                 Json json = new Json("MyJson");
 

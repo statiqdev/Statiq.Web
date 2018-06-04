@@ -238,7 +238,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="DirectoryPath"/>.</returns>
         public static DirectoryPath FromString(string path) =>
-            string.IsNullOrWhiteSpace(path) ? null : new DirectoryPath(path);
+            path == null ? null : new DirectoryPath(path);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Uri"/> to <see cref="DirectoryPath"/>.

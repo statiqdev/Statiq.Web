@@ -219,7 +219,7 @@ namespace Wyam.Common.IO
         /// <param name="path">The path.</param>
         /// <returns>A <see cref="FilePath"/>.</returns>
         public static FilePath FromString(string path) =>
-            string.IsNullOrWhiteSpace(path) ? null : new FilePath(path);
+            path == null ? null : new FilePath(path);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Uri"/> to <see cref="FilePath"/>.
