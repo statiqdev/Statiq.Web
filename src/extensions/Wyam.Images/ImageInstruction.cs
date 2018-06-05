@@ -1,7 +1,7 @@
-﻿using ImageProcessor.Imaging.Filters.Photo;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using img = ImageProcessor.Imaging;
+using SixLabors.ImageSharp.Processing.Transforms;
 
 namespace Wyam.Images
 {
@@ -9,8 +9,6 @@ namespace Wyam.Images
     public class HueInstruction
     {
         public int Degrees { get; set; }
-
-        public bool Rotate { get; set; } = false;
     }
 
     public class ImageInstruction
@@ -21,7 +19,7 @@ namespace Wyam.Images
 
         public Size? Constraint { get; set; }
 
-        public AnchorPosition AnchorPosition { get; set; }
+        public AnchorPositionMode AnchorPosition { get; set; }
 
         public int? Brightness { get; set; }
 
@@ -47,19 +45,19 @@ namespace Wyam.Images
 
         public List<ImageFilter> Filters { get; set; } = new List<ImageFilter>();
 
-        public Size? GetCropSize()
+        public SixLabors.Primitives.Size? GetCropSize()
         {
             if (Width.HasValue && Height.HasValue)
             {
-                return new Size(Width.Value, Height.Value);
+                return new SixLabors.Primitives.Size(Width.Value, Height.Value);
             }
             else if (Width.HasValue)
             {
-                return new Size(Width.Value, 0);
+                return new SixLabors.Primitives.Size(Width.Value, 0);
             }
             else if (Height.HasValue)
             {
-                return new Size(0, Height.Value);
+                return new SixLabors.Primitives.Size(0, Height.Value);
             }
 
             return null;
@@ -146,39 +144,14 @@ namespace Wyam.Images
             return suffix;
         }
 
-        public IMatrixFilter GetMatrixFilter(ImageFilter filter)
+        public AnchorPositionMode GetAnchorPosition()
         {
-            switch (filter)
+            if (!Enum.IsDefined(typeof(AnchorPositionMode), AnchorPosition))
             {
-                case ImageFilter.BlackAndWhite: return MatrixFilters.BlackWhite;
-                case ImageFilter.Comic: return MatrixFilters.Comic;
-                case ImageFilter.Gotham: return MatrixFilters.Gotham;
-                case ImageFilter.GreyScale: return MatrixFilters.GreyScale;
-                case ImageFilter.HiSatch: return MatrixFilters.HiSatch;
-                case ImageFilter.Invert: return MatrixFilters.Invert;
-                case ImageFilter.Lomograph: return MatrixFilters.Lomograph;
-                case ImageFilter.LoSatch: return MatrixFilters.LoSatch;
-                case ImageFilter.Polariod: return MatrixFilters.Polaroid;
-                case ImageFilter.Sepia: return MatrixFilters.Sepia;
-                default: return MatrixFilters.Comic;
+                return AnchorPositionMode.Center;
             }
-        }
 
-        public img.AnchorPosition GetAnchorPosition()
-        {
-            switch (AnchorPosition)
-            {
-                case AnchorPosition.Bottom: return img.AnchorPosition.Bottom;
-                case AnchorPosition.BottomLeft: return img.AnchorPosition.BottomLeft;
-                case AnchorPosition.BottomRight: return img.AnchorPosition.BottomRight;
-                case AnchorPosition.Center: return img.AnchorPosition.Center;
-                case AnchorPosition.Left: return img.AnchorPosition.Left;
-                case AnchorPosition.Right: return img.AnchorPosition.Right;
-                case AnchorPosition.Top: return img.AnchorPosition.Top;
-                case AnchorPosition.TopLeft: return img.AnchorPosition.TopLeft;
-                case AnchorPosition.TopRight: return img.AnchorPosition.TopRight;
-                default: return img.AnchorPosition.Center;
-            }
+            return AnchorPosition;
         }
     }
 }

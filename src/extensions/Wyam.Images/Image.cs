@@ -1,18 +1,20 @@
-﻿using ImageProcessor.Imaging;
-using ImageProcessor.Imaging.Formats;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Filters;
+using SixLabors.ImageSharp.Processing.Transforms;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
-using img = ImageProcessor;
 
 namespace Wyam.Images
 {
@@ -97,7 +99,7 @@ namespace Wyam.Images
         /// </list>
         /// </param>
         /// <returns>The current module instance.</returns>
-        public Image Resize(int? width, int? height, AnchorPosition anchor = AnchorPosition.Center)
+        public Image Resize(int? width, int? height, AnchorPositionMode anchor = AnchorPositionMode.Center)
         {
             EnsureCurrentInstruction();
 
@@ -227,8 +229,7 @@ namespace Wyam.Images
 
             _currentInstruction.Hue = new HueInstruction
             {
-                Degrees = degrees,
-                Rotate = rotate
+                Degrees = degrees
             };
 
             return this;
@@ -379,21 +380,21 @@ namespace Wyam.Images
             }
         }
 
-        private ISupportedImageFormat GetFormat(string extension, ImageInstruction ins)
+        private IImageFormat GetFormat(string extension, ImageInstruction ins)
         {
-            ISupportedImageFormat format = null;
+            IImageFormat format = null;
 
             if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
             {
-                format = new JpegFormat { Quality = ins.JpegQuality };
+                format = ImageFormats.Jpeg;
             }
             else if (extension.Equals(".gif", StringComparison.OrdinalIgnoreCase))
             {
-                format = new GifFormat { };
+                format = ImageFormats.Gif;
             }
             else if (extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
             {
-                format = new PngFormat { };
+                format = ImageFormats.Png;
             }
 
             return format;
@@ -413,7 +414,7 @@ namespace Wyam.Images
 
                 return _instructions.Select(instruction =>
                 {
-                    ISupportedImageFormat format = GetFormat(relativePath.Extension, instruction);
+                    IImageFormat format = GetFormat(relativePath.Extension, instruction);
                     if (format == null)
                     {
                         return null;
@@ -452,84 +453,112 @@ namespace Wyam.Images
             });
         }
 
-        private Stream ProcessImage(IDocument input, ISupportedImageFormat format, ImageInstruction ins)
+        private Stream ProcessImage(IDocument input, IImageFormat format, ImageInstruction ins)
         {
-            using (img.ImageFactory imageFactory = new img.ImageFactory(preserveExifData: true))
+            // Load, resize, set the format and quality and save an image.
+            Image<Rgba32> image;
+            using (Stream stream = input.GetStream())
             {
-                // Load, resize, set the format and quality and save an image.
-                img.ImageFactory fac;
-                using (Stream stream = input.GetStream())
-                {
-                    fac = imageFactory.Load(stream).Format(format);
-                }
+                image = SixLabors.ImageSharp.Image.Load(stream);
+            }
 
+            image.Mutate(fac =>
+            {
                 if (ins.IsNeedResize)
                 {
                     if (ins.IsCropRequired)
                     {
-                        var layer = new ResizeLayer(
-                            size: ins.GetCropSize().Value,
-                            anchorPosition: ins.GetAnchorPosition(),
-                            resizeMode: ResizeMode.Crop
-                            );
-
-                        fac.Resize(layer);
+                        fac = fac.Resize(new ResizeOptions
+                        {
+                            Size = ins.GetCropSize().Value,
+                            Position = ins.GetAnchorPosition(),
+                            Mode = ResizeMode.Crop
+                        });
                     }
                     else
                     {
-                        fac.Resize(ins.GetCropSize().Value);
+                        fac = fac.Resize(ins.GetCropSize().Value);
                     }
                 }
 
                 foreach (var f in ins.Filters)
                 {
-                    fac.Filter(ins.GetMatrixFilter(f));
+                    fac = ApplyFilter(fac, f);
                 }
 
                 if (ins.Brightness.HasValue)
                 {
-                    fac.Brightness(ins.Brightness.Value);
+                    fac = fac.Brightness(ins.Brightness.Value);
                 }
 
                 if (ins.Constraint.HasValue)
                 {
-                    fac.Constrain(ins.Constraint.Value);
+                    var options = new ResizeOptions { Mode = ResizeMode.Max, Size = ins.GetCropSize().Value };
+                    fac = fac.Resize(options);
                 }
 
                 if (ins.Opacity.HasValue)
                 {
-                    fac.Alpha(ins.Opacity.Value);
+                    fac = fac.Opacity(ins.Opacity.Value);
                 }
 
                 if (ins.Hue != null)
                 {
-                    fac.Hue(ins.Hue.Degrees, ins.Hue.Rotate);
+                    fac = fac.Hue(ins.Hue.Degrees);
                 }
 
                 if (ins.Tint != null)
                 {
-                    fac.Tint(ins.Tint.Value);
+                    //fac = fac.Tint(ins.Tint.Value);
                 }
 
                 if (ins.Vignette != null)
                 {
-                    fac.Vignette(ins.Vignette.Value);
+                    //fac = fac.Vignette(ins.Vignette.Value);
                 }
 
                 if (ins.Saturation.HasValue)
                 {
-                    fac.Saturation(ins.Saturation.Value);
+                    fac = fac.Saturate(ins.Saturation.Value);
                 }
 
                 if (ins.Contrast.HasValue)
                 {
-                    fac.Contrast(ins.Contrast.Value);
+                    fac = fac.Contrast(ins.Contrast.Value);
                 }
+            });
 
-                var outputStream = new MemoryStream();
-                fac.Save(outputStream);
-                outputStream.Seek(0, SeekOrigin.Begin);
-                return outputStream;
+            var outputStream = new MemoryStream();
+            image.Save(outputStream, format);
+            outputStream.Seek(0, SeekOrigin.Begin);
+            return outputStream;
+        }
+
+        private static IImageProcessingContext<Rgba32> ApplyFilter(IImageProcessingContext<Rgba32> fac, ImageFilter filter)
+        {
+            switch (filter)
+            {
+                case ImageFilter.BlackAndWhite:
+                    return fac.BlackWhite();
+                case ImageFilter.GreyScale:
+                    return fac.Grayscale();
+                case ImageFilter.HiSatch:
+                    return fac.Saturate(0.7f);
+                case ImageFilter.Invert:
+                    return fac.Invert();
+                case ImageFilter.Lomograph:
+                    return fac.Lomograph();
+                case ImageFilter.LoSatch:
+                    return fac.Saturate(0.3f);
+                case ImageFilter.Polariod:
+                    return fac.Polaroid();
+                case ImageFilter.Sepia:
+                    return fac.Sepia();
+                case ImageFilter.Comic:
+                case ImageFilter.Gotham:
+                    throw new NotSupportedException();
+                default:
+                    return fac;
             }
         }
     }
