@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Filters;
+using SixLabors.ImageSharp.Processing.Overlays;
 using SixLabors.ImageSharp.Processing.Transforms;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
@@ -15,6 +17,7 @@ using Wyam.Common.IO;
 using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
+using Wyam.Images.Operations;
 
 namespace Wyam.Images
 {
@@ -22,10 +25,12 @@ namespace Wyam.Images
     /// This module manipulates images by applying a variety of operations.
     /// </summary>
     /// <remarks>
-    /// <para>This module manipulates images by applying operations such as resizing, darken/lighten, etc. This image module
-    /// does not modify your original images in anyway.It will create a copy of your images and produce images in the
+    /// <para>
+    /// This module manipulates images by applying operations such as resizing, darken/lighten, etc. This image module
+    /// does not modify your original images in any way. It will create a copy of your images and produce images in the
     /// same image format as the original. It relies on other modules such as <c>ReadFiles</c> to read the actual images as
-    /// input and <c>WriteFiles</c> to write images to disk.</para>
+    /// input and <c>WriteFiles</c> to write images to disk.
+    /// </para>
     /// <code>
     /// Pipelines.Add("Images",
     ///   ReadFiles("*")
@@ -35,180 +40,180 @@ namespace Wyam.Images
     ///   WriteFiles("*")
     /// );
     /// </code>
-    /// <para>It will produce image with similar file name as the original image with addition of suffix indicating operations
+    /// <para>
+    /// It will produce image with similar file name as the original image with addition of suffix indicating operations
     /// that have performed, e.g. "hello-world.jpg" can result in "hello-world-w100.jpg". The module allows you to perform more
-    /// than one set of processing instructions by using the fluent property <c>And</c>.</para>
+    /// than one set of processing instructions by using the fluent property <c>And</c>.
+    /// </para>
     /// <code>
     /// Pipelines.Add("Images",
     ///   ReadFiles("*")
     ///     .Where(x => new[] { ".jpg", ".jpeg", ".gif", ".png"}.Contains(x.Path.Extension)),
     ///   Image()
-    ///     .SetJpegQuality(100).Resize(400,209).SetSuffix("-thumb")
-    ///     .And
+    ///     .SetJpegQuality(100).Resize(400, 209).SetSuffix("-thumb")
+    ///     .And()
     ///     .SetJpegQuality(70).Resize(400*2, 209*2).SetSuffix("-medium"),
     ///   WriteFiles("*")
     /// );
     /// </code>
-    /// <para>The above configuration produces two set of new images, one with a "-thumb" suffix and the other with a "-medium" suffix.</para>
+    /// <para>
+    /// The above configuration produces two set of new images, one with a "-thumb" suffix and the other
+    /// with a "-medium" suffix.
+    /// </para>
     /// </remarks>
     /// <metadata cref="Keys.RelativeFilePath" usage="Input" />
-    /// <metadata cref="Keys.WriteExtension" usage="Output" />
     /// <metadata cref="Keys.WritePath" usage="Output" />
     /// <category>Content</category>
     public class Image : IModule
     {
-        private readonly List<ImageInstruction> _instructions;
-
-        private ImageInstruction _currentInstruction;
+        private readonly Stack<ImageOperations> _operations = new Stack<ImageOperations>();
 
         /// <summary>
-        /// Creates the module without any instructions.
+        /// Process images in the content of the input document.
         /// </summary>
         public Image()
         {
-            _instructions = new List<ImageInstruction>();
-        }
-
-        private void EnsureCurrentInstruction()
-        {
-            if (_currentInstruction == null)
-            {
-                _currentInstruction = new ImageInstruction();
-                _instructions.Add(_currentInstruction);
-            }
+            _operations.Push(new ImageOperations());
         }
 
         /// <summary>
-        /// Resizes the image to a certain width and height. It will crop the image whenever necessary. The module will not perform
-        /// any image resizing if both width and height are set to <c>null</c>. If the source image is smaller than the specified
-        /// width and height, the image will be enlarged.
+        /// Outputs the image as JPEG. This will override the default
+        /// behavior of outputting the image as the same format.
         /// </summary>
-        /// <param name="width">The desired width. If set to <c>null</c> or <c>0</c>, the image will be resized to its height.</param>
-        /// <param name="height">The desired height. If set to <c>null</c> or <c>0</c>, the image will be resized to its width.</param>
-        /// <param name="anchor">The anchor position to use for cropping (if necessary). The available values are:
-        /// <list type="bullet">
-        /// <item><description>AnchorPosition.Center</description></item>
-        /// <item><description>AnchorPosition.Top</description></item>
-        /// <item><description>AnchorPosition.Bottom</description></item>
-        /// <item><description>AnchorPosition.Left</description></item>
-        /// <item><description>AnchorPosition.Right</description></item>
-        /// <item><description>AnchorPosition.TopLeft</description></item>
-        /// <item><description>AnchorPosition.TopRight</description></item>
-        /// <item><description>AnchorPosition.BottomLeft</description></item>
-        /// <item><description>AnchorPosition.BottomRight</description></item>
-        /// </list>
+        /// <returns>The current module instance.</returns>
+        public Image OutputAsJpeg()
+        {
+            _operations.Peek().Formats.Add((ImageFormats.Jpeg, null));
+            return this;
+        }
+
+        /// <summary>
+        /// Outputs the image as PNG. This will override the default
+        /// behavior of outputting the image as the same format.
+        /// </summary>
+        /// <returns>The current module instance.</returns>
+        public Image OutputAsPng()
+        {
+            _operations.Peek().Formats.Add((ImageFormats.Png, null));
+            return this;
+        }
+
+        /// <summary>
+        /// Outputs the image as GIF. This will override the default
+        /// behavior of outputting the image as the same format.
+        /// </summary>
+        /// <returns>The current module instance.</returns>
+        public Image OutputAsGif()
+        {
+            _operations.Peek().Formats.Add((ImageFormats.Gif, null));
+            return this;
+        }
+
+        /// <summary>
+        /// Outputs the image as BMP. This will override the default
+        /// behavior of outputting the image as the same format.
+        /// </summary>
+        /// <returns>The current module instance.</returns>
+        public Image OutputAsBmp()
+        {
+            _operations.Peek().Formats.Add((ImageFormats.Bmp, null));
+            return this;
+        }
+
+        /// <summary>
+        /// Allows you to specify an alternate format and encoder for the image.
+        /// This will override the default
+        /// behavior of outputting the image as the same format.
+        /// </summary>
+        /// <param name="format">The format of the image.</param>
+        /// <param name="encoder">The encoder to use. If <c>null</c>, the default encoder for the specified format will be used.</param>
+        /// <returns>The current module instance.</returns>
+        public Image OutputAs(IImageFormat format, IImageEncoder encoder = null)
+        {
+            if (format == null)
+            {
+                throw new ArgumentNullException(nameof(format));
+            }
+
+            _operations.Peek().Formats.Add((format, encoder));
+            return this;
+        }
+
+        /// <summary>
+        /// Allows you to specify your own ImageSharp operation.
+        /// </summary>
+        /// <param name="operation">The operation to perform on the image.</param>
+        /// <param name="pathModifier">Modifies the destination path after applying the operation.</param>
+        /// <returns>The current module instance.</returns>
+        public Image Operation(
+            Func<IImageProcessingContext<Rgba32>, IImageProcessingContext<Rgba32>> operation,
+            Func<FilePath, FilePath> pathModifier = null)
+        {
+            _operations.Peek().Enqueue(new ActionOperation(operation, pathModifier));
+            return this;
+        }
+
+        /// <summary>
+        /// Resizes the image to a certain width and height. No resizing will be performed if
+        /// both width and height are set to <c>null</c>.
+        /// </summary>
+        /// <param name="width">The desired width. If set to <c>null</c> or <c>0</c>, the image will maintain it's original aspect ratio.</param>
+        /// <param name="height">The desired height. If set to <c>null</c> or <c>0</c>, the image will maintain it's original aspect ratio.</param>
+        /// <param name="anchor">The anchor position to use (if necessary).</param>
+        /// <param name="mode">The resize mode to use.</param>
+        /// <returns>The current module instance.</returns>
+        public Image Resize(
+            int? width,
+            int? height,
+            AnchorPositionMode anchor = AnchorPositionMode.Center,
+            ResizeMode mode = ResizeMode.BoxPad)
+        {
+            _operations.Peek().Enqueue(new ResizeOperation(width, height, anchor, mode));
+            return this;
+        }
+
+        /// <summary>
+        /// Applies black and white toning to the image.
+        /// </summary>
+        /// <returns>The current module instance.</returns>
+        public Image BlackWhite()
+        {
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.BlackWhite(),
+                path => path.InsertSuffix("-bw")));
+            return this;
+        }
+
+        /// <summary>
+        /// Brightens the image.
+        /// </summary>
+        /// <param name="amount">
+        /// The proportion of the conversion. Must be greater than or equal to 0.
+        /// A value of 0 will create an image that is completely black.
+        /// A value of 1 leaves the input unchanged. Other values are linear multipliers on the effect.
+        /// Values of an amount over 1 are allowed.
         /// </param>
         /// <returns>The current module instance.</returns>
-        public Image Resize(int? width, int? height, AnchorPositionMode anchor = AnchorPositionMode.Center)
+        public Image Brightness(float amount)
         {
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Width = width;
-            _currentInstruction.Height = height;
-            _currentInstruction.AnchorPosition = anchor;
-
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Brightness(amount),
+                path => path.InsertSuffix($"-b{amount}")));
             return this;
         }
 
         /// <summary>
-        /// Constrains the image to a specified size. If the image is larger than the specified <c>width</c> and <c>height</c>, it will
-        /// be resized down. If the image is smaller than the specified <c>width</c> and <c>height</c>, it will not be resized.
+        /// Multiplies the alpha component of the image.
         /// </summary>
-        /// <param name="width">The maximum desired width.</param>
-        /// <param name="height">The maximum desired height.</param>
+        /// <param name="amount">
+        /// The proportion of the conversion. Must be between 0 and 1.
+        /// </param>
         /// <returns>The current module instance.</returns>
-        public Image Constrain(int width, int height)
+        public Image Opacity(float amount)
         {
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Constraint = new Size(width, height);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Applies the the specified image filters. The available filters are:
-        /// <list type="bullet">
-        /// <item><description>ImageFilter.BlackAndWhite</description></item>
-        /// <item><description>ImageFilter.Comic</description></item>
-        /// <item><description>ImageFilter.Gotham</description></item>
-        /// <item><description>ImageFilter.GreyScale</description></item>
-        /// <item><description>ImageFilter.HiSatch</description></item>
-        /// <item><description>ImageFilter.Invert</description></item>
-        /// <item><description>ImageFilter.Lomograph</description></item>
-        /// <item><description>ImageFilter.LoSatch</description></item>
-        /// <item><description>ImageFilter.Polaroid</description></item>
-        /// <item><description>ImageFilter.Sepia</description></item>
-        /// </list>
-        /// These filter values map directly to filters provided by ImageProcessor library.
-        /// <a href="http://imageprocessor.org/imageprocessor/imagefactory/filter/">You can see the effects of
-        /// these filters here</a>.
-        /// </summary>
-        /// <param name="filters">The filters to apply.</param>
-        /// <returns>The current module instance.</returns>
-        public Image ApplyFilters(params ImageFilter[] filters)
-        {
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Filters.AddRange(filters);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Brightens the image by the specified percentage.
-        /// </summary>
-        /// <param name="percentage">The percentage to brighten the image by (<c>0</c> to <c>100</c>).</param>
-        /// <returns>The current module instance.</returns>
-        public Image Brighten(short percentage)
-        {
-            if (percentage < 0 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Brightness = percentage;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Darkens the image by the specified percentage.
-        /// </summary>
-        /// <param name="percentage">The percentage to darken the image by (<c>0</c> to <c>100</c>).</param>
-        /// <returns>The current module instance.</returns>
-        public Image Darken(short percentage)
-        {
-            if (percentage < 0 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Brightness = -percentage;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the opacity of the image.
-        /// </summary>
-        /// <param name="percentage">The opacity percentage (<c>0</c> to <c>100</c>).</param>
-        /// <returns>The current module instance.</returns>
-        public Image SetOpacity(short percentage)
-        {
-            if (percentage < 0 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Opacity = percentage;
-
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Opacity(amount),
+                path => path.InsertSuffix($"-o{amount}")));
             return this;
         }
 
@@ -216,118 +221,58 @@ namespace Wyam.Images
         /// Sets the hue of the image using <c>0</c> to <c>360</c> degree values.
         /// </summary>
         /// <param name="degrees">The degrees to set.</param>
-        /// <param name="rotate">If set to <c>true</c>, rotates the hue.</param>
         /// <returns>The current module instance.</returns>
-        public Image SetHue(short degrees, bool rotate = false)
+        public Image Hue(float degrees)
         {
-            if (degrees < 0 || degrees > 360)
-            {
-                throw new ArgumentException($"Degrees must be between 0 and 360 instead of {degrees}");
-            }
-
-            EnsureCurrentInstruction();
-
-            _currentInstruction.Hue = new HueInstruction
-            {
-                Degrees = degrees
-            };
-
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Hue(degrees),
+                path => path.InsertSuffix($"-h{degrees}")));
             return this;
         }
 
         /// <summary>
-        /// Tints the image to the specified color, e.g. <c>Color.Aqua</c>.
-        /// <a href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Please
-        /// check here for more color values</a>.
-        /// </summary>
-        /// <param name="color">The color to tint the image to.</param>
-        /// <returns>The current module instance.</returns>
-        public Image Tint(Color color)
-        {
-            EnsureCurrentInstruction();
-            _currentInstruction.Tint = color;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Apply vignette processing to the image with specific color, e.g. <c>Vignette(Color.AliceBlue)</c>.
+        /// Apply vignette processing to the image with specific color, e.g. <c>Vignette(Rgba32.AliceBlue)</c>.
         /// </summary>
         /// <param name="color">The color to use for the vignette.</param>
         /// <returns>The current module instance.</returns>
-        public Image Vignette(Color color)
+        public Image Vignette(Rgba32 color)
         {
-            EnsureCurrentInstruction();
-            _currentInstruction.Vignette = color;
-
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Vignette(color),
+                path => path.InsertSuffix($"-v")));
             return this;
         }
 
         /// <summary>
         /// Saturates the image.
         /// </summary>
-        /// <param name="percentage">The saturation percentage (<c>0</c> to <c>100</c>).</param>
+        /// <param name="amount">
+        /// A value of 0 is completely un-saturated. A value of 1 leaves the input unchanged.
+        /// Other values are linear multipliers on the effect. Values of amount over 1 are allowed,
+        /// providing super-saturated results.</param>
         /// <returns>The current module instance.</returns>
-        public Image Saturate(short percentage)
+        public Image Saturate(float amount)
         {
-            if (percentage < 0 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-            _currentInstruction.Saturation = percentage;
-            return this;
-        }
-
-        /// <summary>
-        /// Desaturates the image.
-        /// </summary>
-        /// <param name="percentage">The desaturation percentage (<c>0</c> to <c>100</c>).</param>
-        /// <returns>The current module instance.</returns>
-        public Image Desaturate(short percentage)
-        {
-            if (percentage < 0 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between 0 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-            _currentInstruction.Saturation = -percentage;
-            return this;
-        }
-
-        /// <summary>
-        /// This setting only applies to JPEG images. It sets the quality of the JPEG output. The possible values are from <c>0</c> to <c>100</c>.
-        /// </summary>
-        /// <param name="quality">The desired JPEG quality (<c>0</c> to <c>100</c>).</param>
-        /// <returns>The current module instance.</returns>
-        public Image SetJpegQuality(short quality)
-        {
-            if (quality < 0 || quality > 100)
-            {
-                throw new ArgumentException($"Quality must be between 0 and 100 instead of {quality}");
-            }
-
-            EnsureCurrentInstruction();
-            _currentInstruction.JpegQuality = quality;
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Saturate(amount),
+                path => path.InsertSuffix($"-s{amount}")));
             return this;
         }
 
         /// <summary>
         /// Adjusts the contrast of the image.
         /// </summary>
-        /// <param name="percentage">Set the contrast value of the image from the value of <c>-100</c> to <c>100</c>.</param>
+        /// <param name="amount">
+        /// A value of 0 will create an image that is completely gray.
+        /// A value of 1 leaves the input unchanged. Other values are linear multipliers on the effect.
+        /// Values of an amount over 1 are allowed, providing results with more contrast.
+        /// </param>
         /// <returns>The current module instance.</returns>
-        public Image SetContrast(short percentage)
+        public Image Contrast(float amount)
         {
-            if (percentage < -100 || percentage > 100)
-            {
-                throw new ArgumentException($"Percentage must be between -100 and 100 instead of {percentage}%");
-            }
-
-            EnsureCurrentInstruction();
-            _currentInstruction.Contrast = percentage;
+            _operations.Peek().Enqueue(new ActionOperation(
+                image => image.Contrast(amount),
+                path => path.InsertSuffix($"-c{amount}")));
             return this;
         }
 
@@ -344,8 +289,7 @@ namespace Wyam.Images
                 throw new ArgumentException("Please supply the suffix");
             }
 
-            EnsureCurrentInstruction();
-            _currentInstruction.FileNameSuffix = suffix;
+            _operations.Peek().Enqueue(new ActionOperation(null, x => x.InsertSuffix(suffix)));
             return this;
         }
 
@@ -362,8 +306,7 @@ namespace Wyam.Images
                 throw new ArgumentException("Please supply the prefix");
             }
 
-            EnsureCurrentInstruction();
-            _currentInstruction.FileNamePrefix = prefix;
+            _operations.Peek().Enqueue(new ActionOperation(null, x => x.InsertPrefix(prefix)));
             return this;
         }
 
@@ -371,195 +314,81 @@ namespace Wyam.Images
         /// Mark the beginning of another set of processing instructions to be applied to the images.
         /// </summary>
         /// <returns>The current module instance.</returns>
-        public Image And
+        public Image And()
         {
-            get
-            {
-                _currentInstruction = null;
-                return this;
-            }
-        }
-
-        private IImageFormat GetFormat(string extension, ImageInstruction ins)
-        {
-            IImageFormat format = null;
-
-            if (extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
-            {
-                format = ImageFormats.Jpeg;
-            }
-            else if (extension.Equals(".gif", StringComparison.OrdinalIgnoreCase))
-            {
-                format = ImageFormats.Gif;
-            }
-            else if (extension.Equals(".png", StringComparison.OrdinalIgnoreCase))
-            {
-                format = ImageFormats.Png;
-            }
-
-            return format;
+            _operations.Push(new ImageOperations());
+            return this;
         }
 
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
+            ImageFormatManager formatManager = new ImageFormatManager();
             return inputs.SelectMany(context, input =>
             {
                 FilePath relativePath = input.FilePath(Keys.RelativeFilePath);
-                if (relativePath == null)
-                {
-                    return Array.Empty<IDocument>();
-                }
-                FilePath destinationPath = context.FileSystem.GetOutputPath(relativePath);
-
-                return _instructions.Select(instruction =>
-                {
-                    IImageFormat format = GetFormat(relativePath.Extension, instruction);
-                    if (format == null)
+                return _operations
+                    .SelectMany(operations =>
                     {
-                        return null;
-                    }
+                        FilePath destinationPath = relativePath == null ? null : context.FileSystem.GetOutputPath(relativePath);
 
-                    string destinationFile = relativePath.FileNameWithoutExtension.FullPath;
-
-                    if (instruction.IsFileNameCustomized)
-                    {
-                        if (!string.IsNullOrWhiteSpace(instruction.FileNamePrefix))
+                        // Get the image
+                        Image<Rgba32> image;
+                        IImageFormat imageFormat;
+                        using (Stream stream = input.GetStream())
                         {
-                            destinationFile = instruction.FileNamePrefix + destinationFile;
+                            image = SixLabors.ImageSharp.Image.Load(stream, out imageFormat);
                         }
 
-                        if (!string.IsNullOrWhiteSpace(instruction.FileNameSuffix))
+                        // Apply operations and output the image
+                        try
                         {
-                            destinationFile += instruction.FileNameSuffix + relativePath.Extension;
+                            // Mutate the image with the specified operations, if there are any
+                            if (operations.Operations.Count > 0)
+                            {
+                                image.Mutate(imageContext =>
+                                {
+                                    IImageProcessingContext<Rgba32> workingImageContext = imageContext;
+                                    foreach (IImageOperation operation in operations.Operations)
+                                    {
+                                        // Apply operation
+                                        workingImageContext = operation.Apply(workingImageContext);
+
+                                        // Modify the path
+                                        if (destinationPath != null)
+                                        {
+                                            destinationPath = operation.GetPath(destinationPath) ?? destinationPath;
+                                        }
+                                    }
+                                });
+                            }
+
+                            // Output in specified formats
+                            IEnumerable<(IImageFormat, IImageEncoder)> formats = operations.Formats.Count == 0
+                                ? (IEnumerable<(IImageFormat, IImageEncoder)>) new (IImageFormat, IImageEncoder)[] { (imageFormat, null) }
+                                : operations.Formats;
+                            return formats.Select(format =>
+                            {
+                                FilePath formatPath = format.Item1.Name == imageFormat.Name
+                                       ? destinationPath
+                                       : destinationPath?.ChangeExtension(format.Item1.FileExtensions.First());
+                                Trace.Verbose($"{Keys.WritePath}: {formatPath}");
+                                MemoryStream outputStream = new MemoryStream();
+                                IImageEncoder encoder = format.Item2 ?? formatManager.FindEncoder(format.Item1);
+                                image.Save(outputStream, encoder);
+                                outputStream.Seek(0, SeekOrigin.Begin);
+                                return context.GetDocument(input, outputStream, new MetadataItems
+                                {
+                                    { Keys.WritePath, formatPath }
+                                });
+                            });
                         }
-                    }
-                    else
-                    {
-                        destinationFile += instruction.GetSuffix() + relativePath.Extension;
-                    }
-
-                    destinationPath = destinationPath.Directory.CombineFile(destinationFile);
-                    Trace.Verbose($"{Keys.WritePath}: {destinationPath}");
-
-                    Stream output = ProcessImage(input, format, instruction);
-
-                    return context.GetDocument(input, output, new MetadataItems
-                    {
-                        {Keys.WritePath, destinationPath},
-                        {Keys.WriteExtension, relativePath.Extension}
+                        finally
+                        {
+                            image.Dispose();
+                        }
                     });
-                }).Where(x => x != null);
             });
-        }
-
-        private Stream ProcessImage(IDocument input, IImageFormat format, ImageInstruction ins)
-        {
-            // Load, resize, set the format and quality and save an image.
-            Image<Rgba32> image;
-            using (Stream stream = input.GetStream())
-            {
-                image = SixLabors.ImageSharp.Image.Load(stream);
-            }
-
-            image.Mutate(fac =>
-            {
-                if (ins.IsNeedResize)
-                {
-                    if (ins.IsCropRequired)
-                    {
-                        fac = fac.Resize(new ResizeOptions
-                        {
-                            Size = ins.GetCropSize().Value,
-                            Position = ins.GetAnchorPosition(),
-                            Mode = ResizeMode.Crop
-                        });
-                    }
-                    else
-                    {
-                        fac = fac.Resize(ins.GetCropSize().Value);
-                    }
-                }
-
-                foreach (var f in ins.Filters)
-                {
-                    fac = ApplyFilter(fac, f);
-                }
-
-                if (ins.Brightness.HasValue)
-                {
-                    fac = fac.Brightness(ins.Brightness.Value);
-                }
-
-                if (ins.Constraint.HasValue)
-                {
-                    var options = new ResizeOptions { Mode = ResizeMode.Max, Size = ins.GetCropSize().Value };
-                    fac = fac.Resize(options);
-                }
-
-                if (ins.Opacity.HasValue)
-                {
-                    fac = fac.Opacity(ins.Opacity.Value);
-                }
-
-                if (ins.Hue != null)
-                {
-                    fac = fac.Hue(ins.Hue.Degrees);
-                }
-
-                if (ins.Tint != null)
-                {
-                    //fac = fac.Tint(ins.Tint.Value);
-                }
-
-                if (ins.Vignette != null)
-                {
-                    //fac = fac.Vignette(ins.Vignette.Value);
-                }
-
-                if (ins.Saturation.HasValue)
-                {
-                    fac = fac.Saturate(ins.Saturation.Value);
-                }
-
-                if (ins.Contrast.HasValue)
-                {
-                    fac = fac.Contrast(ins.Contrast.Value);
-                }
-            });
-
-            var outputStream = new MemoryStream();
-            image.Save(outputStream, format);
-            outputStream.Seek(0, SeekOrigin.Begin);
-            return outputStream;
-        }
-
-        private static IImageProcessingContext<Rgba32> ApplyFilter(IImageProcessingContext<Rgba32> fac, ImageFilter filter)
-        {
-            switch (filter)
-            {
-                case ImageFilter.BlackAndWhite:
-                    return fac.BlackWhite();
-                case ImageFilter.GreyScale:
-                    return fac.Grayscale();
-                case ImageFilter.HiSatch:
-                    return fac.Saturate(0.7f);
-                case ImageFilter.Invert:
-                    return fac.Invert();
-                case ImageFilter.Lomograph:
-                    return fac.Lomograph();
-                case ImageFilter.LoSatch:
-                    return fac.Saturate(0.3f);
-                case ImageFilter.Polariod:
-                    return fac.Polaroid();
-                case ImageFilter.Sepia:
-                    return fac.Sepia();
-                case ImageFilter.Comic:
-                case ImageFilter.Gotham:
-                    throw new NotSupportedException();
-                default:
-                    return fac;
-            }
         }
     }
 }

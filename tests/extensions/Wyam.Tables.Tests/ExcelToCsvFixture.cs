@@ -49,7 +49,7 @@ namespace Wyam.Tables.Tests
 + "\"26\",\"26\",\"52\",\"78\",\"104\",\"130\",\"156\",\"182\"\r\n";
 
                 TestExecutionContext context = new TestExecutionContext();
-                TestDocument document = new TestDocument(new MemoryStream(File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.xlsx"))));
+                TestDocument document = new TestDocument(GetTestFileStream("test.xlsx"));
                 ExcelToCsv module = new ExcelToCsv();
 
                 // When

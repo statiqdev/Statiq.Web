@@ -52,5 +52,8 @@ namespace Wyam.Testing
                 listener.ThrowTraceEventType = traceEventType;
             }
         }
+
+        public Stream GetTestFileStream(string fileName) =>
+            new MemoryStream(File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName)));
     }
 }
