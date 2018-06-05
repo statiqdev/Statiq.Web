@@ -198,6 +198,46 @@ namespace Wyam.Common.IO
         }
 
         /// <summary>
+        /// Inserts a suffix into the file name before the extension.
+        /// </summary>
+        /// <param name="suffix">The suffix to insert.</param>
+        /// <returns>A new <see cref="FilePath"/> with the specified suffix.</returns>
+        public FilePath InsertSuffix(string suffix)
+        {
+            if (suffix == null)
+            {
+                throw new ArgumentNullException(nameof(suffix));
+            }
+
+            int extensionIndex = FullPath.LastIndexOf(".");
+            if (extensionIndex == -1)
+            {
+                return new FilePath(FileProvider, string.Concat(FullPath, suffix));
+            }
+            return new FilePath(FileProvider, string.Concat(FullPath.Substring(0, extensionIndex), suffix, FullPath.Substring(extensionIndex)));
+        }
+
+        /// <summary>
+        /// Inserts a prefix into the file name.
+        /// </summary>
+        /// <param name="prefix">The prefix to insert.</param>
+        /// <returns>A new <see cref="FilePath"/> with the specified prefix.</returns>
+        public FilePath InsertPrefix(string prefix)
+        {
+            if (prefix == null)
+            {
+                throw new ArgumentNullException(nameof(prefix));
+            }
+
+            int nameIndex = FullPath.LastIndexOf("/");
+            if (nameIndex == -1)
+            {
+                return new FilePath(FileProvider, string.Concat(prefix, FullPath));
+            }
+            return new FilePath(FileProvider, string.Concat(FullPath.Substring(0, nameIndex + 1), prefix, FullPath.Substring(nameIndex + 1)));
+        }
+
+        /// <summary>
         /// Collapses a <see cref="FilePath"/> containing ellipses.
         /// </summary>
         /// <returns>A collapsed <see cref="FilePath"/>.</returns>
