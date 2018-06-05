@@ -26,11 +26,16 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    var records = ExcelFile.GetAllRecords(input.GetStream());
-                    using (var stream = new MemoryStream())
+                    IEnumerable<IEnumerable<string>> records;
+                    using (Stream stream = input.GetStream())
                     {
-                        CsvFile.WriteAllRecords(records, stream);
-                        return context.GetDocument(input, stream);
+                        records = ExcelFile.GetAllRecords(input.GetStream());
+                    }
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        CsvFile.WriteAllRecords(records, memoryStream);
+                        return context.GetDocument(input, memoryStream);
                     }
                 }
                 catch (Exception e)

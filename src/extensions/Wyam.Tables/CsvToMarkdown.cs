@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Wyam.Common.Documents;
@@ -45,25 +46,30 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    var records = CsvFile.GetAllRecords(input.GetStream());
+                    IEnumerable<IEnumerable<string>> records;
+                    using (Stream stream = input.GetStream())
+                    {
+                        records = CsvFile.GetAllRecords(stream);
+                    }
+
                     StringBuilder builder = new StringBuilder();
 
                     int columnCount = records.First().Count();
 
                     int[] columnSize = new int[columnCount];
 
-                    foreach (var row in records)
+                    foreach (IEnumerable<string> row in records)
                     {
                         for (int i = 0; i < row.Count(); i++)
                         {
-                            var cell = row.ElementAt(i);
+                            string cell = row.ElementAt(i);
                             columnSize[i] = Math.Max(columnSize[i], cell.Length);
                         }
                     }
 
                     bool firstLine = true;
                     WriteLine(builder, columnSize);
-                    foreach (var row in records)
+                    foreach (IEnumerable<string> row in records)
                     {
                         builder.Append("|");
                         for (int i = 0; i < columnSize.Length; i++)

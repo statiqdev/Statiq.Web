@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Wyam.Common.Documents;
@@ -39,15 +40,19 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    var records = CsvFile.GetAllRecords(input.GetStream());
-                    StringBuilder builder = new StringBuilder();
+                    IEnumerable<IEnumerable<string>> records;
+                    using (Stream stream = input.GetStream())
+                    {
+                        records = CsvFile.GetAllRecords(input.GetStream());
+                    }
 
+                    StringBuilder builder = new StringBuilder();
                     bool firstLine = true;
                     builder.AppendLine("<table>");
-                    foreach (var row in records)
+                    foreach (IEnumerable<string> row in records)
                     {
                         builder.AppendLine("<tr>");
-                        foreach (var cell in row)
+                        foreach (string cell in row)
                         {
                             if (_firstLineHeader && firstLine)
                             {
