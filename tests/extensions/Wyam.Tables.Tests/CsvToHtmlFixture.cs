@@ -14,7 +14,7 @@ namespace Wyam.Tables.Tests
         public class ExecuteTests : CsvToHtmlFixture
         {
             [Test]
-            public void TestWithoutHeadder()
+            public void TestWithoutHeader()
             {
                 // Given
                 string input = string.Empty
@@ -330,7 +330,7 @@ namespace Wyam.Tables.Tests
             }
 
             [Test]
-            public void TestHeadder()
+            public void TestHeader()
             {
                 // Given
                 string input = string.Empty

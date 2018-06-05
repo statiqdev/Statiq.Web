@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wyam.Common.Configuration;
 using Wyam.Common.Documents;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
 
 namespace Wyam.Tables
 {
@@ -30,13 +26,12 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    Tabular.Table table;
-                    using (Stream stream = input.GetStream())
+                    var records = ExcelFile.GetAllRecords(input.GetStream());
+                    using (var stream = new MemoryStream())
                     {
-                        table = Tabular.Excel.ReadFrom(stream, Tabular.ExcelFormat.Excel2007);
+                        CsvFile.WriteAllRecords(records, stream);
+                        return context.GetDocument(input, stream);
                     }
-                    Tabular.Csv csv = Tabular.Csv.ToCsv(table);
-                    return context.GetDocument(input, context.GetContentStream(csv.Data));
                 }
                 catch (Exception e)
                 {

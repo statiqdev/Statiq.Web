@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.Documents;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
 
 namespace Wyam.Tables
 {
@@ -41,24 +39,23 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    Tabular.Csv csv = new Tabular.Csv() { Data = input.Content };
-                    Tabular.Table table = Tabular.Csv.FromCsv(csv);
+                    var records = CsvFile.GetAllRecords(input.GetStream());
                     StringBuilder builder = new StringBuilder();
 
                     bool firstLine = true;
                     builder.AppendLine("<table>");
-                    foreach (var row in table.Rows)
+                    foreach (var row in records)
                     {
                         builder.AppendLine("<tr>");
                         foreach (var cell in row)
                         {
                             if (_firstLineHeader && firstLine)
                             {
-                                builder.AppendLine($"<th>{cell.Value}</th>");
+                                builder.AppendLine($"<th>{cell}</th>");
                             }
                             else
                             {
-                                builder.AppendLine($"<td>{cell.Value}</td>");
+                                builder.AppendLine($"<td>{cell}</td>");
                             }
                         }
                         builder.AppendLine("</tr>");
