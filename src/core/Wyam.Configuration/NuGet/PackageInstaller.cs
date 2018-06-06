@@ -47,6 +47,8 @@ namespace Wyam.Configuration.NuGet
 
         public bool UseGlobalPackageSources { get; set; }
 
+        public bool IgnoreDefaultSources { get; set; }
+
         public DirectoryPath PackagesPath
         {
             get { return _packagesPath; }
@@ -153,6 +155,12 @@ namespace Wyam.Configuration.NuGet
                 if (UseGlobalPackageSources)
                 {
                     _sourceRepositories.AddGlobalDefaults();
+                }
+
+                // Add the default package sources
+                if (!IgnoreDefaultSources)
+                {
+                    _sourceRepositories.AddDefaultPackageSources();
                 }
 
                 // Get the local repository
