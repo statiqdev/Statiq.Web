@@ -7,7 +7,24 @@
     <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Configuration\Wyam.Configuration.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Core\Wyam.Core.csproj" />
-    <ProjectReference Include="..\..\..\src\extensions\**\*.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.AmazonWebServices\Wyam.AmazonWebServices.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.CodeAnalysis\Wyam.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Feeds\Wyam.Feeds.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.GitHub\Wyam.GitHub.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Highlight\Wyam.Highlight.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Html\Wyam.Html.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Images\Wyam.Images.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Json\Wyam.Json.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Less\Wyam.Less.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Markdown\Wyam.Markdown.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Minification\Wyam.Minification.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Razor\Wyam.Razor.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Sass\Wyam.Sass.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.SearchIndex\Wyam.SearchIndex.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Tables\Wyam.Tables.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Xmp\Wyam.Xmp.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Yaml\Wyam.Yaml.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.YouTube\Wyam.YouTube.csproj" />
     <ProjectReference Include="..\..\..\src\recipes\**\*.csproj" />
   </ItemGroup>
   <ItemGroup>
