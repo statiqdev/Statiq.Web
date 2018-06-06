@@ -53,7 +53,7 @@ namespace Wyam.Testing
             }
         }
 
-        public Stream GetTestFileStream(string fileName) =>
+        public MemoryStream GetTestFileStream(string fileName) =>
             new MemoryStream(File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName)));
     }
 }

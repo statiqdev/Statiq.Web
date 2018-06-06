@@ -83,7 +83,8 @@ namespace Wyam.Images
         /// <returns>The current module instance.</returns>
         public Image OutputAsJpeg()
         {
-            _operations.Peek().Formats.Add((ImageFormats.Jpeg, null));
+            _operations.Peek().OutputActions.Add(
+                new OutputAction((i, s) => i.SaveAsJpeg(s), x => x.ChangeExtension(".jpg")));
             return this;
         }
 
@@ -94,7 +95,8 @@ namespace Wyam.Images
         /// <returns>The current module instance.</returns>
         public Image OutputAsPng()
         {
-            _operations.Peek().Formats.Add((ImageFormats.Png, null));
+            _operations.Peek().OutputActions.Add(
+                new OutputAction((i, s) => i.SaveAsPng(s), x => x.ChangeExtension(".png")));
             return this;
         }
 
@@ -105,7 +107,8 @@ namespace Wyam.Images
         /// <returns>The current module instance.</returns>
         public Image OutputAsGif()
         {
-            _operations.Peek().Formats.Add((ImageFormats.Gif, null));
+            _operations.Peek().OutputActions.Add(
+                new OutputAction((i, s) => i.SaveAsGif(s), x => x.ChangeExtension(".gif")));
             return this;
         }
 
@@ -116,26 +119,22 @@ namespace Wyam.Images
         /// <returns>The current module instance.</returns>
         public Image OutputAsBmp()
         {
-            _operations.Peek().Formats.Add((ImageFormats.Bmp, null));
+            _operations.Peek().OutputActions.Add(
+                new OutputAction((i, s) => i.SaveAsBmp(s), x => x.ChangeExtension(".bmp")));
             return this;
         }
 
         /// <summary>
-        /// Allows you to specify an alternate format and encoder for the image.
-        /// This will override the default
-        /// behavior of outputting the image as the same format.
+        /// Allows you to specify an alternate output format for the image.
+        /// For example, you might use this if you want to full specify the encoder and it's properties.
+        /// This will override the default behavior of outputting the image as the same format.
         /// </summary>
-        /// <param name="format">The format of the image.</param>
-        /// <param name="encoder">The encoder to use. If <c>null</c>, the default encoder for the specified format will be used.</param>
+        /// <param name="action">An action that should write the provided image to the provided stream.</param>
+        /// <param name="pathModifier">Modifies the destination path after applying the operation (for example, to set the extension).</param>
         /// <returns>The current module instance.</returns>
-        public Image OutputAs(IImageFormat format, IImageEncoder encoder = null)
+        public Image OutputAs(Action<Image<Rgba32>, Stream> action, Func<FilePath, FilePath> pathModifier = null)
         {
-            if (format == null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
-
-            _operations.Peek().Formats.Add((format, encoder));
+            _operations.Peek().OutputActions.Add(new OutputAction(action, pathModifier));
             return this;
         }
 
@@ -340,53 +339,42 @@ namespace Wyam.Images
                             image = SixLabors.ImageSharp.Image.Load(stream, out imageFormat);
                         }
 
-                        // Apply operations and output the image
-                        try
+                        // Mutate the image with the specified operations, if there are any
+                        if (operations.Operations.Count > 0)
                         {
-                            // Mutate the image with the specified operations, if there are any
-                            if (operations.Operations.Count > 0)
+                            image.Mutate(imageContext =>
                             {
-                                image.Mutate(imageContext =>
+                                IImageProcessingContext<Rgba32> workingImageContext = imageContext;
+                                foreach (IImageOperation operation in operations.Operations)
                                 {
-                                    IImageProcessingContext<Rgba32> workingImageContext = imageContext;
-                                    foreach (IImageOperation operation in operations.Operations)
+                                    // Apply operation
+                                    workingImageContext = operation.Apply(workingImageContext);
+
+                                    // Modify the path
+                                    if (destinationPath != null)
                                     {
-                                        // Apply operation
-                                        workingImageContext = operation.Apply(workingImageContext);
-
-                                        // Modify the path
-                                        if (destinationPath != null)
-                                        {
-                                            destinationPath = operation.GetPath(destinationPath) ?? destinationPath;
-                                        }
+                                        destinationPath = operation.GetPath(destinationPath) ?? destinationPath;
                                     }
-                                });
-                            }
-
-                            // Output in specified formats
-                            IEnumerable<(IImageFormat, IImageEncoder)> formats = operations.Formats.Count == 0
-                                ? (IEnumerable<(IImageFormat, IImageEncoder)>) new (IImageFormat, IImageEncoder)[] { (imageFormat, null) }
-                                : operations.Formats;
-                            return formats.Select(format =>
-                            {
-                                FilePath formatPath = format.Item1.Name == imageFormat.Name
-                                       ? destinationPath
-                                       : destinationPath?.ChangeExtension(format.Item1.FileExtensions.First());
-                                Trace.Verbose($"{Keys.WritePath}: {formatPath}");
-                                MemoryStream outputStream = new MemoryStream();
-                                IImageEncoder encoder = format.Item2 ?? formatManager.FindEncoder(format.Item1);
-                                image.Save(outputStream, encoder);
-                                outputStream.Seek(0, SeekOrigin.Begin);
-                                return context.GetDocument(input, outputStream, new MetadataItems
-                                {
-                                    { Keys.WritePath, formatPath }
-                                });
+                                }
                             });
                         }
-                        finally
+
+                        // Invoke output actions
+                        IEnumerable<OutputAction> outputActions = operations.OutputActions.Count == 0
+                            ? (IEnumerable<OutputAction>)new[] { new OutputAction((i, s) => i.Save(s, imageFormat), null) }
+                            : operations.OutputActions;
+                        return outputActions.Select(action =>
                         {
-                            image.Dispose();
-                        }
+                            FilePath formatPath = action.GetPath(destinationPath) ?? destinationPath;
+                            Trace.Verbose($"{Keys.WritePath}: {formatPath}");
+                            MemoryStream outputStream = new MemoryStream();
+                            action.Invoke(image, outputStream);
+                            outputStream.Seek(0, SeekOrigin.Begin);
+                            return context.GetDocument(input, outputStream, new MetadataItems
+                            {
+                                { Keys.WritePath, formatPath }
+                            });
+                        });
                     });
             });
         }

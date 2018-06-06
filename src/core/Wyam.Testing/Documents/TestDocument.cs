@@ -58,6 +58,13 @@ namespace Wyam.Testing.Documents
         }
 
         /// <inhertdoc />
+        public TestDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> metadata)
+            : this(metadata)
+        {
+            Stream = stream;
+        }
+
+        /// <inhertdoc />
         public IMetadata WithoutSettings => this;
 
         /// <inhertdoc />
