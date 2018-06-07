@@ -1,5 +1,5 @@
 @{
-    bool fullContent = Model.String(Keys.RelativeFilePath) == $"{@Context.String(DocsKeys.BlogPath)}/index.html" && Model.Get<int>(Keys.CurrentPage) == 1;
+    bool fullContent = Model.String(Keys.RelativeFilePath) == $"{Context.String(DocsKeys.BlogPath)}/index.html" && Model.Get<int>(Keys.CurrentPage) == 1;
     foreach(IDocument post in Model.DocumentList(Keys.PageDocuments))
     {
         <h2><a href="@Context.GetLink(post)">@post.WithoutSettings.String(Keys.Title)</a></h2>

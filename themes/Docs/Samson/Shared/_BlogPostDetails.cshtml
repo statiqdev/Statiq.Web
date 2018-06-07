@@ -7,12 +7,12 @@
     {
         string link = Model.String(DocsKeys.Category).Replace(" ", "-").Replace("'", string.Empty);
         <dt><i class="fa fa-bookmark"></i> Category</dt>
-        <dd><a href="@Context.GetLink($"/{@Context.String(DocsKeys.BlogPath)}/{link}")">@(Model.String(DocsKeys.Category))</a></dd>
+        <dd><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/{link}")">@(Model.String(DocsKeys.Category))</a></dd>
     }    
     @if(Model.ContainsKey(DocsKeys.Author))
     {
         string link = Model.String(DocsKeys.Author).Replace(" ", "-").Replace("'", string.Empty);
         <dt><i class="fa fa-user"></i> Author</dt>
-        <dd><a href="@Context.GetLink($"/{@Context.String(DocsKeys.BlogPath)}/author/{link}")">@(Model.String(DocsKeys.Author))</a></dd>
+        <dd><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/author/{link}")">@(Model.String(DocsKeys.Author))</a></dd>
     }  
 </dl>

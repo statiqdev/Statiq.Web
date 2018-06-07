@@ -10,8 +10,8 @@
         .OrderBy(x => x))
     {
         string link = category.Replace(" ", "-").Replace("'", string.Empty);
-        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{@Context.String(DocsKeys.BlogPath)}/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="@Context.GetLink($"/{@Context.String(DocsKeys.BlogPath)}/{link}")">@category</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/{link}")">@category</a></li>
     }
     
     <li class="header"><i class="fa fa-calendar"></i> Archive</li>    
@@ -22,8 +22,8 @@
         .OrderByDescending(x => x))
     {
         string link = published.ToString("yyyy/MM");
-        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"blog/archive/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="@Context.GetLink($"/{@Context.String(DocsKeys.BlogPath)}/archive/{link}")">@(published.ToString("MMMM, yyyy"))</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/archive/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/archive/{link}")">@(published.ToString("MMMM, yyyy"))</a></li>
     }
     
     <li class="header"><i class="fa fa-user"></i> Authors</li>    
@@ -33,8 +33,8 @@
         .OrderBy(x => x))
     {
         string link = author.Replace(" ", "-").Replace("'", string.Empty);
-        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{@Context.String(DocsKeys.BlogPath)}/author/{link}/") ? "selected" : null;
-        <li class="@selected"><a href="@Context.GetLink($"/{@Context.String(DocsKeys.BlogPath)}/author/{link}")">@author</a></li>
+        string selected = Model.String(Keys.RelativeFilePath).StartsWith($"{Context.String(DocsKeys.BlogPath)}/author/{link}/") ? "selected" : null;
+        <li class="@selected"><a href="@Context.GetLink($"/{Context.String(DocsKeys.BlogPath)}/author/{link}")">@author</a></li>
     }
 }
 
