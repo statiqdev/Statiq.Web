@@ -239,6 +239,9 @@ namespace Wyam.Html
                 lastNode = lookup.Root;
             }
             newText = replaced ? builder.ToString() : string.Empty;
+
+            // Special case of embedded generic types (like Foo<Foo>), the generic parameter
+            // is extracted and tested if no match was found.
             if (!replaced && text.Contains("<") && text.EndsWith(">"))
             {
                 var splittedText = text.Split(new[] { '<' }, 2);
