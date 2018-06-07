@@ -540,6 +540,52 @@ namespace Wyam.Html.Tests
                 // Then
                 Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
+
+            [Test]
+            public void AddLinksToGenericWordsInsideAngleBrackets()
+            {
+                // Given
+                string input = @"<html><head></head><body><ul>
+                        <li>Foo</li>
+                        <li>Foo&lt;T&gt;</li>
+                        <li><code>Foo</code></li>
+                        <li><code>Foo&lt;T&gt;</code></li>
+                        <li><code>Foo&lt;Foo&gt;</code></li>
+                        <li><code>Foo&lt;Foo&lt;T&gt;&gt;</code></li>
+                        <li><code>IEnumerable&lt;Foo&gt;</code></li>
+                        <li><code>IEnumerable&lt;Foo&lt;T&gt;&gt;</code></li>
+                        <li><code>IEnumerable&lt;IEnumerable&lt;Foo&gt;&gt;</code></li>
+                        <li><code>IEnumerable&lt;IEnumerable&lt;Foo&lt;T&gt;&gt;&gt;</code></li>
+                    </ul></body></html>";
+                string output = @"<html><head></head><body><ul>
+                        <li>Foo</li>
+                        <li>Foo&lt;T&gt;</li>
+                        <li><code><a href=""http://www.foo.com"">Foo</a></code></li>
+                        <li><code><a href=""http://www.fooOfT.com"">Foo&lt;T&gt;</a></code></li>
+                        <li><code>Foo&lt;<a href=""http://www.foo.com"">Foo</a>&gt;</code></li>
+                        <li><code>Foo&lt;<a href=""http://www.fooOfT.com"">Foo&lt;T&gt;</a>&gt;</code></li>
+                        <li><code>IEnumerable&lt;<a href=""http://www.foo.com"">Foo</a>&gt;</code></li>
+                        <li><code>IEnumerable&lt;<a href=""http://www.fooOfT.com"">Foo&lt;T&gt;</a>&gt;</code></li>
+                        <li><code>IEnumerable&lt;IEnumerable&lt;<a href=""http://www.foo.com"">Foo</a>&gt;&gt;</code></li>
+                        <li><code>IEnumerable&lt;IEnumerable&lt;<a href=""http://www.fooOfT.com"">Foo&lt;T&gt;</a>&gt;&gt;</code></li>
+                    </ul></body></html>";
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(input);
+                var links = new Dictionary<string, string>()
+                {
+                    { "Foo&lt;T&gt;", "http://www.fooOfT.com" },
+                    { "Foo", "http://www.foo.com" },
+                };
+                AutoLink autoLink = new AutoLink(links)
+                    .WithQuerySelector("code")
+                    .WithMatchOnlyWholeWord();
+
+                // When
+                IList<IDocument> results = autoLink.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output.Replace("\r\n", "\n") }));
+            }
         }
     }
 }

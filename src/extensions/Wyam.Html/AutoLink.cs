@@ -177,9 +177,11 @@ namespace Wyam.Html
             });
         }
 
-        private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText)
+        private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText) => ReplaceStrings(text.Text, map, out newText);
+
+        private bool ReplaceStrings(string text, IDictionary<string, string> map, out string newText)
         {
-            string s = WebUtility.HtmlEncode(text.Text);  // The text content is unencoded so we need to reencode it before performing replacements
+            string s = WebUtility.HtmlEncode(text);  // The text content is unencoded so we need to reencode it before performing replacements
             Trie<char> lookup = new Trie<char>(map.Keys);
             StringBuilder builder = new StringBuilder();
             int lastIdx = -1;
@@ -237,6 +239,13 @@ namespace Wyam.Html
                 lastNode = lookup.Root;
             }
             newText = replaced ? builder.ToString() : string.Empty;
+            if (!replaced && text.Contains("<") && text.EndsWith(">"))
+            {
+                var splittedText = text.Split(new[] { '<' }, 2);
+                replaced = ReplaceStrings(splittedText[1].Remove(splittedText[1].Length - 1), map, out string replacedText);
+                newText = replaced ? $"{splittedText[0]}&lt;{replacedText}&gt;" : string.Empty;
+            }
+
             return replaced;
         }
 
