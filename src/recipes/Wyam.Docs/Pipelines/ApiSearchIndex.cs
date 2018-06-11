@@ -41,21 +41,37 @@ namespace Wyam.Docs.Pipelines
                         // Use a custom tokenizer that splits on camel case characters
                         // https://github.com/olivernn/lunr.js/issues/230#issuecomment-244790648
                         scriptBuilder.Insert(0, @"
-var camelCaseTokenizer = function (obj) {
+var camelCaseTokenizer = function (builder) {
+
+  var pipelineFunction = function (token) {
     var previous = '';
-    return obj.toString().trim().split(/[\s\-]+|(?=[A-Z])/).reduce(function(acc, cur) {
-        var current = cur.toLowerCase();
-        if(acc.length === 0) {
-            previous = current;
-            return acc.concat(current);
-        }
-        previous = previous.concat(current);
-        return acc.concat([current, previous]);
+    // split camelCaseString to on each word and combined words
+    // e.g. camelCaseTokenizer -> ['camel', 'case', 'camelcase', 'tokenizer', 'camelcasetokenizer']
+    var tokenStrings = token.toString().trim().split(/[\s\-]+|(?=[A-Z])/).reduce(function(acc, cur) {
+      var current = cur.toLowerCase();
+      if (acc.length === 0) {
+        previous = current;
+        return acc.concat(current);
+      }
+      previous = previous.concat(current);
+      return acc.concat([current, previous]);
     }, []);
-}
-lunr.tokenizer.registerFunction(camelCaseTokenizer, 'camelCaseTokenizer')");
+
+    // return token for each string
+    // will copy any metadata on input token
+    return tokenStrings.map(function(tokenString) {
+      return token.clone(function(str) {
+        return tokenString;
+      })
+    });
+  }
+
+  lunr.Pipeline.registerFunction(pipelineFunction, 'camelCaseTokenizer')
+
+  builder.pipeline.before(lunr.stemmer, pipelineFunction)
+}");
                         scriptBuilder.Replace("this.ref('id');", @"this.ref('id');
-        this.tokenizer(camelCaseTokenizer);");
+        this.use(camelCaseTokenizer);");
                         return scriptBuilder.ToString();
                     })
                     .WithPath("assets/js/searchIndex.js"),
