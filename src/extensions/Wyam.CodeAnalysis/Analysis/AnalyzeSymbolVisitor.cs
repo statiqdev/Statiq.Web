@@ -95,7 +95,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void DefaultVisit(ISymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddDocument(symbol, false, new MetadataItems());
             }
@@ -105,7 +105,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitAssembly(IAssemblySymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddDocument(symbol, true, new MetadataItems
                 {
@@ -129,7 +129,7 @@ namespace Wyam.CodeAnalysis.Analysis
             symbols.Add(symbol);
 
             // Create the document (but not if none of the members would be included)
-            if (_finished || _symbolPredicate == null || (_symbolPredicate(symbol) && symbol.GetMembers().Any(m => _symbolPredicate(m))))
+            if (ShouldIncludeSymbol(symbol, x => x.GetMembers().Any(m => _symbolPredicate(m))))
             {
                 _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
                     _ => AddNamespaceDocument(symbol, true),
@@ -150,7 +150,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 MetadataItems metadata = new MetadataItems
                 {
@@ -191,7 +191,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitTypeParameter(ITypeParameterSymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
@@ -204,7 +204,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitParameter(IParameterSymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
@@ -223,7 +223,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 _extensionMethods.Add(symbol);
             }
 
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
@@ -240,7 +240,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitField(IFieldSymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
@@ -256,7 +256,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitEvent(IEventSymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
@@ -270,7 +270,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitProperty(IPropertySymbol symbol)
         {
-            if (_finished || _symbolPredicate == null || _symbolPredicate(symbol))
+            if (ShouldIncludeSymbol(symbol))
             {
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
@@ -285,6 +285,17 @@ namespace Wyam.CodeAnalysis.Analysis
         }
 
         // Helpers below...
+
+        private bool ShouldIncludeSymbol<TSymbol>(TSymbol symbol, Func<TSymbol, bool> additionalCondition = null)
+            where TSymbol : ISymbol
+        {
+            // Exclude the global auto-generated F# namespace (need to use .ToString() instead of .Name because it can have dots which act as nested namespaces)
+            if (symbol.ToString().Contains("StartupCode$") || (symbol.ContainingNamespace?.ToString().Contains("StartupCode$") ?? false))
+            {
+                return false;
+            }
+            return _finished || ((_symbolPredicate == null || _symbolPredicate(symbol)) && (additionalCondition == null || additionalCondition(symbol)));
+        }
 
         // This was helpful: http://stackoverflow.com/a/30445814/807064
         private IEnumerable<ISymbol> GetAccessibleMembersInThisAndBaseTypes(ITypeSymbol containingType, ISymbol within)
