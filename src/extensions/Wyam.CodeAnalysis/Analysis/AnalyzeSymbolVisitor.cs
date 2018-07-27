@@ -129,7 +129,7 @@ namespace Wyam.CodeAnalysis.Analysis
             symbols.Add(symbol);
 
             // Create the document (but not if none of the members would be included)
-            if (ShouldIncludeSymbol(symbol, x => x.GetMembers().Any(m => _symbolPredicate(m))))
+            if (ShouldIncludeSymbol(symbol, x => _symbolPredicate == null || x.GetMembers().Any(m => _symbolPredicate(m))))
             {
                 _namespaceDisplayNameToDocument.AddOrUpdate(displayName,
                     _ => AddNamespaceDocument(symbol, true),
