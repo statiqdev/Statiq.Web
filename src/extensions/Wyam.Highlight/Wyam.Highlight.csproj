@@ -13,7 +13,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.9.9" />
+    <PackageReference Include="AngleSharp" Version="0.9.10" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="highlight-all.js" />

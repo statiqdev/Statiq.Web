@@ -113,7 +113,9 @@ namespace Wyam.Docs
                         ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                         new AutoLink(TypeNamesToLink)
                             .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>'),
                         new If(
                             (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                             new Replace("@", "&#64;"))));
@@ -141,7 +143,9 @@ namespace Wyam.Docs
                         ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                         new AutoLink(TypeNamesToLink)
                             .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>'),
                         new If(
                             (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                             new Replace("@", "&#64;"))));
