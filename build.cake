@@ -198,7 +198,7 @@ Task("Create-Theme-Packages")
                 Version = semVersion,
                 Title = id,
                 Authors = new [] { "Dave Glick" },
-                Owners = new [] { "Dave Glick" },
+                Owners = new [] { "Dave Glick", "wyam" },
                 Description = "A theme for the Wyam " + segments[segments.Length - 2] + " recipe.",
                 ProjectUrl = new Uri("https://wyam.io"),
                 IconUrl = new Uri("https://wyam.io/assets/img/logo-square-64.png"),
