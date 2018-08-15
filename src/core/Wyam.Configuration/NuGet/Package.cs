@@ -143,13 +143,16 @@ namespace Wyam.Configuration.NuGet
             try
             {
                 DependencyInfoResource dependencyInfoResource = await sourceRepository.GetResourceAsync<DependencyInfoResource>();
-                IEnumerable<SourcePackageDependencyInfo> dependencyInfo = await dependencyInfoResource.ResolvePackages(
-                    _packageId, _currentFramework, logger, CancellationToken.None);
-                return dependencyInfo
-                    .Select(x => x.Version)
-                    .Where(x => x != null && (_versionRange == null || _versionRange.Satisfies(x)))
-                    .DefaultIfEmpty()
-                    .Max();
+                using (SourceCacheContext sourceCacheContext = new SourceCacheContext())
+                {
+                    IEnumerable<SourcePackageDependencyInfo> dependencyInfo = await dependencyInfoResource.ResolvePackages(
+                        _packageId, _currentFramework, sourceCacheContext, logger, CancellationToken.None);
+                    return dependencyInfo
+                        .Select(x => x.Version)
+                        .Where(x => x != null && (_versionRange == null || _versionRange.Satisfies(x)))
+                        .DefaultIfEmpty()
+                        .Max();
+                }
             }
             catch (Exception ex)
             {
