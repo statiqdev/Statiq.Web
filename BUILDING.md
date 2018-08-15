@@ -23,5 +23,3 @@ build.cmd -target Clean
 ## From Visual Studio
 
 If you want to open and build Wyam from Visual Studio, the main solution is in the root folder as `Wyam.sln`.
-
-The `src\Wyam.Windows.sln` solution is only for the Windows-specific installer application and you'll probably never need to view or edit it.
