@@ -218,6 +218,10 @@ namespace Wyam.Blog
                 ValidateLinksAsError = ctx => ctx.Bool(BlogKeys.ValidateLinksAsError)
             });
 
+        /// <inheritdoc cref="Web.Pipelines.Sitemap" />
+        [SourceInfo]
+        public static Web.Pipelines.Sitemap Sitemap { get; } = new Web.Pipelines.Sitemap(nameof(Sitemap));
+
         /// <inheritdoc/>
         public override void Apply(IEngine engine)
         {
