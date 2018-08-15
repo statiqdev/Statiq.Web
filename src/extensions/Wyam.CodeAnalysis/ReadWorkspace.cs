@@ -92,14 +92,17 @@ namespace Wyam.CodeAnalysis
         /// <returns>A sequence of Roslyn <see cref="Project"/> instances in the workspace.</returns>
         protected abstract IEnumerable<Project> GetProjects(IExecutionContext context, IFile file);
 
-        protected internal static void CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
+        protected internal static AnalyzerResult CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
         {
             log.GetStringBuilder().Clear();
-            if (analyzer.Compile() == null)
+            AnalyzerResult result = analyzer.Build();
+            if (result.OverallSuccess == false)
             {
-                Trace.Error($"Could not compile project at {analyzer.ProjectFilePath}");
+                Trace.Error($"Could not compile project at {analyzer.ProjectFile.Path}");
                 Trace.Warning(log.ToString());
+                return null;
             }
+            return result;
         }
 
         /// <inheritdoc />
