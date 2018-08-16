@@ -2,8 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <OutputType>Exe</OutputType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
+    <!-- Need to ensure x64 due to Buildalyzer -> MSBuild -> NuGet.Build.Tasks.dll, see #699 -->
+    <!-- Also to make sure correct x64 libuv gets copied to output, see https://github.com/aspnet/KestrelHttpServer/issues/1292#issuecomment-278871702 -->
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />

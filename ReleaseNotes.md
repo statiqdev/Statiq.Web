@@ -1,7 +1,7 @@
 # 1.5.0
 
 - **[Breaking Change]**[Refactoring] Removed the `TextGeneration` module since it's not .NET Core compatible
-- [Fix] Added back `AnyCPU` support to `wyam.exe` (lost during SDK project conversion) (#699)
+- [Fix] Set `wyam.exe` to `x64` to avoid problems with `NuGet.Build.Tasks.dll`, libuv, and .NET Framework (#699)
 - [Feature] Updated Buildalyzer/MSBuild for `CodeAnalysis` modules, documentation project builds should work more reliably and on more project types now
 - [Refactoring] Updated version of lunrjs used by the `SearchIndex` module and related themes (#660, #661, thanks @SteveLowe)
 - [Fix] Added support for no trailing slash on edit link URL in `Docs` theme (#698, thanks @Foxtrek64)
