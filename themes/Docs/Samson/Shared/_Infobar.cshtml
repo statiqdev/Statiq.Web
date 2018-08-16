@@ -3,7 +3,7 @@
     FilePath editFilePath = Model.FilePath(Wyam.Web.WebKeys.EditFilePath);
     if(!string.IsNullOrWhiteSpace(baseEditUrl) && editFilePath != null)
     {
-        if (!baseEditUrl[baseEditUrl.Length - 1].equals('/'))
+        if (baseEditUrl[baseEditUrl.Length - 1] != '/')
         {
             baseEditUrl += "/";
         }
