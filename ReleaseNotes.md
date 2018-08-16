@@ -1,3 +1,27 @@
+# 1.5.0
+
+- **[Breaking Change]**[Refactoring] Removed the `TextGeneration` module since it's not .NET Core compatible
+- [Fix] Added back `AnyCPU` support to `wyam.exe` (lost during SDK project conversion) (#699)
+- [Feature] Updated Buildalyzer/MSBuild for `CodeAnalysis` modules, documentation project builds should work more reliably and on more project types now
+- [Refactoring] Updated version of lunrjs used by the `SearchIndex` module and related themes (#660, #661, thanks @SteveLowe)
+- [Fix] Added support for no trailing slash on edit link URL in `Docs` theme (#698, thanks @Foxtrek64)
+- [Fix] Fixed a JavaScript console error in the Stellar theme (#685, thanks @jdecarli)
+- [Fix] Removed unintentional Google Analytics code from Stellar theme (#684, thanks @jdecarli)
+- [Fix] Fixes for tag archive links in all themes when using a subdirectory (#590, #681, thanks @schulz3000)
+- [Fix] Fixed problems loading F# projects for code analysis and documentation generation (#687)
+- [Fix] Fixed some assembly loading problems with `System.Text.Encodings.Web` (#667)
+- [Feature] Added a `Sitemap` pipeline to the `Blog` recipe (#680, thanks @schulz3000)
+- [Feature] Added methods to specify additional word separators in the `AutoLink` module
+- [Feature] Added ability for `Docs` recipe to auto-link generic types (#674, #679, thanks @k94ll13nn3)
+- [Feature] Added an `--ignore-default-sources` option to ignore the NuGet gallery (#673, #662)
+- [Feature] Added `InsertPrefix()` and `InsertSuffix()` to `FilePath`
+- [Fix] Encodes type names when linking them in the `Docs` recipe (#674, #676, thanks @k94ll13nn3)
+- [Fix] Fixes some edge-case bugs with root-like paths and recipes (#675)
+- [Refactoring] Replaced Tabular with EPPlus and CsvHelper in tables modules (#672, thanks @MisinformedDNA)
+- [Refactoring] Replaced ImageProcessor with ImageSharp in `Image` module (#671, thanks @MisinformedDNA)
+- [Fix] Fix for hard coded blog path in some parts of `Docs` recipe (#670, thanks @tbolon)
+- [Fix] Fixed problems with month and day names in date strings (#655, thanks @jonasdoerr)
+
 # 1.4.1
 
 - [Fix] Fixed missing known extensions which should help make future version updates smoother (#652)
