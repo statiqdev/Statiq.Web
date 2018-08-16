@@ -26,7 +26,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
-  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != ''" AfterTargets="AfterBuild">
+  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != '' AND !($(DesignTimeBuild) == true OR $(BuildingProject) != true)" AfterTargets="AfterBuild">
     <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />
   </Target>
 </Project>
