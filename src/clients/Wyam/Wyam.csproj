@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <OutputType>Exe</OutputType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />
