@@ -207,6 +207,10 @@ Task("Create-Theme-Packages")
                 Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
                 RequireLicenseAcceptance = false,
                 Symbols = false,
+                Repository = new NuGetRepository {
+                    Type = "git",
+                    Url = "https://github.com/Wyamio/Wyam.git"
+                },
                 Files = new []
                 {
                     new NuSpecContent 
