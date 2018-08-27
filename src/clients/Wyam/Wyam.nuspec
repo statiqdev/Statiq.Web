@@ -9,6 +9,7 @@
     <licenseUrl>https://github.com/Wyamio/Wyam/blob/master/LICENSE</licenseUrl>
     <iconUrl>https://wyam.io/Content/images/logo-square-64.png</iconUrl>
     <projectUrl>https://wyam.io</projectUrl>
+    <repository type="git" url="https://github.com/Wyamio/Wyam.git" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This is a tools package that contains the Wyam CLI.</description>
     <copyright>Copyright 2017</copyright>
