@@ -209,7 +209,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
@@ -230,7 +230,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType.OriginalDefinition)),
+                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(GetOriginalSymbolDefinition(symbol.ReturnType))),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -245,7 +245,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
                     new MetadataItem(CodeAnalysisKeys.HasConstantValue, _ => symbol.HasConstantValue),
                     new MetadataItem(CodeAnalysisKeys.ConstantValue, _ => symbol.ConstantValue),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
@@ -261,7 +261,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenEvent)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
@@ -276,7 +276,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type.OriginalDefinition)),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -425,7 +425,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(
-                GetOriginal(symbol),
+                GetOriginalSymbolDefinition(symbol),
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -592,13 +592,13 @@ namespace Wyam.CodeAnalysis.Analysis
 
         private IReadOnlyList<IDocument> GetDerivedTypes(INamedTypeSymbol symbol) =>
             _namedTypes
-                .Where(x => x.Key.BaseType != null && GetOriginal(x.Key.BaseType).Equals(GetOriginal(symbol)))
+                .Where(x => x.Key.BaseType != null && GetOriginalSymbolDefinition(x.Key.BaseType).Equals(GetOriginalSymbolDefinition(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
 
         private IReadOnlyList<IDocument> GetImplementingTypes(INamedTypeSymbol symbol) =>
             _namedTypes
-                .Where(x => x.Key.AllInterfaces.Select(GetOriginal).Contains(GetOriginal(symbol)))
+                .Where(x => x.Key.AllInterfaces.Select(GetOriginalSymbolDefinition).Contains(GetOriginalSymbolDefinition(symbol)))
                 .Select(x => x.Value)
                 .ToImmutableArray();
 
@@ -613,16 +613,19 @@ namespace Wyam.CodeAnalysis.Analysis
             })).ToList();
 
         private SymbolDocumentValue DocumentFor(ISymbol symbol) =>
-            new SymbolDocumentValue(GetOriginal(symbol), this);
+            new SymbolDocumentValue(GetOriginalSymbolDefinition(symbol), this);
 
         private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols) =>
-            new SymbolDocumentValues(symbols.Select(GetOriginal), this);
+            new SymbolDocumentValues(symbols.Select(GetOriginalSymbolDefinition), this);
 
         public bool TryGetDocument(ISymbol symbol, out IDocument document) =>
-            _symbolToDocument.TryGetValue(GetOriginal(symbol), out document);
+            _symbolToDocument.TryGetValue(GetOriginalSymbolDefinition(symbol), out document);
 
         // We need this because we don't really care about concrete generic types, only their definition
         // This converts all concrete generics into their original defintion
-        private static ISymbol GetOriginal(ISymbol symbol) => symbol?.OriginalDefinition ?? symbol;
+        // Unless the symbol is an error, in which case use the current definition since that has extra point-of-usage information (#702)
+        // This method should always be used instead of ISymbol.OriginalDefinition directly
+        private static ISymbol GetOriginalSymbolDefinition(ISymbol symbol) =>
+            symbol?.Kind == SymbolKind.ErrorType ? symbol : (symbol?.OriginalDefinition ?? symbol);
     }
 }
