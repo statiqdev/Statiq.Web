@@ -1,3 +1,9 @@
+# 1.5.1
+
+- [Refactoring] Added NuGet repository link to packages (#705, #706, thanks @MaximRouiller)
+- [Feature] Better display and linking of nullable type in docs (#470)
+- [Fix] Fixes for generic type parameters in docs (#702, #610)
+
 # 1.5.0
 
 - **[Breaking Change]**[Refactoring] Removed the `TextGeneration` module since it's not .NET Core compatible
