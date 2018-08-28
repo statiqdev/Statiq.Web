@@ -3,6 +3,8 @@
     <TargetFramework>net462</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains a server for use with static sites.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine Hosting WebHost</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="LiveReload\livereload.js" />

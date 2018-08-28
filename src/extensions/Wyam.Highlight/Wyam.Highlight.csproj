@@ -3,6 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library performs server side highlighting of code blocks.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine Highlight.js</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="highlight-all.js" />

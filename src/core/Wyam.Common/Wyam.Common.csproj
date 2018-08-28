@@ -3,6 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides a common set of abstractions and other classes to make writing extensions easier.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 </Project>
