@@ -22,7 +22,6 @@
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
-#addin "Cake.Squirrel"
 using Octokit;
 
 //////////////////////////////////////////////////////////////////////
