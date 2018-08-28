@@ -58,18 +58,29 @@ namespace Wyam.Docs
 
         public static HtmlString GetTypeLink(this IExecutionContext context, IMetadata metadata, HtmlString name)
         {
+            // Link nullable types to their type argument
+            if (metadata.String("Name") == "Nullable")
+            {
+                IDocument nullableType = metadata.DocumentList(CodeAnalysisKeys.TypeArguments).FirstOrDefault();
+                if (nullableType != null)
+                {
+                    return context.GetTypeLink(nullableType, name);
+                }
+            }
+
             if (metadata.String("Kind") == "TypeParameter")
             {
-                IDocument declaringType = metadata.Get<IDocument>("DeclaringType");
+                IDocument declaringType = metadata.Get<IDocument>(CodeAnalysisKeys.DeclaringType);
                 if (declaringType != null)
                 {
-                    return declaringType.ContainsKey("WritePath")
-                        ? new HtmlString($"<a href=\"{context.GetLink(declaringType.FilePath("WritePath"))}#typeparam-{metadata["Name"]}\">{metadata.Name()}</a>")
+                    return declaringType.ContainsKey(Keys.WritePath)
+                        ? new HtmlString($"<a href=\"{context.GetLink(declaringType.FilePath(Keys.WritePath))}#typeparam-{metadata["Name"]}\">{metadata.Name()}</a>")
                         : metadata.Name();
                 }
             }
-            return metadata.ContainsKey("WritePath")
-                ? new HtmlString($"<a href=\"{context.GetLink(metadata.FilePath("WritePath"))}\">{name ?? metadata.Name()}</a>")
+
+            return metadata.ContainsKey(Keys.WritePath)
+                ? new HtmlString($"<a href=\"{context.GetLink(metadata.FilePath(Keys.WritePath))}\">{name ?? metadata.Name()}</a>")
                 : (name ?? metadata.Name());
         }
 

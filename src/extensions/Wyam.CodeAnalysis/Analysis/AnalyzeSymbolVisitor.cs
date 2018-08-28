@@ -164,6 +164,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     { CodeAnalysisKeys.ExtensionMethods, _ => DocumentsFor(_extensionMethods.Where(x => x.ReduceExtensionMethod(symbol) != null)) },
                     { CodeAnalysisKeys.Constructors, DocumentsFor(symbol.Constructors.Where(x => !x.IsImplicitlyDeclared)) },
                     { CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters) },
+                    { CodeAnalysisKeys.TypeArguments, DocumentsFor(symbol.TypeArguments) },
                     { CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString() },
                     { CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol) }
                 };
@@ -229,6 +230,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.MethodKind == MethodKind.Ordinary ? "Method" : symbol.MethodKind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
+                    new MetadataItem(CodeAnalysisKeys.TypeArguments, DocumentsFor(symbol.TypeArguments)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
                     new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(GetOriginalSymbolDefinition(symbol.ReturnType))),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
@@ -624,8 +626,9 @@ namespace Wyam.CodeAnalysis.Analysis
         // We need this because we don't really care about concrete generic types, only their definition
         // This converts all concrete generics into their original defintion
         // Unless the symbol is an error, in which case use the current definition since that has extra point-of-usage information (#702)
+        // And unless the symbol is a Nullable<T>, in which case use the current definition since the original definition looses the type parameter (#610)
         // This method should always be used instead of ISymbol.OriginalDefinition directly
         private static ISymbol GetOriginalSymbolDefinition(ISymbol symbol) =>
-            symbol?.Kind == SymbolKind.ErrorType ? symbol : (symbol?.OriginalDefinition ?? symbol);
+            symbol?.Kind == SymbolKind.ErrorType || symbol?.MetadataName == "Nullable`1" ? symbol : (symbol?.OriginalDefinition ?? symbol);
     }
 }

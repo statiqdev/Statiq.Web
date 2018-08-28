@@ -204,6 +204,13 @@ namespace Wyam.CodeAnalysis
         public const string TypeParameters = nameof(TypeParameters);
 
         /// <summary>
+        /// This is available for type and method symbols and contains a collection of the documents that represent all generic type arguments of the type or method. The collection
+        /// is empty if the type or method doesn't have any generic type parameters.
+        /// </summary>
+        /// <type><c>IReadOnlyList&lt;IDocument&gt;</c></type>
+        public const string TypeArguments = nameof(TypeArguments);
+
+        /// <summary>
         /// This is available for type, method, field, event, and property symbols and contains the declared accessibility of the symbol.
         /// </summary>
         /// <type><see cref="string"/></type>
