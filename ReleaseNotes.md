@@ -1,5 +1,6 @@
 # 1.5.1
 
+- [Refactoring] Updated Cake.Wyam Cake reference to 0.28.0 (#701)
 - [Refactoring] Added NuGet repository link to packages (#705, #706, thanks @MaximRouiller)
 - [Feature] Better display and linking of nullable type in docs (#470)
 - [Fix] Fixes for generic type parameters in docs (#702, #610)
