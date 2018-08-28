@@ -61,7 +61,7 @@ namespace Wyam.Docs
             // Link nullable types to their type argument
             if (metadata.String("Name") == "Nullable")
             {
-                IDocument nullableType = metadata.DocumentList(CodeAnalysisKeys.TypeArguments).FirstOrDefault();
+                IDocument nullableType = metadata.DocumentList(CodeAnalysisKeys.TypeArguments)?.FirstOrDefault();
                 if (nullableType != null)
                 {
                     return context.GetTypeLink(nullableType, name);
