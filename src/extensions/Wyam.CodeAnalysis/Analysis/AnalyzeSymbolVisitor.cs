@@ -210,7 +210,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, false, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
                 });
             }
@@ -232,7 +232,7 @@ namespace Wyam.CodeAnalysis.Analysis
                     new MetadataItem(CodeAnalysisKeys.TypeParameters, DocumentsFor(symbol.TypeParameters)),
                     new MetadataItem(CodeAnalysisKeys.TypeArguments, DocumentsFor(symbol.TypeArguments)),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(GetOriginalSymbolDefinition(symbol.ReturnType))),
+                    new MetadataItem(CodeAnalysisKeys.ReturnType, DocumentFor(symbol.ReturnType)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenMethod)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -247,7 +247,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.HasConstantValue, _ => symbol.HasConstantValue),
                     new MetadataItem(CodeAnalysisKeys.ConstantValue, _ => symbol.ConstantValue),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
@@ -263,7 +263,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 AddMemberDocument(symbol, true, new MetadataItems
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenEvent)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString())
                 });
@@ -278,7 +278,7 @@ namespace Wyam.CodeAnalysis.Analysis
                 {
                     new MetadataItem(CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Parameters, DocumentsFor(symbol.Parameters)),
-                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(GetOriginalSymbolDefinition(symbol.Type))),
+                    new MetadataItem(CodeAnalysisKeys.Type, DocumentFor(symbol.Type)),
                     new MetadataItem(CodeAnalysisKeys.OverriddenMethod, DocumentFor(symbol.OverriddenProperty)),
                     new MetadataItem(CodeAnalysisKeys.Accessibility, _ => symbol.DeclaredAccessibility.ToString()),
                     new MetadataItem(CodeAnalysisKeys.Attributes, GetAttributeDocuments(symbol))
@@ -397,10 +397,11 @@ namespace Wyam.CodeAnalysis.Analysis
                 new MetadataItem(CodeAnalysisKeys.Kind, _ => symbol.Kind.ToString()),
                 new MetadataItem(CodeAnalysisKeys.ContainingNamespace, DocumentFor(symbol.ContainingNamespace)),
                 new MetadataItem(CodeAnalysisKeys.Syntax, _ => GetSyntax(symbol), true),
-                new MetadataItem(CodeAnalysisKeys.IsStatic, _ => symbol.IsStatic ),
-                new MetadataItem(CodeAnalysisKeys.IsAbstract, _ => symbol.IsAbstract ),
-                new MetadataItem(CodeAnalysisKeys.IsVirtual, _ => symbol.IsVirtual ),
-                new MetadataItem(CodeAnalysisKeys.IsOverride, _ => symbol.IsOverride )
+                new MetadataItem(CodeAnalysisKeys.IsStatic, _ => symbol.IsStatic),
+                new MetadataItem(CodeAnalysisKeys.IsAbstract, _ => symbol.IsAbstract),
+                new MetadataItem(CodeAnalysisKeys.IsVirtual, _ => symbol.IsVirtual),
+                new MetadataItem(CodeAnalysisKeys.IsOverride, _ => symbol.IsOverride),
+                new MetadataItem(CodeAnalysisKeys.OriginalDefinition, DocumentFor(GetOriginalSymbolDefinition(symbol)))
             });
 
             // Add metadata that's specific to initially-processed symbols
@@ -427,7 +428,7 @@ namespace Wyam.CodeAnalysis.Analysis
 
             // Create the document and add it to caches
             IDocument document = _symbolToDocument.GetOrAdd(
-                GetOriginalSymbolDefinition(symbol),
+                symbol,
                 _ => _context.GetDocument(new FilePath((Uri)null, symbol.ToDisplayString(), PathKind.Absolute), (Stream)null, items));
 
             return document;
@@ -615,15 +616,15 @@ namespace Wyam.CodeAnalysis.Analysis
             })).ToList();
 
         private SymbolDocumentValue DocumentFor(ISymbol symbol) =>
-            new SymbolDocumentValue(GetOriginalSymbolDefinition(symbol), this);
+            new SymbolDocumentValue(symbol, this);
 
         private SymbolDocumentValues DocumentsFor(IEnumerable<ISymbol> symbols) =>
-            new SymbolDocumentValues(symbols.Select(GetOriginalSymbolDefinition), this);
+            new SymbolDocumentValues(symbols, this);
 
         public bool TryGetDocument(ISymbol symbol, out IDocument document) =>
-            _symbolToDocument.TryGetValue(GetOriginalSymbolDefinition(symbol), out document);
+            _symbolToDocument.TryGetValue(symbol, out document);
 
-        // We need this because we don't really care about concrete generic types, only their definition
+        // We need this because in many cases we don't really care about concrete generic types, only their definition
         // This converts all concrete generics into their original defintion
         // Unless the symbol is an error, in which case use the current definition since that has extra point-of-usage information (#702)
         // And unless the symbol is a Nullable<T>, in which case use the current definition since the original definition looses the type parameter (#610)

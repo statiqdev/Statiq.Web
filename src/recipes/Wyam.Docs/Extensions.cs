@@ -70,7 +70,7 @@ namespace Wyam.Docs
 
             if (metadata.String("Kind") == "TypeParameter")
             {
-                IDocument declaringType = metadata.Get<IDocument>(CodeAnalysisKeys.DeclaringType);
+                IDocument declaringType = metadata.Document(CodeAnalysisKeys.DeclaringType);
                 if (declaringType != null)
                 {
                     return declaringType.ContainsKey(Keys.WritePath)

@@ -247,6 +247,13 @@ namespace Wyam.CodeAnalysis
         public const string Type = nameof(Type);
 
         /// <summary>
+        /// If this symbol is derived from another symbol, by type substitution for instance, this gets a document representing the original definition.
+        /// If this symbol is not derived from another symbol, this gets a document representing the current definition.
+        /// </summary>
+        /// <type><see cref="IDocument"/></type>
+        public const string OriginalDefinition = nameof(OriginalDefinition);
+
+        /// <summary>
         /// This is available for field symbols and indicates whether a constant value is available for the field.
         /// </summary>
         /// <type><see cref="bool"/></type>
