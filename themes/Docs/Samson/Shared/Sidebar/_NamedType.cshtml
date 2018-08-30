@@ -3,14 +3,14 @@
 	if(containingAssembly != null)
 	{
 		<li class="header">Assembly</li>
-		<li>@Context.GetTypeLink(containingAssembly)</li>
+		<li>@Context.GetTypeLink(containingAssembly, false)</li>
 	}
 
 	IDocument containingNamespace = Model.Get<IDocument>("ContainingNamespace");
 	if(containingNamespace != null)
 	{
 		<li class="header">Namespace</li>
-		<li>@Context.GetTypeLink(containingNamespace)</li>
+		<li>@Context.GetTypeLink(containingNamespace, false)</li>
 		
 		<li role="separator" class="divider"></li>
 		
@@ -24,7 +24,7 @@
 				.OrderBy(x => x.String("Name")))
 			{
 				string selectedClass = type.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
-				<li class="@selectedClass">@Context.GetTypeLink(type)</li>
+				<li class="@selectedClass">@Context.GetTypeLink(type, false)</li>
 			}	
 		}
 	}

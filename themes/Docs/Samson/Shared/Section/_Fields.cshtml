@@ -21,7 +21,7 @@
 						@foreach(IDocument field in fields)
 						{
 							<tr>
-								<td>@Context.GetTypeLink(field)</td>
+								<td>@Context.GetTypeLink(field, false)</td>
 								<td>@(field.Bool(CodeAnalysisKeys.HasConstantValue) ? new HtmlString(field.Get(CodeAnalysisKeys.ConstantValue)?.ToString() ?? "null") : new HtmlString(string.Empty))</td>
 								<td>
 									<div>@Html.Raw(field["Summary"])</div>

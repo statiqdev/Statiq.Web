@@ -21,7 +21,7 @@
 						{
 							IDocument returnType = op.Get<IDocument>("ReturnType");
 							<tr>
-								<td>@Context.GetTypeLink(op)</td>
+								<td>@Context.GetTypeLink(op, false)</td>
 								<td>@(returnType == null ? new HtmlString(string.Empty) : Context.GetTypeLink(returnType))</td>
 								<td>
 									<div>@Html.Raw(op.Get("Summary"))</div>

@@ -30,14 +30,14 @@
 				? " active" : null;
 			@Html.Raw($@"
 				<li class=""treeview{activeClass}{selectedClass}"">
-				{Context.GetTypeLink(current.Item2)} <a href=""#"" class=""expand""></a>
+				{Context.GetTypeLink(current.Item2, false)} <a href=""#"" class=""expand""></a>
 				<ul class=""treeview-menu"">
 			");
 			nestingStack.Push(current.Item1);
 		}
 		else
 		{
-			<li class="@selectedClass">@Context.GetTypeLink(current.Item2)</li>
+			<li class="@selectedClass">@Context.GetTypeLink(current.Item2, false)</li>
 		}
 	}
 	while(nestingStack.Count > 0)

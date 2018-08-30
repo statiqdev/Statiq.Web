@@ -20,7 +20,7 @@
 						@foreach(IDocument doc in Model.Docs)
 						{
 							<tr>
-								<td>@Context.GetTypeLink(doc)</td>
+								<td>@Context.GetTypeLink(doc, Model.LinkTypeArguments)</td>
 								@if(Model.HasSummary)
 								{
 									<td>@Html.Raw(doc["Summary"])</td>

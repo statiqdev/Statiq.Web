@@ -150,6 +150,14 @@ namespace Wyam.CodeAnalysis.Analysis
 
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
+            // Only visit the original definition until we're finished
+            INamedTypeSymbol originalDefinition = GetOriginalSymbolDefinition(symbol);
+            if (!_finished && originalDefinition != symbol)
+            {
+                VisitNamedType(originalDefinition);
+                return;
+            }
+
             if (ShouldIncludeSymbol(symbol))
             {
                 MetadataItems metadata = new MetadataItems
@@ -354,11 +362,11 @@ namespace Wyam.CodeAnalysis.Analysis
             string displayName = GetDisplayName(symbol);
             MetadataItems items = new MetadataItems
             {
-                {CodeAnalysisKeys.Symbol, _ => _namespaceDisplayNameToSymbols[displayName].ToImmutableList()},
-                {CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString()},
+                { CodeAnalysisKeys.Symbol, _ => _namespaceDisplayNameToSymbols[displayName].ToImmutableList() },
+                { CodeAnalysisKeys.SpecificKind, _ => symbol.Kind.ToString() },
                 // We need to aggregate the results across all matching namespaces
-                {CodeAnalysisKeys.MemberNamespaces, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetNamespaceMembers()))},
-                {CodeAnalysisKeys.MemberTypes, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetTypeMembers()))}
+                { CodeAnalysisKeys.MemberNamespaces, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetNamespaceMembers())) },
+                { CodeAnalysisKeys.MemberTypes, DocumentsFor(_namespaceDisplayNameToSymbols[displayName].SelectMany(x => x.GetTypeMembers())) }
             };
             return AddDocumentCommon(symbol, xmlDocumentation, items);
         }
@@ -629,7 +637,8 @@ namespace Wyam.CodeAnalysis.Analysis
         // Unless the symbol is an error, in which case use the current definition since that has extra point-of-usage information (#702)
         // And unless the symbol is a Nullable<T>, in which case use the current definition since the original definition looses the type parameter (#610)
         // This method should always be used instead of ISymbol.OriginalDefinition directly
-        private static ISymbol GetOriginalSymbolDefinition(ISymbol symbol) =>
-            symbol?.Kind == SymbolKind.ErrorType || symbol?.MetadataName == "Nullable`1" ? symbol : (symbol?.OriginalDefinition ?? symbol);
+        private static TSymbol GetOriginalSymbolDefinition<TSymbol>(TSymbol symbol)
+            where TSymbol : ISymbol =>
+            symbol?.Kind == SymbolKind.ErrorType || symbol?.MetadataName == "Nullable`1" ? symbol : (TSymbol)(symbol?.OriginalDefinition ?? symbol);
     }
 }

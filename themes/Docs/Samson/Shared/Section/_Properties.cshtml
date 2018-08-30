@@ -22,7 +22,7 @@
 						{
 							IDocument type = property.Get<IDocument>("Type");
 							<tr>
-								<td>@Context.GetTypeLink(property)</td>
+								<td>@Context.GetTypeLink(property, false)</td>
 								<td>@(type == null ? new HtmlString(string.Empty) : Context.GetTypeLink(type))</td>
 								<td>
 									<div>@Html.Raw(property["Summary"])</div>

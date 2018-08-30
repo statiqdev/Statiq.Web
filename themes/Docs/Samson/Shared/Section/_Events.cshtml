@@ -22,7 +22,7 @@
 						{
 							IDocument type = evt.Get<IDocument>("Type");
 							<tr>
-								<td>@Context.GetTypeLink(evt)</td>
+								<td>@Context.GetTypeLink(evt, false)</td>
 								<td>@(type == null ? new HtmlString(string.Empty) : Context.GetTypeLink(type))</td>
 								<td>
 									<div>@Html.Raw(evt["Summary"])</div>
