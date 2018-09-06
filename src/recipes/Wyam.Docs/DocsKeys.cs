@@ -230,6 +230,13 @@ namespace Wyam.Docs
         public const string BlogPath = nameof(BlogPath);
 
         /// <summary>
+        /// Specifies the blog title.
+        /// The default value is <c>Blog</c>.
+        /// </summary>
+        /// <type><see cref="string"/></type>
+        public const string BlogTitle = nameof(BlogTitle);
+
+        /// <summary>
         /// Controls the parent path where API docs are placed. The default is "api".
         /// </summary>
         /// <type><see cref="DirectoryPath"/> or <see cref="string"/></type>
