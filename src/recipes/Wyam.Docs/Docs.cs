@@ -60,6 +60,7 @@ namespace Wyam.Docs
     /// <metadata cref="DocsKeys.BlogAtomPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogRdfPath" usage="Setting" />
     /// <metadata cref="DocsKeys.BlogPath" usage="Setting" />
+    /// <metadata cref="DocsKeys.BlogTitle" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateAbsoluteLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateRelativeLinks" usage="Setting" />
     /// <metadata cref="DocsKeys.ValidateLinksAsError" usage="Setting" />
@@ -162,7 +163,7 @@ namespace Wyam.Docs
                 TemplateFile = ctx => "_BlogIndex.cshtml",
                 Layout = "/_BlogLayout.cshtml",
                 PageSize = ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
-                Title = (doc, ctx) => "Blog",
+                Title = (doc, ctx) => ctx.Get(DocsKeys.BlogTitle, "Blog"),
                 RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}"
             });
 
@@ -363,6 +364,7 @@ namespace Wyam.Docs
             engine.Settings[DocsKeys.MetaRefreshRedirects] = true;
             engine.Settings[DocsKeys.AutoLinkTypes] = true;
             engine.Settings[DocsKeys.BlogPath] = "blog";
+            engine.Settings[DocsKeys.BlogTitle] = "Blog";
             engine.Settings[DocsKeys.BlogPageSize] = 5;
             engine.Settings[DocsKeys.CategoryPageSize] = 5;
             engine.Settings[DocsKeys.TagPageSize] = 5;
