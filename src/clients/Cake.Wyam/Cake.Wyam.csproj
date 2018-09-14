@@ -3,9 +3,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library contains an addin for Cake for interacting with Wyam.</Description>
     <PackageTags>Cake Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cake.Core" Version="0.26.0">
+    <PackageReference Include="Cake.Core" Version="0.28.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>

@@ -23,6 +23,7 @@ namespace Wyam.Common.Tests.IO
             [TestCase("C:/A/B/C", "D:/A/B/C", "D:/A/B/C")]
             [TestCase("C:/A/B", "D:/E/", "D:/E")]
             [TestCase("C:/", "B:/", "B:/")]
+            [TestCase("C:/", "/", "/")]
 #endif
 
             // Absolute
@@ -37,6 +38,7 @@ namespace Wyam.Common.Tests.IO
             [TestCase("/C/A/B", "/D/E/", "/D/E")]
             [TestCase("/C/", "/B/", "/B")]
             [TestCase("/", "/A/B", "A/B")]
+            [TestCase("/C/A/B", "/", "/")]
 
             // Relative
             [TestCase("C/A/B/C", "C/A/B/C", ".")]

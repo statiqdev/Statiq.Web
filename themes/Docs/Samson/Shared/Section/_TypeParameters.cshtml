@@ -19,7 +19,7 @@
 				{
 					IDocument declaringType = typeParam.Get<IDocument>("DeclaringType");
 					<tr id="typeparam-@typeParam["Name"]">
-						<td>@(declaringType != null && declaringType["SymbolId"].Equals(Model["SymbolId"]) ? new HtmlString(typeParam.String("Name")) : Context.GetTypeLink(typeParam))</td>
+						<td>@(declaringType != null && declaringType["SymbolId"].Equals(Model["SymbolId"]) ? new HtmlString(typeParam.String("Name")) : Context.GetTypeLink(typeParam, false))</td>
 						<td>@Html.Raw(typeParams?.Where(x => x.Name.Equals(typeParam["Name"])).Select(x => x.Html).FirstOrDefault())</td>
 					</tr>
 				}

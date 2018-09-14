@@ -105,7 +105,7 @@ namespace Wyam.Docs
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(DocsKeys.IncludeDateInPostPath),
-                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath).FullPath
+                PostsPath = ctx => ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath
             })
                 .InsertAfter(
                     BlogPosts.RazorPosts,
@@ -113,7 +113,9 @@ namespace Wyam.Docs
                         ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                         new AutoLink(TypeNamesToLink)
                             .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>'),
                         new If(
                             (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                             new Replace("@", "&#64;"))));
@@ -126,8 +128,9 @@ namespace Wyam.Docs
             nameof(Pages),
             new PagesSettings
             {
-                IgnorePaths = ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath).FullPath, "api" }
-                    .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>())),
+                IgnorePaths = ctx => new[] { ctx.DirectoryPath(DocsKeys.BlogPath)?.FullPath, "api" }
+                    .Concat(ctx.List(DocsKeys.IgnoreFolders, Array.Empty<string>()))
+                    .Where(x => x != null),
                 MarkdownConfiguration = ctx => ctx.String(DocsKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(DocsKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(DocsKeys.ProcessIncludes),
@@ -140,7 +143,9 @@ namespace Wyam.Docs
                         ctx => ctx.Bool(DocsKeys.AutoLinkTypes),
                         new AutoLink(TypeNamesToLink)
                             .WithQuerySelector("code")
-                            .WithMatchOnlyWholeWord(),
+                            .WithMatchOnlyWholeWord()
+                            .WithStartWordSeparators('<')
+                            .WithEndWordSeparators('>'),
                         new If(
                             (doc, ctx) => doc.String(Keys.SourceFileExt) == ".md",
                             new Replace("@", "&#64;"))));
@@ -158,7 +163,7 @@ namespace Wyam.Docs
                 Layout = "/_BlogLayout.cshtml",
                 PageSize = ctx => ctx.Get(DocsKeys.BlogPageSize, int.MaxValue),
                 Title = (doc, ctx) => "Blog",
-                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}"
             });
 
         /// <summary>
@@ -176,7 +181,7 @@ namespace Wyam.Docs
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveCategories),
                 PageSize = ctx => ctx.Get(DocsKeys.CategoryPageSize, int.MaxValue),
                 Title = (doc, ctx) => doc.String(Keys.GroupKey),
-                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/{doc.String(Keys.GroupKey)}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}/{doc.String(Keys.GroupKey)}"
             });
 
         /// <summary>
@@ -194,7 +199,7 @@ namespace Wyam.Docs
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(DocsKeys.CaseInsensitiveTags),
                 PageSize = ctx => ctx.Get(DocsKeys.TagPageSize, int.MaxValue),
                 Title = (doc, ctx) => doc.String(Keys.GroupKey),
-                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath).FullPath}/tag/{doc.String(Keys.GroupKey)}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}/tag/{doc.String(Keys.GroupKey)}"
             });
 
         /// <summary>
@@ -212,7 +217,7 @@ namespace Wyam.Docs
                 CaseInsensitiveGroupComparer = ctx => ctx.Bool(key: DocsKeys.CaseInsensitiveAuthors),
                 PageSize = ctx => ctx.Get(key: DocsKeys.AuthorPageSize, defaultValue: int.MaxValue),
                 Title = (doc, ctx) => doc.String(key: Keys.GroupKey),
-                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(key: DocsKeys.BlogPath).FullPath}/author/{doc.String(key: Keys.GroupKey)}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}/author/{doc.String(key: Keys.GroupKey)}"
             });
 
         /// <summary>
@@ -229,7 +234,7 @@ namespace Wyam.Docs
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: doc.Get<DateTime>(key: DocsKeys.Published).Month, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
                 Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "MMMM, yyyy"),
-                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy/MM}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy/MM}"
             });
 
         /// <summary>
@@ -246,7 +251,7 @@ namespace Wyam.Docs
                 Group = (doc, ctx) => new DateTime(year: doc.Get<DateTime>(key: DocsKeys.Published).Year, month: 1, day: 1),
                 PageSize = ctx => ctx.Get(key: DocsKeys.MonthPageSize, defaultValue: int.MaxValue),
                 Title = (doc, ctx) => doc.Get<DateTime>(key: Keys.GroupKey).ToString(format: "yyyy"),
-                RelativePath = (doc, ctx) => $"blog/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(DocsKeys.BlogPath, ".").FullPath}/archive/{doc.Get<DateTime>(key: Keys.GroupKey):yyyy}"
             });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />

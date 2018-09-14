@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.CodeAnalysis;
@@ -64,7 +65,7 @@ namespace Wyam.Docs.Pipelines
                     }
                     if (name != null)
                     {
-                        typeNamesToLink.AddOrUpdate(name, ctx.GetLink(doc), (x, y) => string.Empty);
+                        typeNamesToLink.AddOrUpdate(WebUtility.HtmlEncode(name), ctx.GetLink(doc), (x, y) => string.Empty);
                     }
                 }))
                 .WithoutUnmatchedDocuments()

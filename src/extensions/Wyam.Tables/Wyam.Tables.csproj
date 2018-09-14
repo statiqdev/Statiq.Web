@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for importing and exporting CSV and Excel files.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine CSV Excel</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Common\Wyam.Common.csproj">
@@ -10,9 +12,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="4.1.0" />
-    <PackageReference Include="Tabular.Csv.dll" Version="2.1.5" />
-    <PackageReference Include="Tabular.dll" Version="2.1.5" />
-    <PackageReference Include="Tabular.Excel.dll" Version="2.1.5" />
+    <PackageReference Include="CsvHelper" Version="7.1.0" />
+    <PackageReference Include="EPPlus" Version="4.5.2.1" />
   </ItemGroup>
 </Project>

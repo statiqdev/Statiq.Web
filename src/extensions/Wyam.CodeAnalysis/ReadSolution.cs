@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
 using Microsoft.CodeAnalysis;
@@ -61,15 +62,24 @@ namespace Wyam.CodeAnalysis
             {
                 LogWriter = log
             });
-            foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
-            {
-                if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+
+            AnalyzerResult[] results = manager.Projects.Values
+                .Select(analyzer =>
                 {
-                    analyzer.WithBinaryLog();
-                }
-                CompileProjectAndTrace(analyzer, log);
+                    if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+                    {
+                        analyzer.AddBinaryLogger();
+                    }
+                    return ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                })
+                .Where(x => x != null)
+                .ToArray();
+
+            AdhocWorkspace workspace = new AdhocWorkspace();
+            foreach (AnalyzerResult result in results)
+            {
+                result.AddToWorkspace(workspace);
             }
-            Workspace workspace = manager.GetWorkspace();
             return workspace.CurrentSolution.Projects;
         }
     }

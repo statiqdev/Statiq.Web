@@ -3,6 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides services for configuring the engine using configuration files and Roslyn.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine</PackageTags>
+    <RepositoryUrl>https://github.com/Wyamio/Wyam.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj">
@@ -15,24 +17,23 @@
   <ItemGroup>
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="1.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.6.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.0" />
     <PackageReference Include="NuGet.Client" Version="4.2.0" />
-    <PackageReference Include="NuGet.Commands" Version="4.4.0" />
-    <PackageReference Include="NuGet.Common" Version="4.4.0" />
-    <PackageReference Include="NuGet.Configuration" Version="4.4.0" />
+    <PackageReference Include="NuGet.Commands" Version="4.7.0" />
+    <PackageReference Include="NuGet.Common" Version="4.7.0" />
+    <PackageReference Include="NuGet.Configuration" Version="4.7.0" />
     <PackageReference Include="NuGet.ContentModel" Version="4.2.0" />
-    <PackageReference Include="NuGet.Core" Version="2.14.0" />
-    <PackageReference Include="NuGet.DependencyResolver.Core" Version="4.4.0" />
-    <PackageReference Include="NuGet.Frameworks" Version="4.4.0" />
-    <PackageReference Include="NuGet.LibraryModel" Version="4.4.0" />
-    <PackageReference Include="NuGet.PackageManagement" Version="4.4.0" />
-    <PackageReference Include="NuGet.Packaging" Version="4.4.0" />
-    <PackageReference Include="NuGet.Packaging.Core" Version="4.4.0" />
-    <PackageReference Include="NuGet.ProjectModel" Version="4.4.0" />
+    <PackageReference Include="NuGet.DependencyResolver.Core" Version="4.7.0" />
+    <PackageReference Include="NuGet.Frameworks" Version="4.7.0" />
+    <PackageReference Include="NuGet.LibraryModel" Version="4.7.0" />
+    <PackageReference Include="NuGet.PackageManagement.NetStandard" Version="4.7.0" />
+    <PackageReference Include="NuGet.Packaging" Version="4.7.0" />
+    <PackageReference Include="NuGet.Packaging.Core" Version="4.7.0" />
+    <PackageReference Include="NuGet.ProjectModel" Version="4.7.0" />
     <PackageReference Include="NuGet.Repositories" Version="4.2.0" />
-    <PackageReference Include="NuGet.Resolver" Version="4.4.0" />
+    <PackageReference Include="NuGet.Resolver" Version="4.7.0" />
     <PackageReference Include="NuGet.RuntimeModel" Version="4.2.0" />
-    <PackageReference Include="NuGet.Versioning" Version="4.4.0" />
+    <PackageReference Include="NuGet.Versioning" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.CommandLine">

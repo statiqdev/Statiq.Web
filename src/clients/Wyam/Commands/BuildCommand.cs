@@ -81,6 +81,7 @@ namespace Wyam.Commands
             syntax.DefineOption("u|update-packages", ref _configOptions.UpdatePackages, "Check the NuGet server for more recent versions of each package and update them if applicable.");
             syntax.DefineOption("use-local-packages", ref _configOptions.UseLocalPackages, "Toggles the use of a local NuGet packages folder.");
             syntax.DefineOption("use-global-sources", ref _configOptions.UseGlobalSources, "Toggles the use of the global NuGet sources (default is false).");
+            syntax.DefineOption("ignore-default-sources", ref _configOptions.IgnoreDefaultSources, "Ignores default NuGet sources like the NuGet Gallery (default is false).");
             syntax.DefineOption("packages-path", ref _configOptions.PackagesPath, DirectoryPathFromArg, "The packages path to use (only if use-local is true).");
 
             syntax.DefineOption("no-output-config-assembly", ref _configOptions.NoOutputConfigAssembly, "Disable caching configuration file compulation.");

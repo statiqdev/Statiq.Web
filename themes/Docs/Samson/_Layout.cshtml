@@ -33,9 +33,12 @@
 }
 else
 {
-	<section class="content-header">
-		<h1>@ViewData[Keys.Title]</h1>
-	</section>
+	@if(!Model.Bool(DocsKeys.NoTitle, false))
+	{
+		<section class="content-header">
+			<h1>@ViewData[Keys.Title]</h1>
+		</section>
+	}
 	<section class="content">
 		@RenderBody()
 	</section>

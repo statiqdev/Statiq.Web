@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
@@ -48,14 +49,15 @@ namespace Wyam.Tables.Tests
 + "\"26\",\"26\",\"52\",\"78\",\"104\",\"130\",\"156\",\"182\"\r\n";
 
                 TestExecutionContext context = new TestExecutionContext();
-                TestDocument document = new TestDocument(new MemoryStream(File.ReadAllBytes(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.xlsx"))));
+                TestDocument document = new TestDocument(GetTestFileStream("test.xlsx"));
                 ExcelToCsv module = new ExcelToCsv();
 
                 // When
                 IList<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Count.ShouldBe(1);
+                results[0].Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

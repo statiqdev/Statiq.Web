@@ -31,7 +31,7 @@
 								miscellaneousOptions: SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
 							IDocument returnType = method.Get<IDocument>("ReturnType");
 							<tr>
-								<td>@Context.GetTypeLink(method, reducedName)</td>
+								<td>@Context.GetTypeLink(method, reducedName, false)</td>
 								<td>@(returnType == null ? new HtmlString(string.Empty) : Context.GetTypeLink(returnType))</td>
 								<td>
 									<div>@Html.Raw(method["Summary"])</div>

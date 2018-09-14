@@ -74,6 +74,7 @@ namespace Wyam
             Configurator.PackageInstaller.UpdatePackages = _configOptions.UpdatePackages;
             Configurator.PackageInstaller.UseLocalPackagesFolder = _configOptions.UseLocalPackages;
             Configurator.PackageInstaller.UseGlobalPackageSources = _configOptions.UseGlobalSources;
+            Configurator.PackageInstaller.IgnoreDefaultSources = _configOptions.IgnoreDefaultSources;
             if (_configOptions.PackagesPath != null)
             {
                 Configurator.PackageInstaller.PackagesPath = _configOptions.PackagesPath;

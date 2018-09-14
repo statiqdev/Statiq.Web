@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\Wyam.Common\Wyam.Common.csproj" />
+    <ProjectReference Include="..\..\..\src\core\Wyam.Core\Wyam.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\extensions\Wyam.Images\Wyam.Images.csproj" />
+    <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Shouldly" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="logo-square.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

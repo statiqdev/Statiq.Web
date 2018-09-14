@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Testing;
 using Wyam.Testing.Documents;
@@ -14,7 +15,7 @@ namespace Wyam.Tables.Tests
         public class ExecuteTests : CsvToHtmlFixture
         {
             [Test]
-            public void TestWithoutHeadder()
+            public void TestWithoutHeader()
             {
                 // Given
                 string input = string.Empty
@@ -326,11 +327,12 @@ namespace Wyam.Tables.Tests
                 IList<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Count.ShouldBe(1);
+                results[0].Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
-            public void TestHeadder()
+            public void TestHeader()
             {
                 // Given
                 string input = string.Empty
@@ -642,7 +644,8 @@ namespace Wyam.Tables.Tests
                 IList<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Count.ShouldBe(1);
+                results[0].Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

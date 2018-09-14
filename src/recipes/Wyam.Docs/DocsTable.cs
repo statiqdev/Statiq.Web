@@ -12,5 +12,6 @@ namespace Wyam.Docs
         public string Title { get; set; }
         public string Header { get; set; }
         public bool HasSummary { get; set; }
+        public bool LinkTypeArguments { get; set; } = true;
     }
 }

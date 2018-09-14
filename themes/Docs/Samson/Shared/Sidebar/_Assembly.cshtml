@@ -8,6 +8,6 @@
     foreach(IDocument assembly in assemblies)
     {
         string selectedClass = assembly.String("SymbolId") == Model.String("SymbolId") ? "selected" : null;
-        <li class="@selectedClass">@Context.GetTypeLink(assembly)</li>
+        <li class="@selectedClass">@Context.GetTypeLink(assembly, false)</li>
     }
 }

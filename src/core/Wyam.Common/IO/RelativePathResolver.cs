@@ -59,7 +59,7 @@ namespace Wyam.Common.IO
             }
 
             // Check if they share the same root
-            if (string.CompareOrdinal(source.Segments[0], target.Segments[0]) != 0)
+            if (target.Segments.Length == 0 || string.CompareOrdinal(source.Segments[0], target.Segments[0]) != 0)
             {
                 return target;
             }

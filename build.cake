@@ -22,7 +22,6 @@
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
-#addin "Cake.Squirrel"
 using Octokit;
 
 //////////////////////////////////////////////////////////////////////
@@ -198,7 +197,7 @@ Task("Create-Theme-Packages")
                 Version = semVersion,
                 Title = id,
                 Authors = new [] { "Dave Glick" },
-                Owners = new [] { "Dave Glick" },
+                Owners = new [] { "Dave Glick", "wyam" },
                 Description = "A theme for the Wyam " + segments[segments.Length - 2] + " recipe.",
                 ProjectUrl = new Uri("https://wyam.io"),
                 IconUrl = new Uri("https://wyam.io/assets/img/logo-square-64.png"),
@@ -207,6 +206,10 @@ Task("Create-Theme-Packages")
                 Tags = new [] { "Wyam", "Theme", "Static", "StaticContent", "StaticSite" },
                 RequireLicenseAcceptance = false,
                 Symbols = false,
+                Repository = new NuGetRepository {
+                    Type = "git",
+                    Url = "https://github.com/Wyamio/Wyam.git"
+                },
                 Files = new []
                 {
                     new NuSpecContent 

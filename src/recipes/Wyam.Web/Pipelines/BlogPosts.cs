@@ -100,12 +100,12 @@ namespace Wyam.Web.Pipelines
                     new Meta(settings.PublishedKey, (doc, ctx) =>
                     {
                         DateTime published;
-                        if (!ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
+                        if (doc.String(Keys.SourceFileName).Length >= 10 && ctx.TryParseInputDateTime(doc.String(Keys.SourceFileName).Substring(0, 10), out published))
                         {
-                            Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
-                            return null;
+                            return published;
                         }
-                        return published;
+                        Common.Tracing.Trace.Warning($"Could not parse published date for {doc.SourceString()}.");
+                        return null;
                     }).OnlyIfNonExisting(),
                     new Where((doc, ctx) =>
                     {

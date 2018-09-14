@@ -11,6 +11,7 @@ namespace Wyam.Commands
         public bool UpdatePackages = false;
         public bool UseLocalPackages = false;
         public bool UseGlobalSources = false;
+        public bool IgnoreDefaultSources = false;
         public DirectoryPath PackagesPath = null;
         public bool OutputScript = false;
         public bool IgnoreConfigHash = false;

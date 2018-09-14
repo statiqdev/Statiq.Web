@@ -84,6 +84,12 @@ namespace Cake.Wyam
         public bool UseGlobalSources { get; set; }
 
         /// <summary>
+        /// Ignores default NuGet sources like the NuGet Gallery.
+        /// </summary>
+        /// <remarks>Default is false</remarks>
+        public bool IgnoreDefaultSources { get; set; }
+
+        /// <summary>
         /// Gets or sets the packages path to use.
         /// </summary>
         public DirectoryPath PackagesPath { get; set; }

@@ -69,8 +69,9 @@ namespace Wyam.Blog
             new PagesSettings
             {
                 IgnorePaths = ctx =>
-                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath).FullPath }
-                    .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>())),
+                    new[] { ctx.DirectoryPath(BlogKeys.PostsPath)?.FullPath }
+                    .Concat(ctx.List(BlogKeys.IgnoreFolders, Array.Empty<string>()))
+                    .Where(x => x != null),
                 MarkdownConfiguration = ctx => ctx.String(BlogKeys.MarkdownConfiguration),
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes)
@@ -87,7 +88,7 @@ namespace Wyam.Blog
                 MarkdownExtensionTypes = ctx => ctx.List<Type>(BlogKeys.MarkdownExtensionTypes),
                 ProcessIncludes = (doc, ctx) => doc.Bool(BlogKeys.ProcessIncludes),
                 IncludeDateInPostPath = ctx => ctx.Bool(BlogKeys.IncludeDateInPostPath),
-                PostsPath = ctx => ctx.DirectoryPath(BlogKeys.PostsPath).FullPath
+                PostsPath = ctx => ctx.DirectoryPath(BlogKeys.PostsPath, ".").FullPath
             });
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace Wyam.Blog
                     Layout = "/_Layout.cshtml",
                     PageSize = ctx => ctx.Get(BlogKeys.ArchivePageSize, int.MaxValue),
                     Title = (doc, ctx) => "Archive",
-                    RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}"
+                    RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.PostsPath, ".").FullPath}"
                 }));
 
         /// <summary>
@@ -146,7 +147,7 @@ namespace Wyam.Blog
                 PageSize = ctx => ctx.Get(BlogKeys.IndexPageSize, int.MaxValue),
                 WriteIfEmpty = true,
                 TakePages = ctx => ctx.Bool(BlogKeys.IndexPaging) ? int.MaxValue : 1,
-                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.IndexPath).FullPath}"
+                RelativePath = (doc, ctx) => $"{ctx.DirectoryPath(BlogKeys.IndexPath, ".").FullPath}"
             });
 
         /// <inheritdoc cref="Web.Pipelines.Feeds" />
@@ -216,6 +217,10 @@ namespace Wyam.Blog
                 ValidateRelativeLinks = ctx => ctx.Bool(BlogKeys.ValidateRelativeLinks),
                 ValidateLinksAsError = ctx => ctx.Bool(BlogKeys.ValidateLinksAsError)
             });
+
+        /// <inheritdoc cref="Web.Pipelines.Sitemap" />
+        [SourceInfo]
+        public static Web.Pipelines.Sitemap Sitemap { get; } = new Web.Pipelines.Sitemap(nameof(Sitemap));
 
         /// <inheritdoc/>
         public override void Apply(IEngine engine)

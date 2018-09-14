@@ -38,6 +38,8 @@ namespace Wyam.Html
         private readonly IDictionary<string, string> _extraLinks = new Dictionary<string, string>();
         private string _querySelector = "p";
         private bool _matchOnlyWholeWord = false;
+        private List<char> _startWordSeparators = new List<char>();
+        private List<char> _endWordSeparators = new List<char>();
 
         /// <summary>
         /// Creates the module without any initial mappings. Use <c>AddLink(...)</c> to add mappings with fluent methods.
@@ -107,12 +109,50 @@ namespace Wyam.Html
 
         /// <summary>
         /// Forces the string search to only consider whole words (it will not add a link in the middle of a word).
+        /// By default whole words are determined by testing for white space.
         /// </summary>
-        /// <param name="matchOnlyWholeWord">If set to <c>true</c> the module will only insert links at work boundaries.</param>
+        /// <param name="matchOnlyWholeWord">If set to <c>true</c> the module will only insert links at word boundaries.</param>
         /// <returns>The current instance.</returns>
         public AutoLink WithMatchOnlyWholeWord(bool matchOnlyWholeWord = true)
         {
             _matchOnlyWholeWord = matchOnlyWholeWord;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds additional word separator characters when limiting matches to whole words only.
+        /// These additional characters are in addition to the default of splitting words at white space.
+        /// </summary>
+        /// <param name="wordSeparators">Additional word separators that should be considered for the start and end of a word.</param>
+        /// <returns>The current instance.</returns>
+        public AutoLink WithWordSeparators(params char[] wordSeparators)
+        {
+            _startWordSeparators.AddRange(wordSeparators);
+            _endWordSeparators.AddRange(wordSeparators);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds additional start word separator characters when limiting matches to whole words only.
+        /// These additional characters are in addition to the default of splitting words at white space.
+        /// </summary>
+        /// <param name="startWordSeparators">Additional word separators that should be considered for the start of a word.</param>
+        /// <returns>The current instance.</returns>
+        public AutoLink WithStartWordSeparators(params char[] startWordSeparators)
+        {
+            _startWordSeparators.AddRange(startWordSeparators);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds additional end word separator characters when limiting matches to whole words only.
+        /// These additional characters are in addition to the default of splitting words at white space.
+        /// </summary>
+        /// <param name="endWordSeparators">Additional word separators that should be considered for the end of a word.</param>
+        /// <returns>The current instance.</returns>
+        public AutoLink WithEndWordSeparators(params char[] endWordSeparators)
+        {
+            _endWordSeparators.AddRange(endWordSeparators);
             return this;
         }
 
@@ -124,11 +164,11 @@ namespace Wyam.Html
             {
                 try
                 {
-                    // Get the links
+                    // Get the links and HTML decode the keys (if they're encoded) since the text nodes are decoded
                     IDictionary<string, string> links = _links.GetValue(input, context, v => _extraLinks
                         .Concat(v.Where(l => !_extraLinks.ContainsKey(l.Key)))
                         .Where(x => !string.IsNullOrWhiteSpace(x.Value))
-                        .ToDictionary(z => z.Key, z => $"<a href=\"{z.Value}\">{z.Key}</a>"));
+                        .ToDictionary(z => WebUtility.HtmlDecode(z.Key), z => $"<a href=\"{z.Value}\">{z.Key}</a>"));
 
                     // Enumerate all elements that match the query selector not already in a link element
                     List<KeyValuePair<IText, string>> replacements = new List<KeyValuePair<IText, string>>();
@@ -179,7 +219,7 @@ namespace Wyam.Html
 
         private bool ReplaceStrings(IText text, IDictionary<string, string> map, out string newText)
         {
-            string s = WebUtility.HtmlEncode(text.Text);  // The text content is unencoded so we need to reencode it before performing replacements
+            string s = text.Text;
             Trie<char> lookup = new Trie<char>(map.Keys);
             StringBuilder builder = new StringBuilder();
             int lastIdx = -1;
@@ -208,11 +248,11 @@ namespace Wyam.Html
                     }
                 }
 
-                if (lastNode.IsRoot && CheckAdditonalConditions(s, matchIdx, i - 1))
+                if (lastNode.IsRoot && CheckWordSeparators(s, matchIdx, i - 1))
                 {
                     // Complete match
                     string key = new string(lastNode.Cumulative.ToArray());
-                    builder.Append(map[key]);
+                    builder.Append(map[key]);  // New replacement content shouldn't be HTML encoded because it contains HTML like <a>
                     replaced = true;
                     i = i - 1;
                     lastIdx = i;
@@ -229,23 +269,29 @@ namespace Wyam.Html
                         lastNode = lookup.Root;
                         continue;
                     }
-                    builder.Append(i < s.Length ? s.Substring(lastIdx + 1, i - lastIdx) : s.Substring(lastIdx + 1));
+
+                    // Existing text content needs to be encoded since it was part of a text node
+                    builder.Append(WebUtility.HtmlEncode(i < s.Length
+                        ? s.Substring(lastIdx + 1, i - lastIdx)
+                        : s.Substring(lastIdx + 1)));
                     lastIdx = i;
                 }
                 badMatches.Clear();
                 matchIdx = -1;
                 lastNode = lookup.Root;
             }
+
             newText = replaced ? builder.ToString() : string.Empty;
+
             return replaced;
         }
 
-        private bool CheckAdditonalConditions(string stringToCheck, int matchStartIndex, int matchEndIndex)
+        private bool CheckWordSeparators(string stringToCheck, int matchStartIndex, int matchEndIndex)
         {
             if (_matchOnlyWholeWord)
             {
-                return (matchStartIndex <= 0 || char.IsWhiteSpace(stringToCheck[matchStartIndex - 1]))
-                    && (matchEndIndex >= stringToCheck.Length - 1 || char.IsWhiteSpace(stringToCheck[matchEndIndex + 1]));
+                return (matchStartIndex <= 0 || char.IsWhiteSpace(stringToCheck[matchStartIndex - 1]) || _startWordSeparators.Contains(stringToCheck[matchStartIndex - 1]))
+                    && (matchEndIndex >= stringToCheck.Length - 1 || char.IsWhiteSpace(stringToCheck[matchEndIndex + 1]) || _endWordSeparators.Contains(stringToCheck[matchEndIndex + 1]));
             }
             return true;
         }

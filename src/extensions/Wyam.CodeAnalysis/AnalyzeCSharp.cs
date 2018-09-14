@@ -567,13 +567,16 @@ namespace Wyam.CodeAnalysis
                     ProjectAnalyzer analyzer = manager.GetProject(projectFile.Path.FullPath);
                     if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
                     {
-                        analyzer.WithBinaryLog();
+                        analyzer.AddBinaryLogger();
                     }
-                    ReadWorkspace.CompileProjectAndTrace(analyzer, log);
-                    project = analyzer.AddToWorkspace(workspace);
-                    if (!project.Documents.Any())
+                    AnalyzerResult result = ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                    if (result != null)
                     {
-                        Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (check previous log output for any MSBuild warnings)");
+                        project = result.AddToWorkspace(workspace);
+                        if (!project.Documents.Any())
+                        {
+                            Trace.Warning($"Project at {projectFile.Path.FullPath} contains no documents, which may be an error (check previous log output for any MSBuild warnings)");
+                        }
                     }
                 }
                 projects.Add(project);
@@ -596,15 +599,25 @@ namespace Wyam.CodeAnalysis
                     {
                         LogWriter = log
                     });
-                foreach (ProjectAnalyzer analyzer in manager.Projects.Values)
-                {
-                    if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+
+                AnalyzerResult[] results = manager.Projects.Values
+                    .Select(analyzer =>
                     {
-                        analyzer.WithBinaryLog();
-                    }
-                    ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                        if (context.Bool(CodeAnalysisKeys.OutputBuildLog))
+                        {
+                            analyzer.AddBinaryLogger();
+                        }
+                        return ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                    })
+                    .Where(x => x != null)
+                    .ToArray();
+
+                AdhocWorkspace workspace = new AdhocWorkspace();
+                foreach (AnalyzerResult result in results)
+                {
+                    result.AddToWorkspace(workspace);
                 }
-                Workspace workspace = manager.GetWorkspace();
+
                 compilation = AddProjectReferences(workspace.CurrentSolution.Projects, symbols, compilation);
             }
             return compilation;

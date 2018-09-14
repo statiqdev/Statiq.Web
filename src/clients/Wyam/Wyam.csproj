@@ -2,6 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <OutputType>Exe</OutputType>
+    <!-- Need to ensure x64 due to Buildalyzer -> MSBuild -> NuGet.Build.Tasks.dll, see #699 -->
+    <!-- Also to make sure correct x64 libuv gets copied to output, see https://github.com/aspnet/KestrelHttpServer/issues/1292#issuecomment-278871702 -->
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Wyam.Configuration\Wyam.Configuration.csproj" />
@@ -26,7 +29,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
-  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != ''" AfterTargets="AfterBuild">
+  <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != '' AND !($(DesignTimeBuild) == true OR $(BuildingProject) != true)" AfterTargets="AfterBuild">
     <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />
   </Target>
 </Project>

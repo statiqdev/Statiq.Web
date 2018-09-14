@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Wyam.Common.Documents;
-using Wyam.Common.Modules;
 using Wyam.Common.Execution;
+using Wyam.Common.Modules;
 using Wyam.Common.Tracing;
-using Wyam.Common.Util;
 
 namespace Wyam.Tables
 {
@@ -47,37 +46,41 @@ namespace Wyam.Tables
             {
                 try
                 {
-                    Tabular.Csv csv = new Tabular.Csv() { Data = input.Content };
-                    Tabular.Table table = Tabular.Csv.FromCsv(csv);
+                    IEnumerable<IEnumerable<string>> records;
+                    using (Stream stream = input.GetStream())
+                    {
+                        records = CsvFile.GetAllRecords(stream);
+                    }
+
                     StringBuilder builder = new StringBuilder();
 
-                    int columnCount = table.First().Count;
+                    int columnCount = records.First().Count();
 
                     int[] columnSize = new int[columnCount];
 
-                    foreach (var row in table.Rows)
+                    foreach (IEnumerable<string> row in records)
                     {
-                        for (int i = 0; i < row.Count; i++)
+                        for (int i = 0; i < row.Count(); i++)
                         {
-                            var cell = row[i];
-                            columnSize[i] = Math.Max(columnSize[i], cell.Value.Length);
+                            string cell = row.ElementAt(i);
+                            columnSize[i] = Math.Max(columnSize[i], cell.Length);
                         }
                     }
 
                     bool firstLine = true;
                     WriteLine(builder, columnSize);
-                    foreach (var row in table.Rows)
+                    foreach (IEnumerable<string> row in records)
                     {
                         builder.Append("|");
                         for (int i = 0; i < columnSize.Length; i++)
                         {
                             builder.Append(" ");
-                            builder.Append(row[i].Value);
-                            builder.Append(' ', columnSize[i] - row[i].Value.Length + 1);
+                            builder.Append(row.ElementAt(i));
+                            builder.Append(' ', columnSize[i] - row.ElementAt(i).Length + 1);
                             builder.Append("|");
                         }
                         builder.AppendLine();
-                        WriteLine(builder, columnSize, this._firstLineHeader && firstLine);
+                        WriteLine(builder, columnSize, _firstLineHeader && firstLine);
                         firstLine = false;
                     }
 

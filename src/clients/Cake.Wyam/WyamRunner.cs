@@ -143,6 +143,11 @@ namespace Cake.Wyam
                 builder.Append("--use-global-sources");
             }
 
+            if (settings.IgnoreDefaultSources)
+            {
+                builder.Append("--ignore-default-sources");
+            }
+
             if (settings.PackagesPath != null)
             {
                 builder.Append("--packages-path");
