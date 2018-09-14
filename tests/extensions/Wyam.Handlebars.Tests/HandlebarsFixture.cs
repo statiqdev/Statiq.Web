@@ -69,7 +69,7 @@ namespace Wyam.Handlebars.Tests
     }
   },
   ""content"": ""{{json}}""
-}";
+}".NoRN();
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
@@ -79,7 +79,7 @@ namespace Wyam.Handlebars.Tests
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                Assert.That(results.Select(x => x.Content.NoRN()), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -98,7 +98,7 @@ namespace Wyam.Handlebars.Tests
   }
 }
 Serialisation errors :
-- data.Method : Operation is not supported on this platform.";
+- data.Method : Operation is not supported on this platform.".NoRN();
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
@@ -108,7 +108,7 @@ Serialisation errors :
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                Assert.That(results.Select(x => x.Content.NoRN()), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -125,7 +125,7 @@ Serialisation errors :
     title: My new post
     body: This is my first post!
 content: '{{yaml}}'
-";
+".NoRN();
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
@@ -135,7 +135,7 @@ content: '{{yaml}}'
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                Assert.That(results.Select(x => x.Content.NoRN()), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
@@ -152,7 +152,7 @@ content: '{{yaml}}'
   Method: {}
 
 Serialisation errors :
-- data.Method : Operation is not supported on this platform.";
+- data.Method : Operation is not supported on this platform.".NoRN();
 
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input, new Dictionary<string, object> { { "data", data } });
@@ -162,7 +162,7 @@ Serialisation errors :
                 IList<IDocument> results = handlebars.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                Assert.That(results.Select(x => x.Content.NoRN()), Is.EquivalentTo(new[] { output }));
             }
 
             [Test]
