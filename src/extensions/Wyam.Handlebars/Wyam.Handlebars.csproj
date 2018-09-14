@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Wyam is a simple to use, highly modular, and extremely configurable static content generator. This library provides support for rendering Handlebars content.</Description>
     <PackageTags>Wyam Static StaticContent StaticSite Blog BlogEngine Handlebars</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Handlebars.Net" Version="1.9.0" />
+    <PackageReference Include="Handlebars.Net" Version="1.9.5" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="YamlDotNet" Version="4.3.1" />
   </ItemGroup>
