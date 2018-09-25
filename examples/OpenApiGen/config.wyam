@@ -16,10 +16,10 @@ System.Globalization.CultureInfo.DefaultThreadCurrentCulture
 
 // This pipeline generates a document for each symbol, uses Razor to generate a file for each one, and then outputs it to disk
 Pipelines.Add("Api",
-	ReadFiles("../Api/*.yaml"),
+	ReadFiles("../input/api/*.yaml"),
 	OpenAPI("myapi"),
 	Merge(
-		ReadFiles("../Templates/*.handlebars")
+		ReadFiles("../input/templates/*.handlebars")
 	),
 	Handlebars(),
 	WriteFiles("")
