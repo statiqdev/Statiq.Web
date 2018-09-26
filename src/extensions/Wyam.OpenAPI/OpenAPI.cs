@@ -12,7 +12,7 @@ namespace Wyam.OpenAPI
 {
     public class OpenAPI : IModule
     {
-        public const string OpenAPI_DEFAULT_KEY = "MyOpenApi";
+        public const string OpenAPI_DEFAULT_KEY = "openApi";
 
         private readonly string _key;
         private readonly Action<OpenApiReaderSettings> _readerSetup;
@@ -20,6 +20,7 @@ namespace Wyam.OpenAPI
         public OpenAPI(string key = OpenAPI_DEFAULT_KEY)
             : this(s => { }, key)
         {
+
         }
 
         public OpenAPI(Action<OpenApiReaderSettings> readerSetup, string key = OpenAPI_DEFAULT_KEY)
