@@ -70,7 +70,7 @@ namespace Wyam.CodeAnalysis
                     {
                         analyzer.AddBinaryLogger();
                     }
-                    return ReadWorkspace.CompileProjectAndTrace(analyzer, log);
+                    return CompileProjectAndTrace(analyzer, log);
                 })
                 .Where(x => x != null)
                 .ToArray();

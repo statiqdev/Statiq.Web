@@ -11,6 +11,7 @@ using Wyam.Common.Meta;
 using Wyam.Common.Modules;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
+using System.Diagnostics;
 
 namespace Wyam.CodeAnalysis
 {
@@ -95,11 +96,16 @@ namespace Wyam.CodeAnalysis
         protected internal static AnalyzerResult CompileProjectAndTrace(ProjectAnalyzer analyzer, StringWriter log)
         {
             log.GetStringBuilder().Clear();
-            AnalyzerResult result = analyzer.Build();
-            if (result.OverallSuccess == false)
+            Common.Tracing.Trace.Verbose($"Building project {analyzer.ProjectFile.Path}");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            AnalyzerResult result = analyzer.Build().FirstOrDefault();
+            sw.Stop();
+            Common.Tracing.Trace.Verbose($"Project {analyzer.ProjectFile.Path} built in {sw.ElapsedMilliseconds} ms");
+            if (result == null || !result.Succeeded)
             {
-                Trace.Error($"Could not compile project at {analyzer.ProjectFile.Path}");
-                Trace.Warning(log.ToString());
+                Common.Tracing.Trace.Error($"Could not compile project at {analyzer.ProjectFile.Path}");
+                Common.Tracing.Trace.Warning(log.ToString());
                 return null;
             }
             return result;
@@ -126,7 +132,7 @@ namespace Wyam.CodeAnalysis
                         .Where(project => project != null && (_whereProject == null || _whereProject(project.Name)))
                         .SelectMany(project =>
                         {
-                            Trace.Verbose("Read project {0}", project.Name);
+                            Common.Tracing.Trace.Verbose("Read project {0}", project.Name);
                             string assemblyName = project.AssemblyName;
                             return project.Documents
                                 .AsParallel()
@@ -135,7 +141,7 @@ namespace Wyam.CodeAnalysis
                                 .Where(x => x.Exists && (_whereFile == null || _whereFile(x)) && (_extensions == null || _extensions.Contains(x.Path.Extension)))
                                 .Select(file =>
                                 {
-                                    Trace.Verbose($"Read file {file.Path.FullPath}");
+                                    Common.Tracing.Trace.Verbose($"Read file {file.Path.FullPath}");
                                     DirectoryPath inputPath = context.FileSystem.GetContainingInputPath(file.Path);
                                     FilePath relativePath = inputPath?.GetRelativePath(file.Path) ?? projectFile.Path.Directory.GetRelativePath(file.Path);
                                     return context.GetDocument(file.Path, file.OpenRead(), new MetadataItems
