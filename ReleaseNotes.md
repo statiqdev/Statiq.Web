@@ -1,3 +1,11 @@
+# 1.6.0
+
+- [Refactoring] Big update to Buildalyzer which should make MSBuild-based project introspection for docs much more reliable
+- [Fix] Fixes a bug with docs `NoTitle` not working correctly
+- [Feature] Adds support for linking generic type arguments (#707, #709) 
+- [Fix] Fix for generic type argument names (#709)
+- [Fix] Fix for a bug when linking nullable types in docs recipe
+
 # 1.5.1
 
 - [Refactoring] Updated Cake.Wyam Cake reference to 0.28.0 (#701)
