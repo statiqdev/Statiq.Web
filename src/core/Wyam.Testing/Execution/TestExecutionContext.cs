@@ -99,6 +99,15 @@ namespace Wyam.Testing.Execution
         }
 
         /// <inheritdoc/>
+        public IDocument GetDocument(FilePath source, IEnumerable<KeyValuePair<string, object>> items = null)
+        {
+            return new TestDocument(items)
+            {
+                Source = source
+            };
+        }
+
+        /// <inheritdoc/>
         public IDocument GetDocument(IDocument sourceDocument, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true)
         {
             return new TestDocument(items == null ? sourceDocument : sourceDocument.Concat(items))

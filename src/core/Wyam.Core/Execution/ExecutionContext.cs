@@ -102,6 +102,9 @@ namespace Wyam.Core.Execution
         public IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) =>
             GetDocument((IDocument)null, source, stream, items, disposeStream);
 
+        public IDocument GetDocument(FilePath source, IEnumerable<KeyValuePair<string, object>> items = null) =>
+            GetDocument((IDocument)null, source, (Stream)null, items);
+
         public IDocument GetDocument(Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true) =>
             GetDocument((IDocument)null, stream, items, disposeStream);
 

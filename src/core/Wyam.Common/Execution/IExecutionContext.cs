@@ -105,6 +105,14 @@ namespace Wyam.Common.Execution
         IDocument GetDocument(FilePath source, Stream stream, IEnumerable<KeyValuePair<string, object>> items = null, bool disposeStream = true);
 
         /// <summary>
+        /// Gets a new document with the specified source and metadata (in addition to the default initial metadata).
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="items">The metadata items.</param>
+        /// <returns>The new document.</returns>
+        IDocument GetDocument(FilePath source, IEnumerable<KeyValuePair<string, object>> items = null);
+
+        /// <summary>
         /// Gets a new document with the specified content stream and metadata (in addition to the default initial metadata).
         /// If <paramref name="disposeStream"/> is true (which it is by default), the provided
         /// <see cref="Stream"/> will automatically be disposed when the document is disposed (I.e., the

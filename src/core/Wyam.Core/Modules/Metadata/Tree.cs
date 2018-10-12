@@ -80,14 +80,13 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     segments.RemoveAt(segments.Count - 1);
                 }
-                return segments;
+                return segments.Cast<object>().ToArray();
             };
             _placeholderFactory = (treePath, items, context) =>
             {
-                items.Add(new MetadataItem(
-                    Keys.RelativeFilePath,
-                    new FilePath(string.Join("/", treePath.Concat(new[] { "index.html" })))));
-                return context.GetDocument(items);
+                FilePath source = new FilePath(string.Join("/", treePath.Concat(new[] { "index.html" })));
+                items.Add(new MetadataItem(Keys.RelativeFilePath, source));
+                return context.GetDocument(context.FileSystem.GetInputFile(source).Path.FullPath, items);
             };
             _sort = (x, y) => Comparer.Default.Compare(
                 x.Get<object[]>(Keys.TreePath)?.LastOrDefault(),
@@ -101,6 +100,9 @@ namespace Wyam.Core.Modules.Metadata
         /// and the execution context which can be used to create a new document. If the factory function
         /// returns null, a new document with the tree metadata is created.
         /// </summary>
+        /// <remarks>
+        /// The default placeholder factory creates a document at the current tree path with a file name of <c>index.html</c>.
+        /// </remarks>
         /// <param name="factory">The factory function.</param>
         /// <returns>The current module instance.</returns>
         public Tree WithPlaceholderFactory(Func<object[], MetadataItems, IExecutionContext, IDocument> factory)
