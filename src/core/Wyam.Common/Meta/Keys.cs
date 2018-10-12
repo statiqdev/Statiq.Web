@@ -345,6 +345,12 @@ namespace Wyam.Common.Meta
         /// <type><see cref="Array"/></type>
         public const string TreePath = nameof(TreePath);
 
+        /// <summary>
+        /// Gets set on documents that were created as a placeholder for tree roots.
+        /// </summary>
+        /// <type><see cref="bool"/></type>
+        public const string TreePlaceholder = nameof(TreePlaceholder);
+
         // Title
 
         /// <summary>

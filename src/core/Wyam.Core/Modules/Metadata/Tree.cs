@@ -348,9 +348,16 @@ namespace Wyam.Core.Modules.Metadata
                 {
                     metadata.Add(tree._treePathKey, TreePath);
                 }
-                OutputDocument = InputDocument == null
-                    ? (tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata))
-                    : context.GetDocument(InputDocument, metadata);
+                if (InputDocument == null)
+                {
+                    // There's no input document for this node so we need to make a placeholder
+                    metadata.Add(Keys.TreePlaceholder, true);
+                    OutputDocument = tree._placeholderFactory(TreePath, metadata, context) ?? context.GetDocument(metadata);
+                }
+                else
+                {
+                    OutputDocument = context.GetDocument(InputDocument, metadata);
+                }
             }
 
             public object[] GetParentTreePath() => TreePath.Take(TreePath.Length - 1).ToArray();
