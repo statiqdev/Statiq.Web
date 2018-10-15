@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
+using Microsoft.AspNetCore.Http;
 
-namespace Wyam.Hosting.Owin
+namespace Wyam.Hosting.Middleware
 {
     using AppFunc = Func<IDictionary<string, object>, Task>;
 
@@ -15,10 +14,10 @@ namespace Wyam.Hosting.Owin
     /// </summary>
     public class VirtualDirectoryMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly string _virtualDirectory;
-        private readonly AppFunc _next;
 
-        public VirtualDirectoryMiddleware(AppFunc next, string virtualDirectory)
+        public VirtualDirectoryMiddleware(RequestDelegate next, string virtualDirectory)
         {
             if (next == null)
             {
@@ -39,9 +38,8 @@ namespace Wyam.Hosting.Owin
             _virtualDirectory = virtualDirectory;
         }
 
-        public Task Invoke(IDictionary<string, object> environment)
+        public async Task Invoke(HttpContext context)
         {
-            IOwinContext context = new OwinContext(environment);
             if (context.Request.Path.ToString().StartsWith(_virtualDirectory))
             {
                 string realPath = context.Request.Path.ToString().Substring(_virtualDirectory.Length);
@@ -51,13 +49,13 @@ namespace Wyam.Hosting.Owin
                 }
                 context.Request.Path = new PathString(realPath);
                 context.Request.PathBase = new PathString(_virtualDirectory);
-                return _next(environment);
+                await _next(context);
             }
 
             // This isn't under our virtual directory, so it should be a not found
             context.Response.StatusCode = 404;
-            context.Response.ReasonPhrase = "Not Under Virtual Directory";
-            return context.Response.WriteAsync(string.Empty);
+            // context.Response.ReasonPhrase = "Not Under Virtual Directory";
+            await context.Response.WriteAsync(string.Empty);
         }
     }
 }

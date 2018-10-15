@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -8,16 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.StaticFiles;
-using Microsoft.Owin.StaticFiles.ContentTypes;
-using Owin;
-using Owin.WebSocket.Extensions;
+using NuGet;
 using Wyam.Hosting.LiveReload;
-using Wyam.Hosting.Owin;
+using Wyam.Hosting.Middleware;
 
 namespace Wyam.Hosting
 {
@@ -26,9 +24,48 @@ namespace Wyam.Hosting
     /// </summary>
     public class Server : IWebHost
     {
-        private readonly ILoggerProvider _loggerProvider;
-        private readonly IWebHost _host;
+        private static readonly Func<string[], DefaultExtensionsOptions> GetExtensionOptions = (extensions) =>
+        {
+            if (extensions != null && extensions.Length > 0)
+            {
+                return new DefaultExtensionsOptions
+                {
+                    Extensions = extensions
+                };
+            }
+
+            return new DefaultExtensionsOptions();
+        };
+
+        private static readonly Func<string, PreviewServerOptions> GetPreviewServerOptions = (localPath) =>
+            new PreviewServerOptions
+            {
+                LocalPath = localPath
+            };
+
         private readonly IDictionary<string, string> _contentTypes;
+        private readonly IWebHost _host;
+        private readonly ILoggerProvider _loggerProvider;
+        public string[] DefaultExtensions { get; }
+
+        public bool Extensionless { get; }
+
+        public string LocalPath { get; }
+
+        public int Port { get; }
+
+        /// <summary>
+        /// The virtual directory at which files are served (or null). This will always
+        /// begin with a backslash and end without one.
+        /// </summary>
+        public string VirtualDirectory { get; }
+
+        public IFeatureCollection ServerFeatures => _host.ServerFeatures;
+
+        public IServiceProvider Services => _host.Services;
+
+        // internal virtual is required to mock for testing
+        internal virtual ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
 
         /// <summary>
         /// Creates the HTTP server.
@@ -66,10 +103,6 @@ namespace Wyam.Hosting
         /// <param name="contentTypes">Additional content types the server should support.</param>
         public Server(string localPath, int port, bool extensionless, string virtualDirectory, bool liveReload, IDictionary<string, string> contentTypes, ILoggerProvider loggerProvider)
         {
-            if (localPath == null)
-            {
-                throw new ArgumentNullException(nameof(localPath));
-            }
             if (port <= 0)
             {
                 throw new ArgumentException("The port must be greater than 0");
@@ -77,7 +110,7 @@ namespace Wyam.Hosting
 
             _loggerProvider = loggerProvider;
             _contentTypes = contentTypes;
-            LocalPath = localPath;
+            LocalPath = localPath ?? throw new ArgumentNullException(nameof(localPath));
             Port = port;
             Extensionless = extensionless;
 
@@ -95,7 +128,11 @@ namespace Wyam.Hosting
                 LiveReloadClients = new ConcurrentBag<IReloadClient>();
             }
 
+            string currentDirectory = Directory.GetCurrentDirectory();
+
             _host = new WebHostBuilder()
+                .UseContentRoot(currentDirectory)
+                .UseWebRoot(Path.Combine(currentDirectory, "wwwroot"))
                 .ConfigureLogging(log =>
                 {
                     if (loggerProvider != null)
@@ -105,43 +142,31 @@ namespace Wyam.Hosting
                 })
                 .UseKestrel()
                 .UseUrls($"http://localhost:{port}")
-                .Configure(builder =>
+                .UseStartup<Startup>()
+                .ConfigureServices(services =>
                 {
-                    builder.UseWebSockets();
-                    builder.UseOwinBuilder(OwinBuilder);
+                    DefaultExtensionsOptions defaultExtensionsOptions = GetExtensionOptions(DefaultExtensions);
+                    PreviewServerOptions previewServerOptions = GetPreviewServerOptions(LocalPath);
+                    services
+                    .AddSingleton(defaultExtensionsOptions)
+                    .AddSingleton(previewServerOptions);
                 })
-                .BuildWebHost();  // .Build() once the AspNetCore packages are updated to 2.x
+                .Build();  // .Build() once the AspNetCore packages are updated to 2.x
         }
 
-        public string LocalPath { get; }
-
-        public int Port { get; }
-
-        public bool Extensionless { get; }
-
-        /// <summary>
-        /// The virtual directory at which files are served (or null). This will always
-        /// begin with a backslash and end without one.
-        /// </summary>
-        public string VirtualDirectory { get; }
-
-        // internal virtual is required to mock for testing
-        internal virtual ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
+        /// <inheritdoc />
+        public void Dispose() => _host.Dispose();
 
         /// <summary>
         /// Start listening.
         /// </summary>
         public void Start() => _host.Start();
 
-        // These will be needed once the hosting package is updated to 2.x
-        //public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StartAsync(cancellationToken);
-        //public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StopAsync(cancellationToken);
+        /// <inheritdoc />
+        public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StartAsync(cancellationToken);
 
-        public IFeatureCollection ServerFeatures => _host.ServerFeatures;
-
-        public IServiceProvider Services => _host.Services;
-
-        public void Dispose() => _host.Dispose();
+        /// <inheritdoc />
+        public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StopAsync(cancellationToken);
 
         public void TriggerReload()
         {
@@ -151,90 +176,6 @@ namespace Wyam.Hosting
                 {
                     client.NotifyOfChanges();
                 }
-            }
-        }
-
-        private void OwinBuilder(IAppBuilder app)
-        {
-            IFileSystem outputFolder = new PhysicalFileSystem(LocalPath);
-
-            if (LiveReloadClients != null)
-            {
-                // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
-                app.UseScriptInjection($"{VirtualDirectory ?? string.Empty}/livereload.js?host=localhost&port={Port}");
-
-                // Host ws:// (this also needs to go early in the pipeline so WS can return before virtual directory, etc.)
-                app.MapFleckRoute<ReloadClient>("/livereload", connection =>
-                {
-                    ReloadClient reloadClient = (ReloadClient)connection;
-                    reloadClient.Logger = _loggerProvider?.CreateLogger("LiveReload");
-                    LiveReloadClients.Add(reloadClient);
-                });
-            }
-
-            // Support for virtual directory
-            if (!string.IsNullOrEmpty(VirtualDirectory))
-            {
-                app.UseVirtualDirectory(VirtualDirectory);
-            }
-
-            // Disable caching
-            app.Use((c, t) =>
-            {
-                c.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
-                c.Response.Headers.Append("Pragma", "no-cache");
-                c.Response.Headers.Append("Expires", "0");
-                return t();
-            });
-
-            // Support for extensionless URLs
-            if (Extensionless)
-            {
-                app.UseExtensionlessUrls(new ExtensionlessUrlsOptions
-                {
-                    FileSystem = outputFolder
-                });
-            }
-
-            // Add JSON content type
-            FileExtensionContentTypeProvider contentTypeProvider = new FileExtensionContentTypeProvider();
-            contentTypeProvider.Mappings[".json"] = "application/json";
-            if (_contentTypes != null)
-            {
-                foreach (KeyValuePair<string, string> contentType in _contentTypes)
-                {
-                    contentTypeProvider.Mappings[contentType.Key.StartsWith(".") ? contentType.Key : "." + contentType.Key] = contentType.Value;
-                }
-            }
-
-            // Serve up all static files
-            app.UseDefaultFiles(new DefaultFilesOptions
-            {
-                RequestPath = PathString.Empty,
-                FileSystem = outputFolder,
-                DefaultFileNames = new List<string> { "index.html", "index.htm", "home.html", "home.htm", "default.html", "default.html" }
-            });
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                RequestPath = PathString.Empty,
-                FileSystem = outputFolder,
-                ServeUnknownFileTypes = true,
-                ContentTypeProvider = contentTypeProvider
-            });
-
-            if (LiveReloadClients != null)
-            {
-                // Host livereload.js (do this last so virtual directory rewriting applies)
-                Assembly liveReloadAssembly = typeof(ReloadClient).Assembly;
-                string rootNamespace = typeof(ReloadClient).Namespace;
-                IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(liveReloadAssembly, $"{rootNamespace}");
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = PathString.Empty,
-                    FileSystem = reloadFilesystem,
-                    ServeUnknownFileTypes = true,
-                    ContentTypeProvider = contentTypeProvider
-                });
             }
         }
     }

@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Owin;
+using Microsoft.AspNetCore.Builder;
 
-namespace Wyam.Hosting.Owin
+namespace Wyam.Hosting.Middleware
 {
     public static class ScriptInjectionExtensions
     {
-        public static IAppBuilder UseScriptInjection(this IAppBuilder builder, params string[] scriptUrls)
+        public static IApplicationBuilder UseScriptInjection(this IApplicationBuilder builder, params string[] scriptUrls)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            return builder.Use<ScriptInjectionMiddleware>(new object[] { scriptUrls });
+            return builder.UseMiddleware<ScriptInjectionMiddleware>(new object[] { scriptUrls });
         }
     }
 }

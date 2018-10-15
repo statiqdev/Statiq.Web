@@ -5,19 +5,17 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Fleck;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-
-using Owin.WebSocket;
-
 using Wyam.Hosting.LiveReload.Messages;
 
 namespace Wyam.Hosting.LiveReload
 {
     // Attempt to support the Livereload protocol v7.
     // http://feedback.livereload.com/knowledgebase/articles/86174-livereload-protocol
-    internal class ReloadClient : FleckWebSocketConnection, IReloadClient
+    internal class ReloadClient : WebSocketConnection, IReloadClient
     {
         private readonly Guid _clientId = Guid.NewGuid();
 
@@ -36,24 +34,18 @@ namespace Wyam.Hosting.LiveReload
 
         public ILogger Logger { private get; set; }
 
-        public override Task OnMessageReceived(ArraySegment<byte> message, WebSocketMessageType type)
+        public ReloadClient(ISocket socket,
+            Action<IWebSocketConnection> initialize,
+            Func<byte[], WebSocketHttpRequest> parseRequest,
+            Func<WebSocketHttpRequest, IHandler> handlerFactory,
+            Func<IEnumerable<string>, string> negotiateSubProtocol)
+            : base(socket,
+            initialize,
+            parseRequest,
+            handlerFactory,
+            negotiateSubProtocol)
         {
-            string json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
-            HandleClientMessage(json);
-            return Task.CompletedTask;
-        }
-
-        public override void OnOpen()
-        {
-            SayHello();
-            base.OnOpen();
-        }
-
-        public override void OnClose(WebSocketCloseStatus? closeStatus, string closeStatusDescription)
-        {
-            IsConnected = false;
-            Log($"Lost connection with LiveReload client, status: {closeStatus}, description: {closeStatusDescription}");
-            base.OnClose(closeStatus, closeStatusDescription);
+            OnMessage = (str) => { };
         }
 
         public void NotifyOfChanges()
@@ -62,6 +54,26 @@ namespace Wyam.Hosting.LiveReload
             Log($"Sending LiveReload reload message");
             SendObject(reloadMessage);
         }
+
+        //public override void OnClose(WebSocketCloseStatus? closeStatus, string closeStatusDescription)
+        //{
+        //    IsConnected = false;
+        //    Log($"Lost connection with LiveReload client, status: {closeStatus}, description: {closeStatusDescription}");
+        //    base.OnClose(closeStatus, closeStatusDescription);
+        //}
+
+        public string OnMessageReceived(ArraySegment<byte> message, WebSocketMessageType type)
+        {
+            string json = Encoding.UTF8.GetString(message.Array, message.Offset, message.Count);
+            HandleClientMessage(json);
+            return json;
+        }
+
+        //public override void OnOpen()
+        //{
+        //    SayHello();
+        //    base.OnOpen();
+        //}
 
         private ILiveReloadMessage HandleClientMessage(string json)
         {
@@ -72,10 +84,12 @@ namespace Wyam.Hosting.LiveReload
                     InfoMessage info = JsonConvert.DeserializeObject<InfoMessage>(json, _defaultSettings);
                     Log($"LiveReload client sent info: {info.Url}");
                     break;
+
                 case "hello":
                     HelloMessage hello = JsonConvert.DeserializeObject<HelloMessage>(json, _defaultSettings);
                     HandleHello(hello);
                     break;
+
                 default:
                     Log($"Unknown command received from LiveReload client: {parsedMessage.Command}");
                     break;
@@ -99,7 +113,7 @@ namespace Wyam.Hosting.LiveReload
                     $"(client: {string.Join(",", message.Protocols)}, " +
                     $"server: {string.Join(",", _supportedVersion)})";
                 Log(incompatibleMessage);
-                Abort();
+                Socket.Close(); //Abort();
             }
             else
             {
@@ -107,6 +121,8 @@ namespace Wyam.Hosting.LiveReload
                 IsConnected = true;
             }
         }
+
+        private void Log(string message) => Logger?.LogDebug($"{message} (LiveReload client: {_clientId})");
 
         private void SayHello()
         {
@@ -121,9 +137,7 @@ namespace Wyam.Hosting.LiveReload
         {
             string json = JsonConvert.SerializeObject(obj, _defaultSettings);
             byte[] bytes = Encoding.UTF8.GetBytes(json); // UTF-8 by spec
-            SendText(bytes, true);
+            Socket.Send(bytes, null, null); // SendText(bytes, true);
         }
-
-        private void Log(string message) => Logger?.LogDebug($"{message} (LiveReload client: {_clientId})");
     }
 }

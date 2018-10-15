@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
-using Microsoft.Owin;
-
-namespace Wyam.Hosting.Owin
+namespace Wyam.Hosting.Middleware
 {
-    using AppFunc = Func<IDictionary<string, object>, Task>;
-
     /// <summary>
     /// Injects one or more script references into an HTML document just before the closing body element.
     /// </summary>
     public class ScriptInjectionMiddleware
     {
-        private readonly AppFunc _next;
         private readonly string _injectionCode;
+        private readonly RequestDelegate _next;
 
-        public ScriptInjectionMiddleware(AppFunc next, params string[] scriptUrls)
+        public ScriptInjectionMiddleware(RequestDelegate next, params string[] scriptUrls)
         {
             if (next == null)
             {
@@ -36,17 +33,15 @@ namespace Wyam.Hosting.Owin
         }
 
         /// <inheritdoc />
-        public async Task Invoke(IDictionary<string, object> environment)
+        public async Task Invoke(HttpContext context)
         {
-            IOwinContext context = new OwinContext(environment);
-
             // Intercept the original stream
             Stream originalBody = context.Response.Body;
             MemoryStream interceptedBody = new MemoryStream();
             context.Response.Body = interceptedBody;
 
             // Run the middleware
-            await _next(environment);
+            await _next(context);
 
             // Write the buffer to the output stream
             interceptedBody.Position = 0;
