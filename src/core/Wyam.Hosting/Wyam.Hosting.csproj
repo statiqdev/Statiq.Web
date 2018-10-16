@@ -26,4 +26,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Wyam.Common\Wyam.Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Wyam.Hosting.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

@@ -63,8 +63,8 @@ namespace Wyam.Hosting
 
         public IServiceProvider Services => _host.Services;
 
-        // internal virtual is required to mock for testing
-        internal virtual ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
+        // internal for testing
+        internal ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
 
         /// <summary>
         /// Creates the HTTP server.

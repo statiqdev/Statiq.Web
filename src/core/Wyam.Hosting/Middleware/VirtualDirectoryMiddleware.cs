@@ -54,7 +54,6 @@ namespace Wyam.Hosting.Middleware
 
             // This isn't under our virtual directory, so it should be a not found
             context.Response.StatusCode = 404;
-            // context.Response.ReasonPhrase = "Not Under Virtual Directory";
             await context.Response.WriteAsync(string.Empty);
         }
     }

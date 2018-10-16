@@ -20,8 +20,6 @@ namespace Wyam.Hosting.Tests.Middleware
     [TestFixture]
     public class DefaultExtensionsMiddlewareTests
     {
-        private static readonly Assembly TestAssembly = typeof(ScriptInjectionMiddlewareTests).Assembly;
-
         [Test]
         public async Task ReturnsFileWithDefaultExtension()
         {
@@ -34,7 +32,7 @@ namespace Wyam.Hosting.Tests.Middleware
 
             // Then
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-            body.ShouldBe(ReadFile("BasicHtmlDocument.html"));
+            body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile("BasicHtmlDocument.html"));
         }
 
         [Test]
@@ -52,7 +50,7 @@ namespace Wyam.Hosting.Tests.Middleware
 
             // Then
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-            body.ShouldBe(ReadFile("NonHtmlDocument.css"));
+            body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile("NonHtmlDocument.css"));
         }
 
         [Test]
@@ -70,7 +68,7 @@ namespace Wyam.Hosting.Tests.Middleware
 
             // Then
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
-            body.ShouldBe(ReadFile("NonHtmlDocument.css"));
+            body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile("NonHtmlDocument.css"));
         }
 
         [Test]
@@ -93,7 +91,7 @@ namespace Wyam.Hosting.Tests.Middleware
                 new WebHostBuilder()
                     .Configure(builder =>
                     {
-                        IFileProvider embeddedFileProvider = new ManifestEmbeddedFileProvider(TestAssembly, "wwwroot");
+                        IFileProvider embeddedFileProvider = new ManifestEmbeddedFileProvider(AssemblyHelper.TestAssembly, "wwwroot");
                         IHostingEnvironment host = builder.ApplicationServices.GetService<IHostingEnvironment>();
                         host.WebRootFileProvider = embeddedFileProvider;
                         builder
@@ -105,20 +103,5 @@ namespace Wyam.Hosting.Tests.Middleware
                                 ServeUnknownFileTypes = true
                             });
                     }));
-
-        private string ReadFile(string filename)
-        {
-            string resourceName = $"Wyam.Hosting.Tests.wwwroot.{filename}";
-            using (Stream stream = TestAssembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                {
-                    return null;
-                }
-                StreamReader reader = new StreamReader(stream);
-                string fileContent = reader.ReadToEnd();
-                return fileContent;
-            }
-        }
     }
 }

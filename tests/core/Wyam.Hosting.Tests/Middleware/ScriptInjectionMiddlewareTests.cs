@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using NUnit.Framework;
 using Shouldly;
+using Wyam.Hosting.Tests;
 using Wyam.Hosting.Middleware;
 
 namespace Wyam.Hosting.Tests.Middleware
@@ -17,8 +18,6 @@ namespace Wyam.Hosting.Tests.Middleware
     [TestFixture]
     public class ScriptInjectionMiddlewareTests
     {
-        private static readonly Assembly TestAssembly = typeof(ScriptInjectionMiddlewareTests).Assembly;
-
         [TestCase("BasicHtmlDocument.html", true)]
         [TestCase("BasicHtmlDocumentNoBodyEnd.html", false)]
         [TestCase("NonHtmlDocument.css", false)]
@@ -39,7 +38,7 @@ namespace Wyam.Hosting.Tests.Middleware
             }
             else
             {
-                body.ShouldBe(ReadFile(filename));
+                body.ShouldBe(AssemblyHelper.ReadEmbeddedWebFile(filename));
             }
         }
 
@@ -50,23 +49,8 @@ namespace Wyam.Hosting.Tests.Middleware
                     .UseStaticFiles(new StaticFileOptions
                     {
                         RequestPath = PathString.Empty,
-                        FileProvider = new ManifestEmbeddedFileProvider(TestAssembly, "wwwroot"),
+                        FileProvider = new ManifestEmbeddedFileProvider(AssemblyHelper.TestAssembly, "wwwroot"),
                         ServeUnknownFileTypes = true
                     })));
-
-        private string ReadFile(string filename)
-        {
-            string resourceName = $"Wyam.Hosting.Tests.wwwroot.{filename}";
-            using (Stream stream = TestAssembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                {
-                    return null;
-                }
-                StreamReader reader = new StreamReader(stream);
-                string fileContent = reader.ReadToEnd();
-                return fileContent;
-            }
-        }
     }
 }

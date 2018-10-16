@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
 using Shouldly;
 using Wyam.Hosting.LiveReload;
@@ -92,32 +91,34 @@ namespace Wyam.Hosting.Tests
         public void RebuildCompletedShouldAvoidMissingClients()
         {
             // Given
-            IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
-            reloadClientMock.IsConnected.Returns(false);
-            Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
-            server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
+            TestReloadClient reloadClient = new TestReloadClient();
+            Server server = new Server(string.Empty, 35729);
+            server.LiveReloadClients.Add(reloadClient);
 
             // When
             server.TriggerReload();
 
             // Then
-            reloadClientMock.DidNotReceive().NotifyOfChanges();
+            reloadClient.NotifyOfChangesCount.ShouldBe(0);
         }
 
         [Test]
         public void RebuildCompletedShouldNotifyConnectedClients()
         {
             // Given
-            IReloadClient reloadClientMock = Substitute.For<IReloadClient>();
-            reloadClientMock.IsConnected.Returns(true);
-            Server server = Substitute.ForPartsOf<Server>(string.Empty, 35729);
-            server.LiveReloadClients.Returns(new ConcurrentBag<IReloadClient> { reloadClientMock });
+            TestReloadClient reloadClient = new TestReloadClient()
+            {
+                IsConnected = true
+            };
+            Server server = new Server(string.Empty, 35729);
+            server.LiveReloadClients.Add(reloadClient);
 
             // When
             server.TriggerReload();
 
             // Then
-            reloadClientMock.Received().NotifyOfChanges();
+            reloadClient.NotifyOfChangesCount.ShouldBe(1);
         }
+
     }
 }
