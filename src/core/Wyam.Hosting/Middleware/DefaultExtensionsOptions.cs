@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wyam.Hosting
+namespace Wyam.Hosting.Middleware
 {
     /// <summary>
     /// Extenions to use when no extension is provided in the URL.

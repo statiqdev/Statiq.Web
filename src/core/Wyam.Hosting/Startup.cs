@@ -144,7 +144,7 @@ namespace Wyam.Hosting
 
         private void ConfigureFileServer(IApplicationBuilder app)
         {
-            var defaultExtensions = _defaultExtensionsOptions.Extensions;
+            IList<string> defaultExtensions = _defaultExtensionsOptions.Extensions;
             if (defaultExtensions != null && defaultExtensions.Count > 0)
             {
                 app.UseDefaultExtensions(new DefaultExtensionsOptions

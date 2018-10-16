@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Wyam.Hosting
+namespace Wyam.Hosting.Middleware
 {
     public class DefaultExtensionsMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IFileProvider _fileProvider;
-        private readonly DefaultExtensionsOptions _options;
+        private readonly string[] _extensions;
         private readonly ILogger _logger;
 
         public DefaultExtensionsMiddleware(RequestDelegate next, IHostingEnvironment hostingEnv, IOptions<DefaultExtensionsOptions> options, ILoggerFactory loggerFactory)
@@ -41,7 +42,7 @@ namespace Wyam.Hosting
 
             _next = next;
             _fileProvider = hostingEnv.WebRootFileProvider;
-            _options = options.Value;
+            _extensions = (options?.Value ?? new DefaultExtensionsOptions()).Extensions.Select(x => x.StartsWith(".") ? x : ("." + x)).ToArray();
             _logger = loggerFactory.CreateLogger<DefaultExtensionsMiddleware>();
         }
 
@@ -51,7 +52,7 @@ namespace Wyam.Hosting
                 && !PathEndsInSlash(context.Request.Path))
             {
                 // Check if there's a file with a matched extension, and rewrite the request if found
-                foreach (string extension in _options.Extensions)
+                foreach (string extension in _extensions)
                 {
                     string filePath = context.Request.Path.ToString() + extension;
                     IFileInfo fileInfo = _fileProvider.GetFileInfo(filePath);

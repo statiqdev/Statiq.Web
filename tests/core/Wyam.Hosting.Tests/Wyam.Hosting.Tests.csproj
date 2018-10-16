@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Owin\Documents\BasicHtmlDocument.html" />
-    <None Remove="Owin\Documents\BasicHtmlDocumentNoBodyEnd.html" />
-    <None Remove="Owin\Documents\NonHtmlDocument.css" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Hosting\Wyam.Hosting.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
@@ -14,14 +10,16 @@
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="NSubstitute" Version="2.0.2" />
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Shouldly" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Owin\Documents\BasicHtmlDocument.html" />
-    <EmbeddedResource Include="Owin\Documents\BasicHtmlDocumentNoBodyEnd.html" />
-    <EmbeddedResource Include="Owin\Documents\NonHtmlDocument.css" />
+    <EmbeddedResource Include="wwwroot\BasicHtmlDocument.html" />
+    <EmbeddedResource Include="wwwroot\BasicHtmlDocumentNoBodyEnd.html" />
+    <EmbeddedResource Include="wwwroot\NonHtmlDocument.css" />
   </ItemGroup>
 </Project>

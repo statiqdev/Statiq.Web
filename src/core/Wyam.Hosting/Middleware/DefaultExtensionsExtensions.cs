@@ -9,7 +9,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Wyam.Hosting
+namespace Wyam.Hosting.Middleware
 {
     public static class DefaultExtensionsExtensions
     {
