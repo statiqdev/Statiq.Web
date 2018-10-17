@@ -13,49 +13,7 @@ using Wyam.Hosting.Middleware;
 
 namespace Wyam.Hosting
 {
-    /// <summary>
-    /// Startup configuration extensions.
-    /// </summary>
-    public static class StartupConfiguration
-    {
-        /// <summary>
-        /// Configure the server with the default extensions.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="extensionsOptions">The extensions options.</param>
-        /// <returns />
-        /// <exception cref="System.ArgumentNullException">services</exception>
-        public static IServiceCollection WithDefaultExtensions(this IServiceCollection services,
-            DefaultExtensionsOptions extensionsOptions)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-            services.AddSingleton(extensionsOptions);
-            return services;
-        }
-
-        /// <summary>
-        /// Configure the server with the server options.
-        /// </summary>
-        /// <param name="services">The servces.</param>
-        /// <param name="serverOptions">The server options.</param>
-        /// <returns />
-        public static IServiceCollection WithServerOptions(this IServiceCollection services,
-            PreviewServerOptions serverOptions)
-        {
-            services.AddSingleton<PreviewServerOptions>(serverOptions);
-            return services;
-        }
-    }
-
-    public class PreviewServerOptions
-    {
-        public string LocalPath { get; set; }
-    }
-
-    public class Startup
+    internal class Startup
     {
         private readonly DefaultExtensionsOptions _defaultExtensionsOptions;
         private readonly IHostingEnvironment _environment;
@@ -67,7 +25,8 @@ namespace Wyam.Hosting
         /// <param name="environment">The environment.</param>
         /// <param name="previewServerOptions">The preview server options.</param>
         /// <param name="defaultExtensionsOptions">The default extensions options.</param>
-        public Startup(IHostingEnvironment environment,
+        public Startup(
+            IHostingEnvironment environment,
             PreviewServerOptions previewServerOptions,
             DefaultExtensionsOptions defaultExtensionsOptions)
         {
@@ -95,17 +54,11 @@ namespace Wyam.Hosting
             //    }
             //}
 
-            if (!string.IsNullOrEmpty(_previewServerOptions.LocalPath))
-            {
-                app.Map(_previewServerOptions.LocalPath, ConfigureFileServer);
-            }
-            else
-            {
-                ConfigureFileServer(app);
-            }
+            // Configure the file providers
+            app.Map(_previewServerOptions.LocalPath, ConfigureFileServer);
 
-            // Script injector
-            app.UseScriptInjection("/LiveReload/livereload.js");
+            // Inject the live reload script
+            app.UseScriptInjection("/livereload.js");
 
             // IFileSystem reloadFilesystem = new EmbeddedResourceFileSystem(ContentAssembly, ContentNamespace);
             app.UseDisableCache()

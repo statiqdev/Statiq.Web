@@ -64,7 +64,7 @@ namespace Wyam.Hosting.Tests.Middleware
 
         private TestServer GetServer(string virtualDirectory) => new TestServer(
             new WebHostBuilder()
-                .Configure(builder => builder
+                .Configure(app => app
                     .UseVirtualDirectory(virtualDirectory)
                     .UseStaticFiles(new StaticFileOptions
                     {

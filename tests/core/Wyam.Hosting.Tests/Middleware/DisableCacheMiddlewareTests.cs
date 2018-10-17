@@ -35,6 +35,6 @@ namespace Wyam.Hosting.Tests.Middleware
 
         private TestServer GetServer() => new TestServer(
             new WebHostBuilder()
-                .Configure(builder => builder.UseDisableCache()));
+                .Configure(app => app.UseDisableCache()));
     }
 }

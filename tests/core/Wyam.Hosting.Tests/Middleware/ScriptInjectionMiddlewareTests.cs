@@ -44,7 +44,7 @@ namespace Wyam.Hosting.Tests.Middleware
 
         private TestServer GetServer() => new TestServer(
             new WebHostBuilder()
-                .Configure(builder => builder
+                .Configure(app => app
                     .UseScriptInjection("/livereload.js")
                     .UseStaticFiles(new StaticFileOptions
                     {

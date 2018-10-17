@@ -89,12 +89,12 @@ namespace Wyam.Hosting.Tests.Middleware
         private TestServer GetServer(DefaultExtensionsOptions options) =>
             new TestServer(
                 new WebHostBuilder()
-                    .Configure(builder =>
+                    .Configure(app =>
                     {
                         IFileProvider embeddedFileProvider = new ManifestEmbeddedFileProvider(AssemblyHelper.TestAssembly, "wwwroot");
-                        IHostingEnvironment host = builder.ApplicationServices.GetService<IHostingEnvironment>();
+                        IHostingEnvironment host = app.ApplicationServices.GetService<IHostingEnvironment>();
                         host.WebRootFileProvider = embeddedFileProvider;
-                        builder
+                        app
                             .UseDefaultExtensions(options)
                             .UseStaticFiles(new StaticFileOptions
                             {
