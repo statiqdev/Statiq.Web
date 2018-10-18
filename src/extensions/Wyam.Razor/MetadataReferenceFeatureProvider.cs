@@ -5,16 +5,17 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.CodeAnalysis;
+using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
     internal class MetadataReferenceFeatureProvider : IApplicationFeatureProvider<MetadataReferenceFeature>
     {
-        private readonly DynamicAssemblyCollection _dynamicAssemblies;
+        private readonly IList<MetadataReference> _metadataReferences;
 
-        public MetadataReferenceFeatureProvider(DynamicAssemblyCollection dynamicAssemblies)
+        public MetadataReferenceFeatureProvider(IList<MetadataReference> metadataReferences)
         {
-            _dynamicAssemblies = dynamicAssemblies;
+            _metadataReferences = metadataReferences;
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
@@ -29,16 +30,7 @@ namespace Wyam.Razor
                 throw new ArgumentNullException(nameof(feature));
             }
 
-            // Add all references from the execution context
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location)))
-            {
-                feature.MetadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
-            }
-            foreach (byte[] image in _dynamicAssemblies ?? Enumerable.Empty<byte[]>())
-            {
-                feature.MetadataReferences.Add(MetadataReference.CreateFromImage(image));
-            }
+            feature.MetadataReferences.AddRange(_metadataReferences);
         }
     }
 }

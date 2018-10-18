@@ -8,15 +8,15 @@ namespace Wyam.Razor
 {
     internal class HostingEnvironment : IHostingEnvironment
     {
-        public HostingEnvironment(IReadOnlyFileSystem fileSystem)
+        public HostingEnvironment(FileSystemFileProvider fileProvider)
         {
             EnvironmentName = "Wyam";
 
             // This gets used to load dependencies and is passed to Assembly.Load()
             ApplicationName = typeof(HostingEnvironment).Assembly.FullName;
 
-            WebRootPath = fileSystem.RootPath.FullPath;
-            WebRootFileProvider = new FileSystemFileProvider(fileSystem);
+            WebRootPath = fileProvider.WyamFileSystem.RootPath.FullPath;
+            WebRootFileProvider = fileProvider;
             ContentRootPath = WebRootPath;
             ContentRootFileProvider = WebRootFileProvider;
         }
