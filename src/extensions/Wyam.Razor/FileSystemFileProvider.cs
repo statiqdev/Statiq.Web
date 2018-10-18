@@ -36,11 +36,7 @@ namespace Wyam.Razor
             {
                 return new NotFoundFileInfo(subpath);
             }
-            if (subpath.StartsWith("/", StringComparison.Ordinal))
-            {
-                subpath = subpath.Substring(1);
-            }
-            IFile file = WyamFileSystem.GetInputFile(subpath);
+            IFile file = WyamFileSystem.GetInputFile(subpath.TrimStart('/'));
             return new WyamFileInfo(file);
         }
 

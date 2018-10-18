@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -51,6 +52,7 @@ namespace Wyam.Razor
         private readonly ConcurrentDictionary<CompilerCacheKey, CompilationResult> _compilationCache = new ConcurrentDictionary<CompilerCacheKey, CompilationResult>();
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IList<MetadataReference> _metadataReferences;
+        private readonly string _baseType;
 
         internal RazorCompiler(CompilationParameters parameters)
         {
@@ -60,14 +62,27 @@ namespace Wyam.Razor
                 .AddMvcCore()
                 .AddRazorViewEngine();
 
+            // Get and register MetadataReferences
             _metadataReferences = GetMetadataReferences(parameters.DynamicAssemblies);
             builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(_metadataReferences));
 
+            // Calculate the base page type
+            Type basePageType = parameters.BasePageType ?? typeof(WyamRazorPage<>);
+            string baseClassName = basePageType.FullName;
+            int tickIndex = baseClassName.IndexOf('`');
+            if (tickIndex > 0)
+            {
+                baseClassName = baseClassName.Substring(0, tickIndex);
+            }
+            _baseType = basePageType.IsGenericTypeDefinition ? $"{baseClassName}<TModel>" : baseClassName;
+
+            // Register the view location expander
             serviceCollection.Configure<RazorViewEngineOptions>(options =>
             {
                 options.ViewLocationExpanders.Add(new ViewLocationExpander());
             });
 
+            // Register other services
             serviceCollection
                 .AddSingleton(parameters.FileSystem)
                 .AddSingleton(parameters.Namespaces)
@@ -78,19 +93,23 @@ namespace Wyam.Razor
                 .AddSingleton<IHostingEnvironment, HostingEnvironment>()
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IRazorViewEngineFileProviderAccessor, DefaultRazorViewEngineFileProviderAccessor>()
-                .AddSingleton<WyamRazorProjectFileSystem>()
-                .AddSingleton<IBasePageTypeProvider>(new BasePageTypeProvider(parameters.BasePageType ?? typeof(WyamRazorPage<>)));
+                .AddSingleton<WyamRazorProjectFileSystem>();
 
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
 
-        private IList<MetadataReference> GetMetadataReferences(DynamicAssemblyCollection dynamicAssemblies) =>
+        private static IList<MetadataReference> GetMetadataReferences(DynamicAssemblyCollection dynamicAssemblies) =>
             AppDomain.CurrentDomain.GetAssemblies()
                 .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
                 .Select(x => MetadataReference.CreateFromFile(x.Location))
                 .Concat((dynamicAssemblies ?? Enumerable.Empty<byte[]>())
                     .Select(x => (MetadataReference)MetadataReference.CreateFromImage(x)))
+                .Concat(new MetadataReference[]
+                {
+                    // Razor/MVC assemblies that might not be loaded yet
+                    MetadataReference.CreateFromFile(typeof(IHtmlContent).GetTypeInfo().Assembly.Location)
+                })
                 .ToList();
 
         public void ExpireChangeTokens()
@@ -119,7 +138,7 @@ namespace Wyam.Razor
             }
         }
 
-        private Microsoft.AspNetCore.Mvc.Rendering.ViewContext GetViewContext(IServiceProvider serviceProvider, RenderRequest request, IView view, TextWriter output)
+        private ViewContext GetViewContext(IServiceProvider serviceProvider, RenderRequest request, IView view, TextWriter output)
         {
             HttpContext httpContext = new DefaultHttpContext
             {
@@ -206,7 +225,7 @@ namespace Wyam.Razor
 
             CompilationResult compilationResult = CompilePage(serviceProvider, request, hash, projectItem, projectFileSystem);
 
-            IRazorPage result = compilationResult.GetPage();
+            IRazorPage result = compilationResult.GetPage(request.RelativePath);
 
             return result;
         }
@@ -223,6 +242,10 @@ namespace Wyam.Razor
             RazorProjectEngine projectEngine = RazorProjectEngine.Create(RazorConfiguration.Default, projectFileSystem, builder =>
             {
                 RazorExtensions.Register(builder);
+                builder.ConfigureClass((_, classDeclaration) =>
+                {
+                    classDeclaration.BaseType = _baseType;
+                });
             });
             RazorTemplateEngine templateEngine = new MvcRazorTemplateEngine(projectEngine.Engine, projectFileSystem);
             RazorCodeDocument codeDocument = templateEngine.CreateCodeDocument(projectItem);
@@ -259,14 +282,13 @@ namespace Wyam.Razor
                         List<Diagnostic> errorDiagnostics = result.Diagnostics
                             .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
                             .ToList();
-                        List<string> compilationErrors = new List<string>();
+                        List<CompilationErrorException> compilationErrors = new List<CompilationErrorException>();
                         foreach (Diagnostic diagnostic in errorDiagnostics)
                         {
                             string path = diagnostic.Location == Location.None ? codeDocument.Source.FilePath : diagnostic.Location.GetMappedLineSpan().Path;
-                            FileLinePositionSpan lineSpan = diagnostic.Location.SourceTree.GetMappedLineSpan(diagnostic.Location.SourceSpan);
+                            FileLinePositionSpan mappedLineSpan = diagnostic.Location.SourceTree.GetMappedLineSpan(diagnostic.Location.SourceSpan);
                             string errorMessage = diagnostic.GetMessage();
-                            string formattedMessage = $"({path} {lineSpan.StartLinePosition.Line}:{lineSpan.StartLinePosition.Character}) {errorMessage}";
-                            compilationErrors.Add(formattedMessage);
+                            compilationErrors.Add(new CompilationErrorException(path, mappedLineSpan, errorMessage));
                         }
                         throw new CompilationErrorsException(compilationErrors);
                     }

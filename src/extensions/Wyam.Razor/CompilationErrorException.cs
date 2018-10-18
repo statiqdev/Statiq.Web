@@ -40,12 +40,23 @@ using Wyam.Common.Util;
 
 namespace Wyam.Razor
 {
-
-    public class CompilationErrorsException : AggregateException
+    public class CompilationErrorException : Exception
     {
-        public CompilationErrorsException(IEnumerable<CompilationErrorException> errors)
-            : base("Razor compilation failed, see the inner exceptions for details", errors)
+        public string Path { get; }
+
+        public FileLinePositionSpan MappedLineSpan { get; }
+
+        public string ErrorMessage { get; }
+
+        public CompilationErrorException(
+            string path,
+            FileLinePositionSpan mappedLineSpan,
+            string errorMessage)
+            : base($"({path} {mappedLineSpan.StartLinePosition.Line}:{mappedLineSpan.StartLinePosition.Character}) {errorMessage}")
         {
+            Path = path;
+            MappedLineSpan = mappedLineSpan;
+            ErrorMessage = errorMessage;
         }
     }
 }

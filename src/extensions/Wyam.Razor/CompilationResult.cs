@@ -50,6 +50,11 @@ namespace Wyam.Razor
             CompiledItem = item;
         }
 
-        public IRazorPage GetPage() => (IRazorPage)Activator.CreateInstance(CompiledItem.Type);
+        public IRazorPage GetPage(string relativePath)
+        {
+            IRazorPage page = (IRazorPage)Activator.CreateInstance(CompiledItem.Type);
+            page.Path = relativePath;
+            return page;
+        }
     }
 }
