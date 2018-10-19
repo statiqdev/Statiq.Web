@@ -50,22 +50,17 @@ namespace Wyam.Razor
     {
         private const string ViewStartFileName = "_ViewStart.cshtml";
 
-        private readonly ConcurrentDictionary<CompilerCacheKey, CompilationResult> _compilationCache = new ConcurrentDictionary<CompilerCacheKey, CompilationResult>();
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IList<MetadataReference> _metadataReferences;
+        private readonly ConcurrentDictionary<CompilerCacheKey, CompilationResult> _compilationCache
+            = new ConcurrentDictionary<CompilerCacheKey, CompilationResult>();
+
+        private readonly NamespaceCollection _namespaces;
         private readonly string _baseType;
+        private readonly IList<MetadataReference> _metadataReferences;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         internal RazorCompiler(CompilationParameters parameters)
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
-
-            IMvcCoreBuilder builder = serviceCollection
-                .AddMvcCore()
-                .AddRazorViewEngine();
-
-            // Get and register MetadataReferences
-            _metadataReferences = GetMetadataReferences(parameters.DynamicAssemblies);
-            builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(_metadataReferences));
+            _namespaces = parameters.Namespaces;
 
             // Calculate the base page type
             Type basePageType = parameters.BasePageType ?? typeof(WyamRazorPage<>);
@@ -77,6 +72,16 @@ namespace Wyam.Razor
             }
             _baseType = basePageType.IsGenericTypeDefinition ? $"{baseClassName}<TModel>" : baseClassName;
 
+            // Create the service collection that MVC needs and add default MVC services
+            ServiceCollection serviceCollection = new ServiceCollection();
+            IMvcCoreBuilder builder = serviceCollection
+                .AddMvcCore()
+                .AddRazorViewEngine();
+
+            // Get and register MetadataReferences
+            _metadataReferences = GetMetadataReferences(parameters.DynamicAssemblies);
+            builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(_metadataReferences));
+
             // Register the view location expander
             serviceCollection.Configure<RazorViewEngineOptions>(options =>
             {
@@ -86,8 +91,6 @@ namespace Wyam.Razor
             // Register other services
             serviceCollection
                 .AddSingleton(parameters.FileSystem)
-                .AddSingleton(parameters.Namespaces)
-                .AddSingleton(parameters.DynamicAssemblies)
                 .AddSingleton<FileSystemFileProvider>()
                 .AddSingleton<ILoggerFactory, TraceLoggerFactory>()
                 .AddSingleton<DiagnosticSource, SilentDiagnosticSource>()
@@ -109,7 +112,8 @@ namespace Wyam.Razor
                 .Concat(new MetadataReference[]
                 {
                     // Razor/MVC assemblies that might not be loaded yet
-                    MetadataReference.CreateFromFile(typeof(IHtmlContent).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(IHtmlContent).GetTypeInfo().Assembly.Location),
+                    MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.CSharp")).Location)
                 })
                 .ToList();
 
@@ -250,7 +254,7 @@ namespace Wyam.Razor
                 // Also need to add it just after the DocumentClassifierPhase, otherwise it'll miss the C# lowering phase
                 builder.Phases.Insert(
                     builder.Phases.IndexOf(builder.Phases.OfType<IRazorDocumentClassifierPhase>().Last()) + 1,
-                    new WyamDocumentPhase(_baseType));
+                    new WyamDocumentPhase(_baseType, _namespaces));
             });
             RazorTemplateEngine templateEngine = new MvcRazorTemplateEngine(projectEngine.Engine, projectFileSystem);
             RazorCodeDocument codeDocument = templateEngine.CreateCodeDocument(projectItem);
