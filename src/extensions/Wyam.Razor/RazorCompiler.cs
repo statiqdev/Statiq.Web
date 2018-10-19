@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.Hosting;
 using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -242,10 +243,14 @@ namespace Wyam.Razor
             RazorProjectEngine projectEngine = RazorProjectEngine.Create(RazorConfiguration.Default, projectFileSystem, builder =>
             {
                 RazorExtensions.Register(builder);
-                builder.ConfigureClass((_, classDeclaration) =>
-                {
-                    classDeclaration.BaseType = _baseType;
-                });
+
+                // We need to register a new document classifier phase because builder.SetBaseType() (which uses builder.ConfigureClass())
+                // use the DefaultRazorDocumentClassifierPhase which stops applying document classifier passes after DocumentIntermediateNode.DocumentKind is set
+                // (which gets set by the Razor document classifier passes registered in RazorExtensions.Register())
+                // Also need to add it just after the DocumentClassifierPhase, otherwise it'll miss the C# lowering phase
+                builder.Phases.Insert(
+                    builder.Phases.IndexOf(builder.Phases.OfType<IRazorDocumentClassifierPhase>().Last()) + 1,
+                    new WyamDocumentPhase(_baseType));
             });
             RazorTemplateEngine templateEngine = new MvcRazorTemplateEngine(projectEngine.Engine, projectFileSystem);
             RazorCodeDocument codeDocument = templateEngine.CreateCodeDocument(projectItem);
