@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
@@ -24,10 +25,14 @@ namespace Wyam.Razor
             NamespaceDeclarationIntermediateNode namespaceDeclaration =
                 documentNode.Children.OfType<NamespaceDeclarationIntermediateNode>().Single();
 
-            // Set the base page type
+            // Get the current model type, replacing default of dynamic with IDocument
+            string modelType = ModelDirective.GetModelType(documentNode);
+            modelType = modelType == "dynamic" ? "IDocument" : modelType;
+
+            // Set the base page type and perform default model type substitution here
             ClassDeclarationIntermediateNode classDeclaration =
                 namespaceDeclaration.Children.OfType<ClassDeclarationIntermediateNode>().Single();
-            classDeclaration.BaseType = _baseType;
+            classDeclaration.BaseType = _baseType.Replace("<TModel>", "<" + modelType + ">");
 
             // Add namespaces
             int insertIndex = namespaceDeclaration.Children.IndexOf(

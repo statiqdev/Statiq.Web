@@ -1,3 +1,12 @@
+# 1.7.0
+
+- **[Breaking Change]**[Refactoring] New Razor parser based on ASP.NET Core 2.x (potentially breaking due to differences in Razor behavior such as tighter local variable scope)
+- [Refactoring] New integrated preview server based on ASP.NET Core 2.x (#300, thanks @RLittlesII)
+- [Feature] New `IExecutionContext.GetDocument()` overload to get an empty document while defining a source
+- [Fix] Updates `Tree` module placeholder function to set document source for the placeholder
+- [Feature] Adds `Keys.TreePlaceholder` metadata to indicate a placeholder tree document from `Tree` module
+- [Feature] Adds ability to configure blog title in docs recipe (#710, thanks @rschoenbach)
+
 # 1.6.0
 
 - [Refactoring] Big update to Buildalyzer which should make MSBuild-based project introspection for docs much more reliable

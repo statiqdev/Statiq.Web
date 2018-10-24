@@ -31,6 +31,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Razor;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -50,15 +51,32 @@ namespace Wyam.Razor
     {
         private const string ViewStartFileName = "_ViewStart.cshtml";
 
+        private static readonly MethodInfo CompileAndEmitMethod;
+        private static readonly MethodInfo CreateCompilationFailedException;
+
         private readonly ConcurrentDictionary<CompilerCacheKey, CompilationResult> _compilationCache
             = new ConcurrentDictionary<CompilerCacheKey, CompilationResult>();
 
         private readonly NamespaceCollection _namespaces;
         private readonly string _baseType;
-        private readonly IList<MetadataReference> _metadataReferences;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        internal RazorCompiler(CompilationParameters parameters)
+        static RazorCompiler()
+        {
+            CompileAndEmitMethod = typeof(RazorViewCompiler).GetMethod(
+                "CompileAndEmit",
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                Type.DefaultBinder,
+                new Type[] { typeof(RazorCodeDocument), typeof(string) },
+                null);
+            Type compilationFailedExceptionFactory = typeof(IRazorPage).Assembly
+                .GetType("Microsoft.AspNetCore.Mvc.Razor.Internal.CompilationFailedExceptionFactory");
+            CreateCompilationFailedException = compilationFailedExceptionFactory.GetMethod(
+                "Create",
+                new Type[] { typeof(RazorCodeDocument), typeof(IEnumerable<RazorDiagnostic>) });
+        }
+
+        public RazorCompiler(CompilationParameters parameters)
         {
             _namespaces = parameters.Namespaces;
 
@@ -74,21 +92,8 @@ namespace Wyam.Razor
 
             // Create the service collection that MVC needs and add default MVC services
             ServiceCollection serviceCollection = new ServiceCollection();
-            IMvcCoreBuilder builder = serviceCollection
-                .AddMvcCore()
-                .AddRazorViewEngine();
 
-            // Get and register MetadataReferences
-            _metadataReferences = GetMetadataReferences(parameters.DynamicAssemblies);
-            builder.PartManager.FeatureProviders.Add(new MetadataReferenceFeatureProvider(_metadataReferences));
-
-            // Register the view location expander
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.ViewLocationExpanders.Add(new ViewLocationExpander());
-            });
-
-            // Register other services
+            // Register some of our own types
             serviceCollection
                 .AddSingleton(parameters.FileSystem)
                 .AddSingleton<FileSystemFileProvider>()
@@ -97,25 +102,49 @@ namespace Wyam.Razor
                 .AddSingleton<IHostingEnvironment, HostingEnvironment>()
                 .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
                 .AddSingleton<IRazorViewEngineFileProviderAccessor, DefaultRazorViewEngineFileProviderAccessor>()
-                .AddSingleton<WyamRazorProjectFileSystem>();
+                .AddSingleton<WyamRazorProjectFileSystem>()
+                .AddSingleton<RazorProjectFileSystem, WyamRazorProjectFileSystem>()
+                .AddSingleton<RazorProjectEngine>(x =>
+                    RazorProjectEngine.Create(
+                        RazorConfiguration.Default,
+                        x.GetRequiredService<RazorProjectFileSystem>(),
+                        b =>
+                        {
+                            // See MvcRazorMvcCoreBuilderExtensions.AddRazorViewEngineServices(IServiceCollection)
+                            RazorExtensions.Register(b);
+                            b.Features.Add(x.GetRequiredService<LazyMetadataReferenceFeature>()); // Lazily calls the MetadataReferenceFeatureProvider
+                            b.Features.Add(new CompilationTagHelperFeature());
+                            b.Features.Add(new DefaultTagHelperDescriptorProvider());
+                            b.Features.Add(new ViewComponentTagHelperDescriptorProvider());
+
+                            // We need to register a new document classifier phase because builder.SetBaseType() (which uses builder.ConfigureClass())
+                            // use the DefaultRazorDocumentClassifierPhase which stops applying document classifier passes after DocumentIntermediateNode.DocumentKind is set
+                            // (which gets set by the Razor document classifier passes registered in RazorExtensions.Register())
+                            // Also need to add it just after the DocumentClassifierPhase, otherwise it'll miss the C# lowering phase
+                            b.Phases.Insert(
+                                b.Phases.IndexOf(b.Phases.OfType<IRazorDocumentClassifierPhase>().Last()) + 1,
+                                new WyamDocumentPhase(_baseType, _namespaces));
+                        }));
+
+            // Register the view location expander
+            serviceCollection.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new ViewLocationExpander());
+            });
+
+            // Add the default services _after_ adding our own
+            // (most default registration use .TryAdd...() so they skip already registered types)
+            IMvcCoreBuilder builder = serviceCollection
+                .AddMvcCore()
+                .AddRazorViewEngine();
+
+            // Get and register MetadataReferences
+            builder.PartManager.FeatureProviders.Add(
+                new MetadataReferenceFeatureProvider(parameters.DynamicAssemblies));
 
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
-
-        private static IList<MetadataReference> GetMetadataReferences(DynamicAssemblyCollection dynamicAssemblies) =>
-            AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => !x.IsDynamic && !string.IsNullOrEmpty(x.Location))
-                .Select(x => MetadataReference.CreateFromFile(x.Location))
-                .Concat((dynamicAssemblies ?? Enumerable.Empty<byte[]>())
-                    .Select(x => (MetadataReference)MetadataReference.CreateFromImage(x)))
-                .Concat(new MetadataReference[]
-                {
-                    // Razor/MVC assemblies that might not be loaded yet
-                    MetadataReference.CreateFromFile(typeof(IHtmlContent).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("Microsoft.CSharp")).Location)
-                })
-                .ToList();
 
         public void ExpireChangeTokens()
         {
@@ -243,76 +272,33 @@ namespace Wyam.Razor
 
         private CompilationResult GetCompilation(RazorProjectItem projectItem, RazorProjectFileSystem projectFileSystem)
         {
-            // Compile with Razor
-            RazorProjectEngine projectEngine = RazorProjectEngine.Create(RazorConfiguration.Default, projectFileSystem, builder =>
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                RazorExtensions.Register(builder);
+                IServiceProvider serviceProvider = scope.ServiceProvider;
 
-                // We need to register a new document classifier phase because builder.SetBaseType() (which uses builder.ConfigureClass())
-                // use the DefaultRazorDocumentClassifierPhase which stops applying document classifier passes after DocumentIntermediateNode.DocumentKind is set
-                // (which gets set by the Razor document classifier passes registered in RazorExtensions.Register())
-                // Also need to add it just after the DocumentClassifierPhase, otherwise it'll miss the C# lowering phase
-                builder.Phases.Insert(
-                    builder.Phases.IndexOf(builder.Phases.OfType<IRazorDocumentClassifierPhase>().Last()) + 1,
-                    new WyamDocumentPhase(_baseType, _namespaces));
-            });
-            RazorTemplateEngine templateEngine = new MvcRazorTemplateEngine(projectEngine.Engine, projectFileSystem);
-            RazorCodeDocument codeDocument = templateEngine.CreateCodeDocument(projectItem);
-            RazorCSharpDocument cSharpDocument = templateEngine.GenerateCode(codeDocument);
-
-            // Compile with Roslyn
-            SourceText sourceText = SourceText.From(cSharpDocument.GeneratedCode, Encoding.UTF8);
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(sourceText);
-            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                .WithSpecificDiagnosticOptions(
-                    new Dictionary<string, ReportDiagnostic>
-                    {
-                        { "CS1701", ReportDiagnostic.Suppress }, // Binding redirects
-                        { "CS1702", ReportDiagnostic.Suppress }, // Disable 1702 until roslyn turns this off by default
-                        { "CS1705", ReportDiagnostic.Suppress },
-                        { "CS8019", ReportDiagnostic.Suppress }
-                    });
-            CSharpCompilation compilation = CSharpCompilation.Create("WyamRazor", options: compilationOptions, references: _metadataReferences).AddSyntaxTrees(syntaxTree);
-
-            // Emit assembly
-            Assembly assembly;
-            using (MemoryStream assemblyStream = new MemoryStream())
-            {
-                using (MemoryStream pdbStream = new MemoryStream())
+                // See RazorViewCompiler.CompileAndEmit()
+                RazorProjectEngine projectEngine = serviceProvider.GetRequiredService<RazorProjectEngine>();
+                RazorCodeDocument codeDocument = projectEngine.Process(projectItem);
+                RazorCSharpDocument cSharpDocument = codeDocument.GetCSharpDocument();
+                if (cSharpDocument.Diagnostics.Count > 0)
                 {
-                    EmitResult result = compilation.Emit(
-                        assemblyStream,
-                        pdbStream,
-                        options: new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb));
-
-                    // See https://github.com/aspnet/Mvc/blob/a67d9363e22be8ef63a1a62539991e1da3a6e30e/src/Microsoft.AspNetCore.Mvc.Razor/Internal/CompilationFailedExceptionFactory.cs
-                    if (!result.Success)
-                    {
-                        List<Diagnostic> errorDiagnostics = result.Diagnostics
-                            .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                            .ToList();
-                        List<CompilationErrorException> compilationErrors = new List<CompilationErrorException>();
-                        foreach (Diagnostic diagnostic in errorDiagnostics)
-                        {
-                            string path = diagnostic.Location == Location.None ? codeDocument.Source.FilePath : diagnostic.Location.GetMappedLineSpan().Path;
-                            FileLinePositionSpan mappedLineSpan = diagnostic.Location.SourceTree.GetMappedLineSpan(diagnostic.Location.SourceSpan);
-                            string errorMessage = diagnostic.GetMessage();
-                            compilationErrors.Add(new CompilationErrorException(path, mappedLineSpan, errorMessage));
-                        }
-                        throw new CompilationErrorsException(compilationErrors);
-                    }
-
-                    assemblyStream.Seek(0, SeekOrigin.Begin);
-                    pdbStream.Seek(0, SeekOrigin.Begin);
-
-                    assembly = Assembly.Load(assemblyStream.ToArray(), pdbStream.ToArray());
+                    throw (Exception)CreateCompilationFailedException.Invoke(
+                        null,
+                        new object[] { codeDocument, cSharpDocument.Diagnostics });
                 }
-            }
 
-            // Get the runtime item
-            RazorCompiledItemLoader compiledItemLoader = new RazorCompiledItemLoader();
-            RazorCompiledItem compiledItem = compiledItemLoader.LoadItems(assembly).SingleOrDefault();
-            return new CompilationResult(compiledItem);
+                // Use the RazorViewCompiler to finish compiling the view for consistency with layouts
+                IViewCompilerProvider viewCompilerProvider = serviceProvider.GetRequiredService<IViewCompilerProvider>();
+                IViewCompiler viewCompiler = viewCompilerProvider.GetCompiler();
+                Assembly assembly = (Assembly)CompileAndEmitMethod.Invoke(
+                    viewCompiler,
+                    new object[] { codeDocument, cSharpDocument.GeneratedCode });
+
+                // Get the runtime item
+                RazorCompiledItemLoader compiledItemLoader = new RazorCompiledItemLoader();
+                RazorCompiledItem compiledItem = compiledItemLoader.LoadItems(assembly).SingleOrDefault();
+                return new CompilationResult(compiledItem);
+            }
         }
     }
 }
