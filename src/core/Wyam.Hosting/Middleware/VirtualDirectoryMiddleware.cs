@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace Wyam.Hosting.Middleware
 {
-    using AppFunc = Func<IDictionary<string, object>, Task>;
-
     /// <summary>
     /// Implements OWIN support for mapping virtual directories.
     /// </summary>
-    public class VirtualDirectoryMiddleware
+    internal class VirtualDirectoryMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly string _virtualDirectory;
@@ -28,14 +26,8 @@ namespace Wyam.Hosting.Middleware
                 throw new ArgumentNullException(nameof(virtualDirectory));
             }
 
-            if (!virtualDirectory.StartsWith("/"))
-            {
-                virtualDirectory = "/" + virtualDirectory;
-            }
-            virtualDirectory = virtualDirectory.TrimEnd('/');
-
             _next = next;
-            _virtualDirectory = virtualDirectory;
+            _virtualDirectory = NormalizeVirtualDirectory(virtualDirectory);
         }
 
         public async Task Invoke(HttpContext context)
@@ -50,11 +42,21 @@ namespace Wyam.Hosting.Middleware
                 context.Request.Path = new PathString(realPath);
                 context.Request.PathBase = new PathString(_virtualDirectory);
                 await _next(context);
+                return;
             }
 
             // This isn't under our virtual directory, so it should be a not found
             context.Response.StatusCode = 404;
             await context.Response.WriteAsync(string.Empty);
+        }
+
+        public static string NormalizeVirtualDirectory(string virtualDirectory)
+        {
+            if (!virtualDirectory.StartsWith("/"))
+            {
+                virtualDirectory = "/" + virtualDirectory;
+            }
+            return virtualDirectory.TrimEnd('/');
         }
     }
 }

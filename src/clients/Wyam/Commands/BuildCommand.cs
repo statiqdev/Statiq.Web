@@ -345,7 +345,7 @@ namespace Wyam.Commands
                             {
                                 exitCode = ExitCode.ExecutionError;
                             }
-                            previewServer?.TriggerReload();
+                            previewServer?.TriggerReloadAsync().GetAwaiter().GetResult();
                         }
                     }
 

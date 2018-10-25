@@ -86,39 +86,5 @@ namespace Wyam.Hosting.Tests
             response.IsSuccessStatusCode.ShouldBeTrue();
             server.Dispose();
         }
-
-        [Test]
-        public void RebuildCompletedShouldAvoidMissingClients()
-        {
-            // Given
-            TestReloadClient reloadClient = new TestReloadClient();
-            Server server = new Server(string.Empty, 35729);
-            server.LiveReloadClients.Add(reloadClient);
-
-            // When
-            server.TriggerReload();
-
-            // Then
-            reloadClient.NotifyOfChangesCount.ShouldBe(0);
-        }
-
-        [Test]
-        public void RebuildCompletedShouldNotifyConnectedClients()
-        {
-            // Given
-            TestReloadClient reloadClient = new TestReloadClient()
-            {
-                IsConnected = true
-            };
-            Server server = new Server(string.Empty, 35729);
-            server.LiveReloadClients.Add(reloadClient);
-
-            // When
-            server.TriggerReload();
-
-            // Then
-            reloadClient.NotifyOfChangesCount.ShouldBe(1);
-        }
-
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Wyam.Hosting.Middleware
 {
-    public static class VirtualDirectoryExtensions
+    internal static class VirtualDirectoryExtensions
     {
         public static IApplicationBuilder UseVirtualDirectory(this IApplicationBuilder builder, string virtualDirectory)
         {

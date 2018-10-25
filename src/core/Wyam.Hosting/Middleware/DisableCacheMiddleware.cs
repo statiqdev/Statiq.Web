@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Wyam.Hosting.Middleware
 {
-    public class DisableCacheMiddleware
+    internal class DisableCacheMiddleware
     {
         private readonly IHostingEnvironment _hostingEnv;
         private readonly ILoggerFactory _loggerFactory;

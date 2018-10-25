@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Wyam.Hosting.Middleware
 {
-    public class DefaultExtensionsMiddleware
+    internal class DefaultExtensionsMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IFileProvider _fileProvider;

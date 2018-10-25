@@ -10,7 +10,7 @@ namespace Wyam.Hosting.Middleware
     /// <summary>
     /// Injects one or more script references into an HTML document just before the closing body element.
     /// </summary>
-    public class ScriptInjectionMiddleware
+    internal class ScriptInjectionMiddleware
     {
         private readonly string _injectionCode;
         private readonly RequestDelegate _next;

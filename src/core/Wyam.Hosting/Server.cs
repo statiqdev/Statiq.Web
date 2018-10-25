@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +13,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Wyam.Hosting.LiveReload;
 using Wyam.Hosting.Middleware;
 
@@ -28,6 +27,7 @@ namespace Wyam.Hosting
         private readonly IDictionary<string, string> _contentTypes;
         private readonly IWebHost _host;
         private readonly ILoggerProvider _loggerProvider;
+        private readonly LiveReloadServer _liveReloadServer;
 
         public bool Extensionless { get; }
 
@@ -45,8 +45,6 @@ namespace Wyam.Hosting
 
         public IServiceProvider Services => _host.Services;
 
-        // internal for testing
-        internal ConcurrentBag<IReloadClient> LiveReloadClients { get; } = null;
 
         /// <summary>
         /// Creates the HTTP server.
@@ -92,16 +90,12 @@ namespace Wyam.Hosting
 
             if (!string.IsNullOrWhiteSpace(virtualDirectory))
             {
-                if (!virtualDirectory.StartsWith("/"))
-                {
-                    virtualDirectory = "/" + virtualDirectory;
-                }
-                VirtualDirectory = virtualDirectory.TrimEnd('/');
+                VirtualDirectory = VirtualDirectoryMiddleware.NormalizeVirtualDirectory(virtualDirectory);
             }
 
             if (liveReload)
             {
-                LiveReloadClients = new ConcurrentBag<IReloadClient>();
+                _liveReloadServer = new LiveReloadServer();
             }
 
             string currentDirectory = Directory.GetCurrentDirectory();
@@ -136,17 +130,6 @@ namespace Wyam.Hosting
         /// <inheritdoc />
         public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => _host.StopAsync(cancellationToken);
 
-        public void TriggerReload()
-        {
-            if (LiveReloadClients != null)
-            {
-                foreach (IReloadClient client in LiveReloadClients.Where(x => x.IsConnected))
-                {
-                    client.NotifyOfChanges();
-                }
-            }
-        }
-
         private void ConfigureApp(IApplicationBuilder app)
         {
             // Configure file providers
@@ -156,7 +139,7 @@ namespace Wyam.Hosting
             IHostingEnvironment host = app.ApplicationServices.GetService<IHostingEnvironment>();
             host.WebRootFileProvider = compositeFileProvider;
 
-            if (LiveReloadClients != null)
+            if (_liveReloadServer != null)
             {
                 // Inject LiveReload script tags to HTML documents, needs to run first as it overrides output stream
                 app.UseScriptInjection($"{VirtualDirectory ?? string.Empty}/livereload.js?host=localhost&port={Port}");
@@ -169,8 +152,9 @@ namespace Wyam.Hosting
                 //    LiveReloadClients.Add(reloadClient);
                 //});
 
-                // TODO: Figure out websockets (do I still need Fleck?)
-                //app.UseWebSockets();
+                // Turn on web sockets and the live reload middleware
+                app.UseWebSockets();
+                app.UseLiveReload(_liveReloadServer);
             }
 
             // Support for virtual directory
@@ -231,6 +215,14 @@ namespace Wyam.Hosting
             //        ContentTypeProvider = contentTypeProvider
             //    });
             //}
+        }
+
+        public async Task TriggerReloadAsync()
+        {
+            if (_liveReloadServer != null)
+            {
+                await _liveReloadServer.SendReloadMessageAsync();
+            }
         }
     }
 }

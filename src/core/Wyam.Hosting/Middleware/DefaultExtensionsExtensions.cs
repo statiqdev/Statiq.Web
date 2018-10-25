@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Wyam.Hosting.Middleware
 {
-    public static class DefaultExtensionsExtensions
+    internal static class DefaultExtensionsExtensions
     {
         public static IApplicationBuilder UseDefaultExtensions(this IApplicationBuilder app, DefaultExtensionsOptions options)
         {

@@ -6,7 +6,7 @@ using Wyam.Hosting.Middleware;
 
 namespace Wyam.Hosting.Middleware
 {
-    public static class DisableCacheExtensions
+    internal static class DisableCacheExtensions
     {
         public static IApplicationBuilder UseDisableCache(this IApplicationBuilder builder)
         {

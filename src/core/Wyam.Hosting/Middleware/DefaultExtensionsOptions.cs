@@ -7,7 +7,7 @@ namespace Wyam.Hosting.Middleware
     /// <summary>
     /// Extenions to use when no extension is provided in the URL.
     /// </summary>
-    public class DefaultExtensionsOptions
+    internal class DefaultExtensionsOptions
     {
         /// <summary>
         /// Gets or sets the extensions.

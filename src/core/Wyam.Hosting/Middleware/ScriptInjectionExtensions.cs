@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Wyam.Hosting.Middleware
 {
-    public static class ScriptInjectionExtensions
+    internal static class ScriptInjectionExtensions
     {
         public static IApplicationBuilder UseScriptInjection(this IApplicationBuilder builder, params string[] scriptUrls)
         {

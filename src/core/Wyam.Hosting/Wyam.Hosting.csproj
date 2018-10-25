@@ -11,7 +11,6 @@
     <None Remove="LiveReload\livereload.js" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fleck" Version="1.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />    
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.3" />
