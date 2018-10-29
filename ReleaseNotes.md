@@ -1,3 +1,7 @@
+# 1.7.1
+
+- [Fix] Fixed Authenticode signing of `wyam.exe`
+
 # 1.7.0
 
 - **[Breaking Change]**[Refactoring] New Razor parser based on ASP.NET Core 2.x (potentially breaking due to differences in Razor behavior such as tighter local variable scope)

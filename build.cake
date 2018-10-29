@@ -1,3 +1,6 @@
+// The following environment variables need to be set for Build target:
+// SIGNTOOL (to sign the executable)
+
 // The following environment variables need to be set for Publish target:
 // NUGET_API_KEY
 // WYAM_GITHUB_TOKEN
