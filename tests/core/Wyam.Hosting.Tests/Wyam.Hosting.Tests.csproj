@@ -4,6 +4,14 @@
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Wyam.Hosting\Wyam.Hosting.csproj" />
     <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>

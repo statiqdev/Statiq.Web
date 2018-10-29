@@ -33,7 +33,7 @@ namespace Wyam.Hosting.Tests
             Server server = null;
 
             // When, Then
-            Should.NotThrow(() => server = new Server(string.Empty, port));
+            Should.NotThrow(() => server = new Server(TestContext.CurrentContext.TestDirectory, port));
             server?.Dispose();
         }
 
@@ -42,7 +42,7 @@ namespace Wyam.Hosting.Tests
         {
             // Given
             int port = GetEphemeralPort();
-            Server server = new Server(string.Empty, port);
+            Server server = new Server(TestContext.CurrentContext.TestDirectory, port);
 
             // When, Then
             Should.NotThrow(() => server.Start());
@@ -54,12 +54,12 @@ namespace Wyam.Hosting.Tests
         {
             // Given
             int port = GetEphemeralPort();
-            Server server = new Server(string.Empty, port);
+            Server server = new Server(TestContext.CurrentContext.TestDirectory, port);
             server.Start();
 
             HttpClient client = new HttpClient
             {
-                BaseAddress = new Uri($"http://127.0.0.1:{port}/")
+                BaseAddress = new Uri($"http://127.0.0.1:{port}/index.html")
             };
             HttpResponseMessage response = await client.GetAsync("/");
 
@@ -73,7 +73,7 @@ namespace Wyam.Hosting.Tests
         {
             // Given
             int port = GetEphemeralPort();
-            Server server = new Server(string.Empty, port);
+            Server server = new Server(TestContext.CurrentContext.TestDirectory, port);
             server.Start();
 
             HttpClient client = new HttpClient
