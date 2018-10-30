@@ -178,85 +178,83 @@ namespace Wyam.Markdown
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
-            return inputs.AsParallel().Select(context, input => ProcessDocument(input, context));
-        }
-
-        private IDocument ProcessDocument(IDocument input, IExecutionContext context)
-        {
-            Trace.Verbose(
-                       "Processing Markdown {0} for {1}",
-                       string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey),
-                       input.SourceString());
-
-            string result;
-
-            IExecutionCache executionCache = context.ExecutionCache;
-
-            if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
+            return inputs.AsParallel().Select(context, input =>
             {
-                string content;
-                if (string.IsNullOrEmpty(_sourceKey))
-                {
-                    content = input.Content;
-                }
-                else if (input.ContainsKey(_sourceKey))
-                {
-                    content = input.String(_sourceKey) ?? string.Empty;
-                }
-                else
-                {
-                    // Don't do anything if the key doesn't exist
-                    return input;
-                }
+                Trace.Verbose(
+                    "Processing Markdown {0} for {1}",
+                    string.IsNullOrEmpty(_sourceKey) ? string.Empty : ("in" + _sourceKey),
+                    input.SourceString());
 
-                MarkdownPipeline pipeline = CreatePipeline();
+                string result;
 
-                using (var writer = new StringWriter())
+                IExecutionCache executionCache = context.ExecutionCache;
+
+                if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
                 {
-                    var htmlRenderer = new HtmlRenderer(writer);
-                    pipeline.Setup(htmlRenderer);
-
-                    if (_prependLinkRoot && context.Settings.ContainsKey(Keys.LinkRoot))
+                    string content;
+                    if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        htmlRenderer.LinkRewriter = (link) =>
-                        {
-                            if (link == null || link.Length == 0)
-                            {
-                                return link;
-                            }
-
-                            if (link[0] == '/')
-                            {
-                                // root-based url, must be rewritten by appeding LinkRoot setting value
-                                // ex: '/virtual/directory' + '/relative/abs/link.html' => '/virtual/directory/relative/abs/link.html'
-                                link = context.Settings[Keys.LinkRoot] + link;
-                            }
-
-                            return link;
-                        };
+                        content = input.Content;
+                    }
+                    else if (input.ContainsKey(_sourceKey))
+                    {
+                        content = input.String(_sourceKey) ?? string.Empty;
+                    }
+                    else
+                    {
+                        // Don't do anything if the key doesn't exist
+                        return input;
                     }
 
-                    MarkdownDocument document = MarkdownParser.Parse(content, pipeline);
-                    htmlRenderer.Render(document);
-                    writer.Flush();
-                    result = writer.ToString();
+                    MarkdownPipeline pipeline = CreatePipeline();
+
+                    using (var writer = new StringWriter())
+                    {
+                        var htmlRenderer = new HtmlRenderer(writer);
+                        pipeline.Setup(htmlRenderer);
+
+                        if (_prependLinkRoot && context.Settings.ContainsKey(Keys.LinkRoot))
+                        {
+                            htmlRenderer.LinkRewriter = (link) =>
+                            {
+                                if (link == null || link.Length == 0)
+                                {
+                                    return link;
+                                }
+
+                                if (link[0] == '/')
+                                {
+                                    // root-based url, must be rewritten by appeding LinkRoot setting value
+                                    // ex: '/virtual/directory' + '/relative/abs/link.html' => '/virtual/directory/relative/abs/link.html'
+                                    link = context.Settings[Keys.LinkRoot] + link;
+                                }
+
+                                return link;
+                            };
+                        }
+
+                        MarkdownDocument document = MarkdownParser.Parse(content, pipeline);
+                        htmlRenderer.Render(document);
+                        writer.Flush();
+                        result = writer.ToString();
+                    }
+
+                    if (_escapeAt)
+                    {
+                        result = EscapeAtRegex.Replace(result, "&#64;");
+                        result = result.Replace("\\@", "@");
+                    }
+
+                    executionCache.Set(input, _sourceKey, result);
                 }
 
-                if (_escapeAt)
-                {
-                    result = EscapeAtRegex.Replace(result, "&#64;");
-                    result = result.Replace("\\@", "@");
-                }
-
-                executionCache.Set(input, _sourceKey, result);
-            }
-
-            return string.IsNullOrEmpty(_sourceKey)
-                ? context.GetDocument(input, context.GetContentStream(result))
-                : context.GetDocument(input, new MetadataItems
-                {
+                return string.IsNullOrEmpty(_sourceKey)
+                    ? context.GetDocument(input, context.GetContentStream(result))
+                    : context.GetDocument(input, new MetadataItems
+                    {
                         {string.IsNullOrEmpty(_destinationKey) ? _sourceKey : _destinationKey, result}
-                });
+                    });
+            });
         }
 
         private MarkdownPipeline CreatePipeline()
