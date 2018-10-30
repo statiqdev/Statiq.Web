@@ -39,6 +39,8 @@ namespace Wyam.Markdown
         private readonly OrderedList<IMarkdownExtension> _extensions = new OrderedList<IMarkdownExtension>();
         private string _configuration = DefaultConfiguration;
         private bool _escapeAt = true;
+        private Action<MarkdownPipelineBuilder> _pipelineBuilderConfigure;
+        private Func<string, MarkdownPipeline, string> _customRenderer;
 
         /// <summary>
         /// Processes Markdown in the content of the document.
@@ -158,6 +160,30 @@ namespace Wyam.Markdown
             return this;
         }
 
+        /// <summary>
+        /// Adds a specific pipeline builder configuration code, which will be called when configuring the markdig pipeline <see cref="MarkdownPipelineBuilder"/>.
+        /// This code will be called after the pipeline builder has been initialized with configuration and extensions specified in <see cref="UseConfiguration(string)"/> and <see cref="UseExtensions(IEnumerable{Type})"/> overloads.
+        /// </summary>
+        /// <param name="configure">The method to call when configuring the <see cref="MarkdownPipelineBuilder"/>.</param>
+        /// <returns>The current module instance.</returns>
+        public Markdown WithPipelineBuilderConfigure(Action<MarkdownPipelineBuilder> configure)
+        {
+            _pipelineBuilderConfigure = configure;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a specific markdown rendering code, which will be called each time the content must rendered.
+        /// Use this code if you want to replace or customize the html pipeline rendering.
+        /// </summary>
+        /// <param name="renderer">The code which will render the specified markdown content as html.</param>
+        /// <returns>The current module instance.</returns>
+        public Markdown WithCustomRenderer(Func<string, MarkdownPipeline, string> renderer)
+        {
+            _customRenderer = renderer;
+            return this;
+        }
+
         /// <inheritdoc />
         public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
         {
@@ -172,20 +198,31 @@ namespace Wyam.Markdown
 
                 if (!executionCache.TryGetValue<string>(input, _sourceKey, out result))
                 {
+                    string content;
                     if (string.IsNullOrEmpty(_sourceKey))
                     {
-                        MarkdownPipeline pipeline = CreatePipeline();
-                        result = Markdig.Markdown.ToHtml(input.Content, pipeline);
+                        content = input.Content;
                     }
                     else if (input.ContainsKey(_sourceKey))
                     {
-                        MarkdownPipeline pipeline = CreatePipeline();
-                        result = Markdig.Markdown.ToHtml(input.String(_sourceKey) ?? string.Empty, pipeline);
+                        content = input.String(_sourceKey) ?? string.Empty;
                     }
                     else
                     {
                         // Don't do anything if the key doesn't exist
                         return input;
+                    }
+
+                    MarkdownPipeline pipeline = CreatePipeline();
+
+                    if (_customRenderer != null)
+                    {
+                        // use the custom rendering logic
+                        result = _customRenderer(content, pipeline);
+                    }
+                    else
+                    {
+                        result = Markdig.Markdown.ToHtml(content, pipeline);
                     }
 
                     if (_escapeAt)
@@ -211,6 +248,7 @@ namespace Wyam.Markdown
             MarkdownPipelineBuilder pipelineBuilder = new MarkdownPipelineBuilder();
             pipelineBuilder.Configure(_configuration);
             pipelineBuilder.Extensions.AddRange(_extensions);
+            _pipelineBuilderConfigure?.Invoke(pipelineBuilder);
             return pipelineBuilder.Build();
         }
     }
