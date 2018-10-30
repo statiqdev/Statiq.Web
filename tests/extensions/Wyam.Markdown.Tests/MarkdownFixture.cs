@@ -302,6 +302,25 @@ the family Rosaceae.</dd>
                 // Then
                 Assert.That(results, Is.EquivalentTo(new[] { document }));
             }
+
+            [Test]
+            public void UsePrependLinkRootSetting()
+            {
+                // Given
+                string input = @"This is a [link](/link.html)";
+                string output = @"<p>This is a <a href=""/virtual-dir/link.html"">link</a></p>
+".Replace(Environment.NewLine, "\n");
+                TestExecutionContext context = new TestExecutionContext();
+                context.Settings[Keys.LinkRoot] = "/virtual-dir";
+                TestDocument document = new TestDocument(input);
+                Markdown markdown = new Markdown().PrependLinkRoot(true);
+
+                // When
+                IList<IDocument> results = markdown.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+
+                // Then
+                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+            }
         }
     }
 }
