@@ -211,42 +211,32 @@ namespace Wyam.Markdown
 
                 MarkdownPipeline pipeline = CreatePipeline();
 
-                MarkdownDocument document = MarkdownParser.Parse(content, pipeline);
-
                 using (var writer = new StringWriter())
                 {
                     var htmlRenderer = new HtmlRenderer(writer);
                     pipeline.Setup(htmlRenderer);
 
-                    htmlRenderer.LinkRewriter = (link) =>
+                    if (_prependLinkRoot && context.Settings.ContainsKey(Keys.LinkRoot))
                     {
-                        if (link == null || link.Length == 0)
+                        htmlRenderer.LinkRewriter = (link) =>
                         {
-                            return link;
-                        }
-
-                        if (link[0] == '/' && _prependLinkRoot)
-                        {
-                            // root-based url, must be rewritten
-                            if (context.Settings.ContainsKey(Keys.LinkRoot))
+                            if (link == null || link.Length == 0)
                             {
-                                // append link-root
+                                return link;
+                            }
+
+                            if (link[0] == '/')
+                            {
+                                // root-based url, must be rewritten by appeding LinkRoot setting value
                                 // ex: '/virtual/directory' + '/relative/abs/link.html' => '/virtual/directory/relative/abs/link.html'
                                 link = context.Settings[Keys.LinkRoot] + link;
                             }
 
-                            // Disabled for now
-                            ////if (context.Settings.ContainsKey(Keys.Host))
-                            ////{
-                            ////    // append host
-                            ////    // ex: 'http://example.com' + '/relative/abs/link.html' => 'http://example.com/relative/abs/link.html'
-                            ////    link = context.Settings[Keys.Host] + link;
-                            ////}
-                        }
+                            return link;
+                        };
+                    }
 
-                        return link;
-                    };
-
+                    MarkdownDocument document = MarkdownParser.Parse(content, pipeline);
                     htmlRenderer.Render(document);
                     writer.Flush();
                     result = writer.ToString();
