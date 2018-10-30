@@ -224,7 +224,7 @@ namespace Wyam.Markdown
 
                                 if (link[0] == '/')
                                 {
-                                    // root-based url, must be rewritten by appeding LinkRoot setting value
+                                    // root-based url, must be rewritten by prepending the LinkRoot setting value
                                     // ex: '/virtual/directory' + '/relative/abs/link.html' => '/virtual/directory/relative/abs/link.html'
                                     link = context.Settings[Keys.LinkRoot] + link;
                                 }
