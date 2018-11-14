@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Wyam.Examples.Tests
 {
@@ -41,6 +42,14 @@ namespace Wyam.Examples.Tests
         public void SetUp()
         {
             Directory.CreateDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "packages"));
+
+            // Make sure there a "Wyam.runtimeconfig.json" since it won't get copied over with CopyLocalLockFileAssemblies
+            // This is a big hack, but hopefully it'll go away when we switch to running via a project and/or global tool
+            string runtimePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.runtimeconfig.json");
+            if (!File.Exists(runtimePath))
+            {
+                File.WriteAllText(runtimePath, @"{ ""runtimeOptions"": { ""tfm"": ""netcoreapp2.1"", ""framework"": { ""name"": ""Microsoft.NETCore.App"", ""version"": ""2.1.0"" } } }");
+            }
         }
 
         [OneTimeTearDown]
@@ -59,8 +68,9 @@ namespace Wyam.Examples.Tests
 
             // When
             Process process = new Process();
-            process.StartInfo.FileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.exe");
-            process.StartInfo.Arguments = $@"--no-output-config-assembly --use-local-packages --verbose --packages-path ""{packagesPath}"" ""{example}""";
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = "\"" + Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.dll") + "\""
+                + $@" --no-output-config-assembly --use-local-packages --verbose --packages-path ""{packagesPath}"" ""{example}""";
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
@@ -72,7 +82,7 @@ namespace Wyam.Examples.Tests
             process.WaitForExit();
 
             // Then
-            Assert.AreEqual(0, process.ExitCode);
+            process.ExitCode.ShouldBe(0);
         }
     }
 }
