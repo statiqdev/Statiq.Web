@@ -98,7 +98,7 @@ namespace Wyam.Commands
                 // Attach
                 if (_attach)
                 {
-                    Trace.Information("Waiting for a debugger to attach (or press a key to continue)...");
+                    Trace.Information($"Waiting for a debugger to attach to process {Process.GetCurrentProcess().Id} (or press a key to continue)...");
                     while (!Debugger.IsAttached && !Console.KeyAvailable)
                     {
                         Thread.Sleep(100);
