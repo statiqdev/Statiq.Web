@@ -1,3 +1,7 @@
+# 1.7.2
+
+- [Fix] Updated Authenticode certificate
+
 # 1.7.1
 
 - [Fix] Fixed Authenticode signing of `wyam.exe`
