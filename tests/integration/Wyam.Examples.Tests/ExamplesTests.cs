@@ -64,13 +64,15 @@ namespace Wyam.Examples.Tests
         {
             // Given
             string packagesPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "packages");
+            string arguments = "\"" + Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.dll") + "\""
+                + $@" --no-output-config-assembly --use-local-packages --verbose --packages-path ""{packagesPath}"" ""{example}""";
             TestContext.Out.WriteLine($"Packages path: {packagesPath}");
+            TestContext.Out.WriteLine($"Command: dotnet {arguments}");
 
             // When
             Process process = new Process();
             process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = "\"" + Path.Combine(TestContext.CurrentContext.TestDirectory, "Wyam.dll") + "\""
-                + $@" --no-output-config-assembly --use-local-packages --verbose --packages-path ""{packagesPath}"" ""{example}""";
+            process.StartInfo.Arguments = arguments;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
