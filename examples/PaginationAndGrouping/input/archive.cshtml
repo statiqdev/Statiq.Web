@@ -16,12 +16,12 @@
 				<span>
 					@if(page == @Model.Get<int>("CurrentPage"))
 					{
-						<strong>Page @page</strong>
+						<strong>Page @(page)</strong>
 					}	
 					else
 					{
 						string pageLink = string.Format("archive-{0}-{1}.html", @Model["GroupKey"], page);
-						<a href="@pageLink">Page @page</a>
+						<a href="@pageLink">Page @(page)</a>
 					}
 					&nbsp;&nbsp;
 			 	</span>

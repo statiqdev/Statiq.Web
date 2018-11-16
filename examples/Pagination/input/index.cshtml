@@ -15,12 +15,12 @@
 				<span>
 					@if(page == @Model.Get<int>("CurrentPage"))
 					{
-						<strong>Page @page</strong>
+						<strong>Page @(page)</strong>
 					}	
 					else
 					{
 						string pageLink = page == 1 ? "index.html" : ("index-" + page + ".html");
-						<a href="@pageLink">Page @page</a>
+						<a href="@pageLink">Page @(page)</a>
 					}
 					&nbsp;&nbsp;
 			 	</span>
