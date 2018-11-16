@@ -28,6 +28,7 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <Target Name="SignBuild" Condition="'$(SIGNTOOL)' != '' AND $(WYAM_CERTPASS) != '' AND !($(DesignTimeBuild) == true OR $(BuildingProject) != true)" AfterTargets="AfterBuild">
-    <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /v $(TargetPath)" />
+    <!-- https://www.digicert.com/code-signing/signcode-signtool-command-line.htm -->
+    <Exec Command="&quot;$(SIGNTOOL)&quot; sign /f &quot;$(ProjectDir)..\..\..\digicert-davidglick.pfx&quot; /p $(WYAM_CERTPASS) /fd SHA256 /td SHA256 /tr  &quot;http://timestamp.digicert.com&quot; /d &quot;Wyam&quot; /du &quot;https://wyam.io&quot; /v $(TargetPath)" />
   </Target>
 </Project>
