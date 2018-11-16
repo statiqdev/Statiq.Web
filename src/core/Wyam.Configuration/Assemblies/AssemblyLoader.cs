@@ -34,7 +34,7 @@ namespace Wyam.Configuration.Assemblies
         private readonly ConcurrentDictionary<string, (Assembly, bool)> _assembliesToLoad = new ConcurrentDictionary<string, (Assembly, bool)>();
 
         // The full name of assemblies that have already been reflected
-        private readonly HashSet<string> _reflectedAssemblyNames = new HashSet<string>();
+        private readonly ConcurrentHashSet<string> _reflectedAssemblyNames = new ConcurrentHashSet<string>();
 
         private readonly IReadOnlyFileSystem _fileSystem;
         private readonly AssemblyResolver _assemblyResolver;
