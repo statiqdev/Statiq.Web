@@ -1,3 +1,8 @@
+# 1.7.3
+
+- [Fix] Fixes a regression with the new Razor module when using nested layouts
+- [Refactoring] Even better code signing (thanks @vcsjones) 
+
 # 1.7.2
 
 - [Fix] Updated Authenticode certificate
