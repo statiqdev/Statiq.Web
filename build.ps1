@@ -1,15 +1,15 @@
 Param
 (
     [String]$CakeVersion = "0.30.0",
-    [String]$ToolsDir = "$PSScriptRoot\tools",
-    [String]$ToolsProj = "$ToolsDir\build.csproj",
-    [String]$Script = "$PSScriptRoot\build.cake",
+    [String]$ToolsDir = "$PSScriptRoot/tools",
+    [String]$ToolsProj = "$ToolsDir/build.csproj",
+    [String]$Script = "$PSScriptRoot/build.cake",
     [String]$Target = 'Default',
     [String]$Verbosity = 'normal'
 )
 
-$CAKE_DIR = "$ToolsDir\Cake.CoreCLR.$CakeVersion"
-$CAKE_DLL = "$CAKE_DIR\cake.coreclr\$CakeVersion\Cake.dll"
+$CAKE_DIR = "$ToolsDir/Cake.CoreCLR.$CakeVersion"
+$CAKE_DLL = "$CAKE_DIR/cake.coreclr/$CakeVersion/Cake.dll"
 
 If (!(Test-Path $ToolsDir))
 {

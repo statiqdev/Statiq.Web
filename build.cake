@@ -25,6 +25,12 @@
 
 #addin "Cake.FileHelpers"
 #addin "Octokit"
+
+// The built-in AppVeyor logger doesn't work yet,
+// but when it does we can remove the tool directive and TestAdapterPath property
+// https://github.com/appveyor/ci/issues/1601
+#tool "Appveyor.TestLogger&version=2.0.0"
+
 using Octokit;
 
 //////////////////////////////////////////////////////////////////////
@@ -49,6 +55,11 @@ var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
 var version = releaseNotes.Version.ToString();
 var semVersion = version + (isLocal ? string.Empty : string.Concat("-build-", buildNumber));
+
+var msBuildSettings = new DotNetCoreMSBuildSettings()
+    .WithProperty("Version", semVersion)
+    .WithProperty("AssemblyVersion", version)
+    .WithProperty("FileVersion", version);
 
 var buildDir = Directory("./src/clients/Wyam/bin") + Directory(configuration);
 var buildResultDir = Directory("./build");
@@ -95,54 +106,47 @@ Task("Restore-Packages")
     .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
     {
-        NuGetRestore("./Wyam.sln");
-
-        // Need to pass version to restore so assets file is updated
-        // See https://github.com/NuGet/Home/issues/4790
-        // and https://github.com/NuGet/Home/issues/5371
-        MSBuild("./Wyam.sln", new MSBuildSettings()
-            .SetConfiguration(configuration)
-            .WithTarget("restore")
-            .WithProperty("Version", $"\"{semVersion}\"")
-            .WithProperty("WarningLevel", "0")
-            .SetMaxCpuCount(0)
-            .SetVerbosity(Verbosity.Minimal)
-        );
+        DotNetCoreRestore("./Wyam.sln", new DotNetCoreRestoreSettings
+        {
+            MSBuildSettings = msBuildSettings
+        });
     });
 
 Task("Build")
     .IsDependentOn("Restore-Packages")
     .Does(() =>
     {
-        MSBuild("./Wyam.sln", new MSBuildSettings()
-            .SetConfiguration(configuration)
-            .SetMaxCpuCount(0)
-            .SetVerbosity(Verbosity.Minimal)
-            .WithProperty("WarningLevel", "0")  
-        );
+        DotNetCoreBuild("./Wyam.sln", new DotNetCoreBuildSettings
+        {
+            Configuration = configuration,
+            NoRestore = true,
+            MSBuildSettings = msBuildSettings
+        });
     });
 
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
-    .Does(() =>
+    .DoesForEach(GetFiles("./tests/**/*.csproj"), project =>
     {
         DotNetCoreTestSettings testSettings = new DotNetCoreTestSettings()
         {
             NoBuild = true,
-            ArgumentCustomization = x => x.Append("--no-restore"),
+            NoRestore = true,
             Configuration = configuration
         };
         if (isRunningOnAppVeyor)
         {
             testSettings.Filter = "TestCategory!=ExcludeFromAppVeyor";
+            testSettings.Logger = "Appveyor";
+
+            // Remove this when no longer using the tool (see above)
+            testSettings.TestAdapterPath = GetDirectories($"./tools/Appveyor.TestLogger.*/build/_common").First();
         }
 
-        foreach (var project in GetFiles("./tests/**/*.csproj"))
-        {
-            Information($"Running tests in {project}");
-            DotNetCoreTest(MakeAbsolute(project).ToString(), testSettings);
-        }
-    });
+        Information($"Running tests in {project}");
+        DotNetCoreTest(MakeAbsolute(project).ToString(), testSettings);
+    })
+    .DeferOnError();
 
 Task("Copy-Files")
     .IsDependentOn("Build")
