@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Testing;
+using Wyam.Testing.Attributes;
 
 namespace Wyam.Common.Tests.IO
 {
@@ -250,6 +251,7 @@ namespace Wyam.Common.Tests.IO
             }
 
             [Test]
+            [WindowsTest]
             public void ShouldUsePathAsFullPathIfNoPathInString()
             {
                 // Given, When
@@ -374,10 +376,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c", ".")]
             [TestCase("foo.txt", ".")]
             [TestCase("foo", ".")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c", "c:/")]
-            [TestCase("c:/a/b/c", "c:/")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c", "c:/")]
+            [WindowsTestCase("c:/a/b/c", "c:/")]
             public void ShouldReturnRootPath(string fullPath, string expected)
             {
                 // Given
@@ -396,10 +396,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase(@"a\b\c")]
             [TestCase("foo.txt")]
             [TestCase("foo")]
-#if !UNIX
-            [TestCase(@"c:\a\b\c")]
-            [TestCase("c:/a/b/c")]
-#endif
+            [WindowsTestCase(@"c:\a\b\c")]
+            [WindowsTestCase("c:/a/b/c")]
             public void ShouldReturnDottedRootForExplicitRelativePath(string fullPath)
             {
                 // Given
@@ -428,11 +426,10 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(expected, path.IsRelative);
             }
 
-#if !UNIX
-            [TestCase("c:/assets/shaders", false)]
-            [TestCase("c:/assets/shaders/basic.frag", false)]
-            [TestCase("c:/", false)]
-            [TestCase("c:", false)]
+            [WindowsTestCase("c:/assets/shaders", false)]
+            [WindowsTestCase("c:/assets/shaders/basic.frag", false)]
+            [WindowsTestCase("c:/", false)]
+            [WindowsTestCase("c:", false)]
             public void ShouldReturnWhetherOrNotAPathIsRelativeOnWindows(string fullPath, bool expected)
             {
                 // Given, When
@@ -441,7 +438,6 @@ namespace Wyam.Common.Tests.IO
                 // Then
                 Assert.AreEqual(expected, path.IsRelative);
             }
-#endif
         }
 
         public class ToStringTests : NormalizedPathFixture
@@ -449,11 +445,11 @@ namespace Wyam.Common.Tests.IO
             [TestCase(null, "temp/hello", "temp/hello")]
             [TestCase("foo://a/b/c", "/temp/hello", "foo://a/b/c|/temp/hello")]
             [TestCase("foo:///", "/temp/hello", "foo:///temp/hello")]
-            [TestCase("foo:///", "c:/temp/hello", "foo:///c:/temp/hello")]
+            [WindowsTestCase("foo:///", "c:/temp/hello", "foo:///c:/temp/hello")]
             [TestCase("foo:", "/temp/hello", "foo:/temp/hello")]
-            [TestCase("foo:", "c:/temp/hello", "foo:c:/temp/hello")]
+            [WindowsTestCase("foo:", "c:/temp/hello", "foo:c:/temp/hello")]
             [TestCase(null, "/temp/hello", "/temp/hello")]
-            [TestCase(null, "c:/temp/hello", "c:/temp/hello")]
+            [WindowsTestCase(null, "c:/temp/hello", "c:/temp/hello")]
             public void ShouldReturnStringRepresentation(string provider, string path, string expected)
             {
                 // Given, When
@@ -489,10 +485,8 @@ namespace Wyam.Common.Tests.IO
             [TestCase("a/b/.", "a/b")]
             [TestCase("/a/b/.", "/a/b")]
             [TestCase("/./a/b", "/a/b")]
-#if !UNIX
-            [TestCase("c:/hello/temp/test/../../world", "c:/hello/world")]
-            [TestCase("c:/../../../../../../temp", "c:/temp")]
-#endif
+            [WindowsTestCase("c:/hello/temp/test/../../world", "c:/hello/world")]
+            [WindowsTestCase("c:/../../../../../../temp", "c:/temp")]
             public void ShouldCollapseDirectoryPath(string fullPath, string expected)
             {
                 // Given
@@ -506,9 +500,7 @@ namespace Wyam.Common.Tests.IO
             }
 
             [TestCase("/a/b/c/../d/baz.txt", "/a/b/d/baz.txt")]
-#if !UNIX
-            [TestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
-#endif
+            [WindowsTestCase("c:/a/b/c/../d/baz.txt", "c:/a/b/d/baz.txt")]
             public void ShouldCollapseFilePath(string fullPath, string expected)
             {
                 // Given

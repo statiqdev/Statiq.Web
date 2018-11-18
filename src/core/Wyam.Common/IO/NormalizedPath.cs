@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Wyam.Common.Execution;
@@ -100,12 +101,10 @@ namespace Wyam.Common.IO
                 FullPath = FullPath.TrimEnd('/');
             }
 
-#if !UNIX
-            if (FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && FullPath.EndsWith(":", StringComparison.OrdinalIgnoreCase))
             {
                 FullPath = string.Concat(FullPath, "/");
             }
-#endif
 
             // Absolute path?
             switch (pathKind)

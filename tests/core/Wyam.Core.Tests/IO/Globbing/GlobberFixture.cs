@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Core.IO.Globbing;
 using Wyam.Testing;
+using Wyam.Testing.Attributes;
 using Wyam.Testing.IO;
 
 namespace Wyam.Core.Tests.IO.Globbing
@@ -105,12 +107,9 @@ namespace Wyam.Core.Tests.IO.Globbing
                 CollectionAssert.AreEquivalent(new[] { "/a/b/c/x.txt", "/a/bar/foo/y.txt" }, matches.Select(x => x.Path.FullPath));
             }
 
-            [Test]
             [TestCase("/a/b")]
             [TestCase("/**/a")]
-#if !UNIX
-            [TestCase("C:/a")]
-#endif
+            [WindowsTestCase("C:/a")]
             public void ShouldThrowForRootPatterns(string pattern)
             {
                 // Given

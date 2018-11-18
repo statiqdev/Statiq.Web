@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Wyam.Common.IO;
 using Wyam.Testing;
+using Wyam.Testing.Attributes;
 
 namespace Wyam.Common.Tests.IO
 {
@@ -11,20 +12,17 @@ namespace Wyam.Common.Tests.IO
     {
         public class ResolveTests : RelativePathResolverFixture
         {
-            [Test]
-#if !UNIX
-            [TestCase("C:/A/B/C", "C:/A/B/C", ".")]
-            [TestCase("C:/", "C:/", ".")]
-            [TestCase("C:/A/B/C", "C:/A/D/E", "../../D/E")]
-            [TestCase("C:/A/B/C", "C:/", "../../..")]
-            [TestCase("C:/A/B/C/D/E/F", "C:/A/B/C", "../../..")]
-            [TestCase("C:/A/B/C", "C:/A/B/C/D/E/F", "D/E/F")]
-            [TestCase("C:/A/B/C", "W:/X/Y/Z", "W:/X/Y/Z")]
-            [TestCase("C:/A/B/C", "D:/A/B/C", "D:/A/B/C")]
-            [TestCase("C:/A/B", "D:/E/", "D:/E")]
-            [TestCase("C:/", "B:/", "B:/")]
-            [TestCase("C:/", "/", "/")]
-#endif
+            [WindowsTestCase("C:/A/B/C", "C:/A/B/C", ".")]
+            [WindowsTestCase("C:/", "C:/", ".")]
+            [WindowsTestCase("C:/A/B/C", "C:/A/D/E", "../../D/E")]
+            [WindowsTestCase("C:/A/B/C", "C:/", "../../..")]
+            [WindowsTestCase("C:/A/B/C/D/E/F", "C:/A/B/C", "../../..")]
+            [WindowsTestCase("C:/A/B/C", "C:/A/B/C/D/E/F", "D/E/F")]
+            [WindowsTestCase("C:/A/B/C", "W:/X/Y/Z", "W:/X/Y/Z")]
+            [WindowsTestCase("C:/A/B/C", "D:/A/B/C", "D:/A/B/C")]
+            [WindowsTestCase("C:/A/B", "D:/E/", "D:/E")]
+            [WindowsTestCase("C:/", "B:/", "B:/")]
+            [WindowsTestCase("C:/", "/", "/")]
 
             // Absolute
             [TestCase("/C/A/B/C", "/C/A/B/C", ".")]
@@ -64,19 +62,16 @@ namespace Wyam.Common.Tests.IO
                 Assert.AreEqual(expected, relativePath.FullPath);
             }
 
-            [Test]
-#if !UNIX
-            [TestCase("C:/A/B/C", "C:/A/B/C/hello.txt", "hello.txt")]
-            [TestCase("C:/", "C:/hello.txt", "hello.txt")]
-            [TestCase("C:/A/B/C", "C:/A/D/E/hello.txt", "../../D/E/hello.txt")]
-            [TestCase("C:/A/B/C", "C:/hello.txt", "../../../hello.txt")]
-            [TestCase("C:/A/B/C/D/E/F", "C:/A/B/C/hello.txt", "../../../hello.txt")]
-            [TestCase("C:/A/B/C", "C:/A/B/C/D/E/F/hello.txt", "D/E/F/hello.txt")]
-            [TestCase("C:/A/B/C", "W:/X/Y/Z/hello.txt", "W:/X/Y/Z/hello.txt")]
-            [TestCase("C:/A/B/C", "D:/A/B/C/hello.txt", "D:/A/B/C/hello.txt")]
-            [TestCase("C:/A/B", "D:/E/hello.txt", "D:/E/hello.txt")]
-            [TestCase("C:/", "B:/hello.txt", "B:/hello.txt")]
-#endif
+            [WindowsTestCase("C:/A/B/C", "C:/A/B/C/hello.txt", "hello.txt")]
+            [WindowsTestCase("C:/", "C:/hello.txt", "hello.txt")]
+            [WindowsTestCase("C:/A/B/C", "C:/A/D/E/hello.txt", "../../D/E/hello.txt")]
+            [WindowsTestCase("C:/A/B/C", "C:/hello.txt", "../../../hello.txt")]
+            [WindowsTestCase("C:/A/B/C/D/E/F", "C:/A/B/C/hello.txt", "../../../hello.txt")]
+            [WindowsTestCase("C:/A/B/C", "C:/A/B/C/D/E/F/hello.txt", "D/E/F/hello.txt")]
+            [WindowsTestCase("C:/A/B/C", "W:/X/Y/Z/hello.txt", "W:/X/Y/Z/hello.txt")]
+            [WindowsTestCase("C:/A/B/C", "D:/A/B/C/hello.txt", "D:/A/B/C/hello.txt")]
+            [WindowsTestCase("C:/A/B", "D:/E/hello.txt", "D:/E/hello.txt")]
+            [WindowsTestCase("C:/", "B:/hello.txt", "B:/hello.txt")]
 
             // Absolute
             [TestCase("/C/A/B/C", "/C/A/B/C/hello.txt", "hello.txt")]
