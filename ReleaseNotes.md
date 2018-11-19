@@ -1,3 +1,7 @@
+# 1.7.4
+
+- [Feature] Updated Buildalyzer which includes new features like honoring MSBuild constants
+
 # 1.7.3
 
 - [Fix] Fixes a regression with the new Razor module when using nested layouts
