@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\clients\Cake.Wyam\Cake.Wyam.csproj" />
+    <ProjectReference Include="..\..\..\src\core\Wyam.Testing\Wyam.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Cake.Core" Version="0.28.0" />

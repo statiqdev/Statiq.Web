@@ -11,6 +11,9 @@
     <ProjectReference Include="..\..\core\Wyam.Hosting\Wyam.Hosting.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="SharpScss" Version="1.4.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.CommandLine">
       <HintPath>..\..\..\lib\System.CommandLine\System.CommandLine.dll</HintPath>
     </Reference>

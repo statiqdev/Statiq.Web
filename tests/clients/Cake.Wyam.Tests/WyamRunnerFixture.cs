@@ -4,6 +4,7 @@ using Cake.Core.IO;
 using Cake.Testing;
 using Cake.Testing.Fixtures;
 using NUnit.Framework;
+using Wyam.Testing.Attributes;
 
 namespace Cake.Wyam.Tests
 {
@@ -39,7 +40,7 @@ namespace Cake.Wyam.Tests
                 Assert.AreEqual(expected, result.Path.FullPath);
             }
 
-            [TestCase("C:/Wyam/Wyam.exe", "C:/Wyam/Wyam.exe")]
+            [WindowsTestCase("C:/Wyam/Wyam.exe", "C:/Wyam/Wyam.exe")]
             public void ShouldUseWyamRunnerFromToolPathIfProvidedOnWindows(string toolPath, string expected)
             {
                 // Given

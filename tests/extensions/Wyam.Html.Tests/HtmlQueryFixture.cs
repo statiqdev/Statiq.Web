@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Shouldly;
@@ -419,7 +420,7 @@ namespace Wyam.Html.Tests
 
                 // Then
                 results
-                    .Select(x => x.OrderBy(y => y.Key))
+                    .Select(x => x.OrderBy(y => y.Key, StringComparer.OrdinalIgnoreCase))
                     .Cast<IEnumerable<KeyValuePair<string, object>>>()
                     .ShouldBe(new[]
                     {
@@ -461,7 +462,7 @@ namespace Wyam.Html.Tests
 
                 // Then
                 results
-                    .Select(x => x.OrderBy(y => y.Key))
+                    .Select(x => x.OrderBy(y => y.Key, StringComparer.OrdinalIgnoreCase))
                     .Cast<IEnumerable<KeyValuePair<string, object>>>()
                     .ShouldBe(new[]
                     {

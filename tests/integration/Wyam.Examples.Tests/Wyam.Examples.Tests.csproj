@@ -33,6 +33,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="NUnit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="SharpScss" Version="1.4.0" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
   </ItemGroup>
 </Project>
