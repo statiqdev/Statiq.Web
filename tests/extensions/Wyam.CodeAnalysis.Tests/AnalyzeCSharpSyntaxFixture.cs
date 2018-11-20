@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common;
 using Wyam.Common.Documents;
 using Wyam.Common.IO;
@@ -41,7 +42,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal class Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal class Green");
             }
 
             [Test]
@@ -67,7 +68,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"private void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"private void Blue()");
             }
 
             [Test]
@@ -90,7 +91,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"public class Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"public class Green");
             }
 
             [Test]
@@ -116,7 +117,7 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"internal void Blue()");
             }
 
             [Test]
@@ -141,11 +142,9 @@ namespace Wyam.CodeAnalysis.Tests
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(
-                    @"[Foo]
+                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(@"[Foo]
 [Bar, Foo]
-internal class Green",
-                    GetResult(results, "Green")["Syntax"]);
+internal class Green", StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -173,11 +172,9 @@ internal class Green",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(
-                    @"[Foo]
+                GetMember(results, "Green", "Blue")["Syntax"].ToString().ShouldBe(@"[Foo]
 [Bar]
-private int Blue()",
-                    GetMember(results, "Green", "Blue")["Syntax"]);
+private int Blue()", StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -210,11 +207,9 @@ private int Blue()",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(
-                    @"[Foo]
+                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(@"[Foo]
 [Bar(5)]
-internal class Green : Blue",
-                    GetResult(results, "Green")["Syntax"]);
+internal class Green : Blue", StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -237,7 +232,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal abstract class Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal abstract class Green");
             }
 
             [Test]
@@ -260,7 +255,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal sealed class Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal sealed class Green");
             }
 
             [Test]
@@ -283,7 +278,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal static class Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal static class Green");
             }
 
             [Test]
@@ -309,7 +304,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"private static void Blue()", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"private static void Blue()");
             }
 
             [Test]
@@ -332,7 +327,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal class Green<out TKey, TValue>", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal class Green<out TKey, TValue>");
             }
 
             [Test]
@@ -355,7 +350,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal class Green<out TKey, TValue> where TValue : class", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal class Green<out TKey, TValue> where TValue : class");
             }
 
             [Test]
@@ -387,7 +382,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal class Green<out TKey, TValue> : Blue, IFoo where TValue : class", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal class Green<out TKey, TValue> : Blue, IFoo where TValue : class");
             }
 
             [Test]
@@ -414,7 +409,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag)", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag)");
             }
 
             [Test]
@@ -441,7 +436,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag) where TKey : class", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag) where TKey : class");
             }
 
             [Test]
@@ -466,7 +461,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal enum Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal enum Green");
             }
 
             [Test]
@@ -491,7 +486,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal enum Green", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal enum Green");
             }
 
             [Test]
@@ -518,7 +513,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"public int Blue { get; }", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"public int Blue { get; }");
             }
 
             [Test]
@@ -542,7 +537,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"public int Blue { get; set; }", GetMember(results, "Green", "Blue")["Syntax"]);
+                GetMember(results, "Green", "Blue")["Syntax"].ShouldBe(@"public int Blue { get; set; }");
             }
 
             [Test]
@@ -569,10 +564,10 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(
+                GetMember(results, "Green", "Blue")["Syntax"].ToString().ShouldBe(
                     @"public TValue Blue<TKey, TValue>(TKey key, TValue value, bool flag, int something, int somethingElse, int anotherThing) 
     where TKey : class",
-                    GetMember(results, "Green", "Blue")["Syntax"]);
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -595,11 +590,11 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(
+                GetResult(results, "Green")["Syntax"].ToString().ShouldBe(
                     @"internal class Green<TKey, TValue> : IReallyLongInterface, INameToForceWrapping, IFoo, IBar, 
     IFooBar, ICircle, ISquare, IRectangle
     where TKey : class",
-                    GetResult(results, "Green")["Syntax"]);
+                    StringCompareShould.IgnoreLineEndings);
             }
 
             [Test]
@@ -622,7 +617,7 @@ internal class Green : Blue",
                 List<IDocument> results = module.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.AreEqual(@"internal class Green : IFoo, IBar, IFooBar", GetResult(results, "Green")["Syntax"]);
+                GetResult(results, "Green")["Syntax"].ShouldBe(@"internal class Green : IFoo, IBar, IFooBar");
             }
         }
     }

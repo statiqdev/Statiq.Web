@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Testing;
@@ -47,8 +47,6 @@ if (is.ua.indexOf('gecko') >= 0) {
 is.mac=is.ua.indexOf('mac')>=0;if(is.ua.indexOf('opera')>=0){is.ie=is.ns=false;is.opera=true;}
 if(is.ua.indexOf('gecko')>=0){is.ie=is.ns=false;is.gecko=true;}";
 
-                // HACK: The JS minifier will use \n new-lines, but in this test Windows/VS uses \r\n for new-lines
-                output = output.Replace(System.Environment.NewLine, "\n");
                 TestExecutionContext context = new TestExecutionContext();
                 TestDocument document = new TestDocument(input);
                 MinifyJs minifyJs = new MinifyJs();
@@ -57,7 +55,7 @@ if(is.ua.indexOf('gecko')>=0){is.ie=is.ns=false;is.gecko=true;}";
                 IList<IDocument> results = minifyJs.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                Assert.That(results.Select(x => x.Content), Is.EquivalentTo(new[] { output }));
+                results.Single().Content.ShouldBe(output, StringCompareShould.IgnoreLineEndings);
             }
         }
     }

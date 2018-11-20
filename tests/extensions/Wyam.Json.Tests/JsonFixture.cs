@@ -5,12 +5,14 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NSubstitute;
 using NUnit.Framework;
+using Shouldly;
 using Wyam.Common.Documents;
 using Wyam.Common.Execution;
 using Wyam.Common.Tracing;
 using Wyam.Testing;
+using Wyam.Testing.Documents;
+using Wyam.Testing.Execution;
 
 namespace Wyam.Json.Tests
 {
@@ -30,71 +32,44 @@ namespace Wyam.Json.Tests
         public class ExecuteTests : JsonFixture
         {
             [Test]
-            public void SetsMetadataKey()
-            {
-                // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns(_jsonContent);
-                Json json = new Json("MyJson");
-
-                // When
-                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
-
-                // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                context.Received().GetDocument(document, Arg.Is<IEnumerable<KeyValuePair<string, object>>>(x => x.First().Key == "MyJson"));
-            }
-
-            [Test]
             public void GeneratesDynamicObject()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                IEnumerable<KeyValuePair<string, object>> items = null;
-                context
-                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                    .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-                document.Content.Returns(_jsonContent);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(_jsonContent);
                 Json json = new Json("MyJson");
 
                 // When
-                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                Assert.AreEqual(1, items.Count());
-                Assert.IsInstanceOf<ExpandoObject>(items.First().Value);
-                Assert.AreEqual("james@example.com", (string)((dynamic)items.First().Value).Email);
-                Assert.AreEqual(true, (bool)((dynamic)items.First().Value).Active);
-                Assert.AreEqual(new DateTime(2013, 1, 20, 0, 0, 0, DateTimeKind.Utc), (DateTime)((dynamic)items.First().Value).CreatedDate);
-                CollectionAssert.AreEqual(new[] { "User", "Admin" }, (IEnumerable)((dynamic)items.First().Value).Roles);
+                IDocument result = results.Single();
+                result.Count.ShouldBe(1);
+                result["MyJson"].ShouldBeOfType<ExpandoObject>();
+                ((string)((dynamic)result["MyJson"]).Email).ShouldBe("james@example.com");
+                ((bool)((dynamic)result["MyJson"]).Active).ShouldBeTrue();
+                ((DateTime)((dynamic)result["MyJson"]).CreatedDate).ShouldBe(new DateTime(2013, 1, 20, 0, 0, 0, DateTimeKind.Utc));
+                ((IEnumerable)((dynamic)result["MyJson"]).Roles).ShouldBe(new[] { "User", "Admin" });
             }
 
             [Test]
             public void FlattensTopLevel()
             {
                 // Given
-                IExecutionContext context = Substitute.For<IExecutionContext>();
-                IDocument document = Substitute.For<IDocument>();
-                IEnumerable<KeyValuePair<string, object>> items = null;
-                context
-                    .When(x => x.GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>()))
-                    .Do(x => items = x.Arg<IEnumerable<KeyValuePair<string, object>>>());
-                document.Content.Returns(_jsonContent);
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument(_jsonContent);
                 Json json = new Json();
 
                 // When
-                json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
+                IList<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(1).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                Assert.AreEqual(4, items.Count());
-                Assert.AreEqual("james@example.com", items.First(x => x.Key == "Email").Value);
-                Assert.AreEqual(true, items.First(x => x.Key == "Active").Value);
-                Assert.AreEqual(new DateTime(2013, 1, 20, 0, 0, 0, DateTimeKind.Utc), items.First(x => x.Key == "CreatedDate").Value);
-                CollectionAssert.AreEqual(new[] { "User", "Admin" }, (IEnumerable)items.First(x => x.Key == "Roles").Value);
+                IDocument result = results.Single();
+                result.Count.ShouldBe(4);
+                ((string)result["Email"]).ShouldBe("james@example.com");
+                ((bool)result["Active"]).ShouldBeTrue();
+                ((DateTime)result["CreatedDate"]).ShouldBe(new DateTime(2013, 1, 20, 0, 0, 0, DateTimeKind.Utc));
+                ((IEnumerable)result["Roles"]).ShouldBe(new[] { "User", "Admin" });
             }
 
             [Test]
@@ -103,17 +78,15 @@ namespace Wyam.Json.Tests
             {
                 // Given
                 RemoveListener();
-                IDocument document = Substitute.For<IDocument>();
-                document.Content.Returns("asdf");
-                IExecutionContext context = Substitute.For<IExecutionContext>();
+                TestExecutionContext context = new TestExecutionContext();
+                TestDocument document = new TestDocument("asdf");
                 Json json = new Json("MyJson");
 
                 // When
                 List<IDocument> results = json.Execute(new[] { document }, context).ToList();  // Make sure to materialize the result list
 
                 // Then
-                context.Received(0).GetDocument(Arg.Any<IDocument>(), Arg.Any<IEnumerable<KeyValuePair<string, object>>>());
-                Assert.IsTrue(results.Single().Equals(document));
+                document.Count.ShouldBe(0);
             }
         }
     }
